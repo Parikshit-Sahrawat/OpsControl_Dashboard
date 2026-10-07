@@ -546,6 +546,67 @@ Minimum concepts:
 - State transitions
 - Optional evidence/reference
 
+### 9.9 Recent History — Confirmed Scope
+
+The Recent History section will initially show **previous executions of the same Job Order only**.
+
+Scope:
+
+```
+Current execution
+      |
+      +-- Same Job Order
+      |     +-- Previous execution
+      |     +-- Previous execution
+      |     +-- Previous execution
+      |
+      +-- Other Job Orders -> excluded from this initial view
+```
+
+For example, if the current execution is:
+
+```
+Organization: ABC Corporation
+VM: HERO-PRDAPP001
+Job Order: JC_Pricing_Daily
+```
+
+Recent History will show only earlier executions belonging to that same `job_order_id`.
+
+It should include enough information to compare executions, such as:
+
+- Execution date/time
+- Execution type
+- Status
+- Duration
+- Failed step, when applicable
+- Failure category, when available
+- SLA status
+- Incident reference, when applicable
+
+Example:
+
+```
+RECENT HISTORY
+
+08-Oct 08:05  FAILED   Database timeout       INC0012345
+07-Oct 08:04  FAILED   Database timeout       INC0012291
+06-Oct 08:00  SUCCESS  18m                    -
+05-Oct 08:00  SUCCESS  19m                    -
+04-Oct 08:00  SUCCESS  21m                    -
+```
+
+This is intentionally **not** a cross-Job-Order diagnostic view.
+
+Future correlation can add a separate capability for:
+
+- Same failure category across the same Job Order
+- Related failures across the same VM
+- Related failures across the same organization/customer
+- Cross-resource dependency correlation
+
+That future capability should not be mixed into the initial Recent History contract.
+
 ---
 
 # 10. Investigation Lifecycle
@@ -890,6 +951,7 @@ Important principles already confirmed:
 16. PROD is the regular automated ETL monitoring scope.
 17. Recovery actions are performed outside OpsControl.
 18. Historical evidence should not be overwritten.
+19. Initial Recent History is scoped to the same Job Order.
 
 ---
 
@@ -1119,6 +1181,8 @@ This documentation is intended to support developers, NOC/operators, support tea
 | Pentaho facts vs OpsControl diagnosis | Confirmed |
 | Suspected cause vs confirmed root cause | Confirmed |
 | Investigation lifecycle | Confirmed |
+| Recent History scope | **Same Job Order only — Confirmed** |
+| Cross-Job-Order failure correlation in Recent History | Excluded from initial view / Future capability |
 | Retry Job from OpsControl | Excluded |
 | Start/stop Pentaho job | Excluded |
 | VM restart | Excluded |
@@ -1136,11 +1200,11 @@ This documentation is intended to support developers, NOC/operators, support tea
 
 # 28. Next Design Stage
 
-The next design stage is:
+The next design stage remains:
 
 ## **Failed Job Details Drawer — operator workflow and data contract**
 
-We will define, field by field:
+Already validated:
 
 1. Execution Summary
 2. Failure Diagnosis
@@ -1148,14 +1212,16 @@ We will define, field by field:
 4. Timeline/events
 5. Logs
 6. Dependency correlation
-7. Previous/repeated failures
+7. **Recent History: same Job Order only**
 8. Alert history
 9. PagerDuty/ServiceNow state
 10. Investigation state
 11. Operator notes
 12. Audit history
 
-Only after these are validated should we finalize:
+The next focused design step is to validate the **Alert History + PagerDuty/ServiceNow state** portion of the drawer.
+
+Only after the drawer is validated should we finalize:
 
 - REST API contracts
 - PostgreSQL tables
@@ -1176,4 +1242,3 @@ Only after these are validated should we finalize:
 **Source of truth:** GitHub repository + this README
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
-
