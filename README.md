@@ -1393,6 +1393,35 @@ Only after the drawer is validated should we finalize:
 
 ---
 
+## 29. React Prototype
+
+A first functional single-file React-style browser prototype has been added under `prototype/index.html`.
+
+The prototype demonstrates the agreed operational contract using mock data:
+
+- Top navigation
+- Action-first Overview
+- ETL status filters
+- 5-second refresh indicator
+- Clickable ETL execution rows
+- Right-side Job Details drawer
+- Execution Summary
+- Failure Diagnosis
+- Execution Timeline
+- Step-level execution
+- Related Health
+- Alert & Incident History
+- Same-Job-Order Recent History
+- Investigation lifecycle context
+- Simple chronological Operator Notes
+- Root-cause and recovery placeholders
+
+The prototype intentionally uses mock data at this stage. It does not execute Pentaho jobs, restart VMs, modify production configuration, or connect to production integrations.
+
+**Prototype path:** `prototype/index.html`
+
+---
+
 ## Project status
 
 **Phase:** UX + operational requirements / POC
