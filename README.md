@@ -1422,12 +1422,77 @@ The prototype intentionally uses mock data at this stage. It does not execute Pe
 
 ---
 
+## 30. Frontend Application Structure
+
+The single-file prototype has now been converted into a proper Vite + React application foundation under `frontend/`.
+
+Structure:
+
+```text
+frontend/
+├── index.html
+├── package.json
+├── vite.config.js
+└── src/
+    ├── main.jsx
+    ├── App.jsx
+    ├── styles.css
+    ├── data/
+    │   └── mockData.js
+    ├── components/
+    │   ├── KpiCard.jsx
+    │   ├── JobDetailsDrawer.jsx
+    │   ├── StatusBadge.jsx
+    │   └── TopNav.jsx
+    └── pages/
+        ├── Overview.jsx
+        └── ETLJobs.jsx
+```
+
+### ETL Jobs page — first implementation
+
+The ETL Jobs page now implements the agreed operational behavior:
+
+- Current execution-focused view
+- PROD environment filter
+- All / Success / Failed / Running / Long Running / No Run filters
+- Search by Job Order or server
+- 5-second refresh contract indicator
+- Job Order ID and Job Order History ID
+- Start/end/duration
+- Expected runtime and SLA
+- Failed step and incident reference
+- Right-side Job Details drawer
+- Same Job Order recent history
+- Investigation + chronological Operator Notes
+
+The frontend currently uses mock data so the UX can be validated before API/database contracts are frozen.
+
+### Implementation boundary
+
+The frontend does not yet:
+
+- Connect to Pentaho
+- Execute/retry/stop jobs
+- Restart VMs
+- Call ServiceNow/PagerDuty
+- Persist operator notes
+- Read PostgreSQL
+
+Those capabilities will be added after the frontend contract is validated.
+
+---
+
 ## Project status
 
 **Phase:** UX + operational requirements / POC
 
-**Current focus:** Pentaho Job Details and failure investigation workflow
+**Current focus:** React frontend foundation + ETL Jobs operational page
 
 **Source of truth:** GitHub repository + this README
+
+**Frontend:** Vite + React application under `frontend/`
+
+**Current frontend stage:** Overview + ETL Jobs page with mock operational data
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
