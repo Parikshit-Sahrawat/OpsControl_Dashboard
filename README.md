@@ -6,7 +6,61 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ---
 
-## 1. Project Goals
+## Current implementation status
+
+**Phase:** UX + operational POC
+
+**Current focus:** Production-quality ETL Jobs frontend contract
+
+**Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
+
+**Frontend:** Vite + React under `frontend/`
+
+The frontend remains mock-data driven while the API and PostgreSQL contracts are being finalized. No production Pentaho job control is exposed.
+
+### ETL Jobs page now supports
+
+- Current execution-focused monitoring
+- `SUCCESS`, `FAILED`, `RUNNING`, `LONG_RUNNING`, and `NO_RUN` states
+- No Run logic based on expected execution window + grace period
+- Expected runtime vs SLA visual logic
+- Environment filtering with PROD as the default operational scope
+- Explicit Scheduled / Manual execution-type filtering
+- Search by Job Order, Job Order ID, or server
+- Status filter counts
+- Loading, error, and empty states
+- State-aware Job Details drawer for failed, running, successful, long-running, and no-run executions
+- Execution timeline with source attribution
+- Step-level execution with optional type/duration
+- Related health information where available
+- Same Job Order recent history
+- Important operational alert/incident history
+- Investigation lifecycle transitions
+- Chronological Operator Notes
+- Operator notes and investigation transitions are currently persisted in frontend state only
+- 5-second refresh contract placeholder
+
+### Monitoring rules
+
+```text
+Expected execution window + grace period
+        |
+        +-- execution detected -> normal execution monitoring
+        |
+        +-- no execution       -> NO_RUN
+
+Execution runtime
+        |
+        +-- below expected runtime -> ON TRACK
+        +-- expected runtime passed -> LONG_RUNNING / AT RISK
+        +-- SLA passed             -> SLA BREACH
+```
+
+Expected runtime and SLA remain separate thresholds. The UI does not execute, retry, stop, or restart production workloads.
+
+---
+
+# 1. Project Goals
 
 OpsControl is intended to answer:
 
@@ -28,7 +82,7 @@ The platform should help operators:
 
 ---
 
-## 2. Current Product Scope
+# 2. Current Product Scope
 
 ### Top navigation
 
@@ -125,21 +179,6 @@ A VM represents an individual machine used to run applications and workloads.
 
 Applications/services/processes running on a VM can be monitored independently.
 
-Example:
-
-```
-HERO-PRDAPP001
-├── Windows                 ✓
-├── CPU                     42%
-├── RAM                     68%
-├── C: Drive                71%
-├── D: Drive                94%  WARNING
-├── Apache                  ✓
-├── Tomcat                  ✓
-├── IEngine.exe             ✓
-└── Pentaho                 ✓
-```
-
 **VM restart actions are intentionally excluded from OpsControl.**
 
 ---
@@ -148,7 +187,7 @@ HERO-PRDAPP001
 
 Regular automated ETL monitoring is currently focused on **PROD only**.
 
-QA/Test/non-production environments are not part of the regular monitoring scope. If required, those environments may be handled manually or added as a future scope.
+QA/Test/non-production environments are not part of the regular monitoring scope. The current frontend can display other configured environments for validation, but it explicitly identifies them as outside the regular automated scope.
 
 Each monitored ETL workload is a **Job Order**.
 
@@ -172,18 +211,6 @@ Organization + VM + Job Order Name
 
 Internally it has a unique `job_order_id`.
 
-Example:
-
-```
-job_order_id: JO-000127
-Organization: ABC Corporation
-VM: HERO-PRDAPP001
-Job Order Name: JC_Pricing_Daily
-Environment: PROD
-```
-
-The same human-readable Job Order Name may exist for another organization/VM without conflict because the resource context identifies the Job Order.
-
 ## Job Order History
 
 A Job Order History represents:
@@ -192,15 +219,6 @@ A Job Order History represents:
 
 Every execution gets its own history record.
 
-Example:
-
-```
-JC_Pricing_Daily
-├── 08-Oct 08:00 -> FAILED
-├── 08-Oct 09:30 -> SUCCESS (MANUAL)
-└── 09-Oct 08:00 -> SUCCESS
-```
-
 Scheduled and manual Pentaho executions are both captured.
 
 Execution type:
@@ -208,15 +226,13 @@ Execution type:
 - `SCHEDULED`
 - `MANUAL`
 
-A manual execution is not automatically considered a recovery. If required, a future explicit relationship can associate it with an earlier failed execution.
-
 ---
 
 # 6. ETL Scheduling
 
 Both simple and advanced scheduling are required.
 
-## Simple schedules
+Simple schedules:
 
 - Hourly
 - Daily
@@ -224,19 +240,7 @@ Both simple and advanced scheduling are required.
 - Monthly
 - Quarterly
 
-Examples:
-
-```
-Hourly   -> every 1 hour
-Daily    -> every day at 08:00
-Weekly   -> Monday at 08:00
-Monthly  -> 1st day at 08:00
-Quarterly -> first day of quarter at 08:00
-```
-
-## Advanced schedules
-
-The backend must be extensible for:
+Advanced schedules:
 
 - Every N hours
 - Monday-Friday
@@ -249,17 +253,11 @@ The backend must be extensible for:
 
 Do not hard-code the database around only five frequency strings.
 
-## Schedule vs expected execution
+### Schedule vs expected execution
 
-These are different concepts.
+**Schedule** answers when the workload should run.
 
-**Schedule** answers:
-
-> When should the workload run?
-
-**Expected execution window** answers:
-
-> When should OpsControl expect to see an execution?
+**Expected execution window** answers when OpsControl should expect an execution.
 
 Example:
 
@@ -300,7 +298,7 @@ Operational states:
        -> SLA BREACH
 ```
 
-This allows early warning before an actual SLA breach.
+The frontend now visualizes this distinction directly in the ETL Jobs table and Job Details drawer.
 
 ---
 
@@ -328,440 +326,36 @@ Additional UI-level step states:
 
 # 9. Job Details Drawer
 
-The Job Details drawer is being designed as the operational contract for the future backend API and database.
-
-A failed execution should provide enough information for an operator to understand:
-
-1. What failed?
-2. Where did it fail?
-3. What exactly did Pentaho report?
-4. What does OpsControl know about the surrounding infrastructure/dependencies?
-5. Has the same problem happened before?
-6. What incidents/alerts were generated?
-7. What is the current investigation state?
-8. What has the operator documented?
-
-## Drawer sections
-
-### 9.1 Execution Summary
-
-Expected information:
-
-- Job Order Name
-- Job Order History / Execution ID
-- Organization
-- VM/server
-- Environment
-- Pentaho instance
-- Execution type
-- Status
-- Start time
-- End time / failure time
-- Detected time
-- Duration
-- Expected runtime
-- SLA
-- SLA status
-- Current incident reference
-- Last update time
-
-### 9.2 Failure Diagnosis
-
-Failure diagnosis deliberately separates **source facts** from **OpsControl analysis**.
-
-#### Pentaho/source facts
-
-These should represent what the source actually reported:
-
-- Failed step
-- Step type
-- Error code
-- Error message
-- Exception
-- Pentaho status/result
-- Source timestamps
-- Log location
-- Other available raw execution metadata
-
-#### OpsControl diagnosis
-
-These are calculated, correlated, or manually confirmed by OpsControl:
-
-- Failure category
-- Suspected cause
-- Confidence
-- Related resource
-- Related event
-- Correlated incident
-- Root cause
-- Root cause status
-- Analysis timestamp
-
-**Important:** Suspected Cause and Confirmed Root Cause are different fields.
-
-Example:
-
-```
-Pentaho:
-Connection timeout
-
-OpsControl:
-Category: Database
-Suspected cause: ORACLE-PROD-01 unavailable
-Confidence: High
-
-Root cause:
-Pending investigation
-```
-
-Later:
-
-```
-Root cause:
-Database listener failure
-
-Confirmed by:
-DB Team
-
-Confirmed at:
-08:32 IST
-```
-
-Do not overwrite historical diagnostic evidence.
-
-### 9.3 Execution Timeline
-
-The drawer should show an event timeline such as:
-
-```
-08:00:01  Job started
-08:01:12  Extract started
-08:04:21  Transformation started
-08:05:48  Database connection error
-08:05:49  Job failed
-08:05:55  OpsControl detected failure
-08:06:01  PagerDuty notification
-08:06:05  ServiceNow incident created
-```
-
-### 9.4 Step-level execution
-
-The initial implementation should capture **full step-level execution information when Pentaho provides it**.
-
-Example:
-
-```
-Extract Customer Data       SUCCESS
-Transform Pricing           SUCCESS
-Update Customer Database    FAILED
-Generate Output             NOT_STARTED
-```
-
-Available fields may include:
-
-- Step name
-- Step type
-- Step status
-- Start time
-- End time
-- Duration
-- Records read
-- Records written
-- Records rejected
-- Error code
-- Error message
-- Step-specific log information
-
-All fields must be optional when the selected Pentaho integration/source cannot provide them.
-
-### 9.5 Logs
-
-Potential capabilities:
-
-- Execution log
-- Error log
-- Log location
-- Relevant error excerpt
-- Search/filter
-- Open log location
-- Future full-log access/download
-
-Raw logs remain troubleshooting evidence. Structured events should be used for operational state.
-
-### 9.6 Related Health / Correlation
-
-The drawer should eventually correlate ETL execution with:
-
-- VM health
-- CPU
-- RAM
-- Disk
-- Services
-- Processes/applications
-- Database health
-- APIs
-- SFTP/S3 availability where relevant
-- Related ETL jobs
-- Active incidents
-
-Example:
-
-```
-Job failed
-    |
-    +-- Database connection timeout
-    |
-    +-- ORACLE-PROD-01 unavailable
-    |
-    +-- VM CPU 91%
-    +-- Disk 72%
-    +-- Network healthy
-```
-
-Correlation must distinguish observed facts from inferred causes.
-
-### 9.7 Alert & Incident History — Confirmed Scope
-
-The Job Details drawer will show **important operational events only**.
-
-The drawer is intentionally not a complete integration audit log. Its purpose is to answer quickly:
-
-- Was an alert triggered?
-- Was it delivered successfully?
-- Was an incident created?
-- Was it acknowledged?
-- Who is handling it?
-- What is the current incident state?
-
-Example:
-
-```
-ALERT & INCIDENT HISTORY
-
-08:05:55  Failure detected
-          Severity: CRITICAL
-
-08:06:01  PagerDuty
-          TRIGGERED
-          Incident: PD-12345
-
-08:06:05  ServiceNow
-          INCIDENT CREATED
-          INC0012345
-
-08:06:07  Email
-          SENT
-          Recipients: SLM Operations
-
-08:08:14  PagerDuty
-          ACKNOWLEDGED
-          By: Operator A
-```
-
-The drawer should prioritize operational milestones such as:
-
-- Failure/alert detected
-- PagerDuty triggered
-- ServiceNow incident created
-- Email notification sent
-- PagerDuty acknowledgement
-- ServiceNow assignment/update
-- Incident resolved/closed
-
-Repeated delivery attempts, retries, webhook details, payloads, API responses, and other low-level integration events should **not** clutter the Job Details drawer.
-
-A separate future integration/audit view may expose the complete technical event history when troubleshooting the integration itself.
-
-The drawer should retain a link/reference to the related PagerDuty and ServiceNow records where available.
-
-### 9.8 Investigation + Operator Notes — Confirmed Design
-
-Operators need a persistent investigation record that explains what the operator is doing, what evidence was found, what has been confirmed, and how recovery is progressing.
-
-The initial design uses **simple chronological operator notes** rather than a structured ticket-style note editor.
-
-#### Investigation record
-
-Minimum investigation fields:
-
-- Investigation ID
-- Job Order History / Execution ID
-- Investigation status
-- Started timestamp
-- Current operator / last operator
-- Current summary
-- Created/updated timestamps
-
-The investigation status remains separate from the ETL execution status.
-
-Example:
-
-    INVESTIGATION
-    Status:      INVESTIGATING
-    Started:     08-Oct-2026 08:08:14 IST
-    Operator:    Operator A
-    Duration:    24m 31s
-    Current Summary: Database connection failure under investigation with DB team.
-
-#### Chronological operator notes
-
-Each note is an independent timeline entry containing:
-
-- `note_id`
-- `investigation_id`
-- Operator
-- Timestamp
-- Note text
-- Optional evidence/reference
-
-Example:
-
-    08:08  Operator A
-    Acknowledged alert and started investigation.
-
-    08:10  Operator A
-    Database team contacted.
-
-    08:18  Operator A
-    DB listener appears unavailable. Waiting for DB team confirmation.
-
-    08:32  Operator B
-    DB team confirmed listener failure.
-
-A note is an operational record. **Adding a note must not automatically change investigation status.**
-
-#### Evidence
-
-Evidence should remain distinguishable from operator interpretation.
-
-Example:
-
-    EVIDENCE
-    - Pentaho error: Connection timeout
-    - Database monitoring: ORACLE-PROD-01 unavailable
-    - DB team confirmation: Listener failure confirmed
-    - Related incident: INC0012345
-
-Evidence may reference logs, monitoring events, incidents, or external team confirmation. Historical evidence should not be overwritten.
-
-#### Root cause
-
-Root cause must distinguish a **suspected cause** from a **confirmed root cause**.
-
-Before confirmation:
-
-    Root Cause: PENDING
-    Suspected Cause: Database listener unavailable
-    Confidence: HIGH
-
-After confirmation:
-
-    Root Cause Status: CONFIRMED
-    Category: Database
-    Root Cause: Oracle database listener failure
-    Confirmed By: Database Team
-    Confirmed At: 08-Oct-2026 08:32 IST
-    Evidence: DB team confirmation + database health event
-
-OpsControl should record the confirmation and evidence rather than silently replacing the earlier suspected cause.
-
-#### Recovery progress
-
-Recovery is documented in OpsControl but performed outside OpsControl by the appropriate team.
-
-Example:
-
-    RECOVERY
-    Status: RECOVERY_IN_PROGRESS
-    Root Cause: Oracle listener failure
-    Recovery Owner: Database Team
-    Action: Database listener restored
-    Recovery Started: 08:34 IST
-    Recovery Completed: 08:41 IST
-    Verification: Database health check = HEALTHY
-
-#### Monitoring after recovery
-
-After recovery, the investigation can move to `MONITORING` while the operator verifies subsequent behavior.
-
-A successful subsequent execution does not automatically resolve the investigation. The operator should explicitly document the validation and move the investigation to `RESOLVED` when appropriate.
-
-#### Resolution
-
-A resolved investigation should preserve the final explanation and validation evidence.
-
-Example:
-
-    RESOLUTION
-    Resolution: Database listener failure resolved.
-    Root Cause: Oracle listener failure
-    Recovery: DB listener restarted by Database Team.
-    Validation: JC_Pricing_Daily next execution SUCCESS.
-    Resolved By: Operator A
-    Resolved At: 08-Oct-2026 09:07 IST
-
-This design supports reliable auditability and future reporting for investigation duration, recovery duration, MTTA, MTTR, recurring failures, and operator activity.
-
-### 9.9 Recent History — Confirmed Scope
-
-The Recent History section will initially show **previous executions of the same Job Order only**.
-
-Scope:
-
-```
-Current execution
-      |
-      +-- Same Job Order
-      |     +-- Previous execution
-      |     +-- Previous execution
-      |     +-- Previous execution
-      |
-      +-- Other Job Orders -> excluded from this initial view
-```
-
-For example, if the current execution is:
-
-```
-Organization: ABC Corporation
-VM: HERO-PRDAPP001
-Job Order: JC_Pricing_Daily
-```
-
-Recent History will show only earlier executions belonging to that same `job_order_id`.
-
-It should include enough information to compare executions, such as:
-
-- Execution date/time
-- Execution type
-- Status
-- Duration
-- Failed step, when applicable
-- Failure category, when available
-- SLA status
-- Incident reference, when applicable
-
-Example:
-
-```
-RECENT HISTORY
-
-08-Oct 08:05  FAILED   Database timeout       INC0012345
-07-Oct 08:04  FAILED   Database timeout       INC0012291
-06-Oct 08:00  SUCCESS  18m                    -
-05-Oct 08:00  SUCCESS  19m                    -
-04-Oct 08:00  SUCCESS  21m                    -
-```
-
-This is intentionally **not** a cross-Job-Order diagnostic view.
-
-Future correlation can add a separate capability for:
-
-- Same failure category across the same Job Order
-- Related failures across the same VM
-- Related failures across the same organization/customer
-- Cross-resource dependency correlation
-
-That future capability should not be mixed into the initial Recent History contract.
+The Job Details drawer is the operational contract for the future backend API and database.
+
+It is now state-aware:
+
+- Successful execution
+- Running execution
+- Failed execution
+- Long-running execution
+- No-run condition
+
+### Current drawer sections
+
+1. Execution Summary
+2. Failure Diagnosis, where applicable
+3. Monitoring Diagnosis for No Run / Long Running
+4. Execution Timeline
+5. Step-level Execution
+6. Related Health
+7. Alert & Incident History
+8. Recent History — same Job Order only
+9. Investigation
+10. Operator Notes
+
+The drawer does not expose:
+
+- Retry Job
+- Start Job
+- Stop/Cancel Job
+- Restart VM
+- Production Pentaho configuration changes
 
 ---
 
@@ -791,60 +385,157 @@ MONITORING
 RESOLVED
 ```
 
-Every transition should record:
+The React drawer now allows the operator to advance an investigable execution through this lifecycle.
 
-- Operator
-- Timestamp
+Each transition records:
+
 - Previous state
 - New state
-- Optional comment/reason
+- Operator
+- Timestamp
+- Optional comment/reason in the future API contract
 
-### Execution status and investigation status are separate
+Execution status and investigation status remain separate.
+
+A successful subsequent execution does not automatically resolve an investigation.
+
+---
+
+# 11. Operator Notes
+
+The initial design uses simple chronological notes.
+
+Each note contains:
+
+- Note ID in the future backend
+- Investigation ID in the future backend
+- Operator
+- Timestamp
+- Note text
+- Optional evidence/reference
+
+The React prototype now provides a working **Add Note** interaction.
+
+Current limitation:
+
+> Notes are stored only in frontend state. Backend persistence will be implemented after the API contract is frozen.
+
+Adding a note does not automatically change investigation status.
+
+---
+
+# 12. Execution Timeline
+
+The Job Details drawer now supports structured timeline events.
 
 Example:
 
 ```
-Job Order History:
-FAILED
-
-Investigation:
-MONITORING
+08:00:01  Job started             Pentaho
+08:01:12  Extract started         Pentaho
+08:04:21  Transformation started  Pentaho
+08:05:48  Database error          Pentaho
+08:05:49  Job failed              Pentaho
+08:05:55  Failure detected        OpsControl
+08:06:01  PagerDuty triggered     PagerDuty
+08:06:05  ServiceNow created      ServiceNow
 ```
 
-A later successful execution does not automatically mean the investigation is resolved.
+The future backend should normalize source events while preserving their source attribution.
 
 ---
 
-# 11. Operator Action Boundary
+# 13. Step-level Execution
 
-OpsControl is initially a **monitoring, investigation, and incident-management platform**, not a Pentaho execution controller.
+The drawer supports step-level states and optional metadata.
 
-## Supported / planned operator actions
+Potential fields:
 
-- Acknowledge alert
-- Change investigation state
-- Add investigation note
-- View/copy error
-- View logs
-- Open related incident
-- Create ServiceNow incident
-- Open PagerDuty incident
-- View correlated health information
+- Step name
+- Step type
+- Step status
+- Start time
+- End time
+- Duration
+- Records read
+- Records written
+- Records rejected
+- Error code
+- Error message
+- Step-specific log information
 
-## Explicitly excluded
-
-- Retry Job
-- Start Job
-- Stop/Cancel Job
-- Restart VM
-- Modify Pentaho production configuration
-- Modify production job definitions
-
-Recovery is performed manually by the appropriate operator/team using the existing approved Pentaho operational procedure.
+Fields remain optional when the Pentaho source cannot provide them.
 
 ---
 
-# 12. SFTP / S3 Monitoring
+# 14. Loading, Error, and Empty States
+
+The ETL Jobs page now explicitly handles:
+
+### Loading
+
+Shows an operational loading state while execution data is being refreshed.
+
+### Error
+
+Shows an actionable error state with a Retry action.
+
+### Empty
+
+Shows a clear no-results state when filters/search return no executions, with a Clear Filters action.
+
+These states are part of the frontend/API contract and should remain present when mock data is replaced by FastAPI.
+
+---
+
+# 15. Environment Handling
+
+The ETL Jobs page now has a dynamic environment selector.
+
+Current behavior:
+
+- Defaults to `PROD`
+- Detects configured environments from execution data
+- Supports `All`
+- Supports explicit environment filtering
+- Shows a scope warning for non-PROD environments
+
+Regular automated monitoring remains PROD-only.
+
+This allows the UI to be ready for future multi-environment configuration without silently implying that QA/Test monitoring is already production scope.
+
+---
+
+# 16. Execution Type Filtering
+
+The ETL Jobs page now supports:
+
+- All
+- Scheduled
+- Manual
+
+Execution type is displayed for every execution.
+
+This is important because a manual execution is not automatically considered a recovery.
+
+---
+
+# 17. Alerts and Integrations
+
+Initial alerting channels:
+
+- Email
+- PagerDuty
+
+Incident integration:
+
+- ServiceNow
+
+The Job Details drawer shows important operational milestones rather than complete integration audit logs.
+
+---
+
+# 18. SFTP / S3 Monitoring
 
 SFTP/S3 monitoring is not displayed on the Overview page.
 
@@ -856,11 +547,11 @@ Where implemented, checks should focus on:
 - File size
 - File age
 
-**Content validation is currently excluded.**
+Content validation is currently excluded.
 
 ---
 
-# 13. API Monitoring
+# 19. API Monitoring
 
 API monitoring requirements include:
 
@@ -873,11 +564,9 @@ API monitoring requirements include:
 - Certificate expiry
 - Request/response logging
 
-The Overview page should surface only current/recent API issues; detailed historical analysis belongs in Reports.
-
 ---
 
-# 14. VM Monitoring
+# 20. VM Monitoring
 
 VM monitoring should include:
 
@@ -890,47 +579,15 @@ VM monitoring should include:
 - Applications
 - Event/log information where useful
 
-Example:
-
-```
-HERO-PRDAPP001
-├── Windows           HEALTHY
-├── CPU               42%
-├── RAM               68%
-├── C:                71%
-├── D:                94% WARNING
-├── Apache             HEALTHY
-├── Tomcat             HEALTHY
-├── IEngine.exe        HEALTHY
-└── Pentaho            HEALTHY
-```
-
 ---
 
-# 15. Alerts and Integrations
-
-Initial alerting channels:
-
-- Email
-- PagerDuty
-
-Incident integration:
-
-- ServiceNow
-
-The platform should automatically create an incident according to the configured alert policy.
-
-The system must retain integration event/status history so an operator can see whether an alert was successfully delivered.
-
----
-
-# 16. Reports
+# 21. Reports
 
 Reports are separate from the action-first Overview page.
 
 Initial retention target: **1 year**.
 
-### ETL reports
+ETL reports:
 
 - Job success/failure trends
 - SLA compliance
@@ -941,51 +598,9 @@ Initial retention target: **1 year**.
 - Long-running jobs
 - No-run events
 
-### VM reports
-
-- CPU trends
-- RAM trends
-- Disk trends
-- Service/application health
-
-### API reports
-
-- Availability
-- Response time
-- High latency
-- SSL/certificate status
-
-### Incident reports
-
-- Incident trends
-- MTTA
-- MTTR
-- Recurring issues
-- Root-cause analysis
-
-Reports should support email delivery.
-
 ---
 
-# 17. Daily ETL Report
-
-The platform should eventually generate a standardized report containing:
-
-- Total jobs
-- Successful jobs
-- Failed jobs
-- Long-running jobs
-- No-run jobs
-- Success rate
-- SLA compliance
-- Failed job details
-- Incident references
-
-The source should be structured Job Order History data rather than manually compiled status.
-
----
-
-# 18. Resource Management
+# 22. Resource Management
 
 Resource Management will eventually provide controlled configuration for:
 
@@ -1003,15 +618,9 @@ Resource Management will eventually provide controlled configuration for:
 - Roles
 - Integration configuration
 
-Every resource should have documented onboarding/configuration steps.
-
-The goal is that a future developer or support engineer can configure a new monitored resource without relying on undocumented tribal knowledge.
-
 ---
 
-# 19. Roles and Permissions
-
-Multiple departments/teams will use the platform.
+# 23. Roles and Permissions
 
 Potential roles:
 
@@ -1023,11 +632,9 @@ Potential roles:
 
 RBAC is planned.
 
-Actions that can change investigation state, configuration, alerting, or access must eventually be permission-controlled and audited.
-
 ---
 
-# 20. Proposed Architecture
+# 24. Proposed Architecture
 
 Initial logical architecture:
 
@@ -1079,184 +686,6 @@ FastAPI
 +-------------------------------+
 ```
 
-The exact storage/observability stack remains an implementation decision and should be validated during the POC.
-
----
-
-# 21. Backend/Data-Model Principles
-
-The UI requirements are intentionally being finalized before the production backend schema.
-
-Important principles already confirmed:
-
-1. Organization is a first-class resource.
-2. VM is a first-class resource.
-3. Job Order is a first-class resource.
-4. Job Order History is an execution/event record.
-5. Organization + VM + Job Order Name identifies a Job Order configuration.
-6. A Job Order has many Job Order History records.
-7. Scheduled and manual executions are both captured.
-8. Step-level execution data is supported where available.
-9. Raw Pentaho facts are separated from OpsControl analysis.
-10. Suspected cause is separate from confirmed root cause.
-11. Execution status is separate from investigation status.
-12. Investigation state transitions are auditable.
-13. Schedule configuration is structured and extensible.
-14. Expected runtime is separate from SLA.
-15. Expected execution window/grace period is separate from schedule.
-16. PROD is the regular automated ETL monitoring scope.
-17. Recovery actions are performed outside OpsControl.
-18. Historical evidence should not be overwritten.
-19. Initial Recent History is scoped to the same Job Order.
-
----
-
-# 22. Development Workflow
-
-The project is being built incrementally.
-
-Current approach:
-
-1. Validate the operational requirement with human/operator feedback.
-2. Freeze the UX/data requirements for that capability.
-3. Update this README.
-4. Update the React prototype.
-5. Define API contracts.
-6. Define PostgreSQL schema.
-7. Implement backend.
-8. Connect real monitoring sources.
-9. Test failure scenarios.
-10. Document the final operational procedure.
-
-**Do not design production database tables solely from assumptions.** The UI and operator workflow should be validated first.
-
----
-
-# 23. Planned ETL Monitoring Lifecycle
-
-```
-Pentaho execution
-      |
-      v
-Execution detected
-      |
-      v
-Normalize event
-      |
-      v
-Create/update Job Order History
-      |
-      +--> RUNNING
-      |
-      +--> SUCCESS
-      |
-      +--> FAILED
-      |
-      +--> LONG_RUNNING
-      |
-      +--> NO_RUN
-      |
-      v
-Evaluate monitoring rules
-      |
-      v
-Alert
-      |
-      +--> Email
-      +--> PagerDuty
-      +--> ServiceNow
-      |
-      v
-Operator investigation
-      |
-      v
-Manual recovery outside OpsControl
-      |
-      v
-Monitor subsequent execution
-      |
-      v
-Document / resolve investigation
-```
-
----
-
-# 24. Failure Investigation Example
-
-Example scenario:
-
-```
-Organization:
-ABC Corporation
-
-VM:
-HERO-PRDAPP001
-
-Job Order:
-JC_Pricing_Daily
-
-Scheduled:
-08:00
-
-Actual:
-08:00:01 start
-
-Failed:
-08:05:49
-
-Failed Step:
-Update Customer Database
-
-Pentaho Error:
-Connection timeout
-```
-
-OpsControl may correlate:
-
-```
-Database:
-UNAVAILABLE
-
-VM:
-CPU 87%
-RAM 61%
-Disk 72%
-
-Network:
-HEALTHY
-
-Tomcat:
-HEALTHY
-```
-
-Operator workflow:
-
-```
-NEW
-  |
-ACKNOWLEDGED
-  |
-INVESTIGATING
-  |
-Database team contacted
-  |
-ROOT_CAUSE_IDENTIFIED
-  |
-Database listener restored
-  |
-RECOVERY_IN_PROGRESS
-  |
-Manual Pentaho recovery
-  |
-Next execution SUCCESS
-  |
-MONITORING
-  |
-RESOLVED
-```
-
-All important state transitions and notes should remain auditable.
-
 ---
 
 # 25. Security and Operational Safety
@@ -1266,169 +695,16 @@ Initial safety principles:
 - No production job execution control from OpsControl.
 - No VM restart action.
 - No direct production configuration changes from the monitoring drawer.
-- Integrations should use managed secrets/configuration rather than hard-coded credentials.
-- Role-based access will be required before sensitive configuration/actions are exposed.
-- Operator actions and investigation transitions should be auditable.
+- Managed secrets rather than hard-coded credentials.
+- RBAC before sensitive configuration/actions.
+- Operator actions and investigation transitions must be auditable.
 - Monitoring platform health must itself be monitored.
 
 ---
 
-# 26. Documentation Standard
+# 26. React Frontend Structure
 
-Every major feature should document:
-
-### What it does
-Purpose and operator value.
-
-### Why it exists
-Operational problem being solved.
-
-### Architecture
-Data flow and dependencies.
-
-### Configuration
-Step-by-step setup.
-
-### Monitoring
-What is collected, frequency, thresholds, and expected behavior.
-
-### Alerts
-Trigger condition, severity, notification path.
-
-### Troubleshooting
-Common failures and diagnostic steps.
-
-### Recovery
-Approved recovery procedure and ownership.
-
-### Security
-Credentials, permissions, secrets, network requirements.
-
-### Database/API
-Relevant entities, fields, event contracts, and relationships.
-
-### Change history
-What changed, why, and when.
-
-This documentation is intended to support developers, NOC/operators, support teams, and future maintainers.
-
----
-
-# 27. Current Decision Log
-
-| Decision | Status |
-|---|---|
-| Top navigation | Confirmed |
-| Action-first Overview | Confirmed |
-| Overview refresh | 5 seconds |
-| Historical trends on Overview | Excluded |
-| System Health panel on Overview | Excluded |
-| SFTP/S3 on Overview | Excluded |
-| PROD-only regular ETL monitoring | Confirmed |
-| Organization → VM → Application/ETL hierarchy | Confirmed |
-| Job Order vs Job Order History separation | Confirmed |
-| Organization + VM + Job Order Name = Job Order identity | Confirmed |
-| Scheduled + manual executions captured | Confirmed |
-| Simple + advanced schedules | Confirmed |
-| Expected execution window/grace | Confirmed |
-| Expected runtime separate from SLA | Confirmed |
-| Full step-level Pentaho data | Confirmed |
-| Failure diagnosis | Confirmed |
-| Pentaho facts vs OpsControl diagnosis | Confirmed |
-| Suspected cause vs confirmed root cause | Confirmed |
-| Investigation lifecycle | Confirmed |\n| Operator Notes | **Simple chronological notes — Confirmed** |\n| Evidence references in investigation | Confirmed |\n| Suspected cause vs confirmed root cause | Confirmed |\n| Recovery documented outside OpsControl | Confirmed |
-| Recent History scope | **Same Job Order only — Confirmed** |
-| Cross-Job-Order failure correlation in Recent History | Excluded from initial view / Future capability |
-| Alert & Incident History in Job Details drawer | **Important operational events only — Confirmed** |
-| Complete integration audit log in Job Details drawer | Excluded from drawer / Future dedicated audit view |
-| Retry Job from OpsControl | Excluded |
-| Start/stop Pentaho job | Excluded |
-| VM restart | Excluded |
-| Manual recovery outside OpsControl | Confirmed |
-| Email alerts | Confirmed |
-| PagerDuty | Confirmed |
-| ServiceNow | Confirmed |
-| 1-year initial history | Confirmed |
-| Reports emailed | Confirmed |
-| Resource Management | Confirmed |
-| RBAC | Planned |
-| Production backend schema | Not yet frozen |
-
----
-
-# 28. Next Design Stage
-
-The next design stage remains:
-
-## **Failed Job Details Drawer — operator workflow and data contract**
-
-Already validated:
-
-1. Execution Summary
-2. Failure Diagnosis
-3. Step-level execution
-4. Timeline/events
-5. Logs
-6. Dependency correlation
-7. **Recent History: same Job Order only**
-8. **Alert & Incident History: important operational events only**
-9. **PagerDuty/ServiceNow state: operational status, not full integration logs**
-10. Investigation state
-11. Operator notes
-12. Audit history
-
-The Alert History + PagerDuty/ServiceNow scope is now validated as **important operational events only**.
-
-The Investigation + Operator Notes design is now validated: **simple chronological notes** with timestamp, operator, note text, and optional evidence/reference. Evidence, suspected cause, confirmed root cause, recovery progress, monitoring, and resolution remain explicitly distinguishable.
-
-Only after the drawer is validated should we finalize:
-
-- REST API contracts
-- PostgreSQL tables
-- indexes
-- relationships
-- event schema
-- monitoring collector contract
-- Pentaho integration strategy
-
----
-
-## 29. React Prototype
-
-A first functional single-file React-style browser prototype has been added under `prototype/index.html`.
-
-The prototype demonstrates the agreed operational contract using mock data:
-
-- Top navigation
-- Action-first Overview
-- ETL status filters
-- 5-second refresh indicator
-- Clickable ETL execution rows
-- Right-side Job Details drawer
-- Execution Summary
-- Failure Diagnosis
-- Execution Timeline
-- Step-level execution
-- Related Health
-- Alert & Incident History
-- Same-Job-Order Recent History
-- Investigation lifecycle context
-- Simple chronological Operator Notes
-- Root-cause and recovery placeholders
-
-The prototype intentionally uses mock data at this stage. It does not execute Pentaho jobs, restart VMs, modify production configuration, or connect to production integrations.
-
-**Prototype path:** `prototype/index.html`
-
----
-
-## 30. Frontend Application Structure
-
-The single-file prototype has now been converted into a proper Vite + React application foundation under `frontend/`.
-
-Structure:
-
-```text
+```
 frontend/
 ├── index.html
 ├── package.json
@@ -1449,37 +725,91 @@ frontend/
         └── ETLJobs.jsx
 ```
 
-### ETL Jobs page — first implementation
+The frontend currently uses mock operational data to validate the UI contract before backend implementation.
 
-The ETL Jobs page now implements the agreed operational behavior:
+---
 
-- Current execution-focused view
-- PROD environment filter
-- All / Success / Failed / Running / Long Running / No Run filters
-- Search by Job Order or server
-- 5-second refresh contract indicator
-- Job Order ID and Job Order History ID
-- Start/end/duration
-- Expected runtime and SLA
-- Failed step and incident reference
-- Right-side Job Details drawer
-- Same Job Order recent history
-- Investigation + chronological Operator Notes
+# 27. Development Workflow
 
-The frontend currently uses mock data so the UX can be validated before API/database contracts are frozen.
+1. Validate operational requirement with human/operator feedback.
+2. Freeze UX/data requirements for that capability.
+3. Update README.
+4. Update React frontend.
+5. Define API contracts.
+6. Define PostgreSQL schema.
+7. Implement backend.
+8. Connect real monitoring sources.
+9. Test failure scenarios.
+10. Document operational procedure.
 
-### Implementation boundary
+**Do not design production database tables solely from assumptions.**
 
-The frontend does not yet:
+---
 
-- Connect to Pentaho
-- Execute/retry/stop jobs
-- Restart VMs
-- Call ServiceNow/PagerDuty
-- Persist operator notes
-- Read PostgreSQL
+# 28. Current Decision Log
 
-Those capabilities will be added after the frontend contract is validated.
+| Decision | Status |
+|---|---|
+| Top navigation | Confirmed |
+| Action-first Overview | Confirmed |
+| Overview refresh | 5 seconds |
+| Historical trends on Overview | Excluded |
+| SFTP/S3 on Overview | Excluded |
+| PROD-only regular ETL monitoring | Confirmed |
+| Organization → VM → Application/ETL hierarchy | Confirmed |
+| Job Order vs Job Order History | Confirmed |
+| Scheduled + manual executions | Confirmed |
+| Simple + advanced schedules | Confirmed |
+| Expected execution window/grace | Confirmed |
+| Expected runtime separate from SLA | Confirmed |
+| No Run detection | Confirmed in frontend contract |
+| Environment filtering | Confirmed |
+| Execution-type filtering | Confirmed |
+| Full step-level Pentaho data where available | Confirmed |
+| Execution timeline | Confirmed |
+| Loading/error/empty states | Confirmed |
+| Investigation lifecycle | Confirmed |
+| Operator Notes | Simple chronological notes — Confirmed |
+| Recent History | Same Job Order only — Confirmed |
+| Alert & Incident History | Important operational events only — Confirmed |
+| Retry/Start/Stop Pentaho job | Excluded |
+| VM restart | Excluded |
+| Recovery outside OpsControl | Confirmed |
+| Email | Confirmed |
+| PagerDuty | Confirmed |
+| ServiceNow | Confirmed |
+| 1-year initial history | Confirmed |
+| Reports emailed | Confirmed |
+| Resource Management | Confirmed |
+| RBAC | Planned |
+| Production backend schema | Not yet frozen |
+
+---
+
+# 29. Next Implementation Stage
+
+The ETL Jobs frontend contract is now sufficiently mature to move toward:
+
+1. FastAPI REST contract
+2. PostgreSQL Job Order / Job Order History schema
+3. Investigation and Operator Note API
+4. ETL execution collector contract
+5. Pentaho integration strategy
+6. Real 5-second polling/refresh behavior
+7. Alert and incident integration adapters
+8. Authentication/RBAC
+
+The next backend design should preserve the frontend distinctions already established:
+
+- Job Order vs Job Order History
+- Scheduled vs Manual
+- Expected runtime vs SLA
+- Schedule vs expected execution window
+- Execution status vs investigation status
+- Pentaho source facts vs OpsControl analysis
+- Suspected cause vs confirmed root cause
+- Same Job Order history vs broader correlation
+- Operational incident milestones vs technical integration audit logs
 
 ---
 
@@ -1487,12 +817,12 @@ Those capabilities will be added after the frontend contract is validated.
 
 **Phase:** UX + operational requirements / POC
 
-**Current focus:** React frontend foundation + ETL Jobs operational page
+**Current focus:** React frontend + ETL Jobs operational page
 
 **Source of truth:** GitHub repository + this README
 
 **Frontend:** Vite + React application under `frontend/`
 
-**Current frontend stage:** Overview + ETL Jobs page with mock operational data
+**Current frontend stage:** Production-quality ETL Jobs UX contract using mock data
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
