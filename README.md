@@ -520,18 +520,59 @@ Job failed
 
 Correlation must distinguish observed facts from inferred causes.
 
-### 9.7 Incident & Notification History
+### 9.7 Alert & Incident History — Confirmed Scope
 
-Track:
+The Job Details drawer will show **important operational events only**.
 
-- PagerDuty
-- ServiceNow
-- Email
-- Notification timestamps
-- Notification status
-- Acknowledgement
-- Assignment
-- Incident state
+The drawer is intentionally not a complete integration audit log. Its purpose is to answer quickly:
+
+- Was an alert triggered?
+- Was it delivered successfully?
+- Was an incident created?
+- Was it acknowledged?
+- Who is handling it?
+- What is the current incident state?
+
+Example:
+
+```
+ALERT & INCIDENT HISTORY
+
+08:05:55  Failure detected
+          Severity: CRITICAL
+
+08:06:01  PagerDuty
+          TRIGGERED
+          Incident: PD-12345
+
+08:06:05  ServiceNow
+          INCIDENT CREATED
+          INC0012345
+
+08:06:07  Email
+          SENT
+          Recipients: SLM Operations
+
+08:08:14  PagerDuty
+          ACKNOWLEDGED
+          By: Operator A
+```
+
+The drawer should prioritize operational milestones such as:
+
+- Failure/alert detected
+- PagerDuty triggered
+- ServiceNow incident created
+- Email notification sent
+- PagerDuty acknowledgement
+- ServiceNow assignment/update
+- Incident resolved/closed
+
+Repeated delivery attempts, retries, webhook details, payloads, API responses, and other low-level integration events should **not** clutter the Job Details drawer.
+
+A separate future integration/audit view may expose the complete technical event history when troubleshooting the integration itself.
+
+The drawer should retain a link/reference to the related PagerDuty and ServiceNow records where available.
 
 ### 9.8 Investigation
 
@@ -1183,6 +1224,8 @@ This documentation is intended to support developers, NOC/operators, support tea
 | Investigation lifecycle | Confirmed |
 | Recent History scope | **Same Job Order only — Confirmed** |
 | Cross-Job-Order failure correlation in Recent History | Excluded from initial view / Future capability |
+| Alert & Incident History in Job Details drawer | **Important operational events only — Confirmed** |
+| Complete integration audit log in Job Details drawer | Excluded from drawer / Future dedicated audit view |
 | Retry Job from OpsControl | Excluded |
 | Start/stop Pentaho job | Excluded |
 | VM restart | Excluded |
@@ -1213,13 +1256,15 @@ Already validated:
 5. Logs
 6. Dependency correlation
 7. **Recent History: same Job Order only**
-8. Alert history
-9. PagerDuty/ServiceNow state
+8. **Alert & Incident History: important operational events only**
+9. **PagerDuty/ServiceNow state: operational status, not full integration logs**
 10. Investigation state
 11. Operator notes
 12. Audit history
 
-The next focused design step is to validate the **Alert History + PagerDuty/ServiceNow state** portion of the drawer.
+The Alert History + PagerDuty/ServiceNow scope is now validated as **important operational events only**.
+
+The next focused design step is to validate the **Investigation section and operator notes** portion of the drawer.
 
 Only after the drawer is validated should we finalize:
 
