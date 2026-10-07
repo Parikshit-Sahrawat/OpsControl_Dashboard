@@ -574,18 +574,133 @@ A separate future integration/audit view may expose the complete technical event
 
 The drawer should retain a link/reference to the related PagerDuty and ServiceNow records where available.
 
-### 9.8 Investigation
+### 9.8 Investigation + Operator Notes — Confirmed Design
 
-Operators need a persistent investigation record.
+Operators need a persistent investigation record that explains what the operator is doing, what evidence was found, what has been confirmed, and how recovery is progressing.
 
-Minimum concepts:
+The initial design uses **simple chronological operator notes** rather than a structured ticket-style note editor.
 
+#### Investigation record
+
+Minimum investigation fields:
+
+- Investigation ID
+- Job Order History / Execution ID
 - Investigation status
+- Started timestamp
+- Current operator / last operator
+- Current summary
+- Created/updated timestamps
+
+The investigation status remains separate from the ETL execution status.
+
+Example:
+
+    INVESTIGATION
+    Status:      INVESTIGATING
+    Started:     08-Oct-2026 08:08:14 IST
+    Operator:    Operator A
+    Duration:    24m 31s
+    Current Summary: Database connection failure under investigation with DB team.
+
+#### Chronological operator notes
+
+Each note is an independent timeline entry containing:
+
+- `note_id`
+- `investigation_id`
 - Operator
 - Timestamp
-- Notes
-- State transitions
+- Note text
 - Optional evidence/reference
+
+Example:
+
+    08:08  Operator A
+    Acknowledged alert and started investigation.
+
+    08:10  Operator A
+    Database team contacted.
+
+    08:18  Operator A
+    DB listener appears unavailable. Waiting for DB team confirmation.
+
+    08:32  Operator B
+    DB team confirmed listener failure.
+
+A note is an operational record. **Adding a note must not automatically change investigation status.**
+
+#### Evidence
+
+Evidence should remain distinguishable from operator interpretation.
+
+Example:
+
+    EVIDENCE
+    - Pentaho error: Connection timeout
+    - Database monitoring: ORACLE-PROD-01 unavailable
+    - DB team confirmation: Listener failure confirmed
+    - Related incident: INC0012345
+
+Evidence may reference logs, monitoring events, incidents, or external team confirmation. Historical evidence should not be overwritten.
+
+#### Root cause
+
+Root cause must distinguish a **suspected cause** from a **confirmed root cause**.
+
+Before confirmation:
+
+    Root Cause: PENDING
+    Suspected Cause: Database listener unavailable
+    Confidence: HIGH
+
+After confirmation:
+
+    Root Cause Status: CONFIRMED
+    Category: Database
+    Root Cause: Oracle database listener failure
+    Confirmed By: Database Team
+    Confirmed At: 08-Oct-2026 08:32 IST
+    Evidence: DB team confirmation + database health event
+
+OpsControl should record the confirmation and evidence rather than silently replacing the earlier suspected cause.
+
+#### Recovery progress
+
+Recovery is documented in OpsControl but performed outside OpsControl by the appropriate team.
+
+Example:
+
+    RECOVERY
+    Status: RECOVERY_IN_PROGRESS
+    Root Cause: Oracle listener failure
+    Recovery Owner: Database Team
+    Action: Database listener restored
+    Recovery Started: 08:34 IST
+    Recovery Completed: 08:41 IST
+    Verification: Database health check = HEALTHY
+
+#### Monitoring after recovery
+
+After recovery, the investigation can move to `MONITORING` while the operator verifies subsequent behavior.
+
+A successful subsequent execution does not automatically resolve the investigation. The operator should explicitly document the validation and move the investigation to `RESOLVED` when appropriate.
+
+#### Resolution
+
+A resolved investigation should preserve the final explanation and validation evidence.
+
+Example:
+
+    RESOLUTION
+    Resolution: Database listener failure resolved.
+    Root Cause: Oracle listener failure
+    Recovery: DB listener restarted by Database Team.
+    Validation: JC_Pricing_Daily next execution SUCCESS.
+    Resolved By: Operator A
+    Resolved At: 08-Oct-2026 09:07 IST
+
+This design supports reliable auditability and future reporting for investigation duration, recovery duration, MTTA, MTTR, recurring failures, and operator activity.
 
 ### 9.9 Recent History — Confirmed Scope
 
@@ -1221,7 +1336,7 @@ This documentation is intended to support developers, NOC/operators, support tea
 | Failure diagnosis | Confirmed |
 | Pentaho facts vs OpsControl diagnosis | Confirmed |
 | Suspected cause vs confirmed root cause | Confirmed |
-| Investigation lifecycle | Confirmed |
+| Investigation lifecycle | Confirmed |\n| Operator Notes | **Simple chronological notes — Confirmed** |\n| Evidence references in investigation | Confirmed |\n| Suspected cause vs confirmed root cause | Confirmed |\n| Recovery documented outside OpsControl | Confirmed |
 | Recent History scope | **Same Job Order only — Confirmed** |
 | Cross-Job-Order failure correlation in Recent History | Excluded from initial view / Future capability |
 | Alert & Incident History in Job Details drawer | **Important operational events only — Confirmed** |
@@ -1264,7 +1379,7 @@ Already validated:
 
 The Alert History + PagerDuty/ServiceNow scope is now validated as **important operational events only**.
 
-The next focused design step is to validate the **Investigation section and operator notes** portion of the drawer.
+The Investigation + Operator Notes design is now validated: **simple chronological notes** with timestamp, operator, note text, and optional evidence/reference. Evidence, suspected cause, confirmed root cause, recovery progress, monitoring, and resolution remain explicitly distinguishable.
 
 Only after the drawer is validated should we finalize:
 
