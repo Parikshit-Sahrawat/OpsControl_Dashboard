@@ -1228,3 +1228,119 @@ The next implementation stages are:
 11. Native charts and dashboards.
 
 **Prometheus and Grafana are not part of the target architecture.**
+
+
+---
+
+# 40. Confirmed Monitoring Configuration UX Decisions
+
+The following decisions are now locked into the implementation.
+
+## Global Organization Context
+
+Organization/customer selection is a **global OpsControl context**, not a Resource Management-only setting.
+
+The selected organization appears in the top navigation and is persisted locally in the browser.
+
+Organization context will scope:
+
+- Overview
+- ETL Jobs
+- VM Health
+- APIs
+- Incidents
+- Reports
+- Resource Management
+- future dashboards
+- future metrics
+- future logs
+- future alerts
+
+This is the foundation for multi-customer operation and future RBAC.
+
+## Dynamic Collector Builder
+
+Operators no longer need to write generic collector JSON.
+
+The Collector Manager selects a collector type and renders a type-specific configuration form.
+
+Initial collector builders:
+
+### WINDOWS
+- Hostname
+- Agent or WinRM method
+- Managed credential reference
+- CPU
+- Memory
+- Disk
+- Services
+- Processes
+- Event Logs
+
+### LINUX
+- Hostname
+- Agent or SSH method
+- Managed credential reference
+- CPU
+- Memory
+- Disk
+- Processes
+- System Logs
+
+### API
+- URL
+- HTTP method
+- Authentication
+- Timeout
+- Expected status
+- SSL verification
+- Response time
+- Response body
+
+### PENTAHO
+- Endpoint
+- Managed credential reference
+- Read-only collection boundary
+
+The UI produces structured collector configuration for the runtime. Secrets must eventually be represented by managed secret references.
+
+## Visual Metric Builder
+
+Metric definitions now use a visual builder backed by a resource-aware Metric Catalog.
+
+Examples:
+
+- VM: CPU, memory, disk, process count, service availability, network traffic
+- Application: availability, process count
+- ETL Job: execution duration, failure count, success, SLA compliance, no-run
+- API: availability, response time, HTTP status, SSL days remaining, error rate
+- Database: connection availability, query duration
+- SFTP: file arrival, file age, file size
+- S3: object arrival, object age, object size
+
+The builder controls:
+
+- resource type
+- resource association
+- metric selection
+- metric type
+- unit
+- collection interval
+- aggregation
+- retention
+- data source
+- collector
+- warning threshold
+- critical threshold
+
+Thresholds are currently stored under builder configuration as an intermediate representation. The future Alert Rule Engine will promote them to first-class alert rules.
+
+## Validation Before Runtime
+
+Before the collector runtime is implemented, validate these operational choices:
+
+1. Windows collection: Agent, WinRM, or both.
+2. Linux collection: Agent, SSH, or both.
+3. Allowed API authentication mechanisms.
+4. Whether thresholds belong directly to metrics or to separate alert rules.
+
