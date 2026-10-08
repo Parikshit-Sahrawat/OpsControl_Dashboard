@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -5,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertRule, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, Organization
+from app.models import AlertRule, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, MetricSample, Organization
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
@@ -23,6 +24,7 @@ from app.schemas.monitoring import (
     MetricDefinitionCreate,
     MetricDefinitionOut,
     MetricDefinitionUpdate,
+    MetricSampleOut,
     OrganizationOut,
 )
 
@@ -202,6 +204,28 @@ def disable_metric(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(MetricDefinition, item_id, db, "Metric definition")
     item.enabled = False
     db.commit()
+
+
+@router.get("/metrics/{item_id}/samples", response_model=list[MetricSampleOut])
+def list_metric_samples(
+    item_id: UUID,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    limit: int = Query(500, ge=1, le=5000),
+    db: Session = Depends(get_db),
+):
+    _get_or_404(MetricDefinition, item_id, db, "Metric definition")
+    stmt = (
+        select(MetricSample)
+        .where(MetricSample.metric_definition_id == item_id)
+        .order_by(MetricSample.observed_at.desc())
+        .limit(limit)
+    )
+    if start:
+        stmt = stmt.where(MetricSample.observed_at >= start)
+    if end:
+        stmt = stmt.where(MetricSample.observed_at <= end)
+    return db.scalars(stmt).all()
 
 
 @router.get("/logs", response_model=list[LogSourceOut])
