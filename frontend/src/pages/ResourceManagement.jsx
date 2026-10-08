@@ -1,0 +1,82 @@
+import { useEffect, useMemo, useState } from "react";
+import {
+  createCollector, createDataSource, createLogSource, createMetric,
+  deleteCollector, deleteDataSource, deleteLogSource, deleteMetric,
+  fetchCollectors, fetchDataSources, fetchLogSources, fetchMetrics,
+  updateCollector, updateDataSource, updateLogSource, updateMetric
+} from "../api";
+
+const tabs = [
+  ["data-sources","Data Sources","Connections and source systems"],
+  ["collectors","Collectors","Collection schedules and runtime"],
+  ["metrics","Metrics","What OpsControl should measure"],
+  ["logs","Log Sources","What OpsControl should collect and parse"]
+];
+const sourceTypes=["WINDOWS","LINUX","API","PENTAHO","SFTP","S3","DATABASE","FILE"];
+const metricTypes=["GAUGE","COUNTER","RATE","HISTOGRAM"];
+const resourceTypes=["VM","APPLICATION","ETL_JOB","API","DATABASE","SFTP","S3"];
+const parserTypes=["RAW","PATTERN","JSON","CSV","REGEX"];
+const labelFor=k=>tabs.find(x=>x[0]===k)?.[1]||k;
+const singular=k=>labelFor(k).replace(/s$/,"");
+function blank(k){
+ if(k==="data-sources")return{name:"",source_type:"WINDOWS",description:"",endpoint:"",auth_type:"NONE",connection_config:"{}",enabled:true};
+ if(k==="collectors")return{name:"",collector_type:"VM",data_source_id:"",enabled:true,interval_seconds:30,configuration:"{}"};
+ if(k==="metrics")return{name:"",description:"",resource_type:"VM",resource_id:"",metric_type:"GAUGE",unit:"percent",collection_interval_seconds:30,retention_days:365,aggregation:"avg",query_config:"{}",data_source_id:"",collector_id:"",enabled:true};
+ return{name:"",source_type:"FILE",resource_type:"VM",resource_id:"",location:"",parser_type:"RAW",parser_config:"{}",start_position:"NEW",collection_interval_seconds:30,retention_days:30,data_source_id:"",collector_id:"",enabled:true};
+}
+function Modal({title,children,onClose}){return <div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><div className="modal"><div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" onClick={onClose}>×</button></div>{children}</div></div>}
+function Field({label,children,help}){return <label className="form-field"><span>{label}</span>{children}{help&&<small>{help}</small>}</label>}
+function Toggle({value,onChange}){return <label className="toggle"><input type="checkbox" checked={!!value} onChange={e=>onChange(e.target.checked)}/><span>{value?"Enabled":"Disabled"}</span></label>}
+
+export default function ResourceManagement(){
+ const [tab,setTab]=useState("data-sources"),[dataSources,setDataSources]=useState([]),[collectors,setCollectors]=useState([]),[metrics,setMetrics]=useState([]),[logs,setLogs]=useState([]);
+ const [loading,setLoading]=useState(true),[error,setError]=useState(null),[modal,setModal]=useState(null),[form,setForm]=useState(null),[saving,setSaving]=useState(false),[query,setQuery]=useState("");
+ const reload=async()=>{setLoading(true);setError(null);try{const r=await Promise.all([fetchDataSources(),fetchCollectors(),fetchMetrics(),fetchLogSources()]);setDataSources(r[0]);setCollectors(r[1]);setMetrics(r[2]);setLogs(r[3])}catch(e){setError(e.message||"Unable to load monitoring configuration")}finally{setLoading(false)}};
+ useEffect(()=>{reload()},[]);
+ const items=tab==="data-sources"?dataSources:tab==="collectors"?collectors:tab==="metrics"?metrics:logs;
+ const filtered=useMemo(()=>items.filter(x=>(String(x.name||"")+" "+String(x.source_type||"")+" "+String(x.collector_type||"")+" "+String(x.resource_type||"")).toLowerCase().includes(query.toLowerCase())),[items,query]);
+ const openCreate=()=>{setForm(blank(tab));setModal({mode:"create",kind:tab,title:"Add "+singular(tab)})};
+ const openEdit=item=>{const f={...item};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in f)f[k]=JSON.stringify(f[k]||{},null,2)});setForm(f);setModal({mode:"edit",kind:tab,title:"Edit "+singular(tab)})};
+ const save=async e=>{e.preventDefault();setSaving(true);setError(null);try{
+   const kind=modal.kind,p={...form};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in p)p[k]=JSON.parse(p[k]||"{}")});
+   ["organization_id","id","created_at","updated_at","status","last_test_at","last_error","last_run_at","last_success_at","last_error_at","next_run_at"].forEach(k=>delete p[k]);
+   if(["metrics","logs"].includes(kind)){if(!p.resource_id)delete p.resource_id;if(!p.data_source_id)delete p.data_source_id;if(!p.collector_id)delete p.collector_id}
+   const org=window.__OPSCONTROL_ORGANIZATION_ID__||"00000000-0000-0000-0000-000000000001";
+   if(modal.mode==="create"){
+    if(kind==="data-sources")await createDataSource({...p,organization_id:org});
+    if(kind==="collectors")await createCollector(p);
+    if(kind==="metrics")await createMetric({...p,organization_id:org});
+    if(kind==="logs")await createLogSource({...p,organization_id:org});
+   }else{
+    if(kind==="data-sources")await updateDataSource(form.id,p);
+    if(kind==="collectors")await updateCollector(form.id,p);
+    if(kind==="metrics")await updateMetric(form.id,p);
+    if(kind==="logs")await updateLogSource(form.id,p);
+   }
+   setModal(null);setForm(null);await reload();
+ }catch(e){setError(e.message||"Unable to save configuration")}finally{setSaving(false)}};
+ const disable=async item=>{if(!window.confirm('Disable "'+item.name+'"?'))return;try{if(tab==="data-sources")await deleteDataSource(item.id);if(tab==="collectors")await deleteCollector(item.id);if(tab==="metrics")await deleteMetric(item.id);if(tab==="logs")await deleteLogSource(item.id);await reload()}catch(e){setError(e.message||"Unable to disable configuration")}};
+ const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+ const dsName=id=>dataSources.find(x=>x.id===id)?.name||"—";
+ return <div className="resource-page">
+  <div className="page-heading"><div><h1>Resource Management</h1><p>Configure the monitoring control plane without editing collector code.</p></div><div className="heading-actions"><button className="filter-button" onClick={reload}>Refresh</button><button className="primary-button" onClick={openCreate}>+ Add {singular(tab)}</button></div></div>
+  <div className="resource-layout"><aside className="resource-sidebar card">{tabs.map(x=><button key={x[0]} className={tab===x[0]?"resource-tab active":"resource-tab"} onClick={()=>{setTab(x[0]);setQuery("")}}><b>{x[1]}</b><small>{x[2]}</small></button>)}</aside>
+  <section className="resource-main"><div className="card resource-toolbar"><div><h2>{labelFor(tab)}</h2><span className="muted small">{items.length} configured · {items.filter(x=>x.enabled).length} enabled</span></div><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search configuration..."/></div>
+  {error&&<div className="scope-banner error-banner">{error}</div>}
+  {loading?<div className="card state-panel"><div className="spinner"/><h3>Loading monitoring configuration</h3></div>:filtered.length===0?<div className="card state-panel"><h3>No configuration found</h3><p>Add your first configuration to start building the monitoring platform.</p><button className="primary-button" onClick={openCreate}>Add configuration</button></div>:
+  <div className="card table-wrap"><table><thead><tr>{tab==="data-sources"?<><th>Name</th><th>Type</th><th>Endpoint</th><th>Status</th><th>Collectors</th><th>State</th><th/></>:tab==="collectors"?<><th>Name</th><th>Source</th><th>Type</th><th>Interval</th><th>Last Run</th><th>State</th><th/></>:tab==="metrics"?<><th>Metric</th><th>Resource</th><th>Type</th><th>Interval</th><th>Retention</th><th>State</th><th/></>:<><th>Log Source</th><th>Resource</th><th>Location</th><th>Parser</th><th>Interval</th><th>State</th><th/></>}</tr></thead>
+  <tbody>{filtered.map(item=><tr key={item.id}>
+   {tab==="data-sources"&&<><td><b>{item.name}</b><small>{item.id}</small></td><td>{item.source_type}</td><td>{item.endpoint||"—"}</td><td><span className={"status status--"+String(item.status||"unknown").toLowerCase()}>{item.status||"UNKNOWN"}</span></td><td>{collectors.filter(c=>c.data_source_id===item.id).length}</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
+   {tab==="collectors"&&<><td><b>{item.name}</b><small>{item.collector_type}</small></td><td>{dsName(item.data_source_id)}</td><td>{item.collector_type}</td><td>{item.interval_seconds}s</td><td>{item.last_run_at?new Date(item.last_run_at).toLocaleString("en-IN"):"Never"}</td><td><span className={"status status--"+String(item.status||"stopped").toLowerCase()}>{item.status}</span></td></>}
+   {tab==="metrics"&&<><td><b>{item.name}</b><small>{item.unit||"unitless"}</small></td><td>{item.resource_type}<small>{item.resource_id||"All matching resources"}</small></td><td>{item.metric_type}</td><td>{item.collection_interval_seconds}s</td><td>{item.retention_days}d</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
+   {tab==="logs"&&<><td><b>{item.name}</b><small>{item.source_type}</small></td><td>{item.resource_type}<small>{item.resource_id||"All matching resources"}</small></td><td className="truncate-cell">{item.location||"—"}</td><td>{item.parser_type}</td><td>{item.collection_interval_seconds}s</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
+   <td><div className="row-actions"><button className="filter-button" onClick={()=>openEdit(item)}>Edit</button><button className="danger-button" onClick={()=>disable(item)}>Disable</button></div></td>
+  </tr>)}</tbody></table></div>}</section></div>
+  {modal&&form&&<Modal title={modal.title} onClose={()=>!saving&&setModal(null)}><form onSubmit={save} className="resource-form">
+   {modal.kind==="data-sources"&&<><Field label="Name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Production Windows Servers"/></Field><Field label="Source type"><select value={form.source_type} onChange={e=>set("source_type",e.target.value)}>{sourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Endpoint"><input value={form.endpoint||""} onChange={e=>set("endpoint",e.target.value)} placeholder="hostname, URL, bucket or service endpoint"/></Field><Field label="Authentication"><input value={form.auth_type||""} onChange={e=>set("auth_type",e.target.value)}/></Field><Field label="Description"><textarea value={form.description||""} onChange={e=>set("description",e.target.value)}/></Field><Field label="Connection JSON" help="Do not store production passwords or tokens here."><textarea required value={form.connection_config} onChange={e=>set("connection_config",e.target.value)}/></Field></>}
+   {modal.kind==="collectors"&&<><Field label="Name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Windows VM Collector"/></Field><Field label="Data source"><select required value={form.data_source_id} onChange={e=>set("data_source_id",e.target.value)}><option value="">Select data source</option>{dataSources.map(x=><option key={x.id} value={x.id}>{x.name} · {x.source_type}</option>)}</select></Field><Field label="Collector type"><input required value={form.collector_type} onChange={e=>set("collector_type",e.target.value)} placeholder="VM / API / PENTAHO / LOG"/></Field><Field label="Interval (seconds)"><input type="number" min="5" value={form.interval_seconds} onChange={e=>set("interval_seconds",Number(e.target.value))}/></Field><Field label="Configuration JSON"><textarea value={form.configuration} onChange={e=>set("configuration",e.target.value)}/></Field></>}
+   {modal.kind==="metrics"&&<><Field label="Metric name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="vm.cpu.usage"/></Field><Field label="Resource type"><select value={form.resource_type} onChange={e=>set("resource_type",e.target.value)}>{resourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Resource ID"><input value={form.resource_id||""} onChange={e=>set("resource_id",e.target.value)} placeholder="Optional UUID"/></Field><Field label="Metric type"><select value={form.metric_type} onChange={e=>set("metric_type",e.target.value)}>{metricTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Unit"><input value={form.unit||""} onChange={e=>set("unit",e.target.value)} placeholder="percent / bytes / seconds"/></Field><div className="form-grid"><Field label="Collection interval"><input type="number" min="5" value={form.collection_interval_seconds} onChange={e=>set("collection_interval_seconds",Number(e.target.value))}/></Field><Field label="Retention (days)"><input type="number" min="1" value={form.retention_days} onChange={e=>set("retention_days",Number(e.target.value))}/></Field></div><Field label="Aggregation"><input value={form.aggregation} onChange={e=>set("aggregation",e.target.value)}/></Field><Field label="Data source"><select value={form.data_source_id||""} onChange={e=>set("data_source_id",e.target.value)}><option value="">None</option>{dataSources.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field><Field label="Collector"><select value={form.collector_id||""} onChange={e=>set("collector_id",e.target.value)}><option value="">None</option>{collectors.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field><Field label="Query / collection JSON"><textarea value={form.query_config} onChange={e=>set("query_config",e.target.value)}/></Field></>}
+   {modal.kind==="logs"&&<><Field label="Log source name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="IEngine Error Logs"/></Field><div className="form-grid"><Field label="Source type"><select value={form.source_type} onChange={e=>set("source_type",e.target.value)}>{["FILE","WINDOWS_EVENT","SYSLOG","API","S3","SFTP"].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Resource type"><select value={form.resource_type} onChange={e=>set("resource_type",e.target.value)}>{resourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field></div><Field label="Resource ID"><input value={form.resource_id||""} onChange={e=>set("resource_id",e.target.value)} placeholder="Optional UUID"/></Field><Field label="Location / path / query"><input value={form.location||""} onChange={e=>set("location",e.target.value)} placeholder="D:\logs\*.log or API query"/></Field><Field label="Parser"><select value={form.parser_type} onChange={e=>set("parser_type",e.target.value)}>{parserTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Parser configuration JSON"><textarea value={form.parser_config} onChange={e=>set("parser_config",e.target.value)}/></Field><div className="form-grid"><Field label="Collection interval"><input type="number" min="5" value={form.collection_interval_seconds} onChange={e=>set("collection_interval_seconds",Number(e.target.value))}/></Field><Field label="Retention (days)"><input type="number" min="1" value={form.retention_days} onChange={e=>set("retention_days",Number(e.target.value))}/></Field></div></>}
+   <div className="form-footer"><Toggle value={form.enabled} onChange={v=>set("enabled",v)}/><div><button type="button" className="filter-button" onClick={()=>setModal(null)} disabled={saving}>Cancel</button><button className="primary-button" disabled={saving}>{saving?"Saving…":"Save configuration"}</button></div></div>
+  </form></Modal>}
+ </div>
