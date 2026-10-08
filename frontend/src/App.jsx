@@ -28,10 +28,14 @@ function mapDetail(execution, investigation) {
 }
 
 export default function App() {
-  const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);\n  const [organizations,setOrganizations]=useState([]);\n  const [organizationId,setOrganizationId]=useState(()=>window.localStorage.getItem("opscontrol.organizationId")||"");
+  const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
+  const [organizations,setOrganizations]=useState([]);
+  const [organizationId,setOrganizationId]=useState(()=>window.localStorage.getItem("opscontrol.organizationId")||"");
   const selected=jobs.find(job=>job.id===selectedId)||null;
   const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD"}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[]);
-  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);const saved=window.localStorage.getItem("opscontrol.organizationId");const selected=(saved&&orgs.some(o=>o.id===saved))?saved:(orgs[0]?.id||"");setOrganizationId(selected);if(selected)window.localStorage.setItem("opscontrol.organizationId",selected);}).catch(e=>setError(e.message||"Unable to load organizations"));},[]);\n  useEffect(()=>{if(organizationId)window.localStorage.setItem("opscontrol.organizationId",organizationId);},[organizationId]);\n  useEffect(()=>{refresh();const timer=window.setInterval(refresh,5000);return()=>window.clearInterval(timer);},[refresh]);
+  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);const saved=window.localStorage.getItem("opscontrol.organizationId");const selected=(saved&&orgs.some(o=>o.id===saved))?saved:(orgs[0]?.id||"");setOrganizationId(selected);if(selected)window.localStorage.setItem("opscontrol.organizationId",selected);}).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
+  useEffect(()=>{if(organizationId)window.localStorage.setItem("opscontrol.organizationId",organizationId);},[organizationId]);
+  useEffect(()=>{refresh();const timer=window.setInterval(refresh,5000);return()=>window.clearInterval(timer);},[refresh]);
   const selectJob=async job=>{const id=typeof job==="string"?job:job.id;setSelectedId(id);try{const execution=await fetchExecution(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch{}setDetails(current=>({...current,[id]:mapDetail(execution,investigation)}));}catch(e){setError(e.message||"Unable to load execution details");}};
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
