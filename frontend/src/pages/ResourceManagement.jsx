@@ -143,7 +143,7 @@ function normalizeTemplate(value) {
 function TemplateEditor({ template, onCommit, onClose }) {
   const initial=normalizeTemplate(template);
   const [draft,setDraft]=useState(initial);
-  const [saved,setSaved]=useState(JSON.parse(JSON.stringify(initial)));
+  const [saved,setSaved]=useState(()=>template.id ? JSON.parse(JSON.stringify(initial)) : JSON.parse(JSON.stringify({...initial,name:"",description:"",scope:""})));
   const [tab,setTab]=useState("general");
   const [validation,setValidation]=useState([]);
   const [showHistory,setShowHistory]=useState(false);
@@ -396,7 +396,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         {tab === "templates" && <div className="resource-section-stack">
           <div className="card resource-toolbar">
             <div><h2>Monitoring Templates</h2><span className="muted small">Build reusable monitoring packages once, then apply them to hundreds of Data Sources.</span></div>
-            <div className="template-toolbar-actions"><button className="filter-button" onClick={()=>document.getElementById("opscontrol-template-import")?.click()}>↑ Import Template</button><input id="opscontrol-template-import" type="file" accept=".json,application/json" style={{display:"none"}} onChange={async e=>{const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const raw=JSON.parse(await file.text());setTemplateEditor(normalizeTemplate(raw.template||raw));setError(null)}catch(err){setError("Unable to import template: "+(err.message||"Invalid JSON"))}}}/><button className="primary-button" onClick={()=>setTemplateEditor(normalizeTemplate({id:"",name:"New Monitoring Template",description:"",scope:"VM + Application / Services",attributes:[],collector:{type:"OTEL",interval:30,protocol:"OTLP/gRPC",port:4317,tls:true,telemetry:["VM metrics"]},metrics:[],alerts:[],logs:[]}))}>+ Create Template</button></div>
+            <div className="template-toolbar-actions"><button className="filter-button" onClick={()=>document.getElementById("opscontrol-template-import")?.click()}>↑ Import Template</button><input id="opscontrol-template-import" type="file" accept=".json,application/json" style={{display:"none"}} onChange={async e=>{const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const raw=JSON.parse(await file.text());setTemplateEditor({...normalizeTemplate(raw.template||raw),id:"",status:"DRAFT",version:1,committedAt:null,committedBy:"Admin"});setError(null)}catch(err){setError("Unable to import template: "+(err.message||"Invalid JSON"))}}}/><button className="primary-button" onClick={()=>setTemplateEditor(normalizeTemplate({id:"",name:"New Monitoring Template",description:"",scope:"VM + Application / Services",attributes:[],collector:{type:"OTEL",interval:30,protocol:"OTLP/gRPC",port:4317,tls:true,telemetry:["VM metrics"]},metrics:[],alerts:[],logs:[]}))}>+ Create Template</button></div>
           </div>
           <div className="template-admin-grid">
             {templates.map(t => <div className="card template-admin-card" key={t.id}>
