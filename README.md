@@ -826,3 +826,188 @@ The next backend design should preserve the frontend distinctions already establ
 **Current frontend stage:** Production-quality ETL Jobs UX contract using mock data
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
+
+
+---
+
+# 30. Backend Foundation
+
+The project now has a FastAPI backend foundation under backend/.
+
+Structure:
+
+backend/
+- app/main.py
+- app/core/config.py
+- app/db/session.py
+- app/models/entities.py
+- app/schemas/etl.py
+- app/schemas/investigation.py
+- app/api/health.py
+- app/api/etl.py
+- app/api/investigations.py
+- migrations/
+- requirements.txt
+- .env.example
+
+PostgreSQL is the system of record for operational history. SQLAlchemy 2.x is used for persistence and Alembic manages schema migrations.
+
+Local PostgreSQL can be started with the repository docker-compose.yml.
+
+Typical local flow:
+
+1. Start PostgreSQL.
+2. Create backend/.env from backend/.env.example.
+3. Install backend/requirements.txt.
+4. From backend/, run alembic upgrade head.
+5. Run python scripts/seed_demo.py for development data.
+6. Start FastAPI with uvicorn app.main:app --reload.
+7. Open /docs to inspect the OpenAPI contract.
+
+The demo seed is explicitly development data. It does not connect to Pentaho.
+
+---
+
+# 31. REST API Contract
+
+Initial API namespace: /api/v1
+
+Health:
+- GET /health
+- GET /health/db
+
+ETL:
+- GET /api/v1/etl/executions
+- GET /api/v1/etl/executions/{execution_id}
+- POST /api/v1/etl/job-orders/{job_order_id}/executions
+
+ETL list filters:
+- status
+- environment
+- execution_type
+- search
+- limit
+
+Execution creation accepts:
+- execution_type
+- status
+- start/end/detected timestamps
+- expected runtime
+- SLA
+- SLA status
+- failed step
+- source error code/message/exception
+- source log location
+- source result
+- incident reference
+- optional step executions
+
+Investigation:
+- GET /api/v1/etl/executions/{history_id}/investigation
+- POST /api/v1/etl/executions/{history_id}/investigation/transitions
+- POST /api/v1/etl/executions/{history_id}/investigation/notes
+
+Investigation transitions are server-side validated against the confirmed lifecycle. Invalid transitions return HTTP 409.
+
+Operator notes are chronological operational records. Adding a note does not change investigation state.
+
+The API intentionally does not provide Pentaho start/retry/stop or VM restart endpoints.
+
+---
+
+# 32. PostgreSQL Schema
+
+Initial normalized schema:
+
+organizations
+  -> vms
+      -> applications
+      -> pentaho_instances
+      -> job_orders
+          -> job_order_histories
+              -> job_step_executions
+              -> investigations
+                  -> investigation_transitions
+                  -> operator_notes
+              -> alert_incident_events
+
+Important constraints:
+
+- Job Order identity is unique on Organization + VM + Job Order Name.
+- Job Order History is one execution record.
+- Investigation is one-to-one with an execution history.
+- Investigation transitions are append-only records.
+- Operator Notes are append-only operational records.
+- Source Pentaho facts are stored separately from OpsControl investigation analysis.
+- UUIDs are used for internal identifiers.
+- Advanced schedule configuration is stored as structured JSON so the schema is not limited to five frequency types.
+- Expected runtime, SLA, expected window and no-run grace are separate fields.
+
+The first Alembic migration is:
+
+backend/migrations/versions/0001_initial.py
+
+---
+
+# 33. React → FastAPI Integration
+
+The React application is now API-driven for ETL execution data.
+
+frontend/src/api.js provides:
+- execution list retrieval
+- execution detail retrieval
+- investigation retrieval
+- investigation transition
+- operator note creation
+
+The previous mock execution dataset is no longer the runtime data source for App.jsx.
+
+The frontend requests PROD executions from FastAPI and refreshes every 5 seconds.
+
+VITE_API_BASE_URL controls the backend URL. See frontend/.env.example.
+
+The existing loading, error and empty UI states remain part of the contract.
+
+The current detail adapter intentionally keeps unsupported source data as empty/unknown rather than fabricating it. Rich timeline, alert history and same-Job-Order history will become backend-backed capabilities as their source tables and collectors are implemented.
+
+---
+
+# 34. Pentaho Collector Design
+
+The next integration layer is documented in docs/PENTAHO_COLLECTOR.md.
+
+The collector is explicitly read-only.
+
+It converts Pentaho source evidence into the Job Order History contract and must not control production jobs.
+
+Core principles:
+
+- source execution identity must be idempotent
+- source facts must be preserved
+- OpsControl analysis must remain separate
+- NO_RUN, LONG_RUNNING and SLA interpretation belong to OpsControl monitoring logic
+- source transport failure is not the same as ETL FAILED
+- credentials use managed secrets
+- collector runs independently from the FastAPI process
+
+The first adapter interface is provider-neutral and includes discovery, execution listing, execution detail, step retrieval and source error retrieval.
+
+---
+
+# 35. Current Implementation Stage
+
+The project has moved from UX-only POC toward a working application foundation:
+
+1. React operational UX
+2. FastAPI backend
+3. PostgreSQL schema
+4. SQLAlchemy models
+5. Alembic migration
+6. ETL execution REST endpoints
+7. Investigation lifecycle API
+8. Operator Notes API
+9. React API integration
+10. Development seed data
+11. Pentaho collector architecture
+
+Next implementation work should focus on validating the backend locally, then implementing the real read-only Pentaho adapter and monitoring engine before adding additional integrations.
