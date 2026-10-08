@@ -234,7 +234,23 @@ class Collector(Base):
     data_source: Mapped["DataSource"] = relationship(back_populates="collectors")
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="collector")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="collector")
+    runs: Mapped[list["CollectorRun"]] = relationship(back_populates="collector", cascade="all, delete-orphan")
     __table_args__ = (UniqueConstraint("data_source_id", "name", name="uq_collector_source_name"),)
+
+class CollectorRun(Base):
+    __tablename__ = "collector_runs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    collector_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("collectors.id"), nullable=False, index=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    outcome: Mapped[str | None] = mapped_column(String(100))
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    response_time_ms: Mapped[int | None] = mapped_column(Integer)
+    response_size_bytes: Mapped[int | None] = mapped_column(Integer)
+    response_body: Mapped[str | None] = mapped_column(Text)
+    error_message: Mapped[str | None] = mapped_column(Text)
+    collector: Mapped["Collector"] = relationship(back_populates="runs")
 
 class MetricDefinition(Base):
     __tablename__ = "metric_definitions"
