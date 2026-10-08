@@ -1,8 +1,7 @@
 """OpsControl collector runtime.
 
-Runs as a separate process from FastAPI. It schedules enabled collectors,
-updates runtime state, and delegates collection to provider-neutral adapters.
-No production credentials are read from collector JSON.
+Runs as a separate process from FastAPI. The API adapter is the first real
+transport and performs read-only HTTP collection with Basic Authentication.
 """
 import asyncio
 import json
@@ -11,6 +10,8 @@ import ssl
 import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from urllib.error import HTTPError, URLError
+from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithDefaultRealm, Request, build_opener
 
 from sqlalchemy import select
 
@@ -19,6 +20,9 @@ from app.models import Collector, CollectorRun, DataSource
 from app.worker.credentials import CredentialProviderError, resolve_basic_auth
 
 logger = logging.getLogger("opscontrol.collector-runtime")
+
+MAX_RESPONSE_BODY_BYTES = 64 * 1024
+MAX_ERROR_LENGTH = 2000
 
 
 @dataclass
@@ -89,11 +93,11 @@ class ApiAdapter(CollectorAdapter):
             timeout_seconds = min(max(float(cfg.get("timeout_seconds", 15)), 1), 120)
             expected = cfg.get("expected_status", 200)
             expected_statuses = {int(x) for x in expected} if isinstance(expected, list) else {int(expected)}
+            max_body_bytes = min(max(int(cfg.get("max_response_body_bytes", 4096)), 0), MAX_RESPONSE_BODY_BYTES)
         except (TypeError, ValueError):
-            return CollectionResult(False, "timeout_seconds/expected_status has invalid value", {"outcome": "CONFIGURATION_ERROR"})
+            return CollectionResult(False, "timeout_seconds/expected_status/max_response_body_bytes has invalid value", {"outcome": "CONFIGURATION_ERROR"})
 
         capture_body = bool(cfg.get("capture_response_body", False))
-        max_body_bytes = min(max(int(cfg.get("max_response_body_bytes", 4096)), 0), MAX_RESPONSE_BODY_BYTES)
         headers = {"User-Agent": "OpsControl-Collector/1.0", "Accept": "application/json, text/plain, */*"}
         configured_headers = cfg.get("headers") or {}
         if not isinstance(configured_headers, dict):
@@ -115,9 +119,18 @@ class ApiAdapter(CollectorAdapter):
                 return CollectionResult(False, "request_body must be an object, array, or string", {"outcome": "CONFIGURATION_ERROR"})
 
         return await asyncio.to_thread(
-            self._request, url, method, username, password, timeout_seconds,
-            expected_statuses, bool(cfg.get("verify_ssl", True)), capture_body,
-            max_body_bytes, headers, data,
+            self._request,
+            url,
+            method,
+            username,
+            password,
+            timeout_seconds,
+            expected_statuses,
+            bool(cfg.get("verify_ssl", True)),
+            capture_body,
+            max_body_bytes,
+            headers,
+            data,
         )
 
     @staticmethod
@@ -153,9 +166,13 @@ class ApiAdapter(CollectorAdapter):
                 return CollectionResult(True, "API request completed successfully", payload)
         except HTTPError as exc:
             elapsed = int((time.perf_counter() - started) * 1000)
-            payload = {"outcome": "AUTHENTICATION_ERROR" if exc.code in {401, 403} else "HTTP_ERROR",
-                       "http_status": exc.code, "response_time_ms": elapsed,
-                       "response_size_bytes": None, "response_body": None}
+            payload = {
+                "outcome": "AUTHENTICATION_ERROR" if exc.code in {401, 403} else "HTTP_ERROR",
+                "http_status": exc.code,
+                "response_time_ms": elapsed,
+                "response_size_bytes": None,
+                "response_body": None,
+            }
             if capture_body:
                 try:
                     raw = exc.read(MAX_RESPONSE_BODY_BYTES + 1)
@@ -173,20 +190,42 @@ class ApiAdapter(CollectorAdapter):
             return CollectionResult(False, f"API connection failed: {getattr(exc, 'reason', exc)}", {"outcome": "CONNECTION_ERROR"})
         except Exception as exc:
             return CollectionResult(False, f"API collection failed: {exc}", {"outcome": "REQUEST_ERROR"})
+
+
+class PentahoAdapter(CollectorAdapter):
+    collector_type = "PENTAHO"
+
+    async def collect(self, collector):
+        cfg = collector.configuration or {}
+        if not cfg.get("endpoint"):
+            return CollectionResult(False, "Pentaho collector requires endpoint")
+        return CollectionResult(False, "Pentaho adapter is read-only and awaits provider implementation")
+
+
+ADAPTERS = {
+    "WINDOWS": WindowsAdapter(),
+    "LINUX": LinuxAdapter(),
+    "API": ApiAdapter(),
+    "PENTAHO": PentahoAdapter(),
+}
+
+
 def _persist_run(collector, result, started_at, ended_at, db):
     payload = result.payload or {}
-    db.add(CollectorRun(
-        collector_id=collector.id,
-        started_at=started_at,
-        ended_at=ended_at,
-        status="SUCCESS" if result.success else "FAILED",
-        outcome=payload.get("outcome"),
-        http_status=payload.get("http_status"),
-        response_time_ms=payload.get("response_time_ms"),
-        response_size_bytes=payload.get("response_size_bytes"),
-        response_body=payload.get("response_body"),
-        error_message=None if result.success else result.message[:MAX_ERROR_LENGTH],
-    ))
+    db.add(
+        CollectorRun(
+            collector_id=collector.id,
+            started_at=started_at,
+            ended_at=ended_at,
+            status="SUCCESS" if result.success else "FAILED",
+            outcome=payload.get("outcome"),
+            http_status=payload.get("http_status"),
+            response_time_ms=payload.get("response_time_ms"),
+            response_size_bytes=payload.get("response_size_bytes"),
+            response_body=payload.get("response_body"),
+            error_message=None if result.success else result.message[:MAX_ERROR_LENGTH],
+        )
+    )
 
 
 async def execute_collector(collector_id):
@@ -194,6 +233,7 @@ async def execute_collector(collector_id):
         collector = db.get(Collector, collector_id)
         if not collector or not collector.enabled:
             return
+
         data_source = db.get(DataSource, collector.data_source_id)
         if not data_source or not data_source.enabled:
             collector.status = "STOPPED"
@@ -209,7 +249,8 @@ async def execute_collector(collector_id):
         adapter = ADAPTERS.get(collector.collector_type.upper())
         try:
             result = await adapter.collect(collector) if adapter else CollectionResult(
-                False, f"No adapter registered for {collector.collector_type}",
+                False,
+                f"No adapter registered for {collector.collector_type}",
                 {"outcome": "UNSUPPORTED_COLLECTOR"},
             )
         except Exception:
@@ -236,3 +277,20 @@ async def execute_collector(collector_id):
         collector.next_run_at = ended_at + timedelta(seconds=max(collector.interval_seconds, 5))
         db.commit()
 
+
+async def scheduler_loop(poll_seconds=5):
+    logger.info("OpsControl collector runtime started")
+    while True:
+        now = datetime.now(timezone.utc)
+        with SessionLocal() as db:
+            collectors = db.scalars(
+                select(Collector).where(
+                    Collector.enabled.is_(True),
+                    (Collector.next_run_at.is_(None) | (Collector.next_run_at <= now)),
+                )
+            ).all()
+            for collector in collectors:
+                collector.next_run_at = now + timedelta(seconds=max(collector.interval_seconds, 5))
+                db.commit()
+                asyncio.create_task(execute_collector(collector.id))
+        await asyncio.sleep(poll_seconds)
