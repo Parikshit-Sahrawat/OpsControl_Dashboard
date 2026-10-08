@@ -205,3 +205,18 @@ class AlertRuleOut(AlertRuleBase):
     metric_definition_id: UUID
     created_at: datetime
     updated_at: datetime
+
+
+class CollectorRunOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    collector_id: UUID
+    started_at: datetime
+    ended_at: datetime | None
+    status: str
+    outcome: str | None
+    http_status: int | None
+    response_time_ms: int | None
+    response_size_bytes: int | None
+    response_body: str | None
+    error_message: str | None
