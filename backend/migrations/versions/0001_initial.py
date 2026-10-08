@@ -6,14 +6,14 @@ revision="0001_initial"
 down_revision=None
 branch_labels=None
 depends_on=None
-execution_type = sa.Enum(
+execution_type=sa.Enum(
     "SCHEDULED",
     "MANUAL",
     name="executiontype",
     create_type=False,
 )
 
-execution_status = sa.Enum(
+execution_status=sa.Enum(
     "SUCCESS",
     "FAILED",
     "RUNNING",
@@ -24,7 +24,7 @@ execution_status = sa.Enum(
     create_type=False,
 )
 
-investigation_status = sa.Enum(
+investigation_status=sa.Enum(
     "NEW",
     "ACKNOWLEDGED",
     "INVESTIGATING",
