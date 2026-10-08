@@ -1104,7 +1104,7 @@ Current model supports:
 - Collector
 - Enabled state
 
-Metric definitions are configuration. Actual metric samples will be stored by the native metrics subsystem in a later phase.
+Metric definitions are configuration. Actual metric samples are now stored by the native metrics subsystem.
 
 ## Log Source
 
@@ -1213,19 +1213,17 @@ This allows the same metric/log architecture to work with VMs, applications, API
 
 # 39. Next Monitoring Implementation
 
-The next implementation stages are:
+The implementation has progressed through native metric sample storage and the metric query API.
 
-1. Resource Management UI for Data Sources.
-2. Collector Manager UI.
-3. Metric Definition UI.
-4. Log Source UI.
-5. Collector scheduler/runtime.
-6. Native metric sample storage.
-7. Native log event storage.
-8. Metric query API.
-9. Log search API.
-10. Alert rule engine.
-11. Native charts and dashboards.
+Current next stages are:
+
+1. Native log event storage.
+2. Alert Rule evaluation against real metric samples.
+3. Native alert state and notification orchestration.
+4. Native charts and dashboards.
+5. Windows Agent/WinRM transport.
+6. Linux Agent/SSH transport.
+7. Pentaho read-only provider adapter.
 
 **Prometheus and Grafana are not part of the target architecture.**
 
@@ -1519,7 +1517,7 @@ The runtime will not:
                     Processing Pipeline
 ```
 
-The next runtime stage is to implement the first real transport adapter and native collection-result persistence. The safest first adapter is the **API Basic Authentication collector**, followed by Windows/WinRM and Linux/SSH.
+The first real transport adapter and collection-result persistence are implemented through the **API Basic Authentication collector**. The next transport adapters are Windows/WinRM and Linux/SSH.
 
 
 # 44. API Basic Authentication Collector
