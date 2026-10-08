@@ -47,10 +47,12 @@ def _confidence(alerts, logs):
 
 
 def _category(alerts, logs):
-    if logs:
+    if any((e.severity or "").upper() in {"ERROR", "CRITICAL"} for e in logs):
         return "LOG_ERROR"
     if alerts:
         return "RESOURCE_ALERT"
+    if logs:
+        return "LOG_WARNING"
     return "NO_RELATED_EVIDENCE"
 
 
@@ -93,7 +95,7 @@ def correlate_execution(
     end = anchor + timedelta(seconds=window_after_seconds)
     resource_ids = _resource_ids(db, job_order.vm_id)
 
-    metrics = db.scalars(
+    metrics = db.execute(
         select(MetricSample, MetricDefinition)
         .join(MetricDefinition, MetricDefinition.id == MetricSample.metric_definition_id)
         .where(
