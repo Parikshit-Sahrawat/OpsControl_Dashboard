@@ -12,6 +12,7 @@ import ssl
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from urllib.error import HTTPError, URLError
+from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from sqlalchemy import select
@@ -80,6 +81,10 @@ def send_pagerduty(delivery: AlertNotificationDelivery, state: AlertState) -> st
     return f"pagerduty:{state.id}"
 
 
+def _email_message_id(delivery: AlertNotificationDelivery) -> str:
+    return f"<opscontrol-{delivery.id}@opscontrol.local>"
+
+
 def send_email(delivery: AlertNotificationDelivery, state: AlertState) -> str:
     host = _env("OPSCONTROL_SMTP_HOST")
     port = int(os.getenv("OPSCONTROL_SMTP_PORT", "587"))
@@ -95,6 +100,10 @@ def send_email(delivery: AlertNotificationDelivery, state: AlertState) -> str:
     message["Subject"] = f"[OpsControl] [{prefix}] {state.message[:160]}"
     message["From"] = sender
     message["To"] = ", ".join(recipients)
+    message["Message-ID"] = _email_message_id(delivery)
+    message["X-OpsControl-Delivery-ID"] = str(delivery.id)
+    message["X-OpsControl-Alert-State-ID"] = str(state.id)
+    message["X-OpsControl-Event"] = delivery.event_type
     message.set_content(
         "OpsControl alert notification\n\n"
         f"State: {state.status}\n"
@@ -105,6 +114,7 @@ def send_email(delivery: AlertNotificationDelivery, state: AlertState) -> str:
         f"Value: {state.last_value}\n"
         f"Breach count: {state.breach_count}\n"
         f"Message: {state.message}\n"
+        f"OpsControl Delivery ID: {delivery.id}\n"
     )
 
     context = ssl.create_default_context()
@@ -113,7 +123,30 @@ def send_email(delivery: AlertNotificationDelivery, state: AlertState) -> str:
         if username:
             smtp.login(username, password or "")
         smtp.send_message(message)
-    return f"email:{state.id}"
+    return f"email:{delivery.id}"
+
+def _servicenow_auth(username: str, password: str) -> str:
+    import base64
+    return base64.b64encode(f"{username}:{password}".encode()).decode()
+
+
+def _find_servicenow_incident(base_url: str, table: str, correlation_field: str, correlation_id: str, username: str, password: str) -> str | None:
+    query = quote(f"{correlation_field}={correlation_id}", safe="")
+    request = Request(
+        f"{base_url}/api/now/table/{table}?sysparm_query={query}&sysparm_limit=1&sysparm_fields=sys_id,number",
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Basic {_servicenow_auth(username, password)}",
+        },
+        method="GET",
+    )
+    with urlopen(request, timeout=15) as response:
+        if response.status < 200 or response.status >= 300:
+            raise RuntimeError(f"ServiceNow correlation lookup returned HTTP {response.status}")
+        result = json.loads(response.read(8192).decode("utf-8", errors="replace")).get("result", [])
+        if result:
+            return str(result[0].get("sys_id") or result[0].get("number"))
+    return None
 
 
 def send_servicenow(delivery: AlertNotificationDelivery, state: AlertState) -> str:
@@ -121,15 +154,22 @@ def send_servicenow(delivery: AlertNotificationDelivery, state: AlertState) -> s
     username = _env("OPSCONTROL_SERVICENOW_USERNAME")
     password = _env("OPSCONTROL_SERVICENOW_PASSWORD")
     table = os.getenv("OPSCONTROL_SERVICENOW_TABLE", "incident")
-    headers = {"Accept": "application/json"}
+    correlation_field = os.getenv("OPSCONTROL_SERVICENOW_CORRELATION_FIELD", "correlation_id")
+    correlation_id = f"opscontrol:{state.id}:{delivery.event_type}"
+    headers = {"Accept": "application/json", "Authorization": f"Basic {_servicenow_auth(username, password)}"}
 
     if delivery.event_type == "OPENED":
+        existing = _find_servicenow_incident(base_url, table, correlation_field, correlation_id, username, password)
+        if existing:
+            return existing
+
         urgency = {"CRITICAL": "1", "WARNING": "2", "INFO": "3"}.get(state.severity, "2")
         payload = {
             "short_description": f"[OpsControl] {state.message[:150]}",
             "description": state.message,
             "urgency": urgency,
             "impact": urgency,
+            correlation_field: correlation_id,
         }
         assignment_group = os.getenv("OPSCONTROL_SERVICENOW_ASSIGNMENT_GROUP")
         if assignment_group:
@@ -141,50 +181,53 @@ def send_servicenow(delivery: AlertNotificationDelivery, state: AlertState) -> s
             headers={**headers, "Content-Type": "application/json"},
             method="POST",
         )
-    else:
-        open_delivery = None
-        with SessionLocal() as db:
-            open_delivery = db.scalar(
-                select(AlertNotificationDelivery)
-                .where(
-                    AlertNotificationDelivery.alert_state_id == state.id,
-                    AlertNotificationDelivery.channel == "SERVICENOW",
-                    AlertNotificationDelivery.event_type == "OPENED",
-                    AlertNotificationDelivery.status == "SENT",
-                )
-                .order_by(AlertNotificationDelivery.created_at.desc())
-                .limit(1)
-            )
-        if not open_delivery or not open_delivery.external_reference:
-            raise RuntimeError("Cannot resolve ServiceNow incident: no successful OPENED delivery reference")
-        sys_id = open_delivery.external_reference
-        payload = {
-            "state": os.getenv("OPSCONTROL_SERVICENOW_RESOLVED_STATE", "6"),
-            "close_notes": state.message,
-        }
-        body = json.dumps(payload).encode("utf-8")
-        request = Request(
-            f"{base_url}/api/now/table/{table}/{sys_id}",
-            data=body,
-            headers={**headers, "Content-Type": "application/json"},
-            method="PUT",
-        )
+        try:
+            with urlopen(request, timeout=15) as response:
+                raw = response.read(8192).decode("utf-8", errors="replace")
+                if response.status < 200 or response.status >= 300:
+                    raise RuntimeError(f"ServiceNow returned HTTP {response.status}: {raw[:500]}")
+                result = json.loads(raw).get("result", {})
+                return str(result.get("sys_id") or result.get("number") or state.id)
+        except HTTPError as exc:
+            if exc.code not in (409,):
+                raise
+            existing = _find_servicenow_incident(base_url, table, correlation_field, correlation_id, username, password)
+            if existing:
+                return existing
+            raise
 
-    import base64
-    token = base64.b64encode(f"{username}:{password}".encode()).decode()
-    request.add_header("Authorization", f"Basic {token}")
+    open_delivery = None
+    with SessionLocal() as db:
+        open_delivery = db.scalar(
+            select(AlertNotificationDelivery)
+            .where(
+                AlertNotificationDelivery.alert_state_id == state.id,
+                AlertNotificationDelivery.channel == "SERVICENOW",
+                AlertNotificationDelivery.event_type == "OPENED",
+                AlertNotificationDelivery.status == "SENT",
+            )
+            .order_by(AlertNotificationDelivery.created_at.desc())
+            .limit(1)
+        )
+    if not open_delivery or not open_delivery.external_reference:
+        raise RuntimeError("Cannot resolve ServiceNow incident: no successful OPENED delivery reference")
+    sys_id = open_delivery.external_reference
+    payload = {
+        "state": os.getenv("OPSCONTROL_SERVICENOW_RESOLVED_STATE", "6"),
+        "close_notes": state.message,
+    }
+    body = json.dumps(payload).encode("utf-8")
+    request = Request(
+        f"{base_url}/api/now/table/{table}/{sys_id}",
+        data=body,
+        headers={**headers, "Content-Type": "application/json"},
+        method="PUT",
+    )
     with urlopen(request, timeout=15) as response:
         raw = response.read(8192).decode("utf-8", errors="replace")
         if response.status < 200 or response.status >= 300:
             raise RuntimeError(f"ServiceNow returned HTTP {response.status}: {raw[:500]}")
-        if delivery.event_type == "OPENED":
-            try:
-                result = json.loads(raw).get("result", {})
-                return str(result.get("sys_id") or result.get("number") or state.id)
-            except json.JSONDecodeError:
-                return str(state.id)
-        return str(sys_id)
-
+    return str(sys_id)
 
 def deliver(delivery: AlertNotificationDelivery, state: AlertState) -> str:
     if delivery.channel == "PAGERDUTY":
