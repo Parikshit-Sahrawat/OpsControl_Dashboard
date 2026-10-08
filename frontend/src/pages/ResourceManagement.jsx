@@ -1,90 +1,304 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  createCollector, createDataSource, createLogSource, createMetric,
-  deleteCollector, deleteDataSource, deleteLogSource, deleteMetric,
-  fetchCollectors, fetchDataSources, fetchLogSources, fetchMetrics,
-  updateCollector, updateDataSource, updateLogSource, updateMetric, updateAlertRule, createAlertRule, deleteAlertRule, fetchAlertRules
+  createCollector, createDataSource, fetchCollectors, fetchDataSources,
+  fetchOrganizations, updateDataSource,
 } from "../api";
 
-const tabs = [
-  ["data-sources","Data Sources","Connections and source systems"],
-  ["collectors","Collectors","Collection schedules and runtime"],
-  ["metrics","Metrics","What OpsControl should measure"],
-  ["logs","Log Sources","What OpsControl should collect and parse"],
-  ["alert-rules","Alert Rules","When metrics require attention"]
+const NAV = [
+  ["organizations", "Organizations", "Customers and service ownership"],
+  ["data-sources", "Data Sources", "Customer machines and environments"],
+  ["collectors", "Collectors", "Installed OTEL agents"],
+  ["templates", "Templates", "Reusable monitoring packages"],
 ];
-const sourceTypes=["WINDOWS","LINUX","API","PENTAHO","SFTP","S3","DATABASE","FILE"];
-const metricTypes=["GAUGE","COUNTER","RATE","HISTOGRAM"];
-const resourceTypes=["VM","APPLICATION","ETL_JOB","API","DATABASE","SFTP","S3"];
-const parserTypes=["RAW","PATTERN","JSON","CSV","REGEX"];
-const alertOperators=[["GT",">"],["GTE",">="],["LT","<"],["LTE","<="],["EQ","="],["NE","!="]];
-const labelFor=k=>tabs.find(x=>x[0]===k)?.[1]||k;
-const singular=k=>labelFor(k).replace(/s$/,"");
-function blank(k){
- if(k==="data-sources")return{name:"",source_type:"WINDOWS",description:"",endpoint:"",auth_type:"NONE",connection_config:"{}",enabled:true};
- if(k==="collectors")return{name:"",collector_type:"VM",data_source_id:"",enabled:true,interval_seconds:30,configuration:"{}"};
- if(k==="alert-rules")return{name:"",metric_definition_id:"",severity:"WARNING",operator:"GT",threshold_value:"",evaluation_window_seconds:60,consecutive_breaches:1,notification_channels:[],enabled:true};
-  if(k==="metrics")return{name:"",description:"",resource_type:"VM",resource_id:"",metric_type:"GAUGE",unit:"percent",collection_interval_seconds:30,retention_days:365,aggregation:"avg",query_config:"{}",data_source_id:"",collector_id:"",enabled:true};
- return{name:"",source_type:"FILE",resource_type:"VM",resource_id:"",location:"",parser_type:"RAW",parser_config:"{}",start_position:"NEW",collection_interval_seconds:30,retention_days:30,data_source_id:"",collector_id:"",enabled:true};
-}
-function Modal({title,children,onClose}){return <div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><div className="modal"><div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" onClick={onClose}>×</button></div>{children}</div></div>}
-function Field({label,children,help}){return <label className="form-field"><span>{label}</span>{children}{help&&<small>{help}</small>}</label>}
-function Toggle({value,onChange}){return <label className="toggle"><input type="checkbox" checked={!!value} onChange={e=>onChange(e.target.checked)}/><span>{value?"Enabled":"Disabled"}</span></label>}
 
-export default function ResourceManagement({organizationId}){
- const [tab,setTab]=useState("data-sources"),[dataSources,setDataSources]=useState([]),[collectors,setCollectors]=useState([]),[metrics,setMetrics]=useState([]),[logs,setLogs]=useState([]),[alertRules,setAlertRules]=useState([]);
- const [loading,setLoading]=useState(true),[error,setError]=useState(null),[modal,setModal]=useState(null),[form,setForm]=useState(null),[saving,setSaving]=useState(false),[query,setQuery]=useState("");
- const reload=async()=>{if(!organizationId){setDataSources([]);setCollectors([]);setMetrics([]);setLogs([]);setAlertRules([]);setLoading(false);return}setLoading(true);setError(null);try{const r=await Promise.all([fetchDataSources({organization_id:organizationId}),fetchCollectors(),fetchMetrics({organization_id:organizationId}),fetchLogSources({organization_id:organizationId}),fetchAlertRules({organization_id:organizationId})]);setDataSources(r[0]);setCollectors(r[1]);setMetrics(r[2]);setLogs(r[3]);setAlertRules(r[4])}catch(e){setError(e.message||"Unable to load monitoring configuration")}finally{setLoading(false)}};
- useEffect(()=>{reload()},[organizationId]);
- const items=tab==="data-sources"?dataSources:tab==="collectors"?collectors:tab==="metrics"?metrics:tab==="logs"?logs:alertRules;
- const filtered=useMemo(()=>items.filter(x=>(String(x.name||"")+" "+String(x.source_type||"")+" "+String(x.collector_type||"")+" "+String(x.resource_type||"")).toLowerCase().includes(query.toLowerCase())),[items,query]);
- const openCreate=()=>{setForm(blank(tab));setModal({mode:"create",kind:tab,title:"Add "+singular(tab)})};
- const openEdit=item=>{const f={...item};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in f)f[k]=JSON.stringify(f[k]||{},null,2)});setForm(f);setModal({mode:"edit",kind:tab,title:"Edit "+singular(tab)})};
- const save=async e=>{e.preventDefault();setSaving(true);setError(null);try{
-   const kind=modal.kind,p={...form};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in p)p[k]=JSON.parse(p[k]||"{}")});
-   ["organization_id","id","created_at","updated_at","status","last_test_at","last_error","last_run_at","last_success_at","last_error_at","next_run_at"].forEach(k=>delete p[k]);
-   if(["metrics","logs"].includes(kind)){if(!p.resource_id)delete p.resource_id;if(!p.data_source_id)delete p.data_source_id;if(!p.collector_id)delete p.collector_id}
-   const org=organizationId; if(!org)throw new Error("Select an organization before creating configuration.");
-   if(modal.mode==="create"){
-    if(kind==="data-sources")await createDataSource({...p,organization_id:org});
-    if(kind==="collectors")await createCollector(p);
-    if(kind==="metrics")await createMetric({...p,organization_id:org});
-    if(kind==="logs")await createLogSource({...p,organization_id:org});
-    if(kind==="alert-rules")await createAlertRule({...p,organization_id:org});
-   }else{
-    if(kind==="data-sources")await updateDataSource(form.id,p);
-    if(kind==="collectors")await updateCollector(form.id,p);
-    if(kind==="metrics")await updateMetric(form.id,p);
-    if(kind==="logs")await updateLogSource(form.id,p);
-    if(kind==="alert-rules")await updateAlertRule(form.id,p);
-   }
-   setModal(null);setForm(null);await reload();
- }catch(e){setError(e.message||"Unable to save configuration")}finally{setSaving(false)}};
- const disable=async item=>{if(!window.confirm('Disable "'+item.name+'"?'))return;try{if(tab==="data-sources")await deleteDataSource(item.id);if(tab==="collectors")await deleteCollector(item.id);if(tab==="metrics")await deleteMetric(item.id);if(tab==="logs")await deleteLogSource(item.id);
-    if(tab==="alert-rules")await deleteAlertRule(item.id);await reload()}catch(e){setError(e.message||"Unable to disable configuration")}};
- const set=(k,v)=>setForm(f=>({...f,[k]:v}));
- const dsName=id=>dataSources.find(x=>x.id===id)?.name||"—";
- return <div className="resource-page">
-  <div className="page-heading"><div><h1>Resource Management</h1><p>Configure the monitoring control plane without editing collector code.</p></div><div className="heading-actions"><button className="filter-button" onClick={reload}>Refresh</button><button className="primary-button" onClick={openCreate} disabled={!organizationId}>+ Add {singular(tab)}</button></div></div>
-  <div className="resource-layout"><aside className="resource-sidebar card">{tabs.map(x=><button key={x[0]} className={tab===x[0]?"resource-tab active":"resource-tab"} onClick={()=>{setTab(x[0]);setQuery("")}}><b>{x[1]}</b><small>{x[2]}</small></button>)}</aside>
-  <section className="resource-main"><div className="card resource-toolbar"><div><h2>{labelFor(tab)}</h2><span className="muted small">{items.length} configured · {items.filter(x=>x.enabled).length} enabled</span></div><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search configuration..."/></div>
-  {error&&<div className="scope-banner error-banner">{error}</div>}
-  {loading?<div className="card state-panel"><div className="spinner"/><h3>Loading monitoring configuration</h3></div>:filtered.length===0?<div className="card state-panel"><h3>No configuration found</h3><p>Add your first configuration to start building the monitoring platform.</p><button className="primary-button" onClick={openCreate}>Add configuration</button></div>:
-  <div className="card table-wrap"><table><thead><tr>{tab==="alert-rules"?<><th>Rule</th><th>Metric</th><th>Severity</th><th>Condition</th><th>Evaluation</th><th>Notifications</th><th>State</th><th/></>:tab==="data-sources"?<><th>Name</th><th>Type</th><th>Endpoint</th><th>Status</th><th>Collectors</th><th>State</th><th/></>:tab==="collectors"?<><th>Name</th><th>Source</th><th>Type</th><th>Interval</th><th>Last Run</th><th>State</th><th/></>:tab==="metrics"?<><th>Metric</th><th>Resource</th><th>Type</th><th>Interval</th><th>Retention</th><th>State</th><th/></>:<><th>Log Source</th><th>Resource</th><th>Location</th><th>Parser</th><th>Interval</th><th>State</th><th/></>}</tr></thead>
-  <tbody>{filtered.map(item=><tr key={item.id}>
-   {tab==="data-sources"&&<><td><b>{item.name}</b><small>{item.id}</small></td><td>{item.source_type}</td><td>{item.endpoint||"—"}</td><td><span className={"status status--"+String(item.status||"unknown").toLowerCase()}>{item.status||"UNKNOWN"}</span></td><td>{collectors.filter(c=>c.data_source_id===item.id).length}</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
-   {tab==="collectors"&&<><td><b>{item.name}</b><small>{item.collector_type}</small></td><td>{dsName(item.data_source_id)}</td><td>{item.collector_type}</td><td>{item.interval_seconds}s</td><td>{item.last_run_at?new Date(item.last_run_at).toLocaleString("en-IN"):"Never"}</td><td><span className={"status status--"+String(item.status||"stopped").toLowerCase()}>{item.status}</span></td></>}
-   {tab==="metrics"&&<><td><b>{item.name}</b><small>{item.unit||"unitless"}</small></td><td>{item.resource_type}<small>{item.resource_id||"All matching resources"}</small></td><td>{item.metric_type}</td><td>{item.collection_interval_seconds}s</td><td>{item.retention_days}d</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
-   {tab==="logs"&&<><td><b>{item.name}</b><small>{item.source_type}</small></td><td>{item.resource_type}<small>{item.resource_id||"All matching resources"}</small></td><td className="truncate-cell">{item.location||"—"}</td><td>{item.parser_type}</td><td>{item.collection_interval_seconds}s</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
-   {tab==="alert-rules"&&<><td><b>{item.name}</b><small>{item.id}</small></td><td>{metrics.find(m=>m.id===item.metric_definition_id)?.name||"—"}</td><td><span className={"alert-severity "+String(item.severity).toLowerCase()}>{item.severity}</span></td><td><code>{item.operator} {item.threshold_value}</code></td><td>{item.evaluation_window_seconds}s · {item.consecutive_breaches} breach{item.consecutive_breaches>1?"es":""}</td><td>{(item.notification_channels||[]).join(", ")||"None"}</td><td><Toggle value={item.enabled} onChange={()=>{}}/></td></>}
-   <td><div className="row-actions"><button className="filter-button" onClick={()=>openEdit(item)}>Edit</button><button className="danger-button" onClick={()=>disable(item)}>Disable</button></div></td>
-  </tr>)}</tbody></table></div>}</section></div>
-  {modal&&form&&<Modal title={modal.title} onClose={()=>!saving&&setModal(null)}><form onSubmit={save} className="resource-form">
-   {modal.kind==="alert-rules"&&<><div className="info-box">Metric Definitions describe what OpsControl measures. Alert Rules describe when a measured value requires attention.</div><Field label="Rule name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="VM CPU Critical"/></Field><Field label="Metric"><select required value={form.metric_definition_id} onChange={e=>set("metric_definition_id",e.target.value)}><option value="">Select metric</option>{metrics.map(m=><option key={m.id} value={m.id}>{m.name} · {m.resource_type}</option>)}</select></Field><div className="form-grid"><Field label="Severity"><select value={form.severity} onChange={e=>set("severity",e.target.value)}>{["INFO","WARNING","CRITICAL"].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Operator"><select value={form.operator} onChange={e=>set("operator",e.target.value)}>{alertOperators.map(x=><option key={x[0]} value={x[0]}>{x[1]}</option>)}</select></Field></div><div className="form-grid"><Field label="Threshold value"><input required value={form.threshold_value} onChange={e=>set("threshold_value",e.target.value)} placeholder="90"/></Field><Field label="Evaluation window (seconds)"><input type="number" min="5" value={form.evaluation_window_seconds} onChange={e=>set("evaluation_window_seconds",Number(e.target.value))}/></Field></div><Field label="Consecutive breaches"><input type="number" min="1" value={form.consecutive_breaches} onChange={e=>set("consecutive_breaches",Number(e.target.value))}/><small>Number of consecutive evaluations required before the rule fires.</small></Field><Field label="Notification channels" help="Only channels configured in the worker environment will deliver."><div className="checkbox-row">{["EMAIL","PAGERDUTY","SERVICENOW"].map(ch=><label key={ch} className="checkbox-option"><input type="checkbox" checked={(form.notification_channels||[]).includes(ch)} onChange={e=>set("notification_channels",e.target.checked?[...(form.notification_channels||[]),ch]:(form.notification_channels||[]).filter(x=>x!==ch))}/><span>{ch}</span></label>)}</div></Field></>}
-   {modal.kind==="data-sources"&&<><Field label="Name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Production Windows Servers"/></Field><Field label="Source type"><select value={form.source_type} onChange={e=>set("source_type",e.target.value)}>{sourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Endpoint"><input value={form.endpoint||""} onChange={e=>set("endpoint",e.target.value)} placeholder="hostname, URL, bucket or service endpoint"/></Field><Field label="Authentication"><input value={form.auth_type||""} onChange={e=>set("auth_type",e.target.value)}/></Field><Field label="Description"><textarea value={form.description||""} onChange={e=>set("description",e.target.value)}/></Field><Field label="Connection JSON" help="Do not store production passwords or tokens here."><textarea required value={form.connection_config} onChange={e=>set("connection_config",e.target.value)}/></Field></>}
-   {modal.kind==="collectors"&&<><Field label="Name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="Windows VM Collector"/></Field><Field label="Data source"><select required value={form.data_source_id} onChange={e=>set("data_source_id",e.target.value)}><option value="">Select data source</option>{dataSources.map(x=><option key={x.id} value={x.id}>{x.name} · {x.source_type}</option>)}</select></Field><Field label="Collector type"><input required value={form.collector_type} onChange={e=>set("collector_type",e.target.value)} placeholder="VM / API / PENTAHO / LOG"/></Field><Field label="Interval (seconds)"><input type="number" min="5" value={form.interval_seconds} onChange={e=>set("interval_seconds",Number(e.target.value))}/></Field><Field label="Configuration JSON"><textarea value={form.configuration} onChange={e=>set("configuration",e.target.value)}/></Field></>}
-   {modal.kind==="metrics"&&<><Field label="Metric name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="vm.cpu.usage"/></Field><Field label="Resource type"><select value={form.resource_type} onChange={e=>set("resource_type",e.target.value)}>{resourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Resource ID"><input value={form.resource_id||""} onChange={e=>set("resource_id",e.target.value)} placeholder="Optional UUID"/></Field><Field label="Metric type"><select value={form.metric_type} onChange={e=>set("metric_type",e.target.value)}>{metricTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Unit"><input value={form.unit||""} onChange={e=>set("unit",e.target.value)} placeholder="percent / bytes / seconds"/></Field><div className="form-grid"><Field label="Collection interval"><input type="number" min="5" value={form.collection_interval_seconds} onChange={e=>set("collection_interval_seconds",Number(e.target.value))}/></Field><Field label="Retention (days)"><input type="number" min="1" value={form.retention_days} onChange={e=>set("retention_days",Number(e.target.value))}/></Field></div><Field label="Aggregation"><input value={form.aggregation} onChange={e=>set("aggregation",e.target.value)}/></Field><Field label="Data source"><select value={form.data_source_id||""} onChange={e=>set("data_source_id",e.target.value)}><option value="">None</option>{dataSources.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field><Field label="Collector"><select value={form.collector_id||""} onChange={e=>set("collector_id",e.target.value)}><option value="">None</option>{collectors.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</select></Field><Field label="Query / collection JSON"><textarea value={form.query_config} onChange={e=>set("query_config",e.target.value)}/></Field></>}
-   {modal.kind==="logs"&&<><Field label="Log source name"><input required value={form.name} onChange={e=>set("name",e.target.value)} placeholder="IEngine Error Logs"/></Field><div className="form-grid"><Field label="Source type"><select value={form.source_type} onChange={e=>set("source_type",e.target.value)}>{["FILE","WINDOWS_EVENT","SYSLOG","API","S3","SFTP"].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Resource type"><select value={form.resource_type} onChange={e=>set("resource_type",e.target.value)}>{resourceTypes.map(x=><option key={x}>{x}</option>)}</select></Field></div><Field label="Resource ID"><input value={form.resource_id||""} onChange={e=>set("resource_id",e.target.value)} placeholder="Optional UUID"/></Field><Field label="Location / path / query"><input value={form.location||""} onChange={e=>set("location",e.target.value)} placeholder="D:\logs\*.log or API query"/></Field><Field label="Parser"><select value={form.parser_type} onChange={e=>set("parser_type",e.target.value)}>{parserTypes.map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Parser configuration JSON"><textarea value={form.parser_config} onChange={e=>set("parser_config",e.target.value)}/></Field><div className="form-grid"><Field label="Collection interval"><input type="number" min="5" value={form.collection_interval_seconds} onChange={e=>set("collection_interval_seconds",Number(e.target.value))}/></Field><Field label="Retention (days)"><input type="number" min="1" value={form.retention_days} onChange={e=>set("retention_days",Number(e.target.value))}/></Field></div></>}
-   <div className="form-footer"><Toggle value={form.enabled} onChange={v=>set("enabled",v)}/><div><button type="button" className="filter-button" onClick={()=>setModal(null)} disabled={saving}>Cancel</button><button className="primary-button" disabled={saving}>{saving?"Saving…":"Save configuration"}</button></div></div>
-  </form></Modal>}
- </div>
+const ENVIRONMENTS = ["PROD", "QA", "TEST", "DEV", "SANDBOX"];
+const SERVER_TYPES = ["Application Server", "Database Server", "ETL Server", "Other"];
+const OS_TYPES = ["Windows", "Linux"];
+const PRODUCTS = ["SPM", "SPP"];
+const HOST_GROUPS = ["PROD", "QA", "TEST", "DEV", "SANDBOX", "SLM", "SPM", "SPP", "Windows Servers", "Linux Servers", "Application Servers", "Database Servers", "ETL Servers"];
+const TELEMETRY = ["VM metrics", "System logs", "Application logs", "ETL logs", "Services", "Traces"];
+
+const TEMPLATES = [
+  { id: "windows-application", name: "Windows Application Server", scope: "VM + Application / Services", description: "Windows infrastructure, services, application logs and standard health checks.", examples: ["CPU", "Memory", "Disk", "Windows Services", "Event Logs"] },
+  { id: "linux-database", name: "Linux Database Server", scope: "VM + Application / Services", description: "Linux host telemetry with database/application log collection defaults.", examples: ["CPU", "Memory", "Disk", "Processes", "Database logs"] },
+  { id: "pentaho-server", name: "Pentaho Server", scope: "VM + ETL", description: "ETL-oriented defaults for Pentaho/Kettle and batch job telemetry.", examples: ["CPU", "Disk", "Pentaho logs", "Job execution", "Batch runtime"] },
+  { id: "web-ui", name: "SLM Web UI", scope: "Application / Services", description: "WebUI/Tomcat/Apache monitoring defaults for SLM application servers.", examples: ["Apache", "Tomcat", "HTTP health", "Response time"] },
+  { id: "ssl", name: "SSL / Certificate", scope: "Application / Services", description: "Certificate and TLS monitoring defaults for customer endpoints.", examples: ["Certificate expiry", "TLS validity", "Endpoint availability"] },
+];
+
+function metadata(item) {
+  try {
+    const value = typeof item?.connection_config === "string" ? JSON.parse(item.connection_config || "{}") : (item?.connection_config || {});
+    return value.opscontrol || {};
+  } catch { return {}; }
+}
+function collectorConfig(item) {
+  try {
+    return typeof item?.configuration === "string" ? JSON.parse(item.configuration || "{}") : (item?.configuration || {});
+  } catch { return {}; }
+}
+function newDataSource(org = "") {
+  return {
+    organization_id: org, name: "", visible_name: "", hostname: "", environment: "PROD",
+    server_type: "Application Server", os_type: "Windows", product_family: "SLM", product: "SPM",
+    host_groups: ["PROD", "SLM", "Windows Servers", "Application Servers"], templates: [], description: "",
+  };
+}
+function newCollector() {
+  return { name: "", connection_mode: "DNS", ip_address: "", port: 4317, protocol: "OTLP/gRPC", tls: true, vault_secret_ref: "", telemetry: ["VM metrics", "System logs", "Application logs", "Services"] };
+}
+function Field({ label, children, help }) {
+  return <label className="form-field"><span>{label}</span>{children}{help && <small>{help}</small>}</label>;
+}
+function Modal({ title, children, onClose, wide = false }) {
+  return <div className="modal-backdrop" onMouseDown={e => e.target === e.currentTarget && onClose()}>
+    <div className={wide ? "modal resource-onboarding-modal" : "modal"}>
+      <div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" onClick={onClose}>×</button></div>
+      {children}
+    </div>
+  </div>;
+}
+function TemplateCard({ template, selected, onClick }) {
+  return <button type="button" className={selected ? "template-card selected" : "template-card"} onClick={onClick}>
+    <div className="template-card-head"><div><b>{template.name}</b><small>{template.scope}</small></div><span className="template-check">{selected ? "✓" : "+"}</span></div>
+    <p>{template.description}</p><div className="template-example-list">{template.examples.map(x => <span key={x}>{x}</span>)}</div>
+  </button>;
+}
+
+export default function ResourceManagement({ organizationId, organizationIds = [] }) {
+  const scope = organizationIds.length ? organizationIds : (organizationId ? [organizationId] : []);
+  const [tab, setTab] = useState("data-sources");
+  const [organizations, setOrganizations] = useState([]);
+  const [dataSources, setDataSources] = useState([]);
+  const [collectors, setCollectors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useState("");
+  const [wizard, setWizard] = useState(false);
+  const [step, setStep] = useState(1);
+  const [ds, setDs] = useState(newDataSource(scope[0] || ""));
+  const [collector, setCollector] = useState(newCollector());
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(null);
+
+  const reload = async () => {
+    setLoading(true); setError(null);
+    try {
+      const orgs = await fetchOrganizations();
+      setOrganizations(orgs);
+      const ids = scope.length ? scope : orgs.map(x => x.id);
+      const lists = ids.length ? await Promise.all(ids.map(id => fetchDataSources({ organization_id: id }))) : [await fetchDataSources()];
+      setDataSources([...new Map(lists.flat().map(x => [x.id, x])).values()]);
+      setCollectors(await fetchCollectors());
+    } catch (e) { setError(e.message || "Unable to load resource management"); }
+    finally { setLoading(false); }
+  };
+  useEffect(() => { reload(); }, [organizationId, JSON.stringify(organizationIds)]);
+
+  const orgMap = useMemo(() => new Map(organizations.map(x => [x.id, x])), [organizations]);
+  const sources = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return dataSources.filter(x => {
+      const m = metadata(x);
+      return !q || [x.name, x.endpoint, m.visible_name, m.hostname, m.environment, m.product, m.product_family, ...(m.host_groups || [])].join(" ").toLowerCase().includes(q);
+    });
+  }, [dataSources, query]);
+  const collectorRows = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return collectors.filter(x => !q || [x.name, x.collector_type, dataSources.find(s => s.id === x.data_source_id)?.name].join(" ").toLowerCase().includes(q));
+  }, [collectors, dataSources, query]);
+
+  const openWizard = () => {
+    setStep(1); setDs(newDataSource(scope[0] || organizations[0]?.id || "")); setCollector(newCollector()); setWizard(true);
+  };
+  const toggle = (field, value) => setDs(f => ({ ...f, [field]: f[field].includes(value) ? f[field].filter(x => x !== value) : [...f[field], value] }));
+  const toggleTelemetry = value => setCollector(f => ({ ...f, telemetry: f.telemetry.includes(value) ? f.telemetry.filter(x => x !== value) : [...f.telemetry, value] }));
+
+  const createResource = async () => {
+    setSaving(true); setError(null);
+    try {
+      const chosen = TEMPLATES.filter(x => ds.templates.includes(x.id));
+      const source = await createDataSource({
+        organization_id: ds.organization_id,
+        name: ds.name || ds.hostname,
+        source_type: ds.os_type.toUpperCase(),
+        description: ds.description || null,
+        endpoint: ds.hostname,
+        auth_type: "PTC_VAULT",
+        connection_config: { opscontrol: {
+          visible_name: ds.visible_name || ds.name || ds.hostname, hostname: ds.hostname, environment: ds.environment,
+          server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product,
+          host_groups: ds.host_groups, template_ids: ds.templates, templates: chosen.map(x => x.name),
+        }},
+        enabled: true,
+      });
+      await createCollector({
+        data_source_id: source.id, name: collector.name || ${ds.hostname || ds.name}-OTEL,
+        collector_type: "OTEL", enabled: true, interval_seconds: 30,
+        configuration: {
+          provider: "opentelemetry",
+          connection: { mode: collector.connection_mode, ip_address: collector.ip_address, dns_name: ds.hostname, port: Number(collector.port), protocol: collector.protocol, tls: collector.tls },
+          credential_provider: "PTC_VAULT", vault_secret_ref: collector.vault_secret_ref || null,
+          telemetry: collector.telemetry, template_ids: ds.templates,
+        },
+      });
+      setWizard(false); setTab("data-sources"); await reload();
+    } catch (e) { setError(e.message || "Unable to create Data Source and Collector"); }
+    finally { setSaving(false); }
+  };
+
+  const openEdit = source => {
+    const m = metadata(source);
+    setEditing(source);
+    setDs({
+      organization_id: source.organization_id, name: source.name || "", visible_name: m.visible_name || source.name || "",
+      hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", server_type: m.server_type || "Application Server",
+      os_type: m.os_type || "Windows", product_family: m.product_family || "SLM", product: m.product || "SPM",
+      host_groups: m.host_groups || [], templates: m.template_ids || [], description: source.description || "",
+    });
+  };
+  const saveEdit = async e => {
+    e.preventDefault(); setSaving(true);
+    try {
+      const old = metadata(editing);
+      await updateDataSource(editing.id, {
+        name: ds.name, endpoint: ds.hostname, description: ds.description || null,
+        connection_config: { ...(editing.connection_config || {}), opscontrol: {
+          ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment,
+          server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product,
+          host_groups: ds.host_groups, template_ids: ds.templates, templates: TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name),
+        }},
+      });
+      setEditing(null); await reload();
+    } catch (e) { setError(e.message || "Unable to update Data Source"); }
+    finally { setSaving(false); }
+  };
+
+  const orgName = id => orgMap.get(id)?.name || "—";
+  const sourceCollectorCount = id => collectors.filter(x => x.data_source_id === id).length;
+
+  return <div className="resource-page">
+    <div className="page-heading">
+      <div><h1>Resource Management</h1><p>Simple customer onboarding: Organization → Data Source → Collector → Templates.</p></div>
+      <div className="heading-actions"><button className="filter-button" onClick={reload}>Refresh</button><button className="primary-button" onClick={openWizard} disabled={!organizations.length}>+ Add Data Source</button></div>
+    </div>
+
+    <div className="resource-summary-grid">
+      <div className="card resource-summary-card"><span>Organizations</span><b>{organizations.length}</b><small>Customer boundaries</small></div>
+      <div className="card resource-summary-card"><span>Data Sources</span><b>{dataSources.length}</b><small>Customer machines</small></div>
+      <div className="card resource-summary-card"><span>Collectors</span><b>{collectors.length}</b><small>{collectors.filter(x => String(x.status).toUpperCase() === "ONLINE").length} online</small></div>
+      <div className="card resource-summary-card"><span>Templates</span><b>{TEMPLATES.length}</b><small>Reusable packages</small></div>
+    </div>
+
+    <div className="resource-layout">
+      <aside className="resource-sidebar card">{NAV.map(([key, title, subtitle]) =>
+        <button key={key} className={tab === key ? "resource-tab active" : "resource-tab"} onClick={() => { setTab(key); setQuery(""); }}><b>{title}</b><small>{subtitle}</small></button>
+      )}</aside>
+
+      <section className="resource-main">
+        {error && <div className="scope-banner error-banner">{error}</div>}
+
+        {tab === "organizations" && <div className="resource-section-stack">
+          <div className="card resource-toolbar"><div><h2>Organizations</h2><span className="muted small">Customers are the top-level ownership boundary.</span></div><span className="resource-readonly-badge">Provisioning next</span></div>
+          <div className="organization-grid">{organizations.map(org =>
+            <div className="card organization-card" key={org.id}>
+              <div className="organization-card-head"><div><b>{org.name}</b><small>{org.code}</small></div><span className={org.active ? "status status--success" : "status status--unknown"}>{org.active ? "ACTIVE" : "INACTIVE"}</span></div>
+              <div className="organization-fields"><div><span>Services</span><b>SLM / API</b></div><div><span>Distributed List</span><b>Customer profile</b></div><div><span>ServiceNow</span><b>Customer integration</b></div></div>
+            </div>
+          )}</div>
+          <div className="card info-box resource-info-panel"><b>Organization model</b><p>Organization configuration will own customer services, ServiceNow endpoint, distributed lists and application catalog. The current backend exposes organizations as read-only, so this phase does not invent a create/update API.</p></div>
+        </div>}
+
+        {tab === "data-sources" && <div className="resource-section-stack">
+          <div className="card resource-toolbar"><div><h2>Data Sources</h2><span className="muted small">Zabbix-inspired host identity, modernized for OpsControl.</span></div><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search hostname, product, group..." /></div>
+          {loading ? <div className="card state-panel"><div className="spinner" /><h3>Loading resources</h3></div> : sources.length === 0 ? <div className="card state-panel"><h3>No Data Sources</h3><p>Start with a customer machine and choose one or more Monitoring Templates.</p><button className="primary-button" onClick={openWizard}>+ Add Data Source</button></div> :
+            <div className="card table-wrap"><table><thead><tr><th>Data Source</th><th>Organization</th><th>Environment</th><th>Server / OS</th><th>Product</th><th>Templates</th><th>Collector</th><th /></tr></thead><tbody>
+              {sources.map(source => { const m = metadata(source); const cs = collectors.filter(c => c.data_source_id === source.id); return <tr key={source.id}>
+                <td><b>{m.visible_name || source.name}</b><small>{m.hostname || source.endpoint || "No hostname"} · {source.name}</small></td>
+                <td>{orgName(source.organization_id)}</td><td><span className="status status--running">{m.environment || "—"}</span></td>
+                <td>{m.server_type || "—"}<small>{m.os_type || "—"}</small></td><td>{m.product || "—"}<small>{m.product_family || "—"}</small></td>
+                <td><div className="chip-row">{(m.templates || []).slice(0, 2).map(x => <span className="mini-chip" key={x}>{x}</span>)}{(m.templates || []).length > 2 && <span className="mini-chip">+{m.templates.length - 2}</span>}</div></td>
+                <td>{cs.length ? <span className={String(cs[0].status).toUpperCase() === "ONLINE" ? "status status--success" : "status status--unknown"}>{cs[0].status || "STOPPED"}</span> : <span className="status status--unknown">NOT INSTALLED</span>}</td>
+                <td><button className="filter-button" onClick={() => openEdit(source)}>Edit</button></td>
+              </tr>; })}
+            </tbody></table></div>}
+        </div>}
+
+        {tab === "collectors" && <div className="resource-section-stack">
+          <div className="card resource-toolbar"><div><h2>Collectors</h2><span className="muted small">One OTEL collector per Data Source for metrics, logs and traces.</span></div><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search collector or Data Source..." /></div>
+          {loading ? <div className="card state-panel"><div className="spinner" /><h3>Loading collectors</h3></div> : collectorRows.length === 0 ? <div className="card state-panel"><h3>No Collectors</h3><p>Create a Data Source to onboard its collector.</p></div> :
+            <div className="card table-wrap"><table><thead><tr><th>Collector</th><th>Data Source</th><th>Type</th><th>Telemetry</th><th>Status</th><th>Last Run</th></tr></thead><tbody>
+              {collectorRows.map(item => { const c = collectorConfig(item); const source = dataSources.find(s => s.id === item.data_source_id); const m = metadata(source); return <tr key={item.id}>
+                <td><b>{item.name}</b><small>{c.connection?.protocol || "OTLP"}</small></td><td>{m.visible_name || source?.name || "—"}<small>{m.hostname || source?.endpoint || ""}</small></td><td>{item.collector_type}</td>
+                <td><div className="chip-row">{(c.telemetry || []).slice(0, 3).map(x => <span className="mini-chip" key={x}>{x}</span>)}</div></td><td><span className={String(item.status).toUpperCase() === "ONLINE" ? "status status--success" : "status status--unknown"}>{item.status || "STOPPED"}</span></td><td>{item.last_run_at ? new Date(item.last_run_at).toLocaleString("en-IN") : "Never"}</td>
+              </tr>; })}
+            </tbody></table></div>}
+        </div>}
+
+        {tab === "templates" && <div className="resource-section-stack">
+          <div className="card resource-toolbar"><div><h2>Monitoring Templates</h2><span className="muted small">Each package can contain collector configuration, metrics, alerts and log collection defaults.</span></div></div>
+          <div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={false} onClick={() => {}} />)}</div>
+          <div className="card info-box resource-info-panel"><b>Template rule</b><p>Templates are not alert rules. They are reusable monitoring packages selected during Data Source onboarding. Metric Rules and the three Alert Rule domains will be designed later.</p></div>
+        </div>}
+      </section>
+    </div>
+
+    {wizard && <Modal title="Add Data Source" wide onClose={() => !saving && setWizard(false)}>
+      <div className="onboarding-steps">{["Data Source", "Templates", "Collector", "Review"].map((x, i) => <div key={x} className={step === i + 1 ? "onboarding-step active" : step > i + 1 ? "onboarding-step complete" : "onboarding-step"}><span>{step > i + 1 ? "✓" : i + 1}</span>{x}</div>)}</div>
+
+      {step === 1 && <div className="resource-form">
+        <div className="info-box">Configure the machine first. Organization, environment, product and host groups become the Data Source identity.</div>
+        <div className="form-grid"><Field label="Organization"><select value={ds.organization_id} onChange={e => setDs(f => ({ ...f, organization_id: e.target.value }))}>{organizations.map(x => <option key={x.id} value={x.id}>{x.name} ({x.code})</option>)}</select></Field><Field label="Environment"><select value={ds.environment} onChange={e => setDs(f => ({ ...f, environment: e.target.value }))}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field></div>
+        <div className="form-grid"><Field label="Host Name"><input required value={ds.hostname} onChange={e => setDs(f => ({ ...f, hostname: e.target.value, name: f.name || e.target.value }))} placeholder="HPPR-Prodapp001" /></Field><Field label="Visible Name"><input value={ds.visible_name} onChange={e => setDs(f => ({ ...f, visible_name: e.target.value }))} placeholder="Rivian Prod APP" /></Field></div>
+        <div className="form-grid"><Field label="Server Type"><select value={ds.server_type} onChange={e => setDs(f => ({ ...f, server_type: e.target.value }))}>{SERVER_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="OS Type"><select value={ds.os_type} onChange={e => setDs(f => ({ ...f, os_type: e.target.value }))}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div>
+        <div className="form-grid"><Field label="Product Family"><select value={ds.product_family} onChange={e => setDs(f => ({ ...f, product_family: e.target.value }))}><option>SLM</option></select></Field><Field label="Product"><select value={ds.product} onChange={e => setDs(f => ({ ...f, product: e.target.value }))}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div>
+        <Field label="Host Groups" help="Structured fields remain authoritative; groups provide flexible NOC filtering."><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={ds.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field>
+        <Field label="Description"><textarea value={ds.description} onChange={e => setDs(f => ({ ...f, description: e.target.value }))} placeholder="Production application server" /></Field>
+        <div className="form-footer"><span className="muted small">Step 1 of 4</span><button type="button" className="primary-button" disabled={!ds.organization_id || !ds.hostname} onClick={() => setStep(2)}>Next: Templates →</button></div>
+      </div>}
+
+      {step === 2 && <div className="resource-form">
+        <div className="info-box">Select reusable packages instead of manually configuring hundreds of servers. Multiple templates can be attached to one Data Source.</div>
+        <div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div>
+        <div className="form-footer"><span className="muted small">Step 2 of 4 · {ds.templates.length} selected</span><div><button type="button" className="filter-button" onClick={() => setStep(1)}>← Back</button><button type="button" className="primary-button" onClick={() => setStep(3)}>Next: Collector →</button></div></div>
+      </div>}
+
+      {step === 3 && <div className="resource-form">
+        <div className="info-box"><b>OTEL Collector</b> is the single collection agent for the Data Source. It can carry metrics, logs and traces. Credentials are references to the PTC Vault; passwords are never entered into OpsControl.</div>
+        <Field label="Collector Name"><input value={collector.name} onChange={e => setCollector(f => ({ ...f, name: e.target.value }))} placeholder={${ds.hostname || ds.name}-OTEL} /></Field>
+        <div className="form-grid"><Field label="Connection Mode"><select value={collector.connection_mode} onChange={e => setCollector(f => ({ ...f, connection_mode: e.target.value }))}><option>DNS</option><option>IP</option></select></Field><Field label="Port"><input type="number" min="1" max="65535" value={collector.port} onChange={e => setCollector(f => ({ ...f, port: Number(e.target.value) }))} /></Field></div>
+        <div className="form-grid"><Field label="IP Address" help="Used when IP mode is selected."><input value={collector.ip_address} onChange={e => setCollector(f => ({ ...f, ip_address: e.target.value }))} placeholder="10.10.10.25" /></Field><Field label="Protocol"><select value={collector.protocol} onChange={e => setCollector(f => ({ ...f, protocol: e.target.value }))}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field></div>
+        <Field label="PTC Vault Secret Reference" help="Reference only; secret value is never stored in OpsControl."><input value={collector.vault_secret_ref} onChange={e => setCollector(f => ({ ...f, vault_secret_ref: e.target.value }))} placeholder="ptc/prod/rivian/hppr-prodapp001" /></Field>
+        <Field label="Telemetry"><div className="check-grid">{TELEMETRY.map(x => <label className="check-option" key={x}><input type="checkbox" checked={collector.telemetry.includes(x)} onChange={() => toggleTelemetry(x)} /><span>{x}</span></label>)}</div></Field>
+        <label className="toggle"><input type="checkbox" checked={collector.tls} onChange={e => setCollector(f => ({ ...f, tls: e.target.checked }))} /><span>TLS enabled</span></label>
+        <div className="form-footer"><span className="muted small">Step 3 of 4</span><div><button type="button" className="filter-button" onClick={() => setStep(2)}>← Back</button><button type="button" className="primary-button" onClick={() => setStep(4)}>Review →</button></div></div>
+      </div>}
+
+      {step === 4 && <div className="resource-form">
+        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || ${ds.hostname || ds.name}-OTEL}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
+        <div className="card source-fact"><b>What happens next</b><p>OpsControl creates the Data Source and one OTEL Collector. Selected templates are attached as reusable monitoring packages. Metric and Alert Rule backends are deliberately unchanged in this phase.</p></div>
+        <div className="form-footer"><span className="muted small">Step 4 of 4</span><div><button type="button" className="filter-button" onClick={() => setStep(3)}>← Back</button><button type="button" className="primary-button" disabled={saving} onClick={createResource}>{saving ? "Creating..." : "Create Data Source + Collector"}</button></div></div>
+      </div>}
+    </Modal>}
+
+    {editing && <Modal title={${ds.visible_name || ds.name}} onClose={() => !saving && setEditing(null)}>
+      <form className="resource-form" onSubmit={async e => {
+        e.preventDefault(); setSaving(true);
+        try {
+          const old = metadata(editing);
+          await updateDataSource(editing.id, { name: ds.name, endpoint: ds.hostname, description: ds.description || null, connection_config: { ...(editing.connection_config || {}), opscontrol: { ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment, server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product, host_groups: ds.host_groups, template_ids: ds.templates, templates: TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name) } } });
+          setEditing(null); await reload();
+        } catch (e2) { setError(e2.message || "Unable to update Data Source"); } finally { setSaving(false); }
+      }}>
+        <div className="info-box">Zabbix-inspired host editing, but with OpsControl terminology and template packages.</div>
+        <div className="form-grid"><Field label="Host Name"><input required value={ds.hostname} onChange={e => setDs(f => ({ ...f, hostname: e.target.value }))} /></Field><Field label="Visible Name"><input value={ds.visible_name} onChange={e => setDs(f => ({ ...f, visible_name: e.target.value }))} /></Field></div>
+        <div className="form-grid"><Field label="Environment"><select value={ds.environment} onChange={e => setDs(f => ({ ...f, environment: e.target.value }))}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Server Type"><select value={ds.server_type} onChange={e => setDs(f => ({ ...f, server_type: e.target.value }))}>{SERVER_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div>
+        <div className="form-grid"><Field label="OS Type"><select value={ds.os_type} onChange={e => setDs(f => ({ ...f, os_type: e.target.value }))}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Product"><select value={ds.product} onChange={e => setDs(f => ({ ...f, product: e.target.value }))}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div>
+        <Field label="Host Groups"><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={ds.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field>
+        <Field label="Templates"><div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div></Field>
+        <Field label="Description"><textarea value={ds.description} onChange={e => setDs(f => ({ ...f, description: e.target.value }))} /></Field>
+        <div className="form-footer"><span className="muted small">Templates are stored with the Data Source configuration.</span><div><button type="button" className="filter-button" onClick={() => setEditing(null)}>Cancel</button><button className="primary-button" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</button></div></div>
+      </form>
+    </Modal>}
+  </div>;
+}
