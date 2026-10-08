@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization
+from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, CorrelationRecord, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
@@ -30,6 +30,7 @@ from app.schemas.monitoring import (
     MetricDefinitionUpdate,
     MetricSampleOut,
     OrganizationOut,
+    CorrelationRecordOut,
 )
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring Configuration"])
@@ -422,3 +423,10 @@ def disable_alert_rule(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(AlertRule, item_id, db, "Alert rule")
     item.enabled = False
     db.commit()
+
+@router.get("/correlations/{history_id}", response_model=CorrelationRecordOut)
+def get_correlation(history_id: UUID, db: Session = Depends(get_db)):
+    item = db.scalar(select(CorrelationRecord).where(CorrelationRecord.history_id == history_id))
+    if not item:
+        raise HTTPException(status_code=404, detail="Correlation record not found")
+    return item
