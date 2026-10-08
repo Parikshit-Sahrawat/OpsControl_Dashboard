@@ -341,14 +341,21 @@ export default function ResourceManagement({ organizationId, organizationIds = [
     finally { setSaving(false); }
   };
 
-  const openEdit = source => {
+  const openEdit = async source => {
     const m = metadata(source);
+    let attachedTemplateIds = m.template_ids || [];
+    try {
+      const attachments = await fetchDataSourceTemplates(source.id);
+      attachedTemplateIds = attachments.filter(x => x.enabled).map(x => x.template_id);
+    } catch {
+      // Keep the legacy JSON metadata as a compatibility fallback.
+    }
     setEditing(source);
     setDs({
       organization_id: source.organization_id, name: source.name || "", visible_name: m.visible_name || source.name || "",
       hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", server_type: m.server_type || "Application Server",
       os_type: m.os_type || "Windows", product_family: m.product_family || "SLM", product: m.product || "SPM",
-      host_groups: m.host_groups || [], templates: m.template_ids || [], description: source.description || "",
+      host_groups: m.host_groups || [], templates: attachedTemplateIds, description: source.description || "",
     });
   };
   const saveEdit = async e => {
