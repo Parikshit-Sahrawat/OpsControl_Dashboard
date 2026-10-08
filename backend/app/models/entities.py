@@ -6,6 +6,8 @@ from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Intege
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+sa_relationship = relationship
+
 from app.db.session import Base
 
 class ExecutionType(str, enum.Enum):
@@ -480,7 +482,7 @@ class CorrelationEvidence(Base):
     relationship: Mapped[str] = mapped_column(String(100), nullable=False)
     details: Mapped[dict | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
-    correlation: Mapped["CorrelationRecord"] = relationship(back_populates="evidence")
+    correlation: Mapped["CorrelationRecord"] = sa_relationship(back_populates="evidence")
     __table_args__ = (
         Index("ix_correlation_evidence_corr_observed", "correlation_id", "observed_at"),
         Index("ix_correlation_evidence_resource_observed", "resource_id", "observed_at"),
