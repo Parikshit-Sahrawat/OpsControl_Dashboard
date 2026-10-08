@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertRule, Collector, DataSource, LogSource, MetricDefinition, Organization
+from app.models import AlertRule, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, Organization
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
@@ -13,6 +13,7 @@ from app.schemas.monitoring import (
     CollectorCreate,
     CollectorOut,
     CollectorUpdate,
+    CollectorRunOut,
     DataSourceCreate,
     DataSourceOut,
     DataSourceUpdate,
@@ -105,6 +106,22 @@ def list_collectors(
 @router.get("/collectors/{item_id}", response_model=CollectorOut)
 def get_collector(item_id: UUID, db: Session = Depends(get_db)):
     return _get_or_404(Collector, item_id, db, "Collector")
+
+
+@router.get("/collectors/{item_id}/runs", response_model=list[CollectorRunOut])
+def list_collector_runs(
+    item_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    db: Session = Depends(get_db),
+):
+    _get_or_404(Collector, item_id, db, "Collector")
+    stmt = (
+        select(CollectorRun)
+        .where(CollectorRun.collector_id == item_id)
+        .order_by(CollectorRun.started_at.desc())
+        .limit(limit)
+    )
+    return db.scalars(stmt).all()
 
 
 @router.post("/collectors", response_model=CollectorOut, status_code=201)
