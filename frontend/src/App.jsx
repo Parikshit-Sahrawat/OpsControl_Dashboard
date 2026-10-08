@@ -32,14 +32,19 @@ export default function App() {
   const [organizations,setOrganizations]=useState([]);
   const [organizationId,setOrganizationId]=useState(()=>window.localStorage.getItem("opscontrol.organizationId")||"");
   const selected=jobs.find(job=>job.id===selectedId)||null;
-  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD"}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[]);
-  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);const saved=window.localStorage.getItem("opscontrol.organizationId");const selected=(saved&&orgs.some(o=>o.id===saved))?saved:(orgs[0]?.id||"");setOrganizationId(selected);if(selected)window.localStorage.setItem("opscontrol.organizationId",selected);}).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
-  useEffect(()=>{if(organizationId)window.localStorage.setItem("opscontrol.organizationId",organizationId);},[organizationId]);
+  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD",organization_ids:organizationIds}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[]);
+  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);const saved = (()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}})();
+    const valid = saved.filter(id => orgs.some(o => o.id === id));
+    const selected = valid.length ? valid : orgs.map(o => o.id);
+    setOrganizationIds(selected);
+    window.localStorage.setItem("opscontrol.organizationIds", JSON.stringify(selected));}).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
+  useEffect(()=>{window.localStorage.setItem("opscontrol.organizationIds",JSON.stringify(organizationIds));},[organizationIds]);
+  const organizationId = organizationIds[0] || "";
   useEffect(()=>{refresh();const timer=window.setInterval(refresh,5000);return()=>window.clearInterval(timer);},[refresh]);
   const selectJob=async job=>{const id=typeof job==="string"?job:job.id;setSelectedId(id);try{const execution=await fetchExecution(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch{}setDetails(current=>({...current,[id]:mapDetail(execution,investigation)}));}catch(e){setError(e.message||"Unable to load execution details");}};
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
-  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationId={organizationId} onOrganizationChange={setOrganizationId}/><main className="content">
+  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds}/><main className="content">
     {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
     {active==="Resource Management"&&<ResourceManagement organizationId={organizationId}/>}{![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
