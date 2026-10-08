@@ -18,7 +18,7 @@ const PRODUCTS = ["SPM", "SPP"];
 const HOST_GROUPS = ["PROD", "QA", "TEST", "DEV", "SANDBOX", "SLM", "SPM", "SPP", "Windows Servers", "Linux Servers", "Application Servers", "Database Servers", "ETL Servers"];
 const TELEMETRY = ["VM metrics", "System logs", "Application logs", "ETL logs", "Services", "Traces"];
 
-const DEFAULT_DEFAULT_TEMPLATES = [
+const DEFAULT_TEMPLATES = [
   {
     id: "windows-application", name: "Windows Application Server",
     description: "Windows infrastructure, services, application logs and standard health checks.",
@@ -422,7 +422,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
 
       {step === 2 && <div className="resource-form">
         <div className="info-box">Select reusable packages instead of manually configuring hundreds of servers. Multiple templates can be attached to one Data Source.</div>
-        <div className="template-grid">{DEFAULT_TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div>
+        <div className="template-grid">{templates.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div>
         <div className="form-footer"><span className="muted small">Step 2 of 4 · {ds.templates.length} selected</span><div><button type="button" className="filter-button" onClick={() => setStep(1)}>← Back</button><button type="button" className="primary-button" onClick={() => setStep(3)}>Next: Collector →</button></div></div>
       </div>}
 
@@ -438,7 +438,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
       </div>}
 
       {step === 4 && <div className="resource-form">
-        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{DEFAULT_TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || `${ds.hostname || ds.name}-OTEL`}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
+        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{templates.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || `${ds.hostname || ds.name}-OTEL`}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
         <div className="card source-fact"><b>What happens next</b><p>OpsControl creates the Data Source and one OTEL Collector. Selected templates are attached as reusable monitoring packages. Metric and Alert Rule backends are deliberately unchanged in this phase.</p></div>
         <div className="form-footer"><span className="muted small">Step 4 of 4</span><div><button type="button" className="filter-button" onClick={() => setStep(3)}>← Back</button><button type="button" className="primary-button" disabled={saving} onClick={createResource}>{saving ? "Creating..." : "Create Data Source + Collector"}</button></div></div>
       </div>}
@@ -460,7 +460,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         e.preventDefault(); setSaving(true);
         try {
           const old = metadata(editing);
-          await updateDataSource(editing.id, { name: ds.name, endpoint: ds.hostname, description: ds.description || null, connection_config: { ...(editing.connection_config || {}), opscontrol: { ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment, server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product, host_groups: ds.host_groups, template_ids: ds.templates, templates: DEFAULT_TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name) } } });
+          await updateDataSource(editing.id, { name: ds.name, endpoint: ds.hostname, description: ds.description || null, connection_config: { ...(editing.connection_config || {}), opscontrol: { ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment, server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product, host_groups: ds.host_groups, template_ids: ds.templates, templates: templates.filter(x => ds.templates.includes(x.id)).map(x => x.name) } } });
           setEditing(null); await reload();
         } catch (e2) { setError(e2.message || "Unable to update Data Source"); } finally { setSaving(false); }
       }}>
@@ -469,7 +469,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         <div className="form-grid"><Field label="Environment"><select value={ds.environment} onChange={e => setDs(f => ({ ...f, environment: e.target.value }))}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Server Type"><select value={ds.server_type} onChange={e => setDs(f => ({ ...f, server_type: e.target.value }))}>{SERVER_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div>
         <div className="form-grid"><Field label="OS Type"><select value={ds.os_type} onChange={e => setDs(f => ({ ...f, os_type: e.target.value }))}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Product"><select value={ds.product} onChange={e => setDs(f => ({ ...f, product: e.target.value }))}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div>
         <Field label="Host Groups"><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={ds.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field>
-        <Field label="Templates"><div className="template-grid">{DEFAULT_TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div></Field>
+        <Field label="Templates"><div className="template-grid">{templates.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div></Field>
         <Field label="Description"><textarea value={ds.description} onChange={e => setDs(f => ({ ...f, description: e.target.value }))} /></Field>
         <div className="form-footer"><span className="muted small">Templates are stored with the Data Source configuration.</span><div><button type="button" className="filter-button" onClick={() => setEditing(null)}>Cancel</button><button className="primary-button" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</button></div></div>
       </form>
