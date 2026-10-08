@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   createCollector, createDataSource, fetchCollectors, fetchDataSources,
-  fetchOrganizations, updateDataSource,
+  fetchOrganizations, updateDataSource, fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
 } from "../api";
 
 const NAV = [
@@ -228,13 +228,9 @@ export default function ResourceManagement({ organizationId, organizationIds = [
   const [collector, setCollector] = useState(newCollector());
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [templates, setTemplates] = useState(() => {
-    try {
-      const saved = JSON.parse(window.localStorage.getItem("opscontrol.monitoringTemplates") || "null");
-      return Array.isArray(saved) && saved.length ? saved : DEFAULT_TEMPLATES;
-    } catch { return DEFAULT_TEMPLATES; }
-  });
+  const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
   const [templateEditor, setTemplateEditor] = useState(null);
+  const [templatesLoaded, setTemplatesLoaded] = useState(false);
 
   const reload = async () => {
     setLoading(true); setError(null);
@@ -245,13 +241,41 @@ export default function ResourceManagement({ organizationId, organizationIds = [
       const lists = ids.length ? await Promise.all(ids.map(id => fetchDataSources({ organization_id: id }))) : [await fetchDataSources()];
       setDataSources([...new Map(lists.flat().map(x => [x.id, x])).values()]);
       setCollectors(await fetchCollectors());
+
+      try {
+        const remote = await fetchMonitoringTemplates();
+        if (remote.length) {
+          setTemplates(remote.map(x => ({ ...x.package_config, id: x.id, name: x.name, description: x.description || "", scope: x.scope, version: x.version, status: x.status, committedAt: x.committed_at, committedBy: x.committed_by })));
+        } else {
+          const cached = (() => { try { return JSON.parse(window.localStorage.getItem("opscontrol.monitoringTemplates") || "null"); } catch { return null; } })();
+          const seed = Array.isArray(cached) && cached.length ? cached : DEFAULT_TEMPLATES;
+          for (const item of seed) {
+            const normalized = normalizeTemplate(item);
+            await createMonitoringTemplate({
+              name: normalized.name,
+              description: normalized.description,
+              scope: normalized.scope,
+              package_config: normalized,
+              committed_by: "Admin",
+            });
+          }
+          const seeded = await fetchMonitoringTemplates();
+          setTemplates(seeded.map(x => ({ ...x.package_config, id: x.id, name: x.name, description: x.description || "", scope: x.scope, version: x.version, status: x.status, committedAt: x.committed_at, committedBy: x.committed_by })));
+        }
+      } catch (templateError) {
+        const cached = (() => { try { return JSON.parse(window.localStorage.getItem("opscontrol.monitoringTemplates") || "null"); } catch { return null; } })();
+        if (Array.isArray(cached) && cached.length) setTemplates(cached);
+        setError(templateError.message || "Unable to load monitoring templates");
+      } finally {
+        setTemplatesLoaded(true);
+      }
     } catch (e) { setError(e.message || "Unable to load resource management"); }
     finally { setLoading(false); }
   };
   useEffect(() => { reload(); }, [organizationId, JSON.stringify(organizationIds)]);
   useEffect(() => {
-    window.localStorage.setItem("opscontrol.monitoringTemplates", JSON.stringify(templates));
-  }, [templates]);
+    if (templatesLoaded) window.localStorage.setItem("opscontrol.monitoringTemplates", JSON.stringify(templates));
+  }, [templates, templatesLoaded]);
 
   const orgMap = useMemo(() => new Map(organizations.map(x => [x.id, x])), [organizations]);
   const sources = useMemo(() => {
@@ -452,11 +476,29 @@ export default function ResourceManagement({ organizationId, organizationIds = [
     {templateEditor && <TemplateEditor
       template={templateEditor}
       onClose={() => setTemplateEditor(null)}
-      onCommit={draft => {
-        const id = draft.id || draft.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `template-${Date.now()}`;
-        const next = { ...draft, id };
-        setTemplates(current => current.some(x => x.id === id) ? current.map(x => x.id === id ? next : x) : [...current, next]);
-        setTemplateEditor(null);
+      onCommit={async draft => {
+        try {
+          const packageConfig = { ...draft };
+          delete packageConfig.committedAt;
+          delete packageConfig.committedBy;
+          delete packageConfig.status;
+          delete packageConfig.version;
+          const payload = {
+            name: draft.name,
+            description: draft.description,
+            scope: draft.scope,
+            package_config: packageConfig,
+            committed_by: "Admin",
+          };
+          const saved = draft.id
+            ? await updateMonitoringTemplate(draft.id, payload)
+            : await createMonitoringTemplate(payload);
+          const next = { ...saved.package_config, id: saved.id, name: saved.name, description: saved.description || "", scope: saved.scope, version: saved.version, status: saved.status, committedAt: saved.committed_at, committedBy: saved.committed_by };
+          setTemplates(current => current.some(x => x.id === next.id) ? current.map(x => x.id === next.id ? next : x) : [...current, next]);
+          setTemplateEditor(null);
+        } catch (e) {
+          setError(e.message || "Unable to commit monitoring template");
+        }
       }}
     />}
 
