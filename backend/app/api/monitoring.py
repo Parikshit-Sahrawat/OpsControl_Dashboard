@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, MetricSample, Organization
+from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
