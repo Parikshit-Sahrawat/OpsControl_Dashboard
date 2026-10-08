@@ -32,15 +32,15 @@ export const createOrganization = payload => request("/api/v1/organizations", { 
 export const updateOrganization = (id, payload) => request("/api/v1/organizations/" + id, { method: "PATCH", body: JSON.stringify(payload) });
 export const disableOrganization = id => request("/api/v1/organizations/" + id, { method: "DELETE" });
 
-export const fetchDataSources = (params = {}) => request("/api/v1/monitoring/data-sources" + qs(params));
-export const createDataSource = payload => request("/api/v1/monitoring/data-sources", { method: "POST", body: JSON.stringify(payload) });
-export const updateDataSource = (id, payload) => request("/api/v1/monitoring/data-sources/" + id, { method: "PATCH", body: JSON.stringify(payload) });
-export const disableDataSource = id => request("/api/v1/monitoring/data-sources/" + id, { method: "DELETE" });
+export const fetchDataSources = (params = {}) => request("/api/v1/resource-management/data-sources" + qs(params));
+export const createDataSource = payload => request("/api/v1/resource-management/data-sources", { method: "POST", body: JSON.stringify(payload) });
+export const updateDataSource = (id, payload) => request("/api/v1/resource-management/data-sources/" + id, { method: "PATCH", body: JSON.stringify(payload) });
+export const disableDataSource = id => request("/api/v1/resource-management/data-sources/" + id, { method: "DELETE" });
 
-export const fetchCollectors = (params = {}) => request("/api/v1/monitoring/collectors" + qs(params));
-export const createCollector = payload => request("/api/v1/monitoring/collectors", { method: "POST", body: JSON.stringify(payload) });
-export const updateCollector = (id, payload) => request("/api/v1/monitoring/collectors/" + id, { method: "PATCH", body: JSON.stringify(payload) });
-export const disableCollector = id => request("/api/v1/monitoring/collectors/" + id, { method: "DELETE" });
+export const fetchCollectors = (params = {}) => request("/api/v1/resource-management/collectors" + qs(params));
+export const createCollector = payload => request("/api/v1/resource-management/collectors", { method: "POST", body: JSON.stringify(payload) });
+export const updateCollector = (id, payload) => request("/api/v1/resource-management/collectors/" + id, { method: "PATCH", body: JSON.stringify(payload) });
+export const disableCollector = id => request("/api/v1/resource-management/collectors/" + id, { method: "DELETE" });
 
 export const fetchMonitoringTemplates = (params = {}) => request("/api/v1/monitoring/templates" + qs(params));
 export const createMonitoringTemplate = payload => request("/api/v1/monitoring/templates", { method: "POST", body: JSON.stringify(payload) });
