@@ -195,6 +195,34 @@ class AlertIncidentEvent(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     history: Mapped["JobOrderHistory"] = relationship(back_populates="alert_events")
 
+
+class MonitoringTemplate(Base):
+    __tablename__ = "monitoring_templates"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
+    description: Mapped[str | None] = mapped_column(Text)
+    scope: Mapped[str] = mapped_column(String(200), nullable=False, default="VM + Application / Services")
+    version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="COMMITTED")
+    package_config: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    committed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    committed_by: Mapped[str | None] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    versions: Mapped[list["MonitoringTemplateVersion"]] = relationship(back_populates="template", cascade="all, delete-orphan", order_by="MonitoringTemplateVersion.version")
+
+class MonitoringTemplateVersion(Base):
+    __tablename__ = "monitoring_template_versions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id"), nullable=False, index=True)
+    version: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="COMMITTED")
+    package_config: Mapped[dict] = mapped_column(JSON, nullable=False)
+    committed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    committed_by: Mapped[str | None] = mapped_column(String(200))
+    template: Mapped["MonitoringTemplate"] = relationship(back_populates="versions")
+    __table_args__ = (UniqueConstraint("template_id", "version", name="uq_monitoring_template_version"),)
+
 class DataSource(Base):
     __tablename__ = "data_sources"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
