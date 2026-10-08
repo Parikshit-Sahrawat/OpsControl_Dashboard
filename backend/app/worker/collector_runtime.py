@@ -7,7 +7,7 @@ No production credentials are read from collector JSON.
 import asyncio
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 
@@ -132,6 +132,6 @@ async def scheduler_loop(poll_seconds=5):
                 collector.next_run_at = now
                 db.commit()
                 asyncio.create_task(execute_collector(collector.id))
-                collector.next_run_at = now.timestamp() and datetime.fromtimestamp(now.timestamp() + collector.interval_seconds, tz=timezone.utc)
+                collector.next_run_at = now + timedelta(seconds=collector.interval_seconds)
                 db.commit()
         await asyncio.sleep(poll_seconds)
