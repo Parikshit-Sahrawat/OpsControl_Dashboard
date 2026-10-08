@@ -1838,3 +1838,14 @@ API:
 - `POST /api/v1/etl/executions/{history_id}/correlation`
 
 See `docs/CORRELATION_ENGINE.md` for the implementation contract.
+
+## Demo Scenario Generator
+
+For local validation, OpsControl provides a synthetic Correlation Engine scenario generator. It creates an isolated VM, application, ETL failure, high-CPU metrics, CRITICAL alert, application error logs, and correlation evidence without connecting to company infrastructure.
+
+```bash
+cd backend
+python scripts/generate_correlation_scenario.py --scenario correlation-lab
+```
+
+See `docs/DEMO_CORRELATION_SCENARIOS.md` for the scenario contract and validation flow.
