@@ -331,3 +331,45 @@ class CorrelationRecordOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     evidence: list[CorrelationEvidenceOut] = []
+
+
+class MonitoringTemplateCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    description: str | None = None
+    scope: str = Field(default="VM + Application / Services", max_length=200)
+    package_config: dict
+    committed_by: str | None = Field(default="Admin", max_length=200)
+
+
+class MonitoringTemplateUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    description: str | None = None
+    scope: str | None = Field(default=None, max_length=200)
+    package_config: dict | None = None
+    committed_by: str | None = Field(default="Admin", max_length=200)
+
+
+class MonitoringTemplateOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    name: str
+    description: str | None
+    scope: str
+    version: int
+    status: str
+    package_config: dict
+    committed_at: datetime | None
+    committed_by: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class MonitoringTemplateVersionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    template_id: UUID
+    version: int
+    status: str
+    package_config: dict
+    committed_at: datetime
+    committed_by: str | None
