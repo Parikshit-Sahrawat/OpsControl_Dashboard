@@ -64,3 +64,9 @@ export const createMonitoringTemplate=p=>request("/api/v1/monitoring/templates",
 export const updateMonitoringTemplate=(id,p)=>request("/api/v1/monitoring/templates/"+id,{method:"PATCH",body:JSON.stringify(p)});
 export const fetchMonitoringTemplateVersions=id=>request("/api/v1/monitoring/templates/"+id+"/versions");
 export const deleteMonitoringTemplate=id=>request("/api/v1/monitoring/templates/"+id,{method:"DELETE"});
+export const fetchDataSourceTemplates=id=>request("/api/v1/monitoring/data-sources/"+id+"/templates");
+export const attachDataSourceTemplate=(id,p)=>request("/api/v1/monitoring/data-sources/"+id+"/templates",{method:"POST",body:JSON.stringify(p)});
+export const updateDataSourceTemplate=(id,templateId,p)=>request("/api/v1/monitoring/data-sources/"+id+"/templates/"+templateId,{method:"PATCH",body:JSON.stringify(p)});
+export const detachDataSourceTemplate=(id,templateId)=>request("/api/v1/monitoring/data-sources/"+id+"/templates/"+templateId,{method:"DELETE"});
+export const fetchEffectiveDataSourceConfiguration=id=>request("/api/v1/monitoring/data-sources/"+id+"/effective-configuration");
+
