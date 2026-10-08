@@ -272,6 +272,19 @@ class MetricSampleOut(BaseModel):
     created_at: datetime
 
 
+class LogEventCreate(BaseModel):
+    organization_id: UUID
+    log_source_id: UUID
+    observed_at: datetime
+    severity: str | None = Field(default=None, max_length=30)
+    event_type: str | None = Field(default=None, max_length=100)
+    message: str = Field(min_length=1)
+    parser_type: str | None = Field(default=None, max_length=100)
+    source_offset: str | None = Field(default=None, max_length=200)
+    fingerprint: str | None = Field(default=None, max_length=128)
+    attributes: dict | None = None
+
+
 class LogEventOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
