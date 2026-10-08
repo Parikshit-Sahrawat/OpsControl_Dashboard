@@ -213,8 +213,6 @@ def dispatch_pending_notifications():
             .where(
                 AlertNotificationDelivery.status.in_(["PENDING", "FAILED"]),
                 AlertNotificationDelivery.attempts < MAX_ATTEMPTS,
-                (AlertNotificationDelivery.next_attempt_at.is_(None))
-                | (AlertNotificationDelivery.next_attempt_at <= now),
             )
             .order_by(AlertNotificationDelivery.created_at)
             .limit(20)
@@ -226,10 +224,6 @@ def dispatch_pending_notifications():
                 delivery.status = "FAILED"
                 delivery.last_error = "Alert state not found"
                 delivery.attempts += 1
-                delivery.next_attempt_at = (
-                    now + timedelta(seconds=_retry_delay_seconds(delivery.attempts))
-                    if delivery.attempts < MAX_ATTEMPTS else None
-                )
                 continue
 
             delivery.attempts += 1
@@ -238,7 +232,6 @@ def dispatch_pending_notifications():
                 delivery.status = "SENT"
                 delivery.external_reference = reference
                 delivery.last_error = None
-                delivery.next_attempt_at = None
                 delivery.sent_at = datetime.now(timezone.utc)
                 references = dict(state.external_references or {})
                 references[delivery.channel] = reference
@@ -246,10 +239,6 @@ def dispatch_pending_notifications():
             except (HTTPError, URLError, TimeoutError, OSError, RuntimeError, ValueError) as exc:
                 delivery.status = "FAILED"
                 delivery.last_error = str(exc)[:MAX_ERROR_LENGTH]
-                delivery.next_attempt_at = (
-                    datetime.now(timezone.utc)
-                    + timedelta(seconds=_retry_delay_seconds(delivery.attempts))
-                    if delivery.attempts < MAX_ATTEMPTS else None
-                )
+
 
         db.commit()
