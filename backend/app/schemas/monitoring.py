@@ -364,6 +364,33 @@ class MonitoringTemplateOut(BaseModel):
     updated_at: datetime
 
 
+class MonitoringTemplateAttachmentCreate(BaseModel):
+    template_id: UUID
+    template_version: int | None = Field(default=None, ge=1)
+    priority: int = Field(default=100, ge=0, le=100000)
+    overrides: dict | None = None
+
+
+class MonitoringTemplateAttachmentUpdate(BaseModel):
+    template_version: int | None = Field(default=None, ge=1)
+    priority: int | None = Field(default=None, ge=0, le=100000)
+    overrides: dict | None = None
+    enabled: bool | None = None
+
+
+class MonitoringTemplateAttachmentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    data_source_id: UUID
+    template_id: UUID
+    template_version: int
+    priority: int
+    overrides: dict | None
+    enabled: bool
+    created_at: datetime
+    updated_at: datetime
+
+
 class MonitoringTemplateVersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
