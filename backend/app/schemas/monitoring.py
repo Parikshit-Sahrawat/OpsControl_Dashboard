@@ -180,7 +180,7 @@ class AlertRuleBase(BaseModel):
     evaluation_window_seconds: int = Field(default=60, ge=5)
     consecutive_breaches: int = Field(default=1, ge=1)
     enabled: bool = True
-    notification_channels: list[str] = Field(default_factory=list)
+    notification_channels: list[str] | None = None
 
 
 class AlertRuleCreate(AlertRuleBase):
