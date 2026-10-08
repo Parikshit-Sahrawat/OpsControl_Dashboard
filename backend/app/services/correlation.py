@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, or_, select
 from sqlalchemy.orm import Session
 
 from app.models import (
@@ -47,6 +47,8 @@ def _confidence(alerts, logs):
 
 
 def _category(alerts, logs):
+    if any((a.severity or "").upper() == "CRITICAL" for a in alerts):
+        return "RESOURCE_ALERT"
     if any((e.severity or "").upper() in {"ERROR", "CRITICAL"} for e in logs):
         return "LOG_ERROR"
     if alerts:
@@ -128,8 +130,10 @@ def correlate_execution(
         .where(
             AlertState.organization_id == job_order.organization_id,
             MetricDefinition.resource_id.in_(resource_ids),
-            AlertState.last_evaluated_at >= start,
-            AlertState.last_evaluated_at <= end,
+            or_(
+                (AlertState.last_evaluated_at >= start) & (AlertState.last_evaluated_at <= end),
+                ((AlertState.status == "OPEN") & (AlertState.first_triggered_at <= end)),
+            ),
         )
         .order_by(AlertState.last_evaluated_at.desc())
         .limit(MAX_ALERT_EVIDENCE)
