@@ -2034,3 +2034,20 @@ Example attachment:
 The effective configuration is a derived view. Phase 2 does not yet materialize Metric Definitions, Alert Rules, Log Sources, or Collector runtime records from the resolved package. That generation layer is the next incremental step in Phase 2.
 
 The existing Resource Management UI now persists normalized attachments when a Data Source is created or edited while retaining the legacy JSON metadata for compatibility.
+## Phase 1 Resource Management redesign
+
+The Phase 1 Resource Management experience now follows:
+
+Organization → Data Source → Templates → Agent & Collector → Review
+
+- Organizations support create, edit, active/inactive lifecycle, and are the customer ownership boundary.
+- Resource Management data-source and collector reads are organization-scoped through dedicated endpoints.
+- Data Sources model customer VMs/machines and support multiple workload roles such as Application + ETL on the same VM.
+- Collector onboarding records agent install method, version, endpoint, Vault secret reference and telemetry capabilities. Runtime/installer execution remains Phase 3.
+- Monitoring Templates are reusable policy packages containing Collector configuration, Attributes, Metrics, Alert Rules and Log Collection rules.
+- Template attributes now define type, value source, required/default values, descriptions, examples and allowed values.
+- Metric rules define collection method, aggregation, window, dimensions and collection interval.
+- Alert rules support VM, Application / Services and ETL Job domains, numeric conditions, duration/SLA-style conditions, missing signals, string-pattern conditions, recovery and notification routing.
+- Log collection rules define source path, collection mode, parser, timestamp format, multiline behavior, include/exclude patterns, interval and retention.
+- Resource Management summary cards are clickable and open the corresponding list.
+- `.github/workflows/validation.yml` validates Python syntax, SQLAlchemy mapper relationships and the production frontend build on pushes and pull requests.
