@@ -30,14 +30,16 @@ function mapDetail(execution, investigation) {
 export default function App() {
   const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
   const [organizations,setOrganizations]=useState([]);
-  const [organizationId,setOrganizationId]=useState(()=>window.localStorage.getItem("opscontrol.organizationId")||"");
+  const [organizationIds,setOrganizationIds]=useState(()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}});
   const selected=jobs.find(job=>job.id===selectedId)||null;
-  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD",organization_ids:organizationIds}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[]);
-  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);const saved = (()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}})();
+  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD",organization_ids:organizationIds}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[organizationIds]);
+  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);
+    const saved = (()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}})();
     const valid = saved.filter(id => orgs.some(o => o.id === id));
     const selected = valid.length ? valid : orgs.map(o => o.id);
     setOrganizationIds(selected);
-    window.localStorage.setItem("opscontrol.organizationIds", JSON.stringify(selected));}).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
+    window.localStorage.setItem("opscontrol.organizationIds", JSON.stringify(selected));
+  }).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
   useEffect(()=>{window.localStorage.setItem("opscontrol.organizationIds",JSON.stringify(organizationIds));},[organizationIds]);
   const organizationId = organizationIds[0] || "";
   useEffect(()=>{refresh();const timer=window.setInterval(refresh,5000);return()=>window.clearInterval(timer);},[refresh]);
@@ -47,6 +49,7 @@ export default function App() {
   return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds}/><main className="content">
     {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
-    {active==="Resource Management"&&<ResourceManagement organizationId={organizationId}/>}{![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+    {active==="Resource Management"&&<ResourceManagement organizationId={organizationId}/>}
+    {![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }
