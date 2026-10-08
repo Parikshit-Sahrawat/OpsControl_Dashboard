@@ -25,6 +25,14 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
       .finally(() => { if (active) setCorrelationLoading(false); });
     return () => { active = false; };
   }, [job?.id]);
+  const runtimeSummary = useMemo(() => {
+    if (details?.slaStatus) return details.slaStatus;
+    if (job?.status === "SUCCESS") return "MET";
+    if (job?.status === "FAILED") return "NOT MET";
+    if (job?.status === "LONG_RUNNING") return "AT RISK";
+    return "ON TRACK";
+  }, [job?.status, details?.slaStatus]);
+
   const runCorrelation = async () => {
     setAnalyzingCorrelation(true);
     setCorrelationError("");
@@ -41,14 +49,6 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
   const incidentHistory = details?.incidentHistory ?? [];
   const isInvestigable = ["FAILED", "NO_RUN", "NO_RESPONSE", "LONG_RUNNING"].includes(job.status);
   const next = isInvestigable ? nextState(investigation.status) : null;
-  const runtimeSummary = useMemo(() => {
-    if (details?.slaStatus) return details.slaStatus;
-    if (job.status === "SUCCESS") return "MET";
-    if (job.status === "FAILED") return "NOT MET";
-    if (job.status === "LONG_RUNNING") return "AT RISK";
-    return "ON TRACK";
-  }, [job.status, details?.slaStatus]);
-
   const addNote = async () => {
     if (!note.trim() || !onAddNote) return;
     setSavingNote(true);
