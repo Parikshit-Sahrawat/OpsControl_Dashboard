@@ -4,7 +4,7 @@ import JobDetailsDrawer from "./components/JobDetailsDrawer";
 import Overview from "./pages/Overview";
 import ETLJobs from "./pages/ETLJobs";
 import { fetchExecution, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote, fetchOrganizations } from "./api";
-import ResourceManagement from "./pages/ResourceManagement";
+import ResourceManagement from "./pages/ResourceManagementV2";
 
 function mapDetail(execution, investigation) {
   const fmt = value => value ? new Date(value).toLocaleTimeString("en-IN",{hour12:false}) : "—";
