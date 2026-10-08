@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint, JSON
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -274,6 +274,28 @@ class MetricDefinition(Base):
     organization: Mapped["Organization"] = relationship(back_populates="metric_definitions")
     data_source: Mapped["DataSource | None"] = relationship(back_populates="metric_definitions")
     collector: Mapped["Collector | None"] = relationship(back_populates="metric_definitions")
+    samples: Mapped[list["MetricSample"]] = relationship(back_populates="metric_definition", cascade="all, delete-orphan")
+
+class MetricSample(Base):
+    __tablename__ = "metric_samples"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    metric_definition_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("metric_definitions.id"), nullable=False, index=True)
+    collector_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collectors.id"), index=True)
+    collector_run_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collector_runs.id"), index=True)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    value_numeric: Mapped[float] = mapped_column(Float, nullable=False)
+    unit: Mapped[str | None] = mapped_column(String(50))
+    dimensions: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    metric_definition: Mapped["MetricDefinition"] = relationship(back_populates="samples")
+    collector: Mapped["Collector | None"] = relationship()
+    collector_run: Mapped["CollectorRun | None"] = relationship()
+
+    __table_args__ = (
+        Index("ix_metric_samples_metric_observed", "metric_definition_id", "observed_at"),
+        Index("ix_metric_samples_org_observed", "organization_id", "observed_at"),
+    )
 
 class LogSource(Base):
     __tablename__ = "log_sources"
