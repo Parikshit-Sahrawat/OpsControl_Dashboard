@@ -1948,3 +1948,89 @@ The existing Metric Definition and Alert Rule implementations are intentionally 
 JSON import/export is supported by the frontend. Imported templates are staged as new drafts and must pass validation before being committed.
 
 The frontend retains browser storage only as a temporary cache/fallback; the FastAPI/PostgreSQL template API is the source of truth.
+
+# 47. Phase 2 — Template → Data Source Attachment and Configuration Resolution
+
+Monitoring Templates are now attached to Data Sources through a normalized PostgreSQL association rather than relying on the legacy connection_config.opscontrol.template_ids JSON field.
+
+```text
+Data Source
+   |
+   +-- Template A v3 (priority 100)
+   +-- Template B v1 (priority 200)
+   |
+   +-- Data Source overrides
+           |
+           v
+   Effective Monitoring Configuration
+           |
+           +-- Collector
+           +-- Attributes
+           +-- Metrics
+           +-- Alert Rules
+           +-- Log Defaults
+```
+
+## Pinned template versions
+
+Every attachment stores the exact committed template version selected when it is attached.
+
+A later template release does not silently change an existing Data Source. An administrator must explicitly update the attachment to a newer version.
+
+Migration:
+
+backend/migrations/versions/0010_template_attachments.py
+
+Table:
+
+monitoring_template_attachments
+
+Key fields:
+- data_source_id
+- template_id
+- template_version
+- priority
+- overrides
+- enabled
+
+## Deterministic configuration resolution
+
+The resolver loads enabled attachments in ascending priority and applies higher-priority packages last.
+
+Component merge rules:
+- Collector: recursive object merge; higher priority wins for conflicting fields.
+- Attributes: keyed by key.
+- Metrics: keyed by metric.
+- Alert Rules: keyed by name.
+- Log Defaults: keyed by name.
+- Attachment-level overrides are applied after the pinned template package.
+- Data Source connection_config.opscontrol.monitoring_overrides is applied last.
+
+The effective configuration API also reports collector conflicts and missing required template attributes.
+
+## APIs
+
+- GET /api/v1/monitoring/data-sources/{id}/templates
+- POST /api/v1/monitoring/data-sources/{id}/templates
+- PATCH /api/v1/monitoring/data-sources/{id}/templates/{template_id}
+- DELETE /api/v1/monitoring/data-sources/{id}/templates/{template_id}
+- GET /api/v1/monitoring/data-sources/{id}/effective-configuration
+
+Example attachment:
+
+```json
+{
+  "template_id": "template-uuid",
+  "template_version": 3,
+  "priority": 100,
+  "overrides": {
+    "collector": {
+      "interval": 60
+    }
+  }
+}
+```
+
+The effective configuration is a derived view. Phase 2 does not yet materialize Metric Definitions, Alert Rules, Log Sources, or Collector runtime records from the resolved package. That generation layer is the next incremental step in Phase 2.
+
+The existing Resource Management UI now persists normalized attachments when a Data Source is created or edited while retaining the legacy JSON metadata for compatibility.
