@@ -1,14 +1,17 @@
 import enum
 import uuid
 from datetime import datetime
+
 from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.db.session import Base
 
 class ExecutionType(str, enum.Enum):
     SCHEDULED = "SCHEDULED"
     MANUAL = "MANUAL"
+
 class ExecutionStatus(str, enum.Enum):
     SUCCESS = "SUCCESS"
     FAILED = "FAILED"
@@ -16,6 +19,7 @@ class ExecutionStatus(str, enum.Enum):
     LONG_RUNNING = "LONG_RUNNING"
     NO_RUN = "NO_RUN"
     NO_RESPONSE = "NO_RESPONSE"
+
 class InvestigationStatus(str, enum.Enum):
     NEW = "NEW"
     ACKNOWLEDGED = "ACKNOWLEDGED"
@@ -24,6 +28,7 @@ class InvestigationStatus(str, enum.Enum):
     RECOVERY_IN_PROGRESS = "RECOVERY_IN_PROGRESS"
     MONITORING = "MONITORING"
     RESOLVED = "RESOLVED"
+
 class Organization(Base):
     __tablename__ = "organizations"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -34,6 +39,10 @@ class Organization(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     vms: Mapped[list["VM"]] = relationship(back_populates="organization")
     job_orders: Mapped[list["JobOrder"]] = relationship(back_populates="organization")
+    data_sources: Mapped[list["DataSource"]] = relationship(back_populates="organization")
+    metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="organization")
+    log_sources: Mapped[list["LogSource"]] = relationship(back_populates="organization")
+
 class VM(Base):
     __tablename__ = "vms"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -48,6 +57,7 @@ class VM(Base):
     pentaho_instances: Mapped[list["PentahoInstance"]] = relationship(back_populates="vm")
     job_orders: Mapped[list["JobOrder"]] = relationship(back_populates="vm")
     __table_args__ = (UniqueConstraint("organization_id", "hostname", name="uq_vm_org_hostname"),)
+
 class Application(Base):
     __tablename__ = "applications"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -57,6 +67,7 @@ class Application(Base):
     monitoring_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     vm: Mapped["VM"] = relationship(back_populates="applications")
     __table_args__ = (UniqueConstraint("vm_id", "name", name="uq_application_vm_name"),)
+
 class PentahoInstance(Base):
     __tablename__ = "pentaho_instances"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -66,6 +77,7 @@ class PentahoInstance(Base):
     repository_name: Mapped[str | None] = mapped_column(String(200))
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     vm: Mapped["VM"] = relationship(back_populates="pentaho_instances")
+
 class JobOrder(Base):
     __tablename__ = "job_orders"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -87,6 +99,7 @@ class JobOrder(Base):
     vm: Mapped["VM"] = relationship(back_populates="job_orders")
     histories: Mapped[list["JobOrderHistory"]] = relationship(back_populates="job_order", cascade="all, delete-orphan")
     __table_args__ = (UniqueConstraint("organization_id", "vm_id", "name", name="uq_job_order_identity"),)
+
 class JobOrderHistory(Base):
     __tablename__ = "job_order_histories"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -111,6 +124,7 @@ class JobOrderHistory(Base):
     steps: Mapped[list["JobStepExecution"]] = relationship(back_populates="history", cascade="all, delete-orphan")
     investigation: Mapped["Investigation | None"] = relationship(back_populates="history", uselist=False, cascade="all, delete-orphan")
     alert_events: Mapped[list["AlertIncidentEvent"]] = relationship(back_populates="history", cascade="all, delete-orphan")
+
 class JobStepExecution(Base):
     __tablename__ = "job_step_executions"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -127,6 +141,7 @@ class JobStepExecution(Base):
     error_code: Mapped[str | None] = mapped_column(String(100))
     error_message: Mapped[str | None] = mapped_column(Text)
     history: Mapped["JobOrderHistory"] = relationship(back_populates="steps")
+
 class Investigation(Base):
     __tablename__ = "investigations"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -143,6 +158,7 @@ class Investigation(Base):
     history: Mapped["JobOrderHistory"] = relationship(back_populates="investigation")
     transitions: Mapped[list["InvestigationTransition"]] = relationship(back_populates="investigation", cascade="all, delete-orphan")
     notes: Mapped[list["OperatorNote"]] = relationship(back_populates="investigation", cascade="all, delete-orphan")
+
 class InvestigationTransition(Base):
     __tablename__ = "investigation_transitions"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -153,6 +169,7 @@ class InvestigationTransition(Base):
     comment: Mapped[str | None] = mapped_column(Text)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     investigation: Mapped["Investigation"] = relationship(back_populates="transitions")
+
 class OperatorNote(Base):
     __tablename__ = "operator_notes"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -162,6 +179,7 @@ class OperatorNote(Base):
     evidence_reference: Mapped[str | None] = mapped_column(String(1000))
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     investigation: Mapped["Investigation"] = relationship(back_populates="notes")
+
 class AlertIncidentEvent(Base):
     __tablename__ = "alert_incident_events"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -172,3 +190,93 @@ class AlertIncidentEvent(Base):
     severity: Mapped[str | None] = mapped_column(String(50))
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     history: Mapped["JobOrderHistory"] = relationship(back_populates="alert_events")
+
+class DataSource(Base):
+    __tablename__ = "data_sources"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    endpoint: Mapped[str | None] = mapped_column(String(1000))
+    auth_type: Mapped[str | None] = mapped_column(String(100))
+    connection_config: Mapped[dict | None] = mapped_column(JSON)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(50), default="UNKNOWN", nullable=False)
+    last_test_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="data_sources")
+    collectors: Mapped[list["Collector"]] = relationship(back_populates="data_source", cascade="all, delete-orphan")
+    metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="data_source")
+    log_sources: Mapped[list["LogSource"]] = relationship(back_populates="data_source")
+    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_data_source_org_name"),)
+
+class Collector(Base):
+    __tablename__ = "collectors"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    collector_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    interval_seconds: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
+    configuration: Mapped[dict | None] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(50), default="STOPPED", nullable=False)
+    last_run_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_success_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    next_run_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    data_source: Mapped["DataSource"] = relationship(back_populates="collectors")
+    metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="collector")
+    log_sources: Mapped[list["LogSource"]] = relationship(back_populates="collector")
+    __table_args__ = (UniqueConstraint("data_source_id", "name", name="uq_collector_source_name"),)
+
+class MetricDefinition(Base):
+    __tablename__ = "metric_definitions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    data_source_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("data_sources.id"), index=True)
+    collector_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collectors.id"), index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    description: Mapped[str | None] = mapped_column(Text)
+    resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    resource_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    metric_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    unit: Mapped[str | None] = mapped_column(String(50))
+    collection_interval_seconds: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
+    retention_days: Mapped[int] = mapped_column(Integer, default=365, nullable=False)
+    aggregation: Mapped[str] = mapped_column(String(50), default="avg", nullable=False)
+    query_config: Mapped[dict | None] = mapped_column(JSON)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="metric_definitions")
+    data_source: Mapped["DataSource | None"] = relationship(back_populates="metric_definitions")
+    collector: Mapped["Collector | None"] = relationship(back_populates="metric_definitions")
+
+class LogSource(Base):
+    __tablename__ = "log_sources"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    data_source_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("data_sources.id"), index=True)
+    collector_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collectors.id"), index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    source_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    resource_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    location: Mapped[str | None] = mapped_column(String(1000))
+    parser_type: Mapped[str] = mapped_column(String(100), default="RAW", nullable=False)
+    parser_config: Mapped[dict | None] = mapped_column(JSON)
+    start_position: Mapped[str] = mapped_column(String(50), default="NEW", nullable=False)
+    collection_interval_seconds: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+    retention_days: Mapped[int] = mapped_column(Integer, default=30, nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="log_sources")
+    data_source: Mapped["DataSource | None"] = relationship(back_populates="log_sources")
+    collector: Mapped["Collector | None"] = relationship(back_populates="log_sources")
