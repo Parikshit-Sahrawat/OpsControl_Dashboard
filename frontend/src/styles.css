@@ -54,3 +54,32 @@
 .resource-tls-toggle{padding:9px 0}
 @media(max-width:900px){.resource-summary-grid{grid-template-columns:repeat(2,1fr)}.organization-grid,.template-grid{grid-template-columns:1fr}.organization-fields{grid-template-columns:1fr}.review-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.resource-summary-grid{grid-template-columns:1fr 1fr}.onboarding-steps{grid-template-columns:1fr 1fr}.onboarding-step{font-size:10px}.resource-onboarding-modal{padding:16px}}
+
+
+/* Monitoring Template Admin */
+.template-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.template-admin-card{padding:16px}
+.template-admin-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.template-admin-head b{display:block;font-size:15px;color:#eef5fb}
+.template-admin-head small{display:block;margin-top:4px;color:#7f93aa}
+.template-admin-card p{font-size:11px;line-height:1.5;color:#9fb0c3;min-height:34px}
+.template-counts{display:flex;gap:6px;flex-wrap:wrap}
+.template-counts span{font-size:10px;padding:5px 7px;border:1px solid #203a54;background:#0b1b2c;border-radius:6px;color:#8fb0cc}
+.template-editor-title{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.template-editor-tabs{display:flex;gap:4px;overflow-x:auto;margin:18px 0 12px;padding-bottom:2px;border-bottom:1px solid #1d334a}
+.template-editor-tab{border:0;background:transparent;color:#8297ad;padding:10px 12px;font-size:11px;white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer}
+.template-editor-tab:hover{color:#dce9f5;background:#0d2034}
+.template-editor-tab.active{color:#fff;border-bottom-color:#55a8e5;background:#102940}
+.template-editor-panel{display:grid;gap:12px;min-height:250px}
+.template-rule-list{display:grid;gap:7px}
+.template-rule-row{display:grid;grid-template-columns:1.2fr 1.4fr .8fr .6fr .6fr auto auto;gap:6px;align-items:center;background:#0b1b2c;border:1px solid #1d334a;border-radius:8px;padding:8px}
+.template-rule-row input,.template-rule-row select,.template-rule-card input,.template-rule-card select,.template-add-row input,.template-add-row select{min-width:0}
+.template-rule-card{background:#0b1b2c;border:1px solid #1d334a;border-radius:8px;padding:9px}
+.template-rule-grid{display:grid;grid-template-columns:1.2fr .9fr 1.2fr .7fr .55fr .7fr .75fr .6fr auto;gap:6px;align-items:center}
+.template-rule-card>small{display:block;color:#7288a0;margin-top:7px}
+.template-add-row{display:grid;grid-template-columns:1.2fr 1.4fr .8fr .6fr .6fr auto;gap:6px;padding:10px;background:#0e2135;border:1px dashed #2b4864;border-radius:8px}
+.alert-add-row{grid-template-columns:1.2fr .9fr 1.2fr .7fr .55fr .7fr auto}
+.inline-check{display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:10px;color:#91a5b9}
+.danger-button{color:#e6a5a5;border-color:#593438}
+.danger-button:hover{border-color:#9d4d54;background:#28171c}
+@media(max-width:1000px){.template-admin-grid{grid-template-columns:1fr}.template-rule-row,.template-rule-grid,.template-add-row,.alert-add-row{grid-template-columns:1fr 1fr}.template-rule-row .danger-button,.template-rule-grid .danger-button{grid-column:auto}.template-editor-title{grid-template-columns:1fr}}
