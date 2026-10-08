@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import StatusBadge from "./StatusBadge";
+import { analyzeExecutionCorrelation, fetchExecutionCorrelation } from "../api";
 
 const investigationFlow = ["NEW", "ACKNOWLEDGED", "INVESTIGATING", "ROOT_CAUSE_IDENTIFIED", "RECOVERY_IN_PROGRESS", "MONITORING", "RESOLVED"];
 function nextState(state) { const i = investigationFlow.indexOf(state); return i >= 0 && i < investigationFlow.length - 1 ? investigationFlow[i + 1] : null; }
@@ -7,7 +8,30 @@ function nextState(state) { const i = investigationFlow.indexOf(state); return i
 export default function JobDetailsDrawer({ job, details, onClose, onInvestigationChange, onAddNote }) {
   const [note, setNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
-  useEffect(() => setNote(""), [job?.id]);
+  const [correlation, setCorrelation] = useState(null);
+  const [correlationLoading, setCorrelationLoading] = useState(false);
+  const [correlationError, setCorrelationError] = useState("");
+  const [analyzingCorrelation, setAnalyzingCorrelation] = useState(false);
+  useEffect(() => {
+    setNote("");
+    setCorrelation(null);
+    setCorrelationError("");
+    if (!job?.id) return;
+    let active = true;
+    setCorrelationLoading(true);
+    fetchExecutionCorrelation(job.id)
+      .then(value => { if (active) setCorrelation(value); })
+      .catch(error => { if (active && error?.message !== "Correlation record not found") setCorrelationError(error.message || "Unable to load correlation"); })
+      .finally(() => { if (active) setCorrelationLoading(false); });
+    return () => { active = false; };
+  }, [job?.id]);
+  const runCorrelation = async () => {
+    setAnalyzingCorrelation(true);
+    setCorrelationError("");
+    try { setCorrelation(await analyzeExecutionCorrelation(job.id)); }
+    catch (error) { setCorrelationError(error.message || "Correlation analysis failed"); }
+    finally { setAnalyzingCorrelation(false); }
+  };
   if (!job) return null;
 
   const investigation = details?.investigation ?? { status: job.status === "FAILED" ? "NEW" : null, operator: "—", started: "—", notes: [], transitions: [] };
@@ -78,6 +102,21 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
         {details?.relatedHealth && <section className="drawer-section"><h3>Related Health</h3><div className="summary-grid">
           {Object.entries(details.relatedHealth).map(([label, value]) => <div className="kv" key={label}><span>{label}</span><b>{value}</b></div>)}
         </div></section>}
+        <section className="drawer-section"><div className="section-heading-row"><h3>Related Health / Correlation</h3><button className="filter-button" disabled={correlationLoading || analyzingCorrelation} onClick={runCorrelation}>{analyzingCorrelation ? "Analyzing…" : "Analyze"}</button></div>
+          {correlationLoading && <div className="empty-inline">Loading correlation evidence…</div>}
+          {!correlationLoading && correlation && <><div className="summary-grid">
+            <div className="kv"><span>Primary Evidence</span><b>{correlation.primary_category}</b></div>
+            <div className="kv"><span>Confidence</span><b>{correlation.confidence}</b></div>
+            <div className="kv"><span>Evidence Items</span><b>{correlation.evidence_count}</b></div>
+            <div className="kv"><span>Analysis Version</span><b>{correlation.analysis_version}</b></div>
+          </div>
+          <div className="source-fact">{correlation.summary}</div>
+          {correlation.evidence?.slice(0, 12).map(item => <div className="list-row" key={item.id}><span><b>{item.evidence_type}</b> · {item.relationship}</span><span className="muted small">{item.severity ?? "—"} · {new Date(item.observed_at).toLocaleTimeString("en-IN", { hour12: false })}</span></div>)}
+          {correlation.evidence?.length > 12 && <div className="empty-inline">Showing the first 12 evidence items in the drawer.</div>}
+          </>}
+          {!correlationLoading && !correlation && !correlationError && <div className="empty-inline">No correlation analysis has been run for this execution.</div>}
+          {correlationError && <div className="error-box">{correlationError}</div>}
+        </section>
 
         <section className="drawer-section"><h3>Alert & Incident History</h3>
           {incidentHistory.length ? incidentHistory.map((item, i) => <div className="list-row" key={item.time + item.event + i}><span><b>{item.time}</b> · {item.event}</span><span className="muted small">{item.reference ?? "—"}</span></div>) : <div className="empty-inline">No operational alert or incident events recorded.</div>}
