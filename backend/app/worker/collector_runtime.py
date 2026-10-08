@@ -17,7 +17,9 @@ from sqlalchemy import delete, select
 
 from app.db.session import SessionLocal
 from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample
+from app.worker.alert_engine import evaluate_metric_sample
 from app.worker.credentials import CredentialProviderError, resolve_basic_auth
+from app.worker.notifications import dispatch_pending_notifications
 
 logger = logging.getLogger("opscontrol.collector-runtime")
 
@@ -255,12 +257,12 @@ def _persist_metric_samples(collector, run, result, ended_at, db):
             MetricDefinition.enabled.is_(True),
         )
     ).all()
+    samples = []
     for metric in metrics:
         value = _extract_metric_value(metric, result)
         if value is None:
             continue
-        db.add(
-            MetricSample(
+        sample = MetricSample(
                 organization_id=metric.organization_id,
                 metric_definition_id=metric.id,
                 collector_id=collector.id,
@@ -273,7 +275,10 @@ def _persist_metric_samples(collector, run, result, ended_at, db):
                     "outcome": (result.payload or {}).get("outcome"),
                 },
             )
-        )
+        db.add(sample)
+        db.flush()
+        samples.append(sample)
+    return samples
 
 
 def _purge_expired_metric_samples(db, now):
@@ -320,7 +325,9 @@ async def execute_collector(collector_id):
 
         ended_at = datetime.now(timezone.utc)
         run = _persist_run(collector, result, started_at, ended_at, db)
-        _persist_metric_samples(collector, run, result, ended_at, db)
+        samples = _persist_metric_samples(collector, run, result, ended_at, db)
+        for sample in samples:
+            evaluate_metric_sample(db, sample)
 
         if result.success:
             collector.status = "HEALTHY"
@@ -361,4 +368,5 @@ async def scheduler_loop(poll_seconds=5):
                 collector.next_run_at = now + timedelta(seconds=max(collector.interval_seconds, 5))
                 db.commit()
                 asyncio.create_task(execute_collector(collector.id))
+        await asyncio.to_thread(dispatch_pending_notifications)
         await asyncio.sleep(poll_seconds)
