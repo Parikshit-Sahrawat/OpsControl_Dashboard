@@ -223,6 +223,23 @@ class MonitoringTemplateVersion(Base):
     template: Mapped["MonitoringTemplate"] = relationship(back_populates="versions")
     __table_args__ = (UniqueConstraint("template_id", "version", name="uq_monitoring_template_version"),)
 
+class MonitoringTemplateAttachment(Base):
+    __tablename__ = "monitoring_template_attachments"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id", ondelete="CASCADE"), nullable=False, index=True)
+    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id", ondelete="RESTRICT"), nullable=False, index=True)
+    template_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
+    overrides: Mapped[dict | None] = mapped_column(JSON)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    data_source: Mapped["DataSource"] = relationship(back_populates="template_attachments")
+    template: Mapped["MonitoringTemplate"] = relationship()
+    __table_args__ = (
+        UniqueConstraint("data_source_id", "template_id", name="uq_template_attachment_source_template"),
+    )
+
 class DataSource(Base):
     __tablename__ = "data_sources"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -243,6 +260,7 @@ class DataSource(Base):
     collectors: Mapped[list["Collector"]] = relationship(back_populates="data_source", cascade="all, delete-orphan")
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="data_source")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="data_source")
+    template_attachments: Mapped[list["MonitoringTemplateAttachment"]] = relationship(back_populates="data_source", cascade="all, delete-orphan")
     __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_data_source_org_name"),)
 
 class Collector(Base):
