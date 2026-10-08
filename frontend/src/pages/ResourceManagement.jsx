@@ -3,7 +3,7 @@ import {
   createCollector, createDataSource, createLogSource, createMetric,
   deleteCollector, deleteDataSource, deleteLogSource, deleteMetric,
   fetchCollectors, fetchDataSources, fetchLogSources, fetchMetrics,
-  updateCollector, updateDataSource, updateLogSource, updateMetric, updateAlertRule, createAlertRule, deleteAlertRule
+  updateCollector, updateDataSource, updateLogSource, updateMetric, updateAlertRule, createAlertRule, deleteAlertRule, fetchAlertRules
 } from "../api";
 
 const tabs = [
