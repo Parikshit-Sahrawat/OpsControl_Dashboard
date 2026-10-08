@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import Collector, DataSource, LogSource, MetricDefinition
+from app.models import Collector, DataSource, LogSource, MetricDefinition, Organization
 from app.schemas.monitoring import (
     CollectorCreate,
     CollectorOut,
@@ -233,3 +233,15 @@ def disable_log_source(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(LogSource, item_id, db, "Log source")
     item.enabled = False
     db.commit()
+
+
+@router.get("/organizations", response_model=list[OrganizationOut])
+def list_organizations(
+    active: bool | None = True,
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    stmt = select(Organization).order_by(Organization.name).limit(limit)
+    if active is not None:
+        stmt = stmt.where(Organization.active == active)
+    return db.scalars(stmt).all()
