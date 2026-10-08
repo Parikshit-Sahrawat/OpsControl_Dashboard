@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload
 from app.db.session import get_db
-from app.models import JobOrderHistory, JobOrder, ExecutionStatus, ExecutionType, JobStepExecution
+from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution
 from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut
 router = APIRouter(prefix="/api/v1/etl", tags=["ETL"])
 def _item(h):
