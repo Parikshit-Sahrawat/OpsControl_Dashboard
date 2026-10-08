@@ -1520,3 +1520,76 @@ The runtime will not:
 ```
 
 The next runtime stage is to implement the first real transport adapter and native collection-result persistence. The safest first adapter is the **API Basic Authentication collector**, followed by Windows/WinRM and Linux/SSH.
+
+
+# 44. API Basic Authentication Collector
+
+The first real collector transport is now implemented for API monitoring.
+
+The API collector supports:
+
+- HTTP GET/POST/PUT/PATCH/DELETE/HEAD
+- Basic Authentication
+- credential references instead of passwords in collector configuration
+- configurable timeout
+- expected HTTP status validation
+- TLS certificate verification enabled by default
+- optional static non-authorization headers
+- optional JSON/string request body
+- bounded response-body capture
+- response-time measurement
+- authentication, HTTP, timeout, connection and TLS failure classification
+
+Collector execution results are persisted in the `collector_runs` table.
+
+Migration:
+
+`backend/migrations/versions/0004_collector_runs.py`
+
+Collector run history:
+
+`GET /api/v1/monitoring/collectors/{collector_id}/runs`
+
+The worker remains a separate process:
+
+```bash
+python backend/scripts/run_collector_worker.py
+```
+
+For local development, `credential_ref` is resolved from environment variables such as:
+
+```text
+OPSCONTROL_CREDENTIAL_PROD_API_USERNAME=api-user
+OPSCONTROL_CREDENTIAL_PROD_API_PASSWORD=<secret>
+```
+
+The environment-backed resolver is intentionally a development secret-provider boundary. Production deployments should replace it with a managed secret provider.
+
+Detailed configuration and security behavior is documented in:
+
+`docs/API_BASIC_AUTH_COLLECTOR.md`
+
+The API collector establishes the first complete collection path:
+
+```
+Resource Management
+      |
+      v
+Data Source + API Collector
+      |
+      v
+Collector Scheduler
+      |
+      v
+Basic Auth HTTP Request
+      |
+      v
+Collection Result
+      |
+      +--> Collector/Data Source health
+      |
+      +--> collector_runs history
+      |
+      +--> future Metric Processor / Alert Engine
+```
+
