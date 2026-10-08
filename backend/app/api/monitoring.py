@@ -19,6 +19,7 @@ from app.schemas.monitoring import (
     MetricDefinitionCreate,
     MetricDefinitionOut,
     MetricDefinitionUpdate,
+    OrganizationOut,
 )
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring Configuration"])
