@@ -273,7 +273,6 @@ async def execute_collector(collector_id):
             data_source.status = "ERROR"
             data_source.last_error = result.message[:MAX_ERROR_LENGTH]
 
-        data_source.last_test_at = ended_at
         collector.next_run_at = ended_at + timedelta(seconds=max(collector.interval_seconds, 5))
         db.commit()
 
