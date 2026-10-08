@@ -1593,3 +1593,78 @@ Collection Result
       +--> future Metric Processor / Alert Engine
 ```
 
+
+
+# 45. Native Metric Samples
+
+OpsControl now has a native metric sample storage layer between collector execution and future alerting/dashboards.
+
+The collection flow is now:
+
+```
+API Basic Auth Collector
+        |
+        v
+Collector Run
+        |
+        v
+Metric Extraction
+        |
+        v
+Native Metric Samples
+        |
+        +--> Metric Query API
+        |
+        +--> future Alert Rule Engine
+        +--> future Dashboards
+```
+
+Metric definitions can extract these initial API measurements through query_config.extract:
+
+- AVAILABILITY
+- HTTP_STATUS
+- RESPONSE_TIME_MS
+- RESPONSE_SIZE_BYTES
+
+Example:
+
+```json
+{
+  "extract": "RESPONSE_TIME_MS"
+}
+```
+
+Native samples store:
+
+- organization
+- metric definition
+- collector
+- collector run
+- observation timestamp
+- numeric value
+- unit
+- dimensions
+
+Migration:
+
+backend/migrations/versions/0005_metric_samples.py
+
+Query API:
+
+GET /api/v1/monitoring/metrics/{metric_definition_id}/samples
+
+Optional query parameters:
+
+- start
+- end
+- limit
+
+Metric retention is enforced by the collector worker once per hour using each Metric Definition's retention_days.
+
+The implementation intentionally keeps collector evidence separate from normalized metrics. A failed API request can therefore produce an availability sample of 0 while metrics such as HTTP status are only emitted when an HTTP status was actually observed.
+
+Detailed behavior is documented in:
+
+docs/NATIVE_METRIC_SAMPLES.md
+
+The next layer is real Alert Rule evaluation against these samples.
