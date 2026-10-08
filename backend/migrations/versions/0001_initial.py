@@ -37,7 +37,9 @@ investigation_status = sa.Enum(
 )
 def upgrade():
     bind=op.get_bind()
-    execution_type.create(bind,checkfirst=True);execution_status.create(bind,checkfirst=True);investigation_status.create(bind,checkfirst=True)
+    execution_type.create(bind, checkfirst=True)
+    execution_status.create(bind, checkfirst=True)
+    investigation_status.create(bind, checkfirst=True)
     op.create_table("organizations",sa.Column("id",postgresql.UUID(as_uuid=True),primary_key=True),sa.Column("name",sa.String(200),nullable=False,unique=True),sa.Column("code",sa.String(50),nullable=F[...]
     op.create_table("vms",sa.Column("id",postgresql.UUID(as_uuid=True),primary_key=True),sa.Column("organization_id",postgresql.UUID(as_uuid=True),sa.ForeignKey("organizations.id"),nullable=False),sa.[...]
     op.create_index("ix_vms_organization_id","vms",["organization_id"])
