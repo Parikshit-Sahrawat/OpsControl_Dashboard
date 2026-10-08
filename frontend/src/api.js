@@ -20,7 +20,10 @@ export function mapExecution(item) {
 }
 export async function fetchExecutions(params = {}) {
   const query = new URLSearchParams();
-  for (const [key,value] of Object.entries(params)) if (value && value !== "All") query.set(key,value);
+  for (const [key,value] of Object.entries(params)) {
+    if (Array.isArray(value)) value.forEach(item => query.append(key, item));
+    else if (value && value !== "All") query.set(key,value);
+  }
   return (await request("/api/v1/etl/executions?" + query.toString())).map(mapExecution);
 }
 export function fetchExecution(id) { return request("/api/v1/etl/executions/" + id); }
