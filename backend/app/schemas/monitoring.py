@@ -180,6 +180,7 @@ class AlertRuleBase(BaseModel):
     evaluation_window_seconds: int = Field(default=60, ge=5)
     consecutive_breaches: int = Field(default=1, ge=1)
     enabled: bool = True
+    notification_channels: list[str] = Field(default_factory=list)
 
 
 class AlertRuleCreate(AlertRuleBase):
@@ -195,6 +196,7 @@ class AlertRuleUpdate(BaseModel):
     evaluation_window_seconds: int | None = Field(default=None, ge=5)
     consecutive_breaches: int | None = Field(default=None, ge=1)
     enabled: bool | None = None
+    notification_channels: list[str] | None = None
     metric_definition_id: UUID | None = None
 
 
@@ -203,6 +205,40 @@ class AlertRuleOut(AlertRuleBase):
     id: UUID
     organization_id: UUID
     metric_definition_id: UUID
+    created_at: datetime
+    updated_at: datetime
+
+
+class AlertStateOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    organization_id: UUID
+    alert_rule_id: UUID
+    metric_definition_id: UUID
+    status: str
+    severity: str
+    first_triggered_at: datetime
+    last_evaluated_at: datetime
+    resolved_at: datetime | None
+    last_value: float
+    breach_count: int
+    message: str
+    external_references: dict | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class AlertNotificationDeliveryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    alert_state_id: UUID
+    channel: str
+    event_type: str
+    status: str
+    attempts: int
+    external_reference: str | None
+    last_error: str | None
+    sent_at: datetime | None
     created_at: datetime
     updated_at: datetime
 
