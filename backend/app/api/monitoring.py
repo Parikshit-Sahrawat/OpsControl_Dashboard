@@ -22,6 +22,7 @@ from app.schemas.monitoring import (
     DataSourceUpdate,
     LogSourceCreate,
     LogSourceOut,
+    LogEventOut,
     LogSourceUpdate,
     MetricDefinitionCreate,
     MetricDefinitionOut,
@@ -280,6 +281,34 @@ def disable_log_source(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(LogSource, item_id, db, "Log source")
     item.enabled = False
     db.commit()
+
+
+@router.get("/logs/{item_id}/events", response_model=list[LogEventOut])
+def list_log_events(
+    item_id: UUID,
+    start: datetime | None = None,
+    end: datetime | None = None,
+    severity: str | None = None,
+    search: str | None = None,
+    limit: int = Query(200, ge=1, le=5000),
+    db: Session = Depends(get_db),
+):
+    _get_or_404(LogSource, item_id, db, "Log source")
+    stmt = (
+        select(LogEvent)
+        .where(LogEvent.log_source_id == item_id)
+        .order_by(LogEvent.observed_at.desc())
+        .limit(limit)
+    )
+    if start:
+        stmt = stmt.where(LogEvent.observed_at >= start)
+    if end:
+        stmt = stmt.where(LogEvent.observed_at <= end)
+    if severity:
+        stmt = stmt.where(LogEvent.severity == severity.upper())
+    if search:
+        stmt = stmt.where(LogEvent.message.ilike(f"%{search}%"))
+    return db.scalars(stmt).all()
 
 
 @router.get("/alerts", response_model=list[AlertStateOut])
