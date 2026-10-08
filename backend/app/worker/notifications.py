@@ -9,7 +9,7 @@ import json
 import os
 import smtplib
 import ssl
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -196,13 +196,25 @@ def deliver(delivery: AlertNotificationDelivery, state: AlertState) -> str:
     raise RuntimeError(f"Unsupported notification channel: {delivery.channel}")
 
 
+MAX_ATTEMPTS = 5
+RETRY_BASE_SECONDS = 30
+RETRY_MAX_SECONDS = 30 * 60
+
+
+def _retry_delay_seconds(attempts: int) -> int:
+    return min(RETRY_MAX_SECONDS, RETRY_BASE_SECONDS * (2 ** max(0, attempts - 1)))
+
+
 def dispatch_pending_notifications():
+    now = datetime.now(timezone.utc)
     with SessionLocal() as db:
         deliveries = db.scalars(
             select(AlertNotificationDelivery)
             .where(
                 AlertNotificationDelivery.status.in_(["PENDING", "FAILED"]),
-                AlertNotificationDelivery.attempts < 5,
+                AlertNotificationDelivery.attempts < MAX_ATTEMPTS,
+                (AlertNotificationDelivery.next_attempt_at.is_(None))
+                | (AlertNotificationDelivery.next_attempt_at <= now),
             )
             .order_by(AlertNotificationDelivery.created_at)
             .limit(20)
@@ -214,6 +226,10 @@ def dispatch_pending_notifications():
                 delivery.status = "FAILED"
                 delivery.last_error = "Alert state not found"
                 delivery.attempts += 1
+                delivery.next_attempt_at = (
+                    now + timedelta(seconds=_retry_delay_seconds(delivery.attempts))
+                    if delivery.attempts < MAX_ATTEMPTS else None
+                )
                 continue
 
             delivery.attempts += 1
@@ -222,6 +238,7 @@ def dispatch_pending_notifications():
                 delivery.status = "SENT"
                 delivery.external_reference = reference
                 delivery.last_error = None
+                delivery.next_attempt_at = None
                 delivery.sent_at = datetime.now(timezone.utc)
                 references = dict(state.external_references or {})
                 references[delivery.channel] = reference
@@ -229,5 +246,10 @@ def dispatch_pending_notifications():
             except (HTTPError, URLError, TimeoutError, OSError, RuntimeError, ValueError) as exc:
                 delivery.status = "FAILED"
                 delivery.last_error = str(exc)[:MAX_ERROR_LENGTH]
+                delivery.next_attempt_at = (
+                    datetime.now(timezone.utc)
+                    + timedelta(seconds=_retry_delay_seconds(delivery.attempts))
+                    if delivery.attempts < MAX_ATTEMPTS else None
+                )
 
         db.commit()
