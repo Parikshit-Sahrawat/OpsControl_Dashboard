@@ -170,3 +170,38 @@ class OrganizationOut(BaseModel):
     name: str
     code: str
     active: bool
+
+
+class AlertRuleBase(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    severity: str = Field(default="WARNING", max_length=50)
+    operator: str = Field(default="GT", max_length=20)
+    threshold_value: str = Field(min_length=1, max_length=100)
+    evaluation_window_seconds: int = Field(default=60, ge=5)
+    consecutive_breaches: int = Field(default=1, ge=1)
+    enabled: bool = True
+
+
+class AlertRuleCreate(AlertRuleBase):
+    organization_id: UUID
+    metric_definition_id: UUID
+
+
+class AlertRuleUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    severity: str | None = Field(default=None, max_length=50)
+    operator: str | None = Field(default=None, max_length=20)
+    threshold_value: str | None = Field(default=None, min_length=1, max_length=100)
+    evaluation_window_seconds: int | None = Field(default=None, ge=5)
+    consecutive_breaches: int | None = Field(default=None, ge=1)
+    enabled: bool | None = None
+    metric_definition_id: UUID | None = None
+
+
+class AlertRuleOut(AlertRuleBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    organization_id: UUID
+    metric_definition_id: UUID
+    created_at: datetime
+    updated_at: datetime
