@@ -51,3 +51,6 @@ export const fetchAlertRules=(params={})=>request("/api/v1/monitoring/alert-rule
 export const createAlertRule=p=>request("/api/v1/monitoring/alert-rules",{method:"POST",body:JSON.stringify(p)});
 export const updateAlertRule=(id,p)=>request("/api/v1/monitoring/alert-rules/"+id,{method:"PATCH",body:JSON.stringify(p)});
 export const deleteAlertRule=id=>request("/api/v1/monitoring/alert-rules/"+id,{method:"DELETE"});
+
+export const fetchExecutionCorrelation=id=>request("/api/v1/etl/executions/"+id+"/correlation");
+export const analyzeExecutionCorrelation=(id,windowBeforeSeconds=900,windowAfterSeconds=900)=>request("/api/v1/etl/executions/"+id+"/correlation?window_before_seconds="+windowBeforeSeconds+"&window_after_seconds="+windowAfterSeconds,{method:"POST"});
