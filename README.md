@@ -8,15 +8,15 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ## Current implementation status
 
-**Phase:** UX + operational POC
+**Phase:** Platform foundation + monitoring control plane
 
-**Current focus:** Production-quality ETL Jobs frontend contract
+**Current focus:** Data Source, Collector Manager, Metric Definition, and Log Source control plane
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
 
 **Frontend:** Vite + React under `frontend/`
 
-The frontend remains mock-data driven while the API and PostgreSQL contracts are being finalized. No production Pentaho job control is exposed.
+The ETL frontend is API-driven through FastAPI. The monitoring configuration control plane is now being built so resources, data sources, collectors, metrics, and log sources can be configured from OpsControl UI/API. No production Pentaho job control is exposed.
 
 ### ETL Jobs page now supports
 
@@ -634,57 +634,56 @@ RBAC is planned.
 
 ---
 
-# 24. Proposed Architecture
+# 24. OpsControl-Native Architecture
 
-Initial logical architecture:
-
-```
-React UI
-   |
-   +-- Overview
-   +-- ETL Jobs
-   +-- VM Health
-   +-- APIs
-   +-- Incidents
-   +-- Reports
-   +-- Resource Management
-          |
-          v
-      FastAPI API
-          |
-     +----+----+
-     |         |
-     v         v
- PostgreSQL  Prometheus
-```
-
-Longer-term:
+OpsControl is intentionally replacing the Prometheus + Grafana dependency with its own monitoring platform.
 
 ```
-Users
-  |
-React Dashboard
-  |
-FastAPI
-  |
-+-------------------------------+
-| PostgreSQL                    |
-| Prometheus                    |
-| Redis                         |
-| Monitoring / Alert Engines    |
-+-------------------------------+
-  |
-+-------------------------------+
-| Pentaho                       |
-| SFTP / S3                     |
-| VM / OS / Application Agents  |
-| APIs                          |
-+-------------------------------+
-  |
-+-------------------------------+
-| Email | PagerDuty | ServiceNow|
-+-------------------------------+
+                         OPSCONTROL UI
+                              |
+              +---------------+----------------+
+              |                                |
+        Configuration                    Visualization
+              |                                |
+              v                                v
+      +----------------+              +-----------------+
+      | Control Plane  |              | Dashboards      |
+      | Resources      |              | Metrics         |
+      | Data Sources   |              | Logs            |
+      | Collectors     |              | Events          |
+      | Metric Rules   |              | Incidents       |
+      | Log Sources   |              | Reports         |
+      +-------+--------+              +--------^--------+
+              |                                |
+              v                                |
+       +----------------------------------------+
+       |          COLLECTION PLANE              |
+       | Collector Manager / Scheduler          |
+       | VM | API | ETL | Log | SFTP | S3       |
+       +-------------------+--------------------+
+                           |
+                           v
+       +----------------------------------------+
+       |          PROCESSING PLANE              |
+       | Metric Processor | Log Processor       |
+       | Event Processor  | Alert Engine        |
+       | Correlation Engine                    |
+       +-------------------+--------------------+
+                           |
+                    +------+------+
+                    |             |
+                    v             v
+              Metrics Store    Log Store
+                    |             |
+                    +------+------+
+                           |
+                      Query Engine
+                           |
+                           v
+                       OpsControl
 ```
+
+PostgreSQL remains the system of record for configuration and operational records. The native metrics/log storage and query layers will be designed specifically for OpsControl rather than reproducing every feature of external observability products.
 
 ---
 
@@ -725,7 +724,7 @@ frontend/
         └── ETLJobs.jsx
 ```
 
-The frontend currently uses mock operational data to validate the UI contract before backend implementation.
+The frontend has moved to the FastAPI contract for ETL execution data. Monitoring configuration UI will be added on top of the new configuration APIs.
 
 ---
 
@@ -817,13 +816,13 @@ The next backend design should preserve the frontend distinctions already establ
 
 **Phase:** UX + operational requirements / POC
 
-**Current focus:** React frontend + ETL Jobs operational page
+**Current focus:** Dynamic monitoring configuration foundation
 
 **Source of truth:** GitHub repository + this README
 
 **Frontend:** Vite + React application under `frontend/`
 
-**Current frontend stage:** Production-quality ETL Jobs UX contract using mock data
+**Current frontend stage:** ETL Jobs UX connected to FastAPI; monitoring configuration API foundation implemented
 
 **Repository:** `Parikshit-Sahrawat/OpsControl_Dashboard`
 
@@ -1011,3 +1010,221 @@ The project has moved from UX-only POC toward a working application foundation:
 11. Pentaho collector architecture
 
 Next implementation work should focus on validating the backend locally, then implementing the real read-only Pentaho adapter and monitoring engine before adding additional integrations.
+
+
+---
+
+# 36. Dynamic Monitoring Configuration Foundation
+
+OpsControl is being designed as a control plane where monitoring is configured from the UI rather than hard-coded into collectors.
+
+The first configuration model consists of four core objects:
+
+```
+Organization
+    |
+    +-- Data Source
+    |      |
+    |      +-- Collector
+    |      +-- Metric Definitions
+    |      +-- Log Sources
+    |
+    +-- Resources
+           |
+           +-- VM
+           +-- Application
+           +-- ETL Job Order
+           +-- API
+```
+
+## Data Source
+
+A Data Source describes where monitoring data comes from.
+
+Examples:
+
+- Windows server
+- Linux server
+- API
+- Pentaho
+- SFTP
+- S3
+- Database
+- File/log source
+
+The current model supports:
+
+- Source type
+- Endpoint
+- Authentication type
+- Connection configuration
+- Enabled/disabled state
+- Source health/status
+- Last test timestamp
+- Last error
+
+Connection credentials are configuration data and must be moved to managed secret storage before production use.
+
+## Collector Manager
+
+A Collector belongs to a Data Source and describes how OpsControl collects information.
+
+Current model supports:
+
+- Collector name
+- Collector type
+- Enabled state
+- Collection interval
+- Collector configuration
+- Runtime status
+- Last run
+- Last successful run
+- Last error
+- Next run
+
+The Collector Manager will later schedule and execute these definitions independently of the FastAPI request process.
+
+## Metric Definition
+
+A Metric Definition describes a metric that OpsControl should collect and expose.
+
+Current model supports:
+
+- Metric name
+- Description
+- Resource type
+- Resource ID
+- Metric type
+- Unit
+- Collection interval
+- Retention
+- Aggregation
+- Query/collection configuration
+- Data Source
+- Collector
+- Enabled state
+
+Metric definitions are configuration. Actual metric samples will be stored by the native metrics subsystem in a later phase.
+
+## Log Source
+
+A Log Source describes a stream/file/event source that OpsControl should collect.
+
+Current model supports:
+
+- Log source name
+- Source type
+- Resource type
+- Resource ID
+- Location/path/query
+- Parser type
+- Parser configuration
+- Start position
+- Collection interval
+- Retention
+- Data Source
+- Collector
+- Enabled state
+
+Actual log events will be stored by the native log subsystem in a later phase.
+
+---
+
+# 37. Monitoring Configuration API
+
+Namespace:
+
+`/api/v1/monitoring`
+
+### Data Sources
+
+- GET `/data-sources`
+- GET `/data-sources/{id}`
+- POST `/data-sources`
+- PATCH `/data-sources/{id}`
+- DELETE `/data-sources/{id}`
+
+DELETE is implemented as a disable operation.
+
+### Collectors
+
+- GET `/collectors`
+- GET `/collectors/{id}`
+- POST `/collectors`
+- PATCH `/collectors/{id}`
+- DELETE `/collectors/{id}`
+
+DELETE disables the collector and marks it STOPPED.
+
+### Metric Definitions
+
+- GET `/metrics`
+- GET `/metrics/{id}`
+- POST `/metrics`
+- PATCH `/metrics/{id}`
+- DELETE `/metrics/{id}`
+
+DELETE disables the metric definition.
+
+### Log Sources
+
+- GET `/logs`
+- GET `/logs/{id}`
+- POST `/logs`
+- PATCH `/logs/{id}`
+- DELETE `/logs/{id}`
+
+DELETE disables the log source.
+
+Filtering is available by organization, resource, source, enabled state, or collector where appropriate.
+
+---
+
+# 38. Monitoring Configuration Database
+
+Alembic migration:
+
+`backend/migrations/versions/0002_monitoring_configuration.py`
+
+New tables:
+
+```
+organizations
+    |
+    +-- data_sources
+           |
+           +-- collectors
+           |
+           +-- metric_definitions
+           |
+           +-- log_sources
+```
+
+The model intentionally uses structured JSON for connector-specific configuration so new source types do not require a database migration for every new connector option.
+
+Resource association uses:
+
+- `resource_type`
+- `resource_id`
+
+This allows the same metric/log architecture to work with VMs, applications, APIs, ETL jobs, and future resource types.
+
+---
+
+# 39. Next Monitoring Implementation
+
+The next implementation stages are:
+
+1. Resource Management UI for Data Sources.
+2. Collector Manager UI.
+3. Metric Definition UI.
+4. Log Source UI.
+5. Collector scheduler/runtime.
+6. Native metric sample storage.
+7. Native log event storage.
+8. Metric query API.
+9. Log search API.
+10. Alert rule engine.
+11. Native charts and dashboards.
+
+**Prometheus and Grafana are not part of the target architecture.**
