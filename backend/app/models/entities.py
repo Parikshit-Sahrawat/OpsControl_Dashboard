@@ -43,6 +43,7 @@ class Organization(Base):
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="organization")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="organization")
     alert_rules: Mapped[list["AlertRule"]] = relationship(back_populates="organization")
+    alert_states: Mapped[list["AlertState"]] = relationship(back_populates="organization")
 
 class VM(Base):
     __tablename__ = "vms"
@@ -332,8 +333,46 @@ class AlertRule(Base):
     evaluation_window_seconds: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
     consecutive_breaches: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    notification_channels: Mapped[list | None] = mapped_column(JSON)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     organization: Mapped["Organization"] = relationship(back_populates="alert_rules")
     metric_definition: Mapped["MetricDefinition"] = relationship()
+    alert_states: Mapped[list["AlertState"]] = relationship(back_populates="alert_rule", cascade="all, delete-orphan")
     __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_alert_rule_org_name"),)
+
+class AlertState(Base):
+    __tablename__ = "alert_states"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    alert_rule_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("alert_rules.id"), nullable=False, index=True)
+    metric_definition_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("metric_definitions.id"), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="OPEN")
+    severity: Mapped[str] = mapped_column(String(50), nullable=False)
+    first_triggered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    last_evaluated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_value: Mapped[float] = mapped_column(Float, nullable=False)
+    breach_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    external_references: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="alert_states")
+    alert_rule: Mapped["AlertRule"] = relationship(back_populates="alert_states")
+
+class AlertNotificationDelivery(Base):
+    __tablename__ = "alert_notification_deliveries"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    alert_state_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("alert_states.id"), nullable=False, index=True)
+    channel: Mapped[str] = mapped_column(String(50), nullable=False)
+    event_type: Mapped[str] = mapped_column(String(30), nullable=False)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="PENDING")
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    external_reference: Mapped[str | None] = mapped_column(String(500))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    payload: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    alert_state: Mapped["AlertState"] = relationship()
