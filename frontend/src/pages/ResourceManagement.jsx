@@ -3,7 +3,7 @@ import {
   createCollector, createDataSource, createLogSource, createMetric,
   deleteCollector, deleteDataSource, deleteLogSource, deleteMetric,
   fetchCollectors, fetchDataSources, fetchLogSources, fetchMetrics,
-  updateCollector, updateDataSource, updateLogSource, updateMetric
+  updateCollector, updateDataSource, updateLogSource, updateMetric, fetchOrganizations
 } from "../api";
 
 const tabs = [
@@ -29,10 +29,10 @@ function Field({label,children,help}){return <label className="form-field"><span
 function Toggle({value,onChange}){return <label className="toggle"><input type="checkbox" checked={!!value} onChange={e=>onChange(e.target.checked)}/><span>{value?"Enabled":"Disabled"}</span></label>}
 
 export default function ResourceManagement(){
- const [tab,setTab]=useState("data-sources"),[dataSources,setDataSources]=useState([]),[collectors,setCollectors]=useState([]),[metrics,setMetrics]=useState([]),[logs,setLogs]=useState([]);
+ const [tab,setTab]=useState("data-sources"),[organizations,setOrganizations]=useState([]),[organizationId,setOrganizationId]=useState(""),[dataSources,setDataSources]=useState([]),[collectors,setCollectors]=useState([]),[metrics,setMetrics]=useState([]),[logs,setLogs]=useState([]);
  const [loading,setLoading]=useState(true),[error,setError]=useState(null),[modal,setModal]=useState(null),[form,setForm]=useState(null),[saving,setSaving]=useState(false),[query,setQuery]=useState("");
- const reload=async()=>{setLoading(true);setError(null);try{const r=await Promise.all([fetchDataSources(),fetchCollectors(),fetchMetrics(),fetchLogSources()]);setDataSources(r[0]);setCollectors(r[1]);setMetrics(r[2]);setLogs(r[3])}catch(e){setError(e.message||"Unable to load monitoring configuration")}finally{setLoading(false)}};
- useEffect(()=>{reload()},[]);
+ const reload=async()=>{setLoading(true);setError(null);try{const orgs=await fetchOrganizations();setOrganizations(orgs);const activeOrg=organizationId||orgs[0]?.id||"";if(!organizationId&&activeOrg)setOrganizationId(activeOrg);const r=await Promise.all([fetchDataSources({organization_id:activeOrg}),fetchCollectors(),fetchMetrics({organization_id:activeOrg}),fetchLogSources({organization_id:activeOrg})]);setDataSources(r[0]);setCollectors(r[1]);setMetrics(r[2]);setLogs(r[3])}catch(e){setError(e.message||"Unable to load monitoring configuration")}finally{setLoading(false)}};
+ useEffect(()=>{reload()},[organizationId]);
  const items=tab==="data-sources"?dataSources:tab==="collectors"?collectors:tab==="metrics"?metrics:logs;
  const filtered=useMemo(()=>items.filter(x=>(String(x.name||"")+" "+String(x.source_type||"")+" "+String(x.collector_type||"")+" "+String(x.resource_type||"")).toLowerCase().includes(query.toLowerCase())),[items,query]);
  const openCreate=()=>{setForm(blank(tab));setModal({mode:"create",kind:tab,title:"Add "+singular(tab)})};
@@ -41,7 +41,7 @@ export default function ResourceManagement(){
    const kind=modal.kind,p={...form};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in p)p[k]=JSON.parse(p[k]||"{}")});
    ["organization_id","id","created_at","updated_at","status","last_test_at","last_error","last_run_at","last_success_at","last_error_at","next_run_at"].forEach(k=>delete p[k]);
    if(["metrics","logs"].includes(kind)){if(!p.resource_id)delete p.resource_id;if(!p.data_source_id)delete p.data_source_id;if(!p.collector_id)delete p.collector_id}
-   const org=window.__OPSCONTROL_ORGANIZATION_ID__||"00000000-0000-0000-0000-000000000001";
+   const org=organizationId; if(!org)throw new Error("Select an organization before creating configuration.");
    if(modal.mode==="create"){
     if(kind==="data-sources")await createDataSource({...p,organization_id:org});
     if(kind==="collectors")await createCollector(p);
@@ -59,7 +59,7 @@ export default function ResourceManagement(){
  const set=(k,v)=>setForm(f=>({...f,[k]:v}));
  const dsName=id=>dataSources.find(x=>x.id===id)?.name||"—";
  return <div className="resource-page">
-  <div className="page-heading"><div><h1>Resource Management</h1><p>Configure the monitoring control plane without editing collector code.</p></div><div className="heading-actions"><button className="filter-button" onClick={reload}>Refresh</button><button className="primary-button" onClick={openCreate}>+ Add {singular(tab)}</button></div></div>
+  <div className="page-heading"><div><h1>Resource Management</h1><p>Configure the monitoring control plane without editing collector code.</p></div><div className="heading-actions"><select className="org-select" value={organizationId} onChange={e=>setOrganizationId(e.target.value)}><option value="">Select organization</option>{organizations.map(o=><option key={o.id} value={o.id}>{o.name} ({o.code})</option>)}</select><button className="filter-button" onClick={reload}>Refresh</button><button className="primary-button" onClick={openCreate} disabled={!organizationId}>+ Add {singular(tab)}</button></div></div>
   <div className="resource-layout"><aside className="resource-sidebar card">{tabs.map(x=><button key={x[0]} className={tab===x[0]?"resource-tab active":"resource-tab"} onClick={()=>{setTab(x[0]);setQuery("")}}><b>{x[1]}</b><small>{x[2]}</small></button>)}</aside>
   <section className="resource-main"><div className="card resource-toolbar"><div><h2>{labelFor(tab)}</h2><span className="muted small">{items.length} configured · {items.filter(x=>x.enabled).length} enabled</span></div><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search configuration..."/></div>
   {error&&<div className="scope-banner error-banner">{error}</div>}
