@@ -4,6 +4,7 @@ import JobDetailsDrawer from "./components/JobDetailsDrawer";
 import Overview from "./pages/Overview";
 import ETLJobs from "./pages/ETLJobs";
 import { fetchExecution, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote } from "./api";
+import ResourceManagement from "./pages/ResourceManagement";
 
 function mapDetail(execution, investigation) {
   const fmt = value => value ? new Date(value).toLocaleTimeString("en-IN",{hour12:false}) : "—";
@@ -37,6 +38,6 @@ export default function App() {
   return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}}/><main className="content">
     {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
-    {![ "Overview","ETL Jobs" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+    {active==="Resource Management"&&<ResourceManagement/>}{![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }
