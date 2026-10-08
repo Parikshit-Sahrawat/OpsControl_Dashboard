@@ -51,13 +51,14 @@ LogSource.retention_days is the intended retention policy. The worker will enfor
 
 ## Correlation direction
 
-Future correlation will connect:
+The first correlation implementation connects log events to ETL executions through:
 
 Log Event
   -> resource
-  -> metric sample
-  -> alert state
+  -> bounded time window
   -> ETL execution
-  -> incident
+  -> Correlation Record / Evidence
 
-Correlation must preserve the distinction between source evidence and OpsControl inference.
+Metric samples and alert states are also correlated through the same resource and time-window model.
+
+Correlation must preserve the distinction between source evidence and OpsControl inference. See `docs/CORRELATION_ENGINE.md`.
