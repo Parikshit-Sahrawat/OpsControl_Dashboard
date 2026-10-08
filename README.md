@@ -1395,3 +1395,128 @@ Confirmed collector transport choices:
 - API: Basic Authentication for the initial implementation
 
 Basic-auth passwords must not be stored directly in collector JSON. The production runtime will use a managed credential/secret reference.
+
+---
+
+# 42. Alert Rules UI
+
+Resource Management now includes a first-class **Alert Rules** tab.
+
+An Alert Rule contains:
+- Rule name
+- Metric Definition
+- Severity
+- Operator
+- Threshold
+- Evaluation window
+- Consecutive breach count
+- Enabled state
+
+The UI intentionally keeps alert thresholds separate from Metric Definitions.
+
+Example:
+
+```
+VM CPU Usage
+    |
+    +-- Warning: > 75% for 60s
+    +-- Critical: > 90% for 120s
+```
+
+This allows one metric to support multiple alert policies without changing collection configuration.
+
+---
+
+# 43. Collector Scheduler / Runtime Foundation
+
+The Collector Manager runtime is implemented as a **separate worker process**, not inside the FastAPI request process.
+
+Entrypoint:
+
+```
+python backend/scripts/run_collector_worker.py
+```
+
+Runtime responsibilities:
+1. Discover enabled collectors.
+2. Determine which collectors are due.
+3. Schedule collection work.
+4. Select the provider adapter.
+5. Update collector runtime state.
+6. Record last run/success/error information.
+7. Calculate the next scheduled run.
+
+Runtime state uses the existing Collector fields:
+- `status`
+- `last_run_at`
+- `last_success_at`
+- `last_error_at`
+- `last_error`
+- `next_run_at`
+
+Provider-neutral adapter boundary:
+
+```
+Collector
+    |
+    v
+Collector Runtime
+    |
+    +-- Windows Adapter
+    |      +-- Agent
+    |      +-- WinRM
+    |
+    +-- Linux Adapter
+    |      +-- Agent
+    |      +-- SSH
+    |
+    +-- API Adapter
+    |      +-- Basic Authentication
+    |
+    +-- Pentaho Adapter
+           +-- Read-only
+```
+
+The initial runtime validates configuration and establishes the execution boundary. Actual Windows Agent/WinRM, Linux Agent/SSH, API credential-provider, and Pentaho transport implementations are separate follow-up adapters.
+
+### Security boundary
+
+Collector configuration must contain references to managed credentials, never production passwords or tokens.
+
+The runtime will not:
+- execute arbitrary commands
+- restart VMs
+- start/retry/stop Pentaho jobs
+- modify production job definitions
+- expose raw credentials
+
+### Runtime architecture
+
+```
+             FastAPI
+                |
+        Configuration API
+                |
+            PostgreSQL
+                |
+        +-------+--------+
+        |                |
+        v                v
+ Resource Management   Collector Worker
+                            |
+                         Scheduler
+                            |
+                       Adapter Layer
+                            |
+                  +---------+---------+
+                  |         |         |
+                Windows   Linux      API
+                  |         |         |
+                  +---------+---------+
+                            |
+                    Collection Result
+                            |
+                    Processing Pipeline
+```
+
+The next runtime stage is to implement the first real transport adapter and native collection-result persistence. The safest first adapter is the **API Basic Authentication collector**, followed by Windows/WinRM and Linux/SSH.
