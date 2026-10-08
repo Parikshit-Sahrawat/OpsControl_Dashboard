@@ -27,3 +27,20 @@ export function fetchExecution(id) { return request("/api/v1/etl/executions/" + 
 export function fetchInvestigation(id) { return request("/api/v1/etl/executions/" + id + "/investigation"); }
 export function transitionInvestigation(id,newStatus,operator="Operator A",comment=null) { return request("/api/v1/etl/executions/" + id + "/investigation/transitions",{method:"POST",body:JSON.stringify({new_status:newStatus,operator,comment})}); }
 export function addInvestigationNote(id,text,operator="Operator A",evidence_reference=null) { return request("/api/v1/etl/executions/" + id + "/investigation/notes",{method:"POST",body:JSON.stringify({operator,text,evidence_reference})}); }
+
+export const fetchDataSources=(params={})=>request("/api/v1/monitoring/data-sources?"+new URLSearchParams(params).toString());
+export const fetchCollectors=(params={})=>request("/api/v1/monitoring/collectors?"+new URLSearchParams(params).toString());
+export const fetchMetrics=(params={})=>request("/api/v1/monitoring/metrics?"+new URLSearchParams(params).toString());
+export const fetchLogSources=(params={})=>request("/api/v1/monitoring/logs?"+new URLSearchParams(params).toString());
+export const createDataSource=p=>request("/api/v1/monitoring/data-sources",{method:"POST",body:JSON.stringify(p)});
+export const updateDataSource=(id,p)=>request("/api/v1/monitoring/data-sources/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const deleteDataSource=id=>request("/api/v1/monitoring/data-sources/"+id,{method:"DELETE"});
+export const createCollector=p=>request("/api/v1/monitoring/collectors",{method:"POST",body:JSON.stringify(p)});
+export const updateCollector=(id,p)=>request("/api/v1/monitoring/collectors/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const deleteCollector=id=>request("/api/v1/monitoring/collectors/"+id,{method:"DELETE"});
+export const createMetric=p=>request("/api/v1/monitoring/metrics",{method:"POST",body:JSON.stringify(p)});
+export const updateMetric=(id,p)=>request("/api/v1/monitoring/metrics/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const deleteMetric=id=>request("/api/v1/monitoring/metrics/"+id,{method:"DELETE"});
+export const createLogSource=p=>request("/api/v1/monitoring/logs",{method:"POST",body:JSON.stringify(p)});
+export const updateLogSource=(id,p)=>request("/api/v1/monitoring/logs/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const deleteLogSource=id=>request("/api/v1/monitoring/logs/"+id,{method:"DELETE"});
