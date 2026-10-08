@@ -197,22 +197,19 @@ def deliver(delivery: AlertNotificationDelivery, state: AlertState) -> str:
 
 
 MAX_ATTEMPTS = 5
-RETRY_BASE_SECONDS = 30
-RETRY_MAX_SECONDS = 30 * 60
-
-
-def _retry_delay_seconds(attempts: int) -> int:
-    return min(RETRY_MAX_SECONDS, RETRY_BASE_SECONDS * (2 ** max(0, attempts - 1)))
-
-
 def dispatch_pending_notifications():
     now = datetime.now(timezone.utc)
     with SessionLocal() as db:
         deliveries = db.scalars(
             select(AlertNotificationDelivery)
             .where(
-                AlertNotificationDelivery.status.in_(["PENDING", "FAILED"]),
                 AlertNotificationDelivery.attempts < MAX_ATTEMPTS,
+                (
+                    AlertNotificationDelivery.status == "PENDING"
+                ) | (
+                    (AlertNotificationDelivery.status == "FAILED")
+                    & (AlertNotificationDelivery.updated_at <= now - timedelta(seconds=30))
+                ),
             )
             .order_by(AlertNotificationDelivery.created_at)
             .limit(20)
