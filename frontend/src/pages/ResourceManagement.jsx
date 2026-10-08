@@ -18,12 +18,74 @@ const PRODUCTS = ["SPM", "SPP"];
 const HOST_GROUPS = ["PROD", "QA", "TEST", "DEV", "SANDBOX", "SLM", "SPM", "SPP", "Windows Servers", "Linux Servers", "Application Servers", "Database Servers", "ETL Servers"];
 const TELEMETRY = ["VM metrics", "System logs", "Application logs", "ETL logs", "Services", "Traces"];
 
-const TEMPLATES = [
-  { id: "windows-application", name: "Windows Application Server", scope: "VM + Application / Services", description: "Windows infrastructure, services, application logs and standard health checks.", examples: ["CPU", "Memory", "Disk", "Windows Services", "Event Logs"] },
-  { id: "linux-database", name: "Linux Database Server", scope: "VM + Application / Services", description: "Linux host telemetry with database/application log collection defaults.", examples: ["CPU", "Memory", "Disk", "Processes", "Database logs"] },
-  { id: "pentaho-server", name: "Pentaho Server", scope: "VM + ETL", description: "ETL-oriented defaults for Pentaho/Kettle and batch job telemetry.", examples: ["CPU", "Disk", "Pentaho logs", "Job execution", "Batch runtime"] },
-  { id: "web-ui", name: "SLM Web UI", scope: "Application / Services", description: "WebUI/Tomcat/Apache monitoring defaults for SLM application servers.", examples: ["Apache", "Tomcat", "HTTP health", "Response time"] },
-  { id: "ssl", name: "SSL / Certificate", scope: "Application / Services", description: "Certificate and TLS monitoring defaults for customer endpoints.", examples: ["Certificate expiry", "TLS validity", "Endpoint availability"] },
+const DEFAULT_DEFAULT_TEMPLATES = [
+  {
+    id: "windows-application", name: "Windows Application Server",
+    description: "Windows infrastructure, services, application logs and standard health checks.",
+    scope: "VM + Application / Services",
+    collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["VM metrics","System logs","Application logs","Services"] },
+    metrics: [
+      { name: "CPU Utilization", metric: "cpu.utilization", resource: "VM", unit: "%", interval: 30, enabled: true },
+      { name: "Memory Utilization", metric: "memory.utilization", resource: "VM", unit: "%", interval: 30, enabled: true },
+      { name: "Disk Utilization", metric: "disk.utilization", resource: "VM", unit: "%", interval: 60, enabled: true },
+    ],
+    alerts: [
+      { name: "High CPU", domain: "VM", metric: "CPU Utilization", severity: "WARNING", operator: "GT", threshold: 85, window: 300, consecutive: 3, notifications: ["EMAIL"] },
+      { name: "Critical CPU", domain: "VM", metric: "CPU Utilization", severity: "CRITICAL", operator: "GT", threshold: 95, window: 300, consecutive: 2, notifications: ["EMAIL","PAGERDUTY"] },
+    ],
+    logs: [
+      { name: "Windows Event Logs", source: "WINDOWS_EVENT", location: "Windows Event Viewer", parser: "WINDOWS_EVENT", severity: "WARNING+", interval: 30, retention: 30, enabled: true },
+    ],
+  },
+  {
+    id: "linux-database", name: "Linux Database Server",
+    description: "Linux host telemetry with database/application log collection defaults.",
+    scope: "VM + Application / Services",
+    collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["VM metrics","System logs","Application logs","Services"] },
+    metrics: [
+      { name: "CPU Utilization", metric: "cpu.utilization", resource: "VM", unit: "%", interval: 30, enabled: true },
+      { name: "Memory Utilization", metric: "memory.utilization", resource: "VM", unit: "%", interval: 30, enabled: true },
+      { name: "Disk Utilization", metric: "disk.utilization", resource: "VM", unit: "%", interval: 60, enabled: true },
+    ],
+    alerts: [
+      { name: "High Disk", domain: "VM", metric: "Disk Utilization", severity: "WARNING", operator: "GT", threshold: 85, window: 300, consecutive: 3, notifications: ["EMAIL"] },
+    ],
+    logs: [
+      { name: "Linux System Logs", source: "FILE", location: "/var/log/*.log", parser: "SYSLOG", severity: "WARNING+", interval: 30, retention: 30, enabled: true },
+    ],
+  },
+  {
+    id: "pentaho-server", name: "Pentaho Server",
+    description: "ETL-oriented defaults for Pentaho/Kettle and batch job telemetry.",
+    scope: "VM + ETL",
+    collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["VM metrics","System logs","ETL logs","Services"] },
+    metrics: [
+      { name: "CPU Utilization", metric: "cpu.utilization", resource: "VM", unit: "%", interval: 30, enabled: true },
+      { name: "Disk Utilization", metric: "disk.utilization", resource: "VM", unit: "%", interval: 60, enabled: true },
+    ],
+    alerts: [
+      { name: "ETL Long Running", domain: "ETL", metric: "Job Runtime", severity: "WARNING", operator: "GT", threshold: 1800, window: 300, consecutive: 1, notifications: ["EMAIL"] },
+    ],
+    logs: [
+      { name: "Pentaho Logs", source: "FILE", location: "/opt/pentaho/logs/*.log", parser: "PENTAHO", severity: "ERROR+", interval: 15, retention: 30, enabled: true },
+    ],
+  },
+  {
+    id: "web-ui", name: "SLM Web UI", description: "WebUI/Tomcat/Apache monitoring defaults for SLM application servers.",
+    scope: "Application / Services",
+    collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["Application logs","Services","Traces"] },
+    metrics: [{ name: "HTTP Response Time", metric: "http.server.duration", resource: "Application", unit: "ms", interval: 30, enabled: true }],
+    alerts: [{ name: "HTTP Response Slow", domain: "Application / Services", metric: "HTTP Response Time", severity: "WARNING", operator: "GT", threshold: 2000, window: 300, consecutive: 3, notifications: ["EMAIL"] }],
+    logs: [{ name: "Apache / Tomcat Logs", source: "FILE", location: "/opt/*/logs/*.log", parser: "TEXT", severity: "ERROR+", interval: 30, retention: 30, enabled: true }],
+  },
+  {
+    id: "ssl", name: "SSL / Certificate", description: "Certificate and TLS monitoring defaults for customer endpoints.",
+    scope: "Application / Services",
+    collector: { type: "OTEL", interval: 300, protocol: "OTLP/HTTP", port: 4318, tls: true, telemetry: ["Traces"] },
+    metrics: [{ name: "Certificate Days Remaining", metric: "ssl.certificate.days_remaining", resource: "Application", unit: "days", interval: 300, enabled: true }],
+    alerts: [{ name: "Certificate Expiry", domain: "Application / Services", metric: "Certificate Days Remaining", severity: "CRITICAL", operator: "LT", threshold: 15, window: 900, consecutive: 1, notifications: ["EMAIL","PAGERDUTY"] }],
+    logs: [],
+  },
 ];
 
 function metadata(item) {
@@ -65,6 +127,87 @@ function TemplateCard({ template, selected, onClick }) {
   </button>;
 }
 
+
+function TemplateEditor({ template, onSave, onClose }) {
+  const [draft, setDraft] = useState(JSON.parse(JSON.stringify(template)));
+  const [tab, setTab] = useState("collector");
+  const [newMetric, setNewMetric] = useState({ name: "", metric: "", resource: "VM", unit: "", interval: 60, enabled: true });
+  const [newAlert, setNewAlert] = useState({ name: "", domain: "VM", metric: "", severity: "WARNING", operator: "GT", threshold: 80, window: 300, consecutive: 1, notifications: ["EMAIL"] });
+  const [newLog, setNewLog] = useState({ name: "", source: "FILE", location: "", parser: "RAW", severity: "ERROR+", interval: 30, retention: 30, enabled: true });
+
+  const updateCollector = (key, value) => setDraft(d => ({ ...d, collector: { ...d.collector, [key]: value } }));
+  const updateRow = (section, index, key, value) => setDraft(d => ({ ...d, [section]: d[section].map((row, i) => i === index ? { ...row, [key]: value } : row) }));
+  const removeRow = (section, index) => setDraft(d => ({ ...d, [section]: d[section].filter((_, i) => i !== index) }));
+
+  const addMetric = () => {
+    if (!newMetric.name.trim() || !newMetric.metric.trim()) return;
+    setDraft(d => ({ ...d, metrics: [...d.metrics, { ...newMetric, interval: Number(newMetric.interval) }] }));
+    setNewMetric({ name: "", metric: "", resource: "VM", unit: "", interval: 60, enabled: true });
+  };
+  const addAlert = () => {
+    if (!newAlert.name.trim() || !newAlert.metric.trim()) return;
+    setDraft(d => ({ ...d, alerts: [...d.alerts, { ...newAlert, threshold: Number(newAlert.threshold), window: Number(newAlert.window), consecutive: Number(newAlert.consecutive) }] }));
+    setNewAlert({ name: "", domain: "VM", metric: "", severity: "WARNING", operator: "GT", threshold: 80, window: 300, consecutive: 1, notifications: ["EMAIL"] });
+  };
+  const addLog = () => {
+    if (!newLog.name.trim() || !newLog.location.trim()) return;
+    setDraft(d => ({ ...d, logs: [...d.logs, { ...newLog, interval: Number(newLog.interval), retention: Number(newLog.retention) }] }));
+    setNewLog({ name: "", source: "FILE", location: "", parser: "RAW", severity: "ERROR+", interval: 30, retention: 30, enabled: true });
+  };
+
+  return <Modal title={template.id ? "Edit Monitoring Template" : "Create Monitoring Template"} wide onClose={onClose}>
+    <div className="template-editor-title">
+      <div><Field label="Template Name"><input value={draft.name} onChange={e => setDraft(d => ({ ...d, name: e.target.value }))} /></Field></div>
+      <div><Field label="Scope"><input value={draft.scope} onChange={e => setDraft(d => ({ ...d, scope: e.target.value }))} /></Field></div>
+    </div>
+    <Field label="Description"><textarea value={draft.description} onChange={e => setDraft(d => ({ ...d, description: e.target.value }))} /></Field>
+
+    <div className="template-editor-tabs">
+      {[["collector","Collector configuration"],["metrics","Metric Rules"],["alerts","Alert Rules"],["logs","Log collection defaults"]].map(([key,label]) =>
+        <button type="button" key={key} className={tab === key ? "template-editor-tab active" : "template-editor-tab"} onClick={() => setTab(key)}>{label}</button>
+      )}
+    </div>
+
+    {tab === "collector" && <div className="template-editor-panel">
+      <div className="info-box">Defaults applied when this template is attached to a Data Source. These values describe the collector package; they do not install anything by themselves.</div>
+      <div className="form-grid">
+        <Field label="Collector Type"><select value={draft.collector.type} onChange={e => updateCollector("type", e.target.value)}><option>OTEL</option><option>WINDOWS</option><option>LINUX</option><option>PENTAHO</option></select></Field>
+        <Field label="Collection Interval (sec)"><input type="number" min="5" value={draft.collector.interval} onChange={e => updateCollector("interval", Number(e.target.value))} /></Field>
+      </div>
+      <div className="form-grid">
+        <Field label="Protocol"><select value={draft.collector.protocol} onChange={e => updateCollector("protocol", e.target.value)}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field>
+        <Field label="Port"><input type="number" min="1" max="65535" value={draft.collector.port} onChange={e => updateCollector("port", Number(e.target.value))} /></Field>
+      </div>
+      <label className="toggle"><input type="checkbox" checked={draft.collector.tls} onChange={e => updateCollector("tls", e.target.checked)} /><span>TLS enabled by default</span></label>
+      <Field label="Telemetry"><div className="check-grid">{TELEMETRY.map(x => <label className="check-option" key={x}><input type="checkbox" checked={draft.collector.telemetry.includes(x)} onChange={() => updateCollector("telemetry", draft.collector.telemetry.includes(x) ? draft.collector.telemetry.filter(v => v !== x) : [...draft.collector.telemetry, x])} /><span>{x}</span></label>)}</div></Field>
+    </div>}
+
+    {tab === "metrics" && <div className="template-editor-panel">
+      <div className="template-rule-list">{draft.metrics.map((row, i) =>
+        <div className="template-rule-row" key={i}><input value={row.name} placeholder="Rule name" onChange={e => updateRow("metrics", i, "name", e.target.value)} /><input value={row.metric} placeholder="Metric key" onChange={e => updateRow("metrics", i, "metric", e.target.value)} /><select value={row.resource} onChange={e => updateRow("metrics", i, "resource", e.target.value)}><option>VM</option><option>Application</option><option>ETL</option></select><input value={row.unit || ""} placeholder="Unit" onChange={e => updateRow("metrics", i, "unit", e.target.value)} /><input type="number" min="5" value={row.interval} onChange={e => updateRow("metrics", i, "interval", Number(e.target.value))} /><label className="inline-check"><input type="checkbox" checked={row.enabled} onChange={e => updateRow("metrics", i, "enabled", e.target.checked)} /> Enabled</label><button type="button" className="filter-button danger-button" onClick={() => removeRow("metrics", i)}>Remove</button></div>
+      )}</div>
+      <div className="template-add-row"><input value={newMetric.name} placeholder="Metric rule name" onChange={e => setNewMetric(v => ({ ...v, name: e.target.value }))} /><input value={newMetric.metric} placeholder="Metric key e.g. cpu.utilization" onChange={e => setNewMetric(v => ({ ...v, metric: e.target.value }))} /><select value={newMetric.resource} onChange={e => setNewMetric(v => ({ ...v, resource: e.target.value }))}><option>VM</option><option>Application</option><option>ETL</option></select><input value={newMetric.unit} placeholder="Unit" onChange={e => setNewMetric(v => ({ ...v, unit: e.target.value }))} /><input type="number" value={newMetric.interval} onChange={e => setNewMetric(v => ({ ...v, interval: e.target.value }))} /><button type="button" className="primary-button" onClick={addMetric}>+ Add Metric</button></div>
+    </div>}
+
+    {tab === "alerts" && <div className="template-editor-panel">
+      <div className="info-box">Alert Rules are packaged by the template, but their final domain model remains intentionally separate. For now the editor supports VM, Application / Services and ETL Job rule domains.</div>
+      <div className="template-rule-list">{draft.alerts.map((row, i) =>
+        <div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={row.name} placeholder="Alert name" onChange={e => updateRow("alerts", i, "name", e.target.value)} /><select value={row.domain} onChange={e => updateRow("alerts", i, "domain", e.target.value)}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={row.metric} placeholder="Metric / signal" onChange={e => updateRow("alerts", i, "metric", e.target.value)} /><select value={row.severity} onChange={e => updateRow("alerts", i, "severity", e.target.value)}><option>INFO</option><option>WARNING</option><option>CRITICAL</option></select><select value={row.operator} onChange={e => updateRow("alerts", i, "operator", e.target.value)}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option><option>EQ</option><option>NE</option></select><input type="number" value={row.threshold} onChange={e => updateRow("alerts", i, "threshold", Number(e.target.value))} placeholder="Threshold" /><input type="number" value={row.window} onChange={e => updateRow("alerts", i, "window", Number(e.target.value))} placeholder="Window sec" /><input type="number" min="1" value={row.consecutive} onChange={e => updateRow("alerts", i, "consecutive", Number(e.target.value))} placeholder="Breaches" /><button type="button" className="filter-button danger-button" onClick={() => removeRow("alerts", i)}>Remove</button></div><small>Notifications: {(row.notifications || []).join(", ") || "None"}</small></div>
+      )}</div>
+      <div className="template-add-row alert-add-row"><input value={newAlert.name} placeholder="Alert name" onChange={e => setNewAlert(v => ({ ...v, name: e.target.value }))} /><select value={newAlert.domain} onChange={e => setNewAlert(v => ({ ...v, domain: e.target.value }))}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={newAlert.metric} placeholder="Metric / signal" onChange={e => setNewAlert(v => ({ ...v, metric: e.target.value }))} /><select value={newAlert.severity} onChange={e => setNewAlert(v => ({ ...v, severity: e.target.value }))}><option>WARNING</option><option>CRITICAL</option><option>INFO</option></select><select value={newAlert.operator} onChange={e => setNewAlert(v => ({ ...v, operator: e.target.value }))}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option></select><input type="number" value={newAlert.threshold} onChange={e => setNewAlert(v => ({ ...v, threshold: e.target.value }))} /><button type="button" className="primary-button" onClick={addAlert}>+ Add Alert</button></div>
+    </div>}
+
+    {tab === "logs" && <div className="template-editor-panel">
+      <div className="template-rule-list">{draft.logs.map((row, i) =>
+        <div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={row.name} placeholder="Log source name" onChange={e => updateRow("logs", i, "name", e.target.value)} /><select value={row.source} onChange={e => updateRow("logs", i, "source", e.target.value)}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={row.location} placeholder="Path / source" onChange={e => updateRow("logs", i, "location", e.target.value)} /><select value={row.parser} onChange={e => updateRow("logs", i, "parser", e.target.value)}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><input value={row.severity} placeholder="Severity" onChange={e => updateRow("logs", i, "severity", e.target.value)} /><input type="number" value={row.interval} onChange={e => updateRow("logs", i, "interval", Number(e.target.value))} placeholder="Interval" /><input type="number" value={row.retention} onChange={e => updateRow("logs", i, "retention", Number(e.target.value))} placeholder="Days" /><label className="inline-check"><input type="checkbox" checked={row.enabled} onChange={e => updateRow("logs", i, "enabled", e.target.checked)} /> Enabled</label><button type="button" className="filter-button danger-button" onClick={() => removeRow("logs", i)}>Remove</button></div></div>
+      )}</div>
+      <div className="template-add-row"><input value={newLog.name} placeholder="Log source name" onChange={e => setNewLog(v => ({ ...v, name: e.target.value }))} /><select value={newLog.source} onChange={e => setNewLog(v => ({ ...v, source: e.target.value }))}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={newLog.location} placeholder="Path / source" onChange={e => setNewLog(v => ({ ...v, location: e.target.value }))} /><select value={newLog.parser} onChange={e => setNewLog(v => ({ ...v, parser: e.target.value }))}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><button type="button" className="primary-button" onClick={addLog}>+ Add Log Source</button></div>
+    </div>}
+
+    <div className="form-footer"><span className="muted small">Template package: collector + metrics + alerts + logs</span><div><button type="button" className="filter-button" onClick={onClose}>Cancel</button><button type="button" className="primary-button" onClick={() => onSave(draft)}>Save Template</button></div></div>
+  </Modal>;
+}
+
 export default function ResourceManagement({ organizationId, organizationIds = [] }) {
   const scope = organizationIds.length ? organizationIds : (organizationId ? [organizationId] : []);
   const [tab, setTab] = useState("data-sources");
@@ -80,6 +223,13 @@ export default function ResourceManagement({ organizationId, organizationIds = [
   const [collector, setCollector] = useState(newCollector());
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [templates, setTemplates] = useState(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem("opscontrol.monitoringTemplates") || "null");
+      return Array.isArray(saved) && saved.length ? saved : DEFAULT_TEMPLATES;
+    } catch { return DEFAULT_TEMPLATES; }
+  });
+  const [templateEditor, setTemplateEditor] = useState(null);
 
   const reload = async () => {
     setLoading(true); setError(null);
@@ -94,6 +244,9 @@ export default function ResourceManagement({ organizationId, organizationIds = [
     finally { setLoading(false); }
   };
   useEffect(() => { reload(); }, [organizationId, JSON.stringify(organizationIds)]);
+  useEffect(() => {
+    window.localStorage.setItem("opscontrol.monitoringTemplates", JSON.stringify(templates));
+  }, [templates]);
 
   const orgMap = useMemo(() => new Map(organizations.map(x => [x.id, x])), [organizations]);
   const sources = useMemo(() => {
@@ -117,7 +270,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
   const createResource = async () => {
     setSaving(true); setError(null);
     try {
-      const chosen = TEMPLATES.filter(x => ds.templates.includes(x.id));
+      const chosen = templates.filter(x => ds.templates.includes(x.id));
       const source = await createDataSource({
         organization_id: ds.organization_id,
         name: ds.name || ds.hostname,
@@ -166,7 +319,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         connection_config: { ...(editing.connection_config || {}), opscontrol: {
           ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment,
           server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product,
-          host_groups: ds.host_groups, template_ids: ds.templates, templates: TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name),
+          host_groups: ds.host_groups, template_ids: ds.templates, templates: templates.filter(x => ds.templates.includes(x.id)).map(x => x.name),
         }},
       });
       setEditing(null); await reload();
@@ -187,7 +340,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
       <div className="card resource-summary-card"><span>Organizations</span><b>{organizations.length}</b><small>Customer boundaries</small></div>
       <div className="card resource-summary-card"><span>Data Sources</span><b>{dataSources.length}</b><small>Customer machines</small></div>
       <div className="card resource-summary-card"><span>Collectors</span><b>{collectors.length}</b><small>{collectors.filter(x => String(x.status).toUpperCase() === "ONLINE").length} online</small></div>
-      <div className="card resource-summary-card"><span>Templates</span><b>{TEMPLATES.length}</b><small>Reusable packages</small></div>
+      <div className="card resource-summary-card"><span>Templates</span><b>{templates.length}</b><small>Reusable packages</small></div>
     </div>
 
     <div className="resource-layout">
@@ -236,10 +389,20 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         </div>}
 
         {tab === "templates" && <div className="resource-section-stack">
-          <div className="card resource-toolbar"><div><h2>Monitoring Templates</h2><span className="muted small">Each package can contain collector configuration, metrics, alerts and log collection defaults.</span></div></div>
-          <div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={false} onClick={() => {}} />)}</div>
-          <div className="card info-box resource-info-panel"><b>Template rule</b><p>Templates are not alert rules. They are reusable monitoring packages selected during Data Source onboarding. Metric Rules and the three Alert Rule domains will be designed later.</p></div>
-        </div>}
+          <div className="card resource-toolbar">
+            <div><h2>Monitoring Templates</h2><span className="muted small">Build reusable monitoring packages once, then apply them to hundreds of Data Sources.</span></div>
+            <button className="primary-button" onClick={() => setTemplateEditor({ id: "", name: "New Monitoring Template", description: "", scope: "VM + Application / Services", collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["VM metrics"] }, metrics: [], alerts: [], logs: [] })}>+ Create Template</button>
+          </div>
+          <div className="template-admin-grid">
+            {templates.map(t => <div className="card template-admin-card" key={t.id}>
+              <div className="template-admin-head"><div><b>{t.name}</b><small>{t.scope}</small></div><button className="filter-button" onClick={() => setTemplateEditor(t)}>Edit</button></div>
+              <p>{t.description}</p>
+              <div className="template-counts"><span>{t.collector?.telemetry?.length || 0} collector signals</span><span>{t.metrics?.length || 0} metric rules</span><span>{t.alerts?.length || 0} alert rules</span><span>{t.logs?.length || 0} log defaults</span></div>
+            </div>)}
+          </div>
+          <div className="card info-box resource-info-panel"><b>Template package model</b><p>Each template is a complete monitoring package: Collector configuration + Metric Rules + Alert Rules + Log collection defaults. Templates are independent from the eventual Alert Rule domain design.</p></div>
+        </div>
+
       </section>
     </div>
 
@@ -259,7 +422,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
 
       {step === 2 && <div className="resource-form">
         <div className="info-box">Select reusable packages instead of manually configuring hundreds of servers. Multiple templates can be attached to one Data Source.</div>
-        <div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div>
+        <div className="template-grid">{DEFAULT_TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div>
         <div className="form-footer"><span className="muted small">Step 2 of 4 · {ds.templates.length} selected</span><div><button type="button" className="filter-button" onClick={() => setStep(1)}>← Back</button><button type="button" className="primary-button" onClick={() => setStep(3)}>Next: Collector →</button></div></div>
       </div>}
 
@@ -275,18 +438,29 @@ export default function ResourceManagement({ organizationId, organizationIds = [
       </div>}
 
       {step === 4 && <div className="resource-form">
-        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || `${ds.hostname || ds.name}-OTEL`}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
+        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{DEFAULT_TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || `${ds.hostname || ds.name}-OTEL`}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
         <div className="card source-fact"><b>What happens next</b><p>OpsControl creates the Data Source and one OTEL Collector. Selected templates are attached as reusable monitoring packages. Metric and Alert Rule backends are deliberately unchanged in this phase.</p></div>
         <div className="form-footer"><span className="muted small">Step 4 of 4</span><div><button type="button" className="filter-button" onClick={() => setStep(3)}>← Back</button><button type="button" className="primary-button" disabled={saving} onClick={createResource}>{saving ? "Creating..." : "Create Data Source + Collector"}</button></div></div>
       </div>}
     </Modal>}
+
+    {templateEditor && <TemplateEditor
+      template={templateEditor}
+      onClose={() => setTemplateEditor(null)}
+      onSave={draft => {
+        const id = draft.id || draft.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `template-${Date.now()}`;
+        const next = { ...draft, id };
+        setTemplates(current => current.some(x => x.id === id) ? current.map(x => x.id === id ? next : x) : [...current, next]);
+        setTemplateEditor(null);
+      }}
+    />}
 
     {editing && <Modal title={`${ds.visible_name || ds.name}`} onClose={() => !saving && setEditing(null)}>
       <form className="resource-form" onSubmit={async e => {
         e.preventDefault(); setSaving(true);
         try {
           const old = metadata(editing);
-          await updateDataSource(editing.id, { name: ds.name, endpoint: ds.hostname, description: ds.description || null, connection_config: { ...(editing.connection_config || {}), opscontrol: { ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment, server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product, host_groups: ds.host_groups, template_ids: ds.templates, templates: TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name) } } });
+          await updateDataSource(editing.id, { name: ds.name, endpoint: ds.hostname, description: ds.description || null, connection_config: { ...(editing.connection_config || {}), opscontrol: { ...old, visible_name: ds.visible_name || ds.name, hostname: ds.hostname, environment: ds.environment, server_type: ds.server_type, os_type: ds.os_type, product_family: ds.product_family, product: ds.product, host_groups: ds.host_groups, template_ids: ds.templates, templates: DEFAULT_TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name) } } });
           setEditing(null); await reload();
         } catch (e2) { setError(e2.message || "Unable to update Data Source"); } finally { setSaving(false); }
       }}>
@@ -295,7 +469,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         <div className="form-grid"><Field label="Environment"><select value={ds.environment} onChange={e => setDs(f => ({ ...f, environment: e.target.value }))}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Server Type"><select value={ds.server_type} onChange={e => setDs(f => ({ ...f, server_type: e.target.value }))}>{SERVER_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div>
         <div className="form-grid"><Field label="OS Type"><select value={ds.os_type} onChange={e => setDs(f => ({ ...f, os_type: e.target.value }))}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Product"><select value={ds.product} onChange={e => setDs(f => ({ ...f, product: e.target.value }))}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div>
         <Field label="Host Groups"><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={ds.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field>
-        <Field label="Templates"><div className="template-grid">{TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div></Field>
+        <Field label="Templates"><div className="template-grid">{DEFAULT_TEMPLATES.map(t => <TemplateCard key={t.id} template={t} selected={ds.templates.includes(t.id)} onClick={() => toggle("templates", t.id)} />)}</div></Field>
         <Field label="Description"><textarea value={ds.description} onChange={e => setDs(f => ({ ...f, description: e.target.value }))} /></Field>
         <div className="form-footer"><span className="muted small">Templates are stored with the Data Source configuration.</span><div><button type="button" className="filter-button" onClick={() => setEditing(null)}>Cancel</button><button className="primary-button" disabled={saving}>{saving ? "Saving..." : "Save Changes"}</button></div></div>
       </form>
