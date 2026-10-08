@@ -5,8 +5,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import Collector, DataSource, LogSource, MetricDefinition, Organization
+from app.models import AlertRule, Collector, DataSource, LogSource, MetricDefinition, Organization
 from app.schemas.monitoring import (
+    AlertRuleCreate,
+    AlertRuleOut,
+    AlertRuleUpdate,
     CollectorCreate,
     CollectorOut,
     CollectorUpdate,
@@ -246,3 +249,43 @@ def list_organizations(
     if active is not None:
         stmt = stmt.where(Organization.active == active)
     return db.scalars(stmt).all()
+
+
+@router.get("/alert-rules", response_model=list[AlertRuleOut])
+def list_alert_rules(organization_id: UUID | None = None, metric_definition_id: UUID | None = None, enabled: bool | None = None, limit: int = Query(100, ge=1, le=500), db: Session = Depends(get_db)):
+    stmt = select(AlertRule).order_by(AlertRule.name).limit(limit)
+    if organization_id: stmt = stmt.where(AlertRule.organization_id == organization_id)
+    if metric_definition_id: stmt = stmt.where(AlertRule.metric_definition_id == metric_definition_id)
+    if enabled is not None: stmt = stmt.where(AlertRule.enabled == enabled)
+    return db.scalars(stmt).all()
+
+@router.get("/alert-rules/{item_id}", response_model=AlertRuleOut)
+def get_alert_rule(item_id: UUID, db: Session = Depends(get_db)):
+    return _get_or_404(AlertRule, item_id, db, "Alert rule")
+
+@router.post("/alert-rules", response_model=AlertRuleOut, status_code=201)
+def create_alert_rule(payload: AlertRuleCreate, db: Session = Depends(get_db)):
+    metric = _get_or_404(MetricDefinition, payload.metric_definition_id, db, "Metric definition")
+    if metric.organization_id != payload.organization_id:
+        raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+    item = AlertRule(**payload.model_dump())
+    db.add(item); db.commit(); db.refresh(item)
+    return item
+
+@router.patch("/alert-rules/{item_id}", response_model=AlertRuleOut)
+def update_alert_rule(item_id: UUID, payload: AlertRuleUpdate, db: Session = Depends(get_db)):
+    item = _get_or_404(AlertRule, item_id, db, "Alert rule")
+    values = payload.model_dump(exclude_unset=True)
+    if "metric_definition_id" in values:
+        metric = _get_or_404(MetricDefinition, values["metric_definition_id"], db, "Metric definition")
+        if metric.organization_id != item.organization_id:
+            raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+    for key, value in values.items(): setattr(item, key, value)
+    db.commit(); db.refresh(item)
+    return item
+
+@router.delete("/alert-rules/{item_id}", status_code=204)
+def disable_alert_rule(item_id: UUID, db: Session = Depends(get_db)):
+    item = _get_or_404(AlertRule, item_id, db, "Alert rule")
+    item.enabled = False
+    db.commit()
