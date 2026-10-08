@@ -162,3 +162,11 @@ class LogSourceOut(LogSourceBase):
     collector_id: UUID | None
     created_at: datetime
     updated_at: datetime
+
+
+class OrganizationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    name: str
+    code: str
+    active: bool
