@@ -1,0 +1,174 @@
+import enum
+import uuid
+from datetime import datetime
+from sqlalchemy import Boolean, DateTime, Enum, ForeignKey, Integer, String, Text, UniqueConstraint, JSON
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.db.session import Base
+
+class ExecutionType(str, enum.Enum):
+    SCHEDULED = "SCHEDULED"
+    MANUAL = "MANUAL"
+class ExecutionStatus(str, enum.Enum):
+    SUCCESS = "SUCCESS"
+    FAILED = "FAILED"
+    RUNNING = "RUNNING"
+    LONG_RUNNING = "LONG_RUNNING"
+    NO_RUN = "NO_RUN"
+    NO_RESPONSE = "NO_RESPONSE"
+class InvestigationStatus(str, enum.Enum):
+    NEW = "NEW"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
+    INVESTIGATING = "INVESTIGATING"
+    ROOT_CAUSE_IDENTIFIED = "ROOT_CAUSE_IDENTIFIED"
+    RECOVERY_IN_PROGRESS = "RECOVERY_IN_PROGRESS"
+    MONITORING = "MONITORING"
+    RESOLVED = "RESOLVED"
+class Organization(Base):
+    __tablename__ = "organizations"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
+    code: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    vms: Mapped[list["VM"]] = relationship(back_populates="organization")
+    job_orders: Mapped[list["JobOrder"]] = relationship(back_populates="organization")
+class VM(Base):
+    __tablename__ = "vms"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    hostname: Mapped[str] = mapped_column(String(200), nullable=False)
+    environment: Mapped[str] = mapped_column(String(50), nullable=False, default="PROD")
+    os: Mapped[str | None] = mapped_column(String(100))
+    monitoring_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="vms")
+    applications: Mapped[list["Application"]] = relationship(back_populates="vm")
+    pentaho_instances: Mapped[list["PentahoInstance"]] = relationship(back_populates="vm")
+    job_orders: Mapped[list["JobOrder"]] = relationship(back_populates="vm")
+    __table_args__ = (UniqueConstraint("organization_id", "hostname", name="uq_vm_org_hostname"),)
+class Application(Base):
+    __tablename__ = "applications"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    vm_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("vms.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    app_type: Mapped[str | None] = mapped_column(String(100))
+    monitoring_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    vm: Mapped["VM"] = relationship(back_populates="applications")
+    __table_args__ = (UniqueConstraint("vm_id", "name", name="uq_application_vm_name"),)
+class PentahoInstance(Base):
+    __tablename__ = "pentaho_instances"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    vm_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("vms.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    base_url: Mapped[str | None] = mapped_column(String(500))
+    repository_name: Mapped[str | None] = mapped_column(String(200))
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    vm: Mapped["VM"] = relationship(back_populates="pentaho_instances")
+class JobOrder(Base):
+    __tablename__ = "job_orders"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    vm_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("vms.id"), nullable=False, index=True)
+    pentaho_instance_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("pentaho_instances.id"))
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    environment: Mapped[str] = mapped_column(String(50), nullable=False, default="PROD")
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    expected_runtime_seconds: Mapped[int | None] = mapped_column(Integer)
+    sla_seconds: Mapped[int | None] = mapped_column(Integer)
+    schedule: Mapped[dict | None] = mapped_column(JSON)
+    expected_window_start: Mapped[str | None] = mapped_column(String(10))
+    expected_window_end: Mapped[str | None] = mapped_column(String(10))
+    no_run_grace_seconds: Mapped[int | None] = mapped_column(Integer)
+    monitoring_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="job_orders")
+    vm: Mapped["VM"] = relationship(back_populates="job_orders")
+    histories: Mapped[list["JobOrderHistory"]] = relationship(back_populates="job_order", cascade="all, delete-orphan")
+    __table_args__ = (UniqueConstraint("organization_id", "vm_id", "name", name="uq_job_order_identity"),)
+class JobOrderHistory(Base):
+    __tablename__ = "job_order_histories"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    job_order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_orders.id"), nullable=False, index=True)
+    execution_type: Mapped[ExecutionType] = mapped_column(Enum(ExecutionType), nullable=False)
+    status: Mapped[ExecutionStatus] = mapped_column(Enum(ExecutionStatus), nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    detected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    expected_runtime_seconds: Mapped[int | None] = mapped_column(Integer)
+    sla_seconds: Mapped[int | None] = mapped_column(Integer)
+    sla_status: Mapped[str | None] = mapped_column(String(50))
+    failed_step: Mapped[str | None] = mapped_column(String(200))
+    source_error_code: Mapped[str | None] = mapped_column(String(100))
+    source_error_message: Mapped[str | None] = mapped_column(Text)
+    source_exception: Mapped[str | None] = mapped_column(Text)
+    source_log_location: Mapped[str | None] = mapped_column(String(1000))
+    source_result: Mapped[str | None] = mapped_column(String(200))
+    incident_number: Mapped[str | None] = mapped_column(String(100))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    job_order: Mapped["JobOrder"] = relationship(back_populates="histories")
+    steps: Mapped[list["JobStepExecution"]] = relationship(back_populates="history", cascade="all, delete-orphan")
+    investigation: Mapped["Investigation | None"] = relationship(back_populates="history", uselist=False, cascade="all, delete-orphan")
+    alert_events: Mapped[list["AlertIncidentEvent"]] = relationship(back_populates="history", cascade="all, delete-orphan")
+class JobStepExecution(Base):
+    __tablename__ = "job_step_executions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    step_type: Mapped[str | None] = mapped_column(String(100))
+    status: Mapped[str] = mapped_column(String(50), nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    duration_seconds: Mapped[int | None] = mapped_column(Integer)
+    records_read: Mapped[int | None] = mapped_column(Integer)
+    records_written: Mapped[int | None] = mapped_column(Integer)
+    records_rejected: Mapped[int | None] = mapped_column(Integer)
+    error_code: Mapped[str | None] = mapped_column(String(100))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    history: Mapped["JobOrderHistory"] = relationship(back_populates="steps")
+class Investigation(Base):
+    __tablename__ = "investigations"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, unique=True)
+    status: Mapped[InvestigationStatus] = mapped_column(Enum(InvestigationStatus), nullable=False, default=InvestigationStatus.NEW)
+    operator: Mapped[str | None] = mapped_column(String(200))
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    failure_category: Mapped[str | None] = mapped_column(String(100))
+    suspected_cause: Mapped[str | None] = mapped_column(Text)
+    confidence: Mapped[str | None] = mapped_column(String(50))
+    root_cause: Mapped[str | None] = mapped_column(Text)
+    root_cause_status: Mapped[str | None] = mapped_column(String(50))
+    history: Mapped["JobOrderHistory"] = relationship(back_populates="investigation")
+    transitions: Mapped[list["InvestigationTransition"]] = relationship(back_populates="investigation", cascade="all, delete-orphan")
+    notes: Mapped[list["OperatorNote"]] = relationship(back_populates="investigation", cascade="all, delete-orphan")
+class InvestigationTransition(Base):
+    __tablename__ = "investigation_transitions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    investigation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("investigations.id"), nullable=False, index=True)
+    previous_status: Mapped[InvestigationStatus] = mapped_column(Enum(InvestigationStatus), nullable=False)
+    new_status: Mapped[InvestigationStatus] = mapped_column(Enum(InvestigationStatus), nullable=False)
+    operator: Mapped[str] = mapped_column(String(200), nullable=False)
+    comment: Mapped[str | None] = mapped_column(Text)
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    investigation: Mapped["Investigation"] = relationship(back_populates="transitions")
+class OperatorNote(Base):
+    __tablename__ = "operator_notes"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    investigation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("investigations.id"), nullable=False, index=True)
+    operator: Mapped[str] = mapped_column(String(200), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    evidence_reference: Mapped[str | None] = mapped_column(String(1000))
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    investigation: Mapped["Investigation"] = relationship(back_populates="notes")
+class AlertIncidentEvent(Base):
+    __tablename__ = "alert_incident_events"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, index=True)
+    event_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    source: Mapped[str] = mapped_column(String(100), nullable=False)
+    reference: Mapped[str | None] = mapped_column(String(200))
+    severity: Mapped[str | None] = mapped_column(String(50))
+    timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    history: Mapped["JobOrderHistory"] = relationship(back_populates="alert_events")
