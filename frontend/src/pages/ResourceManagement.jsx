@@ -3,25 +3,28 @@ import {
   createCollector, createDataSource, createLogSource, createMetric,
   deleteCollector, deleteDataSource, deleteLogSource, deleteMetric,
   fetchCollectors, fetchDataSources, fetchLogSources, fetchMetrics,
-  updateCollector, updateDataSource, updateLogSource, updateMetric, fetchOrganizations
+  updateCollector, updateDataSource, updateLogSource, updateMetric, updateAlertRule, createAlertRule, deleteAlertRule, fetchOrganizations
 } from "../api";
 
 const tabs = [
   ["data-sources","Data Sources","Connections and source systems"],
   ["collectors","Collectors","Collection schedules and runtime"],
   ["metrics","Metrics","What OpsControl should measure"],
-  ["logs","Log Sources","What OpsControl should collect and parse"]
+  ["logs","Log Sources","What OpsControl should collect and parse"],
+  ["alert-rules","Alert Rules","When metrics require attention"]
 ];
 const sourceTypes=["WINDOWS","LINUX","API","PENTAHO","SFTP","S3","DATABASE","FILE"];
 const metricTypes=["GAUGE","COUNTER","RATE","HISTOGRAM"];
 const resourceTypes=["VM","APPLICATION","ETL_JOB","API","DATABASE","SFTP","S3"];
 const parserTypes=["RAW","PATTERN","JSON","CSV","REGEX"];
+const alertOperators=[["GT",">"],["GTE",">="],["LT","<"],["LTE","<="],["EQ","="],["NE","!="]];
 const labelFor=k=>tabs.find(x=>x[0]===k)?.[1]||k;
 const singular=k=>labelFor(k).replace(/s$/,"");
 function blank(k){
  if(k==="data-sources")return{name:"",source_type:"WINDOWS",description:"",endpoint:"",auth_type:"NONE",connection_config:"{}",enabled:true};
  if(k==="collectors")return{name:"",collector_type:"VM",data_source_id:"",enabled:true,interval_seconds:30,configuration:"{}"};
- if(k==="metrics")return{name:"",description:"",resource_type:"VM",resource_id:"",metric_type:"GAUGE",unit:"percent",collection_interval_seconds:30,retention_days:365,aggregation:"avg",query_config:"{}",data_source_id:"",collector_id:"",enabled:true};
+ if(k==="alert-rules")return{name:"",metric_definition_id:"",severity:"WARNING",operator:"GT",threshold_value:"",evaluation_window_seconds:60,consecutive_breaches:1,enabled:true};
+  if(k==="metrics")return{name:"",description:"",resource_type:"VM",resource_id:"",metric_type:"GAUGE",unit:"percent",collection_interval_seconds:30,retention_days:365,aggregation:"avg",query_config:"{}",data_source_id:"",collector_id:"",enabled:true};
  return{name:"",source_type:"FILE",resource_type:"VM",resource_id:"",location:"",parser_type:"RAW",parser_config:"{}",start_position:"NEW",collection_interval_seconds:30,retention_days:30,data_source_id:"",collector_id:"",enabled:true};
 }
 function Modal({title,children,onClose}){return <div className="modal-backdrop" onMouseDown={e=>e.target===e.currentTarget&&onClose()}><div className="modal"><div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" onClick={onClose}>×</button></div>{children}</div></div>}
@@ -33,7 +36,7 @@ export default function ResourceManagement(){
  const [loading,setLoading]=useState(true),[error,setError]=useState(null),[modal,setModal]=useState(null),[form,setForm]=useState(null),[saving,setSaving]=useState(false),[query,setQuery]=useState("");
  const reload=async()=>{setLoading(true);setError(null);try{const orgs=await fetchOrganizations();setOrganizations(orgs);const activeOrg=organizationId||orgs[0]?.id||"";if(!organizationId&&activeOrg)setOrganizationId(activeOrg);const r=await Promise.all([fetchDataSources({organization_id:activeOrg}),fetchCollectors(),fetchMetrics({organization_id:activeOrg}),fetchLogSources({organization_id:activeOrg})]);setDataSources(r[0]);setCollectors(r[1]);setMetrics(r[2]);setLogs(r[3])}catch(e){setError(e.message||"Unable to load monitoring configuration")}finally{setLoading(false)}};
  useEffect(()=>{reload()},[organizationId]);
- const items=tab==="data-sources"?dataSources:tab==="collectors"?collectors:tab==="metrics"?metrics:logs;
+ const items=tab==="data-sources"?dataSources:tab==="collectors"?collectors:tab==="metrics"?metrics:tab==="logs"?logs:alertRules;
  const filtered=useMemo(()=>items.filter(x=>(String(x.name||"")+" "+String(x.source_type||"")+" "+String(x.collector_type||"")+" "+String(x.resource_type||"")).toLowerCase().includes(query.toLowerCase())),[items,query]);
  const openCreate=()=>{setForm(blank(tab));setModal({mode:"create",kind:tab,title:"Add "+singular(tab)})};
  const openEdit=item=>{const f={...item};["connection_config","configuration","query_config","parser_config"].forEach(k=>{if(k in f)f[k]=JSON.stringify(f[k]||{},null,2)});setForm(f);setModal({mode:"edit",kind:tab,title:"Edit "+singular(tab)})};
