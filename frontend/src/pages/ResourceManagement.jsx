@@ -133,7 +133,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         enabled: true,
       });
       await createCollector({
-        data_source_id: source.id, name: collector.name || ${ds.hostname || ds.name}-OTEL,
+        data_source_id: source.id, name: collector.name || `${ds.hostname || ds.name}-OTEL`,
         collector_type: "OTEL", enabled: true, interval_seconds: 30,
         configuration: {
           provider: "opentelemetry",
@@ -265,7 +265,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
 
       {step === 3 && <div className="resource-form">
         <div className="info-box"><b>OTEL Collector</b> is the single collection agent for the Data Source. It can carry metrics, logs and traces. Credentials are references to the PTC Vault; passwords are never entered into OpsControl.</div>
-        <Field label="Collector Name"><input value={collector.name} onChange={e => setCollector(f => ({ ...f, name: e.target.value }))} placeholder={${ds.hostname || ds.name}-OTEL} /></Field>
+        <Field label="Collector Name"><input value={collector.name} onChange={e => setCollector(f => ({ ...f, name: e.target.value }))} placeholder={`${ds.hostname || ds.name}-OTEL`} /></Field>
         <div className="form-grid"><Field label="Connection Mode"><select value={collector.connection_mode} onChange={e => setCollector(f => ({ ...f, connection_mode: e.target.value }))}><option>DNS</option><option>IP</option></select></Field><Field label="Port"><input type="number" min="1" max="65535" value={collector.port} onChange={e => setCollector(f => ({ ...f, port: Number(e.target.value) }))} /></Field></div>
         <div className="form-grid"><Field label="IP Address" help="Used when IP mode is selected."><input value={collector.ip_address} onChange={e => setCollector(f => ({ ...f, ip_address: e.target.value }))} placeholder="10.10.10.25" /></Field><Field label="Protocol"><select value={collector.protocol} onChange={e => setCollector(f => ({ ...f, protocol: e.target.value }))}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field></div>
         <Field label="PTC Vault Secret Reference" help="Reference only; secret value is never stored in OpsControl."><input value={collector.vault_secret_ref} onChange={e => setCollector(f => ({ ...f, vault_secret_ref: e.target.value }))} placeholder="ptc/prod/rivian/hppr-prodapp001" /></Field>
@@ -275,13 +275,13 @@ export default function ResourceManagement({ organizationId, organizationIds = [
       </div>}
 
       {step === 4 && <div className="resource-form">
-        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || ${ds.hostname || ds.name}-OTEL}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
+        <div className="review-grid"><div className="card review-card"><span>Organization</span><b>{orgName(ds.organization_id)}</b><small>{ds.environment} · {ds.product_family} · {ds.product}</small></div><div className="card review-card"><span>Data Source</span><b>{ds.visible_name || ds.name}</b><small>{ds.hostname} · {ds.os_type} · {ds.server_type}</small></div><div className="card review-card"><span>Templates</span><b>{ds.templates.length || "None"}</b><small>{TEMPLATES.filter(x => ds.templates.includes(x.id)).map(x => x.name).join(", ") || "No template selected"}</small></div><div className="card review-card"><span>Collector</span><b>{collector.name || `${ds.hostname || ds.name}-OTEL`}</b><small>{collector.protocol} · {collector.port} · PTC Vault</small></div></div>
         <div className="card source-fact"><b>What happens next</b><p>OpsControl creates the Data Source and one OTEL Collector. Selected templates are attached as reusable monitoring packages. Metric and Alert Rule backends are deliberately unchanged in this phase.</p></div>
         <div className="form-footer"><span className="muted small">Step 4 of 4</span><div><button type="button" className="filter-button" onClick={() => setStep(3)}>← Back</button><button type="button" className="primary-button" disabled={saving} onClick={createResource}>{saving ? "Creating..." : "Create Data Source + Collector"}</button></div></div>
       </div>}
     </Modal>}
 
-    {editing && <Modal title={${ds.visible_name || ds.name}} onClose={() => !saving && setEditing(null)}>
+    {editing && <Modal title={`${ds.visible_name || ds.name}`} onClose={() => !saving && setEditing(null)}>
       <form className="resource-form" onSubmit={async e => {
         e.preventDefault(); setSaving(true);
         try {
