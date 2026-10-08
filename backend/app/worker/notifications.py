@@ -9,6 +9,7 @@ import json
 import os
 import smtplib
 import ssl
+from datetime import datetime, timezone
 from email.message import EmailMessage
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -221,8 +222,10 @@ def dispatch_pending_notifications():
                 delivery.status = "SENT"
                 delivery.external_reference = reference
                 delivery.last_error = None
-                from datetime import datetime, timezone
                 delivery.sent_at = datetime.now(timezone.utc)
+                references = dict(state.external_references or {})
+                references[delivery.channel] = reference
+                state.external_references = references
             except (HTTPError, URLError, TimeoutError, OSError, RuntimeError, ValueError) as exc:
                 delivery.status = "FAILED"
                 delivery.last_error = str(exc)[:MAX_ERROR_LENGTH]
