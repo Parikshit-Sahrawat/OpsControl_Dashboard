@@ -299,3 +299,35 @@ class LogEventOut(BaseModel):
     fingerprint: str | None
     attributes: dict | None
     created_at: datetime
+
+class CorrelationEvidenceOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    correlation_id: UUID
+    evidence_type: str
+    source_id: UUID
+    resource_type: str | None
+    resource_id: UUID | None
+    observed_at: datetime
+    severity: str | None
+    relationship: str
+    details: dict | None
+    created_at: datetime
+
+class CorrelationRecordOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    organization_id: UUID
+    history_id: UUID
+    anchor_at: datetime
+    window_start: datetime
+    window_end: datetime
+    status: str
+    primary_category: str
+    confidence: str
+    summary: str
+    evidence_count: int
+    analysis_version: int
+    created_at: datetime
+    updated_at: datetime
+    evidence: list[CorrelationEvidenceOut] = []
