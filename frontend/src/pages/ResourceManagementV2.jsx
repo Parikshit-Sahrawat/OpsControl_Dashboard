@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import "../resource-v2.css";
 import {
   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
   fetchDataSources, createDataSource, updateDataSource, disableDataSource,
