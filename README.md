@@ -1666,3 +1666,135 @@ Detailed behavior is documented in:
 docs/NATIVE_METRIC_SAMPLES.md
 
 The next layer is real Alert Rule evaluation against these samples.
+
+
+# 46. Alert Rule Evaluation and Notification Engine
+
+OpsControl now evaluates native Metric Samples against first-class Alert Rules.
+
+Supported operators:
+
+- GT
+- GTE
+- LT
+- LTE
+- EQ
+- NE
+
+Alert evaluation uses the configured evaluation window and consecutive breach count.
+
+Example:
+
+```
+API Response Time
+    |
+    +-- Warning: > 1000 ms
+    +-- Evaluation window: 60 seconds
+    +-- Consecutive breaches: 3
+```
+
+The alert opens only after three consecutive samples within the evaluation window breach the rule.
+
+A non-breaching sample resolves an OPEN alert.
+
+## Alert State
+
+Alert state is separate from collector and metric evidence:
+
+```
+Metric Sample
+     |
+     v
+Alert Rule Evaluation
+     |
+     +-- threshold not met --> no state change
+     |
+     +-- consecutive breaches reached --> OPEN
+     |
+     +-- recovery sample --> RESOLVED
+```
+
+Only OPEN and RESOLVED transitions create notification deliveries. Repeated breach samples update the existing OPEN state instead of generating duplicate notifications.
+
+Migration:
+
+`backend/migrations/versions/0006_alert_state.py`
+
+## Notification Channels
+
+Alert Rules now support:
+
+- EMAIL
+- PAGERDUTY
+- SERVICENOW
+
+Channels are configured per Alert Rule. Existing rules default to no notification channels.
+
+Notification deliveries are persisted in:
+
+`alert_notification_deliveries`
+
+Delivery states:
+
+- PENDING
+- SENT
+- FAILED
+
+The worker keeps alert state independent from notification delivery failures.
+
+## PagerDuty
+
+OpsControl uses PagerDuty Events API v2.
+
+OPENED -> trigger event  
+RESOLVED -> resolve event
+
+The same alert-state-derived deduplication key is used for both transitions.
+
+Required environment setting:
+
+`OPSCONTROL_PAGERDUTY_ROUTING_KEY`
+
+## Email
+
+SMTP with STARTTLS is supported.
+
+Environment settings:
+
+`OPSCONTROL_SMTP_HOST`  
+`OPSCONTROL_SMTP_PORT`  
+`OPSCONTROL_SMTP_USERNAME`  
+`OPSCONTROL_SMTP_PASSWORD`  
+`OPSCONTROL_ALERT_EMAIL_FROM`  
+`OPSCONTROL_ALERT_EMAIL_TO`
+
+## ServiceNow
+
+OpsControl creates an Incident through the ServiceNow Table API when an alert opens and updates the same incident when the alert resolves.
+
+Environment settings:
+
+`OPSCONTROL_SERVICENOW_URL`  
+`OPSCONTROL_SERVICENOW_USERNAME`  
+`OPSCONTROL_SERVICENOW_PASSWORD`  
+`OPSCONTROL_SERVICENOW_TABLE`  
+`OPSCONTROL_SERVICENOW_ASSIGNMENT_GROUP`  
+`OPSCONTROL_SERVICENOW_RESOLVED_STATE`
+
+Credentials remain outside Alert Rules and database notification payloads.
+
+## Alert APIs
+
+`GET /api/v1/monitoring/alerts`
+
+`GET /api/v1/monitoring/alerts/{id}`
+
+`GET /api/v1/monitoring/alerts/{id}/notifications`
+
+Alert Rule create/update APIs now also accept `notification_channels`.
+
+Detailed design:
+
+`docs/ALERT_ENGINE.md`
+
+The next major monitoring layer is native log event storage and correlation between alerts, logs, VM health, ETL executions, and incidents.
