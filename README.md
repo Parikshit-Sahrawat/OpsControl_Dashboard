@@ -1897,3 +1897,54 @@ Organization -> Data Source -> Templates -> Collector -> Review -> Create
 Metric Rules and Alert Rules are intentionally not redesigned in this phase. Future Alert Rules will be separated into VM, Application / Services and ETL Job domains.
 
 > Current implementation note: the frontend stores the new Data Source metadata and template selection inside the existing Data Source `connection_config.opscontrol` JSON envelope while the normalized Resource Management backend model is finalized. Existing Metric/Alert implementations are left unchanged.
+
+
+### Monitoring Template persistence
+
+Monitoring Templates are now persisted through the FastAPI control plane rather than relying on browser storage as the source of truth.
+
+API endpoints:
+
+- GET /api/v1/monitoring/templates
+- GET /api/v1/monitoring/templates/{id}
+- GET /api/v1/monitoring/templates/{id}/versions
+- POST /api/v1/monitoring/templates
+- PATCH /api/v1/monitoring/templates/{id} — commits a new package version
+- DELETE /api/v1/monitoring/templates/{id} — disables the template
+
+A template is a complete reusable package:
+
+Monitoring Template
+├── Collector configuration
+├── Custom Attribute schema
+├── Metric Rules
+├── Alert Rules
+└── Log collection defaults
+
+The backend stores the package definition as JSON while keeping template identity and version history normalized in PostgreSQL:
+
+monitoring_templates
+        |
+        +-- monitoring_template_versions
+
+The editor workflow is:
+
+Edit
+  |
+  v
+Unsaved Changes
+  |
+  v
+Validate
+  |
+  v
+Apply & Commit Changes
+  |
+  v
+New immutable template version
+
+The existing Metric Definition and Alert Rule implementations are intentionally not changed by template persistence. Domain-specific alert modeling for VM, Application / Services, and ETL Job remains a separate design phase.
+
+JSON import/export is supported by the frontend. Imported templates are staged as new drafts and must pass validation before being committed.
+
+The frontend retains browser storage only as a temporary cache/fallback; the FastAPI/PostgreSQL template API is the source of truth.
