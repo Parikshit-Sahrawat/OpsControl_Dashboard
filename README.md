@@ -1849,3 +1849,51 @@ python scripts/generate_correlation_scenario.py --scenario correlation-lab
 ```
 
 See `docs/DEMO_CORRELATION_SCENARIOS.md` for the scenario contract and validation flow.
+
+
+## Resource Management Architecture
+
+OpsControl uses a simple, incremental onboarding model:
+
+```text
+Organization / Customer
+        |
+        +-- Data Source
+        |      |
+        |      +-- Host identity
+        |      +-- Environment / OS / Server Type
+        |      +-- Product / Product Family
+        |      +-- Host Groups
+        |      +-- Monitoring Templates
+        |      |
+        |      +-- Collector
+        |             |
+        |             +-- Metrics
+        |             +-- Logs
+        |             +-- Traces
+        |
+        +-- Applications / Services
+```
+
+### Organization
+Represents a PTC customer such as Trane or Philips. The organization will own customer services, ServiceNow configuration, distributed lists and application definitions.
+
+### Data Source
+Represents a customer machine or VM. The Data Source uses a Zabbix-inspired host identity model: Host Name, Visible Name, Organization, Environment, Server Type, OS Type, Product Family, Product, Host Groups and Templates.
+
+### Collector
+A single OpenTelemetry-based collector is installed on the Data Source and is intended to collect metrics, logs and traces. Collector credentials are references to the PTC Vault; OpsControl must not store customer passwords.
+
+### Monitoring Templates
+Templates are reusable monitoring packages, not just alert-rule bundles. A template can package collector configuration, metric rules, alert rules and log collection defaults. Multiple templates can be attached to one Data Source.
+
+### Incremental onboarding
+The UI onboarding flow is:
+
+```text
+Organization -> Data Source -> Templates -> Collector -> Review -> Create
+```
+
+Metric Rules and Alert Rules are intentionally not redesigned in this phase. Future Alert Rules will be separated into VM, Application / Services and ETL Job domains.
+
+> Current implementation note: the frontend stores the new Data Source metadata and template selection inside the existing Data Source `connection_config.opscontrol` JSON envelope while the normalized Resource Management backend model is finalized. Existing Metric/Alert implementations are left unchanged.
