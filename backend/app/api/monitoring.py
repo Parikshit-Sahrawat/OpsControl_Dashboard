@@ -22,6 +22,7 @@ from app.schemas.monitoring import (
     DataSourceUpdate,
     LogSourceCreate,
     LogSourceOut,
+    LogEventCreate,
     LogEventOut,
     LogSourceUpdate,
     MetricDefinitionCreate,
@@ -281,6 +282,24 @@ def disable_log_source(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(LogSource, item_id, db, "Log source")
     item.enabled = False
     db.commit()
+
+
+@router.post("/logs/{item_id}/events", response_model=LogEventOut, status_code=201)
+def create_log_event(
+    item_id: UUID,
+    payload: LogEventCreate,
+    db: Session = Depends(get_db),
+):
+    source = _get_or_404(LogSource, item_id, db, "Log source")
+    if payload.log_source_id != item_id:
+        raise HTTPException(status_code=409, detail="Log source does not match path")
+    if payload.organization_id != source.organization_id:
+        raise HTTPException(status_code=409, detail="Log event belongs to a different organization")
+    event = LogEvent(**payload.model_dump())
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+    return event
 
 
 @router.get("/logs/{item_id}/events", response_model=list[LogEventOut])
