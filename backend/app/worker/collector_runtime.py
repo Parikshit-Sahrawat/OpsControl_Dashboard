@@ -11,7 +11,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithDefaultRealm, Request, build_opener
+from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, Request, build_opener
 
 from sqlalchemy import select
 
@@ -137,8 +137,8 @@ class ApiAdapter(CollectorAdapter):
     def _request(url, method, username, password, timeout_seconds, expected_statuses,
                  verify_ssl, capture_body, max_body_bytes, headers, data):
         started = time.perf_counter()
-        password_manager = HTTPPasswordMgrWithDefaultRealm()
-        password_manager.add_password(None, url, username, password)
+        password_manager = HTTPPasswordMgrWithPriorAuth()
+        password_manager.add_password(None, url, username, password, is_authenticated=True)
         opener = build_opener(HTTPBasicAuthHandler(password_manager))
         context = None
         if url.lower().startswith("https://"):
