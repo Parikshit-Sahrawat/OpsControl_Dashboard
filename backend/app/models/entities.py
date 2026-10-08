@@ -42,6 +42,7 @@ class Organization(Base):
     data_sources: Mapped[list["DataSource"]] = relationship(back_populates="organization")
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="organization")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="organization")
+    alert_rules: Mapped[list["AlertRule"]] = relationship(back_populates="organization")
 
 class VM(Base):
     __tablename__ = "vms"
@@ -280,3 +281,21 @@ class LogSource(Base):
     organization: Mapped["Organization"] = relationship(back_populates="log_sources")
     data_source: Mapped["DataSource | None"] = relationship(back_populates="log_sources")
     collector: Mapped["Collector | None"] = relationship(back_populates="log_sources")
+
+class AlertRule(Base):
+    __tablename__ = "alert_rules"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    metric_definition_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("metric_definitions.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    severity: Mapped[str] = mapped_column(String(50), nullable=False, default="WARNING")
+    operator: Mapped[str] = mapped_column(String(20), nullable=False, default="GT")
+    threshold_value: Mapped[str] = mapped_column(String(100), nullable=False)
+    evaluation_window_seconds: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
+    consecutive_breaches: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="alert_rules")
+    metric_definition: Mapped["MetricDefinition"] = relationship()
+    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_alert_rule_org_name"),)
