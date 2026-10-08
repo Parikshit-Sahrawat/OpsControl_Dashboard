@@ -29,7 +29,7 @@ export default function TopNav({ active, onChange, organizations = [], organizat
   };
 
   const toggleAll = () => {
-    onOrganizationChange(allSelected ? [] : organizations.map(org => org.id));
+    onOrganizationChange(allSelected ? [organizations[0]?.id].filter(Boolean) : organizations.map(org => org.id));
   };
 
   return (
