@@ -6,11 +6,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertRule, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, MetricSample, Organization
+from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, DataSource, LogSource, MetricDefinition, MetricSample, Organization
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
     AlertRuleUpdate,
+    AlertNotificationDeliveryOut,
+    AlertStateOut,
     CollectorCreate,
     CollectorOut,
     CollectorUpdate,
@@ -278,6 +280,48 @@ def disable_log_source(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(LogSource, item_id, db, "Log source")
     item.enabled = False
     db.commit()
+
+
+@router.get("/alerts", response_model=list[AlertStateOut])
+def list_alert_states(
+    organization_id: UUID | None = None,
+    status: str | None = None,
+    severity: str | None = None,
+    alert_rule_id: UUID | None = None,
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    stmt = select(AlertState).order_by(AlertState.last_evaluated_at.desc()).limit(limit)
+    if organization_id:
+        stmt = stmt.where(AlertState.organization_id == organization_id)
+    if status:
+        stmt = stmt.where(AlertState.status == status.upper())
+    if severity:
+        stmt = stmt.where(AlertState.severity == severity.upper())
+    if alert_rule_id:
+        stmt = stmt.where(AlertState.alert_rule_id == alert_rule_id)
+    return db.scalars(stmt).all()
+
+
+@router.get("/alerts/{item_id}", response_model=AlertStateOut)
+def get_alert_state(item_id: UUID, db: Session = Depends(get_db)):
+    return _get_or_404(AlertState, item_id, db, "Alert state")
+
+
+@router.get("/alerts/{item_id}/notifications", response_model=list[AlertNotificationDeliveryOut])
+def list_alert_notifications(
+    item_id: UUID,
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    _get_or_404(AlertState, item_id, db, "Alert state")
+    stmt = (
+        select(AlertNotificationDelivery)
+        .where(AlertNotificationDelivery.alert_state_id == item_id)
+        .order_by(AlertNotificationDelivery.created_at.desc())
+        .limit(limit)
+    )
+    return db.scalars(stmt).all()
 
 
 @router.get("/organizations", response_model=list[OrganizationOut])
