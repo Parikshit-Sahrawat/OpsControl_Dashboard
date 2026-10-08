@@ -270,3 +270,19 @@ class MetricSampleOut(BaseModel):
     unit: str | None
     dimensions: dict | None
     created_at: datetime
+
+
+class LogEventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    organization_id: UUID
+    log_source_id: UUID
+    observed_at: datetime
+    severity: str | None
+    event_type: str | None
+    message: str
+    parser_type: str | None
+    source_offset: str | None
+    fingerprint: str | None
+    attributes: dict | None
+    created_at: datetime
