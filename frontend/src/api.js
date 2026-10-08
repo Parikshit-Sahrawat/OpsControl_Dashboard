@@ -44,3 +44,5 @@ export const deleteMetric=id=>request("/api/v1/monitoring/metrics/"+id,{method:"
 export const createLogSource=p=>request("/api/v1/monitoring/logs",{method:"POST",body:JSON.stringify(p)});
 export const updateLogSource=(id,p)=>request("/api/v1/monitoring/logs/"+id,{method:"PATCH",body:JSON.stringify(p)});
 export const deleteLogSource=id=>request("/api/v1/monitoring/logs/"+id,{method:"DELETE"});
+
+export const fetchOrganizations=(params={})=>request("/api/v1/monitoring/organizations?"+new URLSearchParams(params).toString());
