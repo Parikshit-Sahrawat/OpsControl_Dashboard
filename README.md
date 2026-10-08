@@ -1798,3 +1798,43 @@ Detailed design:
 `docs/ALERT_ENGINE.md`
 
 The next major monitoring layer is native log event storage and correlation between alerts, logs, VM health, ETL executions, and incidents.
+
+
+## Correlation Engine Foundation
+
+OpsControl now includes a persisted correlation foundation for ETL investigations.
+
+The first correlation scope is deliberately conservative:
+
+```
+ETL execution
+   |
+   +-- same VM
+   +-- applications on VM
+   |
+   +-- Metric Samples
+   +-- Log Events
+   +-- Alert States
+          |
+          v
+   Correlation Record
+          |
+          v
+   Evidence + confidence
+```
+
+The engine uses a bounded time window (15 minutes before and after the execution anchor by default) and stores source evidence separately from OpsControl inference.
+
+Current categories:
+- `LOG_ERROR`
+- `RESOURCE_ALERT`
+- `LOG_WARNING`
+- `NO_RELATED_EVIDENCE`
+
+The correlation layer does **not** claim confirmed root cause, automatically resolve investigations, restart VMs, retry Pentaho jobs, or modify production job definitions.
+
+API:
+- `GET /api/v1/etl/executions/{history_id}/correlation`
+- `POST /api/v1/etl/executions/{history_id}/correlation`
+
+See `docs/CORRELATION_ENGINE.md` for the implementation contract.
