@@ -220,3 +220,17 @@ class CollectorRunOut(BaseModel):
     response_size_bytes: int | None
     response_body: str | None
     error_message: str | None
+
+
+class MetricSampleOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: UUID
+    organization_id: UUID
+    metric_definition_id: UUID
+    collector_id: UUID | None
+    collector_run_id: UUID | None
+    observed_at: datetime
+    value_numeric: float
+    unit: str | None
+    dimensions: dict | None
+    created_at: datetime
