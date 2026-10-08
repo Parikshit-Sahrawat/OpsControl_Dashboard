@@ -212,6 +212,7 @@ def dispatch_pending_notifications():
                 ),
             )
             .order_by(AlertNotificationDelivery.created_at)
+            .with_for_update()
             .limit(20)
         ).all()
 
