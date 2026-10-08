@@ -13,10 +13,10 @@ from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, Request, build_opener
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.db.session import SessionLocal
-from app.models import Collector, CollectorRun, DataSource
+from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample
 from app.worker.credentials import CredentialProviderError, resolve_basic_auth
 
 logger = logging.getLogger("opscontrol.collector-runtime")
@@ -212,20 +212,81 @@ ADAPTERS = {
 
 def _persist_run(collector, result, started_at, ended_at, db):
     payload = result.payload or {}
-    db.add(
-        CollectorRun(
-            collector_id=collector.id,
-            started_at=started_at,
-            ended_at=ended_at,
-            status="SUCCESS" if result.success else "FAILED",
-            outcome=payload.get("outcome"),
-            http_status=payload.get("http_status"),
-            response_time_ms=payload.get("response_time_ms"),
-            response_size_bytes=payload.get("response_size_bytes"),
-            response_body=payload.get("response_body"),
-            error_message=None if result.success else result.message[:MAX_ERROR_LENGTH],
-        )
+    run = CollectorRun(
+        collector_id=collector.id,
+        started_at=started_at,
+        ended_at=ended_at,
+        status="SUCCESS" if result.success else "FAILED",
+        outcome=payload.get("outcome"),
+        http_status=payload.get("http_status"),
+        response_time_ms=payload.get("response_time_ms"),
+        response_size_bytes=payload.get("response_size_bytes"),
+        response_body=payload.get("response_body"),
+        error_message=None if result.success else result.message[:MAX_ERROR_LENGTH],
     )
+    db.add(run)
+    db.flush()
+    return run
+
+
+def _extract_metric_value(metric, result):
+    payload = result.payload or {}
+    extract = str((metric.query_config or {}).get("extract", "")).upper()
+    if extract == "AVAILABILITY":
+        return 1.0 if result.success else 0.0
+    mapping = {
+        "HTTP_STATUS": payload.get("http_status"),
+        "RESPONSE_TIME_MS": payload.get("response_time_ms"),
+        "RESPONSE_SIZE_BYTES": payload.get("response_size_bytes"),
+    }
+    value = mapping.get(extract)
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _persist_metric_samples(collector, run, result, ended_at, db):
+    metrics = db.scalars(
+        select(MetricDefinition).where(
+            MetricDefinition.collector_id == collector.id,
+            MetricDefinition.enabled.is_(True),
+        )
+    ).all()
+    for metric in metrics:
+        value = _extract_metric_value(metric, result)
+        if value is None:
+            continue
+        db.add(
+            MetricSample(
+                organization_id=metric.organization_id,
+                metric_definition_id=metric.id,
+                collector_id=collector.id,
+                collector_run_id=run.id,
+                observed_at=ended_at,
+                value_numeric=value,
+                unit=metric.unit,
+                dimensions={
+                    "collector_type": collector.collector_type,
+                    "outcome": (result.payload or {}).get("outcome"),
+                },
+            )
+        )
+
+
+def _purge_expired_metric_samples(db, now):
+    definitions = db.execute(select(MetricDefinition.id, MetricDefinition.retention_days)).all()
+    deleted = 0
+    for metric_id, retention_days in definitions:
+        cutoff = now - timedelta(days=max(int(retention_days), 1))
+        result = db.execute(delete(MetricSample).where(
+            MetricSample.metric_definition_id == metric_id,
+            MetricSample.observed_at < cutoff,
+        ))
+        deleted += result.rowcount or 0
+    return deleted
 
 
 async def execute_collector(collector_id):
@@ -258,7 +319,8 @@ async def execute_collector(collector_id):
             result = CollectionResult(False, "Collector execution failed", {"outcome": "RUNTIME_ERROR"})
 
         ended_at = datetime.now(timezone.utc)
-        _persist_run(collector, result, started_at, ended_at, db)
+        run = _persist_run(collector, result, started_at, ended_at, db)
+        _persist_metric_samples(collector, run, result, ended_at, db)
 
         if result.success:
             collector.status = "HEALTHY"
@@ -279,9 +341,16 @@ async def execute_collector(collector_id):
 
 async def scheduler_loop(poll_seconds=5):
     logger.info("OpsControl collector runtime started")
+    last_retention_cleanup = datetime.now(timezone.utc)
     while True:
         now = datetime.now(timezone.utc)
         with SessionLocal() as db:
+            if (now - last_retention_cleanup).total_seconds() >= 3600:
+                deleted = _purge_expired_metric_samples(db, now)
+                if deleted:
+                    logger.info("Purged %s expired metric samples", deleted)
+                db.commit()
+                last_retention_cleanup = now
             collectors = db.scalars(
                 select(Collector).where(
                     Collector.enabled.is_(True),
