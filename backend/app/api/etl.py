@@ -3,8 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload
 from app.db.session import get_db
-from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution
+from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution, CorrelationRecord
 from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut
+from app.schemas.monitoring import CorrelationRecordOut
+from app.services.correlation import correlate_execution
 router = APIRouter(prefix="/api/v1/etl", tags=["ETL"])
 def _item(h):
     return ExecutionListItem(id=h.id,job_order_id=h.job_order_id,execution_type=h.execution_type,status=h.status,started_at=h.started_at,ended_at=h.ended_at,detected_at=h.detected_at,expected_runtime_seconds=h.expected_runtime_seconds,sla_seconds=h.sla_seconds,sla_status=h.sla_status,failed_step=h.failed_step,incident_number=h.incident_number,job_name=h.job_order.name,server=h.job_order.vm.hostname,environment=h.job_order.environment,organization=h.job_order.organization.name)
@@ -35,3 +37,37 @@ def create_execution(job_order_id:UUID,payload:ExecutionCreate,db:Session=Depend
     h=JobOrderHistory(job_order_id=job_order_id,**payload.model_dump(exclude={"steps"})); db.add(h); db.flush()
     for step in payload.steps: db.add(JobStepExecution(history_id=h.id,**step.model_dump()))
     db.commit(); return _out(_load(h.id,db))
+
+@router.get("/executions/{history_id}/correlation", response_model=CorrelationRecordOut)
+def get_execution_correlation(history_id: UUID, db: Session = Depends(get_db)):
+    record = db.scalar(
+        select(CorrelationRecord)
+        .options(selectinload(CorrelationRecord.evidence))
+        .where(CorrelationRecord.history_id == history_id)
+    )
+    if not record:
+        raise HTTPException(404, "Correlation record not found")
+    return record
+
+
+@router.post("/executions/{history_id}/correlation", response_model=CorrelationRecordOut)
+def analyze_execution_correlation(
+    history_id: UUID,
+    window_before_seconds: int = Query(900, ge=0, le=86400),
+    window_after_seconds: int = Query(900, ge=0, le=86400),
+    db: Session = Depends(get_db),
+):
+    try:
+        record = correlate_execution(
+            db,
+            history_id,
+            window_before_seconds=window_before_seconds,
+            window_after_seconds=window_after_seconds,
+        )
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+    if not record:
+        raise HTTPException(404, "Execution not found")
+    db.commit()
+    db.refresh(record)
+    return record
