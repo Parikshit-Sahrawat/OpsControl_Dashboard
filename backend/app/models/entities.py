@@ -44,6 +44,7 @@ class Organization(Base):
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="organization")
     alert_rules: Mapped[list["AlertRule"]] = relationship(back_populates="organization")
     alert_states: Mapped[list["AlertState"]] = relationship(back_populates="organization")
+    correlation_records: Mapped[list["CorrelationRecord"]] = relationship(back_populates="organization", cascade="all, delete-orphan")
 
 class VM(Base):
     __tablename__ = "vms"
@@ -126,6 +127,7 @@ class JobOrderHistory(Base):
     steps: Mapped[list["JobStepExecution"]] = relationship(back_populates="history", cascade="all, delete-orphan")
     investigation: Mapped["Investigation | None"] = relationship(back_populates="history", uselist=False, cascade="all, delete-orphan")
     alert_events: Mapped[list["AlertIncidentEvent"]] = relationship(back_populates="history", cascade="all, delete-orphan")
+    correlation: Mapped["CorrelationRecord | None"] = relationship(back_populates="history", uselist=False, cascade="all, delete-orphan")
 
 class JobStepExecution(Base):
     __tablename__ = "job_step_executions"
@@ -398,3 +400,42 @@ class AlertNotificationDelivery(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     alert_state: Mapped["AlertState"] = relationship()
+
+class CorrelationRecord(Base):
+    __tablename__ = "correlation_records"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, unique=True, index=True)
+    anchor_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    window_end: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    status: Mapped[str] = mapped_column(String(30), nullable=False, default="ANALYZED")
+    primary_category: Mapped[str] = mapped_column(String(100), nullable=False, default="NO_RELATED_EVIDENCE")
+    confidence: Mapped[str] = mapped_column(String(30), nullable=False, default="NONE")
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    evidence_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    analysis_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    organization: Mapped["Organization"] = relationship(back_populates="correlation_records")
+    history: Mapped["JobOrderHistory"] = relationship(back_populates="correlation")
+    evidence: Mapped[list["CorrelationEvidence"]] = relationship(back_populates="correlation", cascade="all, delete-orphan")
+
+class CorrelationEvidence(Base):
+    __tablename__ = "correlation_evidence"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    correlation_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("correlation_records.id"), nullable=False, index=True)
+    evidence_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    source_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    resource_type: Mapped[str | None] = mapped_column(String(100))
+    resource_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    severity: Mapped[str | None] = mapped_column(String(50))
+    relationship: Mapped[str] = mapped_column(String(100), nullable=False)
+    details: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    correlation: Mapped["CorrelationRecord"] = relationship(back_populates="evidence")
+    __table_args__ = (
+        Index("ix_correlation_evidence_corr_observed", "correlation_id", "observed_at"),
+        Index("ix_correlation_evidence_resource_observed", "resource_id", "observed_at"),
+    )
