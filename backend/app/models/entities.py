@@ -321,6 +321,28 @@ class LogSource(Base):
     data_source: Mapped["DataSource | None"] = relationship(back_populates="log_sources")
     collector: Mapped["Collector | None"] = relationship(back_populates="log_sources")
 
+class LogEvent(Base):
+    __tablename__ = "log_events"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    log_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("log_sources.id"), nullable=False, index=True)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, index=True)
+    severity: Mapped[str | None] = mapped_column(String(30))
+    event_type: Mapped[str | None] = mapped_column(String(100))
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    parser_type: Mapped[str | None] = mapped_column(String(100))
+    source_offset: Mapped[str | None] = mapped_column(String(200))
+    fingerprint: Mapped[str | None] = mapped_column(String(128), index=True)
+    attributes: Mapped[dict | None] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
+    log_source: Mapped["LogSource"] = relationship()
+
+    __table_args__ = (
+        Index("ix_log_events_source_observed", "log_source_id", "observed_at"),
+        Index("ix_log_events_org_observed", "organization_id", "observed_at"),
+    )
+
+
 class AlertRule(Base):
     __tablename__ = "alert_rules"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
