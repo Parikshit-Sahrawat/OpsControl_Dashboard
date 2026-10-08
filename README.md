@@ -1339,8 +1339,59 @@ Thresholds are currently stored under builder configuration as an intermediate r
 
 Before the collector runtime is implemented, validate these operational choices:
 
-1. Windows collection: Agent, WinRM, or both.
-2. Linux collection: Agent, SSH, or both.
-3. Allowed API authentication mechanisms.
-4. Whether thresholds belong directly to metrics or to separate alert rules.
+1. Windows collection: **Agent + WinRM — Confirmed.**
+2. Linux collection: **Agent + SSH — Confirmed.**
+3. API authentication: **Basic Authentication — Confirmed for initial release.**
+4. Threshold architecture: **Separate first-class Alert Rules — Confirmed.**
 
+
+
+---
+
+# 41. Alert Rule Architecture
+
+Thresholds are now separate from Metric Definitions.
+
+A Metric Definition answers **what OpsControl measures**. An Alert Rule answers **when a measured value requires attention**.
+
+Relationship:
+
+```
+Metric Definition
+      |
+      +-- Alert Rule: Warning
+      +-- Alert Rule: Critical
+      +-- future additional rules
+```
+
+Alert Rule fields:
+
+- Organization
+- Metric Definition
+- Rule name
+- Severity
+- Operator
+- Threshold value
+- Evaluation window
+- Consecutive breaches
+- Enabled state
+
+Initial API:
+
+- GET `/api/v1/monitoring/alert-rules`
+- GET `/api/v1/monitoring/alert-rules/{id}`
+- POST `/api/v1/monitoring/alert-rules`
+- PATCH `/api/v1/monitoring/alert-rules/{id}`
+- DELETE `/api/v1/monitoring/alert-rules/{id}`
+
+DELETE disables the rule.
+
+Migration: `backend/migrations/versions/0003_alert_rules.py`
+
+Confirmed collector transport choices:
+
+- Windows: Agent and WinRM
+- Linux: Agent and SSH
+- API: Basic Authentication for the initial implementation
+
+Basic-auth passwords must not be stored directly in collector JSON. The production runtime will use a managed credential/secret reference.
