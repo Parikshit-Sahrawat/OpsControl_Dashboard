@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   createCollector, createDataSource, fetchCollectors, fetchDataSources,
   fetchOrganizations, updateDataSource, fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
+  attachDataSourceTemplate, fetchDataSourceTemplates, detachDataSourceTemplate, updateDataSourceTemplate, fetchEffectiveDataSourceConfiguration,
 } from "../api";
 
 const NAV = [
@@ -314,6 +315,17 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         }},
         enabled: true,
       });
+      // Persist template attachments as normalized records. The legacy template_ids JSON is
+      // retained above for backwards-compatible UI metadata; the control plane resolves
+      // pinned template versions from monitoring_template_attachments.
+      for (const template of chosen) {
+        await attachDataSourceTemplate(source.id, {
+          template_id: template.id,
+          template_version: Number(template.version || 1),
+          priority: 100,
+          overrides: null,
+        });
+      }
       await createCollector({
         data_source_id: source.id, name: collector.name || `${ds.hostname || ds.name}-OTEL`,
         collector_type: "OTEL", enabled: true, interval_seconds: 30,
@@ -351,6 +363,32 @@ export default function ResourceManagement({ organizationId, organizationIds = [
           host_groups: ds.host_groups, template_ids: ds.templates, templates: templates.filter(x => ds.templates.includes(x.id)).map(x => x.name),
         }},
       });
+      const existingAttachments = await fetchDataSourceTemplates(editing.id);
+      const selectedIds = new Set(ds.templates);
+      for (const attachment of existingAttachments) {
+        if (!selectedIds.has(attachment.template_id)) {
+          await detachDataSourceTemplate(editing.id, attachment.template_id);
+        }
+      }
+      for (const template of templates.filter(x => selectedIds.has(x.id))) {
+        const current = existingAttachments.find(x => x.template_id === template.id);
+        if (current) {
+          await updateDataSourceTemplate(editing.id, template.id, {
+            template_version: Number(template.version || current.template_version),
+            priority: current.priority,
+            overrides: current.overrides || null,
+            enabled: true,
+          });
+        } else {
+          await attachDataSourceTemplate(editing.id, {
+            template_id: template.id,
+            template_version: Number(template.version || 1),
+            priority: 100,
+            overrides: null,
+          });
+        }
+      }
+      await fetchEffectiveDataSourceConfiguration(editing.id);
       setEditing(null); await reload();
     } catch (e) { setError(e.message || "Unable to update Data Source"); }
     finally { setSaving(false); }
