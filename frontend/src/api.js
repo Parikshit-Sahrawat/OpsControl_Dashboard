@@ -46,3 +46,8 @@ export const updateLogSource=(id,p)=>request("/api/v1/monitoring/logs/"+id,{meth
 export const deleteLogSource=id=>request("/api/v1/monitoring/logs/"+id,{method:"DELETE"});
 
 export const fetchOrganizations=(params={})=>request("/api/v1/monitoring/organizations?"+new URLSearchParams(params).toString());
+
+export const fetchAlertRules=(params={})=>request("/api/v1/monitoring/alert-rules?"+new URLSearchParams(params).toString());
+export const createAlertRule=p=>request("/api/v1/monitoring/alert-rules",{method:"POST",body:JSON.stringify(p)});
+export const updateAlertRule=(id,p)=>request("/api/v1/monitoring/alert-rules/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const deleteAlertRule=id=>request("/api/v1/monitoring/alert-rules/"+id,{method:"DELETE"});
