@@ -10,13 +10,20 @@ function incidentUrl(number) {
 
 export default function Overview({ jobs, onSelect, onNavigate }) {
   const vmIssues = [
-    { hostname: "HERO-PRDAPP001", metric: "D: Drive", value: "94%", condition: "Low Disk Space", status: "CRITICAL" },
-    { hostname: "ETL-PRD-03", metric: "CPU", value: "91%", condition: "High Utilization", status: "WARNING" },
+    { sourceName: "Customer Production Windows", hostname: "HERO-PRDAPP001", metric: "D: Drive", value: "94%", condition: "Low Disk Space", status: "CRITICAL" },
+    { sourceName: "ETL Production Monitoring", hostname: "ETL-PRD-03", metric: "CPU", value: "91%", condition: "High Utilization", status: "WARNING" },
   ];
 
   const incidents = [
     { number: "INC0012345", summary: "JC_Pricing_Daily · Database timeout", severity: "CRITICAL" },
     { number: "INC0012339", summary: "Customer_Extract · SLA breach", severity: "WARNING" },
+  ];
+
+  const kpis = [
+    { label: "ETL Jobs", value: "1", tone: "critical-text", detail: "failed · 1 running · 1 at risk", target: "ETL Jobs" },
+    { label: "VM Health", value: "1", tone: "warning-text", detail: "critical issue requiring attention", target: "VM Health" },
+    { label: "APIs & Services", value: "18", tone: "healthy-text", detail: "healthy · 1 high latency", target: "APIs" },
+    { label: "Active Incidents", value: "2", tone: "critical-text", detail: "1 critical · 1 major", target: "Incidents" },
   ];
 
   return (
@@ -27,15 +34,19 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
       </div>
 
       <div className="kpi-grid">
-        <KpiCard label="ETL Jobs" value="1" tone="critical-text" detail="failed · 1 running · 1 at risk" />
-        <KpiCard label="VM Health" value="1" tone="warning-text" detail="critical issue requiring attention" />
-        <KpiCard label="APIs & Services" value="18" tone="healthy-text" detail="healthy · 1 high latency" />
-        <KpiCard label="Active Incidents" value="2" tone="critical-text" detail="1 critical · 1 major" />
+        {kpis.map(kpi => (
+          <button key={kpi.label} className="kpi-link" onClick={() => onNavigate?.(kpi.target)} aria-label={`Open ${kpi.label}`}>
+            <KpiCard label={kpi.label} value={kpi.value} tone={kpi.tone} detail={kpi.detail} />
+          </button>
+        ))}
       </div>
 
       <div className="overview-grid">
         <section className="card">
-          <h2>Recent ETL Jobs</h2>
+          <div className="section-heading-row">
+            <h2>Recent ETL Jobs</h2>
+            <button className="text-link" onClick={() => onNavigate?.("ETL Jobs")}>View all</button>
+          </div>
           <table>
             <thead><tr><th>Job</th><th>Server</th><th>Start</th><th>Duration</th><th>Status</th></tr></thead>
             <tbody>
@@ -57,10 +68,10 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
               <button className="text-link" onClick={() => onNavigate?.("VM Health")}>View all</button>
             </div>
             {vmIssues.map(issue => (
-              <div className="list-row vm-issue-row" key={issue.hostname + issue.metric}>
+              <div className="list-row vm-issue-row" key={issue.sourceName + issue.hostname + issue.metric}>
                 <button className="entity-link" onClick={() => onNavigate?.("VM Health")}>
-                  <b>{issue.hostname}</b>
-                  <small>{issue.metric} · {issue.value}</small>
+                  <b>{issue.sourceName}</b>
+                  <small>{issue.metric} · {issue.value} · {issue.hostname}</small>
                 </button>
                 <div className="vm-issue-meta">
                   <span className="issue-condition">{issue.condition}</span>
@@ -80,7 +91,7 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
               return (
                 <div className="list-row" key={incident.number}>
                   {url ? (
-                    <a className="entity-link incident-link" href={url} target="_blank" rel="noreferrer">
+                    <a className="entity-link incident-link" href={url} target="_self" rel="noreferrer">
                       <b>{incident.number}</b><small>{incident.summary}</small>
                     </a>
                   ) : (
