@@ -49,7 +49,7 @@ export default function App() {
   return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds}/><main className="content">
     {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
-    {active==="Resource Management"&&<ResourceManagement organizationId={organizationId}/>}
+    {active==="Resource Management"&&<ResourceManagement organizationId={organizationId} organizationIds={organizationIds}/>}
     {![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }
