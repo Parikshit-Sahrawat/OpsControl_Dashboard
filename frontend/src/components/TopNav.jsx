@@ -34,7 +34,11 @@ export default function TopNav({ active, onChange, organizations = [], organizat
 
   return (
     <header className="topbar">
-      <div className="brand">OpsControl</div>
+      <div className="brand">
+        <button className="brand-link" onClick={() => onChange("Overview")} aria-label="Go to Overview">
+          OpsControl
+        </button>
+      </div>
       <nav>
         {items.map(item => (
           <button key={item} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
