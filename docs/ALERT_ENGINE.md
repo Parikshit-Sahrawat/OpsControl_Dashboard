@@ -74,3 +74,30 @@ Alert Rule channel configuration is available through the existing Alert Rule cr
 Alert evaluation never modifies the source resource. It does not restart VMs, retry Pentaho jobs, modify ETL definitions, or execute arbitrary production commands.
 
 It only evaluates collected evidence and creates operational alert and notification records.
+
+## Provider-specific correlation
+
+### ServiceNow
+
+ServiceNow OPENED delivery now uses a deterministic correlation value:
+
+`opscontrol:<alert_state_id>:OPENED`
+
+The correlation field defaults to `correlation_id` and is configurable with `OPSCONTROL_SERVICENOW_CORRELATION_FIELD`.
+
+Before creating an Incident, OpsControl queries ServiceNow for an existing record with that correlation value. If found, the existing Incident reference is reused. This protects against the failure mode where ServiceNow creates the Incident but the HTTP response is lost before OpsControl records the delivery as SENT.
+
+The correlation value is also written to the created Incident. A successful existing/new Incident reference is persisted as the delivery external reference.
+
+### Email
+
+SMTP does not provide a universal server-side idempotency key. OpsControl therefore uses a deterministic RFC Message-ID derived from the persisted delivery ID and adds explicit tracking headers:
+
+- `Message-ID: <opscontrol-<delivery-id>@opscontrol.local>`
+- `X-OpsControl-Delivery-ID`
+- `X-OpsControl-Alert-State-ID`
+- `X-OpsControl-Event`
+
+Retries of the same persisted delivery therefore carry the same correlation identity. Mail systems that deduplicate or trace by Message-ID can recognize repeated delivery attempts.
+
+This is correlation rather than a guarantee of SMTP-level exactly-once delivery; SMTP itself cannot guarantee exactly-once acceptance across a network failure boundary.
