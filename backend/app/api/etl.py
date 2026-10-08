@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, or_
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db.session import get_db
 from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution, CorrelationRecord
 from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut
@@ -16,8 +16,9 @@ def _load(eid,db):
 def _out(h):
     return ExecutionOut(**_item(h).model_dump(),source_error_code=h.source_error_code,source_error_message=h.source_error_message,source_exception=h.source_exception,source_log_location=h.source_log_location,source_result=h.source_result,steps=[StepOut.model_validate(s) for s in h.steps])
 @router.get("/executions",response_model=list[ExecutionListItem])
-def list_executions(status:ExecutionStatus|None=None,environment:str|None=None,execution_type:ExecutionType|None=None,search:str|None=None,limit:int=Query(100,ge=1,le=500),db:Session=Depends(get_db)):
+def list_executions(status:ExecutionStatus|None=None,environment:str|None=None,execution_type:ExecutionType|None=None,search:str|None=None,organization_ids:list[UUID]|None=Query(default=None),limit:int=Query(100,ge=1,le=500),db:Session=Depends(get_db)):
     stmt=select(JobOrderHistory).join(JobOrder).join(JobOrder.vm).options(joinedload(JobOrderHistory.job_order).joinedload(JobOrder.vm),joinedload(JobOrderHistory.job_order).joinedload(JobOrder.organization))
+    if organization_ids: stmt=stmt.where(JobOrder.organization_id.in_(organization_ids))
     if status: stmt=stmt.where(JobOrderHistory.status==status)
     if environment: stmt=stmt.where(JobOrder.environment==environment)
     if execution_type: stmt=stmt.where(JobOrderHistory.execution_type==execution_type)
