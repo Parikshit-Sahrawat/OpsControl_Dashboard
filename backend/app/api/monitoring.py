@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, CorrelationRecord, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization, MonitoringTemplate, MonitoringTemplateVersion
+from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, CorrelationRecord, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization, MonitoringTemplate, MonitoringTemplateVersion, MonitoringTemplateAttachment
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
@@ -17,6 +17,9 @@ from app.schemas.monitoring import (
     MonitoringTemplateOut,
     MonitoringTemplateUpdate,
     MonitoringTemplateVersionOut,
+    MonitoringTemplateAttachmentCreate,
+    MonitoringTemplateAttachmentUpdate,
+    MonitoringTemplateAttachmentOut,
     CollectorCreate,
     CollectorOut,
     CollectorUpdate,
@@ -36,6 +39,8 @@ from app.schemas.monitoring import (
     OrganizationOut,
     CorrelationRecordOut,
 )
+
+from app.services.template_resolution import attach_template, detach_template, list_template_attachments, resolve_data_source_configuration
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring Configuration"])
 
@@ -94,6 +99,75 @@ def disable_data_source(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(DataSource, item_id, db, "Data source")
     item.enabled = False
     db.commit()
+
+
+@router.get("/data-sources/{item_id}/templates", response_model=list[MonitoringTemplateAttachmentOut])
+def list_data_source_templates(item_id: UUID, db: Session = Depends(get_db)):
+    _get_or_404(DataSource, item_id, db, "Data source")
+    return list_template_attachments(db, item_id)
+
+
+@router.post("/data-sources/{item_id}/templates", response_model=MonitoringTemplateAttachmentOut, status_code=201)
+def attach_data_source_template(
+    item_id: UUID,
+    payload: MonitoringTemplateAttachmentCreate,
+    db: Session = Depends(get_db),
+):
+    return attach_template(
+        db,
+        item_id,
+        payload.template_id,
+        payload.template_version,
+        payload.priority,
+        payload.overrides,
+    )
+
+
+@router.patch("/data-sources/{item_id}/templates/{template_id}", response_model=MonitoringTemplateAttachmentOut)
+def update_data_source_template(
+    item_id: UUID,
+    template_id: UUID,
+    payload: MonitoringTemplateAttachmentUpdate,
+    db: Session = Depends(get_db),
+):
+    _get_or_404(DataSource, item_id, db, "Data source")
+    attachment = db.scalar(
+        select(MonitoringTemplateAttachment).where(
+            MonitoringTemplateAttachment.data_source_id == item_id,
+            MonitoringTemplateAttachment.template_id == template_id,
+        )
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Template attachment not found")
+
+    values = payload.model_dump(exclude_unset=True)
+    if "template_version" in values:
+        template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
+        version = db.scalar(
+            select(MonitoringTemplateVersion).where(
+                MonitoringTemplateVersion.template_id == template_id,
+                MonitoringTemplateVersion.version == values["template_version"],
+                MonitoringTemplateVersion.status == "COMMITTED",
+            )
+        )
+        if not version:
+            raise HTTPException(status_code=409, detail=f"Template version {values['template_version']} is not available")
+    for key, value in values.items():
+        setattr(attachment, key, value)
+    db.commit()
+    db.refresh(attachment)
+    return attachment
+
+
+@router.delete("/data-sources/{item_id}/templates/{template_id}", status_code=204)
+def detach_data_source_template(item_id: UUID, template_id: UUID, db: Session = Depends(get_db)):
+    _get_or_404(DataSource, item_id, db, "Data source")
+    detach_template(db, item_id, template_id)
+
+
+@router.get("/data-sources/{item_id}/effective-configuration")
+def get_effective_data_source_configuration(item_id: UUID, db: Session = Depends(get_db)):
+    return resolve_data_source_configuration(db, item_id)
 
 
 @router.get("/collectors", response_model=list[CollectorOut])
