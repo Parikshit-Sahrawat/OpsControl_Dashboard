@@ -6,13 +6,17 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, CorrelationRecord, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization
+from app.models import AlertNotificationDelivery, AlertRule, AlertState, Collector, CollectorRun, CorrelationRecord, DataSource, LogEvent, LogSource, MetricDefinition, MetricSample, Organization, MonitoringTemplate, MonitoringTemplateVersion
 from app.schemas.monitoring import (
     AlertRuleCreate,
     AlertRuleOut,
     AlertRuleUpdate,
     AlertNotificationDeliveryOut,
     AlertStateOut,
+    MonitoringTemplateCreate,
+    MonitoringTemplateOut,
+    MonitoringTemplateUpdate,
+    MonitoringTemplateVersionOut,
     CollectorCreate,
     CollectorOut,
     CollectorUpdate,
@@ -423,6 +427,107 @@ def disable_alert_rule(item_id: UUID, db: Session = Depends(get_db)):
     item = _get_or_404(AlertRule, item_id, db, "Alert rule")
     item.enabled = False
     db.commit()
+
+
+@router.get("/templates", response_model=list[MonitoringTemplateOut])
+def list_monitoring_templates(
+    status: str | None = None,
+    limit: int = Query(200, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    stmt = select(MonitoringTemplate).order_by(MonitoringTemplate.name).limit(limit)
+    if status:
+        stmt = stmt.where(MonitoringTemplate.status == status.upper())
+    return db.scalars(stmt).all()
+
+
+@router.get("/templates/{item_id}", response_model=MonitoringTemplateOut)
+def get_monitoring_template(item_id: UUID, db: Session = Depends(get_db)):
+    return _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+
+
+@router.get("/templates/{item_id}/versions", response_model=list[MonitoringTemplateVersionOut])
+def list_monitoring_template_versions(
+    item_id: UUID,
+    limit: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+):
+    _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+    stmt = (
+        select(MonitoringTemplateVersion)
+        .where(MonitoringTemplateVersion.template_id == item_id)
+        .order_by(MonitoringTemplateVersion.version.desc())
+        .limit(limit)
+    )
+    return db.scalars(stmt).all()
+
+
+@router.post("/templates", response_model=MonitoringTemplateOut, status_code=201)
+def create_monitoring_template(payload: MonitoringTemplateCreate, db: Session = Depends(get_db)):
+    item = MonitoringTemplate(
+        name=payload.name,
+        description=payload.description,
+        scope=payload.scope,
+        version=1,
+        status="COMMITTED",
+        package_config=payload.package_config,
+        committed_at=datetime.utcnow(),
+        committed_by=payload.committed_by or "Admin",
+    )
+    db.add(item)
+    db.flush()
+    db.add(MonitoringTemplateVersion(
+        template_id=item.id,
+        version=1,
+        status="COMMITTED",
+        package_config=payload.package_config,
+        committed_at=item.committed_at,
+        committed_by=item.committed_by,
+    ))
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.patch("/templates/{item_id}", response_model=MonitoringTemplateOut)
+def commit_monitoring_template(
+    item_id: UUID,
+    payload: MonitoringTemplateUpdate,
+    db: Session = Depends(get_db),
+):
+    item = _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+    values = payload.model_dump(exclude_unset=True)
+    package = values.pop("package_config", None)
+    committed_by = values.pop("committed_by", None) or "Admin"
+    for key, value in values.items():
+        setattr(item, key, value)
+
+    if package is not None:
+        next_version = int(item.version) + 1
+        item.version = next_version
+        item.status = "COMMITTED"
+        item.package_config = package
+        item.committed_at = datetime.utcnow()
+        item.committed_by = committed_by
+        db.add(MonitoringTemplateVersion(
+            template_id=item.id,
+            version=next_version,
+            status="COMMITTED",
+            package_config=package,
+            committed_at=item.committed_at,
+            committed_by=committed_by,
+        ))
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+@router.delete("/templates/{item_id}", status_code=204)
+def disable_monitoring_template(item_id: UUID, db: Session = Depends(get_db)):
+    item = _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+    item.status = "DISABLED"
+    db.commit()
+
 
 @router.get("/correlations/{history_id}", response_model=CorrelationRecordOut)
 def get_correlation(history_id: UUID, db: Session = Depends(get_db)):
