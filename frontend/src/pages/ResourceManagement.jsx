@@ -123,90 +123,95 @@ function Modal({ title, children, onClose, wide = false }) {
 function TemplateCard({ template, selected, onClick }) {
   return <button type="button" className={selected ? "template-card selected" : "template-card"} onClick={onClick}>
     <div className="template-card-head"><div><b>{template.name}</b><small>{template.scope}</small></div><span className="template-check">{selected ? "✓" : "+"}</span></div>
-    <p>{template.description}</p><div className="template-example-list">{template.examples.map(x => <span key={x}>{x}</span>)}</div>
+    <p>{template.description}</p><div className="template-example-list">{(template.examples || []).map(x => <span key={x}>{x}</span>)}</div>
   </button>;
 }
 
 
-function TemplateEditor({ template, onSave, onClose }) {
-  const [draft, setDraft] = useState(JSON.parse(JSON.stringify(template)));
-  const [tab, setTab] = useState("collector");
-  const [newMetric, setNewMetric] = useState({ name: "", metric: "", resource: "VM", unit: "", interval: 60, enabled: true });
-  const [newAlert, setNewAlert] = useState({ name: "", domain: "VM", metric: "", severity: "WARNING", operator: "GT", threshold: 80, window: 300, consecutive: 1, notifications: ["EMAIL"] });
-  const [newLog, setNewLog] = useState({ name: "", source: "FILE", location: "", parser: "RAW", severity: "ERROR+", interval: 30, retention: 30, enabled: true });
-
-  const updateCollector = (key, value) => setDraft(d => ({ ...d, collector: { ...d.collector, [key]: value } }));
-  const updateRow = (section, index, key, value) => setDraft(d => ({ ...d, [section]: d[section].map((row, i) => i === index ? { ...row, [key]: value } : row) }));
-  const removeRow = (section, index) => setDraft(d => ({ ...d, [section]: d[section].filter((_, i) => i !== index) }));
-
-  const addMetric = () => {
-    if (!newMetric.name.trim() || !newMetric.metric.trim()) return;
-    setDraft(d => ({ ...d, metrics: [...d.metrics, { ...newMetric, interval: Number(newMetric.interval) }] }));
-    setNewMetric({ name: "", metric: "", resource: "VM", unit: "", interval: 60, enabled: true });
+function normalizeTemplate(value) {
+  const t = JSON.parse(JSON.stringify(value || {}));
+  return {
+    id: t.id || "", name: t.name || "New Monitoring Template", description: t.description || "",
+    scope: t.scope || "VM + Application / Services", version: Number(t.version || 1),
+    status: t.status || "DRAFT", committedAt: t.committedAt || null, committedBy: t.committedBy || "Admin",
+    attributes: Array.isArray(t.attributes) ? t.attributes : [],
+    collector: { type:"OTEL", interval:30, protocol:"OTLP/gRPC", port:4317, tls:true, telemetry:[], ...(t.collector||{}) },
+    metrics: Array.isArray(t.metrics) ? t.metrics : [], alerts: Array.isArray(t.alerts) ? t.alerts : [], logs: Array.isArray(t.logs) ? t.logs : []
   };
-  const addAlert = () => {
-    if (!newAlert.name.trim() || !newAlert.metric.trim()) return;
-    setDraft(d => ({ ...d, alerts: [...d.alerts, { ...newAlert, threshold: Number(newAlert.threshold), window: Number(newAlert.window), consecutive: Number(newAlert.consecutive) }] }));
-    setNewAlert({ name: "", domain: "VM", metric: "", severity: "WARNING", operator: "GT", threshold: 80, window: 300, consecutive: 1, notifications: ["EMAIL"] });
-  };
-  const addLog = () => {
-    if (!newLog.name.trim() || !newLog.location.trim()) return;
-    setDraft(d => ({ ...d, logs: [...d.logs, { ...newLog, interval: Number(newLog.interval), retention: Number(newLog.retention) }] }));
-    setNewLog({ name: "", source: "FILE", location: "", parser: "RAW", severity: "ERROR+", interval: 30, retention: 30, enabled: true });
-  };
+}
 
-  return <Modal title={template.id ? "Edit Monitoring Template" : "Create Monitoring Template"} wide onClose={onClose}>
-    <div className="template-editor-title">
-      <div><Field label="Template Name"><input value={draft.name} onChange={e => setDraft(d => ({ ...d, name: e.target.value }))} /></Field></div>
-      <div><Field label="Scope"><input value={draft.scope} onChange={e => setDraft(d => ({ ...d, scope: e.target.value }))} /></Field></div>
+function TemplateEditor({ template, onCommit, onClose }) {
+  const initial=normalizeTemplate(template);
+  const [draft,setDraft]=useState(initial);
+  const [saved,setSaved]=useState(JSON.parse(JSON.stringify(initial)));
+  const [tab,setTab]=useState("general");
+  const [validation,setValidation]=useState([]);
+  const [showHistory,setShowHistory]=useState(false);
+  const [attr,setAttr]=useState({name:"",key:"",type:"TEXT",required:false,defaultValue:"",allowedValues:""});
+  const [metric,setMetric]=useState({name:"",metric:"",resource:"VM",unit:"",interval:60,enabled:true});
+  const [alert,setAlert]=useState({name:"",domain:"VM",metric:"",severity:"WARNING",operator:"GT",threshold:80,window:300,consecutive:1,notifications:["EMAIL"]});
+  const [log,setLog]=useState({name:"",source:"FILE",location:"",parser:"RAW",severity:"ERROR+",interval:30,retention:30,enabled:true});
+  const dirty=JSON.stringify(draft)!==JSON.stringify(saved);
+  const update=(p)=>setDraft(d=>({...d,...p}));
+  const updateCollector=(k,v)=>setDraft(d=>({...d,collector:{...d.collector,[k]:v}}));
+  const updateRow=(section,i,k,v)=>setDraft(d=>({...d,[section]:d[section].map((r,n)=>n===i?{...r,[k]:v}:r)}));
+  const removeRow=(section,i)=>setDraft(d=>({...d,[section]:d[section].filter((_,n)=>n!==i)}));
+
+  const validate=()=>{
+    const errors=[];
+    if(!draft.name.trim()) errors.push("Template name is required.");
+    if(!draft.scope.trim()) errors.push("Template scope is required.");
+    if(!Number(draft.collector.interval)||draft.collector.interval<5) errors.push("Collector interval must be at least 5 seconds.");
+    if(!Number(draft.collector.port)||draft.collector.port>65535) errors.push("Collector port must be between 1 and 65535.");
+    const keys=new Set();
+    draft.attributes.forEach((a,i)=>{
+      if(!a.name?.trim()) errors.push("Attribute "+(i+1)+" needs a name.");
+      if(!a.key?.trim()) errors.push("Attribute "+(i+1)+" needs a key.");
+      if(a.key&&keys.has(a.key)) errors.push("Duplicate attribute key: "+a.key);
+      if(a.key) keys.add(a.key);
+      if(["SELECT","MULTI_SELECT"].includes(a.type)&&!(a.allowedValues||[]).length) errors.push("Attribute "+(a.name||i+1)+" needs allowed values.");
+    });
+    draft.metrics.forEach((m,i)=>{if(!m.name?.trim()||!m.metric?.trim())errors.push("Metric "+(i+1)+" needs name and key.");});
+    draft.alerts.forEach((a,i)=>{if(!a.name?.trim()||!a.metric?.trim())errors.push("Alert "+(i+1)+" needs name and metric/signal.");});
+    draft.logs.forEach((l,i)=>{if(!l.name?.trim()||!l.location?.trim())errors.push("Log source "+(i+1)+" needs name and location.");});
+    setValidation(errors); return errors;
+  };
+  const commit=()=>{
+    if(validate().length)return;
+    const id=draft.id||draft.name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"")||"template-"+Date.now();
+    const next={...draft,id,version:Number(saved.version||1)+(dirty?1:0),status:"COMMITTED",committedAt:new Date().toISOString(),committedBy:"Admin"};
+    onCommit(next); setSaved(JSON.parse(JSON.stringify(next))); setDraft(JSON.parse(JSON.stringify(next))); setValidation([]);
+  };
+  const addAttr=()=>{if(!attr.name.trim()||!attr.key.trim())return;setDraft(d=>({...d,attributes:[...d.attributes,{...attr,allowedValues:String(attr.allowedValues||"").split(",").map(x=>x.trim()).filter(Boolean)}]}));setAttr({name:"",key:"",type:"TEXT",required:false,defaultValue:"",allowedValues:""});};
+  const addMetric=()=>{if(!metric.name.trim()||!metric.metric.trim())return;setDraft(d=>({...d,metrics:[...d.metrics,{...metric,interval:Number(metric.interval)}]}));setMetric({name:"",metric:"",resource:"VM",unit:"",interval:60,enabled:true});};
+  const addAlert=()=>{if(!alert.name.trim()||!alert.metric.trim())return;setDraft(d=>({...d,alerts:[...d.alerts,{...alert,threshold:Number(alert.threshold),window:Number(alert.window),consecutive:Number(alert.consecutive)}]}));setAlert({name:"",domain:"VM",metric:"",severity:"WARNING",operator:"GT",threshold:80,window:300,consecutive:1,notifications:["EMAIL"]});};
+  const addLog=()=>{if(!log.name.trim()||!log.location.trim())return;setDraft(d=>({...d,logs:[...d.logs,{...log,interval:Number(log.interval),retention:Number(log.retention)}]}));setLog({name:"",source:"FILE",location:"",parser:"RAW",severity:"ERROR+",interval:30,retention:30,enabled:true});};
+  const tabs=[["general","General"],["attributes","Attributes"],["collector","Collector"],["metrics","Metrics"],["alerts","Alert Rules"],["logs","Log Defaults"]];
+
+  return <Modal title={template.id?"Edit Monitoring Template":"Create Monitoring Template"} wide onClose={onClose}>
+    <div className="template-editor-header"><div><div className="template-editor-name-row"><h3>{draft.name}</h3><span className={dirty?"template-draft-badge dirty":"template-draft-badge"}>{dirty?"UNSAVED CHANGES":draft.status}</span><span className="template-version-badge">v{draft.version}</span></div><small className="muted">Edit → Validate → Apply &amp; Commit Changes</small></div><button className="filter-button" type="button" onClick={()=>setShowHistory(v=>!v)}>Version History</button></div>
+    {showHistory&&<div className="template-history-panel"><b>Version History</b><div className="template-history-row"><span>v{draft.version}</span><b>{draft.status}</b><span>{draft.committedAt?new Date(draft.committedAt).toLocaleString("en-IN"):"Not committed"}</span><span>{draft.committedBy}</span></div></div>}
+    <div className="template-editor-layout">
+      <aside className="template-editor-side-tabs">{tabs.map(([k,label])=><button type="button" key={k} className={tab===k?"template-side-tab active":"template-side-tab"} onClick={()=>setTab(k)}>{label}<span>{k==="attributes"?draft.attributes.length:k==="metrics"?draft.metrics.length:k==="alerts"?draft.alerts.length:k==="logs"?draft.logs.length:""}</span></button>)}</aside>
+      <section className="template-editor-content">
+        {tab==="general"&&<div className="template-editor-panel"><div className="form-grid"><Field label="Template Name"><input value={draft.name} onChange={e=>update({name:e.target.value})}/></Field><Field label="Scope"><input value={draft.scope} onChange={e=>update({scope:e.target.value})}/></Field></div><Field label="Description"><textarea value={draft.description} onChange={e=>update({description:e.target.value})}/></Field><div className="template-general-summary"><div><span>Attributes</span><b>{draft.attributes.length}</b></div><div><span>Metrics</span><b>{draft.metrics.length}</b></div><div><span>Alerts</span><b>{draft.alerts.length}</b></div><div><span>Logs</span><b>{draft.logs.length}</b></div></div><div className="info-box"><b>Template lifecycle:</b> all edits are staged. Nothing is committed until <b>Apply &amp; Commit Changes</b>.</div></div>}
+
+        {tab==="attributes"&&<div className="template-editor-panel"><div className="info-box">Define self-managed fields and their values. The template defines the schema; a Data Source supplies the actual value.</div><div className="template-rule-list">{draft.attributes.map((r,i)=><div className="template-attribute-card" key={i}><div className="template-attribute-grid"><input value={r.name} placeholder="Attribute name" onChange={e=>updateRow("attributes",i,"name",e.target.value)}/><input value={r.key} placeholder="attribute_key" onChange={e=>updateRow("attributes",i,"key",e.target.value)}/><select value={r.type} onChange={e=>updateRow("attributes",i,"type",e.target.value)}>{["TEXT","NUMBER","BOOLEAN","SELECT","MULTI_SELECT","PASSWORD","IP_ADDRESS","PORT","URL","DURATION","TIME"].map(x=><option key={x}>{x}</option>)}</select><label className="inline-check"><input type="checkbox" checked={!!r.required} onChange={e=>updateRow("attributes",i,"required",e.target.checked)}/> Required</label><input value={r.defaultValue||""} placeholder="Default value" onChange={e=>updateRow("attributes",i,"defaultValue",e.target.value)}/><input value={Array.isArray(r.allowedValues)?r.allowedValues.join(", "):(r.allowedValues||"")} placeholder="Allowed values" onChange={e=>updateRow("attributes",i,"allowedValues",e.target.value.split(",").map(x=>x.trim()).filter(Boolean))}/><button type="button" className="filter-button danger-button" onClick={()=>removeRow("attributes",i)}>Remove</button></div></div>)}</div><div className="template-add-row template-attribute-add-row"><input value={attr.name} placeholder="Attribute name" onChange={e=>setAttr(v=>({...v,name:e.target.value}))}/><input value={attr.key} placeholder="attribute_key" onChange={e=>setAttr(v=>({...v,key:e.target.value}))}/><select value={attr.type} onChange={e=>setAttr(v=>({...v,type:e.target.value}))}>{["TEXT","NUMBER","BOOLEAN","SELECT","MULTI_SELECT","PASSWORD","IP_ADDRESS","PORT","URL","DURATION","TIME"].map(x=><option key={x}>{x}</option>)}</select><label className="inline-check"><input type="checkbox" checked={attr.required} onChange={e=>setAttr(v=>({...v,required:e.target.checked}))}/> Required</label><input value={attr.defaultValue} placeholder="Default value" onChange={e=>setAttr(v=>({...v,defaultValue:e.target.value}))}/><input value={attr.allowedValues} placeholder="Allowed values" onChange={e=>setAttr(v=>({...v,allowedValues:e.target.value}))}/><button type="button" className="primary-button" onClick={addAttr}>+ Add Attribute</button></div></div>}
+
+        {tab==="collector"&&<div className="template-editor-panel"><div className="info-box">Collector defaults packaged with this template.</div><div className="form-grid"><Field label="Collector Type"><select value={draft.collector.type} onChange={e=>updateCollector("type",e.target.value)}><option>OTEL</option><option>WINDOWS</option><option>LINUX</option><option>PENTAHO</option></select></Field><Field label="Collection Interval (sec)"><input type="number" min="5" value={draft.collector.interval} onChange={e=>updateCollector("interval",Number(e.target.value))}/></Field></div><div className="form-grid"><Field label="Protocol"><select value={draft.collector.protocol} onChange={e=>updateCollector("protocol",e.target.value)}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field><Field label="Port"><input type="number" min="1" max="65535" value={draft.collector.port} onChange={e=>updateCollector("port",Number(e.target.value))}/></Field></div><label className="toggle"><input type="checkbox" checked={!!draft.collector.tls} onChange={e=>updateCollector("tls",e.target.checked)}/><span>TLS enabled by default</span></label><Field label="Telemetry"><div className="check-grid">{TELEMETRY.map(x=><label className="check-option" key={x}><input type="checkbox" checked={(draft.collector.telemetry||[]).includes(x)} onChange={()=>updateCollector("telemetry",(draft.collector.telemetry||[]).includes(x)?draft.collector.telemetry.filter(v=>v!==x):[...(draft.collector.telemetry||[]),x])}/><span>{x}</span></label>)}</div></Field></div>}
+
+        {tab==="metrics"&&<div className="template-editor-panel"><div className="template-rule-list">{draft.metrics.map((r,i)=><div className="template-rule-row" key={i}><input value={r.name} onChange={e=>updateRow("metrics",i,"name",e.target.value)} placeholder="Rule name"/><input value={r.metric} onChange={e=>updateRow("metrics",i,"metric",e.target.value)} placeholder="Metric key"/><select value={r.resource} onChange={e=>updateRow("metrics",i,"resource",e.target.value)}><option>VM</option><option>Application</option><option>ETL</option><option>Database</option></select><input value={r.unit||""} onChange={e=>updateRow("metrics",i,"unit",e.target.value)} placeholder="Unit"/><input type="number" min="5" value={r.interval} onChange={e=>updateRow("metrics",i,"interval",Number(e.target.value))}/><label className="inline-check"><input type="checkbox" checked={r.enabled!==false} onChange={e=>updateRow("metrics",i,"enabled",e.target.checked)}/> Enabled</label><button type="button" className="filter-button danger-button" onClick={()=>removeRow("metrics",i)}>Remove</button></div>)}</div><div className="template-add-row"><input value={metric.name} placeholder="Metric name" onChange={e=>setMetric(v=>({...v,name:e.target.value}))}/><input value={metric.metric} placeholder="metric.key" onChange={e=>setMetric(v=>({...v,metric:e.target.value}))}/><select value={metric.resource} onChange={e=>setMetric(v=>({...v,resource:e.target.value}))}><option>VM</option><option>Application</option><option>ETL</option><option>Database</option></select><input value={metric.unit} placeholder="Unit" onChange={e=>setMetric(v=>({...v,unit:e.target.value}))}/><input type="number" value={metric.interval} onChange={e=>setMetric(v=>({...v,interval:e.target.value}))}/><button type="button" className="primary-button" onClick={addMetric}>+ Add Metric</button></div></div>}
+
+        {tab==="alerts"&&<div className="template-editor-panel"><div className="info-box">Alert Rules are packaged here. Domain contracts remain separate for the later VM, Application / Services and ETL Job alert design.</div><div className="template-rule-list">{draft.alerts.map((r,i)=><div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={r.name} onChange={e=>updateRow("alerts",i,"name",e.target.value)} placeholder="Alert name"/><select value={r.domain} onChange={e=>updateRow("alerts",i,"domain",e.target.value)}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={r.metric} onChange={e=>updateRow("alerts",i,"metric",e.target.value)} placeholder="Metric / signal"/><select value={r.severity} onChange={e=>updateRow("alerts",i,"severity",e.target.value)}><option>INFO</option><option>WARNING</option><option>CRITICAL</option></select><select value={r.operator} onChange={e=>updateRow("alerts",i,"operator",e.target.value)}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option><option>EQ</option><option>NE</option></select><input type="number" value={r.threshold} onChange={e=>updateRow("alerts",i,"threshold",Number(e.target.value))}/><input type="number" value={r.window} onChange={e=>updateRow("alerts",i,"window",Number(e.target.value))}/><input type="number" min="1" value={r.consecutive} onChange={e=>updateRow("alerts",i,"consecutive",Number(e.target.value))}/><button type="button" className="filter-button danger-button" onClick={()=>removeRow("alerts",i)}>Remove</button></div><small>Notifications: {(r.notifications||[]).join(", ")||"None"}</small></div>)}</div><div className="template-add-row alert-add-row"><input value={alert.name} placeholder="Alert name" onChange={e=>setAlert(v=>({...v,name:e.target.value}))}/><select value={alert.domain} onChange={e=>setAlert(v=>({...v,domain:e.target.value}))}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={alert.metric} placeholder="Metric / signal" onChange={e=>setAlert(v=>({...v,metric:e.target.value}))}/><select value={alert.severity} onChange={e=>setAlert(v=>({...v,severity:e.target.value}))}><option>WARNING</option><option>CRITICAL</option><option>INFO</option></select><select value={alert.operator} onChange={e=>setAlert(v=>({...v,operator:e.target.value}))}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option><option>EQ</option><option>NE</option></select><input type="number" value={alert.threshold} onChange={e=>setAlert(v=>({...v,threshold:e.target.value}))}/><button type="button" className="primary-button" onClick={addAlert}>+ Add Alert</button></div></div>}
+
+        {tab==="logs"&&<div className="template-editor-panel"><div className="template-rule-list">{draft.logs.map((r,i)=><div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={r.name} onChange={e=>updateRow("logs",i,"name",e.target.value)} placeholder="Log source"/><select value={r.source} onChange={e=>updateRow("logs",i,"source",e.target.value)}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={r.location} onChange={e=>updateRow("logs",i,"location",e.target.value)} placeholder="Path / source"/><select value={r.parser} onChange={e=>updateRow("logs",i,"parser",e.target.value)}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><input value={r.severity} onChange={e=>updateRow("logs",i,"severity",e.target.value)}/><input type="number" value={r.interval} onChange={e=>updateRow("logs",i,"interval",Number(e.target.value))}/><input type="number" value={r.retention} onChange={e=>updateRow("logs",i,"retention",Number(e.target.value))}/><label className="inline-check"><input type="checkbox" checked={r.enabled!==false} onChange={e=>updateRow("logs",i,"enabled",e.target.checked)}/> Enabled</label><button type="button" className="filter-button danger-button" onClick={()=>removeRow("logs",i)}>Remove</button></div></div>)}</div><div className="template-add-row"><input value={log.name} placeholder="Log source" onChange={e=>setLog(v=>({...v,name:e.target.value}))}/><select value={log.source} onChange={e=>setLog(v=>({...v,source:e.target.value}))}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={log.location} placeholder="Path / source" onChange={e=>setLog(v=>({...v,location:e.target.value}))}/><select value={log.parser} onChange={e=>setLog(v=>({...v,parser:e.target.value}))}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><button type="button" className="primary-button" onClick={addLog}>+ Add Log Source</button></div></div>}
+      </section>
     </div>
-    <Field label="Description"><textarea value={draft.description} onChange={e => setDraft(d => ({ ...d, description: e.target.value }))} /></Field>
-
-    <div className="template-editor-tabs">
-      {[["collector","Collector configuration"],["metrics","Metric Rules"],["alerts","Alert Rules"],["logs","Log collection defaults"]].map(([key,label]) =>
-        <button type="button" key={key} className={tab === key ? "template-editor-tab active" : "template-editor-tab"} onClick={() => setTab(key)}>{label}</button>
-      )}
-    </div>
-
-    {tab === "collector" && <div className="template-editor-panel">
-      <div className="info-box">Defaults applied when this template is attached to a Data Source. These values describe the collector package; they do not install anything by themselves.</div>
-      <div className="form-grid">
-        <Field label="Collector Type"><select value={draft.collector.type} onChange={e => updateCollector("type", e.target.value)}><option>OTEL</option><option>WINDOWS</option><option>LINUX</option><option>PENTAHO</option></select></Field>
-        <Field label="Collection Interval (sec)"><input type="number" min="5" value={draft.collector.interval} onChange={e => updateCollector("interval", Number(e.target.value))} /></Field>
-      </div>
-      <div className="form-grid">
-        <Field label="Protocol"><select value={draft.collector.protocol} onChange={e => updateCollector("protocol", e.target.value)}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field>
-        <Field label="Port"><input type="number" min="1" max="65535" value={draft.collector.port} onChange={e => updateCollector("port", Number(e.target.value))} /></Field>
-      </div>
-      <label className="toggle"><input type="checkbox" checked={draft.collector.tls} onChange={e => updateCollector("tls", e.target.checked)} /><span>TLS enabled by default</span></label>
-      <Field label="Telemetry"><div className="check-grid">{TELEMETRY.map(x => <label className="check-option" key={x}><input type="checkbox" checked={draft.collector.telemetry.includes(x)} onChange={() => updateCollector("telemetry", draft.collector.telemetry.includes(x) ? draft.collector.telemetry.filter(v => v !== x) : [...draft.collector.telemetry, x])} /><span>{x}</span></label>)}</div></Field>
-    </div>}
-
-    {tab === "metrics" && <div className="template-editor-panel">
-      <div className="template-rule-list">{draft.metrics.map((row, i) =>
-        <div className="template-rule-row" key={i}><input value={row.name} placeholder="Rule name" onChange={e => updateRow("metrics", i, "name", e.target.value)} /><input value={row.metric} placeholder="Metric key" onChange={e => updateRow("metrics", i, "metric", e.target.value)} /><select value={row.resource} onChange={e => updateRow("metrics", i, "resource", e.target.value)}><option>VM</option><option>Application</option><option>ETL</option></select><input value={row.unit || ""} placeholder="Unit" onChange={e => updateRow("metrics", i, "unit", e.target.value)} /><input type="number" min="5" value={row.interval} onChange={e => updateRow("metrics", i, "interval", Number(e.target.value))} /><label className="inline-check"><input type="checkbox" checked={row.enabled} onChange={e => updateRow("metrics", i, "enabled", e.target.checked)} /> Enabled</label><button type="button" className="filter-button danger-button" onClick={() => removeRow("metrics", i)}>Remove</button></div>
-      )}</div>
-      <div className="template-add-row"><input value={newMetric.name} placeholder="Metric rule name" onChange={e => setNewMetric(v => ({ ...v, name: e.target.value }))} /><input value={newMetric.metric} placeholder="Metric key e.g. cpu.utilization" onChange={e => setNewMetric(v => ({ ...v, metric: e.target.value }))} /><select value={newMetric.resource} onChange={e => setNewMetric(v => ({ ...v, resource: e.target.value }))}><option>VM</option><option>Application</option><option>ETL</option></select><input value={newMetric.unit} placeholder="Unit" onChange={e => setNewMetric(v => ({ ...v, unit: e.target.value }))} /><input type="number" value={newMetric.interval} onChange={e => setNewMetric(v => ({ ...v, interval: e.target.value }))} /><button type="button" className="primary-button" onClick={addMetric}>+ Add Metric</button></div>
-    </div>}
-
-    {tab === "alerts" && <div className="template-editor-panel">
-      <div className="info-box">Alert Rules are packaged by the template, but their final domain model remains intentionally separate. For now the editor supports VM, Application / Services and ETL Job rule domains.</div>
-      <div className="template-rule-list">{draft.alerts.map((row, i) =>
-        <div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={row.name} placeholder="Alert name" onChange={e => updateRow("alerts", i, "name", e.target.value)} /><select value={row.domain} onChange={e => updateRow("alerts", i, "domain", e.target.value)}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={row.metric} placeholder="Metric / signal" onChange={e => updateRow("alerts", i, "metric", e.target.value)} /><select value={row.severity} onChange={e => updateRow("alerts", i, "severity", e.target.value)}><option>INFO</option><option>WARNING</option><option>CRITICAL</option></select><select value={row.operator} onChange={e => updateRow("alerts", i, "operator", e.target.value)}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option><option>EQ</option><option>NE</option></select><input type="number" value={row.threshold} onChange={e => updateRow("alerts", i, "threshold", Number(e.target.value))} placeholder="Threshold" /><input type="number" value={row.window} onChange={e => updateRow("alerts", i, "window", Number(e.target.value))} placeholder="Window sec" /><input type="number" min="1" value={row.consecutive} onChange={e => updateRow("alerts", i, "consecutive", Number(e.target.value))} placeholder="Breaches" /><button type="button" className="filter-button danger-button" onClick={() => removeRow("alerts", i)}>Remove</button></div><small>Notifications: {(row.notifications || []).join(", ") || "None"}</small></div>
-      )}</div>
-      <div className="template-add-row alert-add-row"><input value={newAlert.name} placeholder="Alert name" onChange={e => setNewAlert(v => ({ ...v, name: e.target.value }))} /><select value={newAlert.domain} onChange={e => setNewAlert(v => ({ ...v, domain: e.target.value }))}><option>VM</option><option>Application / Services</option><option>ETL</option></select><input value={newAlert.metric} placeholder="Metric / signal" onChange={e => setNewAlert(v => ({ ...v, metric: e.target.value }))} /><select value={newAlert.severity} onChange={e => setNewAlert(v => ({ ...v, severity: e.target.value }))}><option>WARNING</option><option>CRITICAL</option><option>INFO</option></select><select value={newAlert.operator} onChange={e => setNewAlert(v => ({ ...v, operator: e.target.value }))}><option>GT</option><option>GTE</option><option>LT</option><option>LTE</option></select><input type="number" value={newAlert.threshold} onChange={e => setNewAlert(v => ({ ...v, threshold: e.target.value }))} /><button type="button" className="primary-button" onClick={addAlert}>+ Add Alert</button></div>
-    </div>}
-
-    {tab === "logs" && <div className="template-editor-panel">
-      <div className="template-rule-list">{draft.logs.map((row, i) =>
-        <div className="template-rule-card" key={i}><div className="template-rule-grid"><input value={row.name} placeholder="Log source name" onChange={e => updateRow("logs", i, "name", e.target.value)} /><select value={row.source} onChange={e => updateRow("logs", i, "source", e.target.value)}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={row.location} placeholder="Path / source" onChange={e => updateRow("logs", i, "location", e.target.value)} /><select value={row.parser} onChange={e => updateRow("logs", i, "parser", e.target.value)}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><input value={row.severity} placeholder="Severity" onChange={e => updateRow("logs", i, "severity", e.target.value)} /><input type="number" value={row.interval} onChange={e => updateRow("logs", i, "interval", Number(e.target.value))} placeholder="Interval" /><input type="number" value={row.retention} onChange={e => updateRow("logs", i, "retention", Number(e.target.value))} placeholder="Days" /><label className="inline-check"><input type="checkbox" checked={row.enabled} onChange={e => updateRow("logs", i, "enabled", e.target.checked)} /> Enabled</label><button type="button" className="filter-button danger-button" onClick={() => removeRow("logs", i)}>Remove</button></div></div>
-      )}</div>
-      <div className="template-add-row"><input value={newLog.name} placeholder="Log source name" onChange={e => setNewLog(v => ({ ...v, name: e.target.value }))} /><select value={newLog.source} onChange={e => setNewLog(v => ({ ...v, source: e.target.value }))}><option>FILE</option><option>WINDOWS_EVENT</option><option>JOURNALD</option><option>API</option></select><input value={newLog.location} placeholder="Path / source" onChange={e => setNewLog(v => ({ ...v, location: e.target.value }))} /><select value={newLog.parser} onChange={e => setNewLog(v => ({ ...v, parser: e.target.value }))}><option>RAW</option><option>SYSLOG</option><option>WINDOWS_EVENT</option><option>PENTAHO</option><option>TEXT</option></select><button type="button" className="primary-button" onClick={addLog}>+ Add Log Source</button></div>
-    </div>}
-
-    <div className="form-footer"><span className="muted small">Template package: collector + metrics + alerts + logs</span><div><button type="button" className="filter-button" onClick={onClose}>Cancel</button><button type="button" className="primary-button" onClick={() => onSave(draft)}>Save Template</button></div></div>
+    {validation.length>0&&<div className="template-validation-panel"><b>Validation failed</b>{validation.map((x,i)=><div key={i}>• {x}</div>)}</div>}
+    <div className="form-footer template-commit-footer"><div><span className={dirty?"template-change-indicator dirty":"template-change-indicator"}>{dirty?"● Unsaved changes":"✓ No unsaved changes"}</span></div><div><button type="button" className="filter-button" disabled={!dirty} onClick={()=>{setDraft(JSON.parse(JSON.stringify(saved)));setValidation([])}}>Discard Changes</button><button type="button" className="filter-button" onClick={validate}>Validate</button><button type="button" className="primary-button" disabled={!dirty} onClick={commit}>Apply &amp; Commit Changes</button></div></div>
   </Modal>;
 }
+
 
 export default function ResourceManagement({ organizationId, organizationIds = [] }) {
   const scope = organizationIds.length ? organizationIds : (organizationId ? [organizationId] : []);
@@ -391,13 +396,13 @@ export default function ResourceManagement({ organizationId, organizationIds = [
         {tab === "templates" && <div className="resource-section-stack">
           <div className="card resource-toolbar">
             <div><h2>Monitoring Templates</h2><span className="muted small">Build reusable monitoring packages once, then apply them to hundreds of Data Sources.</span></div>
-            <button className="primary-button" onClick={() => setTemplateEditor({ id: "", name: "New Monitoring Template", description: "", scope: "VM + Application / Services", collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: ["VM metrics"] }, metrics: [], alerts: [], logs: [] })}>+ Create Template</button>
+            <div className="template-toolbar-actions"><button className="filter-button" onClick={()=>document.getElementById("opscontrol-template-import")?.click()}>↑ Import Template</button><input id="opscontrol-template-import" type="file" accept=".json,application/json" style={{display:"none"}} onChange={async e=>{const file=e.target.files?.[0];e.target.value="";if(!file)return;try{const raw=JSON.parse(await file.text());setTemplateEditor(normalizeTemplate(raw.template||raw));setError(null)}catch(err){setError("Unable to import template: "+(err.message||"Invalid JSON"))}}}/><button className="primary-button" onClick={()=>setTemplateEditor(normalizeTemplate({id:"",name:"New Monitoring Template",description:"",scope:"VM + Application / Services",attributes:[],collector:{type:"OTEL",interval:30,protocol:"OTLP/gRPC",port:4317,tls:true,telemetry:["VM metrics"]},metrics:[],alerts:[],logs:[]}))}>+ Create Template</button></div>
           </div>
           <div className="template-admin-grid">
             {templates.map(t => <div className="card template-admin-card" key={t.id}>
               <div className="template-admin-head"><div><b>{t.name}</b><small>{t.scope}</small></div><button className="filter-button" onClick={() => setTemplateEditor(t)}>Edit</button></div>
               <p>{t.description}</p>
-              <div className="template-counts"><span>{t.collector?.telemetry?.length || 0} collector signals</span><span>{t.metrics?.length || 0} metric rules</span><span>{t.alerts?.length || 0} alert rules</span><span>{t.logs?.length || 0} log defaults</span></div>
+              <div className="template-counts"><span>v{t.version||1}</span><span>{t.attributes?.length||0} attributes</span><span>{t.collector?.telemetry?.length||0} collector signals</span><span>{t.metrics?.length||0} metric rules</span><span>{t.alerts?.length||0} alert rules</span><span>{t.logs?.length||0} log defaults</span></div><div className="template-card-actions"><button className="filter-button" onClick={()=>{const blob=new Blob([JSON.stringify(t,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=(t.id||"opscontrol-template")+".json";a.click();URL.revokeObjectURL(url)}}>Export</button></div>
             </div>)}
           </div>
           <div className="card info-box resource-info-panel"><b>Template package model</b><p>Each template is a complete monitoring package: Collector configuration + Metric Rules + Alert Rules + Log collection defaults. Templates are independent from the eventual Alert Rule domain design.</p></div>
@@ -447,7 +452,7 @@ export default function ResourceManagement({ organizationId, organizationIds = [
     {templateEditor && <TemplateEditor
       template={templateEditor}
       onClose={() => setTemplateEditor(null)}
-      onSave={draft => {
+      onCommit={draft => {
         const id = draft.id || draft.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `template-${Date.now()}`;
         const next = { ...draft, id };
         setTemplates(current => current.some(x => x.id === id) ? current.map(x => x.id === id ? next : x) : [...current, next]);
