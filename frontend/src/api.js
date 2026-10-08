@@ -57,3 +57,10 @@ export const deleteAlertRule=id=>request("/api/v1/monitoring/alert-rules/"+id,{m
 
 export const fetchExecutionCorrelation=id=>request("/api/v1/etl/executions/"+id+"/correlation");
 export const analyzeExecutionCorrelation=(id,windowBeforeSeconds=900,windowAfterSeconds=900)=>request("/api/v1/etl/executions/"+id+"/correlation?window_before_seconds="+windowBeforeSeconds+"&window_after_seconds="+windowAfterSeconds,{method:"POST"});
+
+
+export const fetchMonitoringTemplates=(params={})=>request("/api/v1/monitoring/templates?"+new URLSearchParams(params).toString());
+export const createMonitoringTemplate=p=>request("/api/v1/monitoring/templates",{method:"POST",body:JSON.stringify(p)});
+export const updateMonitoringTemplate=(id,p)=>request("/api/v1/monitoring/templates/"+id,{method:"PATCH",body:JSON.stringify(p)});
+export const fetchMonitoringTemplateVersions=id=>request("/api/v1/monitoring/templates/"+id+"/versions");
+export const deleteMonitoringTemplate=id=>request("/api/v1/monitoring/templates/"+id,{method:"DELETE"});
