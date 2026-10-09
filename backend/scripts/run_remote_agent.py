@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import ssl
+import socket
 import time
 import uuid
 import urllib.error
@@ -94,8 +95,6 @@ def run_once(base,token,hosts,cidrs):
     return True
 
 def main():
-    global socket
-    import socket
     logging.basicConfig(level=logging.INFO,format="%(asctime)s %(levelname)s %(message)s")
     base,token,hosts,cidrs=config()
     delay=5
