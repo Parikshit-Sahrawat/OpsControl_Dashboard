@@ -90,6 +90,9 @@ jobs:
       - name: Assert throttling, audit, revocation and worker credentials
         working-directory: backend
         run: python scripts/security_release_probe.py
+      - name: Verify expired-session cleanup maintenance command
+        working-directory: backend
+        run: python -m scripts.prune_security_sessions
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
