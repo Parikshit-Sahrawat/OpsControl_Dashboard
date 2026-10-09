@@ -1,6 +1,6 @@
 # DOC-09 — Phase 1 Discovery Handoff and Decision Register
 
-**Version:** 0.1 | **Date:** 2026-10-10 | **Status:** Discovery evidence substantially complete; owner sign-off and clean UI capture review pending. **Not a production approval.**
+**Version:** 0.1 | **Date:** 2026-10-10 | **Status:** Discovery evidence complete; owner sign-off remains pending. **Not a production approval.**
 
 ## What Phase 1 delivers
 - Charter, SRS with IDs and acceptance criteria, current-state assessment, product journeys, delivery roadmap, traceability, risk register, source audit and reproducible staging verification.
@@ -11,7 +11,7 @@
 - [Run 37986761440](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37986761440): clean migration failed with duplicate PostgreSQL `executiontype` enum; tracked as #14.
 - [Run 37986901968](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37986901968): after PostgreSQL ENUM fix, migrations/API passed; harness stopped on test script import path; subsequently corrected.
 - [Run 37987009835](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37987009835): **successful CI jobs**, including fresh PostgreSQL migration, FastAPI startup, React build, synthetic tenant probes, and manually configured API collector sampling. This proves *test execution*, not that security requirements pass.
-- Corrected UI capture run and final screenshot review: **pending final review**; artifacts from 37987009835 showed browser-to-API connectivity misconfiguration, subsequently corrected on the branch.
+- [Run 37987379543](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37987379543): **successful** fresh PostgreSQL, API and React build, synthetic probes and 11 browser screenshots after correcting CORS/loopback configuration. Browser manifest reports **zero page errors and zero error banners**. The screenshots reflect synthetic test fixtures, not live customer workloads.
 
 ## Verified behavior from 37987009835
 | Check | Observed | Compliance |
@@ -62,6 +62,23 @@ The SDLC Discovery phase can exit when specifications are baselined, gaps are ve
 - [x] Baseline verification of tenant exposure and template failure
 - [x] Positive manual collector-to-sample test
 - [x] Initial actual browser screenshots and placeholder identification
-- [ ] Final corrected browser evidence and visual comparison
+- [x] Final corrected browser evidence and static visual comparison
 - [ ] Owner approval of release-1 scope, role capabilities and risk priorities
 - [ ] Merge approval (separate from advancing draft design)
+
+## Final screenshot verification (run 37987379543)
+| Screenshot | Observed rendered UI | Comparison with illustration |
+|---|---|---|
+| 01 Overview | Operations KPI cards, recent jobs table (empty), static VM issues and incidents | Illustration is a concept, not a live data snapshot; KPI values are fixed in code |
+| 02 ETL Jobs | Filtering controls and valid empty-data state after API connection | Structure matches intent; live Pentaho feed unverified |
+| 03 VM Health | Generic "reserved for next implementation stage" placeholder | Illustration correctly represents a proposed feature only |
+| 04 APIs | Same generic placeholder | No operational API health page |
+| 05 Incidents | Same generic placeholder | No operational incident list page |
+| 06 Reports | Same generic placeholder | No operational reporting page |
+| 10 Resource Management | Live page and populated summary from synthetic fixtures | UI exists; counts are not proof of isolation or collector activation |
+| 11 Organizations | Two artificial organizations render | CRUD UI present; anonymous authorization failure remains |
+| 12 Data Sources | Two artificial sources render | UI present; tenant authorization remains missing |
+| 13 Collectors | One manually registered API collector renders | Collector is not auto-provisioned from template |
+| 14 Templates | One committed test template renders | Templates are configuration packages, not operational deployments |
+
+**Artifact**: [GitHub Actions run](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37987379543) → `phase1-staging-evidence` ZIP with PNGs, JSON evidence and logs. No screenshot implies a successful production integration. The original SVGs should remain labeled as illustrative designs.
