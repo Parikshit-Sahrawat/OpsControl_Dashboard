@@ -44,8 +44,8 @@ try {
   for (const [label, filename] of [
     ["Organizations", "11-organizations"],
     ["Data Sources", "12-data-sources"],
-    ["Collectors & Agents", "13-collectors"],
-    ["Monitoring Templates", "14-templates"]
+    ["Collectors", "13-collectors"],
+    ["Templates", "14-templates"]
   ]) {
     await page.locator("button.resource-tab").filter({ hasText: label }).click();
     await capture("Resource Management / " + label, filename);
