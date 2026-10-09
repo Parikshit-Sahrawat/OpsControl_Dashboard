@@ -8,9 +8,9 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ## UI Tour — Frontend
 
-The following screenshots provide a visual journey through the current OpsControl frontend. They are intentionally kept next to the source documentation so a visitor can understand the product direction before reading the implementation details.
+The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.
 
-> **Screenshot note:** These captures document the current navigation/design state. **Overview**, **ETL Jobs**, and **Resource Management** are implemented areas. **VM Health**, **APIs & Services**, **Incidents**, and **Reports** are already wired into navigation but are reserved for their next implementation stages.
+> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health**, **APIs & Services**, **Incidents** and **Reports** currently render placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
 
 ### 1. Operations Overview
 
