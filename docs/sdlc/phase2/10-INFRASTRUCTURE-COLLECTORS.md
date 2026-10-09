@@ -13,6 +13,8 @@ Track independently **transport/connectivity**, **host/cluster health**, **servi
 | Internal UI/API | HTTP(S) checks; optional browser synthetic runner | DNS/TLS, status code, expected content, latency, auth dependency, multi-step UI journey | Network-local runner, test identity/credentials via secret refs, bounded probes |
 | Pentaho ETL | Approved read-only Pentaho API/DB/log adapter | Execution state, job duration, latest run, failure step, freshness and missing run | Supported production read interface; no arbitrary ETL mutation |
 
+For the complete vendor-neutral onboarding, runner security, health model, API endpoints and acceptance tests for internal web UIs, see [13 — Internal Application UI Monitoring](13-INTERNAL-APPLICATION-UI-MONITORING.md).
+
 ## Architecture
 ```mermaid
 flowchart LR
