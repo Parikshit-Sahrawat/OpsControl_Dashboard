@@ -4,6 +4,8 @@
 
 Phase 2 designs the fixes and integrations needed to turn the existing control-plane UI into safe, operational monitoring. These are **proposed interfaces and architecture decisions**, not claims of implemented code or approved production deployment.
 
+For first-time developers, start with the [hands-on Quickstart](../../QUICKSTART.md). It explains the concepts and the current safe local startup path without private infrastructure.
+
 ## Design pack
 - [01 — System architecture](01-ARCHITECTURE.md)
 - [02 — Identity, RBAC and organization isolation](02-TENANCY-SECURITY.md)
@@ -13,6 +15,10 @@ Phase 2 designs the fixes and integrations needed to turn the existing control-p
 - [06 — Test and verification strategy](06-VERIFICATION.md)
 - [07 — Architecture decision records](07-ADRS.md)
 - [08 — Implementation sequencing and exit gate](08-IMPLEMENTATION-PLAN.md)
+- [09 — Reusable Metric, Log and Alert Rules](09-RULE-CATALOG-DESIGN.md)
+- [10 — Infrastructure and application collectors](10-INFRASTRUCTURE-COLLECTORS.md)
+- [11 — Homepage live world clock](11-HOMEPAGE-WORLD-CLOCK.md)
+- [12 — Universal open-source product principles](12-OPEN-SOURCE-PRODUCT-PRINCIPLES.md)
 
 ## References
 - SRS [DOC-02](../02-SRS.md) — requirements FR-001–FR-019 and NFR-001–NFR-012.
