@@ -6,6 +6,129 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ---
 
+## UI Tour — Frontend
+
+The following screenshots provide a visual journey through the current OpsControl frontend. They are intentionally kept next to the source documentation so a visitor can understand the product direction before reading the implementation details.
+
+> **Screenshot note:** These captures document the current navigation/design state. **Overview**, **ETL Jobs**, and **Resource Management** are implemented areas. **VM Health**, **APIs & Services**, **Incidents**, and **Reports** are already wired into navigation but are reserved for their next implementation stages.
+
+### 1. Operations Overview
+
+![OpsControl Overview](docs/screenshots/01-overview.svg)
+
+**Purpose:** The Overview is the operator's starting point: **"What needs my attention right now?"**
+
+Key features:
+- Clickable ETL Jobs, VM Health, APIs & Services, and Active Incidents KPIs.
+- Recent ETL executions with operational status.
+- Recent VM issues using the Data Source name as the operator-facing identity.
+- VM conditions such as **Low Disk Space** and **High Utilization**.
+- Recent API issues and availability/latency signals.
+- Active incident references designed to link to ServiceNow.
+- Organization-scoped operational context.
+- 5-second refresh contract.
+
+### 2. ETL Jobs
+
+![OpsControl ETL Jobs](docs/screenshots/02-etl-jobs.svg)
+
+**Purpose:** Monitor and investigate individual ETL executions.
+
+Key features:
+- `SUCCESS`, `FAILED`, `RUNNING`, `LONG_RUNNING`, and `NO_RUN` states.
+- Scheduled vs Manual execution types.
+- Expected runtime vs SLA monitoring.
+- Status filters and search.
+- Execution details drawer.
+- Failure diagnosis, timeline, step-level execution and incident history.
+- Investigation lifecycle and operator notes.
+- Correlation with VM, application, metric and log evidence.
+
+### 3. VM Health
+
+![OpsControl VM Health](docs/screenshots/03-vm-health.svg)
+
+**Purpose:** Provide a dedicated operational view for customer Data Sources and their infrastructure health.
+
+Planned/next-stage capabilities:
+- CPU, memory and disk monitoring.
+- Service/process/application health.
+- Data Source-level status and conditions.
+- Collector/runtime evidence.
+- Critical, Warning, Healthy and Unknown states.
+
+### 4. APIs & Services
+
+![OpsControl APIs](docs/screenshots/04-apis.svg)
+
+**Purpose:** Monitor application/API availability and performance.
+
+Planned/next-stage capabilities:
+- Availability and HTTP status.
+- Response-time monitoring.
+- Authentication checks.
+- TLS/SSL checks.
+- Alert routing through Email, PagerDuty and ServiceNow.
+
+The backend already contains the first real API collector foundation using Basic Authentication.
+
+### 5. Incidents
+
+![OpsControl Incidents](docs/screenshots/05-incidents.svg)
+
+**Purpose:** Turn operational signals into actionable incident investigation.
+
+Planned/next-stage capabilities:
+- Active incident list.
+- Severity and source.
+- Assignment and investigation state.
+- ServiceNow linkage.
+- Investigation lifecycle from detection through resolution.
+
+### 6. Reports
+
+![OpsControl Reports](docs/screenshots/06-reports.svg)
+
+**Purpose:** Keep historical and analytical information out of the real-time Overview while still providing operational reporting.
+
+Planned/next-stage capabilities:
+- One-year operational history.
+- ETL runtime and SLA reporting.
+- VM/API health trends.
+- ETL success/failure reports.
+- Historical operational analysis.
+
+### 7. Resource Management
+
+![OpsControl Resource Management](docs/screenshots/10-resource-management.svg)
+
+**Purpose:** Define the monitoring control plane before runtime collection begins.
+
+Current Resource Management model:
+
+    Organization
+        ↓
+    Data Source
+        ↓
+    Monitoring Templates
+        ↓
+    Agent & Collector
+        ↓
+    Review
+
+The Resource Management area contains:
+- **Organizations** — customer ownership and isolation boundary.
+- **Data Sources** — customer machines/VMs with environment, OS, workload roles, product and host-group metadata.
+- **Collectors** — connection mode, endpoint, protocol, TLS, Vault secret reference, install method, version and telemetry capabilities.
+- **Templates** — reusable monitoring packages containing Collector configuration, Attributes, Metrics, Alert Rules and Log Collection rules.
+- Guided Data Source onboarding.
+- Template versioning and normalized Data Source template attachments.
+- Effective monitoring configuration resolution.
+
+The next Phase 2 step is to reconcile that effective configuration into actual operational Collector, Metric Definition, Alert Rule and Log Source records.
+
+---
+
 ## Current implementation status
 
 **Phase:** Platform foundation + monitoring control plane
