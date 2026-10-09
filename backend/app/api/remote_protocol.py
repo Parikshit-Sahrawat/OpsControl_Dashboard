@@ -21,6 +21,7 @@ from app.security.audit import log_event
 from app.security.http import require_admin, token_digest
 from app.security.models import WorkerIdentity
 from app.worker.egress import EgressDenied, check_target, policy_cidrs, policy_hosts
+from app.worker.alert_engine import evaluate_metric_sample
 from app.worker.remote_models import RemoteProbeJob, RemoteProbeEvidence
 
 worker_router = APIRouter(prefix="/api/v1/worker", tags=["Remote Probe Workers"])
@@ -275,9 +276,12 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
             elif name in {"http_response_time_ms","response_time_ms"} and payload.response_time_ms is not None:
                 value=float(payload.response_time_ms)
             else: continue
-            db.add(MetricSample(organization_id=identity["organization_id"],
+            sample=MetricSample(organization_id=identity["organization_id"],
                 metric_definition_id=metric.id,collector_id=collector.id,collector_run_id=run.id,
-                observed_at=payload.observed_at,value_numeric=value,unit=metric.unit))
+                observed_at=payload.observed_at,value_numeric=value,unit=metric.unit)
+            db.add(sample)
+            db.flush()
+            evaluate_metric_sample(db,sample)
         job.state="COMPLETED"
         job.completed_at=now
         job.lease_nonce_hash=None
