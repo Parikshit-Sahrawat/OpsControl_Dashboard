@@ -133,3 +133,6 @@ npm run build
 
 ### Updated approval gate
 Phase 1 remains **NOT APPROVED**. Static source and SVG reconciliation expanded; live PostgreSQL, tenant authorization and real browser captures remain blocked by execution environment and missing identity/test harness. No functional code changes have been made.
+
+## Iteration 3 — Staging harness provisioned
+A disposable PostgreSQL 17 GitHub Actions integration smoke workflow has been added at `.github/workflows/phase1-staging.yml` with backend migration, startup, OpenAPI, anonymous-access diagnostic, frontend build and evidence artifact steps. **Execution is pending; no runtime success is claimed.** See [DOC-08](08-STAGING-VERIFICATION.md). Authenticated tenant-boundary tests, template-to-sample execution and browser screenshots remain unresolved.
