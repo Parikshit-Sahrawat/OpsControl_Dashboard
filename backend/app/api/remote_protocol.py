@@ -150,7 +150,7 @@ def enqueue_probe(payload:QueueRequest):
     actor=require_admin()
     with SessionLocal() as db:
         worker=db.get(WorkerIdentity,payload.worker_id)
-        collector=db.get(Collector,payload.collector_id)
+        collector=db.scalar(select(Collector).where(Collector.id==payload.collector_id).with_for_update())
         if not worker or not worker.enabled or worker.expires_at.replace(tzinfo=timezone.utc)<=utc():
             raise HTTPException(404,"Worker not available")
         if not collector or not collector.enabled: raise HTTPException(404,"Collector not available")
@@ -165,6 +165,11 @@ def enqueue_probe(payload:QueueRequest):
             if existing.collector_id!=collector.id or existing.assigned_worker_id!=worker.id:
                 raise HTTPException(409,"Idempotency key already used")
             return {"job_id":str(existing.id),"state":existing.state,"duplicate":True}
+        pending=db.scalar(select(RemoteProbeJob.id).where(
+            RemoteProbeJob.collector_id==collector.id,
+            RemoteProbeJob.state.in_(["QUEUED","LEASED"])).limit(1))
+        if pending:
+            raise HTTPException(409,"Collector already has an outstanding remote job")
         job=RemoteProbeJob(id=payload.idempotency_key,organization_id=worker.organization_id,
             collector_id=collector.id,assigned_worker_id=worker.id,planned_for=utc(),
             config_snapshot=snapshot,state="QUEUED",attempts=0)
