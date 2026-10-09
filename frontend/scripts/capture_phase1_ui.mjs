@@ -46,7 +46,7 @@ try {
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button", { name: "Sign in" }).click();
   try { await page.waitForSelector("button.nav-button", { timeout: 20000 }); }
-  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error)); }
+  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error) + " pageErrors=" + errors.join(" | ")); }
 
   for (const [label, filename] of categories) {
     await page.locator("button.nav-button").filter({ hasText: label }).click();
