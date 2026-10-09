@@ -11,7 +11,7 @@ try {
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button", { name: "Sign in" }).click();
   try { await page.waitForSelector("button.nav-button", { timeout: 20000 }); }
-  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error)); }
+  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error) + " pageErrors=" + errors.join(" | ")); }
   const clock = page.locator(".world-clock");
   await clock.waitFor();
   const selector = page.getByRole("combobox", { name: "World clock timezone" });
