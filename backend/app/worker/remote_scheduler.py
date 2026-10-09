@@ -10,7 +10,7 @@ import logging
 import time
 import uuid
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import select
+from sqlalchemy import select, update
 from app.db.session import SessionLocal
 from app.models import Collector,DataSource,Organization
 from app.security.models import WorkerIdentity
@@ -25,6 +25,13 @@ def queue_due_once(limit=100):
     now=utc()
     queued=0
     with SessionLocal() as db:
+        # Expired 3-attempt leases are terminal rather than blocking
+        # future scheduling forever or misrepresenting monitoring as healthy.
+        db.execute(update(RemoteProbeJob).where(
+            RemoteProbeJob.state=="LEASED",
+            RemoteProbeJob.attempts>=3,
+            RemoteProbeJob.lease_expires_at<now
+        ).values(state="EXPIRED",lease_nonce_hash=None))
         collectors=db.scalars(
             select(Collector).where(
                 Collector.enabled.is_(True),Collector.remote_worker_id.is_not(None),
