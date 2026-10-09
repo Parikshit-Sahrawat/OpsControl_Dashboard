@@ -50,3 +50,10 @@
 - [ ] Threat model, retention and incident response policy approved
 - [ ] Tenant/worker attack-surface tests complete
 - [ ] Explicit maintainer merge/deploy approval granted
+
+## Remote worker protocol evidence (draft PR #20)
+
+- `backend/scripts/test_remote_egress.py`: local and central policy intersection, pinned DNS allowlist, mixed-address DNS rebinding, metadata/loopback/link-local and unsafe URL rejections.
+- `backend/scripts/remote_protocol_probe.py`: two-tenant worker authentication, explicit assignment, recurring scheduling, lease nonce, idempotent ingestion, forged event rejection and source-linked metrics in disposable PostgreSQL.
+- `backend/migrations/versions/0015_remote_jobs.py` and `0016_remote_collector_assignment.py`: migration and rollback smoke.
+- Must validate deployment egress firewall independently; worker Python validation alone is not a sandbox.
