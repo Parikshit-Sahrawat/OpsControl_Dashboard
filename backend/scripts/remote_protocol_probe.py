@@ -44,6 +44,7 @@ def main():
         metric=MetricDefinition(organization_id=north.organization_id,data_source_id=north.id,collector_id=collector.id,
                                 name="probe_up",metric_type="GAUGE",resource_type="APPLICATION")
         db.add(metric)
+        db.flush()
         ids={"collector":str(collector.id),"org_n":str(north.organization_id),"org_s":str(south.organization_id),
              "metric":str(metric.id)}
         db.commit()
