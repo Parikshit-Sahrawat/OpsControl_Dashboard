@@ -1,4 +1,4 @@
-name: Authenticated OpsControl Staging Verification
+name: OpsControl Security Release Gate
 
 on:
   push:
@@ -56,7 +56,7 @@ jobs:
           from app.db.session import engine
           tables = set(inspect(engine).get_table_names())
           required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
-          required |= {"users", "access_sessions", "organization_memberships"}
+          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities"}
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
@@ -81,6 +81,9 @@ jobs:
       - name: Assert identity and tenant isolation against disposable PostgreSQL
         working-directory: backend
         run: python scripts/auth_tenant_probe.py
+      - name: Assert throttling, audit, revocation and worker credentials
+        working-directory: backend
+        run: python scripts/security_release_probe.py
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
