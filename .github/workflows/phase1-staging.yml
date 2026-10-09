@@ -59,7 +59,7 @@ jobs:
           from app.db.session import engine
           tables = set(inspect(engine).get_table_names())
           required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
-          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities"}
+          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities", "remote_probe_jobs", "remote_probe_evidence"}
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
@@ -90,6 +90,9 @@ jobs:
       - name: Assert throttling, audit, revocation and worker credentials
         working-directory: backend
         run: python scripts/security_release_probe.py
+      - name: Assert secure remote dispatch and evidence ingestion
+        working-directory: backend
+        run: python scripts/remote_protocol_probe.py
       - name: Verify expired-session cleanup maintenance command
         working-directory: backend
         run: python -m scripts.prune_security_sessions
