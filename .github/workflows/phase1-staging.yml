@@ -108,6 +108,9 @@ jobs:
       - name: Assert homepage live clock behavior
         working-directory: frontend
         run: node scripts/test_world_clock.mjs
+      - name: Assert platform-admin navigation is role-restricted
+        working-directory: frontend
+        run: node scripts/test_access_management.mjs
       - name: Upload API logs and tenant evidence
         if: always()
         uses: actions/upload-artifact@v4
