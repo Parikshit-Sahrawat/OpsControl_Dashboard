@@ -22,6 +22,8 @@ jobs:
           --health-timeout 5s
           --health-retries 12
     env:
+      OPSCONTROL_CREDENTIAL_STAGING_USERNAME: staging
+      OPSCONTROL_CREDENTIAL_STAGING_PASSWORD: ci-example-only
       DATABASE_URL: postgresql+psycopg://opscontrol:opscontrol@localhost:5432/opscontrol
       SEED_DEMO_DATA: "false"
       ENVIRONMENT: test
@@ -70,6 +72,9 @@ jobs:
                   if i == 29: raise
                   time.sleep(1)
           PY
+      - name: Execute disposable tenant / template / collector probes
+        working-directory: backend
+        run: python scripts/phase1_staging_probe.py
       - name: Capture tenant authorization baseline (diagnostic, not a pass)
         working-directory: backend
         run: |
@@ -85,6 +90,21 @@ jobs:
           print(json.dumps(results,indent=2))
           print("DIAGNOSTIC ONLY: anonymous endpoint checks do not prove tenant isolation")
           PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run frontend for browser evidence
+        working-directory: frontend
+        run: |
+          npm install --no-audit --no-fund
+          npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &
+          echo $! > /tmp/opscontrol-vite.pid
+      - name: Capture current React UI with Playwright
+        working-directory: frontend
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node scripts/capture_phase1_ui.mjs
       - name: Upload API logs and tenant evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -92,7 +112,11 @@ jobs:
           name: phase1-staging-evidence
           path: |
             backend/tenant-baseline.json
+            backend/phase1-staging-evidence.json
+            backend/phase1-staging-evidence-error.txt
+            frontend/phase1-screenshots/
             /tmp/opscontrol-api.log
+            /tmp/opscontrol-vite.log
           if-no-files-found: ignore
 
   frontend-build:
@@ -102,10 +126,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+
       - name: Install and build frontend
         working-directory: frontend
         run: |
-          npm ci
+          npm install --no-audit --no-fund
           npm run build
