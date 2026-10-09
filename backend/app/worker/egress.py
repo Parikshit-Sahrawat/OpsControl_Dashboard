@@ -66,6 +66,9 @@ def check_target(url, hosts, cidrs):
     networks=policy_cidrs(cidrs)
     if host is None: raise EgressDenied("Missing hostname")
     if len(url)>2048: raise EgressDenied("URL exceeds limit")
+    path=parts.path or "/"
+    if not path.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in path):
+        raise EgressDenied("Target path contains unsafe characters")
     return parts, networks
 
 def resolve_target(host, networks, resolver=socket.getaddrinfo):
