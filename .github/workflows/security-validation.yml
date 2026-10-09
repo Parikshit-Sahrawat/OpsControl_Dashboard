@@ -32,6 +32,11 @@ jobs:
       - name: Check production dependency advisories
         working-directory: frontend
         run: npm audit --omit=dev --audit-level=high
+      - name: Retain generated lockfile for reviewed reproducible installs
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-package-lock-candidate
+          path: frontend/package-lock.json
   secret-history-scan:
     runs-on: ubuntu-latest
     steps:
