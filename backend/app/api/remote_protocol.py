@@ -156,6 +156,8 @@ def enqueue_probe(payload:QueueRequest):
         source=db.get(DataSource,collector.data_source_id)
         if not source or not source.enabled or source.organization_id!=worker.organization_id:
             raise HTTPException(403,"Worker cannot access this collector")
+        if collector.remote_worker_id!=worker.id:
+            raise HTTPException(403,"Collector is not assigned to this worker")
         snapshot=_snapshot(collector,source,worker)
         existing=db.get(RemoteProbeJob,payload.idempotency_key)
         if existing:
@@ -188,7 +190,7 @@ def claim_probe(identity=Depends(worker_from_request)):
         if not job: return {"job":None}
         collector=db.get(Collector,job.collector_id)
         source=db.get(DataSource,collector.data_source_id) if collector else None
-        if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=worker.organization_id:
+        if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=worker.organization_id or collector.remote_worker_id!=worker.id:
             job.state="CANCELLED"
             db.commit()
             return {"job":None}
@@ -241,7 +243,7 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
             raise HTTPException(409,"Lease expired, revoked or invalid")
         collector=db.get(Collector,job.collector_id)
         source=db.get(DataSource,collector.data_source_id) if collector else None
-        if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=identity["organization_id"]:
+        if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=identity["organization_id"] or collector.remote_worker_id!=identity["id"]:
             raise HTTPException(409,"Collector no longer authorized")
         if db.scalar(select(RemoteProbeEvidence).where(RemoteProbeEvidence.event_id==payload.event_id)):
             raise HTTPException(409,"Event id already used")
