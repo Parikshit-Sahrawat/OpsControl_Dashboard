@@ -140,3 +140,14 @@
 .login-card input{background:#07111f;border:1px solid #29415d;color:#e8eef7;padding:12px;border-radius:8px;font:inherit}
 .login-card small{line-height:1.6}.session-banner{position:relative;z-index:25;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:5px 26px;background:#0c2032;border-bottom:1px solid #29415d;color:#a6bdd4;font-size:12px}
 .session-banner button{background:#17334f;color:#e8eef7;border:1px solid #365777;border-radius:6px;padding:5px 10px;cursor:pointer}
+
+/* Admin-only user & organization access management */
+.access-page{display:grid;gap:18px}
+.access-management-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.access-form{display:grid;gap:12px;align-content:start}
+.access-form label{display:grid;gap:6px;color:#a8bdd5;font-size:12px}
+.access-form input,.access-form select,.access-table select{background:#07111f;border:1px solid #29415d;color:#e8eef7;padding:9px;border-radius:6px}
+.access-form .access-checkbox{display:flex;gap:9px;align-items:center}
+.access-actions{display:flex;gap:7px;flex-wrap:wrap}
+.access-table{min-width:0}
+@media(max-width:700px){.access-management-grid{grid-template-columns:1fr}}
