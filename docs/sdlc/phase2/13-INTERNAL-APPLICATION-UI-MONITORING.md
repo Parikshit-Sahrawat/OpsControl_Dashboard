@@ -6,6 +6,8 @@
 
 **Dependencies:** [architecture](01-ARCHITECTURE.md), [tenant/security design](02-TENANCY-SECURITY.md), [activation/reconciliation](03-MONITORING-ACTIVATION.md), [API conventions](05-API-CONTRACTS.md), [verification](06-VERIFICATION.md), [separate metric/log/alert rules](09-RULE-CATALOG-DESIGN.md), [collector catalog](10-INFRASTRUCTURE-COLLECTORS.md), and [open-source neutrality](12-OPEN-SOURCE-PRODUCT-PRINCIPLES.md).
 
+For the infrastructure-wide discovery manager, provider adapters and outbound-only remote agent pool, see [14 — Resource Discovery and Infrastructure Monitoring](14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md).
+
 ## 1. Scope, tiers and exclusions
 
 | Tier | Mode | Verification | Minimum infrastructure |
