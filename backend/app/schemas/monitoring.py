@@ -100,6 +100,7 @@ class CollectorUpdate(BaseModel):
 class CollectorOut(CollectorBase):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
+    remote_worker_id: UUID | None
     data_source_id: UUID
     status: str
     last_run_at: datetime | None
