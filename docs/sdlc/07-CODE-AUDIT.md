@@ -136,3 +136,20 @@ Phase 1 remains **NOT APPROVED**. Static source and SVG reconciliation expanded;
 
 ## Iteration 3 — Staging harness provisioned
 A disposable PostgreSQL 17 GitHub Actions integration smoke workflow has been added at `.github/workflows/phase1-staging.yml` with backend migration, startup, OpenAPI, anonymous-access diagnostic, frontend build and evidence artifact steps. **Execution is pending; no runtime success is claimed.** See [DOC-08](08-STAGING-VERIFICATION.md). Authenticated tenant-boundary tests, template-to-sample execution and browser screenshots remain unresolved.
+
+## Iteration 4 — Live integration and browser verification completed (2026-10-10)
+Evidence: [successful GitHub Actions run 37987379543](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/37987379543); the `phase1-staging-evidence` ZIP contains JSON evidence, API/Vite logs, and 11 PNG screenshots. All tests ran against an ephemeral PostgreSQL 17 service and synthetic fixtures. **Workflow success measures execution of probes, not release compliance.**
+
+### Runtime results
+- **PASS:** Alembic migrations 0001–0011 applied to fresh PostgreSQL 17 after correcting duplicate enum creation in migration 0001 on the review branch (issue #14).
+- **PASS:** SQLAlchemy mapper/app import, FastAPI startup/OpenAPI, Vite production build, and browser navigation capture.
+- **PASS:** A manually created API Collector generated one SUCCESS CollectorRun and one AVAILABILITY sample valued 1.0.
+- **FAIL P0:** Anonymous GET organizations, GET data sources, GET a second organization's source, and PATCH that source all returned HTTP **200**; the synthetic unfiltered source list exposed both artificial organizations. This is confirmed absent authorization, not merely a possible UI isolation bug (#2).
+- **FAIL P0:** Template attachment persisted and resolved the effective API collector, but created **0 Collectors and 0 MetricDefinitions**; automatic template activation is unimplemented (#3).
+- **BROWSER VERIFIED:** 11 live page screenshots captured, 0 page errors and 0 visible error banners after fixing staging origin configuration. Main navigation: Overview, ETL Jobs and Resource Management render; VM Health, APIs, Incidents and Reports are placeholders. Nested Resource pages show 2 synthetic organizations, 2 Data Sources, 1 manually configured collector and 1 template. Frontend navigation/screenshot evidence does not mean all CRUD flows or monitoring functions were exercised.
+- **NOT EXECUTED:** true authenticated org-A vs org-B role negative tests (no authentication model implemented), real Pentaho/Windows/Linux adapter integrations, HTTP TLS verification, UI accessibility/load, migration downgrade, formal pytest/lint suites. These remain in the risk/implementation backlog and are not prerequisites for documenting discovery, but they block product release where applicable.
+
+The original `docs/screenshots/*.svg` files are editorial illustrations, **not** genuine captures. README has been amended to make this distinction. Actual screenshots are stored in the linked CI artifact; [DOC-09](09-PHASE1-HANDOFF.md) gives a per-screen review.
+
+### SDLC gate distinction
+**Phase 1 discovery/audit deliverables: complete for draft owner review.** Scope/roles/retention/SLO approval and merge remain pending. **Operational/production release: blocked** by #2, #3, #8, #4 and missing acceptance tests. The project may proceed into **provisional Phase 2 architecture design** with known risks, but must not equate design progress with production readiness.
