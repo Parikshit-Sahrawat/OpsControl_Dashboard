@@ -79,6 +79,8 @@ def main():
     expect(401,"GET","/api/v1/etl/executions")
     expect(401,"GET","/api/v1/monitoring/templates")
     a=login("test-north");b=login("test-south");reader=login("test-reader");admin=login("test-admin")
+    identity=expect(200,"GET","/api/v1/auth/me",a)
+    assert identity["username"]=="test-north" and len(identity["memberships"])==1,identity
     result=expect(200,"GET",org,a)
     assert {x["id"] for x in result}=={ids["a"]},result
     result=expect(200,"GET",source,a)
