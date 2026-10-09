@@ -21,6 +21,8 @@ def main():
     denied(lambda:check_target("https://portal.example.test/ready?token=abc",hosts,cidrs))
     denied(lambda:check_target("https://portal.example.test/\r\nHost:evil",hosts,cidrs))
     denied(lambda:policy_hosts(["*.example.test"]))
+    denied(lambda:policy_cidrs(["0.0.0.0/0"]))
+    denied(lambda:policy_cidrs(["::/0"]))
     denied(lambda:policy_cidrs(["127.0.0.0/8"]))
     denied(lambda:policy_cidrs(["169.254.0.0/16"]))
     permitted=policy_cidrs(cidrs)
