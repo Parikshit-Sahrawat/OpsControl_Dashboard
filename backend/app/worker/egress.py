@@ -103,6 +103,8 @@ def probe_https(config, hosts, cidrs):
         raise EgressDenied("Invalid expected response status")
     ip=resolve_target(parts.hostname,networks)
     path=parts.path or "/"
+    if not path.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in path):
+        raise EgressDenied("Target path contains unsafe characters")
     # No redirects are followed. 3xx is an observed result, not a new hop.
     timeout= min(max(int(config.get("timeout_seconds",8)),1),10)
     started=time.monotonic()
