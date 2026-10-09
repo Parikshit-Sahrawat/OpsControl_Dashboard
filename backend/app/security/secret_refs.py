@@ -61,3 +61,11 @@ def redact_config(value):
     if _unsafe_url(value):
         return "[REDACTED_URL_WITH_CREDENTIALS]"
     return value
+
+def require_safe_url(value):
+    if value is not None and _unsafe_url(value):
+        raise ValueError("URL must not contain embedded credentials")
+    return value
+
+def redact_url(value):
+    return "[REDACTED_URL_WITH_CREDENTIALS]" if _unsafe_url(value) else value
