@@ -26,6 +26,7 @@ jobs:
     env:
       OPSCONTROL_CREDENTIAL_STAGING_USERNAME: staging
       OPSCONTROL_CREDENTIAL_STAGING_PASSWORD: ci-example-only
+      PYTHONPATH: .
       DATABASE_URL: postgresql+psycopg://opscontrol:opscontrol@localhost:5432/opscontrol
       SEED_DEMO_DATA: "false"
       ENVIRONMENT: test
