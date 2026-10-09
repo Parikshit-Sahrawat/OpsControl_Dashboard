@@ -13,6 +13,9 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, dev
 const manifest = [];
 const errors = [];
 page.on("pageerror", error => errors.push(String(error)));
+page.on("requestfailed", request => {
+  if (request.url().includes(":8000")) errors.push("API request failed: " + request.url() + " - " + request.failure()?.errorText);
+});
 
 const categories = [
   ["Overview", "01-overview"],
@@ -27,11 +30,13 @@ const categories = [
 async function capture(name, file) {
   await page.waitForTimeout(750);
   const placeholder = await page.locator(".card.placeholder").count() > 0;
+  const errorBanners = await page.locator(".error-banner").allTextContents();
+  if (errorBanners.length) errors.push(name + ": " + errorBanners.join("; "));
   const heading = await page.locator("h1").first().textContent().catch(() => null);
   const filename = file + ".png";
   await page.screenshot({ path: path.join(output, filename), fullPage: true });
   manifest.push({ name, filename, heading: heading?.trim(), placeholder,
-    classification: placeholder ? "navigation placeholder" : "implemented UI view (behavior unverified)" });
+    errorBanners, classification: placeholder ? "navigation placeholder" : "implemented UI view (behavior unverified)" });
 }
 
 try {
@@ -41,6 +46,7 @@ try {
     await page.locator("button.nav-button").filter({ hasText: label }).click();
     await capture(label, filename);
   }
+  await page.waitForTimeout(1500);
   for (const [label, filename] of [
     ["Organizations", "11-organizations"],
     ["Data Sources", "12-data-sources"],
