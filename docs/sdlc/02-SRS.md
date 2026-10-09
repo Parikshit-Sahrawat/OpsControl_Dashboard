@@ -41,3 +41,18 @@ Requirements use IDs for traceability. **MUST** means required for the proposed 
 - Customer-specific credentials and datasets will not be embedded in public tests/docs.
 - Notification channel availability and credentials are environment-dependent.
 - Read-only monitoring is the default; remediation is a separately gated capability.
+
+## Audit-driven SRS refinements (2026-10-10)
+These strengthen the baseline and are **requirements**, not assertions of current functionality.
+
+| ID | Requirement | Priority | Verification |
+|---|---|---|---|
+| FR-016 | All organization-scoped list, detail, create, edit and delete operations MUST derive authorized tenant scope from authenticated identity, never from request filters alone | MUST / P0 | User A cannot enumerate, read, modify or delete B data even with B IDs |
+| FR-017 | Monitoring template activation MUST validate, materialize/reconcile effective Collector, MetricDefinition, LogSource and AlertRule objects and expose activation/health state | MUST / P0 | Attach template -> scheduler run -> persisted metric sample; idempotent reactivation |
+| FR-018 | UI KPI totals MUST derive from the same authorized query scope as the linked filtered list; demo data MUST be clearly identified | MUST / P1 | Seeded counts and click-through E2E tests |
+| FR-019 | Collector adapter capability MUST be exposed accurately (supported, configuration-only, unavailable) | MUST / P1 | API and UI capability tests |
+| NFR-010 | HTTPS collection MUST support certificate verification and correct SSL context handling | MUST / P1 | Controlled TLS endpoint tests, trusted and untrusted certificates |
+| NFR-011 | CI MUST run automated backend tests, frontend build/lint, migration smoke tests and API startup checks before release | MUST / P1 | Required checks and published evidence |
+| NFR-012 | A release MUST NOT represent placeholder pages or stub collectors as live operational functionality | MUST / P1 | Product review and smoke-test checklist |
+
+See [DOC-07 Code Audit](07-CODE-AUDIT.md) and tracked issues #2–#7.
