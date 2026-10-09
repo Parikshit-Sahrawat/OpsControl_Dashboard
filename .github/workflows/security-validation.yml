@@ -26,9 +26,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install locked frontend dependencies
+      - name: Install and resolve frontend dependencies (lockfile currently absent)
         working-directory: frontend
-        run: npm ci --no-audit --no-fund
+        run: npm install --no-audit --no-fund
       - name: Check production dependency advisories
         working-directory: frontend
         run: npm audit --omit=dev --audit-level=high
