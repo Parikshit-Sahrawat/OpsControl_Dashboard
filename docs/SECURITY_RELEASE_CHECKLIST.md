@@ -15,6 +15,7 @@
 | Hardened API HTTP headers | `backend/app/main.py` | CSP, no-store, nosniff, frame deny and production TLS/HSTS checks |
 | Config secret references | `security/secret_refs.py`, monitoring serializers/validators | Reject plaintext config credentials and URL userinfo; redact legacy API responses |
 | Dependency/secret scanning | `.github/workflows/security-validation.yml` | `pip-audit`, npm production audit, Gitleaks history scan |
+| Expired token/bucket cleanup | `backend/scripts/prune_security_sessions.py` | Local DB cleanup command tested by CI; operator must schedule it securely | 
 | Reproducible frontend install | `frontend/package-lock.json`, GitHub Actions `npm ci` | lockfile version 3, deterministic install and build |
 | Fresh database migrations and browser tests | staging workflow | PostgreSQL 17 Alembic head, auth security probes, authenticated Playwright |
 
