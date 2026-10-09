@@ -140,8 +140,10 @@ def enforce_writes(db, flush_context, instances):
         if model.__name__ not in _PATHS:
             raise HTTPException(403, "Resource cannot be modified through this API")
         org_id = _resolve_org(db, obj)
-        if not principal.can_edit(org_id):
-            raise HTTPException(403, "Organization administrator required")
+        can_investigate = (model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote"}
+                           and principal.roles.get(org_id) in {"operator", "org_admin"})
+        if not (principal.can_edit(org_id) or can_investigate):
+            raise HTTPException(403, "Organization permission required")
         state = inspect(obj)
         if state.persistent:
             for attr in ("organization_id", "data_source_id", "collector_id", "job_order_id",
