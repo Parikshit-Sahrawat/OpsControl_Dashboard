@@ -6,7 +6,7 @@ Fixtures never use real infrastructure, people or credentials.
 import json
 import urllib.request
 import urllib.error
-from sqlalchemy import select, func
+from sqlalchemy import select, func, update
 from app.db.session import SessionLocal
 from app.security.models import User, OrganizationMembership, WorkerIdentity, SecurityAuditEvent
 from app.models import DataSource
@@ -127,6 +127,14 @@ def main():
     assert PASSWORD not in serialized and wk not in serialized and "bad-password" not in serialized
     with SessionLocal() as db:
         assert db.scalar(select(func.count()).select_from(SecurityAuditEvent)) >= len(audit)
+        # Reject direct updates to protected security events.
+        try:
+            db.execute(update(SecurityAuditEvent).values(outcome="SUCCESS"))
+            db.commit()
+            raise AssertionError("Audit mutation was permitted")
+        except Exception as error:
+            db.rollback()
+            assert "append-only" in str(error), str(error)
         assert db.scalar(select(func.count()).select_from(WorkerIdentity).where(WorkerIdentity.enabled.is_(False))) >= 1
     print("SECURITY RELEASE HARDENING NEGATIVE TESTS PASS")
 
