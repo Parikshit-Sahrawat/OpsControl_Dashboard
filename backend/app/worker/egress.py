@@ -33,6 +33,8 @@ def policy_cidrs(cidrs):
         except ValueError as exc: raise EgressDenied("Invalid network CIDR") from exc
         # Explicit private LAN CIDRs are valid, but metadata/link-local/
         # loopback are NEVER reachable even with a permissive customer policy.
+        if net.prefixlen < (8 if net.version==4 else 32):
+            raise EgressDenied("Network allowlist range is excessively broad")
         if net.is_loopback or net.is_link_local or net.is_multicast or net.is_unspecified:
             raise EgressDenied("Forbidden network range")
         result.append(net)
