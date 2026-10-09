@@ -26,17 +26,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Install and resolve frontend dependencies (lockfile currently absent)
+      - name: Install locked frontend dependencies
         working-directory: frontend
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Check production dependency advisories
         working-directory: frontend
         run: npm audit --omit=dev --audit-level=high
-      - name: Retain generated lockfile for reviewed reproducible installs
-        uses: actions/upload-artifact@v4
-        with:
-          name: npm-package-lock-candidate
-          path: frontend/package-lock.json
   secret-history-scan:
     runs-on: ubuntu-latest
     steps:
