@@ -80,3 +80,56 @@ README is approximately 56.9 KB. Seven SVG screenshot assets exist under `docs/s
 
 ## Phase 1 gate
 **NOT APPROVED** until runtime checks and tenant boundary tests are executed and the SRS is updated for explicit authorization, activation semantics, API transport, truthful UI data and verification gates.
+
+## Iteration 2 — Expanded source and asset reconciliation (2026-10-10)
+
+### Review coverage
+- **Frontend:** inspected both Resource Management modules (active `ResourceManagementV2.jsx`, 291 source lines; inactive `ResourceManagement.jsx`, 571 source lines), `App.jsx`, `TopNav.jsx`, `Overview.jsx`, `ETLJobs.jsx`, `JobDetailsDrawer.jsx`, `api.js`, `resourceApi.js`, package scripts. Note that compressed one-line JSX makes line counts a poor proxy for complexity. A formal per-statement code-review signoff is not claimed.
+- **Schemas:** inspected the four schema files (`monitoring.py`, `etl.py`, `investigation.py`, `organization.py`); organization IDs are accepted in client payloads rather than bound to a principal.
+- **Migrations:** inspected all eleven Alembic revision files 0001–0011 and `migrations/env.py`. The `down_revision` chain is linear and internally linked; 0011 is intentionally a no-op. **Execution against PostgreSQL remains unverified.** The `env.py` online connection derives its URL from `alembic.ini`, not directly from application `Settings.database_url`; deployment must explicitly reconcile these values.
+- **Worker:** inspected collector runtime, adapter registry, alert and notification module entry points, and credentials provider. Only API transport has a real HTTP request path; Linux, Windows and Pentaho are stubs; OTEL is unregistered.
+- **Tests:** repository tree contains no `tests/` directory or test files, and frontend has no test/lint scripts. CI is compile/import/build only.
+
+### Additional findings
+| ID | Priority | Source evidence | Result |
+|---|---|---|---|
+| [#8](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/8) | P1 | `ResourceManagementV2.jsx:215` creates `collector_type: "OTEL"`; `collector_runtime.py:208–213` registers only WINDOWS, LINUX, API and PENTAHO | **Broken by design**: onboarding creates unsupported collector. Existing source edits do not update agent collector configuration. |
+| [#9](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/9) | P1 | `ResourceManagementV2.jsx:247–255,274–280` fetches organizations/templates globally and counts all; Data Sources only are selection-filtered | **Partial/misleading**: multi-org selection is not a security boundary and totals do not share consistent scope. |
+| [#10](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/10) | P2 | All seven screenshot SVGs consist of vector labels/shapes; none contains a captured browser image | **Documentation mismatch**: illustrative assets cannot establish actual UI appearance. |
+| [#11](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/11) | P1 | `collector_runtime.py:349–370` uses unleased scheduler claim and `asyncio.create_task`; sample organization copied from metric definition without checking source ownership | **Risk/unverified**: duplicate runs with multiple workers and inconsistent cross-org entity links require database tests. |
+
+### Screenshot-by-screenshot reconciliation (static asset vs active React routes)
+| Asset | Asset contents | Current code | Classification |
+|---|---|---|---|
+| `01-overview.svg` | Vector illustration with KPI counts, ETL table and incident cards | Overview page exists, but hard-coded KPI counts and static incident/VM rows; values/text do not consistently match illustration | **Illustrative, not verified screenshot** |
+| `02-etl-jobs.svg` | Illustrated execution statuses and list | ETL Jobs page exists and uses API-backed `jobs`, with client filters and details drawer | **Illustrative; live data/browser unverified** |
+| `03-vm-health.svg` | Explicitly labels CPU/memory/disk/services as planned view | `App.jsx` renders generic placeholder | **Planned only** |
+| `04-apis.svg` | Explicitly labels endpoint health UI planned | `App.jsx` renders generic placeholder | **Planned only** |
+| `05-incidents.svg` | Explicitly labels incident UI planned | `App.jsx` renders generic placeholder; Overview has static incident rows | **Planned only** |
+| `06-reports.svg` | Explicitly labels reporting UI planned | `App.jsx` renders generic placeholder | **Planned only** |
+| `10-resource-management.svg` | Illustrates organizations, sources, collectors, templates and onboarding | `ResourceManagementV2.jsx` implements these surfaces, but OTEL activation and org-scope issues remain | **Illustrative; browser unverified** |
+
+### Database and tenant test execution record
+**NOT EXECUTED.** No registered remote Codex environment was available and direct GitHub access from the local container failed DNS resolution. The connected GitHub integration supports reading/writing source and retrieving Actions results, not arbitrary command execution against a live PostgreSQL instance. It would be inaccurate to claim that migrations, API startup, tenant negative tests, browser screenshots or template-to-sample integration were exercised.
+
+**Required execution environment:** disposable PostgreSQL database, checked-out exact branch commit, Python and Node dependencies, a running FastAPI instance and worker, two seeded tenant fixtures with authenticated identities, controlled HTTP/HTTPS endpoints, and a browser runner. Do not run destructive migration downgrade tests against production or shared data.
+
+**Acceptance commands to execute in a safe environment:**
+```bash
+cd backend
+python -m compileall -q app migrations
+python -c 'from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print("mapper startup ok")'
+alembic upgrade head
+alembic current
+# Run a future pytest tenant + activation suite once written; none exists today.
+cd ../frontend
+npm install
+npm run build
+# npm run lint is currently unavailable: no lint script.
+```
+**Tenant negative matrix:** list, get, patch, delete data sources/collectors/templates/metrics/logs/ETL and investigation records using org-A caller with org-B IDs; test no filter, one filter, multi-filter and forged organization_id; test inactive org behavior. The current API has no authenticated principal, so true tenant-boundary execution must first define a test identity model and security contract.
+
+**Template-to-sample matrix:** attach committed template; resolve effective config; verify materialized collector and metric definition; run supported adapter; assert collector run and metric sample; repeat attachment to test idempotency; detach and confirm deactivation. Existing attach flow does not materialize the entities.
+
+### Updated approval gate
+Phase 1 remains **NOT APPROVED**. Static source and SVG reconciliation expanded; live PostgreSQL, tenant authorization and real browser captures remain blocked by execution environment and missing identity/test harness. No functional code changes have been made.
