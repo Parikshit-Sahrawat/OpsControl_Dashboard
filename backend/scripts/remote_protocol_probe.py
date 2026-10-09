@@ -55,6 +55,7 @@ def main():
     token=worker["worker_token"]
     other_token=other["worker_token"]
     check(401,"POST","/api/v1/worker/claim",body={})
+    check(413,"POST","/api/v1/worker/claim",worker["worker_token"],{"padding":"x"*10000})
     check(401,"POST","/api/v1/worker/claim",admin,{})
     check(403,"POST","/api/v1/remote-probes/jobs",viewer,{"collector_id":ids["collector"],"worker_id":worker["id"],"idempotency_key":str(uuid.uuid4())})
     check(422,"PUT",f"/api/v1/remote-probes/workers/{worker['id']}/network-policy",admin,
