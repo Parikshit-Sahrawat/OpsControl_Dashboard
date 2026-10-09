@@ -13,6 +13,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal, get_db
@@ -290,7 +291,11 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
         job.state="COMPLETED"
         job.completed_at=now
         job.lease_nonce_hash=None
-        db.commit()
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(409,"Evidence event conflicts with another result")
         return {"accepted":True,"duplicate":False}
 
 @admin_router.get("/jobs/{job_id}")
