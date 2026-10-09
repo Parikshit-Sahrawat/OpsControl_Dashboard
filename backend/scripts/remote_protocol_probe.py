@@ -115,6 +115,36 @@ def main():
         assert len(db.scalars(select(CollectorRun).where(CollectorRun.collector_id==uuid.UUID(ids["collector"]))).all())==1
         samples=db.scalars(select(MetricSample).where(MetricSample.metric_definition_id==uuid.UUID(ids["metric"]))).all()
         assert len(samples)==1 and samples[0].value_numeric==1.0
+    # A second authenticated failed probe emits a fresh sample and activates
+    # an independently configured metric alert rule.
+    from app.models import AlertRule, AlertState
+    with SessionLocal() as db:
+        rule=AlertRule(organization_id=uuid.UUID(ids["org_n"]),
+            metric_definition_id=uuid.UUID(ids["metric"]),
+            name="Synthetic http availability",operator="LT",
+            threshold_value="0.5",consecutive_breaches=1)
+        db.add(rule);db.flush()
+        rule_id=rule.id
+        db.commit()
+    next_id=str(uuid.uuid4())
+    check(201,"POST","/api/v1/remote-probes/jobs",admin,
+        {"collector_id":ids["collector"],"worker_id":worker["id"],"idempotency_key":next_id})
+    next_job=check(200,"POST","/api/v1/worker/claim",token,{})["job"]
+    assert next_job and next_job["job_id"]==next_id
+    failure={"event_id":str(uuid.uuid4()),"job_id":next_id,
+             "lease_nonce":next_job["lease_nonce"],
+             "observed_at":datetime.now(timezone.utc).isoformat(),
+             "outcome":"ASSERTION_FAILED","http_status":503,
+             "response_time_ms":72,"response_size_bytes":0}
+    check(202,"POST","/api/v1/worker/results",token,failure)
+    with SessionLocal() as db:
+        from app.models import MetricSample
+        samples=db.scalars(select(MetricSample).where(
+            MetricSample.metric_definition_id==uuid.UUID(ids["metric"]))).all()
+        assert len(samples)==2 and sorted(s.value_numeric for s in samples)==[0.0,1.0]
+        alerts=db.scalars(select(AlertState).where(AlertState.alert_rule_id==rule_id)).all()
+        assert len(alerts)==1 and alerts[0].status=="OPEN"
+    print("PASS remote metric alert evaluation")
     check(204,"DELETE","/api/v1/remote-probes/collectors/"+ids["collector"]+"/assignment",admin)
     check(204,"DELETE",f"/api/v1/auth/workers/{worker['id']}",admin)
     check(401,"POST","/api/v1/worker/claim",token,{})
