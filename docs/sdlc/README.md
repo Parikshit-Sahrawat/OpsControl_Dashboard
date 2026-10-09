@@ -23,6 +23,8 @@ The phases are governance gates, not a prohibition on iterative development. Wor
 
 - [Evidence-based code audit](07-CODE-AUDIT.md) — findings, validation evidence, test blockers, reproduction plans and issue links.
 
+- [Phase 1 verification handoff and decision register](09-PHASE1-HANDOFF.md) — audited capabilities, runtime evidence, open risks and design entry gates.
+
 ## Working rules
 - GitHub contains versioned technical specifications and code.
 - GitBook may publish approved docs; Linear may track implementation after requirements review.
