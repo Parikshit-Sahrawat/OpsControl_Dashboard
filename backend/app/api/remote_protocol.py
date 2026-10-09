@@ -237,7 +237,7 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
 
 @admin_router.get("/jobs/{job_id}")
 def get_remote_job(job_id:uuid.UUID,db:Session=Depends(get_db)):
-    # Reading is scoped to authorized orgs, even when the UUID is known.
+    require_admin()  # until explicitly tenant-scoped resource model access is available
     job=db.get(RemoteProbeJob,job_id)
     if not job: raise HTTPException(404,"Job not found")
     return {"job_id":str(job.id),"organization_id":str(job.organization_id),
