@@ -93,7 +93,7 @@ jobs:
       - name: Run frontend for browser evidence
         working-directory: frontend
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &
           echo $! > /tmp/opscontrol-vite.pid
       - name: Capture authenticated React UI with Playwright
@@ -127,5 +127,5 @@ jobs:
       - name: Install and build frontend
         working-directory: frontend
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build
