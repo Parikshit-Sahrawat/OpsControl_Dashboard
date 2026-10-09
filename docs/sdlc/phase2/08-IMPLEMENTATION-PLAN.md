@@ -9,6 +9,9 @@
 6. **P1 First source integration:** implement read-only Pentaho execution adapter using a representative, approved source contract; preserve NO_RUN vs NO_RESPONSE vs FAILED semantics.
 7. **P2 Integrations:** VM metrics/log transport; SFTP/S3; notification providers and reports, each gated by adapter tests and admin approval.
 
+## Product integration sequence and parallel ETL workstream
+After P0 auth/tenancy, bounded network egress, versioned rule activation and worker reliability gates, the infrastructure implementation follows **HTTP/Application Health → AWS EC2 → Kubernetes Pods/Deployments → Apache/Tomcat deep monitoring**. Implement private-network collector/agent registration and outbound authenticated delivery as part of the HTTP phase, before promising internal-UI monitoring. **Pentaho/ETL monitoring is a separate parallel priority workstream**, with source-neutral ETL execution semantics rather than dependency on cloud integrations. The discovery candidate → approved inventory → rule activation chain is specified in [14 — Resource Discovery and Infrastructure Monitoring](14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md); internal UI security/metrics/health/API acceptance tests in [13 — Internal Application UI Monitoring](13-INTERNAL-APPLICATION-UI-MONITORING.md).
+
 ## Architecture review deliverables
 | Design item | Output | Acceptance |
 |---|---|---|
