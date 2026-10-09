@@ -25,6 +25,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 production = settings.environment.lower() == "production"
+if production and (
+    not settings.cors_origin_list
+    or any(not origin.startswith("https://") or "*" in origin for origin in settings.cors_origin_list)
+):
+    raise RuntimeError("Production requires an explicit HTTPS-only CORS origin allowlist")
 app = FastAPI(
     title="OpsControl API", version="0.2.0",
     description="General-purpose open-source monitoring and configuration API.",
