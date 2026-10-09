@@ -26,7 +26,7 @@ from app.security.throttle import failed_login, login_allowed, successful_login
 router = APIRouter(prefix="/api/v1/auth", tags=["Identity"])
 worker_router = APIRouter(prefix="/api/v1/worker", tags=["Worker Identity"])
 _ALLOWED_PUBLIC = {"/", "/health", "/health/db", "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc", "/api/v1/auth/login"}
-_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami"}
+_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami", "/api/v1/worker/claim", "/api/v1/worker/results"}
 _ROLE_VALUES = {"viewer", "operator", "org_admin"}
 _DUMMY_HASH = hash_password(secrets.token_urlsafe(24))  # uniform work for unknown usernames
 
