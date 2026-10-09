@@ -1,14 +1,3 @@
-import KpiCard from "../components/KpiCard";
-import StatusBadge from "../components/StatusBadge";
-import WorldClock from "../components/WorldClock";
-
-const serviceNowBase = import.meta.env.VITE_SERVICENOW_BASE_URL || "";
-
-function incidentUrl(number) {
-  if (!serviceNowBase || !number) return null;
-  return `${serviceNowBase.replace(/\/$/, "")}/nav_to.do?uri=incident.do?sysparm_query=number=${encodeURIComponent(number)}`;
-}
-
 export default function Overview({ jobs, onSelect, onNavigate }) {
   // Never represent hardcoded examples as operational health.
   // Until these APIs are implemented, show unknown rather than healthy.
