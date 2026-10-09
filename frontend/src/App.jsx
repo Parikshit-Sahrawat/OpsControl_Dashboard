@@ -1,3 +1,4 @@
+import AccessManagement from "./pages/AccessManagement";
 import { useCallback, useEffect, useState } from "react";
 import TopNav from "./components/TopNav";
 import JobDetailsDrawer from "./components/JobDetailsDrawer";
@@ -27,7 +28,7 @@ function mapDetail(execution, investigation) {
   };
 }
 
-export default function App() {
+export default function App({ user }) {
   const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
   const [organizations,setOrganizations]=useState([]);
   const [organizationIds,setOrganizationIds]=useState(()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}});
@@ -46,10 +47,11 @@ export default function App() {
   const selectJob=async job=>{const id=typeof job==="string"?job:job.id;setSelectedId(id);try{const execution=await fetchExecution(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch{}setDetails(current=>({...current,[id]:mapDetail(execution,investigation)}));}catch(e){setError(e.message||"Unable to load execution details");}};
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
-  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds}/><main className="content">
+  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds} platformAdmin={user?.platform_admin}/><main className="content">
     {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
+    {active==="Access Management"&&user?.platform_admin&&<AccessManagement />}
     {active==="Resource Management"&&<ResourceManagement organizationId={organizationId} organizationIds={organizationIds}/>}
-    {![ "Overview","ETL Jobs","Resource Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+    {![ "Overview","ETL Jobs","Resource Management","Access Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }
