@@ -9,6 +9,7 @@ import urllib.error
 from sqlalchemy import select, func
 from app.db.session import SessionLocal
 from app.security.models import User, OrganizationMembership, WorkerIdentity, SecurityAuditEvent
+from app.models import DataSource
 
 URL = "http://127.0.0.1:8000"
 PASSWORD = "testing-only-StrongPassword-123!"
@@ -48,6 +49,27 @@ def main():
         memberships = db.scalars(select(OrganizationMembership)).all()
         a = next(m.organization_id for m in memberships if str(m.user_id)==north["id"])
         b = next(m.organization_id for m in memberships if str(m.user_id)==south["id"])
+
+
+    # Deny embedded secrets and never echo rejected inputs in validation errors.
+    unsafe={"organization_id":str(a),"name":"unsafe-source","source_type":"API",
+            "connection_config":{"nested":{"password":"forbidden-plain-secret-123"}}}
+    result,_=check(422,"POST","/api/v1/resource-management/data-sources",admin,unsafe)
+    assert "forbidden-plain-secret-123" not in json.dumps(result)
+    unsafe={"organization_id":str(a),"name":"unsafe-url","source_type":"API",
+            "endpoint":"https://user:forbidden-url-secret@service.example.test"}
+    result,_=check(422,"POST","/api/v1/resource-management/data-sources",admin,unsafe)
+    assert "forbidden-url-secret" not in json.dumps(result)
+    with SessionLocal() as db:
+        existing=db.scalar(select(DataSource).where(DataSource.organization_id==a))
+        existing.connection_config={"password":"legacy-private-value","credential_ref":"secret://synthetic/read-only"}
+        existing.endpoint="https://user:legacy-url-private@example.test"
+        db.commit()
+    sources,_=check(200,"GET","/api/v1/resource-management/data-sources",admin)
+    serialized_sources=json.dumps(sources)
+    assert "legacy-private-value" not in serialized_sources
+    assert "legacy-url-private" not in serialized_sources
+    assert "[REDACTED]" in serialized_sources
 
     # Never allow a viewer to access the platform security administration APIs.
     viewer = login("test-reader")
