@@ -41,7 +41,11 @@ async function capture(name, file) {
 
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded", timeout: 30000 });
+  await page.getByRole("textbox", { name: "Username" }).fill("test-north");
+  await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
+  await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForSelector("button.nav-button", { timeout: 30000 });
+
   for (const [label, filename] of categories) {
     await page.locator("button.nav-button").filter({ hasText: label }).click();
     await capture(label, filename);
