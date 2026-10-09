@@ -81,6 +81,9 @@ jobs:
       - name: Assert identity and tenant isolation against disposable PostgreSQL
         working-directory: backend
         run: python scripts/auth_tenant_probe.py
+      - name: Assert nested metric, log, and alert authorization boundaries
+        working-directory: backend
+        run: python scripts/deep_tenant_security_probe.py
       - name: Assert throttling, audit, revocation and worker credentials
         working-directory: backend
         run: python scripts/security_release_probe.py
