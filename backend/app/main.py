@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
@@ -58,3 +59,12 @@ app.include_router(resource_management.router)
 @app.get("/")
 def root():
     return {"name": "OpsControl API", "version": app.version}
+
+@app.exception_handler(RequestValidationError)
+async def redacted_validation_error(request: Request, exc: RequestValidationError):
+    # Never echo secret-bearing submitted JSON in Pydantic's default error
+    # response; even a rejected config may contain a raw password/token.
+    safe_errors = [{"loc": [str(part) for part in err.get("loc", ())],
+                    "type": str(err.get("type", "value_error"))}
+                   for err in exc.errors()]
+    return JSONResponse({"detail": "Invalid input", "errors": safe_errors}, status_code=422)
