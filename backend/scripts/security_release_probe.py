@@ -20,9 +20,9 @@ def request(method, path, token=None, payload=None):
     req = urllib.request.Request(URL + path, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=20) as r:
-            return r.status, json.loads(r.read() or b"null") if r.status != 204 else None, dict(r.headers)
+            return r.status, json.loads(r.read() or b"null") if r.status != 204 else None, {k.lower(): v for k, v in r.headers.items()}
     except urllib.error.HTTPError as e:
-        return e.code, json.loads(e.read() or b"null"), dict(e.headers)
+        return e.code, json.loads(e.read() or b"null"), {k.lower(): v for k, v in e.headers.items()}
 
 def check(expected, method, path, token=None, payload=None):
     got, result, headers = request(method, path, token, payload)
@@ -37,9 +37,9 @@ def login(username, password=PASSWORD):
 def main():
     admin = login("test-admin")
     _, headers = check(200, "GET", "/api/v1/auth/me", admin)
-    assert headers.get("X-Content-Type-Options") == "nosniff", headers
-    assert headers.get("X-Frame-Options") == "DENY", headers
-    assert headers.get("Cache-Control") == "no-store", headers
+    assert headers.get("x-content-type-options") == "nosniff", headers
+    assert headers.get("x-frame-options") == "DENY", headers
+    assert headers.get("cache-control") == "no-store", headers
     users,_ = check(200,"GET","/api/v1/auth/users",admin)
     north = next(u for u in users if u["username"]=="test-north")
     south = next(u for u in users if u["username"]=="test-south")
@@ -92,7 +92,7 @@ def main():
               payload={"username":"unknown-lockout-lab","password":"bad-password"})
     _,hdr = check(429,"POST","/api/v1/auth/login",
                   payload={"username":"unknown-lockout-lab","password":"bad-password"})
-    assert hdr.get("Retry-After")=="900",hdr
+    assert hdr.get("retry-after")=="900",hdr
     # Valid admin session is not affected by a different username bucket.
     check(200,"GET","/api/v1/auth/me",admin)
 
