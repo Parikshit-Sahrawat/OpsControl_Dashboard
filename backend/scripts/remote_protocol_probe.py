@@ -62,6 +62,16 @@ def main():
           {"allowed_hosts":["portal.example.test"],"allowed_cidrs":["10.20.0.0/16"]})
     check(200,"PUT",f"/api/v1/remote-probes/workers/{other['id']}/network-policy",admin,
           {"allowed_hosts":["portal.example.test"],"allowed_cidrs":["10.20.0.0/16"]})
+    check(200,"PUT","/api/v1/remote-probes/collectors/"+ids["collector"]+"/assignment",admin,{"worker_id":worker["id"]})
+    from app.worker.remote_scheduler import queue_due_once
+    assert queue_due_once()>=1
+    with SessionLocal() as db:
+        generated=db.scalars(select(RemoteProbeJob).where(
+            RemoteProbeJob.collector_id==uuid.UUID(ids["collector"]),
+            RemoteProbeJob.state=="QUEUED")).all()
+        assert len(generated)==1
+        generated[0].state="CANCELLED"
+        db.commit()
     data={"collector_id":ids["collector"],"worker_id":other["id"],"idempotency_key":str(uuid.uuid4())}
     check(403,"POST","/api/v1/remote-probes/jobs",admin,data)
     job_id=str(uuid.uuid4())
@@ -103,6 +113,7 @@ def main():
         assert len(db.scalars(select(CollectorRun).where(CollectorRun.collector_id==uuid.UUID(ids["collector"]))).all())==1
         samples=db.scalars(select(MetricSample).where(MetricSample.metric_definition_id==uuid.UUID(ids["metric"]))).all()
         assert len(samples)==1 and samples[0].value_numeric==1.0
+    check(204,"DELETE","/api/v1/remote-probes/collectors/"+ids["collector"]+"/assignment",admin)
     check(204,"DELETE",f"/api/v1/auth/workers/{worker['id']}",admin)
     check(401,"POST","/api/v1/worker/claim",token,{})
     print("REMOTE TRUST/LEASE/EVIDENCE TESTS PASS")
