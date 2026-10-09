@@ -10,21 +10,16 @@ function incidentUrl(number) {
 }
 
 export default function Overview({ jobs, onSelect, onNavigate }) {
-  const vmIssues = [
-    { sourceName: "Customer Production Windows", hostname: "HERO-PRDAPP001", metric: "D: Drive", value: "94%", condition: "Low Disk Space", status: "CRITICAL" },
-    { sourceName: "ETL Production Monitoring", hostname: "ETL-PRD-03", metric: "CPU", value: "91%", condition: "High Utilization", status: "WARNING" },
-  ];
-
-  const incidents = [
-    { number: "INC0012345", summary: "JC_Pricing_Daily · Database timeout", severity: "CRITICAL" },
-    { number: "INC0012339", summary: "Customer_Extract · SLA breach", severity: "WARNING" },
-  ];
-
+  // Never represent hardcoded examples as operational health.
+  // Until these APIs are implemented, show unknown rather than healthy.
+  const failed = jobs.filter(job => job.status === "FAILED").length;
+  const running = jobs.filter(job => job.status === "RUNNING").length;
+  const atRisk = jobs.filter(job => job.status === "LONG_RUNNING").length;
   const kpis = [
-    { label: "ETL Jobs", value: "1", tone: "critical-text", detail: "failed · 1 running · 1 at risk", target: "ETL Jobs" },
-    { label: "VM Health", value: "1", tone: "warning-text", detail: "critical issue requiring attention", target: "VM Health" },
-    { label: "APIs & Services", value: "18", tone: "healthy-text", detail: "healthy · 1 high latency", target: "APIs" },
-    { label: "Active Incidents", value: "2", tone: "critical-text", detail: "1 critical · 1 major", target: "Incidents" },
+    { label: "ETL Jobs", value: String(jobs.length), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
+    { label: "VM Health", value: "—", tone: "", detail: "Health monitoring not connected", target: "VM Health" },
+    { label: "APIs & Services", value: "—", tone: "", detail: "Service monitoring not connected", target: "APIs" },
+    { label: "Active Incidents", value: "—", tone: "", detail: "Incident feed not connected", target: "Incidents" },
   ];
 
   return (
@@ -68,18 +63,7 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
               <h2>Recent VM Issues</h2>
               <button className="text-link" onClick={() => onNavigate?.("VM Health")}>View all</button>
             </div>
-            {vmIssues.map(issue => (
-              <div className="list-row vm-issue-row" key={issue.sourceName + issue.hostname + issue.metric}>
-                <button className="entity-link" onClick={() => onNavigate?.("VM Health")}>
-                  <b>{issue.sourceName}</b>
-                  <small>{issue.metric} · {issue.value} · {issue.hostname}</small>
-                </button>
-                <div className="vm-issue-meta">
-                  <span className="issue-condition">{issue.condition}</span>
-                  <StatusBadge status={issue.status}/>
-                </div>
-              </div>
-            ))}
+            <div className="empty-inline">No live VM health feed connected. Add a supported collector to see verified infrastructure status.</div>
           </section>
 
           <section className="card">
@@ -87,24 +71,7 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
               <h2>Active Incidents</h2>
               <button className="text-link" onClick={() => onNavigate?.("Incidents")}>View all</button>
             </div>
-            {incidents.map(incident => {
-              const url = incidentUrl(incident.number);
-              return (
-                <div className="list-row" key={incident.number}>
-                  {url ? (
-                    <a className="entity-link incident-link" href={url} target="_self" rel="noreferrer">
-                      <b>{incident.number}</b><small>{incident.summary}</small>
-                    </a>
-                  ) : (
-                    <button className="entity-link incident-link" onClick={() => onNavigate?.("Incidents")}>
-                      <b>{incident.number}</b><small>{incident.summary}</small>
-                    </button>
-                  )}
-                  <StatusBadge status={incident.severity}/>
-                </div>
-              );
-            })}
-            {!serviceNowBase && <div className="source-fact">ServiceNow URL is not configured. Set <code>VITE_SERVICENOW_BASE_URL</code> to make incident numbers open the corresponding ServiceNow record.</div>}
+            <div className="empty-inline">No live incident integration connected. Operational incidents will appear after the alert and incident feed is implemented.</div>
           </section>
         </div>
       </div>
