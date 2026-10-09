@@ -53,6 +53,8 @@ def validate_ip(value, cidrs):
     return ip
 
 def check_target(url, hosts, cidrs):
+    if not isinstance(url,str) or not url.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in url):
+        raise EgressDenied("URL contains unsafe characters")
     try: parts=urlsplit(url)
     except ValueError as exc: raise EgressDenied("Invalid target URL") from exc
     if parts.scheme!="https" or parts.username is not None or parts.password is not None:
