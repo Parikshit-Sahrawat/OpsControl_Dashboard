@@ -23,7 +23,7 @@ try {
   await nav.waitFor();
   await nav.click();
   await page.getByRole("heading", { name: "Access Management" }).waitFor();
-  await page.getByText("test-north", { exact: true }).first().waitFor();
+  await page.locator("table tbody tr td").getByText("test-north", { exact: true }).first().waitFor();
   await page.getByText("Organization memberships").first().waitFor();
   if (errors.length) throw new Error(errors.join("; "));
   console.log(JSON.stringify({ status: "PASS", viewerAdminNavigation: false, adminPortalRendered: true }));
