@@ -20,6 +20,9 @@ The phases are governance gates, not a prohibition on iterative development. Wor
 - [Roadmap and Review Gates](05-ROADMAP.md)
 - [Requirements Traceability](06-TRACEABILITY.md)
 
+
+- [Evidence-based code audit](07-CODE-AUDIT.md) — findings, validation evidence, test blockers, reproduction plans and issue links.
+
 ## Working rules
 - GitHub contains versioned technical specifications and code.
 - GitBook may publish approved docs; Linear may track implementation after requirements review.
