@@ -128,7 +128,7 @@ All proposed routes require authenticated, server-scoped organization permission
 | GET | `/resources/{id}` | Discovery provenance, capabilities, child resources, config and evidence links |
 | POST | `/runner-pools` | Admin-only pool registration policy; returns no long-lived secret |
 | GET | `/runner-pools` | Scoped, heartbeat/capability/status summary |
-| GET | `/data-sources/{id}/activation-preview` | Use existing activation preview contract (POST is canonical as defined in 05); discovery **does not** activate automatically |
+| POST | `/data-sources/{id}/activation-preview` | Reuse canonical activation preview; discovery **does not** activate automatically |
 
 **Consistency note:** The canonical preview route remains `POST /api/v1/data-sources/{id}/activation-preview` from [05-API-CONTRACTS.md](05-API-CONTRACTS.md). All new flows must use it; do not introduce a competing GET endpoint.
 
