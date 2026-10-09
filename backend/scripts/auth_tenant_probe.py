@@ -36,11 +36,14 @@ def seed():
         user=User(username="test-north", password_hash=hash_password(PASSWORD))
         other=User(username="test-south", password_hash=hash_password(PASSWORD))
         reader=User(username="test-reader", password_hash=hash_password(PASSWORD))
-        db.add_all([admin,user,other,reader]); db.flush()
+        mixed=User(username="test-mixed", password_hash=hash_password(PASSWORD))
+        db.add_all([admin,user,other,reader,mixed]); db.flush()
         db.add_all([
             OrganizationMembership(user_id=user.id,organization_id=a.id,role="org_admin"),
             OrganizationMembership(user_id=other.id,organization_id=b.id,role="org_admin"),
             OrganizationMembership(user_id=reader.id,organization_id=a.id,role="viewer"),
+            OrganizationMembership(user_id=mixed.id,organization_id=a.id,role="org_admin"),
+            OrganizationMembership(user_id=mixed.id,organization_id=b.id,role="viewer"),
         ])
         result={"a":str(a.id),"b":str(b.id),"sa":str(sa.id),"sb":str(sb.id),"ca":str(ca.id),"cb":str(cb.id),"ha":str(ha.id),"hb":str(hb.id)}
         db.commit();return result
@@ -78,7 +81,7 @@ def main():
     expect(401,"PATCH",source+"/"+ids["sa"],body={"name":"bad"})
     expect(401,"GET","/api/v1/etl/executions")
     expect(401,"GET","/api/v1/monitoring/templates")
-    a=login("test-north");b=login("test-south");reader=login("test-reader");admin=login("test-admin")
+    a=login("test-north");b=login("test-south");reader=login("test-reader");mixed=login("test-mixed");admin=login("test-admin")
     identity=expect(200,"GET","/api/v1/auth/me",a)
     assert identity["username"]=="test-north" and len(identity["memberships"])==1,identity
     result=expect(200,"GET",org,a)
@@ -104,6 +107,9 @@ def main():
     expect(404,"POST",source,a,{"organization_id":ids["b"],"name":"forged","source_type":"API"})
     expect(403,"POST",org,a,{"name":"Forged","code":"FORGED"})
     expect(403,"POST",source,reader,{"organization_id":ids["a"],"name":"illegal","source_type":"API"})
+    result=expect(200,"GET",org,mixed); assert {x["id"] for x in result}=={ids["a"],ids["b"]}
+    expect(403,"PATCH",source+"/"+ids["sb"],mixed,{"name":"cross-tenant-mutation"})
+    expect(403,"POST",source,mixed,{"organization_id":ids["b"],"name":"mixed-forge","source_type":"API"})
     result=expect(200,"GET",org,b); assert {x["id"] for x in result}=={ids["b"]}
     result=expect(200,"GET",org,admin); assert {x["id"] for x in result}=={ids["a"],ids["b"]}
     expect(201,"POST",source,a,{"organization_id":ids["a"],"name":"authorized-probe","source_type":"API"})
