@@ -119,7 +119,7 @@ python -m scripts.run_remote_agent
 
 The agent continuously polls over outbound TLS. Its **own** exact host/CIDR configuration is mandatory and cannot be broadened by a remote job, protecting against central misconfiguration. The control plane never needs a route into the private LAN.
 
-For a local-only API prototype on `http://127.0.0.1:8000`, `OPSCONTROL_ALLOW_INSECURE_CONTROL_PLANE=1` temporarily allows the **control plane** to use loopback HTTP, never the monitored destination; this must not be used for real infrastructure.
+For Kubernetes-hosted agents, review the [example restricted egress NetworkPolicy](../deploy/examples/remote-agent-networkpolicy.yaml) and replace every **documentation-only CIDR/label**. Its protection depends on an enforcing CNI and a separately audited deployment manifest; it is not applied automatically. On VMs or containers outside Kubernetes, deploy equivalent host/firewall rules.\n\nFor a local-only API prototype on `http://127.0.0.1:8000`, `OPSCONTROL_ALLOW_INSECURE_CONTROL_PLANE=1` temporarily allows the **control plane** to use loopback HTTP, never the monitored destination; this must not be used for real infrastructure.
 
 ### Verification (disposable, synthetic)
 
