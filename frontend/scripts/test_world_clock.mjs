@@ -6,6 +6,10 @@ const errors = [];
 page.on("pageerror", error => errors.push(String(error)));
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.getByRole("textbox", { name: "Username" }).fill("test-north");
+  await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.waitForSelector("button.nav-button", { timeout: 30000 });
   const clock = page.locator(".world-clock");
   await clock.waitFor();
   const selector = page.getByRole("combobox", { name: "World clock timezone" });
