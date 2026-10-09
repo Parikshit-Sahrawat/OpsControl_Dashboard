@@ -28,6 +28,7 @@ worker_router = APIRouter(prefix="/api/v1/worker", tags=["Worker Identity"])
 _ALLOWED_PUBLIC = {"/", "/health", "/health/db", "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc", "/api/v1/auth/login"}
 _WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami"}
 _ROLE_VALUES = {"viewer", "operator", "org_admin"}
+_DUMMY_HASH = hash_password(secrets.token_urlsafe(24))  # uniform work for unknown usernames
 
 class Login(BaseModel):
     username: str = Field(min_length=1, max_length=120)
@@ -151,7 +152,8 @@ def login(payload: Login, request: Request):
             db.commit()
             raise HTTPException(429, "Too many login attempts; try again later", headers={"Retry-After": "900"})
         user = db.scalar(select(User).where(User.username == username))
-        if user is None or not user.active or not verify_password(payload.password, user.password_hash):
+        valid_password = verify_password(payload.password, user.password_hash if user else _DUMMY_HASH)
+        if user is None or not user.active or not valid_password:
             failed_login(db, username, ip)
             log_event(db, event_type="LOGIN", outcome="FAILURE", target_type="identity")
             db.commit()
@@ -353,7 +355,7 @@ def revoke_worker(worker_id: UUID):
 def worker_whoami(request: Request):
     # A service token cannot access any human-facing /api/v1/ route.
     parts = request.headers.get("authorization", "").split()
-    if len(parts) != 2 or parts[0] != "Bearer":
+    if len(parts) != 2 or parts[0] != "Bearer" or len(parts[1]) > 256:
         raise HTTPException(401, "Worker authentication required")
     with SessionLocal() as db:
         row = db.scalar(select(WorkerIdentity).where(WorkerIdentity.token_hash == token_digest(parts[1])))
