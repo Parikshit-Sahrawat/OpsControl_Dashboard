@@ -17,7 +17,7 @@ Avoid posting live credentials, exploits involving real infrastructure, private 
 - Human sessions: 12-hour random bearer tokens (only SHA-256 digest retained), authenticated per request. No default public admin account. Interactive bootstrap only.
 - Identity lifecycle: administrators may disable users, reset passwords and change/revoke organization memberships, invalidating sessions.
 - Organization isolation: server-side memberships and ORM tenant predicate; the frontend organization selector is a preference, not access control.
-- Worker identity: separate organization-scoped, expiring, revocable token; worker `whoami` validates scope but **no remote task dispatch is authorized or implemented**.
+- Worker identity: separate organization-scoped, expiring, revocable token; worker identity, leased HTTPS GET work claims and bounded evidence ingestion are implemented in draft PR #20. Remote collection is not production-approved without a network egress firewall, real secret-provider integration and threat-model sign-off.
 - Audit: security events record actor/action/outcome and bounded resource identifiers, not request bodies/tokens/passwords. Admin read-only endpoint; protect DB permissions and backups separately.
 - Login throttling: PostgreSQL-backed username/client-address limits; ensure your reverse proxy passes client identity only via a trusted ingress. Do not trust arbitrary `X-Forwarded-For` headers.
 - Deployment: use properly configured TLS and trusted proxy headers, explicit HTTPS browser-origin allowlist and protected PostgreSQL credentials.
@@ -27,3 +27,5 @@ Avoid posting live credentials, exploits involving real infrastructure, private 
 ## Release gate
 
 The [security review checklist](docs/SECURITY_RELEASE_CHECKLIST.md) distinguishes automated evidence from deployment and third-party review. A green static scan/CI run is not permission to expose the application or close release blockers. 
+
+See the [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) for private-network deployment and trust boundaries.
