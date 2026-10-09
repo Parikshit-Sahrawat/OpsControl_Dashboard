@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
-from app.security.secret_refs import require_safe_config, redact_config
+from app.security.secret_refs import require_safe_config, redact_config, require_safe_url, redact_url
 
 
 class DataSourceBase(BaseModel):
@@ -23,6 +23,11 @@ class DataSourceCreate(DataSourceBase):
     def validate_no_embedded_secrets(cls, value):
         return require_safe_config(value)
 
+    @field_validator("endpoint")
+    @classmethod
+    def prevent_url_credentials(cls, value):
+        return require_safe_url(value)
+
 class DataSourceUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     source_type: str | None = Field(default=None, min_length=1, max_length=100)
@@ -38,6 +43,11 @@ class DataSourceUpdate(BaseModel):
     def validate_no_embedded_secrets(cls, value):
         return require_safe_config(value)
 
+    @field_validator("endpoint")
+    @classmethod
+    def prevent_url_credentials(cls, value):
+        return require_safe_url(value)
+
 class DataSourceOut(DataSourceBase):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -52,6 +62,10 @@ class DataSourceOut(DataSourceBase):
     @field_serializer("connection_config")
     def serialize_safe_config(self, value):
         return redact_config(value)
+
+    @field_serializer("endpoint")
+    def serialize_safe_endpoint(self, value):
+        return redact_url(value)
 
 class CollectorBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
