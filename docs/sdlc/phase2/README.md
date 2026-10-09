@@ -20,6 +20,7 @@ For first-time developers, start with the [hands-on Quickstart](../../QUICKSTART
 - [11 — Homepage live world clock](11-HOMEPAGE-WORLD-CLOCK.md)
 - [12 — Universal open-source product principles](12-OPEN-SOURCE-PRODUCT-PRINCIPLES.md)
 - [13 — Internal Application UI Monitoring: HTTP/Synthetic detailed design](13-INTERNAL-APPLICATION-UI-MONITORING.md)
+- [14 — Resource Discovery and Infrastructure Monitoring](14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md)
 
 ## References
 - SRS [DOC-02](../02-SRS.md) — requirements FR-001–FR-019 and NFR-001–NFR-012.
