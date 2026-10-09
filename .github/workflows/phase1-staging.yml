@@ -1,0 +1,111 @@
+name: Phase 1 Staging Verification
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  staging-smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: opscontrol
+          POSTGRES_PASSWORD: opscontrol
+          POSTGRES_DB: opscontrol
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opscontrol -d opscontrol"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql+psycopg://opscontrol:opscontrol@localhost:5432/opscontrol
+      SEED_DEMO_DATA: "false"
+      ENVIRONMENT: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+      - name: Compile and import backend
+        working-directory: backend
+        run: |
+          python -m compileall -q app migrations
+          python -c "from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('mapper/app import OK')"
+      - name: Apply migrations against disposable PostgreSQL
+        working-directory: backend
+        run: |
+          alembic upgrade head
+          alembic current
+          python - <<'PY'
+          from sqlalchemy import inspect
+          from app.db.session import engine
+          tables = set(inspect(engine).get_table_names())
+          required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
+          assert required <= tables, f"Missing tables: {required - tables}"
+          print(f"Migration smoke OK; {len(tables)} tables")
+          PY
+      - name: Start API and check HTTP endpoints
+        working-directory: backend
+        run: |
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/opscontrol-api.log 2>&1 &
+          echo $! > /tmp/opscontrol-api.pid
+          python - <<'PY'
+          import json, time, urllib.request
+          for i in range(30):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8000/openapi.json", timeout=2) as r:
+                      payload=json.load(r)
+                      assert "/api/v1/organizations" in payload["paths"]
+                      print("API startup/OpenAPI OK")
+                      break
+              except Exception:
+                  if i == 29: raise
+                  time.sleep(1)
+          PY
+      - name: Capture tenant authorization baseline (diagnostic, not a pass)
+        working-directory: backend
+        run: |
+          python - <<'PY'
+          import json, urllib.error, urllib.request
+          results={}
+          for path in ("/api/v1/organizations", "/api/v1/resource-management/data-sources", "/api/v1/monitoring/templates"):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8000"+path, timeout=5) as r: code=r.status
+              except urllib.error.HTTPError as e: code=e.code
+              results[path]={"anonymous_status":code, "requires_auth":code in (401,403)}
+          with open("tenant-baseline.json","w") as f: json.dump(results,f,indent=2)
+          print(json.dumps(results,indent=2))
+          print("DIAGNOSTIC ONLY: anonymous endpoint checks do not prove tenant isolation")
+          PY
+      - name: Upload API logs and tenant evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-staging-evidence
+          path: |
+            backend/tenant-baseline.json
+            /tmp/opscontrol-api.log
+          if-no-files-found: ignore
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install and build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
