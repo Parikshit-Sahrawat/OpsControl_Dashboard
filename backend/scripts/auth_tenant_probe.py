@@ -85,7 +85,7 @@ def main():
     expect(404,"PATCH",legacy+"/"+ids["sb"],a,{"name":"illegal"})
     expect(404,"GET","/api/v1/monitoring/collectors/"+ids["cb"],a)
     expect(404,"GET","/api/v1/monitoring/collectors/"+ids["cb"]+"/runs",a)
-    expect(403,"POST",source,a,{"organization_id":ids["b"],"name":"forged","source_type":"API"})
+    expect(404,"POST",source,a,{"organization_id":ids["b"],"name":"forged","source_type":"API"})
     expect(403,"POST",org,a,{"name":"Forged","code":"FORGED"})
     expect(403,"POST",source,reader,{"organization_id":ids["a"],"name":"illegal","source_type":"API"})
     result=expect(200,"GET",org,b); assert {x["id"] for x in result}=={ids["b"]}
