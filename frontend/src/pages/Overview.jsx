@@ -1,5 +1,6 @@
 import KpiCard from "../components/KpiCard";
 import StatusBadge from "../components/StatusBadge";
+import WorldClock from "../components/WorldClock";
 
 const serviceNowBase = import.meta.env.VITE_SERVICENOW_BASE_URL || "";
 
@@ -30,7 +31,7 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
     <>
       <div className="page-heading">
         <div><h1>Overview</h1><p>Production operations — attention first</p></div>
-        <span className="refresh">● Auto refresh · 5 seconds</span>
+        <div className="overview-header-controls"><span className="refresh">● Auto refresh · 5 seconds</span><WorldClock /></div>
       </div>
 
       <div className="kpi-grid">
