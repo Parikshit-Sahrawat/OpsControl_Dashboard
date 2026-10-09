@@ -33,6 +33,53 @@ class NetworkPolicy(BaseModel):
     allowed_hosts: list[str] = Field(min_length=1,max_length=64)
     allowed_cidrs: list[str] = Field(min_length=1,max_length=32)
 
+class AssignmentRequest(BaseModel):
+    model_config=ConfigDict(extra="forbid")
+    worker_id: uuid.UUID
+
+@admin_router.put("/collectors/{collector_id}/assignment")
+def assign_collector(collector_id:uuid.UUID,payload:AssignmentRequest):
+    principal=require_admin()
+    with SessionLocal() as db:
+        worker=db.get(WorkerIdentity,payload.worker_id)
+        collector=db.get(Collector,collector_id)
+        if not worker or not worker.enabled or worker.expires_at.replace(tzinfo=timezone.utc)<=utc():
+            raise HTTPException(404,"Worker not available")
+        if not collector or not collector.enabled:
+            raise HTTPException(404,"Collector not available")
+        source=db.get(DataSource,collector.data_source_id)
+        if not source or not source.enabled or source.organization_id!=worker.organization_id:
+            raise HTTPException(403,"Organization mismatch")
+        _snapshot(collector,source,worker)
+        collector.remote_worker_id=worker.id
+        collector.next_run_at=utc()
+        # Legacy worker must stop; new scheduler owns this collector.
+        collector.status="STOPPED"
+        log_event(db,event_type="REMOTE_ASSIGN",outcome="SUCCESS",actor_id=principal.user_id,
+                  organization_id=worker.organization_id,target_type="collector",target_id=collector_id)
+        db.commit()
+        return {"collector_id":str(collector_id),"worker_id":str(worker.id),"scheduled":True}
+
+@admin_router.delete("/collectors/{collector_id}/assignment",status_code=204)
+def unassign_collector(collector_id:uuid.UUID):
+    principal=require_admin()
+    with SessionLocal() as db:
+        collector=db.get(Collector,collector_id)
+        if not collector: raise HTTPException(404,"Collector not found")
+        source=db.get(DataSource,collector.data_source_id)
+        for job in db.scalars(select(RemoteProbeJob).where(
+                RemoteProbeJob.collector_id==collector_id,
+                RemoteProbeJob.state.in_(["QUEUED","LEASED"]))).all():
+            job.state="CANCELLED"
+            job.lease_nonce_hash=None
+        collector.remote_worker_id=None
+        collector.enabled=False   # cannot fall back to legacy local polling
+        collector.status="STOPPED"
+        log_event(db,event_type="REMOTE_UNASSIGN",outcome="SUCCESS",actor_id=principal.user_id,
+                  organization_id=source.organization_id if source else None,
+                  target_type="collector",target_id=collector_id)
+        db.commit()
+
 class QueueRequest(BaseModel):
     model_config=ConfigDict(extra="forbid")
     collector_id: uuid.UUID
