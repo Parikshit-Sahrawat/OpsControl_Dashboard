@@ -99,6 +99,10 @@ def main():
     with SessionLocal() as db:
         assert db.scalar(select(MetricSample).join(MetricDefinition).where(
             MetricDefinition.collector_id==uuid.UUID(collector_id),MetricSample.value_numeric==0.0)) is not None
+        logs=db.scalars(select(LogEvent).join(LogSource).where(
+            LogSource.collector_id==uuid.UUID(collector_id))).all()
+        assert len(logs)==1 and logs[0].event_type=="HTTP_PROBE_ASSERTION_FAILED"
+        assert "portal.example.test" not in logs[0].message
         state=db.scalar(select(AlertState).join(AlertRule).where(
             AlertRule.name.like("%unavailable"),AlertState.status=="OPEN"))
         assert state is not None
