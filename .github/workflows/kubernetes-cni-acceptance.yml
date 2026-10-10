@@ -1,0 +1,38 @@
+name: Kubernetes CNI Enforcement Acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  calico-networkpolicy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create disposable kind cluster with default CNI disabled
+        uses: helm/kind-action@v1.12.0
+        with:
+          cluster_name: opscontrol-policy-test
+          config: deploy/fixtures/kind-calico.yaml
+          wait: 0s
+      - name: Install enforcing Calico CNI in the disposable cluster
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            https://raw.githubusercontent.com/projectcalico/calico/v3.33.0/manifests/calico.yaml \
+            -o /tmp/opscontrol-calico.yaml
+          test -s /tmp/opscontrol-calico.yaml
+          kubectl apply -f /tmp/opscontrol-calico.yaml
+          kubectl -n kube-system rollout status daemonset/calico-node --timeout=600s
+          kubectl wait --for=condition=Ready nodes --all --timeout=300s
+      - name: Confirm approved pod reachable and denied pod blocked
+        run: bash scripts/verify-cni-egress.sh
+      - name: Record disposable cluster diagnostics on failure
+        if: failure()
+        run: |
+          kubectl get nodes -o wide || true
+          kubectl -n kube-system get pods -o wide || true
+          kubectl -n kube-system describe daemonset/calico-node || true
