@@ -146,7 +146,8 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True):
     db.flush()  # source/collector integrity checks must resolve a persisted parent
     if existing is None:
         existing=MonitoringActivation(organization_id=source.organization_id,
-            data_source_id=source.id,version=0,fingerprint="",status="DRAFT",details={})
+            data_source_id=source.id,collector_id=collector.id,version=0,
+            fingerprint=plan["fingerprint"],status="ACTIVE",applied_at=now(),details={})
         db.add(existing)
         db.flush()
     else:
