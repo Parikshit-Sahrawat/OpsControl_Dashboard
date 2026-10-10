@@ -18,12 +18,12 @@ def main():
     source=uuid.uuid4()
     with engine.begin() as connection:
         connection.execute(text("""
-            INSERT INTO organizations (id, name, code, active, created_at)
-            VALUES (:id, 'Existing Fictional Lab', 'UPGRADE-LAB', true, now())
+            INSERT INTO organizations (id, name, code, active, created_at, updated_at)
+            VALUES (:id, 'Existing Fictional Lab', 'UPGRADE-LAB', true, now(), now())
         """),{"id":org})
         connection.execute(text("""
-            INSERT INTO data_sources (id, organization_id, name, source_type, enabled, created_at)
-            VALUES (:id, :org, 'Pre-existing fictional source', 'API', true, now())
+            INSERT INTO data_sources (id, organization_id, name, source_type, enabled, status, created_at, updated_at)
+            VALUES (:id, :org, 'Pre-existing fictional source', 'API', true, 'UNKNOWN', now(), now())
         """),{"id":source,"org":org})
     alembic("upgrade","head")
     with engine.begin() as connection:
