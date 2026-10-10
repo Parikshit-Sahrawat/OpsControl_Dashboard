@@ -46,13 +46,18 @@ jobs:
           assert all('example' in x['name'].lower() or 'fictional' in x['name'].lower() for x in orgs),orgs
           print('PUBLIC-SAFE LOCALHOST DEMO SMOKE PASSED')
           PY
-      - name: Assert no public database binding
+      - name: Assert database has no published port and UI/API bind only loopback
         run: |
-          docker compose -f docker-compose.demo.yml port api 8000 | grep -q '127.0.0.1'
-          if docker compose -f docker-compose.demo.yml port postgres 5432 | grep .; then
-            echo 'Database must not publish a host port'
-            exit 1
-          fi
+          python3 - <<'PY'
+          import json,subprocess
+          config=json.loads(subprocess.check_output([
+              'docker','compose','-f','docker-compose.demo.yml','config','--format','json']))
+          assert not config['services']['postgres'].get('ports'), 'Database publishes a host port'
+          for name in ('api','frontend'):
+              ports=config['services'][name].get('ports',[])
+              assert ports and all(p.get('host_ip')=='127.0.0.1' for p in ports),(name,ports)
+          print('Demo exposed only on loopback; PostgreSQL private.')
+          PY
       - name: Stop disposable demo and delete test credentials
         if: always()
         run: |
