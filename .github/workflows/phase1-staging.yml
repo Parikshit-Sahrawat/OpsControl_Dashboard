@@ -99,6 +99,9 @@ jobs:
       - name: Verify read-only EC2, Kubernetes and Pentaho collectors with offline fakes
         working-directory: backend
         run: python scripts/provider_unit_probe.py
+      - name: Verify Pentaho Carte read-only history persistence and deduplication
+        working-directory: backend
+        run: python scripts/phase2_pentaho_persistence_probe.py
       - name: Verify separate rules → activation → remote run → alerts end-to-end
         working-directory: backend
         run: python scripts/phase2_activation_probe.py
