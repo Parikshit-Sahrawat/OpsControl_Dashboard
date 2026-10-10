@@ -297,7 +297,7 @@ def _purge_expired_metric_samples(db, now):
 async def execute_collector(collector_id):
     with SessionLocal() as db:
         collector = db.get(Collector, collector_id)
-        if not collector or not collector.enabled:
+        if not collector or not collector.enabled or collector.remote_worker_id is not None:
             return
 
         data_source = db.get(DataSource, collector.data_source_id)
@@ -361,6 +361,7 @@ async def scheduler_loop(poll_seconds=5):
             collectors = db.scalars(
                 select(Collector).where(
                     Collector.enabled.is_(True),
+                    Collector.remote_worker_id.is_(None),
                     (Collector.next_run_at.is_(None) | (Collector.next_run_at <= now)),
                 )
             ).all()

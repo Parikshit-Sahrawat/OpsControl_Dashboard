@@ -269,6 +269,7 @@ class Collector(Base):
     __tablename__ = "collectors"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id"), nullable=False, index=True)
+    remote_worker_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("worker_identities.id", ondelete="SET NULL"), index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     collector_type: Mapped[str] = mapped_column(String(100), nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

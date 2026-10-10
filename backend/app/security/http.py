@@ -26,7 +26,7 @@ from app.security.throttle import failed_login, login_allowed, successful_login
 router = APIRouter(prefix="/api/v1/auth", tags=["Identity"])
 worker_router = APIRouter(prefix="/api/v1/worker", tags=["Worker Identity"])
 _ALLOWED_PUBLIC = {"/", "/health", "/health/db", "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc", "/api/v1/auth/login"}
-_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami"}
+_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami", "/api/v1/worker/claim", "/api/v1/worker/results"}
 _ROLE_VALUES = {"viewer", "operator", "org_admin"}
 _DUMMY_HASH = hash_password(secrets.token_urlsafe(24))  # uniform work for unknown usernames
 
@@ -105,6 +105,14 @@ def _audit_denial(principal, status: int, path: str, request_id=None):
 class IdentityMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         path = request.url.path.rstrip("/") or "/"
+        if path in _WORKER_PUBLIC_GATE and request.method == "POST":
+            length = request.headers.get("content-length")
+            if length is None or not length.isdecimal():
+                return JSONResponse({"detail": "Content-Length required"}, status_code=411)
+            if int(length) > 8192:
+                return JSONResponse({"detail": "Worker payload exceeds 8 KiB"}, status_code=413)
+            if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/json":
+                return JSONResponse({"detail": "JSON required"}, status_code=415)
         if request.method == "OPTIONS" or path in _ALLOWED_PUBLIC or path in _WORKER_PUBLIC_GATE:
             return await call_next(request)
         if not path.startswith("/api/"):
