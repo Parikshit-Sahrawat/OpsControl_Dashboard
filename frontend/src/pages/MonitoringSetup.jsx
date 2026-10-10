@@ -27,6 +27,8 @@ export default function MonitoringSetup({organizationId,user}) {
   const [kind,setKind]=useState("METRIC"),[ruleName,setRuleName]=useState("readiness");
   const [definition,setDefinition]=useState(JSON.stringify(DEFAULTS.METRIC,null,2));
   const [preview,setPreview]=useState(null),[activation,setActivation]=useState(null);
+  const [diagnostics,setDiagnostics]=useState(null),[diagBusy,setDiagBusy]=useState(false);
+  const [editRule,setEditRule]=useState(""),[editDefinition,setEditDefinition]=useState("");
   const [error,setError]=useState(""),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
   const [enrollName,setEnrollName]=useState("demo-runner"),[enrollHost,setEnrollHost]=useState("portal.example.test");
   const [enrollCIDR,setEnrollCIDR]=useState("10.20.0.0/16"),[oneTimeToken,setOneTimeToken]=useState("");
@@ -93,6 +95,29 @@ export default function MonitoringSetup({organizationId,user}) {
     },async result=>{setOneTimeToken(result.worker_token);setMessage("Worker registered. Copy token once into a protected agent secret store.");await reload();});
   }
 
+  async function saveNewRuleVersion(event){
+    event.preventDefault();
+    let parsed;
+    try{parsed=JSON.parse(editDefinition);}catch{setError("Enter valid JSON for the new rule version.");return;}
+    await run(()=>api(API+"/rule-catalogs/"+editRule+"/versions",{method:"POST",body:JSON.stringify({definition:parsed})}),
+      async result=>{setMessage("Immutable rule version "+result.version+" created. Review and select it before reactivation.");setEditRule("");setEditDefinition("");setPreview(null);await reload();});
+  }
+  async function refreshDiagnostics(){
+    if(!sourceId)return;
+    setDiagBusy(true);
+    try{
+      const details=await api(API+"/data-sources/"+sourceId+"/diagnostics");
+      setDiagnostics(details);
+    }catch(e){setDiagnostics(null);setError(e.message||"Could not load monitoring diagnostics");}
+    finally{setDiagBusy(false);}
+  }
+  useEffect(()=>{
+    setDiagnostics(null);
+    if(!sourceId)return;
+    refreshDiagnostics();
+    const timer=window.setInterval(refreshDiagnostics,15000);
+    return()=>window.clearInterval(timer);
+  },[sourceId]);
   const versionRows=catalogs.flatMap(c=>c.versions.map(v=>({id:v.id,catalog:c,version:v})));
   function setType(next){setKind(next);setDefinition(JSON.stringify(DEFAULTS[next],null,2));setRuleName(next.toLowerCase()+"-rule");}
   return <div className="monitoring-setup">
@@ -124,6 +149,26 @@ export default function MonitoringSetup({organizationId,user}) {
         </label>)}
         {!versionRows.length&&<p className="monitoring-helper">No rule versions yet. Create a Metric Rule to get started.</p>}
       </div>
+      {canWrite&&<div className="monitoring-rule-editor">
+        <h3>Revise an existing rule (new immutable version)</h3>
+        <label>Rule catalog
+          <select value={editRule} onChange={e=>{
+            setEditRule(e.target.value);
+            const catalog=catalogs.find(c=>c.id===e.target.value);
+            setEditDefinition(catalog?JSON.stringify(catalog.versions.at(-1)?.definition||{},null,2):"");
+          }}>
+            <option value="">Choose an existing catalog</option>
+            {catalogs.map(c=><option key={c.id} value={c.id}>{c.kind} · {c.name} · latest v{c.versions.at(-1)?.version||1}</option>)}
+          </select>
+        </label>
+        {editRule&&<form onSubmit={saveNewRuleVersion}>
+          <p className="monitoring-helper">Existing versions remain unchanged. Activation continues using the pinned selected version until explicitly reapplied.</p>
+          <label>Next version JSON<textarea rows={6} spellCheck={false} value={editDefinition} onChange={e=>setEditDefinition(e.target.value)}/></label>
+          <button disabled={busy||!editDefinition.trim()} className="primary-button">Create next version</button>
+        </form>}
+      </div>
+      <div className="monitoring-rule-list">
+      </div>
       <label className="monitoring-rule-option"><input type="checkbox" checked={includeTemplates} onChange={e=>{setIncludeTemplates(e.target.checked);setPreview(null);}}/>
         Include attached Monitoring Template bundles</label>
       {canWrite&&<form onSubmit={makeRule} className="monitoring-rule-editor">
@@ -146,10 +191,30 @@ export default function MonitoringSetup({organizationId,user}) {
       {preview&&<div className="monitoring-preview"><b>{preview.status}</b>
         <p>Collector: {preview.plan.collector.name} · {preview.plan.collector.interval_seconds}s · {preview.plan.rules.length} rules</p>
         <p>Target: {preview.plan.collector.configuration.url}</p>
-        <p>Monitoring will be ACTIVE only after the worker receives its job; resource health stays unknown until fresh evidence is accepted.</p>
+        <p>Activation means scheduled collection is configured. Target health remains UNKNOWN until fresh evidence arrives.</p>
       </div>}
       {activation&&<div className="monitoring-preview" role="status">Monitoring state: <b>{activation.status}</b>
         {activation.collector_id&&<p>Provisioned collector ID: <code>{activation.collector_id}</code></p>}</div>}
+    </section>
+    <section className="card monitoring-setup-panel">
+      <div className="monitoring-setup-actions"><h2>4. Collector diagnostics and activation progress</h2>
+        <button type="button" disabled={!sourceId||diagBusy} onClick={refreshDiagnostics}>{diagBusy?"Refreshing…":"Refresh diagnostics"}</button>
+      </div>
+      {!diagnostics&&<p className="monitoring-helper">Select a Data Source to inspect actual collector state. No evidence is never reported as healthy.</p>}
+      {diagnostics&&<div className="monitoring-preview" data-testid="monitoring-diagnostics">
+        <p><b>Activation:</b> {diagnostics.activation.status} · revision {diagnostics.activation.version}</p>
+        <p><b>Monitoring:</b> {diagnostics.health} · freshness {diagnostics.freshness}</p>
+        {diagnostics.collector&&<>
+          <p><b>Collector:</b> {diagnostics.collector.status} · {diagnostics.collector.enabled?"enabled":"disabled"} · interval {diagnostics.collector.interval_seconds}s</p>
+          <p><b>Last sample:</b> {diagnostics.collector.last_run_at||"Never collected"}</p>
+          <p><b>Next scheduled:</b> {diagnostics.collector.next_run_at||"Not scheduled"}</p>
+          {diagnostics.collector.last_error&&<p role="alert"><b>Collector issue:</b> {diagnostics.collector.last_error}</p>}
+        </>}
+        <p><b>Evidence:</b> {diagnostics.metric_sample_count} metric samples · {diagnostics.open_alert_count} open alerts</p>
+        {diagnostics.latest_evidence&&<p><b>Latest HTTP evidence:</b> {diagnostics.latest_evidence.outcome} · HTTP {diagnostics.latest_evidence.http_status??"N/A"} · {diagnostics.latest_evidence.response_time_ms??"N/A"} ms</p>}
+        <h3>Recent job leases</h3>
+        {diagnostics.jobs.length?<ul>{diagnostics.jobs.map(job=><li key={job.id}>{job.state} · attempts {job.attempts} · {new Date(job.planned_for).toLocaleString()}</li>)}</ul>:<p>No remote jobs dispatched yet.</p>}
+      </div>}
     </section>
     {user?.platform_admin&&<section className="card monitoring-setup-panel">
       <h2>Optional — Enroll a private-network agent</h2>
