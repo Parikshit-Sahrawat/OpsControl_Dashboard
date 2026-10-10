@@ -237,6 +237,40 @@ class PentahoAdapter(CollectorAdapter):
             return CollectionResult(False, "Pentaho Carte read-only status unavailable", {"outcome":"PROVIDER_ERROR"})
 
 
+class LinuxHostMetricsAdapter(CollectorAdapter):
+    collector_type="LINUX_HOST"
+
+    async def collect(self,collector):
+        from app.worker.deep_checks import linux_host_health,DeepCheckError
+        try:
+            payload=await asyncio.to_thread(linux_host_health,collector.configuration or {})
+            return CollectionResult(payload["outcome"]=="SUCCESS","Read-only Linux host/process metrics",payload)
+        except (DeepCheckError,ValueError,OSError):
+            return CollectionResult(False,"Host configuration or metrics unavailable",{"outcome":"CONFIGURATION_ERROR"})
+
+class ApacheStatusAdapter(CollectorAdapter):
+    collector_type="APACHE"
+
+    async def collect(self,collector):
+        from app.worker.deep_checks import apache_status,DeepCheckError
+        try:
+            payload=await asyncio.to_thread(apache_status,collector.configuration or {})
+            return CollectionResult(True,"Read-only Apache status",payload)
+        except Exception:
+            return CollectionResult(False,"Apache status unavailable or unauthorized",{"outcome":"PROVIDER_ERROR"})
+
+class TomcatStatusAdapter(CollectorAdapter):
+    collector_type="TOMCAT"
+
+    async def collect(self,collector):
+        from app.worker.deep_checks import tomcat_status,DeepCheckError
+        try:
+            payload=await asyncio.to_thread(tomcat_status,collector.configuration or {})
+            return CollectionResult(True,"Read-only Tomcat JVM status",payload)
+        except Exception:
+            return CollectionResult(False,"Tomcat status unavailable or unauthorized",{"outcome":"PROVIDER_ERROR"})
+
+
 ADAPTERS = {
     "WINDOWS": WindowsAdapter(),
     "LINUX": LinuxAdapter(),
@@ -246,6 +280,9 @@ ADAPTERS = {
     "EC2": AwsEC2Adapter(),
     "KUBERNETES": KubernetesAdapter(),
     "K8S": KubernetesAdapter(),
+    "LINUX_HOST": LinuxHostMetricsAdapter(),
+    "APACHE": ApacheStatusAdapter(),
+    "TOMCAT": TomcatStatusAdapter(),
 }
 
 
@@ -274,6 +311,10 @@ def _extract_metric_value(metric, result):
     if extract == "AVAILABILITY":
         return 1.0 if result.success else 0.0
     mapping = {
+        "HOST_MEMORY_USED_PERCENT": payload.get("memory_used_percent"),
+        "HOST_DISK_USED_PERCENT": payload.get("disk_used_percent"),
+        "APACHE_BUSY_WORKERS": payload.get("busy_workers"),
+        "TOMCAT_HEAP_USED_PERCENT": payload.get("jvm_heap_used_percent"),
         "EC2_CPU_PERCENT": payload.get("cpu_percent"),
         "K8S_RESTARTS": payload.get("restarts"),
         "K8S_AVAILABLE_REPLICAS": payload.get("available_replicas"),
