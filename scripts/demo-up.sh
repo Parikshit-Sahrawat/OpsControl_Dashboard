@@ -12,7 +12,16 @@ pathlib.Path(".demo-private/admin-password").write_text(secrets.token_urlsafe(24
 PY
 fi
 chmod 600 .demo-private/admin-password
-docker compose -f docker-compose.demo.yml up --build --detach
+if ! docker compose -f docker-compose.demo.yml up --build --detach; then
+  echo "Primary image registry failed; trying alternate PostgreSQL mirror..."
+  if docker pull postgres:17; then
+    docker tag postgres:17 public.ecr.aws/docker/library/postgres:17
+    docker compose -f docker-compose.demo.yml up --build --detach
+  else
+    echo "Container registry unavailable or rate-limited." >&2
+    exit 1
+  fi
+fi
 echo
 echo "OpsControl local demo: http://127.0.0.1:5173"
 echo "Username: demo-admin"
