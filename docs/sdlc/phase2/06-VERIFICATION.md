@@ -45,5 +45,8 @@ flowchart LR
 ## Test data and reproducibility
 Fixed synthetic organizations A/B, known roles/permissions, API fixture returning deterministic status, stub Pentaho executions, service health and alert thresholds. Each CI run uses a fresh disposable PostgreSQL service; no shared production/staging customer database. Record CLI commands, versions, migration head, failure logs and link to run in audit.
 
+## Internal Application UI verification gate
+The HTTP probe, private runner, browser synthetic, authorization, SSRF, TLS, freshness, alert and E2E cases are specified as APP-001 through APP-018 in [13 — Internal Application UI Monitoring](13-INTERNAL-APPLICATION-UI-MONITORING.md#12-acceptance-and-release-tests-all-required-for-each-delivered-tier). Tests for unsupported tiers must be marked not implemented, never passed.
+
 ## Current gaps
 No pytest suite or ESLint command exists yet (#6). The current staging probe lacks authenticated identities because the system has no auth implementation (#2). Screenshot capture verifies rendering but not accessibility or all user interactions. True template-to-sample from an attached template fails (#3); only manual collector path passes.

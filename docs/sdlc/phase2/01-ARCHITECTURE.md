@@ -3,6 +3,9 @@
 ## Architectural objectives
 One operator console; authoritative organization-scoped data; read-only monitoring integrations; safe, replayable evidence ingestion; independently scheduled collectors; observable and idempotent alerts; simple local development. The product is a **modular monolith plus background workers**, not prematurely split microservices.
 
+## Resource discovery and private-network collection extension
+The detailed [Resource Discovery and Infrastructure Monitoring specification](14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md) extends this modular architecture with a Discovery Manager, provider registry, candidate review/import, canonical resource inventory, runner pools and private-network remote agents. Discovery is **not** automatic monitoring activation. Local/private agents establish an outbound authenticated channel and do not require exposing private applications publicly. See also the [Internal Application HTTP/Synthetic design](13-INTERNAL-APPLICATION-UI-MONITORING.md).
+
 ## Logical components
 ```mermaid
 flowchart LR
@@ -14,7 +17,7 @@ flowchart LR
   Act --> DB
   Worker[Collector Scheduler + Worker] --> DB
   Worker --> Adapters[Read-only Collector Adapters]
-  Adapters --> External[Pentaho / VMs / HTTP / S3 / SFTP]
+  Adapters --> External[ETL / Kubernetes / AWS / Hosts / HTTP / S3 / SFTP]
   Worker --> Evidence[Metrics / Logs / ETL Evidence]
   Evidence --> DB
   Worker --> Alerts[Alert & Correlation Engine]

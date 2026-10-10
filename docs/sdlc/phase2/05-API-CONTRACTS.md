@@ -44,6 +44,9 @@ Route names are proposals; final OpenAPI contract should minimize breaking chang
 ```
 Response `202` contains `activation_id`, `status: ACTIVATING`, `desired_hash`, `warnings`, and a pollable status URI; `ACTIVE` is only set after validated reconciliation. Collector `HEALTHY` requires runtime evidence.
 
+## Internal Application UI HTTP / synthetic probe API extension
+The scoped probe creation, configuration, runs, health, metrics, events, preflight and authenticated runner result-ingestion contracts are detailed in [13 — Internal Application UI Monitoring](13-INTERNAL-APPLICATION-UI-MONITORING.md#9-proposed-api-and-worker-event-contracts). Those endpoints are proposals, not currently implemented, and extend rather than duplicate the generic Data Source activation endpoints above.
+
 ## Worker event contract (proposed)
 Use a versioned record `{event_id, schema_version, organization_id, data_source_id, collector_id, run_id, observed_at, source_identity, evidence_type, payload, trace_id}`. Worker-owned results use stable idempotency key per source execution/sample; retry must not duplicate evidence/alerts. Source-origin `FAILED` must not be inferred from transport `NO_RESPONSE`.
 
