@@ -96,6 +96,9 @@ jobs:
       - name: Assert secure remote dispatch and evidence ingestion
         working-directory: backend
         run: python scripts/remote_protocol_probe.py
+      - name: Verify read-only EC2, Kubernetes and Pentaho collectors with offline fakes
+        working-directory: backend
+        run: python scripts/provider_unit_probe.py
       - name: Verify separate rules → activation → remote run → alerts end-to-end
         working-directory: backend
         run: python scripts/phase2_activation_probe.py
