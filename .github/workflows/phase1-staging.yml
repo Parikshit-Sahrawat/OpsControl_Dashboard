@@ -126,6 +126,9 @@ jobs:
       - name: Assert homepage live clock behavior
         working-directory: frontend
         run: node scripts/test_world_clock.mjs
+      - name: Verify authenticated HTTP onboarding and rule/activation UI
+        working-directory: frontend
+        run: node scripts/test_monitoring_setup.mjs
       - name: Assert platform-admin navigation is role-restricted
         working-directory: frontend
         run: node scripts/test_access_management.mjs
