@@ -8,7 +8,17 @@ async function api(path, options={}) {
   if(!response.ok) {
     const err=await response.json().catch(()=>({}));
     const detail=err.detail;
-    throw new Error(typeof detail==="string"?detail:JSON.stringify(detail||"Request failed"));
+    const guidance={
+      401:"Your session has expired. Sign out and sign in again.",
+      403:"You do not have permission for this operation in the selected organization.",
+      404:"This resource is no longer accessible. Refresh the organization and resource selection.",
+      409:"Monitoring configuration changed or conflicts with an active job. Refresh and preview again.",
+      422:"Configuration validation failed. Check the rule JSON, selected metric, worker policy and endpoint.",
+      429:"Too many requests. Try again after the server's rate-limit interval.",
+    };
+    const explanation=typeof detail==="string" && ![401,403,404,429].includes(response.status)
+      ?detail:guidance[response.status]||"The monitoring request could not be completed.";
+    throw new Error(explanation);
   }
   return response.status===204?null:response.json();
 }
@@ -75,12 +85,13 @@ export default function MonitoringSetup({organizationId,user}) {
       method:"POST",body:JSON.stringify(payload)}),result=>{
       setActivation(result);setPreview(null);
       setMessage(result.changed?"Collector and rule bindings activated. Health remains unknown until evidence arrives.":"Configuration already active — no duplicate collector created.");
+      refreshDiagnostics();
     });
   }
   async function deactivate(){
     if(!window.confirm("Deactivate monitoring for this Data Source and cancel pending remote jobs?"))return;
     await run(()=>api(API+"/data-sources/"+sourceId+"/deactivation",{method:"POST"}),result=>{
-      setActivation(result);setPreview(null);setMessage("Monitoring disabled; history preserved.");
+      setActivation(result);setPreview(null);setMessage("Monitoring disabled; history preserved.");refreshDiagnostics();
     });
   }
   async function enroll(event){
@@ -200,6 +211,14 @@ export default function MonitoringSetup({organizationId,user}) {
       </div>
       {!diagnostics&&<p className="monitoring-helper">Select a Data Source to inspect actual collector state. No evidence is never reported as healthy.</p>}
       {diagnostics&&<div className="monitoring-preview" data-testid="monitoring-diagnostics">
+        <h3>Monitoring activation stages</h3>
+        <ol>
+          <li>Configuration: {diagnostics.activation.status==="ACTIVE"?"Provisioned":diagnostics.activation.status}</li>
+          <li>Collector: {diagnostics.collector?.enabled?"Enabled / awaiting or performing work":"Not enabled"}</li>
+          <li>Dispatch: {diagnostics.jobs.length?diagnostics.jobs[0].state:"No jobs dispatched"}</li>
+          <li>Fresh evidence: {diagnostics.freshness==="CURRENT"?"Received":diagnostics.freshness}</li>
+          <li>Rule evaluation: {diagnostics.metric_sample_count?"Samples evaluated":"Waiting for monitoring evidence"}</li>
+        </ol>
         <p><b>Activation:</b> {diagnostics.activation.status} · revision {diagnostics.activation.version}</p>
         <p><b>Monitoring:</b> {diagnostics.health} · freshness {diagnostics.freshness}</p>
         {diagnostics.collector&&<>
