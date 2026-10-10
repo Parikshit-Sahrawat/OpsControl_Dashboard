@@ -1,4 +1,5 @@
 import AccessManagement from "./pages/AccessManagement";
+import MonitoringSetup from "./pages/MonitoringSetup";
 import { useCallback, useEffect, useState } from "react";
 import TopNav from "./components/TopNav";
 import JobDetailsDrawer from "./components/JobDetailsDrawer";
@@ -52,6 +53,7 @@ export default function App({ user }) {
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
     {active==="Access Management"&&user?.platform_admin&&<AccessManagement />}
     {active==="Resource Management"&&<ResourceManagement organizationId={organizationId} organizationIds={organizationIds}/>}
-    {![ "Overview","ETL Jobs","Resource Management","Access Management" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+    {active==="Monitoring Setup"&&<MonitoringSetup organizationId={organizationId} user={user}/> }
+    {![ "Overview","ETL Jobs","Resource Management","Access Management","Monitoring Setup" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }

@@ -109,6 +109,7 @@ class JobOrderHistory(Base):
     __tablename__ = "job_order_histories"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     job_order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_orders.id"), nullable=False, index=True)
+    provider_execution_id: Mapped[str | None] = mapped_column(String(200))
     execution_type: Mapped[ExecutionType] = mapped_column(Enum(ExecutionType), nullable=False)
     status: Mapped[ExecutionStatus] = mapped_column(Enum(ExecutionStatus), nullable=False)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

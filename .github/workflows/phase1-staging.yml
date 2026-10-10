@@ -59,7 +59,7 @@ jobs:
           from app.db.session import engine
           tables = set(inspect(engine).get_table_names())
           required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
-          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities", "remote_probe_jobs", "remote_probe_evidence"}
+          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities", "remote_probe_jobs", "remote_probe_evidence", "monitoring_rule_catalogs", "monitoring_rule_versions", "monitoring_activations", "monitoring_rule_bindings"}
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
@@ -96,6 +96,15 @@ jobs:
       - name: Assert secure remote dispatch and evidence ingestion
         working-directory: backend
         run: python scripts/remote_protocol_probe.py
+      - name: Verify read-only EC2, Kubernetes and Pentaho collectors with offline fakes
+        working-directory: backend
+        run: python scripts/provider_unit_probe.py
+      - name: Verify Pentaho Carte read-only history persistence and deduplication
+        working-directory: backend
+        run: python scripts/phase2_pentaho_persistence_probe.py
+      - name: Verify separate rules → activation → remote run → alerts end-to-end
+        working-directory: backend
+        run: python scripts/phase2_activation_probe.py
       - name: Verify expired-session cleanup maintenance command
         working-directory: backend
         run: python -m scripts.prune_security_sessions
@@ -117,6 +126,9 @@ jobs:
       - name: Assert homepage live clock behavior
         working-directory: frontend
         run: node scripts/test_world_clock.mjs
+      - name: Verify authenticated HTTP onboarding and rule/activation UI
+        working-directory: frontend
+        run: node scripts/test_monitoring_setup.mjs
       - name: Assert platform-admin navigation is role-restricted
         working-directory: frontend
         run: node scripts/test_access_management.mjs

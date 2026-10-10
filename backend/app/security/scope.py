@@ -56,6 +56,10 @@ _PATHS = {
     "CorrelationRecord": ("organization",),
     "CorrelationEvidence": ("correlation", "organization"),
     "MonitoringTemplateAttachment": ("data_source", "organization"),
+    "MonitoringRuleCatalog": ("organization",),
+    "MonitoringRuleVersion": ("catalog", "organization"),
+    "MonitoringActivation": ("organization",),
+    "MonitoringRuleBinding": ("activation", "organization"),
 }
 _GLOBAL = {"MonitoringTemplate", "MonitoringTemplateVersion"}
 
@@ -148,13 +152,14 @@ def enforce_writes(db, flush_context, instances):
         if state.persistent:
             for attr in ("organization_id", "data_source_id", "collector_id", "job_order_id",
                          "vm_id", "history_id", "metric_definition_id", "log_source_id",
-                         "alert_rule_id", "alert_state_id"):
+                         "alert_rule_id", "alert_state_id", "catalog_id", "activation_id", "rule_version_id"):
                 if attr in state.attrs and state.attrs[attr].history.has_changes():
                     raise HTTPException(403, "Changing resource ownership is not supported")
         # All tenant-owned foreign keys must point to resources in the SAME org.
         for attr, parent_type in (("data_source_id", "DataSource"), ("collector_id", "Collector"),
                                   ("metric_definition_id", "MetricDefinition"), ("log_source_id", "LogSource"),
-                                  ("alert_rule_id", "AlertRule"), ("vm_id", "VM"),
+                                  ("alert_rule_id", "AlertRule"), ("catalog_id", "MonitoringRuleCatalog"),
+                                  ("activation_id", "MonitoringActivation"), ("rule_version_id", "MonitoringRuleVersion"), ("vm_id", "VM"),
                                   ("job_order_id", "JobOrder"), ("history_id", "JobOrderHistory"),
                                   ("template_id", "MonitoringTemplate")):
             if not hasattr(obj, attr):
