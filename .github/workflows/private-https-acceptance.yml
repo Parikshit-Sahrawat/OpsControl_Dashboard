@@ -33,6 +33,27 @@ jobs:
           docker run --rm --network opscontrol-private-fixture             -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED
           echo healthy > /tmp/opscontrol-fixture/state
           docker run --rm --network opscontrol-private-fixture             -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS
+      - name: Verify real TLS Carte-shaped read-only execution lifecycle
+        run: |
+          set -euo pipefail
+          echo running > /tmp/opscontrol-fixture/state
+          docker run --rm --network opscontrol-private-fixture \
+            -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro" \
+            -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \
+            -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \
+            python:3.12-alpine python /tests/probe_private_carte.py RUNNING
+          echo failed > /tmp/opscontrol-fixture/state
+          docker run --rm --network opscontrol-private-fixture \
+            -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro" \
+            -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \
+            -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \
+            python:3.12-alpine python /tests/probe_private_carte.py FAILED
+          echo healthy > /tmp/opscontrol-fixture/state
+          docker run --rm --network opscontrol-private-fixture \
+            -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro" \
+            -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \
+            -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \
+            python:3.12-alpine python /tests/probe_private_carte.py SUCCESS
       - name: Check private network is isolated at Docker layer
         run: |
           set -euo pipefail
