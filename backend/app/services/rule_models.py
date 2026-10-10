@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.session import Base
 
 def utc_now(): return datetime.now(timezone.utc)
@@ -25,6 +25,7 @@ class MonitoringRuleVersion(Base):
     version:Mapped[int]=mapped_column(Integer,nullable=False)
     definition:Mapped[dict]=mapped_column(JSON,nullable=False)
     created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False,default=utc_now)
+    catalog=relationship("MonitoringRuleCatalog")
     __table_args__=(UniqueConstraint("catalog_id","version",name="uq_monitoring_rule_version"),
                     CheckConstraint("version >= 1",name="ck_monitoring_rule_version_positive"))
 
@@ -47,4 +48,5 @@ class MonitoringRuleBinding(Base):
     rule_version_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("monitoring_rule_versions.id"),nullable=False)
     materialized_id:Mapped[uuid.UUID|None]=mapped_column(UUID(as_uuid=True))
     kind:Mapped[str]=mapped_column(String(12),nullable=False)
+    activation=relationship("MonitoringActivation")
     __table_args__=(UniqueConstraint("activation_id","rule_version_id",name="uq_monitoring_activation_rule"),)
