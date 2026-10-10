@@ -13,6 +13,7 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, dev
 const manifest = [];
 const errors = [];
 page.on("pageerror", error => errors.push(String(error)));
+page.on("response", response => { if (response.url().includes(":8000") && response.status() >= 400) errors.push(response.status() + " " + response.url()); });
 page.on("requestfailed", request => {
   if (request.url().includes(":8000")) errors.push("API request failed: " + request.url() + " - " + request.failure()?.errorText);
 });
@@ -41,7 +42,12 @@ async function capture(name, file) {
 
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded", timeout: 30000 });
-  await page.waitForSelector("button.nav-button", { timeout: 30000 });
+  await page.getByRole("textbox", { name: "Username" }).fill("test-north");
+  await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  try { await page.waitForSelector("button.nav-button", { timeout: 20000 }); }
+  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error) + " pageErrors=" + errors.join(" | ")); }
+
   for (const [label, filename] of categories) {
     await page.locator("button.nav-button").filter({ hasText: label }).click();
     await capture(label, filename);

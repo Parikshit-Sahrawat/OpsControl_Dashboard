@@ -4,8 +4,14 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 const errors = [];
 page.on("pageerror", error => errors.push(String(error)));
+page.on("response", response => { if (response.url().includes(":8000") && response.status() >= 400) errors.push(response.status() + " " + response.url()); });
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
+  await page.getByRole("textbox", { name: "Username" }).fill("test-north");
+  await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  try { await page.waitForSelector("button.nav-button", { timeout: 20000 }); }
+  catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error) + " pageErrors=" + errors.join(" | ")); }
   const clock = page.locator(".world-clock");
   await clock.waitFor();
   const selector = page.getByRole("combobox", { name: "World clock timezone" });

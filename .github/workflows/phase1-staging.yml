@@ -1,4 +1,4 @@
-name: Phase 1 Staging Verification
+name: Authenticated OpsControl Staging Verification
 
 on:
   push:
@@ -56,6 +56,7 @@ jobs:
           from app.db.session import engine
           tables = set(inspect(engine).get_table_names())
           required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
+          required |= {"users", "access_sessions", "organization_memberships"}
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
@@ -77,24 +78,9 @@ jobs:
                   if i == 29: raise
                   time.sleep(1)
           PY
-      - name: Execute disposable tenant / template / collector probes
+      - name: Assert identity and tenant isolation against disposable PostgreSQL
         working-directory: backend
-        run: python scripts/phase1_staging_probe.py
-      - name: Capture tenant authorization baseline (diagnostic, not a pass)
-        working-directory: backend
-        run: |
-          python - <<'PY'
-          import json, urllib.error, urllib.request
-          results={}
-          for path in ("/api/v1/organizations", "/api/v1/resource-management/data-sources", "/api/v1/monitoring/templates"):
-              try:
-                  with urllib.request.urlopen("http://127.0.0.1:8000"+path, timeout=5) as r: code=r.status
-              except urllib.error.HTTPError as e: code=e.code
-              results[path]={"anonymous_status":code, "requires_auth":code in (401,403)}
-          with open("tenant-baseline.json","w") as f: json.dump(results,f,indent=2)
-          print(json.dumps(results,indent=2))
-          print("DIAGNOSTIC ONLY: anonymous endpoint checks do not prove tenant isolation")
-          PY
+        run: python scripts/auth_tenant_probe.py
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -104,7 +90,7 @@ jobs:
           npm install --no-audit --no-fund
           npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &
           echo $! > /tmp/opscontrol-vite.pid
-      - name: Capture current React UI with Playwright
+      - name: Capture authenticated React UI with Playwright
         working-directory: frontend
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.56.1
@@ -119,9 +105,6 @@ jobs:
         with:
           name: phase1-staging-evidence
           path: |
-            backend/tenant-baseline.json
-            backend/phase1-staging-evidence.json
-            backend/phase1-staging-evidence-error.txt
             frontend/phase1-screenshots/
             /tmp/opscontrol-api.log
             /tmp/opscontrol-vite.log

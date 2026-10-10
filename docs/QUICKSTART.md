@@ -2,7 +2,7 @@
 
 **Audience:** Independent developers, students, self-hosters and open-source contributors.
 
-**Current release status:** Early development / technical preview. This guide starts the existing React UI, FastAPI API and PostgreSQL database locally. It does **not** claim production readiness, secure multi-tenancy, or working Kubernetes/EC2/Apache collectors. The current API lacks enforced authentication/organization isolation; **run on your own trusted computer only**, never on a publicly reachable server.
+**Current release status:** Early development / technical preview. The review branch now has an authentication implementation and login screen, but it requires a security review and validated negative tests before any public deployment. This guide starts the existing React UI, FastAPI API and PostgreSQL database locally. It does **not** claim production readiness, secure multi-tenancy, or working Kubernetes/EC2/Apache collectors. The default `main` branch may still lack security controls; the draft authentication review branch introduces server-enforced access but remains unapproved. **Run on your trusted computer only**, never on a publicly reachable server.
 
 ## What you'll learn in 10–20 minutes
 
@@ -75,10 +75,11 @@ Edit `backend/.env` for your local environment. Keep the sample `DATABASE_URL` i
 ```bash
 alembic upgrade head
 alembic current
+python -m scripts.create_admin --username admin
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Expected: FastAPI starts. Open [http://localhost:8000/docs](http://localhost:8000/docs) to explore its interactive OpenAPI documentation, or run:
+The administrator command prompts for a new strong password and refuses to create a predictable default account. See [authentication and role guide](AUTHENTICATION.md). Sign in to the UI using this new account.\n\nExpected: FastAPI starts. Open [http://localhost:8000/docs](http://localhost:8000/docs) to explore its interactive OpenAPI documentation, or run:
 
 ```bash
 curl http://localhost:8000/
@@ -106,7 +107,7 @@ The supplied frontend environment sets `VITE_API_BASE_URL=http://localhost:8000`
 2. Open **ETL Jobs** to explore search, filters and execution detail layout. Real external ETL monitoring is not connected by default.
 3. Open **Resource Management** to inspect Organizations, Data Sources, Collectors and Templates. Create only **fictional** organization names and test Data Sources on this trusted local instance.
 4. Open **VM Health**, **APIs & Services**, **Incidents** and **Reports** to see planned navigation placeholders. They are **not** implemented monitoring views.
-5. Browse the API at `/docs` and inspect the JSON schemas and endpoints. Because authorization is not implemented, **do not add private infrastructure URLs or secrets**.
+5. Browse the API at `/docs` and inspect the JSON schemas and endpoints. Because authorization is not implemented, **do not add private infrastructure URLs or secrets**. Authenticated builds require the bootstrap platform administrator before Resource Management can be used.
 
 ### Optional: worker process
 
