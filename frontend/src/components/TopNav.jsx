@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management"];
+const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management", "Monitoring Setup"];
 
 export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange, platformAdmin = false }) {
   const [open, setOpen] = useState(false);
