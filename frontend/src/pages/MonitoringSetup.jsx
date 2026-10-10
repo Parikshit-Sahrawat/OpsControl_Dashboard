@@ -166,7 +166,7 @@ export default function MonitoringSetup({organizationId,user}) {
           <label>Next version JSON<textarea rows={6} spellCheck={false} value={editDefinition} onChange={e=>setEditDefinition(e.target.value)}/></label>
           <button disabled={busy||!editDefinition.trim()} className="primary-button">Create next version</button>
         </form>}
-      </div>
+      </div>}
       <label className="monitoring-rule-option"><input type="checkbox" checked={includeTemplates} onChange={e=>{setIncludeTemplates(e.target.checked);setPreview(null);}}/>
         Include attached Monitoring Template bundles</label>
       {canWrite&&<form onSubmit={makeRule} className="monitoring-rule-editor">
