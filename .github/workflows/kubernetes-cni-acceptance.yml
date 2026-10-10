@@ -30,6 +30,8 @@ jobs:
           kubectl wait --for=condition=Ready nodes --all --timeout=300s
       - name: Confirm approved pod reachable and denied pod blocked
         run: bash scripts/verify-cni-egress.sh
+      - name: Exercise actual Kubernetes provider reads and namespace-only RBAC
+        run: bash scripts/verify-kubernetes-provider.sh
       - name: Record disposable cluster diagnostics on failure
         if: failure()
         run: |
