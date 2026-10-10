@@ -20,7 +20,7 @@ jobs:
           chmod 600 /tmp/opscontrol-fixture/tls.key
           echo healthy > /tmp/opscontrol-fixture/state
           docker network create --driver bridge --internal --subnet 172.28.77.0/24 opscontrol-private-fixture
-          docker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v "$PWD/deploy/fixtures/private_https_target.py:/fixture/app.py:ro"             python:3.12-alpine python /fixture/app.py
+          docker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v "$PWD/deploy/fixtures/private_https_target.py:/app.py:ro"             python:3.12-alpine python /app.py
       - name: Probe real private TLS target and detect incident
         run: |
           set -euo pipefail
