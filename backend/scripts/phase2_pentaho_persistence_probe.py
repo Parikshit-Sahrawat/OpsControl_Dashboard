@@ -6,6 +6,7 @@ separately; no live Carte instance or credentials are required for this proof.
 from datetime import datetime,timezone,timedelta
 from sqlalchemy import select,func
 from app.db.session import SessionLocal
+import app.security.models  # register referenced service-identity tables
 from app.models import Organization,JobOrder,JobOrderHistory,Collector,DataSource
 from app.worker.collector_runtime import CollectionResult,_persist_pentaho_history
 
