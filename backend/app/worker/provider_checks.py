@@ -82,11 +82,9 @@ def kubernetes_health(config,client_factory=None):
         raise ProviderCheckError("Invalid Pod/Deployment name")
     if client_factory is None:
         try:
-            from kubernetes import client,kubernetes as _unused
-        except ImportError:
-            try: from kubernetes import client
-            except ImportError as exc:
-                raise ProviderCheckError("Install optional Kubernetes client") from exc
+            from kubernetes import client
+        except ImportError as exc:
+            raise ProviderCheckError("Install optional Kubernetes client") from exc
         from kubernetes import config as kconfig
         kconfig.load_incluster_config()  # service-account only; no arbitrary kubeconfig
         client_factory=client
