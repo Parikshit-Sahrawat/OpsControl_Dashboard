@@ -3,7 +3,13 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from app.db.session import Base
 from app.models import entities
+from app.core.config import settings
+import app.security.models
+import app.worker.remote_models
+import app.services.rule_models
 config=context.config
+# Use the same environment-configured database as FastAPI, not an outdated localhost URL.
+config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
 if config.config_file_name:fileConfig(config.config_file_name)
 target_metadata=Base.metadata
 def run_migrations_offline():
