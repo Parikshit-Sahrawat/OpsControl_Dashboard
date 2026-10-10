@@ -20,6 +20,7 @@ from app.db.session import SessionLocal, get_db
 from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample, Organization
 from app.security.audit import log_event
 from app.security.http import require_admin, token_digest
+from app.security.scope import current_principal
 from app.security.models import WorkerIdentity
 from app.worker.egress import EgressDenied, check_target, policy_cidrs, policy_hosts
 from app.worker.alert_engine import evaluate_metric_sample
@@ -111,6 +112,18 @@ def worker_from_request(request: Request):
         if org is None or not org.active:
             raise HTTPException(403,"Worker organization inactive")
         return {"id":worker.id,"organization_id":worker.organization_id}
+
+@admin_router.get("/workers")
+def list_authorized_workers(organization_id:uuid.UUID,db:Session=Depends(get_db)):
+    principal=current_principal.get()
+    if not principal or not principal.can_edit(organization_id):
+        raise HTTPException(403,"Organization administrator required")
+    records=db.scalars(select(WorkerIdentity).where(
+        WorkerIdentity.organization_id==organization_id,
+        WorkerIdentity.enabled.is_(True))).all()
+    return [{"id":str(w.id),"name":w.name,"organization_id":str(w.organization_id),
+             "allowed_hosts":w.allowed_hosts,"allowed_cidrs":w.allowed_cidrs,
+             "expires_at":w.expires_at.isoformat()} for w in records]
 
 @admin_router.put("/workers/{worker_id}/network-policy")
 def update_network_policy(worker_id:uuid.UUID,payload:NetworkPolicy):
