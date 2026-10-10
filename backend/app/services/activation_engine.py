@@ -143,6 +143,7 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True):
     collector.enabled=True
     collector.next_run_at=now()
     collector.status="STOPPED"  # never mark healthy until verified evidence
+    db.flush()  # source/collector integrity checks must resolve a persisted parent
     if existing is None:
         existing=MonitoringActivation(organization_id=source.organization_id,
             data_source_id=source.id,version=0,fingerprint="",status="DRAFT",details={})
@@ -169,6 +170,7 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True):
                         data_source_id=source.id,collector_id=collector.id,name=data["name"],
                         resource_type="APPLICATION",metric_type="GAUGE")
                     db.add(row)
+                    db.flush()  # alerts in this activation reference this metric FK
                 row.enabled=True
                 row.collector_id=collector.id
                 row.collection_interval_seconds=collector.interval_seconds
