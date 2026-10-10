@@ -1,24 +1,35 @@
 # OpsControl Phase 2 — Field Acceptance and Release Evidence
 
 **Date:** 2026-10-10  
-**Branch:** `feat/phase2-field-acceptance-ux`; [draft PR #22](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/22).  
-**Safety:** CI uses fictional identities, disposable PostgreSQL, Docker-internal TLS targets and disposable kind. Neither the feature branch nor any parent draft PR is merged into `main`; no production deployment is authorized.
+**Development baseline:** `main`, consolidated through [PR #22](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/22) and its dependency PRs.
+**Test scope:** CI uses fictional identities, disposable PostgreSQL, Docker-internal TLS targets and disposable kind. Development consolidation does not authorize a production deployment.
+
+## Development merge decision — 2026-10-10
+
+The repository owner approved merging PRs #13, #15, #16, #17, #19, #20, #21 and #22 into `main` without live AWS or genuine Pentaho Carte acceptance. Earlier no-merge holds are superseded for this development consolidation. The integrations remain experimental until their real-provider acceptance passes.
+
+All eight PR heads passed their automated workflows after conflict and CI repairs. The combined code at `2ca1cb5523872065855b89b119fc953c8fd9f38a` passed all eight workflows, including [database migrations, preservation and authenticated browser checks](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38029892064), [private HTTPS alert recovery](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38029892030), and [disposable Kubernetes/Calico acceptance](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38029892083). This decision update changes documentation only; merge verification must also confirm the final `main` build.
+
+Outstanding provider acceptance, explicitly deferred rather than marked passed:
+- [ ] AWS: run the OIDC workflow against an authorized sandbox account/region/instance and verify real IAM, EC2 and CloudWatch access.
+- [ ] Pentaho: collect from a genuine reachable Carte installation using an approved credential reference; verify actual job status and execution-history persistence.
+- [ ] Verify live secret retrieval and deployment-specific network access before relying on either provider for production monitoring.
 
 ## Scope and evidence
 
 | Acceptance requirement | Evidence / test | Accurate status |
 |---|---|---|
-| HTTP activation → leased job → **real private TLS** GET → metric → alert OPEN on HTTP 503 → RESOLVED after recovery | [Live Private HTTPS Alert and Recovery](../.github/workflows/live-http-alert-recovery.yml), `scripts/live_https_acceptance.py`, `deploy/fixtures/agent_cycle.py` | **Passed on prior commit**; includes real worker/result DB path and two isolated Docker networks |
-| Private target TLS trust, no redirect, 200 → 503 → 200 detection | [Private HTTPS Target Acceptance](../.github/workflows/private-https-acceptance.yml) | **Passed on prior commit**; repeat on latest HEAD |
+| HTTP activation → leased job → **real private TLS** GET → metric → alert OPEN on HTTP 503 → RESOLVED after recovery | [Live Private HTTPS Alert and Recovery](../.github/workflows/live-http-alert-recovery.yml), `scripts/live_https_acceptance.py`, `deploy/fixtures/agent_cycle.py` | **Passed at the combined code SHA above**; includes real worker/result DB path and two isolated Docker networks |
+| Private target TLS trust, no redirect, 200 → 503 → 200 detection | [Private HTTPS Target Acceptance](../.github/workflows/private-https-acceptance.yml) | **Passed at the combined code SHA above** |
 | Carte read-only status over actual TLS | Same workflow plus `deploy/fixtures/probe_private_carte.py` | **Synthetic Carte-shaped TLS fixture** (Running, Failed, Success) — not a genuine Pentaho Carte installation |
 | Auth roles, organization isolation, schema denial, replay protection, immutable rule versioning | [Security Release Gate](../.github/workflows/phase1-staging.yml) | Automated disposable DB/browser checks; **independent threat-model review pending** |
-| Nonempty existing PostgreSQL database migrates without losing owned resources | `backend/scripts/existing_database_upgrade_probe.py` downgrades to 0016, seeds Organization/DataSource, upgrades to 0018, verifies identities unchanged | **CI verification required on latest HEAD**; not an upgrade of a real deployed OpsControl database |
+| Nonempty existing PostgreSQL database migrates without losing owned resources | `backend/scripts/existing_database_upgrade_probe.py` downgrades to 0016, seeds Organization/DataSource, upgrades to 0018, verifies identities unchanged | **CI passed at the combined code SHA above**; not an upgrade of a real deployed OpsControl database |
 | Secrets: no raw credentials, scoped production provider | `backend/scripts/secrets_provider_probe.py`, `app/worker/credentials.py` | AWS Secrets Manager ARN reference + workload identity code and fake-client negatives; **live AWS Secrets Manager access not yet verified** |
 | Kubernetes NetworkPolicy real enforcement | [kind+Calico CI](../.github/workflows/kubernetes-cni-acceptance.yml), `scripts/verify-cni-egress.sh` | Disposable enforcing CNI tests approved Pod reachable / denied Pod blocked; **not verified on customer's production CNI** |
-| Kubernetes Pod/Deployment real API and read-only RBAC | Same kind+Calico job, `scripts/verify-kubernetes-provider.sh` | Disposable cluster acceptance added; watch latest-head run. Not a production Kubernetes cluster |
+| Kubernetes Pod/Deployment real API and read-only RBAC | Same kind+Calico job, `scripts/verify-kubernetes-provider.sh` | **Disposable cluster acceptance passed at the combined code SHA above**. Not a production Kubernetes cluster |
 | AWS EC2 least-privilege IAM and CloudWatch status | [AWS OIDC manual acceptance](../.github/workflows/aws-ec2-live-acceptance.yml), [minimal policy](../deploy/examples/aws-ec2-monitoring-readonly-policy.json) | **NOT RUN**: requires an authorized sandbox account, scoped OIDC role and instance |
 | Pentaho Carte genuine read-only job collection | `app/worker/pentaho_status.py` and `provider_unit_probe.py` | Mock/XML + synthetic TLS fixture only; **NOT verified against actual Carte** |
-| Rule-version editing, activation progression, worker diagnostics and friendly errors | `frontend/src/pages/MonitoringSetup.jsx`, `backend/app/api/monitoring_diagnostics.py` | Code committed; frontend compile/Playwright and authenticated tests required on latest SHA |
+| Rule-version editing, activation progression, worker diagnostics and friendly errors | `frontend/src/pages/MonitoringSetup.jsx`, `backend/app/api/monitoring_diagnostics.py` | **Frontend build, Playwright and authenticated tests passed at the combined code SHA above** |
 | Linux host/process, Apache mod_status and Tomcat JVM | `app/worker/deep_checks.py`, `backend/scripts/deep_checks_probe.py` | Read-only adapters + synthetic safety tests. **Real service installations pending** |
 
 ## Operational controls that still block production
