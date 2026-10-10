@@ -151,3 +151,24 @@
 .access-actions{display:flex;gap:7px;flex-wrap:wrap}
 .access-table{min-width:0}
 @media(max-width:700px){.access-management-grid{grid-template-columns:1fr}}
+
+/* Independent monitoring onboarding wizard */
+.monitoring-setup{display:grid;gap:18px}
+.monitoring-setup-panel{display:grid;gap:12px}
+.monitoring-setup-panel h2,.monitoring-setup-panel h3{margin:0}
+.monitoring-setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.monitoring-setup label{display:grid;gap:7px;font-size:13px;color:#bdcde0}
+.monitoring-setup input:not([type=checkbox]),.monitoring-setup select,.monitoring-setup textarea{background:#091829;border:1px solid #32475e;border-radius:8px;color:#eef4ff;padding:10px;width:100%;min-width:0}
+.monitoring-setup textarea{font-family:ui-monospace,monospace}
+.monitoring-helper{margin:0;color:#a5b5cb;font-size:12px}
+.monitoring-rule-list{display:grid;gap:8px}
+.monitoring-setup .monitoring-rule-option{display:flex;align-items:center;gap:14px;padding:10px;background:#102236;border:1px solid #2e4660;border-radius:7px}
+.monitoring-rule-option span{flex:1}
+.monitoring-rule-option small{color:#9eb4c8}
+.monitoring-rule-editor{display:grid;gap:12px}
+.monitoring-setup-actions{display:flex;gap:10px;flex-wrap:wrap}
+.monitoring-setup-actions button,.monitoring-rule-editor button{border:1px solid #365777;border-radius:8px;background:#16314f;color:#eef4ff;padding:10px 14px;cursor:pointer}
+.monitoring-setup-actions button:disabled,.monitoring-rule-editor button:disabled{opacity:.5;cursor:not-allowed}
+.monitoring-preview{border:1px solid #39566e;border-radius:8px;padding:14px;background:#0e2136;overflow-wrap:anywhere}
+.monitoring-preview p{margin:7px 0;color:#bccfe0}
+@media(max-width:700px){.monitoring-setup-grid{grid-template-columns:1fr}.monitoring-setup-actions button{width:100%}}
