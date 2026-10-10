@@ -66,7 +66,7 @@ def main():
          "definition":{"name":"bad","metric_name":"http_response_time_ms","operator":"GT","threshold_value":10}})
     payload={"remote_worker_id":wid,"rule_version_ids":rule_ids,"include_templates":False}
     request(403,"POST",f"/api/v1/data-sources/{source_id}/activations",viewer,payload)
-    request(403,"POST",f"/api/v1/data-sources/{other_id}/activations",north,payload)
+    request(404,"POST",f"/api/v1/data-sources/{other_id}/activations",north,payload)
     request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
             {**payload,"rule_version_ids":rule_ids+[bad["versions"][0]["id"]]})
     plan=request(200,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,payload)
