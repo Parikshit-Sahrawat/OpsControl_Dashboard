@@ -1,5 +1,8 @@
 # OpsControl Dashboard
 
+**Project implementation roadmap:** [Living Implementation Priorities & Verification Tracker](docs/IMPLEMENTATION_ROADMAP.md) — status, completed stages, current blockers and next testable workstreams. Update this table after each milestone; see linked draft PRs for evidence.
+
+
 **Private-network HTTPS monitoring:** [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) — scoped workers, scheduled jobs, strict egress and deduplicated evidence (draft feature, not production approved).\n\n**New to OpsControl?** Start with the [Beginner Quickstart](docs/QUICKSTART.md) to learn the basic monitoring concepts and run the current technical preview locally. This is a general-purpose open-source monitoring and observability project in development, not a production-ready release. The guide documents current limitations and uses only local/synthetic examples.
 
 OpsControl Dashboard is an enterprise operations monitoring platform being designed to give NOC, SLM, support, and engineering teams a single operational view of production ETL jobs, VMs, applications, APIs, incidents, alerts, and operational history.
