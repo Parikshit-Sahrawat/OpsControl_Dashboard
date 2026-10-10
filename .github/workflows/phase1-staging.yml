@@ -63,6 +63,9 @@ jobs:
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
+      - name: Preserve existing organization and data source through incremental migrations
+        working-directory: backend
+        run: python scripts/existing_database_upgrade_probe.py
       - name: Start API and check HTTP endpoints
         working-directory: backend
         run: |
@@ -102,6 +105,12 @@ jobs:
       - name: Verify Pentaho Carte read-only history persistence and deduplication
         working-directory: backend
         run: python scripts/phase2_pentaho_persistence_probe.py
+      - name: Verify production credential references and secret redaction policy
+        working-directory: backend
+        run: python scripts/secrets_provider_probe.py
+      - name: Verify read-only Linux/Apache/Tomcat collectors and unsafe-config rejection
+        working-directory: backend
+        run: python scripts/deep_checks_probe.py
       - name: Verify separate rules → activation → remote run → alerts end-to-end
         working-directory: backend
         run: python scripts/phase2_activation_probe.py

@@ -1,0 +1,45 @@
+name: AWS EC2 Read-Only Field Acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      aws_account_id:
+        description: "Authorized 12-digit disposable sandbox AWS account"
+        required: true
+      aws_region:
+        description: "Region containing a disposable test instance"
+        required: true
+        default: ap-south-1
+      instance_id:
+        description: "Authorized sandbox EC2 instance ID"
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  read-only-ec2:
+    runs-on: ubuntu-latest
+    environment: aws-acceptance
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Acquire short-lived AWS identity using restricted GitHub OIDC role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.OPSCONTROL_AWS_ACCEPTANCE_ROLE_ARN }}
+          aws-region: ${{ inputs.aws_region }}
+          role-session-name: OpsControlReadonlyAcceptance
+      - name: Exercise actual instance health and CloudWatch APIs
+        working-directory: backend
+        env:
+          AWS_EC2_METADATA_DISABLED: "true"
+        run: |
+          python -m pip install 'boto3>=1.35,<2'
+          PYTHONPATH=. python scripts/aws_live_acceptance.py \
+            --account "${{ inputs.aws_account_id }}" \
+            --region "${{ inputs.aws_region }}" \
+            --instance-id "${{ inputs.instance_id }}"

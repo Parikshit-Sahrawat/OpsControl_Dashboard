@@ -1,0 +1,95 @@
+name: Live Private HTTPS Alert and Recovery
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-tls-evidence-alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start isolated disposable API and PostgreSQL
+        run: |
+          set -euo pipefail
+          mkdir -p .demo-private
+          chmod 700 .demo-private
+          umask 077
+          python3 - <<'PY'
+          import pathlib,secrets
+          pathlib.Path(".demo-private/admin-password").write_text(secrets.token_urlsafe(32))
+          PY
+          docker compose -f docker-compose.demo.yml up --build -d postgres api
+          for i in {1..75}; do
+            if curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null; then break; fi
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null
+      - name: Launch TLS target and outbound-only agent on separate isolated networks
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/opscontrol-fixture
+          openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
+            -keyout /tmp/opscontrol-fixture/tls.key -out /tmp/opscontrol-fixture/tls.crt \
+            -subj '/CN=portal.example.test' -addext 'subjectAltName=DNS:portal.example.test' >/dev/null 2>&1
+          chmod 600 /tmp/opscontrol-fixture/tls.key
+          echo healthy >/tmp/opscontrol-fixture/state
+          docker network create --internal --subnet 172.28.77.0/24 opscontrol-fixture-target-net
+          docker network create --internal --subnet 172.28.78.0/24 opscontrol-fixture-control-net
+          api_id="$(docker compose -f docker-compose.demo.yml ps -q api)"
+          docker network connect --alias opscontrol-control opscontrol-fixture-control-net "$api_id"
+          docker run -d --name opscontrol-private-fixture --network opscontrol-fixture-target-net \
+            --ip 172.28.77.10 --network-alias portal.example.test \
+            -v /tmp/opscontrol-fixture:/fixture:ro \
+            -v "$PWD/deploy/fixtures/private_https_target.py:/app.py:ro" \
+            python:3.12-alpine python /app.py
+          docker run -d --name opscontrol-private-agent --network opscontrol-fixture-target-net \
+            -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro" \
+            -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \
+            -e SSL_CERT_FILE=/fixture/ca.crt -e PYTHONPATH=/src \
+            python:3.12-alpine sleep 3600
+          docker network connect opscontrol-fixture-control-net opscontrol-private-agent
+          for i in {1..20}; do
+            if docker exec opscontrol-private-fixture python -c \
+                'import socket;socket.create_connection(("127.0.0.1",443),1).close()' 2>/dev/null; then break; fi
+            sleep 1
+          done
+      - name: Verify real healthy → failed → recovered evidence and native alert lifecycle
+        run: |
+          set -euo pipefail
+          api_id="$(docker compose -f docker-compose.demo.yml ps -q api)"
+          token="$(docker exec "$api_id" python -m scripts.live_https_acceptance setup)"
+          test -n "$token"
+          docker exec -e OPSCONTROL_WORKER_TOKEN="$token" opscontrol-private-agent python /tests/agent_cycle.py
+          docker exec "$api_id" python -m scripts.live_https_acceptance healthy
+          echo failed >/tmp/opscontrol-fixture/state
+          docker exec "$api_id" python -m scripts.live_https_acceptance schedule
+          docker exec -e OPSCONTROL_WORKER_TOKEN="$token" opscontrol-private-agent python /tests/agent_cycle.py
+          docker exec "$api_id" python -m scripts.live_https_acceptance failed
+          echo healthy >/tmp/opscontrol-fixture/state
+          docker exec "$api_id" python -m scripts.live_https_acceptance schedule
+          docker exec -e OPSCONTROL_WORKER_TOKEN="$token" opscontrol-private-agent python /tests/agent_cycle.py
+          docker exec "$api_id" python -m scripts.live_https_acceptance recovered
+      - name: Assert network-level containment
+        run: |
+          set -euo pipefail
+          test "$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-target-net)" = true
+          test "$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-control-net)" = true
+          docker exec opscontrol-private-agent python -c 'import socket
+          s=socket.socket();s.settimeout(2)
+          try:
+              s.connect(("1.1.1.1",443))
+              raise AssertionError("Unapproved internet egress unexpectedly allowed")
+          except (OSError,TimeoutError):
+              print("PASS: private agent has no public network egress")'
+      - name: Cleanup and purge synthetic secrets
+        if: always()
+        run: |
+          docker rm -f opscontrol-private-agent opscontrol-private-fixture || true
+          docker network rm opscontrol-fixture-target-net opscontrol-fixture-control-net || true
+          docker compose -f docker-compose.demo.yml logs --tail=80 api || true
+          docker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true
+          rm -rf /tmp/opscontrol-fixture .demo-private

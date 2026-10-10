@@ -18,6 +18,10 @@ try{
   await page.getByRole("button",{name:"Validate & Preview"}).waitFor();
   await page.getByRole("button",{name:"Save immutable rule v1"}).waitFor();
   await page.getByRole("button",{name:"Create worker and network policy"}).waitFor();
+  await page.getByRole("heading",{name:"Revise an existing rule (new immutable version)"}).waitFor();
+  await page.getByRole("heading",{name:"4. Collector diagnostics and activation progress"}).waitFor();
+  await page.getByTestId("monitoring-diagnostics").waitFor({timeout:20000});
+  await page.getByText("Monitoring activation stages").waitFor();
   await mkdir("phase1-screenshots",{recursive:true});
   await page.screenshot({path:"phase1-screenshots/monitoring-setup-real.png",fullPage:true});
   if(errors.length) throw new Error(errors.join("; "));
