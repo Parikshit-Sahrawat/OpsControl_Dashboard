@@ -1,0 +1,61 @@
+name: Public-Safe One-Command Demo Smoke
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  demo-localhost:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build/start synthetic demo (single command)
+        run: bash scripts/demo-up.sh
+      - name: Verify local-only API, fictional organization and random login
+        run: |
+          python3 - <<'PY'
+          import json,time,urllib.request,urllib.error,pathlib
+          api='http://127.0.0.1:8000'
+          ui='http://127.0.0.1:5173'
+          for n in range(75):
+              try:
+                  urllib.request.urlopen(api+'/openapi.json',timeout=3).close()
+                  urllib.request.urlopen(ui+'/',timeout=3).close()
+                  break
+              except Exception:
+                  time.sleep(2)
+          else:raise AssertionError('Demo frontend/API never became healthy')
+          password=pathlib.Path('.demo-private/admin-password').read_text().strip()
+          assert len(password)>=20 and password!='admin'
+          body=json.dumps({'username':'demo-admin','password':password}).encode()
+          req=urllib.request.Request(api+'/api/v1/auth/login',body,
+              {'Content-Type':'application/json'},method='POST')
+          with urllib.request.urlopen(req,timeout=10) as response:
+              token=json.load(response)['access_token']
+          req=urllib.request.Request(api+'/api/v1/organizations',
+              headers={'Authorization':'Bearer '+token})
+          with urllib.request.urlopen(req,timeout=10) as response:
+              orgs=json.load(response)
+          assert any(x['code']=='DEMO-LAB' for x in orgs),orgs
+          assert all('example' in x['name'].lower() or 'fictional' in x['name'].lower() for x in orgs),orgs
+          print('PUBLIC-SAFE LOCALHOST DEMO SMOKE PASSED')
+          PY
+      - name: Assert no public database binding
+        run: |
+          docker compose -f docker-compose.demo.yml port api 8000 | grep -q '127.0.0.1'
+          if docker compose -f docker-compose.demo.yml port postgres 5432 | grep .; then
+            echo 'Database must not publish a host port'
+            exit 1
+          fi
+      - name: Stop disposable demo and delete test credentials
+        if: always()
+        run: |
+          docker compose -f docker-compose.demo.yml logs --tail=50 || true
+          docker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true
+          rm -rf .demo-private
