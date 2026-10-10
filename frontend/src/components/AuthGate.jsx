@@ -21,7 +21,7 @@ export default function AuthGate() {
   }
   async function logout() { await signOut(); setUser(null); }
   if (loading) return <main className="login-layout"><p>Checking session…</p></main>;
-  if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App /></>;
+  if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App user={user} /></>;
   return <main className="login-layout"><form className="login-card" onSubmit={submit}>
     <h1>OpsControl</h1><p>Sign in to view your authorized monitoring resources.</p>
     <label>Username<input type="text" name="username" required autoComplete="username" maxLength={120}/></label>

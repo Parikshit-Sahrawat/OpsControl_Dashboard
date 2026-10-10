@@ -1,4 +1,4 @@
-name: Authenticated OpsControl Staging Verification
+name: OpsControl Security Release Gate
 
 on:
   push:
@@ -51,12 +51,15 @@ jobs:
         run: |
           alembic upgrade head
           alembic current
+          alembic downgrade -1
+          alembic upgrade head
+          alembic current
           python - <<'PY'
           from sqlalchemy import inspect
           from app.db.session import engine
           tables = set(inspect(engine).get_table_names())
           required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
-          required |= {"users", "access_sessions", "organization_memberships"}
+          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities"}
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
@@ -81,13 +84,22 @@ jobs:
       - name: Assert identity and tenant isolation against disposable PostgreSQL
         working-directory: backend
         run: python scripts/auth_tenant_probe.py
+      - name: Assert nested metric, log, and alert authorization boundaries
+        working-directory: backend
+        run: python scripts/deep_tenant_security_probe.py
+      - name: Assert throttling, audit, revocation and worker credentials
+        working-directory: backend
+        run: python scripts/security_release_probe.py
+      - name: Verify expired-session cleanup maintenance command
+        working-directory: backend
+        run: python -m scripts.prune_security_sessions
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Run frontend for browser evidence
         working-directory: frontend
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &
           echo $! > /tmp/opscontrol-vite.pid
       - name: Capture authenticated React UI with Playwright
@@ -99,6 +111,9 @@ jobs:
       - name: Assert homepage live clock behavior
         working-directory: frontend
         run: node scripts/test_world_clock.mjs
+      - name: Assert platform-admin navigation is role-restricted
+        working-directory: frontend
+        run: node scripts/test_access_management.mjs
       - name: Upload API logs and tenant evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -121,5 +136,5 @@ jobs:
       - name: Install and build frontend
         working-directory: frontend
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build

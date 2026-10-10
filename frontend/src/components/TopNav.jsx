@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management"];
 
-export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange }) {
+export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange, platformAdmin = false }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -40,7 +40,7 @@ export default function TopNav({ active, onChange, organizations = [], organizat
         </button>
       </div>
       <nav>
-        {items.map(item => (
+        {[...items, ...(platformAdmin ? ["Access Management"] : [])].map(item => (
           <button key={item} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
             {item}
           </button>
