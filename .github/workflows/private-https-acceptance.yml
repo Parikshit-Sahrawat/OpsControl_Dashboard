@@ -1,0 +1,52 @@
+name: Private HTTPS Target Acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  private-https:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create isolated private-network HTTPS fixture
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/opscontrol-fixture
+          openssl req -x509 -newkey rsa:2048 -nodes -days 1             -keyout /tmp/opscontrol-fixture/tls.key             -out /tmp/opscontrol-fixture/tls.crt             -subj "/CN=portal.example.test"             -addext "subjectAltName=DNS:portal.example.test" >/dev/null 2>&1
+          chmod 600 /tmp/opscontrol-fixture/tls.key
+          echo healthy > /tmp/opscontrol-fixture/state
+          docker network create --driver bridge --internal --subnet 172.28.77.0/24 opscontrol-private-fixture
+          docker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v "$PWD/deploy/fixtures/private_https_target.py:/fixture/app.py:ro"             python:3.12-alpine python /fixture/app.py
+      - name: Probe real private TLS target and detect incident
+        run: |
+          set -euo pipefail
+          for i in {1..20}; do
+            if docker exec opscontrol-private-target python -c 'import socket;socket.create_connection(("127.0.0.1",443),1).close()' 2>/dev/null; then break; fi
+            sleep 1
+          done
+          docker run --rm --network opscontrol-private-fixture             -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS
+          echo failed > /tmp/opscontrol-fixture/state
+          docker run --rm --network opscontrol-private-fixture             -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED
+          echo healthy > /tmp/opscontrol-fixture/state
+          docker run --rm --network opscontrol-private-fixture             -v "$PWD/backend:/src:ro" -v "$PWD/deploy/fixtures:/tests:ro"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS
+      - name: Check private network is isolated at Docker layer
+        run: |
+          set -euo pipefail
+          test "$(docker network inspect -f '{{.Internal}}' opscontrol-private-fixture)" = true
+          docker run --rm --network opscontrol-private-fixture python:3.12-alpine             python -c 'import socket
+          s=socket.socket();s.settimeout(2)
+          try:
+              s.connect(("1.1.1.1",443))
+              raise AssertionError("Outside-network egress unexpectedly permitted")
+          except (OSError,TimeoutError):
+              print("PASS: external egress blocked at Docker network layer")'
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f opscontrol-private-target || true
+          docker network rm opscontrol-private-fixture || true
+          rm -rf /tmp/opscontrol-fixture
