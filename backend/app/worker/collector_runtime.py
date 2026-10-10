@@ -194,14 +194,47 @@ class ApiAdapter(CollectorAdapter):
             return CollectionResult(False, f"API collection failed: {exc}", {"outcome": "REQUEST_ERROR"})
 
 
+class AwsEC2Adapter(CollectorAdapter):
+    collector_type = "AWS_EC2"
+
+    async def collect(self, collector):
+        from app.worker.provider_checks import ec2_health, ProviderCheckError
+        try:
+            payload = await asyncio.to_thread(ec2_health, collector.configuration or {})
+            return CollectionResult(payload["outcome"]=="SUCCESS", "Read-only EC2 status collected", payload)
+        except (ProviderCheckError, ImportError):
+            return CollectionResult(False, "EC2 configuration or SDK unavailable", {"outcome":"CONFIGURATION_ERROR"})
+        except Exception:
+            return CollectionResult(False, "EC2 read-only API unavailable", {"outcome":"PROVIDER_ERROR"})
+
+
+class KubernetesAdapter(CollectorAdapter):
+    collector_type = "KUBERNETES"
+
+    async def collect(self, collector):
+        from app.worker.provider_checks import kubernetes_health, ProviderCheckError
+        try:
+            payload = await asyncio.to_thread(kubernetes_health, collector.configuration or {})
+            return CollectionResult(payload["outcome"]=="SUCCESS", "Read-only Kubernetes status collected", payload)
+        except (ProviderCheckError, ImportError):
+            return CollectionResult(False, "Kubernetes RBAC/configuration/SDK unavailable", {"outcome":"CONFIGURATION_ERROR"})
+        except Exception:
+            return CollectionResult(False, "Kubernetes read-only API unavailable", {"outcome":"PROVIDER_ERROR"})
+
+
 class PentahoAdapter(CollectorAdapter):
     collector_type = "PENTAHO"
 
     async def collect(self, collector):
-        cfg = collector.configuration or {}
-        if not cfg.get("endpoint"):
-            return CollectionResult(False, "Pentaho collector requires endpoint")
-        return CollectionResult(False, "Pentaho adapter is read-only and awaits provider implementation")
+        from app.worker.pentaho_status import get_job_status, PentahoStatusError
+        try:
+            payload = await asyncio.to_thread(get_job_status, collector.configuration or {})
+            return CollectionResult(payload["outcome"]=="SUCCESS", "Read-only Pentaho execution status collected", payload)
+        except (PentahoStatusError, CredentialProviderError, ValueError):
+            return CollectionResult(False, "Pentaho status configuration, credentials or network policy invalid",
+                                    {"outcome":"CONFIGURATION_ERROR"})
+        except Exception:
+            return CollectionResult(False, "Pentaho Carte read-only status unavailable", {"outcome":"PROVIDER_ERROR"})
 
 
 ADAPTERS = {
@@ -209,6 +242,10 @@ ADAPTERS = {
     "LINUX": LinuxAdapter(),
     "API": ApiAdapter(),
     "PENTAHO": PentahoAdapter(),
+    "AWS_EC2": AwsEC2Adapter(),
+    "EC2": AwsEC2Adapter(),
+    "KUBERNETES": KubernetesAdapter(),
+    "K8S": KubernetesAdapter(),
 }
 
 
@@ -237,6 +274,11 @@ def _extract_metric_value(metric, result):
     if extract == "AVAILABILITY":
         return 1.0 if result.success else 0.0
     mapping = {
+        "EC2_CPU_PERCENT": payload.get("cpu_percent"),
+        "K8S_RESTARTS": payload.get("restarts"),
+        "K8S_AVAILABLE_REPLICAS": payload.get("available_replicas"),
+        "PENTAHO_ERRORS": payload.get("nr_errors"),
+        "PENTAHO_RUNNING": 1 if payload.get("execution_status")=="RUNNING" else 0 if payload.get("execution_status") in {"SUCCESS","FAILED"} else None,
         "HTTP_STATUS": payload.get("http_status"),
         "RESPONSE_TIME_MS": payload.get("response_time_ms"),
         "RESPONSE_SIZE_BYTES": payload.get("response_size_bytes"),
@@ -294,6 +336,44 @@ def _purge_expired_metric_samples(db, now):
     return deleted
 
 
+def _persist_pentaho_history(collector, result, observed_at, db):
+    """Deduplicate Carte status polls by stable execution ID.
+
+    Never invent a job start timestamp: detection time is not source start.
+    A failed poll does not invent an ETL failure; it is monitoring blindness.
+    """
+    payload=result.payload or {}
+    if collector.collector_type.upper()!="PENTAHO" or payload.get("provider")!="PENTAHO":
+        return
+    from uuid import UUID
+    from app.models import JobOrder,JobOrderHistory,ExecutionType,ExecutionStatus
+    cfg=collector.configuration or {}
+    try: job_id=UUID(cfg["job_order_id"])
+    except (ValueError,KeyError,TypeError): return
+    job=db.get(JobOrder,job_id)
+    source=db.get(DataSource,collector.data_source_id)
+    if not job or not source or job.organization_id!=source.organization_id:
+        return
+    execution_id=payload.get("execution_id")
+    if not execution_id: return
+    hist=db.scalar(select(JobOrderHistory).where(
+        JobOrderHistory.job_order_id==job_id,
+        JobOrderHistory.provider_execution_id==execution_id))
+    status=ExecutionStatus(payload["execution_status"])
+    if not hist:
+        hist=JobOrderHistory(job_order_id=job_id,provider_execution_id=execution_id,
+            execution_type=ExecutionType.SCHEDULED,status=status,detected_at=observed_at,
+            source_result="CARTE_READ_ONLY")
+        db.add(hist)
+    else:
+        hist.status=status
+        hist.detected_at=observed_at
+    if status in {ExecutionStatus.SUCCESS,ExecutionStatus.FAILED}:
+        hist.ended_at=observed_at  # observation time; source end not available
+    if payload.get("nr_errors",0):
+        hist.source_error_code="CARTE_REPORTED_ERRORS"
+
+
 async def execute_collector(collector_id):
     with SessionLocal() as db:
         collector = db.get(Collector, collector_id)
@@ -326,6 +406,7 @@ async def execute_collector(collector_id):
         ended_at = datetime.now(timezone.utc)
         run = _persist_run(collector, result, started_at, ended_at, db)
         samples = _persist_metric_samples(collector, run, result, ended_at, db)
+        _persist_pentaho_history(collector, result, ended_at, db)
         for sample in samples:
             evaluate_metric_sample(db, sample)
 
