@@ -63,6 +63,9 @@ jobs:
           assert required <= tables, f"Missing tables: {required - tables}"
           print(f"Migration smoke OK; {len(tables)} tables")
           PY
+      - name: Preserve existing organization and data source through incremental migrations
+        working-directory: backend
+        run: python scripts/existing_database_upgrade_probe.py
       - name: Start API and check HTTP endpoints
         working-directory: backend
         run: |
