@@ -17,7 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal, get_db
-from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample, Organization
+from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample, LogSource, LogEvent, Organization
 from app.security.audit import log_event
 from app.security.http import require_admin, token_digest
 from app.security.scope import current_principal
@@ -301,6 +301,21 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
             db.add(sample)
             db.flush()
             evaluate_metric_sample(db,sample)
+        for log_source in db.scalars(select(LogSource).where(
+                LogSource.collector_id==collector.id,
+                LogSource.organization_id==identity["organization_id"],
+                LogSource.enabled.is_(True))).all():
+            # Emit structured operational evidence only; no token, URL, body or headers.
+            db.add(LogEvent(
+                organization_id=identity["organization_id"],
+                log_source_id=log_source.id,
+                observed_at=payload.observed_at,
+                severity="INFO" if payload.outcome=="SUCCESS" else "ERROR",
+                event_type="HTTP_PROBE_"+payload.outcome,
+                message="Remote HTTP monitoring probe "+("passed" if payload.outcome=="SUCCESS" else "failed"),
+                parser_type="RAW",
+                attributes={"run_id":str(job.run_id),"http_status":payload.http_status,
+                            "response_time_ms":payload.response_time_ms,"outcome":payload.outcome}))
         job.state="COMPLETED"
         job.completed_at=now
         job.lease_nonce_hash=None
