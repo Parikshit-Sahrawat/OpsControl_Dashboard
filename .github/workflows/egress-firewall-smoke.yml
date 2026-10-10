@@ -1,0 +1,19 @@
+name: Network-Layer Egress Firewall Test
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-docker-bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify actual restricted Docker network behavior
+        run: bash scripts/verify-firewall-docker.sh
+      - name: Validate NetworkPolicy manifest exists and is scoped
+        run: |
+          test -f deploy/examples/remote-agent-networkpolicy.yaml
+          grep -q 'policyTypes:' deploy/examples/remote-agent-networkpolicy.yaml
+          echo "Manifest inspection is not a live CNI enforcement test."
