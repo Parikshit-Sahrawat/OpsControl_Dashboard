@@ -35,11 +35,20 @@ kubectl -n "$ns" create deployment demo-web --image=python:3.12-alpine -- python
 kubectl -n "$ns" rollout status deployment/demo-web --timeout=180s
 pod="$(kubectl -n "$ns" get pods -l app=demo-web -o jsonpath='{.items[0].metadata.name}')"
 identity="system:serviceaccount:$ns:monitoring-reader"
-kubectl auth can-i get pods --namespace "$ns" --as "$identity" | grep -qx yes
-kubectl auth can-i get deployments.apps --namespace "$ns" --as "$identity" | grep -qx yes
-kubectl auth can-i delete pods --namespace "$ns" --as "$identity" | grep -qx no
-kubectl auth can-i list secrets --namespace "$ns" --as "$identity" | grep -qx no
-kubectl auth can-i get pods --namespace default --as "$identity" | grep -qx no
+assert_permission(){
+  expected="$1"; verb="$2"; resource="$3"; namespace="$4"
+  observed="$(kubectl auth can-i "$verb" "$resource" --namespace "$namespace" --as "$identity" 2>&1 || true)"
+  echo "RBAC: $verb $resource in $namespace → $observed (expected $expected)"
+  if [[ "$observed" != "$expected" ]]; then
+    echo "RBAC expectation failed" >&2
+    exit 1
+  fi
+}
+assert_permission yes get pods "$ns"
+assert_permission yes get deployments.apps "$ns"
+assert_permission no delete pods "$ns"
+assert_permission no list secrets "$ns"
+assert_permission no get pods default
 python3 -m pip install 'kubernetes>=32,<37' --quiet
 PYTHONPATH=backend OPSCONTROL_TEST_NAMESPACE="$ns" OPSCONTROL_TEST_POD="$pod" python3 - <<'PY'
 import os
