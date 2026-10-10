@@ -29,6 +29,7 @@ def main():
         source_id=str(source.id)
         org_id=str(source.organization_id)
         other_id=str(other.id)
+        other_org_id=str(other.organization_id)
         db.commit()
 
     worker=request(201,"POST","/api/v1/auth/workers",admin,
@@ -51,7 +52,7 @@ def main():
     request(403,"POST","/api/v1/rule-catalogs",viewer,
         {"organization_id":org_id,"kind":"METRIC","name":"illegal","definition":defs[0][2]})
     request(403,"POST","/api/v1/rule-catalogs",north,
-        {"organization_id":str(other.organization_id),"kind":"METRIC","name":"illegal","definition":defs[0][2]})
+        {"organization_id":other_org_id,"kind":"METRIC","name":"illegal","definition":defs[0][2]})
     cats=request(200,"GET","/api/v1/rule-catalogs",north)
     assert len(cats)==3,cats
     cats_other=request(200,"GET","/api/v1/rule-catalogs",south)
