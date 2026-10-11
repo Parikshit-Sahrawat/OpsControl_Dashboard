@@ -24,11 +24,43 @@ def run_item(run):
         "ended_at": iso(run.ended_at), "status": run.status, "outcome": run.outcome,
         "http_status": run.http_status, "response_time_ms": run.response_time_ms}
 
-def service_snapshot(source, db):
-    collectors = db.scalars(select(Collector).where(Collector.data_source_id == source.id).order_by(Collector.name)).all()
+def prefetch_services(sources, db):
+    """Constant query count per page instead of queries per source/collector."""
+    if not sources:
+        return {}
+    ids = [source.id for source in sources]
+    result = {sid: {"collectors": [], "runs": {}, "alerts": [], "open_count": 0} for sid in ids}
+    collectors = db.scalars(select(Collector).where(Collector.data_source_id.in_(ids)).order_by(Collector.name, Collector.id)).all()
+    collector_sources = {row.id: row.data_source_id for row in collectors}
+    for row in collectors:
+        result[row.data_source_id]["collectors"].append(row)
+    runs = db.scalars(select(CollectorRun).where(CollectorRun.collector_id.in_(collector_sources))
+        .distinct(CollectorRun.collector_id).order_by(CollectorRun.collector_id, CollectorRun.started_at.desc(), CollectorRun.id.desc())).all()
+    for row in runs:
+        result[collector_sources[row.collector_id]]["runs"][row.collector_id] = row
+    rank = select(AlertState.id.label("alert_id"), func.row_number().over(
+        partition_by=MetricDefinition.data_source_id,
+        order_by=(AlertState.last_evaluated_at.desc(), AlertState.id.desc())).label("position"))
+    rank = rank.join(MetricDefinition, MetricDefinition.id == AlertState.metric_definition_id).where(MetricDefinition.data_source_id.in_(ids)).subquery()
+    alerts = db.execute(select(AlertState, MetricDefinition.data_source_id).select_from(AlertState)
+        .join(MetricDefinition, MetricDefinition.id == AlertState.metric_definition_id)
+        .join(rank, rank.c.alert_id == AlertState.id).where(rank.c.position <= 100)
+        .order_by(AlertState.last_evaluated_at.desc(), AlertState.id.desc())).all()
+    for alert, sid in alerts:
+        result[sid]["alerts"].append(alert)
+    counts = db.execute(select(MetricDefinition.data_source_id, func.count(AlertState.id)).select_from(AlertState)
+        .join(MetricDefinition, MetricDefinition.id == AlertState.metric_definition_id)
+        .where(MetricDefinition.data_source_id.in_(ids), AlertState.status == "OPEN")
+        .group_by(MetricDefinition.data_source_id)).all()
+    for sid, count in counts:
+        result[sid]["open_count"] = count
+    return result
+
+def service_snapshot(source, db, preloaded=None):
+    collectors = preloaded["collectors"] if preloaded is not None else db.scalars(select(Collector).where(Collector.data_source_id == source.id).order_by(Collector.name)).all()
     values = []; now = datetime.now(timezone.utc)
     for collector in collectors:
-        run = db.scalar(select(CollectorRun).where(CollectorRun.collector_id == collector.id)
+        run = preloaded["runs"].get(collector.id) if preloaded is not None else db.scalar(select(CollectorRun).where(CollectorRun.collector_id == collector.id)
             .order_by(CollectorRun.started_at.desc(), CollectorRun.id.desc()).limit(1))
         observed = run.started_at if run else None
         if observed and not observed.tzinfo: observed = observed.replace(tzinfo=timezone.utc)
@@ -36,9 +68,9 @@ def service_snapshot(source, db):
         values.append({"id": str(collector.id), "name": collector.name, "enabled": collector.enabled,
             "status": collector.status, "freshness": freshness, "latest_run": run_item(run) if run else None})
     metric_ids = select(MetricDefinition.id).where(MetricDefinition.data_source_id == source.id)
-    alerts = db.scalars(select(AlertState).where(AlertState.metric_definition_id.in_(metric_ids))
+    alerts = preloaded["alerts"] if preloaded is not None else db.scalars(select(AlertState).where(AlertState.metric_definition_id.in_(metric_ids))
         .order_by(AlertState.last_evaluated_at.desc()).limit(100)).all()
-    open_count = db.scalar(select(func.count()).select_from(AlertState).where(
+    open_count = preloaded["open_count"] if preloaded is not None else db.scalar(select(func.count()).select_from(AlertState).where(
         AlertState.metric_definition_id.in_(metric_ids), AlertState.status == "OPEN")) or 0
     enabled = [row for row in values if row["enabled"]]
     if not source.enabled or not enabled: health = "DISABLED"
@@ -52,11 +84,15 @@ def service_snapshot(source, db):
             "message": row.message, "opened_at": iso(row.first_triggered_at), "resolved_at": iso(row.resolved_at)} for row in alerts]}
 
 @router.get("/services")
-def services(organization_id: list[UUID] = Query(default=[]), limit: int = Query(200, ge=1, le=500), db: Session = Depends(get_db)):
+def services(organization_id: list[UUID] = Query(default=[]), limit: int = Query(200, ge=1, le=500),
+    offset: int = Query(0, ge=0, le=1000000), db: Session = Depends(get_db)):
     stmt = scoped(select(DataSource).where(DataSource.source_type.in_(HTTP_TYPES)), DataSource, organization_id)
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = [service_snapshot(source, db) for source in db.scalars(stmt.order_by(DataSource.name).limit(limit)).all()]
-    return {"services": rows, "total": total, "truncated": total > len(rows),
+    sources = db.scalars(stmt.order_by(DataSource.name, DataSource.id).offset(offset).limit(limit)).all()
+    preloaded = prefetch_services(sources, db)
+    rows = [service_snapshot(source, db, preloaded[source.id]) for source in sources]
+    return {"services": rows, "total": total, "offset": offset, "limit": limit,
+        "has_more": offset + len(rows) < total, "truncated": total > len(rows), "summary_scope": "page",
         "summary": {state: sum(row["health"] == state for row in rows) for state in ("HEALTHY", "CRITICAL", "UNKNOWN", "DISABLED")}}
 
 @router.get("/services/{source_id}")
@@ -93,16 +129,17 @@ def incident_item(row):
 def incidents(organization_id: list[UUID] = Query(default=[]),
     status: Literal["OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED"] | None = None,
     source_kind: Literal["METRIC", "ETL"] | None = None, search: str = Query("", max_length=200),
-    limit: int = Query(200, ge=1, le=500), db: Session = Depends(get_db)):
+    limit: int = Query(200, ge=1, le=500), offset: int = Query(0, ge=0, le=1000000), db: Session = Depends(get_db)):
     stmt = scoped(select(OperationalIncident), OperationalIncident, organization_id)
     if status: stmt = stmt.where(OperationalIncident.status == status)
     if source_kind: stmt = stmt.where(OperationalIncident.source_kind == source_kind)
     if search: stmt = stmt.where(OperationalIncident.title.ilike("%" + search + "%"))
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = db.scalars(stmt.order_by(OperationalIncident.opened_at.desc(), OperationalIncident.id.desc()).limit(limit)).all()
+    rows = db.scalars(stmt.order_by(OperationalIncident.opened_at.desc(), OperationalIncident.id.desc()).offset(offset).limit(limit)).all()
     counts = dict(db.execute(scoped(select(OperationalIncident.status, func.count()).group_by(OperationalIncident.status),
         OperationalIncident, organization_id)).all())
-    return {"incidents": [incident_item(row) for row in rows], "total": total, "truncated": total > len(rows),
+    return {"incidents": [incident_item(row) for row in rows], "total": total, "offset": offset, "limit": limit,
+        "has_more": offset + len(rows) < total, "truncated": total > len(rows),
         "summary": {state: counts.get(state, 0) for state in ("OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED")}}
 
 def load_incident(db, incident_id, lock=False):

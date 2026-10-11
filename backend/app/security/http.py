@@ -15,6 +15,7 @@ from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
 
 from app.db.session import SessionLocal
 from app.security.audit import log_event
@@ -35,6 +36,7 @@ class Login(BaseModel):
     password: str = Field(min_length=1, max_length=1024)
 
 class UserCreate(Login):
+    password: str = Field(min_length=12, max_length=1024)
     platform_admin: bool = False
 
 class MemberCreate(BaseModel):
@@ -102,6 +104,17 @@ def _audit_denial(principal, status: int, path: str, request_id=None):
     return JSONResponse({"detail": "Authentication required" if status == 401 else "Access denied"},
                         status_code=status, headers={"WWW-Authenticate": "Bearer"} if status == 401 else None)
 
+def _identify_token(token: str):
+    # Open and close the synchronous session inside the worker thread.
+    with SessionLocal() as db:
+        return identify(db, token)
+
+def _audit_action(principal, status: int, path: str):
+    with SessionLocal() as db:
+        log_event(db, event_type="CONFIG_OR_ACTION", outcome="SUCCESS" if status < 400 else "FAILURE",
+                  actor_id=principal.user_id, target_type="route", target_id=path)
+        db.commit()
+
 class IdentityMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         path = request.url.path.rstrip("/") or "/"
@@ -120,32 +133,28 @@ class IdentityMiddleware(BaseHTTPMiddleware):
         header = request.headers.get("authorization", "")
         parts = header.split()
         if len(parts) != 2 or parts[0] != "Bearer":
-            return _audit_denial(None, 401, path)
-        with SessionLocal() as db:
-            principal = identify(db, parts[1])
+            return await run_in_threadpool(_audit_denial, None, 401, path)
+        principal = await run_in_threadpool(_identify_token, parts[1])
         if principal is None:
-            return _audit_denial(None, 401, path)
+            return await run_in_threadpool(_audit_denial, None, 401, path)
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
             if path == "/api/v1/auth/logout":
                 pass
             elif path.startswith("/api/v1/auth/") and not principal.platform_admin:
-                return _audit_denial(principal, 403, path)
+                return await run_in_threadpool(_audit_denial, principal, 403, path)
             elif path.startswith("/api/v1/organizations") and request.method == "POST" and not principal.platform_admin:
-                return _audit_denial(principal, 403, path)
+                return await run_in_threadpool(_audit_denial, principal, 403, path)
             elif path.startswith("/api/v1/monitoring/templates") and not principal.platform_admin:
-                return _audit_denial(principal, 403, path)
+                return await run_in_threadpool(_audit_denial, principal, 403, path)
             elif not principal.platform_admin and not any(role == "org_admin" for role in principal.roles.values()):
                 investigation_route = "/investigation/" in path or path.endswith('/correlation') or path.startswith('/api/v1/operations/incidents/')
                 if not (investigation_route and any(role == "operator" for role in principal.roles.values())):
-                    return _audit_denial(principal, 403, path)
+                    return await run_in_threadpool(_audit_denial, principal, 403, path)
         ctx = current_principal.set(principal)
         try:
             response = await call_next(request)
             if request.method not in {"GET", "HEAD", "OPTIONS"}:
-                with SessionLocal() as db:
-                    log_event(db, event_type="CONFIG_OR_ACTION", outcome="SUCCESS" if response.status_code < 400 else "FAILURE",
-                              actor_id=principal.user_id, target_type="route", target_id=path)
-                    db.commit()
+                await run_in_threadpool(_audit_action, principal, response.status_code, path)
             return response
         finally:
             current_principal.reset(ctx)
@@ -221,6 +230,10 @@ def list_users():
 def change_user_status(user_id: UUID, payload: UserStatus):
     principal = require_admin()
     with SessionLocal() as db:
+        # Serialize administrator status changes before counting. Row locks on
+        # different users do not protect the shared last-admin invariant.
+        from sqlalchemy import text
+        db.execute(text("SELECT pg_advisory_xact_lock(782104, 1)"))
         user = db.get(User, user_id)
         if user is None:
             raise HTTPException(404, "User not found")

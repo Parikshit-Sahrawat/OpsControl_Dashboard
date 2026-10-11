@@ -150,7 +150,7 @@ def enforce_writes(db, flush_context, instances):
             from app.worker.infrastructure import INFRA_TYPES
             state=inspect(obj)
             previous_types=state.attrs.collector_type.history.deleted
-            protected_types = INFRA_TYPES | {'PENTAHO'}
+            protected_types = INFRA_TYPES | {'PENTAHO', 'API'}
             protected_type=obj.collector_type.upper() in protected_types or any(str(t).upper() in protected_types for t in previous_types)
             if protected_type and (
                 (obj in db.new and obj.enabled) or (obj not in db.new and any(state.attrs[key].history.has_changes() for key in ('configuration','collector_type')))
@@ -186,3 +186,16 @@ def enforce_writes(db, flush_context, instances):
             parent = db.get(parent_model, parent_id) if parent_model is not None else None
             if parent is None or _resolve_org(db, parent) != org_id:
                 raise HTTPException(409, "Referenced resource is unavailable in this organization")
+    if (db.new or db.dirty or db.deleted) and not db.info.get("opscontrol_mutation_audited"):
+        # Append only AFTER all authorization/FK checks pass, inside the same
+        # transaction as the mutation. A later rollback also rolls back audit.
+        from app.security.audit import log_event
+        log_event(db, event_type="CONFIG_MUTATION", outcome="SUCCESS",
+                  actor_id=principal.user_id, target_type="route",
+                  target_id=db.info.get("opscontrol_route", "scoped-transaction"))
+        db.info["opscontrol_mutation_audited"] = True
+
+@event.listens_for(Session, "after_commit")
+@event.listens_for(Session, "after_rollback")
+def reset_mutation_audit(db):
+    db.info.pop("opscontrol_mutation_audited", None)

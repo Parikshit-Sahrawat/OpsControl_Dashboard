@@ -1,0 +1,40 @@
+name: Controlled release reliability and deployment
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  restore-retention-tls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install existing locked frontend and backend dependencies
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/release-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/release-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Offline security regression
+        run: (cd backend && .venv/bin/python -m unittest discover -s tests -v)
+      - name: Populated restore, bounded retention, multi-process recovery and actual TLS ingress
+        env:
+          RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/release-evidence
+          RELEASE_BROWSER_ACCEPTANCE: '1'
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/release-tools/node_modules/playwright/index.mjs
+        run: backend/.venv/bin/python scripts/release-acceptance.py
+      - name: Upload redacted acceptance ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-reliability-evidence
+          path: ${{ runner.temp }}/release-evidence
+          if-no-files-found: warn

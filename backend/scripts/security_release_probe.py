@@ -9,7 +9,7 @@ import urllib.error
 from sqlalchemy import select, func, update
 from app.db.session import SessionLocal
 from app.security.models import User, OrganizationMembership, WorkerIdentity, SecurityAuditEvent
-from app.models import DataSource
+from app.models import DataSource, Collector
 
 URL = "http://127.0.0.1:8000"
 PASSWORD = "testing-only-StrongPassword-123!"
@@ -86,19 +86,28 @@ def main():
     result,_=check(422,"POST","/api/v1/resource-management/data-sources",admin,unsafe)
     assert "forbidden-plain-secret-123" not in json.dumps(result)
     unsafe={"organization_id":str(a),"name":"unsafe-url","source_type":"API",
-            "endpoint":"https://user:forbidden-url-secret@service.example.test"}
+            "endpoint":"HTTPS://user:forbidden-url-secret@service.example.test"}
     result,_=check(422,"POST","/api/v1/resource-management/data-sources",admin,unsafe)
     assert "forbidden-url-secret" not in json.dumps(result)
     with SessionLocal() as db:
         existing=db.scalar(select(DataSource).where(DataSource.organization_id==a))
         existing.connection_config={"password":"legacy-private-value","credential_ref":"secret://synthetic/read-only"}
-        existing.endpoint="https://user:legacy-url-private@example.test"
+        existing.endpoint="HTTPS://user:legacy-url-private@example.test"
+        existing_id = str(existing.id)
+        legacy_collector_id = str(db.scalar(select(Collector.id).where(Collector.data_source_id == existing.id)))
         db.commit()
     sources,_=check(200,"GET","/api/v1/resource-management/data-sources",admin)
     serialized_sources=json.dumps(sources)
     assert "legacy-private-value" not in serialized_sources
     assert "legacy-url-private" not in serialized_sources
     assert "[REDACTED]" in serialized_sources
+
+    # Legacy local API transport is a platform network authority, even in demo.
+    tenant_admin = login("test-north")
+    check(403,"POST","/api/v1/monitoring/collectors",tenant_admin,
+          {"data_source_id":existing_id,"name":"forged-local-api","collector_type":"API","enabled":True})
+    check(403,"PATCH",f"/api/v1/monitoring/collectors/{legacy_collector_id}",tenant_admin,
+          {"configuration":{"base_url":"https://service.example.test"}})
 
     # Never allow a viewer to access the platform security administration APIs.
     viewer = login("test-reader")

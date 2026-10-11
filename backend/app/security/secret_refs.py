@@ -25,9 +25,12 @@ def is_secret_field(name):
 def _unsafe_url(text):
     if not isinstance(text, str):
         return False
-    if not text.startswith(("http://", "https://")):
-        return False
-    parts = urlsplit(text)
+    try:
+        # urlsplit normalizes schemes and also covers database/other URLs and
+        # network-path references; checking a lowercase prefix missed secrets.
+        parts = urlsplit(text)
+    except ValueError:
+        return "://" in text or text.startswith("//")
     return parts.username is not None or parts.password is not None
 
 def require_safe_config(value):

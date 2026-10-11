@@ -8,14 +8,18 @@ import json
 import logging
 import ssl
 import time
+import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
-from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, Request, build_opener
+from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, HTTPSHandler, HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from sqlalchemy import delete, select
+from sqlalchemy import select, text
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, engine
+from app.core.config import settings
 from app.security.models import WorkerIdentity  # Register collector FK metadata in standalone workers.
 from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample
 from app.worker.alert_engine import evaluate_metric_sample
@@ -72,6 +76,12 @@ class ApiAdapter(CollectorAdapter):
     collector_type = "API"
 
     async def collect(self, collector):
+        # Legacy collection shares the control plane's workload identity and
+        # lacks the remote protocol's tenant-bound destination/secret policy.
+        # Fail closed in production, including collectors created before RBAC
+        # hardening. Use an explicitly assigned, egress-restricted remote worker.
+        if settings.environment.lower() == "production":
+            return CollectionResult(False, "Production API collection requires an approved remote worker", {"outcome": "CONFIGURATION_ERROR"})
         cfg = collector.configuration or {}
         url = cfg.get("url")
         if not url:
@@ -142,17 +152,20 @@ class ApiAdapter(CollectorAdapter):
         started = time.perf_counter()
         password_manager = HTTPPasswordMgrWithPriorAuth()
         password_manager.add_password(None, url, username, password, is_authenticated=True)
-        opener = build_opener(HTTPBasicAuthHandler(password_manager))
         context = None
         if url.lower().startswith("https://"):
             context = ssl.create_default_context() if verify_ssl else ssl._create_unverified_context()
 
+        class NoRedirect(HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):
+                return None  # Never forward credentials to a redirected target.
+
+        opener = build_opener(ProxyHandler({}), NoRedirect(),
+                              HTTPBasicAuthHandler(password_manager),
+                              HTTPSHandler(context=context))
         request = Request(url, data=data, headers=headers, method=method)
         try:
-            kwargs = {"timeout": timeout_seconds}
-            if context is not None:
-                kwargs["context"] = context
-            with opener.open(request, **kwargs) as response:
+            with opener.open(request, timeout=timeout_seconds) as response:
                 raw = response.read(MAX_RESPONSE_BODY_BYTES + 1)
                 status = response.getcode()
                 elapsed = int((time.perf_counter() - started) * 1000)
@@ -392,16 +405,8 @@ def _persist_metric_samples(collector, run, result, ended_at, db):
 
 
 def _purge_expired_metric_samples(db, now):
-    definitions = db.execute(select(MetricDefinition.id, MetricDefinition.retention_days)).all()
-    deleted = 0
-    for metric_id, retention_days in definitions:
-        cutoff = now - timedelta(days=max(int(retention_days), 1))
-        result = db.execute(delete(MetricSample).where(
-            MetricSample.metric_definition_id == metric_id,
-            MetricSample.observed_at < cutoff,
-        ))
-        deleted += result.rowcount or 0
-    return deleted
+    from app.services.retention import prune_batch
+    return prune_batch(db, now=now)["metric_samples"]
 
 
 def _persist_pentaho_history(collector, result, observed_at, db):
@@ -409,88 +414,144 @@ def _persist_pentaho_history(collector, result, observed_at, db):
     ingest_snapshot(collector, result, observed_at, db)
 
 
-async def execute_collector(collector_id):
-    with SessionLocal() as db:
-        collector = db.get(Collector, collector_id)
-        if not collector or not collector.enabled or collector.remote_worker_id is not None:
+async def execute_collector(collector_id, *, scheduled=False):
+    # Session advisory locks fence the SAME collector across local processes.
+    # PostgreSQL releases them on process/connection death. Never return a
+    # locked connection to the pool; a failed unlock invalidates it instead.
+    key = int.from_bytes(hashlib.sha256(f"local-collector:{collector_id}".encode()).digest()[:8], "big", signed=True)
+    with engine.connect() as connection:
+        acquired = connection.scalar(text("SELECT pg_try_advisory_lock(:key)"), {"key": key})
+        connection.commit()
+        if not acquired:
             return
-
-        data_source = db.get(DataSource, collector.data_source_id)
-        if not data_source or not data_source.enabled:
-            collector.status = "STOPPED"
-            collector.last_error = "Data source is disabled or missing"
-            db.commit()
-            return
-
-        started_at = datetime.now(timezone.utc)
-        collector.status = "RUNNING"
-        collector.last_run_at = started_at
-        db.commit()
-
-        adapter = ADAPTERS.get(collector.collector_type.upper())
         try:
-            result = await adapter.collect(collector) if adapter else CollectionResult(
-                False,
-                f"No adapter registered for {collector.collector_type}",
-                {"outcome": "UNSUPPORTED_COLLECTOR"},
-            )
-        except Exception:
-            logger.exception("Collector %s failed", collector.name)
-            result = CollectionResult(False, "Collector execution failed", {"outcome": "RUNTIME_ERROR"})
+            with Session(bind=connection) as db:
+                await _execute_locked(collector_id, db, scheduled=scheduled)
+        finally:
+            try:
+                connection.rollback()
+                connection.execute(text("SELECT pg_advisory_unlock(:key)"), {"key": key})
+                connection.commit()
+            except SQLAlchemyError:
+                connection.invalidate()
 
-        ended_at = datetime.now(timezone.utc)
-        run = _persist_run(collector, result, started_at, ended_at, db)
-        from app.worker.infrastructure import INFRA_TYPES, normalize, safe_evidence
-        if collector.collector_type.upper() in INFRA_TYPES:
-            from app.models import InfrastructureEvidence
-            db.add(InfrastructureEvidence(organization_id=data_source.organization_id,
-                data_source_id=data_source.id,collector_id=collector.id,collector_run_id=run.id,
-                observed_at=ended_at,provider=normalize(collector.collector_type),
-                payload=safe_evidence(result.payload)))
-        samples = _persist_metric_samples(collector, run, result, ended_at, db)
-        _persist_pentaho_history(collector, result, ended_at, db)
-        for sample in samples:
-            evaluate_metric_sample(db, sample)
+async def _execute_locked(collector_id, db, *, scheduled=False):
+    collector = db.get(Collector, collector_id)
+    if not collector or not collector.enabled or collector.remote_worker_id is not None:
+        return
+    due = collector.next_run_at
+    if due and due.tzinfo is None:
+        due = due.replace(tzinfo=timezone.utc)
+    if scheduled and due and due > datetime.now(timezone.utc):
+        return
 
-        if result.success:
-            collector.status = "HEALTHY"
-            collector.last_success_at = ended_at
-            collector.last_error = None
-            data_source.status = "HEALTHY"
-            data_source.last_error = None
-        else:
-            collector.status = "ERROR"
-            collector.last_error_at = ended_at
-            collector.last_error = result.message[:MAX_ERROR_LENGTH]
-            data_source.status = "ERROR"
-            data_source.last_error = result.message[:MAX_ERROR_LENGTH]
+    data_source = db.get(DataSource, collector.data_source_id)
+    if not data_source or not data_source.enabled:
+        collector.status = "STOPPED"
+        collector.last_error = "Data source is disabled or missing"
+        db.commit()
+        return
 
-        collector.next_run_at = ended_at + timedelta(seconds=max(collector.interval_seconds, 5))
+    started_at = datetime.now(timezone.utc)
+    collector.status = "RUNNING"
+    collector.last_run_at = started_at
+    collector.next_run_at = started_at + timedelta(seconds=max(collector.interval_seconds, 5))
+    db.commit()
+
+    adapter = ADAPTERS.get(collector.collector_type.upper())
+    try:
+        result = await adapter.collect(collector) if adapter else CollectionResult(
+            False,
+            f"No adapter registered for {collector.collector_type}",
+            {"outcome": "UNSUPPORTED_COLLECTOR"},
+        )
+    except Exception:
+        logger.error("Collector %s execution failed", collector.id)
+        result = CollectionResult(False, "Collector execution failed", {"outcome": "RUNTIME_ERROR"})
+
+    ended_at = datetime.now(timezone.utc)
+    run = _persist_run(collector, result, started_at, ended_at, db)
+    from app.worker.infrastructure import INFRA_TYPES, normalize, safe_evidence
+    if collector.collector_type.upper() in INFRA_TYPES:
+        from app.models import InfrastructureEvidence
+        db.add(InfrastructureEvidence(organization_id=data_source.organization_id,
+            data_source_id=data_source.id,collector_id=collector.id,collector_run_id=run.id,
+            observed_at=ended_at,provider=normalize(collector.collector_type),
+            payload=safe_evidence(result.payload)))
+    samples = _persist_metric_samples(collector, run, result, ended_at, db)
+    _persist_pentaho_history(collector, result, ended_at, db)
+    for sample in samples:
+        evaluate_metric_sample(db, sample)
+
+    if result.success:
+        collector.status = "HEALTHY"
+        collector.last_success_at = ended_at
+        collector.last_error = None
+        data_source.status = "HEALTHY"
+        data_source.last_error = None
+    else:
+        collector.status = "ERROR"
+        collector.last_error_at = ended_at
+        collector.last_error = result.message[:MAX_ERROR_LENGTH]
+        data_source.status = "ERROR"
+        data_source.last_error = result.message[:MAX_ERROR_LENGTH]
+
+    collector.next_run_at = ended_at + timedelta(seconds=max(collector.interval_seconds, 5))
+    db.commit()
+
+
+def _due_collector_ids(limit, excluded=()):
+    with SessionLocal() as db:
+        return list(db.scalars(select(Collector.id).where(
+            Collector.enabled.is_(True), Collector.remote_worker_id.is_(None), Collector.id.not_in(excluded),
+            (Collector.next_run_at.is_(None) | (Collector.next_run_at <= datetime.now(timezone.utc)))
+        ).order_by(Collector.next_run_at.nullsfirst(), Collector.id).limit(limit)))
+
+def _retention_once():
+    with SessionLocal() as db:
+        _purge_expired_metric_samples(db, datetime.now(timezone.utc))
         db.commit()
 
+async def _notification_loop(poll_seconds):
+    while True:
+        try:
+            await asyncio.to_thread(dispatch_pending_notifications)
+        except Exception:
+            logger.error("Notification dispatch unavailable; retrying")
+        await asyncio.sleep(poll_seconds)
 
 async def scheduler_loop(poll_seconds=5):
     logger.info("OpsControl collector runtime started")
     last_retention_cleanup = datetime.now(timezone.utc)
-    while True:
-        now = datetime.now(timezone.utc)
-        with SessionLocal() as db:
-            if (now - last_retention_cleanup).total_seconds() >= 3600:
-                deleted = _purge_expired_metric_samples(db, now)
-                if deleted:
-                    logger.info("Purged %s expired metric samples", deleted)
-                db.commit()
-                last_retention_cleanup = now
-            collectors = db.scalars(
-                select(Collector).where(
-                    Collector.enabled.is_(True),
-                    Collector.remote_worker_id.is_(None),
-                    (Collector.next_run_at.is_(None) | (Collector.next_run_at <= now)),
-                )
-            ).all()
-            for collector in collectors:
-                collector.next_run_at = now + timedelta(seconds=max(collector.interval_seconds, 5))
-                db.commit()
-                asyncio.create_task(execute_collector(collector.id))
-        await asyncio.to_thread(dispatch_pending_notifications)
-        await asyncio.sleep(poll_seconds)
+    # Reserve a connection for polling/maintenance; retain at most this many
+    # task objects, instead of queuing an unbounded fleet behind a semaphore.
+    capacity = min(settings.collector_max_concurrency, max(1, settings.database_pool_size - 1))
+    pending = {}
+    notifications = asyncio.create_task(_notification_loop(poll_seconds))
+    try:
+        while True:
+            for cid, task in list(pending.items()):
+                if task.done():
+                    pending.pop(cid)
+                    try:
+                        task.result()
+                    except Exception:
+                        logger.error("Collector task failed; next poll will retry")
+            try:
+                now = datetime.now(timezone.utc)
+                if (now - last_retention_cleanup).total_seconds() >= 3600:
+                    await asyncio.to_thread(_retention_once)
+                    last_retention_cleanup = now
+                slots = capacity - len(pending)
+                if slots:
+                    for cid in await asyncio.to_thread(_due_collector_ids, slots, tuple(pending)):
+                        if cid not in pending:
+                            pending[cid] = asyncio.create_task(execute_collector(cid, scheduled=True))
+            except Exception:
+                logger.error("Collector scheduling unavailable; next poll will retry")
+            await asyncio.sleep(poll_seconds)
+    finally:
+        notifications.cancel()
+        for task in pending.values():
+            task.cancel()
+        await asyncio.gather(notifications, *pending.values(), return_exceptions=True)

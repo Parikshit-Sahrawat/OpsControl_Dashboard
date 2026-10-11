@@ -2,7 +2,7 @@
 from datetime import datetime,timezone
 from uuid import UUID
 from fastapi import APIRouter,Depends,HTTPException,Query
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import DataSource,Collector,MetricDefinition,MetricSample,AlertRule,AlertState,InfrastructureEvidence
@@ -50,12 +50,14 @@ def snapshot(source,db):
             'resolved_at':a.resolved_at.isoformat() if a.resolved_at else None} for a in alerts]}
 
 @router.get('/resources')
-def resources(organization_id:list[UUID]=Query(default=[]),limit:int=Query(200,ge=1,le=500),db:Session=Depends(get_db)):
-    stmt=select(DataSource).where(DataSource.source_type.in_(INFRA_TYPES)).order_by(DataSource.name).limit(limit)
+def resources(organization_id:list[UUID]=Query(default=[]),limit:int=Query(200,ge=1,le=500),offset:int=Query(0,ge=0,le=1000000),db:Session=Depends(get_db)):
+    stmt=select(DataSource).where(DataSource.source_type.in_(INFRA_TYPES))
     if organization_id: stmt=stmt.where(DataSource.organization_id.in_(organization_id))
-    rows=[snapshot(source,db) for source in db.scalars(stmt).all()]
+    total=db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows=[snapshot(source,db) for source in db.scalars(stmt.order_by(DataSource.name,DataSource.id).offset(offset).limit(limit)).all()]
     return {'resources':rows,'summary':{state:sum(r['health']==state for r in rows)
-        for state in ('HEALTHY','WARNING','CRITICAL','UNKNOWN','DISABLED')},'total':len(rows)}
+        for state in ('HEALTHY','WARNING','CRITICAL','UNKNOWN','DISABLED')},'total':total,
+        'offset':offset,'limit':limit,'has_more':offset+len(rows)<total,'truncated':total>len(rows),'summary_scope':'page'}
 
 @router.get('/resources/{source_id}')
 def resource(source_id:UUID,db:Session=Depends(get_db)):

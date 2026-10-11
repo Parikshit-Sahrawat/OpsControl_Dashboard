@@ -26,17 +26,20 @@ def ec2_health(config,session_factory=None):
         raise ProviderCheckError("Valid EC2 instance ID required")
     if not isinstance(account,str) or not re.fullmatch(r"\d{12}",account):
         raise ProviderCheckError("12-digit expected AWS account ID required")
+    client_options = {}
     if session_factory is None:
         try: import boto3
         except ImportError as exc:
             raise ProviderCheckError("Install optional provider SDK requirements") from exc
         session_factory=boto3.Session
+        from botocore.config import Config
+        client_options['config'] = Config(connect_timeout=5, read_timeout=15, retries={'total_max_attempts': 2})
     # Never permit a caller-provided endpoint, access key, profile or role ARN.
     session=session_factory(region_name=region)
-    sts=session.client("sts")
+    sts=session.client("sts", **client_options)
     if sts.get_caller_identity().get("Account")!=account:
         raise ProviderCheckError("Workload identity does not match approved AWS account")
-    ec2=session.client("ec2")
+    ec2=session.client("ec2", **client_options)
     describe=ec2.describe_instances(InstanceIds=[instance])
     rows=[entry for reservation in describe.get("Reservations",[])
           for entry in reservation.get("Instances",[])
@@ -53,7 +56,7 @@ def ec2_health(config,session_factory=None):
             system=record.get("SystemStatus",{}).get("Status","unknown")
             instance_status=record.get("InstanceStatus",{}).get("Status","unknown")
             check_value="ok" if system==instance_status=="ok" else "impaired" if "impaired" in (system,instance_status) else "unknown"
-    cloudwatch=session.client("cloudwatch")
+    cloudwatch=session.client("cloudwatch", **client_options)
     now=datetime.now(timezone.utc)
     metric=cloudwatch.get_metric_statistics(
         Namespace="AWS/EC2",MetricName="CPUUtilization",
@@ -94,7 +97,7 @@ def kubernetes_health(config,client_factory=None):
         kconfig.load_incluster_config()  # service-account only; no arbitrary kubeconfig
         client_factory=client
     if node:
-        obj=client_factory.CoreV1Api().read_node(name=name)
+        obj=client_factory.CoreV1Api().read_node(name=name, _request_timeout=(5, 15))
         conditions={c.type:c.status for c in (obj.status.conditions or [])}
         ready=conditions.get('Ready')=='True'
         pressures={key: conditions.get(value)=='True' for key,value in (
@@ -103,7 +106,7 @@ def kubernetes_health(config,client_factory=None):
             'node_ready':ready,'unschedulable':bool(obj.spec.unschedulable),**pressures,
             'outcome':'SUCCESS' if ready and not any(pressures.values()) else 'DEGRADED'}
     if pod:
-        obj=client_factory.CoreV1Api().read_namespaced_pod(name=name,namespace=namespace)
+        obj=client_factory.CoreV1Api().read_namespaced_pod(name=name,namespace=namespace, _request_timeout=(5, 15))
         status=obj.status
         phase=status.phase or "Unknown"
         ready=any(c.type=="Ready" and c.status=="True" for c in (status.conditions or []))
@@ -114,7 +117,7 @@ def kubernetes_health(config,client_factory=None):
         return {"provider":"KUBERNETES","resource":"POD","namespace":namespace,
                 "name":name,"phase":phase,"ready":ready,"restarts":restarts,
                 "waiting_reasons":waiting[:10],"outcome":outcome}
-    obj=client_factory.AppsV1Api().read_namespaced_deployment(name=name,namespace=namespace)
+    obj=client_factory.AppsV1Api().read_namespaced_deployment(name=name,namespace=namespace, _request_timeout=(5, 15))
     status=obj.status
     desired=int(obj.spec.replicas or 0)
     ready=int(status.ready_replicas or 0)

@@ -2,6 +2,16 @@ from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
 from app.security.secret_refs import require_safe_config, redact_config, require_safe_url, redact_url
+import math
+
+def finite_threshold(value):
+    if value is not None:
+        try:
+            if not math.isfinite(float(value)):
+                raise ValueError("Non-finite threshold")
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError("Threshold must be a finite number") from None
+    return value
 
 
 class DataSourceBase(BaseModel):
@@ -245,6 +255,7 @@ class OrganizationOut(BaseModel):
 
 
 class AlertRuleBase(BaseModel):
+    _validate_threshold = field_validator("threshold_value")(finite_threshold)
     name: str = Field(min_length=1, max_length=200)
     severity: str = Field(default="WARNING", max_length=50)
     operator: str = Field(default="GT", max_length=20)
@@ -261,6 +272,7 @@ class AlertRuleCreate(AlertRuleBase):
 
 
 class AlertRuleUpdate(BaseModel):
+    _validate_threshold = field_validator("threshold_value")(finite_threshold)
     name: str | None = Field(default=None, min_length=1, max_length=200)
     severity: str | None = Field(default=None, max_length=50)
     operator: str | None = Field(default=None, max_length=20)
