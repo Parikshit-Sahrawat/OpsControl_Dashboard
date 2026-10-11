@@ -1,3 +1,4 @@
 export default function StatusBadge({ status }) {
-  return <span className={`status status--${status.toLowerCase()}`}>{status.replaceAll("_", " ")}</span>;
+  const label = typeof status === "string" && status.trim() ? status : "UNKNOWN";
+  return <span className={`status status--${label.toLowerCase()}`}><span className="status-indicator" aria-hidden="true" />{label.replaceAll("_", " ")}</span>;
 }
