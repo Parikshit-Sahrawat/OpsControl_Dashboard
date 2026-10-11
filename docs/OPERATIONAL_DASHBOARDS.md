@@ -86,3 +86,9 @@ Browser assertion ledgers: [configured](screenshots/operational/browser-configur
 Actual browser artifacts are produced under `screenshots/operational/`, with the ETL regression in its `etl/` subdirectory. The redacted `report.json` and phase-specific `browser-*.json` record assertions and real browser versions. The [CI workflow](../.github/workflows/operational-acceptance.yml) reproduces the gate and uploads artifacts; remote execution is separately recorded.
 
 Remaining gates: independent PR/security review, remote CI and merge; genuine provider/Carte acceptance; Sprint 5 backup/restore/retention, load/resilience/reconnect/failover, deployment/UAT and formal release acceptance. This synthetic lab does not establish production readiness.
+
+## Publication and review
+
+Implementation commit **`21bd284`** is pushed to `feature/sprint4-operational-dashboards`, stacked on `feature/sprint3-pentaho-monitoring`. Native Git publication succeeded. Draft PR creation returned **`Post https://api.github.com/graphql: Forbidden`** in this cloud environment; a separate GitHub API read was also Forbidden. This is an API access restriction, not a claim of missing Git credentials. No independent review, remote workflow success or merge is claimed.
+
+The concrete PR description is prepared at `/tmp/opscontrol-sprint4-pr.md` in the development environment. Use the [stacked comparison](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/compare/feature%2Fsprint3-pentaho-monitoring...feature%2Fsprint4-operational-dashboards?expand=1) for review/PR creation. The cloud configuration draft adds `api.github.com` to the known custom egress rules while preserving selected presets; review/save/publication is required before claiming changed runtime access. Live AWS setup remains paused.
