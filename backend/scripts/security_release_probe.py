@@ -35,7 +35,36 @@ def login(username, password=PASSWORD):
     result, _ = check(200, "POST", "/api/v1/auth/login", payload={"username":username, "password":password})
     return result["access_token"]
 
+def cors_policy():
+    """Browser mutation preflight succeeds only for configured UI origins."""
+    from app.core.config import settings
+    origin = settings.cors_origin_list[0]
+    for requested_origin, method, expected in (
+        (origin, "PUT", 200),
+        (origin, "PATCH", 200),
+        ("https://unapproved-ui.example.test", "PUT", 400),
+        (origin, "TRACE", 400),
+    ):
+        req = urllib.request.Request(URL + "/api/v1/resource-management/data-sources", method="OPTIONS", headers={
+            "Origin": requested_origin,
+            "Access-Control-Request-Method": method,
+            "Access-Control-Request-Headers": "authorization,content-type",
+        })
+        try:
+            response = urllib.request.urlopen(req, timeout=10)
+        except urllib.error.HTTPError as error:
+            response = error
+        with response:
+            assert response.status == expected, (method, expected, response.status)
+            if expected == 200:
+                assert response.headers.get("Access-Control-Allow-Origin") == origin
+                assert method in response.headers.get("Access-Control-Allow-Methods", "").split(", ")
+            elif requested_origin != origin:
+                assert response.headers.get("Access-Control-Allow-Origin") is None
+    print("CORS browser PUT/PATCH and denied origin/method preflight PASS")
+
 def main():
+    cors_policy()
     admin = login("test-admin")
     _, headers = check(200, "GET", "/api/v1/auth/me", admin)
     assert headers.get("x-content-type-options") == "nosniff", headers

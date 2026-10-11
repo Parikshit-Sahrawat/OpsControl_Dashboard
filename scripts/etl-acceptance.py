@@ -32,6 +32,8 @@ def operations(command):
 def noc_browser(phase):
     if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
         run(['node','frontend/scripts/operations_acceptance.mjs',phase])
+        if phase=='recovered' and env.get('OPSCONTROL_UI_THEME_ACCEPTANCE')=='1':
+            run(['node','frontend/scripts/ui_theme_acceptance.mjs'])
 def target():return start([PYTHON,'-c','import time;time.sleep(3600)'],label='linux-target')
 
 try:

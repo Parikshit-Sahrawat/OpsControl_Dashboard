@@ -17,7 +17,14 @@ async function login(who){
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
   await page.getByRole('heading',{name:'Overview',exact:true}).waitFor();return page;
 }
-const tab=async(page,name)=>{await page.getByRole('button',{name,exact:true}).first().click();};
+const tab=async(page,name)=>{
+  // Modal investigations must close before navigating the workspace behind them.
+  const close=page.getByRole('button',{name:'Close evidence',exact:true});
+  if(await close.isVisible())await close.click();
+  const jobClose=page.getByRole('button',{name:'Close drawer',exact:true});
+  if(await jobClose.isVisible())await jobClose.click();
+  await page.getByRole('button',{name,exact:true}).first().click();
+};
 const shot=async(page,name)=>page.screenshot({path:`${output}/${name}.png`,fullPage:true});
 async function chooseOrganization(page,name){
   await page.locator('.org-context-button').click();

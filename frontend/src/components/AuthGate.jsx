@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import App from "../App";
+import ThemeToggle from "./ThemeToggle";
 import { readToken, sessionUser, signIn, signOut, clearToken } from "../auth";
 
 export default function AuthGate() {
@@ -22,7 +23,8 @@ export default function AuthGate() {
   async function logout() { await signOut(); setUser(null); }
   if (loading) return <main className="login-layout"><p>Checking session…</p></main>;
   if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App user={user} /></>;
-  return <main className="login-layout"><form className="login-card" onSubmit={submit}>
+  return <main className="login-layout"><div className="login-appearance"><ThemeToggle /></div><form className="login-card" onSubmit={submit}>
+    <span className="login-eyebrow">MONITORING WORKSPACE</span>
     <h1>OpsControl</h1><p>Sign in to view your authorized monitoring resources.</p>
     <label>Username<input type="text" name="username" required autoComplete="username" maxLength={120}/></label>
     <label>Password<input type="password" name="password" required autoComplete="current-password"/></label>

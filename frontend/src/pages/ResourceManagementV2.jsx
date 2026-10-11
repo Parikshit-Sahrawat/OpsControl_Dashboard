@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useDialogFocus from "../components/useDialogFocus";
 import "../resource-v2.css";
 import {
   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
@@ -61,9 +62,11 @@ function Field({ label, children, help }) {
   return <label className="form-field"><span>{label}</span>{children}{help && <small>{help}</small>}</label>;
 }
 function Modal({ title, children, onClose, wide = false }) {
+  const dialog = useRef(null);
+  useDialogFocus(dialog, true, onClose);
   return <div className="modal-backdrop" onMouseDown={e => e.target === e.currentTarget && onClose()}>
-    <div className={wide ? "modal resource-onboarding-modal" : "modal"}>
-      <div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" onClick={onClose}>×</button></div>
+    <div ref={dialog} role="dialog" aria-modal="true" aria-label={title} className={wide ? "modal resource-onboarding-modal" : "modal"}>
+      <div className="modal-header"><div><div className="eyebrow">RESOURCE MANAGEMENT</div><h2>{title}</h2></div><button className="close-button" aria-label="Close resource dialog" onClick={onClose}>×</button></div>
       {children}
     </div>
   </div>;

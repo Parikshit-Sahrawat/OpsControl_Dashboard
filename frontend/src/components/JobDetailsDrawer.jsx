@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import useDialogFocus from "./useDialogFocus";
 import StatusBadge from "./StatusBadge";
 import { analyzeExecutionCorrelation, fetchExecutionCorrelation } from "../api";
 
@@ -6,6 +7,8 @@ const investigationFlow = ["NEW", "ACKNOWLEDGED", "INVESTIGATING", "ROOT_CAUSE_I
 function nextState(state) { const i = investigationFlow.indexOf(state); return i >= 0 && i < investigationFlow.length - 1 ? investigationFlow[i + 1] : null; }
 
 export default function JobDetailsDrawer({ job, details, onClose, onInvestigationChange, onAddNote, canInvestigate=false, onSelectExecution }) {
+  const dialog = useRef(null);
+  useDialogFocus(dialog, !!job, onClose);
   const [note, setNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [correlation, setCorrelation] = useState(null);
@@ -54,7 +57,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
   return (
     <>
       <div className="overlay" onClick={onClose} />
-      <aside className="drawer" role="dialog" aria-modal="true" aria-label={`${job.name} execution details`}>
+      <aside ref={dialog} className="drawer" role="dialog" aria-modal="true" aria-label={`${job.name} execution details`}>
         <div className="drawer-header">
           <div><div className="eyebrow">JOB ORDER HISTORY · {job.id}</div><h2>{job.name}</h2><div className="drawer-status-row"><StatusBadge status={job.status}/><span className="execution-type">{job.executionType}</span></div></div>
           <button className="close-button" onClick={onClose} aria-label="Close drawer">×</button>

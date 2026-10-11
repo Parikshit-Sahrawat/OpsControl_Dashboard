@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import ThemeToggle from "./ThemeToggle";
+import NavIcon from "./NavIcon";
 
 const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management", "Monitoring Setup"];
 
@@ -36,15 +38,18 @@ export default function TopNav({ active, onChange, organizations = [], organizat
     <header className="topbar">
       <div className="brand">
         <button className="brand-link" onClick={() => onChange("Overview")} aria-label="Go to Overview">
-          OpsControl
+          <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span><span>OpsControl<span className="brand-caption">MONITORING WORKSPACE</span></span>
         </button>
       </div>
-      <nav>
+      <div className="workspace-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><b>{active}</b></div>
+      <nav aria-label="Primary navigation">
+        <span className="nav-section-label">WORKSPACE</span>
         {[...items, ...(platformAdmin ? ["Access Management"] : [])].map(item => (
-          <button key={item} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
-            {item}
+          <button key={item} aria-current={active === item ? "page" : undefined} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
+            <NavIcon name={item}/><span>{item}</span>
           </button>
         ))}
+        <div className="sidebar-footnote"><span className="sidebar-footnote-mark" aria-hidden="true">◈</span><b>Your operations.<br/>One clear view.</b><small>Health · Evidence · Investigation</small></div>
       </nav>
       <div className="global-context" ref={ref}>
         <span className="context-label">Organization</span>
@@ -69,6 +74,7 @@ export default function TopNav({ active, onChange, organizations = [], organizat
           </div>
         )}
       </div>
+      <ThemeToggle />
     </header>
   );
 }

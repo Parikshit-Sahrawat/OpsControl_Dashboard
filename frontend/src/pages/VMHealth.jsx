@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { authHeaders } from '../auth';
 import { evidenceTime } from '../operations';
+import StatusBadge from '../components/StatusBadge';
 const BASE=import.meta.env.VITE_API_BASE_URL||'http://localhost:8000';
 export default function VMHealth({organizationIds,initialSourceId}) {
   const [data,setData]=useState(null),[error,setError]=useState(''),[selected,setSelected]=useState(null),[history,setHistory]=useState([]);
@@ -37,7 +38,7 @@ export default function VMHealth({organizationIds,initialSourceId}) {
         <label>Health<select aria-label="Health" value={health} onChange={e=>setHealth(e.target.value)}>{['ALL','HEALTHY','WARNING','CRITICAL','UNKNOWN','DISABLED'].map(h=><option key={h}>{h}</option>)}</select></label></div>
       {!data&&!error&&<p>Loading infrastructure…</p>}
       {data&&<table><thead><tr><th>Resource</th><th>Provider</th><th>Health</th><th>Collector / freshness</th><th>Latest metrics</th><th>Open alerts</th></tr></thead><tbody>
-        {rows.map(r=><tr key={r.id} data-testid="infrastructure-row"><td><button className="text-link" onClick={()=>setSelected(r)}>{r.name}</button></td><td>{r.provider}</td><td>{r.health}</td><td>{r.collectors.map(c=><div key={c.id}>{c.status} · {c.freshness}{!c.enabled?' · disabled':''}</div>)}</td><td>{r.metrics.map((m,i)=><div key={i}>{m.name}: {Number(m.value).toFixed(2)} {m.unit||''}</div>)}</td><td>{r.open_alert_count}</td></tr>)}
+        {rows.map(r=><tr key={r.id} data-testid="infrastructure-row"><td><button className="text-link" onClick={()=>setSelected(r)}>{r.name}</button></td><td>{r.provider}</td><td><StatusBadge status={r.health}/></td><td>{r.collectors.map(c=><div key={c.id}>{c.status} · {c.freshness}{!c.enabled?' · disabled':''}</div>)}</td><td>{r.metrics.map((m,i)=><div key={i}>{m.name}: {Number(m.value).toFixed(2)} {m.unit||''}</div>)}</td><td>{r.open_alert_count}</td></tr>)}
       </tbody></table>}
       {data&&!rows.length&&<p>No infrastructure resources match this organization and filters.</p>}
     </section>
