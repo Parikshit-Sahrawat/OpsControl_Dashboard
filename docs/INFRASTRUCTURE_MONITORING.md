@@ -90,3 +90,5 @@ Local controlled runtime/browser/security checks and frontend/backend checks are
 | Genuine providers / remote CI / independent review / merge | PENDING |
 
 Migration 0019 backfills the discovery identity of legacy generated inventory still named by its external ID. Previously renamed legacy inventory needs explicit reconciliation before reimport; the migration cannot infer a lost identity from arbitrary display text. New imports retain identity through renaming.
+
+Implementation committed as `5033221` (HTTP reference: `fb036f5`) and pushed to `feature/sprint2-infrastructure-monitoring`. The GitHub API refused draft PR creation with `Forbidden`; native Git push succeeded using platform authentication. PR creation, remote CI, independent review and merge remain pending. [Open the published branch PR form](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/new/feature/sprint2-infrastructure-monitoring).
