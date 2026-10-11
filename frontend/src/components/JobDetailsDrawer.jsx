@@ -5,7 +5,7 @@ import { analyzeExecutionCorrelation, fetchExecutionCorrelation } from "../api";
 const investigationFlow = ["NEW", "ACKNOWLEDGED", "INVESTIGATING", "ROOT_CAUSE_IDENTIFIED", "RECOVERY_IN_PROGRESS", "MONITORING", "RESOLVED"];
 function nextState(state) { const i = investigationFlow.indexOf(state); return i >= 0 && i < investigationFlow.length - 1 ? investigationFlow[i + 1] : null; }
 
-export default function JobDetailsDrawer({ job, details, onClose, onInvestigationChange, onAddNote }) {
+export default function JobDetailsDrawer({ job, details, onClose, onInvestigationChange, onAddNote, canInvestigate=false, onSelectExecution }) {
   const [note, setNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [correlation, setCorrelation] = useState(null);
@@ -42,7 +42,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
   };
   if (!job) return null;
 
-  const investigation = details?.investigation ?? { status: job.status === "FAILED" ? "NEW" : null, operator: "—", started: "—", notes: [], transitions: [] };
+  const investigation = details?.investigation ?? { status: "NEW", operator: "—", started: "—", notes: [], transitions: [] };
   const steps = details?.steps ?? [];
   const timeline = details?.timeline ?? [];
   const recentHistory = details?.recentHistory ?? [];
@@ -66,11 +66,11 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
 
         <section className="drawer-section"><h3>Execution Summary</h3><div className="summary-grid">
           {[
-            ["Job Order ID", job.jobOrderId], ["Organization", details?.organization ?? "ABC Corporation"], ["VM / Server", job.server],
-            ["Environment", job.environment], ["Pentaho", details?.pentahoInstance ?? "PENTAHO-PROD-01"], ["Execution", job.executionType],
+            ["Job Order ID", job.jobOrderId], ["Organization", details?.organization ?? "—"], ["VM / Server", job.server],
+            ["Environment", job.environment], ["Pentaho", details?.pentahoInstance ?? "—"], ["Execution", job.executionType],
             ["Start", job.start ? `${job.start} IST` : "Not started"], ["End / Failure", job.end ? `${job.end} IST` : "Not completed"],
             ["Duration", job.duration ?? "—"], ["Expected Runtime", job.expectedRuntime ?? "—"], ["SLA", job.sla ?? "—"],
-            ["SLA Status", runtimeSummary], ["Incident", job.incident ?? "—"], ["Detected", details?.detected ?? "—"], ["Last Update", details?.lastUpdate ?? "—"],
+            ["SLA Status", runtimeSummary], ["Incident", job.incident ?? "—"], ["Monitor", details?.monitoringStatus ?? "UNKNOWN"], ["Provider Execution", details?.providerExecutionId ?? "—"], ["Detected", details?.detected ?? "—"], ["Last Update", details?.lastUpdate ?? "—"],
           ].map(([label, value]) => <div className="kv" key={label}><span>{label}</span><b>{value}</b></div>)}
         </div></section>
 
@@ -79,7 +79,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
             <div><span>Failed Step</span><b>{job.failedStep ?? "—"}</b></div><div><span>Failure Category</span><b>{details?.failureCategory ?? "Pending"}</b></div>
             <div><span>Suspected Cause</span><b>{details?.suspectedCause ?? "Pending"}</b></div><div><span>Confidence</span><b>{details?.confidence ?? "—"}</b></div>
           </div>
-          <pre className="error-box">PentahoError: {job.error ?? "No source error reported."}</pre>
+          <pre className="error-box">PentahoError: {details?.sourceError ?? "No source error reported."}</pre>
           <div className="source-fact"><span>Source fact</span> OpsControl analysis is shown separately from Pentaho-reported data and does not overwrite historical evidence.</div>
         </section>}
 
@@ -88,7 +88,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
             <div><span>Expected Window</span><b>{details?.expectedWindow ?? "Configured window unavailable"}</b></div><div><span>Grace Period</span><b>{details?.gracePeriod ?? "Configured value unavailable"}</b></div>
             <div><span>Expected Runtime</span><b>{job.expectedRuntime ?? "—"}</b></div><div><span>SLA</span><b>{job.sla ?? "—"}</b></div>
           </div>
-          <div className="source-fact">{job.status === "NO_RUN" ? "No execution was detected after the configured expected window and grace period." : "Execution has exceeded expected runtime but remains within the configured SLA window."}</div>
+          <div className="source-fact">{job.status === "NO_RUN" ? "No execution was detected after the configured expected window and grace period." : `Execution has exceeded expected runtime. SLA status: ${runtimeSummary}.`}</div>
         </section>}
 
         <section className="drawer-section"><h3>Execution Timeline</h3>
@@ -99,10 +99,11 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
           {steps.length ? steps.map((step, i) => <div className="step-row" key={step.name + i}><div><b>{step.name}</b><small>{step.type ?? "Pentaho step"}{step.duration ? ` · ${step.duration}` : ""}</small></div><StatusBadge status={step.status}/></div>) : <div className="empty-inline">Step-level data is not available from the current source.</div>}
         </section>
 
+        <section className="drawer-section"><h3>Source Logs</h3>{details?.logs ? <pre className="error-box">{details.logs}</pre> : <div className="empty-inline">No source logs collected. Collection requires explicit opt-in.</div>}</section>
         {details?.relatedHealth && <section className="drawer-section"><h3>Related Health</h3><div className="summary-grid">
           {Object.entries(details.relatedHealth).map(([label, value]) => <div className="kv" key={label}><span>{label}</span><b>{value}</b></div>)}
         </div></section>}
-        <section className="drawer-section"><div className="section-heading-row"><h3>Related Health / Correlation</h3><button className="filter-button" disabled={correlationLoading || analyzingCorrelation} onClick={runCorrelation}>{analyzingCorrelation ? "Analyzing…" : "Analyze"}</button></div>
+        <section className="drawer-section"><div className="section-heading-row"><h3>Related Health / Correlation</h3>{canInvestigate && <button className="filter-button" disabled={correlationLoading || analyzingCorrelation} onClick={runCorrelation}>{analyzingCorrelation ? "Analyzing…" : "Analyze"}</button>}</div>
           {correlationLoading && <div className="empty-inline">Loading correlation evidence…</div>}
           {!correlationLoading && correlation && <><div className="summary-grid">
             <div className="kv"><span>Primary Evidence</span><b>{correlation.primary_category}</b></div>
@@ -111,7 +112,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
             <div className="kv"><span>Analysis Version</span><b>{correlation.analysis_version}</b></div>
           </div>
           <div className="source-fact">{correlation.summary}</div>
-          {correlation.evidence?.slice(0, 12).map(item => <div className="list-row" key={item.id}><span><b>{item.evidence_type}</b> · {item.relationship}</span><span className="muted small">{item.severity ?? "—"} · {new Date(item.observed_at).toLocaleTimeString("en-IN", { hour12: false })}</span></div>)}
+          {correlation.evidence?.slice(0, 12).map(item => <div className="list-row" key={item.id}><span><b>{item.evidence_type}</b> · {item.relationship}</span><span className="muted small">{item.severity ?? "—"} · {new Date(item.observed_at).toLocaleTimeString("en-IN", { hour12: false, timeZone: "Asia/Kolkata" })}</span></div>)}
           {correlation.evidence?.length > 12 && <div className="empty-inline">Showing the first 12 evidence items in the drawer.</div>}
           </>}
           {!correlationLoading && !correlation && !correlationError && <div className="empty-inline">No correlation analysis has been run for this execution.</div>}
@@ -123,7 +124,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
         </section>
 
         <section className="drawer-section"><h3>Recent History · Same Job Order</h3>
-          {recentHistory.length ? recentHistory.map((item, i) => <div className="list-row" key={item.time + i}><span>{item.time} · <b>{item.status}</b></span><span className="muted small">{item.duration ?? item.reason ?? "—"} {item.incident ? `· ${item.incident}` : ""}</span></div>) : <div className="empty-inline">No previous execution history available.</div>}
+          {recentHistory.length ? recentHistory.map((item, i) => <div className="list-row" key={item.id || item.time + i}><button className="text-link" onClick={()=>onSelectExecution?.(item.id)}>{item.time} · <b>{item.status}</b> · {item.reason ?? "—"}</button><span className="muted small">{item.duration ?? ""} {item.incident ? `· ${item.incident}` : ""}</span></div>) : <div className="empty-inline">No previous execution history available.</div>}
         </section>
 
         {isInvestigable && <section className="drawer-section">
@@ -134,11 +135,11 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
           </div>
           {investigation.transitions?.map((t, i) => <div className="transition" key={t.timestamp + i}><b>{t.previous} → {t.next}</b><small>{t.timestamp} · {t.operator}{t.comment ? ` · ${t.comment}` : ""}</small></div>)}
           {investigation.notes?.map((n, i) => <div className="note" key={n.timestamp + i}><b>{n.timestamp} · {n.operator}</b><div>{n.text}</div>{n.evidence && <small>Evidence: {n.evidence}</small>}</div>)}
-          <textarea className="note-input" value={note} onChange={e => setNote(e.target.value)} placeholder="Add chronological operator note..." />
-          <div className="action-row">
+          {canInvestigate && <textarea className="note-input" value={note} onChange={e => setNote(e.target.value)} placeholder="Add chronological operator note..." />}
+          {canInvestigate && <div className="action-row">
             <button className="primary-button" disabled={!note.trim() || savingNote} onClick={addNote}>{savingNote ? "Adding…" : "Add Note"}</button>
             {next && <button className="filter-button" onClick={() => onInvestigationChange?.(job.id, next)}>Move to {next.replaceAll("_", " ")}</button>}
-          </div>
+          </div>}
           {investigation.status === "RESOLVED" && <div className="resolution-box">Resolution is preserved as an auditable investigation outcome. A successful next execution does not automatically resolve an investigation.</div>}
         </section>}
       </aside>

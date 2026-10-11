@@ -42,6 +42,16 @@ flowchart LR
 2. **Investigation:** Source execution -> read-only normalized ETL facts -> historical record -> scoped evidence correlation -> alert -> notification -> operator review.
 3. **Security:** Identity -> allowed organizations/roles -> policy decision -> SQL scope. The UI's selected organizations are preferences only, never authorization.
 
+## Sprint 3 ETL evidence path
+
+The [Pentaho ETL implementation](../../PENTAHO_ETL_MONITORING.md) uses the existing scheduler, scoped Data Source/Collector and CollectorRun transaction. A platform-approved local collector reads a pinned, authenticated Carte inventory and exact-job status details. The worker validates Job Order/source ownership before credential resolution or network access. Failed polls preserve source facts and report collector ERROR.
+
+The ETL ingestion service deduplicates JobOrderHistory by Job Order/provider ID, preserves source timestamps and terminal facts, stores bounded redacted opt-in evidence, and persists job-entry results. Daily timezone/window/grace evaluation creates an explicit OpsControl No Run diagnosis only after complete successful inventory evidence; unknown source timing suppresses absence inference. Runtime thresholds are captured per execution. Condition changes append stable Job Order/condition references to AlertIncidentEvent; external ETL delivery and rule-catalog-based ETL activation are follow-up work.
+
+JobOrder has an explicit tenant-checked host Data Source association, so failure correlation reads actual same-organization host samples and native infrastructure alerts in its time window. Correlation is supporting evidence, not RCA. The read-only execution/evidence APIs back current ETL rows, logs, timelines and clickable retained history. Investigation reads do not create state, and authorized transitions/notes record the authenticated actor. Successful recovery never rewrites a failed history or resolves an investigation automatically.
+
+The controlled fixture uses actual authenticated HTTPS and a disposable real Linux process. Its evidence origin remains distinct from genuine Carte compatibility/retention acceptance. See the [Sprint 1–3 reassessment](../../SPRINT_REASSESSMENT.md) for the acceptance gates and remaining UI/release work.
+
 ## Deployment topology
 **Dev and CI:** React/Vite + one FastAPI app + PostgreSQL 17 + separately launched worker. CI uses ephemeral database and synthetic sources; no live customer integration. **Later deployment:** package existing modules into separate API/worker containers (same codebase) with managed PostgreSQL and external secrets. EKS/Helm/GitOps/Terraform follows functional acceptance rather than drives design.
 

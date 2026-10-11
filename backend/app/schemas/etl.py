@@ -1,6 +1,6 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.models.entities import ExecutionStatus, ExecutionType
 class StepCreate(BaseModel):
     name: str
@@ -51,6 +51,10 @@ class ExecutionListItem(BaseModel):
     server: str
     environment: str
     organization: str
+    organization_id: UUID
+    duration_seconds: int | None = None
+    provider_execution_id: str | None = None
+    monitoring_status: str = 'UNKNOWN'
 class ExecutionOut(ExecutionListItem):
     source_error_code: str | None
     source_error_message: str | None
@@ -58,3 +62,31 @@ class ExecutionOut(ExecutionListItem):
     source_log_location: str | None
     source_result: str | None
     steps: list[StepOut]
+    source_evidence: dict | None = None
+
+class JobOrderCreate(BaseModel):
+    organization_id: UUID
+    hostname: str = Field(min_length=1, max_length=200)
+    name: str = Field(min_length=1, max_length=200)
+    environment: str = Field(default='PROD', min_length=1, max_length=50)
+    host_data_source_id: UUID | None = None
+    expected_runtime_seconds: int = Field(ge=1, le=604800)
+    sla_seconds: int = Field(ge=1, le=604800)
+    expected_window_start: str | None = Field(default=None, pattern=r'^\d{2}:\d{2}$')
+    expected_window_end: str | None = Field(default=None, pattern=r'^\d{2}:\d{2}$')
+    no_run_grace_seconds: int = Field(default=900, ge=0, le=86400)
+    timezone: str = 'UTC'
+    weekdays: list[int] = Field(default_factory=lambda: list(range(7)), min_length=1, max_length=7)
+
+    @model_validator(mode='after')
+    def validate_policy(self):
+        from datetime import time
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+        try: ZoneInfo(self.timezone)
+        except (ZoneInfoNotFoundError, ValueError): raise ValueError('Valid schedule timezone required')
+        if any(type(day) is not int or day not in range(7) for day in self.weekdays): raise ValueError('Invalid weekdays')
+        if self.sla_seconds < self.expected_runtime_seconds: raise ValueError('SLA must be at least expected runtime')
+        if bool(self.expected_window_start) != bool(self.expected_window_end): raise ValueError('Both window endpoints required')
+        for value in (self.expected_window_start, self.expected_window_end):
+            if value: time.fromisoformat(value)
+        return self

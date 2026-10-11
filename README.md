@@ -39,6 +39,14 @@ Run `backend/.venv/bin/python scripts/infrastructure-acceptance.py` with the gui
 
 **Evidence origins:** Linux telemetry is live on the local worker. AWS uses controlled boto3/CloudWatch responses, Kubernetes uses an authenticated certificate-verified controlled API, and Windows uses controlled native API inputs. Genuine AWS sandbox, Kubernetes cluster and Windows installation acceptance remain pending. Native Windows collection requires a Windows worker. The guide lists sandbox inputs and deployment restrictions; remote CI, independent PR review and merge remain separate gates.
 
+## Sprint 3 — Pentaho ETL monitoring
+
+The [ETL monitoring guide](docs/PENTAHO_ETL_MONITORING.md) documents authenticated read-only Carte polling, No Run/grace, Long Running, runtime SLA evaluation, source entries/logs and host-health correlation. The ETL drawer now shows database-backed timelines, stable condition events and clickable execution history. Authorized investigation transitions/notes use the signed-in operator; a recovered execution preserves the previous failure and its investigation.
+
+Run `backend/.venv/bin/python scripts/etl-acceptance.py` with the guide's prerequisites. The controlled gate passes seven phases, six execution histories, four stable alert-condition references, live Linux process correlation, migration/security/tenant negatives and **11 actual Playwright captures**. [Runtime report](docs/screenshots/etl/report.json); key screenshots: [No Run](docs/screenshots/etl/no-run.png), [SLA breach](docs/screenshots/etl/sla-breach.png), [failed](docs/screenshots/etl/failed.png), [investigation](docs/screenshots/etl/investigation.png), [recovered](docs/screenshots/etl/recovered.png), [historical failure](docs/screenshots/etl/historical-failure.png), [other tenant](docs/screenshots/etl/other-tenant.png).
+
+**Evidence origin:** a controlled authenticated TLS Carte-shaped API and real local Linux telemetry. Genuine Carte acceptance is separately **pending**. [The Sprint 1–3 reassessment](docs/SPRINT_REASSESSMENT.md) records successful HTTP/infrastructure regressions and the remaining PR, live-provider, UI/reporting and release gates. Live AWS/Agent Toolkit setup is paused; controlled development can continue.
+
 ## UI Tour — Frontend
 
 The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.

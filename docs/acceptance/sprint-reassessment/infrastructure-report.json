@@ -1,0 +1,847 @@
+{
+  "origins": {
+    "AWS_EC2": "CONTROLLED_BOTOCORE_STUBBER",
+    "KUBERNETES": "CONTROLLED_AUTHENTICATED_TLS_API",
+    "LINUX_HOST": "LIVE_LOCAL_LINUX",
+    "WINDOWS_HOST": "CONTROLLED_WINDOWS_API_INPUTS"
+  },
+  "genuine_aws": "PENDING_SANDBOX_IDENTITY",
+  "genuine_kubernetes": "PENDING_CLUSTER_KERNEL_SUPPORT",
+  "genuine_windows": "PENDING_NATIVE_WORKER",
+  "phases": [
+    {
+      "phase": "healthy",
+      "resources": [
+        {
+          "name": "EC2 controlled SDK fixture",
+          "provider": "AWS_EC2",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "ec2_cpu_percent",
+              "value": 19.75,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:21.800597+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:21.800597+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "9d2f2409-9cc8-4e66-b98d-a5f28adc48a9",
+            "observed_at": "2026-10-11T10:51:21.800597+00:00",
+            "provider": "AWS_EC2",
+            "instance_id": "i-0123456789abcdef0",
+            "region": "ap-south-1",
+            "state": "running",
+            "system_checks": "ok",
+            "cpu_percent": 19.75,
+            "outcome": "SUCCESS"
+          },
+          "alerts": []
+        },
+        {
+          "name": "K8S_POD controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:21.857466+00:00"
+            },
+            {
+              "name": "k8s_restarts",
+              "value": 0.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:21.857466+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "dbb9c0fe-0584-43ed-b5ed-732abc873274",
+            "observed_at": "2026-10-11T10:51:21.857466+00:00",
+            "provider": "KUBERNETES",
+            "resource": "POD",
+            "namespace": "infra-lab",
+            "name": "web-0",
+            "phase": "Running",
+            "ready": true,
+            "restarts": 0,
+            "outcome": "SUCCESS"
+          },
+          "alerts": []
+        },
+        {
+          "name": "K8S_DEPLOYMENT controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:21.882558+00:00"
+            },
+            {
+              "name": "k8s_available_replicas",
+              "value": 2.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:21.882558+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "43c9eddd-0deb-4d67-a938-55a2b48a4ba8",
+            "observed_at": "2026-10-11T10:51:21.882558+00:00",
+            "provider": "KUBERNETES",
+            "resource": "DEPLOYMENT",
+            "namespace": "infra-lab",
+            "name": "web",
+            "desired_replicas": 2,
+            "ready_replicas": 2,
+            "available_replicas": 2,
+            "outcome": "SUCCESS"
+          },
+          "alerts": []
+        },
+        {
+          "name": "K8S_NODE controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:21.905997+00:00"
+            },
+            {
+              "name": "k8s_node_ready",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:21.905997+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "389552a5-71fc-4c59-b887-254ceda56dda",
+            "observed_at": "2026-10-11T10:51:21.905997+00:00",
+            "provider": "KUBERNETES",
+            "resource": "NODE",
+            "namespace": "infra-lab",
+            "name": "fixture-node",
+            "node_ready": true,
+            "unschedulable": false,
+            "memory_pressure": false,
+            "disk_pressure": false,
+            "pid_pressure": false,
+            "outcome": "SUCCESS"
+          },
+          "alerts": []
+        },
+        {
+          "name": "Linux live worker",
+          "provider": "LINUX_HOST",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "cpu_percent",
+              "value": 0.99,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.125882+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 27.67,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.125882+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:22.125882+00:00"
+            },
+            {
+              "name": "memory_used_percent",
+              "value": 5.42,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.125882+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:22.125882+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "ff4a7248-156b-4f52-a183-c39ded0f9533",
+            "observed_at": "2026-10-11T10:51:22.125882+00:00",
+            "provider": "LINUX_HOST",
+            "outcome": "SUCCESS",
+            "cpu_percent": 0.99,
+            "memory_total_bytes": 35743784960,
+            "memory_available_bytes": 33806512128,
+            "memory_used_percent": 5.42,
+            "disk_total_bytes": 33770192896,
+            "disk_available_bytes": 24424550400,
+            "disk_used_percent": 27.67,
+            "load_1m": 3.24267578125,
+            "process_pid": 39646,
+            "process_running": true
+          },
+          "alerts": []
+        },
+        {
+          "name": "Windows controlled SDK fixture",
+          "provider": "WINDOWS_HOST",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "cpu_percent",
+              "value": 20.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.155776+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 25.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.155776+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:22.155776+00:00"
+            },
+            {
+              "name": "memory_used_percent",
+              "value": 50.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:22.155776+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:22.155776+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "b1deaf53-fd34-481d-8450-f667dea3a31f",
+            "observed_at": "2026-10-11T10:51:22.155776+00:00",
+            "provider": "WINDOWS_HOST",
+            "outcome": "SUCCESS",
+            "cpu_percent": 20.0,
+            "memory_total_bytes": 16000000000,
+            "memory_available_bytes": 8000000000,
+            "memory_used_percent": 50.0,
+            "disk_total_bytes": 100000000000,
+            "disk_available_bytes": 75000000000,
+            "disk_used_percent": 25.0,
+            "process_pid": 101,
+            "process_running": true
+          },
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "phase": "failed",
+      "resources": [
+        {
+          "name": "EC2 controlled SDK fixture",
+          "provider": "AWS_EC2",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "ec2_cpu_percent",
+              "value": 95.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.413831+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.413831+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "44ae2047-4760-4ac3-8af0-7e93053e0568",
+            "observed_at": "2026-10-11T10:51:35.413831+00:00",
+            "provider": "AWS_EC2",
+            "instance_id": "i-0123456789abcdef0",
+            "region": "ap-south-1",
+            "state": "running",
+            "system_checks": "ok",
+            "cpu_percent": 95.0,
+            "outcome": "SUCCESS"
+          },
+          "alerts": [
+            {
+              "id": "c41c9bdb-8645-4c9e-8a9c-3ea7d1ef937e",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "112ad98c-8a70-4c59-a270-ede3b56d0351:infra-health: metric value 95 GT threshold 80; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.413831+00:00",
+              "resolved_at": null
+            }
+          ]
+        },
+        {
+          "name": "K8S_POD controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.492996+00:00"
+            },
+            {
+              "name": "k8s_restarts",
+              "value": 2.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:35.492996+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "3a5641c8-f7dd-411e-98e0-13ba543f3968",
+            "observed_at": "2026-10-11T10:51:35.492996+00:00",
+            "provider": "KUBERNETES",
+            "resource": "POD",
+            "namespace": "infra-lab",
+            "name": "web-0",
+            "phase": "Running",
+            "ready": false,
+            "restarts": 2,
+            "outcome": "DEGRADED"
+          },
+          "alerts": [
+            {
+              "id": "a00d6e08-396b-44f4-8923-12b24ddaa0a4",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "dc07e27c-5771-4f6d-9e8d-eaadeaf873d9:infra-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.492996+00:00",
+              "resolved_at": null
+            }
+          ]
+        },
+        {
+          "name": "K8S_DEPLOYMENT controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.552130+00:00"
+            },
+            {
+              "name": "k8s_available_replicas",
+              "value": 0.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:35.552130+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "cdd5afe3-a46c-494a-b9f7-acc78a0360c0",
+            "observed_at": "2026-10-11T10:51:35.552130+00:00",
+            "provider": "KUBERNETES",
+            "resource": "DEPLOYMENT",
+            "namespace": "infra-lab",
+            "name": "web",
+            "desired_replicas": 2,
+            "ready_replicas": 0,
+            "available_replicas": 0,
+            "outcome": "DEGRADED"
+          },
+          "alerts": [
+            {
+              "id": "2b5d71eb-96be-48d7-9d5a-cb5d0146fc60",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "d034b2e8-1419-4e5c-9038-f6cfa2526380:infra-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.552130+00:00",
+              "resolved_at": null
+            }
+          ]
+        },
+        {
+          "name": "K8S_NODE controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.623808+00:00"
+            },
+            {
+              "name": "k8s_node_ready",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.623808+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "4f6e5065-006d-4c55-8b1a-5c8360e24232",
+            "observed_at": "2026-10-11T10:51:35.623808+00:00",
+            "provider": "KUBERNETES",
+            "resource": "NODE",
+            "namespace": "infra-lab",
+            "name": "fixture-node",
+            "node_ready": true,
+            "unschedulable": false,
+            "memory_pressure": true,
+            "disk_pressure": false,
+            "pid_pressure": false,
+            "outcome": "DEGRADED"
+          },
+          "alerts": [
+            {
+              "id": "4cf11cff-8a0c-4c4e-b3a8-a957e3e6ef50",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "63560063-f3ec-40ad-a384-ddef443723de:infra-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.623808+00:00",
+              "resolved_at": null
+            }
+          ]
+        },
+        {
+          "name": "Linux live worker",
+          "provider": "LINUX_HOST",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "cpu_percent",
+              "value": 0.98,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.874369+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 27.67,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.874369+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.874369+00:00"
+            },
+            {
+              "name": "memory_used_percent",
+              "value": 5.54,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.874369+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.874369+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "e02c12b2-ff12-4ef5-9a1b-748089e0dfa3",
+            "observed_at": "2026-10-11T10:51:35.874369+00:00",
+            "provider": "LINUX_HOST",
+            "outcome": "DEGRADED",
+            "cpu_percent": 0.98,
+            "memory_total_bytes": 35743784960,
+            "memory_available_bytes": 33763713024,
+            "memory_used_percent": 5.54,
+            "disk_total_bytes": 33770192896,
+            "disk_available_bytes": 24424501248,
+            "disk_used_percent": 27.67,
+            "load_1m": 2.67724609375,
+            "process_pid": 39646,
+            "process_running": false
+          },
+          "alerts": [
+            {
+              "id": "3fc7862c-e76d-4f12-b944-e27c1240542e",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "0fae1fb2-677f-404e-b189-efde41105cf6:infra-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.874369+00:00",
+              "resolved_at": null
+            }
+          ]
+        },
+        {
+          "name": "Windows controlled SDK fixture",
+          "provider": "WINDOWS_HOST",
+          "health": "CRITICAL",
+          "metrics": [
+            {
+              "name": "cpu_percent",
+              "value": 20.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.931180+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 25.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.931180+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.931180+00:00"
+            },
+            {
+              "name": "memory_used_percent",
+              "value": 50.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:35.931180+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 0.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:35.931180+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "b79988ae-1640-4990-b1f7-8f7b9b38fa68",
+            "observed_at": "2026-10-11T10:51:35.931180+00:00",
+            "provider": "WINDOWS_HOST",
+            "outcome": "DEGRADED",
+            "cpu_percent": 20.0,
+            "memory_total_bytes": 16000000000,
+            "memory_available_bytes": 8000000000,
+            "memory_used_percent": 50.0,
+            "disk_total_bytes": 100000000000,
+            "disk_available_bytes": 75000000000,
+            "disk_used_percent": 25.0,
+            "process_pid": 101,
+            "process_running": false
+          },
+          "alerts": [
+            {
+              "id": "d87cd721-6cf7-4c00-b8db-c99cf7cd06b4",
+              "status": "OPEN",
+              "severity": "CRITICAL",
+              "message": "d26e6a3b-0d48-4961-a073-de007c3f9159:infra-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+              "first_triggered_at": "2026-10-11T10:51:35.931180+00:00",
+              "resolved_at": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "recovered",
+      "resources": [
+        {
+          "name": "EC2 controlled SDK fixture",
+          "provider": "AWS_EC2",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "ec2_cpu_percent",
+              "value": 19.75,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:54.480611+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:54.480611+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "81600569-4710-4d0c-aea1-e6a72ad948be",
+            "observed_at": "2026-10-11T10:51:54.480611+00:00",
+            "provider": "AWS_EC2",
+            "instance_id": "i-0123456789abcdef0",
+            "region": "ap-south-1",
+            "state": "running",
+            "system_checks": "ok",
+            "cpu_percent": 19.75,
+            "outcome": "SUCCESS"
+          },
+          "alerts": [
+            {
+              "id": "c41c9bdb-8645-4c9e-8a9c-3ea7d1ef937e",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: 112ad98c-8a70-4c59-a270-ede3b56d0351:infra-health; metric value recovered to 19.75",
+              "first_triggered_at": "2026-10-11T10:51:35.413831+00:00",
+              "resolved_at": "2026-10-11T10:51:54.480611+00:00"
+            }
+          ]
+        },
+        {
+          "name": "K8S_POD controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:54.558527+00:00"
+            },
+            {
+              "name": "k8s_restarts",
+              "value": 0.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:54.558527+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "acb4e610-060b-450b-ae2b-24adc4d19a6c",
+            "observed_at": "2026-10-11T10:51:54.558527+00:00",
+            "provider": "KUBERNETES",
+            "resource": "POD",
+            "namespace": "infra-lab",
+            "name": "web-0",
+            "phase": "Running",
+            "ready": true,
+            "restarts": 0,
+            "outcome": "SUCCESS"
+          },
+          "alerts": [
+            {
+              "id": "a00d6e08-396b-44f4-8923-12b24ddaa0a4",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: dc07e27c-5771-4f6d-9e8d-eaadeaf873d9:infra-health; metric value recovered to 1",
+              "first_triggered_at": "2026-10-11T10:51:35.492996+00:00",
+              "resolved_at": "2026-10-11T10:51:54.558527+00:00"
+            }
+          ]
+        },
+        {
+          "name": "K8S_DEPLOYMENT controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:54.609317+00:00"
+            },
+            {
+              "name": "k8s_available_replicas",
+              "value": 2.0,
+              "unit": "count",
+              "observed_at": "2026-10-11T10:51:54.609317+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "1024683d-7966-46dc-96cf-ea03f2a72976",
+            "observed_at": "2026-10-11T10:51:54.609317+00:00",
+            "provider": "KUBERNETES",
+            "resource": "DEPLOYMENT",
+            "namespace": "infra-lab",
+            "name": "web",
+            "desired_replicas": 2,
+            "ready_replicas": 2,
+            "available_replicas": 2,
+            "outcome": "SUCCESS"
+          },
+          "alerts": [
+            {
+              "id": "2b5d71eb-96be-48d7-9d5a-cb5d0146fc60",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: d034b2e8-1419-4e5c-9038-f6cfa2526380:infra-health; metric value recovered to 1",
+              "first_triggered_at": "2026-10-11T10:51:35.552130+00:00",
+              "resolved_at": "2026-10-11T10:51:54.609317+00:00"
+            }
+          ]
+        },
+        {
+          "name": "K8S_NODE controlled TLS fixture",
+          "provider": "KUBERNETES",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:54.643256+00:00"
+            },
+            {
+              "name": "k8s_node_ready",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:54.643256+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "4264b625-ace4-455e-91d3-92128054bb38",
+            "observed_at": "2026-10-11T10:51:54.643256+00:00",
+            "provider": "KUBERNETES",
+            "resource": "NODE",
+            "namespace": "infra-lab",
+            "name": "fixture-node",
+            "node_ready": true,
+            "unschedulable": false,
+            "memory_pressure": false,
+            "disk_pressure": false,
+            "pid_pressure": false,
+            "outcome": "SUCCESS"
+          },
+          "alerts": [
+            {
+              "id": "4cf11cff-8a0c-4c4e-b3a8-a957e3e6ef50",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: 63560063-f3ec-40ad-a384-ddef443723de:infra-health; metric value recovered to 1",
+              "first_triggered_at": "2026-10-11T10:51:35.623808+00:00",
+              "resolved_at": "2026-10-11T10:51:54.643256+00:00"
+            }
+          ]
+        },
+        {
+          "name": "Linux live worker",
+          "provider": "LINUX_HOST",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "memory_used_percent",
+              "value": 5.3,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.088300+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:55.088300+00:00"
+            },
+            {
+              "name": "cpu_percent",
+              "value": 0.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.088300+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 27.67,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.088300+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:55.088300+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "d354a328-e314-410d-a3a5-c0c9bf7618a7",
+            "observed_at": "2026-10-11T10:51:55.088300+00:00",
+            "provider": "LINUX_HOST",
+            "outcome": "SUCCESS",
+            "cpu_percent": 0.0,
+            "memory_total_bytes": 35743784960,
+            "memory_available_bytes": 33850576896,
+            "memory_used_percent": 5.3,
+            "disk_total_bytes": 33770192896,
+            "disk_available_bytes": 24424361984,
+            "disk_used_percent": 27.67,
+            "load_1m": 2.63623046875,
+            "process_pid": 40430,
+            "process_running": true
+          },
+          "alerts": [
+            {
+              "id": "3fc7862c-e76d-4f12-b944-e27c1240542e",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: 0fae1fb2-677f-404e-b189-efde41105cf6:infra-health; metric value recovered to 1",
+              "first_triggered_at": "2026-10-11T10:51:35.874369+00:00",
+              "resolved_at": "2026-10-11T10:51:55.088300+00:00"
+            }
+          ]
+        },
+        {
+          "name": "Windows controlled SDK fixture",
+          "provider": "WINDOWS_HOST",
+          "health": "HEALTHY",
+          "metrics": [
+            {
+              "name": "cpu_percent",
+              "value": 20.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.128270+00:00"
+            },
+            {
+              "name": "disk_used_percent",
+              "value": 25.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.128270+00:00"
+            },
+            {
+              "name": "infrastructure_up",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:55.128270+00:00"
+            },
+            {
+              "name": "memory_used_percent",
+              "value": 50.0,
+              "unit": "percent",
+              "observed_at": "2026-10-11T10:51:55.128270+00:00"
+            },
+            {
+              "name": "process_running",
+              "value": 1.0,
+              "unit": null,
+              "observed_at": "2026-10-11T10:51:55.128270+00:00"
+            }
+          ],
+          "latest_evidence": {
+            "id": "0936a444-734f-481a-84e7-91e09aa274e6",
+            "observed_at": "2026-10-11T10:51:55.128270+00:00",
+            "provider": "WINDOWS_HOST",
+            "outcome": "SUCCESS",
+            "cpu_percent": 20.0,
+            "memory_total_bytes": 16000000000,
+            "memory_available_bytes": 8000000000,
+            "memory_used_percent": 50.0,
+            "disk_total_bytes": 100000000000,
+            "disk_available_bytes": 75000000000,
+            "disk_used_percent": 25.0,
+            "process_pid": 101,
+            "process_running": true
+          },
+          "alerts": [
+            {
+              "id": "d87cd721-6cf7-4c00-b8db-c99cf7cd06b4",
+              "status": "RESOLVED",
+              "severity": "CRITICAL",
+              "message": "Resolved: d26e6a3b-0d48-4961-a073-de007c3f9159:infra-health; metric value recovered to 1",
+              "first_triggered_at": "2026-10-11T10:51:35.931180+00:00",
+              "resolved_at": "2026-10-11T10:51:55.128270+00:00"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "security": "PASS",
+  "stale_evidence": "UNKNOWN",
+  "audit_event_count": 159
+}

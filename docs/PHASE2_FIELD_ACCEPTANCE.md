@@ -50,3 +50,7 @@ Outstanding provider acceptance, explicitly deferred rather than marked passed:
 ## SDLC decision
 
 **Current stage:** Phase 2 implementation with substantial Phase 3 disposable-environment integration verification. **Not Phase 4 production security approval or Phase 5 deployment.** Requirements are not “successfully completed” until their specific environment and threat-model acceptance gates are evidenced. The [living roadmap](IMPLEMENTATION_ROADMAP.md) must remain aligned.
+
+## Sprint 3 controlled ETL gate — 2026-10-11
+
+[Controlled ETL acceptance](PENTAHO_ETL_MONITORING.md) now passes actual authenticated pinned HTTPS inventory/status reads, No Run/grace, Long Running/runtime SLA, source entries/logs/history, real Linux host correlation, poll failure preservation, investigation and cross-tenant browser/API checks. [Runtime evidence](screenshots/etl/report.json) and eleven actual captures are committed with the Sprint 3 feature work. **This remains a Carte-shaped fixture, not a genuine Carte installation.** Genuine XML/timezone/retention/log compatibility and read-only credential acceptance remain separate pending checks. [The reassessment](SPRINT_REASSESSMENT.md) records fresh HTTP and infrastructure regression reports without promoting remote CI, independent review or merge to passed.

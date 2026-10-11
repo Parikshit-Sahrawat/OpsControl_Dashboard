@@ -229,9 +229,18 @@ class PentahoAdapter(CollectorAdapter):
     async def collect(self, collector):
         from app.worker.pentaho_status import get_job_status, PentahoStatusError
         try:
+            # Validate tenant association before resolving privileged credentials
+            # or making an outbound request, including legacy Collector API paths.
+            from uuid import UUID
+            from app.models import JobOrder
+            with SessionLocal() as db:
+                job = db.get(JobOrder, UUID((collector.configuration or {})['job_order_id']))
+                source = db.get(DataSource, collector.data_source_id)
+                if not job or not source or job.organization_id != source.organization_id:
+                    raise PentahoStatusError('Job Order unavailable in source organization')
             payload = await asyncio.to_thread(get_job_status, collector.configuration or {})
             return CollectionResult(payload["outcome"]=="SUCCESS", "Read-only Pentaho execution status collected", payload)
-        except (PentahoStatusError, CredentialProviderError, ValueError):
+        except (PentahoStatusError, CredentialProviderError, ValueError, KeyError, TypeError):
             return CollectionResult(False, "Pentaho status configuration, credentials or network policy invalid",
                                     {"outcome":"CONFIGURATION_ERROR"})
         except Exception:
@@ -396,41 +405,8 @@ def _purge_expired_metric_samples(db, now):
 
 
 def _persist_pentaho_history(collector, result, observed_at, db):
-    """Deduplicate Carte status polls by stable execution ID.
-
-    Never invent a job start timestamp: detection time is not source start.
-    A failed poll does not invent an ETL failure; it is monitoring blindness.
-    """
-    payload=result.payload or {}
-    if collector.collector_type.upper()!="PENTAHO" or payload.get("provider")!="PENTAHO":
-        return
-    from uuid import UUID
-    from app.models import JobOrder,JobOrderHistory,ExecutionType,ExecutionStatus
-    cfg=collector.configuration or {}
-    try: job_id=UUID(cfg["job_order_id"])
-    except (ValueError,KeyError,TypeError): return
-    job=db.get(JobOrder,job_id)
-    source=db.get(DataSource,collector.data_source_id)
-    if not job or not source or job.organization_id!=source.organization_id:
-        return
-    execution_id=payload.get("execution_id")
-    if not execution_id: return
-    hist=db.scalar(select(JobOrderHistory).where(
-        JobOrderHistory.job_order_id==job_id,
-        JobOrderHistory.provider_execution_id==execution_id))
-    status=ExecutionStatus(payload["execution_status"])
-    if not hist:
-        hist=JobOrderHistory(job_order_id=job_id,provider_execution_id=execution_id,
-            execution_type=ExecutionType.SCHEDULED,status=status,detected_at=observed_at,
-            source_result="CARTE_READ_ONLY")
-        db.add(hist)
-    else:
-        hist.status=status
-        hist.detected_at=observed_at
-    if status in {ExecutionStatus.SUCCESS,ExecutionStatus.FAILED}:
-        hist.ended_at=observed_at  # observation time; source end not available
-    if payload.get("nr_errors",0):
-        hist.source_error_code="CARTE_REPORTED_ERRORS"
+    from app.services.etl_monitoring import ingest_snapshot
+    ingest_snapshot(collector, result, observed_at, db)
 
 
 async def execute_collector(collector_id):
