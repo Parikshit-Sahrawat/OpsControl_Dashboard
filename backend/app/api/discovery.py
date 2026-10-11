@@ -27,8 +27,8 @@ def source_access(db,source_id):
     source=db.get(DataSource,source_id)
     if source is None:raise HTTPException(404,"Data source not found")
     principal=current_principal.get()
-    if not principal or not principal.can_edit(source.organization_id):
-        raise HTTPException(403,"Organization administrator required")
+    if not principal or not principal.platform_admin:
+        raise HTTPException(403,"Platform administrator must authorize discovery using deployment identity")
     if source.source_type not in {"AWS_EC2","EC2","KUBERNETES","K8S"}:
         raise HTTPException(422,"Source is not a supported resource-discovery connection")
     if not source.enabled:raise HTTPException(409,"Discovery source disabled")
@@ -87,7 +87,7 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
         display_name=external_id[:200]
         existing=db.scalar(select(DataSource).where(
             DataSource.organization_id==source.organization_id,
-            DataSource.name==display_name))
+            DataSource.discovery_external_id==external_id))
         new=existing is None
         if new and not payload.dry_run:
             if candidate["resource_type"]=="EC2_INSTANCE":
@@ -95,10 +95,11 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
                         "instance_id":candidate["instance_id"]}
                 ctype="AWS_EC2"
             else:
-                config={"namespace":candidate["namespace"],"pod_name":candidate["pod_name"]}
+                key={'K8S_POD':'pod_name','K8S_DEPLOYMENT':'deployment_name','K8S_NODE':'node_name'}[candidate['resource_type']]
+                config={"namespace":candidate["namespace"],key:candidate[key]}
                 ctype="KUBERNETES"
             new_source=DataSource(organization_id=source.organization_id,name=display_name,
-                source_type=ctype,connection_config=config,status="UNKNOWN",
+                source_type=ctype,connection_config=config,status="UNKNOWN",discovery_external_id=external_id,
                 description="Approved read-only resource inventory; monitoring not yet activated")
             db.add(new_source);db.flush()
             db.add(Collector(data_source_id=new_source.id,name="provider-readonly",

@@ -1,3 +1,4 @@
+import VMHealth from "./pages/VMHealth";
 import AccessManagement from "./pages/AccessManagement";
 import MonitoringSetup from "./pages/MonitoringSetup";
 import { useCallback, useEffect, useState } from "react";
@@ -5,22 +6,19 @@ import TopNav from "./components/TopNav";
 import JobDetailsDrawer from "./components/JobDetailsDrawer";
 import Overview from "./pages/Overview";
 import ETLJobs from "./pages/ETLJobs";
-import { fetchExecution, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote, fetchOrganizations } from "./api";
+import { fetchExecution, fetchExecutionEvidence, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote, fetchOrganizations, mapExecution } from "./api";
 import ResourceManagement from "./pages/ResourceManagementV2";
 
-function mapDetail(execution, investigation) {
-  const fmt = value => value ? new Date(value).toLocaleTimeString("en-IN",{hour12:false}) : "—";
+function mapDetail(execution, investigation, evidence) {
+  const fmt = value => value ? new Date(value).toLocaleTimeString("en-IN",{hour12:false,timeZone:"Asia/Kolkata"}) : "—";
   return {
-    organization:execution.organization, pentahoInstance:"—", detected:fmt(execution.detected_at)+" IST", lastUpdate:fmt(execution.ended_at)+" IST",
+    job:mapExecution(execution),
+    organization:execution.organization, pentahoInstance:"—", detected:fmt(execution.detected_at)+" IST", lastUpdate:fmt(execution.source_evidence?.observed_at)+" IST", logs:evidence?.logs, sourceError:execution.source_error_message, monitoringStatus:execution.monitoring_status, providerExecutionId:execution.provider_execution_id, expectedWindow:[execution.source_evidence?.policy?.expected_window_start,execution.source_evidence?.policy?.expected_window_end].filter(Boolean).join(" – ") ? [execution.source_evidence?.policy?.expected_window_start,execution.source_evidence?.policy?.expected_window_end].join(" – ")+" ("+(execution.source_evidence?.policy?.timezone || "UTC")+")" : execution.source_evidence?.deadline ? fmt(execution.source_evidence.deadline)+" IST" : undefined, gracePeriod:execution.source_evidence?.policy?.grace_seconds!=null ? execution.source_evidence.policy.grace_seconds+"s" : undefined,
     slaStatus:execution.sla_status || "—", failureCategory:investigation?.failure_category, suspectedCause:investigation?.suspected_cause, confidence:investigation?.confidence,
     steps:(execution.steps||[]).map(s=>({name:s.name,status:s.status,type:s.step_type,duration:s.duration_seconds!=null?Math.floor(s.duration_seconds/60)+"m "+String(s.duration_seconds%60).padStart(2,"0")+"s":null})),
-    timeline:[
-      execution.started_at&&{time:fmt(execution.started_at),event:"Job started",source:"Pentaho"},
-      execution.detected_at&&{time:fmt(execution.detected_at),event:"Execution detected",source:"OpsControl"},
-      execution.ended_at&&{time:fmt(execution.ended_at),event:"Job "+execution.status.toLowerCase(),source:"Pentaho"}
-    ].filter(Boolean),
-    incidentHistory:execution.incident_number?[{time:"—",event:"Incident reference",reference:execution.incident_number}]:[],
-    recentHistory:[],
+    timeline:(evidence?.timeline||[]).map(item=>({...item,time:fmt(item.time)+" IST"})),
+    incidentHistory:(evidence?.alert_events||[]).map(item=>({time:fmt(item.timestamp)+" IST",event:item.event_type,reference:item.reference})),
+    recentHistory:(evidence?.history||[]).filter(item=>item.id!==execution.id).map(item=>({id:item.id,time:fmt(item.detected_at)+" IST",status:item.status,reason:item.provider_execution_id})),
     investigation:investigation?{
       status:investigation.status,operator:investigation.operator||"—",started:investigation.started_at?fmt(investigation.started_at)+" IST":"—",
       notes:(investigation.notes||[]).map(n=>({timestamp:fmt(n.timestamp),operator:n.operator,text:n.text})),
@@ -33,8 +31,8 @@ export default function App({ user }) {
   const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
   const [organizations,setOrganizations]=useState([]);
   const [organizationIds,setOrganizationIds]=useState(()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}});
-  const selected=jobs.find(job=>job.id===selectedId)||null;
-  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({environment:"PROD",organization_ids:organizationIds}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[organizationIds]);
+  const selected=jobs.find(job=>job.id===selectedId)||details[selectedId]?.job||null;
+  const refresh=useCallback(async()=>{try{setError(null);setJobs(await fetchExecutions({latest_only:true,organization_ids:organizationIds}));}catch(e){setError(e.message||"Unable to load ETL executions");}finally{setLoading(false);}},[organizationIds]);
   useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);
     const saved = (()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}})();
     const valid = saved.filter(id => orgs.some(o => o.id === id));
@@ -45,15 +43,17 @@ export default function App({ user }) {
   useEffect(()=>{window.localStorage.setItem("opscontrol.organizationIds",JSON.stringify(organizationIds));},[organizationIds]);
   const organizationId = organizationIds[0] || "";
   useEffect(()=>{refresh();const timer=window.setInterval(refresh,5000);return()=>window.clearInterval(timer);},[refresh]);
-  const selectJob=async job=>{const id=typeof job==="string"?job:job.id;setSelectedId(id);try{const execution=await fetchExecution(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch{}setDetails(current=>({...current,[id]:mapDetail(execution,investigation)}));}catch(e){setError(e.message||"Unable to load execution details");}};
+  const selectJob=async job=>{const id=typeof job==="string"?job:job.id;setSelectedId(id);try{const execution=await fetchExecution(id);const evidence=await fetchExecutionEvidence(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch{}setDetails(current=>({...current,[id]:mapDetail(execution,investigation,evidence)}));}catch(e){setError(e.message||"Unable to load execution details");}};
+  useEffect(()=>{if(selectedId)selectJob(selectedId);},[jobs,selectedId]);
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
-  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds} platformAdmin={user?.platform_admin}/><main className="content">
-    {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
+  return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={ids=>{setSelectedId(null);setDetails({});setOrganizationIds(ids)}} platformAdmin={user?.platform_admin}/><main className="content">
+    {active==="Overview"&&<Overview organizationIds={organizationIds} jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
     {active==="Access Management"&&user?.platform_admin&&<AccessManagement />}
     {active==="Resource Management"&&<ResourceManagement organizationId={organizationId} organizationIds={organizationIds}/>}
+    {active==="VM Health"&&<VMHealth organizationIds={organizationIds}/> }
     {active==="Monitoring Setup"&&<MonitoringSetup organizationId={organizationId} user={user}/> }
-    {![ "Overview","ETL Jobs","Resource Management","Access Management","Monitoring Setup" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
-  </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
+    {![ "Overview","ETL Jobs","Resource Management","Access Management","Monitoring Setup","VM Health" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+  </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote} onSelectExecution={selectJob} canInvestigate={!!(user?.platform_admin || user?.memberships?.some(m=>m.organization_id===selected?.organizationId && ["operator","org_admin"].includes(m.role)))}/></div>;
 }

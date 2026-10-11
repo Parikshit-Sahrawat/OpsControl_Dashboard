@@ -22,6 +22,14 @@ def linux_host_health(cfg):
     approved={p.strip() for p in os.getenv("OPSCONTROL_HOST_ALLOWED_DISKS","/").split(",")}
     if path not in approved or not os.path.isabs(path) or ".." in path.split("/"):
         raise DeepCheckError("Disk path is not approved for this local agent")
+    import time
+    def cpu_ticks():
+        with open('/proc/stat',encoding='ascii') as stat:
+            values=[int(v) for v in stat.readline().split()[1:9]]
+        return sum(values),values[3]+values[4]
+    first=cpu_ticks();time.sleep(0.2);second=cpu_ticks()
+    elapsed=second[0]-first[0]
+    cpu_percent=round(100*(1-(second[1]-first[1])/elapsed),2) if elapsed>0 else None
     with open("/proc/meminfo",encoding="ascii") as mem:
         values={}
         for line in mem:
@@ -32,7 +40,7 @@ def linux_host_health(cfg):
     disk=os.statvfs(path)
     disk_total=disk.f_blocks*disk.f_frsize
     disk_available=disk.f_bavail*disk.f_frsize
-    result={"provider":"LINUX_HOST","outcome":"SUCCESS","disk_path":path,
+    result={"provider":"LINUX_HOST","outcome":"SUCCESS","disk_path":path,"cpu_percent":cpu_percent,
             "memory_total_bytes":total*1024,"memory_available_bytes":available*1024,
             "memory_used_percent":round(100*(1-available/total),2),
             "disk_total_bytes":disk_total,"disk_available_bytes":disk_available,
@@ -109,3 +117,28 @@ def tomcat_status(cfg,transport=_transport,resolver=None,credential_resolver=res
     return {"provider":"TOMCAT","outcome":"SUCCESS",
             "jvm_heap_total_bytes":total,"jvm_heap_free_bytes":free,
             "jvm_heap_used_percent":round((total-free)*100/total,2)}
+
+
+def windows_host_health(cfg, *, metrics=None, system=None):
+    """Local Windows APIs via psutil; no WinRM, remote shell or arbitrary code."""
+    import platform
+    from app.worker.infrastructure import validate_config
+    validate_config('WINDOWS_HOST',cfg)
+    if (system or platform.system())!='Windows':
+        raise DeepCheckError('Windows host telemetry requires a native Windows worker')
+    if metrics is None:
+        try: import psutil as metrics
+        except ImportError as exc: raise DeepCheckError('Install optional host SDK requirements') from exc
+    memory=metrics.virtual_memory()
+    disk=metrics.disk_usage(cfg.get('disk_path','C:\\'))
+    cpu=metrics.cpu_percent(interval=0.2)
+    result={'provider':'WINDOWS_HOST','outcome':'SUCCESS','cpu_percent':cpu,
+        'memory_total_bytes':memory.total,'memory_available_bytes':memory.available,
+        'memory_used_percent':memory.percent,'disk_total_bytes':disk.total,
+        'disk_available_bytes':disk.free,'disk_used_percent':disk.percent}
+    pid=cfg.get('process_pid')
+    if pid is not None:
+        result['process_pid']=pid
+        result['process_running']=metrics.pid_exists(pid)
+        if not result['process_running']: result['outcome']='DEGRADED'
+    return result

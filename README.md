@@ -3,7 +3,9 @@
 **Project implementation roadmap:** [Living Implementation Priorities & Verification Tracker](docs/IMPLEMENTATION_ROADMAP.md) — status, completed stages, current blockers and next testable workstreams. Update this table after each milestone; see linked draft PRs for evidence.
 
 
-**Private-network HTTPS monitoring:** [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) — scoped workers, scheduled jobs, strict egress and deduplicated evidence (draft feature, not production approved).\n\n**New to OpsControl?** Start with the [Beginner Quickstart](docs/QUICKSTART.md) to learn the basic monitoring concepts and run the current technical preview locally. This is a general-purpose open-source monitoring and observability project in development, not a production-ready release. The guide documents current limitations and uses only local/synthetic examples.
+**Private-network HTTPS monitoring:** [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) — scoped workers, scheduled jobs, strict egress and deduplicated evidence (draft feature, not production approved).
+
+**New to OpsControl?** Start with the [Beginner Quickstart](docs/QUICKSTART.md) to learn the basic monitoring concepts and run the current technical preview locally. This is a general-purpose open-source monitoring and observability project in development, not a production-ready release. The guide documents current limitations and uses only local/synthetic examples.
 
 OpsControl Dashboard is an enterprise operations monitoring platform being designed to give NOC, SLM, support, and engineering teams a single operational view of production ETL jobs, VMs, applications, APIs, incidents, alerts, and operational history.
 
@@ -11,11 +13,45 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ---
 
+## HTTP monitoring golden path
+
+The [HTTP golden path lab](docs/HTTP_GOLDEN_PATH.md) creates **Golden HTTP Lab** and its **Fictional HTTPS Portal** through authenticated APIs, publishes independent Metric/Log/Alert Rules, pins immutable versions, and activates a private-network collector. It drives an actual certificate-verified HTTPS fixture through HTTP **200 → 503 → 200**, checking PostgreSQL evidence and native alert **OPEN → RESOLVED** transitions. Playwright signs in through the real UI, exercises activation preview/reapply, checks visible diagnostics, and captures each state plus another tenant's empty view.
+
+Run `scripts/http-golden-path.sh` after installing the prerequisites in the [lab guide](docs/HTTP_GOLDEN_PATH.md). It uses a disposable database, random ephemeral credentials, internal Docker networks and loopback ports; cleanup preserves your development database. See the [CI workflow](.github/workflows/http-golden-path.yml) for automation. Local run results and CI status are recorded in the guide.
+
+These are **actual Playwright screenshots**, separate from the illustrative SVG tour below:
+
+| State | Browser capture | Evidence checked |
+|---|---|---|
+| Configured | [Before the first sample](docs/screenshots/http-golden-path/configured.png) | Active configuration, unknown health, zero samples |
+| Healthy | [HTTP 200](docs/screenshots/http-golden-path/healthy.png) | `probe_up=1`, no open alert |
+| Failed | [HTTP 503](docs/screenshots/http-golden-path/failed.png) | `probe_up=0`, one open alert |
+| Recovered | [HTTP 200 recovery](docs/screenshots/http-golden-path/recovered.png) | `probe_up=1`, zero open / one resolved alert; previous collector error cleared |
+| Other tenant | [Scoped empty view](docs/screenshots/http-golden-path/other-tenant.png) | First tenant's source and rules absent |
+
+The [redacted report](docs/screenshots/http-golden-path/report.json) records database phase checks and audit metadata. The harness checks anonymous/cross-tenant access, audit UPDATE/DELETE rejection and public egress denial. This is local synthetic HTTPS acceptance; real provider integrations, external alert delivery and production deployment remain separate validation work.
+
+## Sprint 2 — infrastructure monitoring
+
+The [infrastructure acceptance guide](docs/INFRASTRUCTURE_MONITORING.md) documents the next slice of the HTTP reference architecture: scoped AWS/Kubernetes discovery, versioned metric/alert activation and an operational **VM Health** screen with collector freshness, filters, clickable status counts, evidence and alert history. Overview uses the same scoped health API.
+
+Run `backend/.venv/bin/python scripts/infrastructure-acceptance.py` with the guide's dependencies and Playwright settings. It verifies six resources through healthy → failed → recovered, PostgreSQL observations and stable alert resolution, real browser interactions, tenant negatives and audit history. [Runtime report](docs/screenshots/infrastructure/report.json) and actual screenshots: [configured](docs/screenshots/infrastructure/configured.png), [healthy](docs/screenshots/infrastructure/healthy.png), [failed](docs/screenshots/infrastructure/failed.png), [recovered](docs/screenshots/infrastructure/recovered.png), [other tenant](docs/screenshots/infrastructure/other-tenant.png).
+
+**Evidence origins:** Linux telemetry is live on the local worker. AWS uses controlled boto3/CloudWatch responses, Kubernetes uses an authenticated certificate-verified controlled API, and Windows uses controlled native API inputs. Genuine AWS sandbox, Kubernetes cluster and Windows installation acceptance remain pending. Native Windows collection requires a Windows worker. The guide lists sandbox inputs and deployment restrictions; remote CI, independent PR review and merge remain separate gates.
+
+## Sprint 3 — Pentaho ETL monitoring
+
+The [ETL monitoring guide](docs/PENTAHO_ETL_MONITORING.md) documents authenticated read-only Carte polling, No Run/grace, Long Running, runtime SLA evaluation, source entries/logs and host-health correlation. The ETL drawer now shows database-backed timelines, stable condition events and clickable execution history. Authorized investigation transitions/notes use the signed-in operator; a recovered execution preserves the previous failure and its investigation.
+
+Run `backend/.venv/bin/python scripts/etl-acceptance.py` with the guide's prerequisites. The controlled gate passes seven phases, six execution histories, four stable alert-condition references, live Linux process correlation, migration/security/tenant negatives and **11 actual Playwright captures**. [Runtime report](docs/screenshots/etl/report.json); key screenshots: [No Run](docs/screenshots/etl/no-run.png), [SLA breach](docs/screenshots/etl/sla-breach.png), [failed](docs/screenshots/etl/failed.png), [investigation](docs/screenshots/etl/investigation.png), [recovered](docs/screenshots/etl/recovered.png), [historical failure](docs/screenshots/etl/historical-failure.png), [other tenant](docs/screenshots/etl/other-tenant.png).
+
+**Evidence origin:** a controlled authenticated TLS Carte-shaped API and real local Linux telemetry. Genuine Carte acceptance is separately **pending**. [The Sprint 1–3 reassessment](docs/SPRINT_REASSESSMENT.md) records successful HTTP/infrastructure regressions and the remaining PR, live-provider, UI/reporting and release gates. Live AWS/Agent Toolkit setup is paused; controlled development can continue.
+
 ## UI Tour — Frontend
 
 The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.
 
-> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health**, **APIs & Services**, **Incidents** and **Reports** currently render placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
+> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health** now has the Sprint 2 data-backed implementation and controlled browser evidence above. **APIs & Services**, **Incidents** and **Reports** remain placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
 
 ### 1. Operations Overview
 
@@ -55,7 +91,7 @@ Key features:
 
 **Purpose:** Provide a dedicated operational view for customer Data Sources and their infrastructure health.
 
-Planned/next-stage capabilities:
+Implemented in the Sprint 2 development branch, with the evidence origins described above:
 - CPU, memory and disk monitoring.
 - Service/process/application health.
 - Data Source-level status and conditions.

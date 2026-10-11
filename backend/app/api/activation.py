@@ -14,7 +14,7 @@ router=APIRouter(prefix="/api/v1/data-sources",tags=["Monitoring Activation"])
 
 class ActivationRequest(BaseModel):
     model_config=ConfigDict(extra="forbid")
-    remote_worker_id:uuid.UUID
+    remote_worker_id:uuid.UUID | None=None
     rule_version_ids:list[uuid.UUID]=Field(default_factory=list,max_length=100)
     include_templates:bool=True
 

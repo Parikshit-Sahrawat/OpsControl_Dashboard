@@ -135,7 +135,7 @@ class IdentityMiddleware(BaseHTTPMiddleware):
             elif path.startswith("/api/v1/monitoring/templates") and not principal.platform_admin:
                 return _audit_denial(principal, 403, path)
             elif not principal.platform_admin and not any(role == "org_admin" for role in principal.roles.values()):
-                investigation_route = "/investigation/" in path
+                investigation_route = "/investigation/" in path or path.endswith('/correlation')
                 if not (investigation_route and any(role == "operator" for role in principal.roles.values())):
                     return _audit_denial(principal, 403, path)
         ctx = current_principal.set(principal)

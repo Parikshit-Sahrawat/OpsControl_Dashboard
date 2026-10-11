@@ -24,7 +24,7 @@ MAX_ALERT_EVIDENCE = 50
 
 
 def _anchor(history: JobOrderHistory):
-    return history.detected_at or history.ended_at or history.started_at
+    return history.ended_at or history.detected_at or history.started_at
 
 
 def _resource_ids(db: Session, vm_id):
@@ -102,7 +102,7 @@ def correlate_execution(
         .join(MetricDefinition, MetricDefinition.id == MetricSample.metric_definition_id)
         .where(
             MetricSample.organization_id == job_order.organization_id,
-            MetricDefinition.resource_id.in_(resource_ids),
+            or_(MetricDefinition.resource_id.in_(resource_ids), MetricDefinition.data_source_id == job_order.host_data_source_id) if job_order.host_data_source_id else MetricDefinition.resource_id.in_(resource_ids),
             MetricSample.observed_at >= start,
             MetricSample.observed_at <= end,
         )
@@ -115,7 +115,7 @@ def correlate_execution(
         .join(LogSource, LogSource.id == LogEvent.log_source_id)
         .where(
             LogEvent.organization_id == job_order.organization_id,
-            LogSource.resource_id.in_(resource_ids),
+            or_(LogSource.resource_id.in_(resource_ids), LogSource.data_source_id == job_order.host_data_source_id) if job_order.host_data_source_id else LogSource.resource_id.in_(resource_ids),
             LogEvent.observed_at >= start,
             LogEvent.observed_at <= end,
             LogEvent.severity.in_([ "ERROR", "CRITICAL", "WARNING" ]),
@@ -129,7 +129,7 @@ def correlate_execution(
         .join(MetricDefinition, MetricDefinition.id == AlertState.metric_definition_id)
         .where(
             AlertState.organization_id == job_order.organization_id,
-            MetricDefinition.resource_id.in_(resource_ids),
+            or_(MetricDefinition.resource_id.in_(resource_ids), MetricDefinition.data_source_id == job_order.host_data_source_id) if job_order.host_data_source_id else MetricDefinition.resource_id.in_(resource_ids),
             or_(
                 (AlertState.last_evaluated_at >= start) & (AlertState.last_evaluated_at <= end),
                 ((AlertState.status == "OPEN") & (AlertState.first_triggered_at <= end)),
@@ -155,6 +155,7 @@ def correlate_execution(
             anchor_at=anchor,
             window_start=start,
             window_end=end,
+            summary=_summary(_category(alerts, logs), _confidence(alerts, logs), alerts, logs, metrics),
         )
         db.add(record)
         db.flush()

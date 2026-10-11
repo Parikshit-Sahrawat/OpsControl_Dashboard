@@ -16,6 +16,7 @@ from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, R
 from sqlalchemy import delete, select
 
 from app.db.session import SessionLocal
+from app.security.models import WorkerIdentity  # Register collector FK metadata in standalone workers.
 from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample
 from app.worker.alert_engine import evaluate_metric_sample
 from app.worker.credentials import CredentialProviderError, resolve_basic_auth
@@ -228,9 +229,18 @@ class PentahoAdapter(CollectorAdapter):
     async def collect(self, collector):
         from app.worker.pentaho_status import get_job_status, PentahoStatusError
         try:
+            # Validate tenant association before resolving privileged credentials
+            # or making an outbound request, including legacy Collector API paths.
+            from uuid import UUID
+            from app.models import JobOrder
+            with SessionLocal() as db:
+                job = db.get(JobOrder, UUID((collector.configuration or {})['job_order_id']))
+                source = db.get(DataSource, collector.data_source_id)
+                if not job or not source or job.organization_id != source.organization_id:
+                    raise PentahoStatusError('Job Order unavailable in source organization')
             payload = await asyncio.to_thread(get_job_status, collector.configuration or {})
             return CollectionResult(payload["outcome"]=="SUCCESS", "Read-only Pentaho execution status collected", payload)
-        except (PentahoStatusError, CredentialProviderError, ValueError):
+        except (PentahoStatusError, CredentialProviderError, ValueError, KeyError, TypeError):
             return CollectionResult(False, "Pentaho status configuration, credentials or network policy invalid",
                                     {"outcome":"CONFIGURATION_ERROR"})
         except Exception:
@@ -247,6 +257,17 @@ class LinuxHostMetricsAdapter(CollectorAdapter):
             return CollectionResult(payload["outcome"]=="SUCCESS","Read-only Linux host/process metrics",payload)
         except (DeepCheckError,ValueError,OSError):
             return CollectionResult(False,"Host configuration or metrics unavailable",{"outcome":"CONFIGURATION_ERROR"})
+
+class WindowsHostMetricsAdapter(CollectorAdapter):
+    collector_type="WINDOWS_HOST"
+
+    async def collect(self,collector):
+        from app.worker.deep_checks import windows_host_health,DeepCheckError
+        try:
+            payload=await asyncio.to_thread(windows_host_health,collector.configuration or {})
+            return CollectionResult(payload['outcome']=='SUCCESS','Read-only Windows host/process metrics',payload)
+        except (DeepCheckError,ValueError,OSError):
+            return CollectionResult(False,'Windows host metrics unavailable',{'outcome':'CONFIGURATION_ERROR'})
 
 class ApacheStatusAdapter(CollectorAdapter):
     collector_type="APACHE"
@@ -281,6 +302,7 @@ ADAPTERS = {
     "KUBERNETES": KubernetesAdapter(),
     "K8S": KubernetesAdapter(),
     "LINUX_HOST": LinuxHostMetricsAdapter(),
+    "WINDOWS_HOST": WindowsHostMetricsAdapter(),
     "APACHE": ApacheStatusAdapter(),
     "TOMCAT": TomcatStatusAdapter(),
 }
@@ -311,6 +333,9 @@ def _extract_metric_value(metric, result):
     if extract == "AVAILABILITY":
         return 1.0 if result.success else 0.0
     mapping = {
+        "HOST_CPU_PERCENT": payload.get("cpu_percent"),
+        "HOST_PROCESS_RUNNING": 1 if payload.get("process_running") is True else 0 if payload.get("process_running") is False else None,
+        "K8S_NODE_READY": 1 if payload.get("node_ready") is True else 0 if payload.get("node_ready") is False else None,
         "HOST_MEMORY_USED_PERCENT": payload.get("memory_used_percent"),
         "HOST_DISK_USED_PERCENT": payload.get("disk_used_percent"),
         "APACHE_BUSY_WORKERS": payload.get("busy_workers"),
@@ -328,7 +353,9 @@ def _extract_metric_value(metric, result):
     if value is None:
         return None
     try:
-        return float(value)
+        import math
+        numeric=float(value)
+        return numeric if math.isfinite(numeric) else None
     except (TypeError, ValueError):
         return None
 
@@ -378,41 +405,8 @@ def _purge_expired_metric_samples(db, now):
 
 
 def _persist_pentaho_history(collector, result, observed_at, db):
-    """Deduplicate Carte status polls by stable execution ID.
-
-    Never invent a job start timestamp: detection time is not source start.
-    A failed poll does not invent an ETL failure; it is monitoring blindness.
-    """
-    payload=result.payload or {}
-    if collector.collector_type.upper()!="PENTAHO" or payload.get("provider")!="PENTAHO":
-        return
-    from uuid import UUID
-    from app.models import JobOrder,JobOrderHistory,ExecutionType,ExecutionStatus
-    cfg=collector.configuration or {}
-    try: job_id=UUID(cfg["job_order_id"])
-    except (ValueError,KeyError,TypeError): return
-    job=db.get(JobOrder,job_id)
-    source=db.get(DataSource,collector.data_source_id)
-    if not job or not source or job.organization_id!=source.organization_id:
-        return
-    execution_id=payload.get("execution_id")
-    if not execution_id: return
-    hist=db.scalar(select(JobOrderHistory).where(
-        JobOrderHistory.job_order_id==job_id,
-        JobOrderHistory.provider_execution_id==execution_id))
-    status=ExecutionStatus(payload["execution_status"])
-    if not hist:
-        hist=JobOrderHistory(job_order_id=job_id,provider_execution_id=execution_id,
-            execution_type=ExecutionType.SCHEDULED,status=status,detected_at=observed_at,
-            source_result="CARTE_READ_ONLY")
-        db.add(hist)
-    else:
-        hist.status=status
-        hist.detected_at=observed_at
-    if status in {ExecutionStatus.SUCCESS,ExecutionStatus.FAILED}:
-        hist.ended_at=observed_at  # observation time; source end not available
-    if payload.get("nr_errors",0):
-        hist.source_error_code="CARTE_REPORTED_ERRORS"
+    from app.services.etl_monitoring import ingest_snapshot
+    ingest_snapshot(collector, result, observed_at, db)
 
 
 async def execute_collector(collector_id):
@@ -446,6 +440,13 @@ async def execute_collector(collector_id):
 
         ended_at = datetime.now(timezone.utc)
         run = _persist_run(collector, result, started_at, ended_at, db)
+        from app.worker.infrastructure import INFRA_TYPES, normalize, safe_evidence
+        if collector.collector_type.upper() in INFRA_TYPES:
+            from app.models import InfrastructureEvidence
+            db.add(InfrastructureEvidence(organization_id=data_source.organization_id,
+                data_source_id=data_source.id,collector_id=collector.id,collector_run_id=run.id,
+                observed_at=ended_at,provider=normalize(collector.collector_type),
+                payload=safe_evidence(result.payload)))
         samples = _persist_metric_samples(collector, run, result, ended_at, db)
         _persist_pentaho_history(collector, result, ended_at, db)
         for sample in samples:

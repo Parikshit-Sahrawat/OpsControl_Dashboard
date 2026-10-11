@@ -1,7 +1,7 @@
 """Idempotent, scoped activation of independent rule versions and template bundles.
 
-Only explicitly approved remote HTTP workers can be made ACTIVE. Resource
-discovery and configuration attachment do not implicitly start monitoring.
+Activation binds HTTP to approved remote identities and infrastructure to
+platform-admin-approved local workload identities. Discovery stays inactive.
 """
 import hashlib
 import json
@@ -18,6 +18,8 @@ from app.services.rule_models import (MonitoringRuleCatalog,MonitoringRuleVersio
     MonitoringActivation,MonitoringRuleBinding)
 from app.api.rule_catalogs import validate_definition
 from app.worker.egress import EgressDenied,check_target
+from app.worker.infrastructure import INFRA_TYPES,METRICS,PROVIDER_METRICS,normalize,validate_config
+from app.security.scope import current_principal
 
 def now(): return datetime.now(timezone.utc)
 def stable(namespace,component):
@@ -64,8 +66,10 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     source=db.get(DataSource,source_id)
     if source is None: raise HTTPException(404,"Data source not found")
     if not source.enabled: raise HTTPException(409,"Data source disabled")
+    provider=normalize(source.source_type)
+    infrastructure=provider in INFRA_TYPES
     worker=db.get(WorkerIdentity,worker_id) if worker_id else None
-    if worker is None or not worker.enabled or worker.organization_id!=source.organization_id or worker.expires_at.replace(tzinfo=timezone.utc)<=now():
+    if not infrastructure and (worker is None or not worker.enabled or worker.organization_id!=source.organization_id or worker.expires_at.replace(tzinfo=timezone.utc)<=now()):
         raise HTTPException(422,"An active organization-scoped remote worker is required")
     rules=_rules(db,source,version_ids,include_templates)
     if not rules: raise HTTPException(422,"Select at least one metric, log or alert rule")
@@ -78,25 +82,40 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
             raise HTTPException(422,"Alert rule references a missing metric rule")
     effective=resolve_data_source_configuration(db,source.id) if include_templates else {"collector":{}}
     cc=effective.get("collector") or {}
-    if cc.get("type", "HTTP").upper() not in {"HTTP","API"}:
-        raise HTTPException(422,"Only remote HTTP/API activation is supported; other providers remain BLOCKED")
-    config={"url":cc.get("url") or source.endpoint,
-            "expected_status":cc.get("expected_status",200),
-            "timeout_seconds":cc.get("timeout_seconds",8)}
-    if not isinstance(config["url"],str): raise HTTPException(422,"Target HTTPS URL is missing")
-    try:
-        check_target(config["url"],worker.allowed_hosts,worker.allowed_cidrs)
-    except EgressDenied as exc:raise HTTPException(422,str(exc))
-    if type(config["expected_status"]) is not int or not 100<=config["expected_status"]<=599:
-        raise HTTPException(422,"Invalid expected_status")
-    if type(config["timeout_seconds"]) is not int or not 1<=config["timeout_seconds"]<=10:
-        raise HTTPException(422,"Timeout must be 1..10 seconds")
-    try:
-        interval=int(cc.get("interval_seconds",60))
+    if infrastructure:
+        principal=current_principal.get()
+        if not principal or not principal.platform_admin:
+            raise HTTPException(403,'Platform administrator must authorize local infrastructure workers')
+        if worker_id is not None:
+            raise HTTPException(422,'Infrastructure runs on an explicitly deployed local worker, not the HTTP remote agent')
+        if 'LOG' in types: raise HTTPException(422,'Infrastructure activation currently supports metric and alert rules')
+        if not metric_names <= PROVIDER_METRICS[provider]: raise HTTPException(422,'Metric incompatible with infrastructure provider')
+        try: config=validate_config(provider,source.connection_config or {})
+        except ValueError as error: raise HTTPException(422,str(error))
+        collector_type=provider
+    else:
+        from app.api.rule_catalogs import HTTP_METRICS
+        if not metric_names <= HTTP_METRICS: raise HTTPException(422,'Metric incompatible with HTTP provider')
+        if cc.get("type", "HTTP").upper() not in {"HTTP","API"}:
+            raise HTTPException(422,"Unsupported remote HTTP collector type")
+        config={"url":cc.get("url") or source.endpoint,
+                "expected_status":cc.get("expected_status",200),
+                "timeout_seconds":cc.get("timeout_seconds",8)}
+        if not isinstance(config["url"],str): raise HTTPException(422,"Target HTTPS URL is missing")
+        try: check_target(config["url"],worker.allowed_hosts,worker.allowed_cidrs)
+        except EgressDenied as exc:raise HTTPException(422,str(exc))
+        if type(config["expected_status"]) is not int or not 100<=config["expected_status"]<=599:
+            raise HTTPException(422,"Invalid expected_status")
+        if type(config["timeout_seconds"]) is not int or not 1<=config["timeout_seconds"]<=10:
+            raise HTTPException(422,"Timeout must be 1..10 seconds")
+        collector_type='HTTP'
+    try: interval=int(cc.get("interval_seconds",60))
     except (ValueError,TypeError): raise HTTPException(422,"Invalid polling interval")
     if interval<30 or interval>86400: raise HTTPException(422,"Interval must be 30..86400 seconds")
     plan={"source_id":str(source.id),"organization_id":str(source.organization_id),
-          "remote_worker_id":str(worker.id),"collector":{"type":"HTTP","name":"opscontrol-http",
+          "remote_worker_id":str(worker.id) if worker else None,
+          "execution_mode":"LOCAL_WORKER" if infrastructure else "REMOTE_HTTP",
+          "collector":{"type":collector_type,"name":"opscontrol-"+collector_type.lower(),
           "interval_seconds":interval,"configuration":config},"rules":rules}
     fingerprint=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(",",":")).encode()).hexdigest()
     plan["fingerprint"]=fingerprint
@@ -128,15 +147,19 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True):
         return {"status":"ACTIVE","changed":False,"version":existing.version,
                 "collector_id":str(existing.collector_id)}
     if existing: _disable_previous(db,existing)
-    stable_id=stable(source.id,"collector:http")
+    collector_type=plan["collector"]["type"]
+    stable_id=stable(source.id,"collector:"+collector_type.lower())
+    if existing and existing.collector_id!=stable_id:
+        previous=db.get(Collector,existing.collector_id)
+        if previous: previous.enabled=False
     collector=db.get(Collector,stable_id)
     if collector is None:
         collector=Collector(id=stable_id,data_source_id=source.id,
-            name="opscontrol-http",collector_type="HTTP")
+            name=plan["collector"]["name"],collector_type=collector_type)
         db.add(collector)
     elif collector.data_source_id!=source.id:
         raise HTTPException(409,"Collector identity collision")
-    collector.collector_type="HTTP"
+    collector.collector_type=collector_type
     collector.configuration=plan["collector"]["configuration"]
     collector.interval_seconds=plan["collector"]["interval_seconds"]
     collector.remote_worker_id=worker_id
@@ -175,7 +198,14 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True):
                 row.enabled=True
                 row.collector_id=collector.id
                 row.collection_interval_seconds=collector.interval_seconds
-                row.query_config={"adapter":"remote_http","rule_version_id":rule["version_id"]}
+                row.resource_type="INFRASTRUCTURE" if collector_type in INFRA_TYPES else "APPLICATION"
+                row.metric_type=data.get('metric_type','GAUGE')
+                if collector_type in INFRA_TYPES:
+                    extract,unit=METRICS[data['name']]
+                    row.query_config={'extract':extract,'rule_version_id':rule['version_id']}
+                    row.unit=unit
+                else:
+                    row.query_config={"adapter":"remote_http","rule_version_id":rule["version_id"]}
                 metrics[data["name"]]=row
             elif kind=="LOG":
                 row=db.get(LogSource,identity)

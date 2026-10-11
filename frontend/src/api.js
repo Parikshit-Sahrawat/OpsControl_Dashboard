@@ -15,9 +15,9 @@ const secondsToText = (seconds) => {
   const m = Math.floor(seconds / 60), s = seconds % 60;
   return m ? (m + "m " + String(s).padStart(2,"0") + "s") : (s + "s");
 };
-const timeText = (value) => value ? new Date(value).toLocaleTimeString("en-IN", { hour12: false }) : null;
+const timeText = (value) => value ? new Date(value).toLocaleTimeString("en-IN", { hour12: false, timeZone: "Asia/Kolkata" }) : null;
 export function mapExecution(item) {
-  return { id:item.id, jobOrderId:item.job_order_id, name:item.job_name, server:item.server, environment:item.environment, executionType:item.execution_type, start:timeText(item.started_at), end:timeText(item.ended_at), duration:item.started_at && item.ended_at ? secondsToText(Math.max(0,(new Date(item.ended_at)-new Date(item.started_at))/1000)) : null, expectedRuntime:secondsToText(item.expected_runtime_seconds), sla:secondsToText(item.sla_seconds), status:item.status, failedStep:item.failed_step, incident:item.incident_number };
+  return { id:item.id, jobOrderId:item.job_order_id, organizationId:item.organization_id, name:item.job_name, server:item.server, environment:item.environment, executionType:item.execution_type, start:timeText(item.started_at), end:timeText(item.ended_at), duration:secondsToText(item.duration_seconds), expectedRuntime:secondsToText(item.expected_runtime_seconds), sla:secondsToText(item.sla_seconds), status:item.status, failedStep:item.failed_step, incident:item.incident_number, slaStatus:item.sla_status, monitoringStatus:item.monitoring_status, providerExecutionId:item.provider_execution_id };
 }
 export async function fetchExecutions(params = {}) {
   const query = new URLSearchParams();
@@ -28,6 +28,7 @@ export async function fetchExecutions(params = {}) {
   return (await request("/api/v1/etl/executions?" + query.toString())).map(mapExecution);
 }
 export function fetchExecution(id) { return request("/api/v1/etl/executions/" + id); }
+export function fetchExecutionEvidence(id) { return request("/api/v1/etl/executions/" + id + "/evidence"); }
 export function fetchInvestigation(id) { return request("/api/v1/etl/executions/" + id + "/investigation"); }
 export function transitionInvestigation(id,newStatus,operator="Operator A",comment=null) { return request("/api/v1/etl/executions/" + id + "/investigation/transitions",{method:"POST",body:JSON.stringify({new_status:newStatus,operator,comment})}); }
 export function addInvestigationNote(id,text,operator="Operator A",evidence_reference=null) { return request("/api/v1/etl/executions/" + id + "/investigation/notes",{method:"POST",body:JSON.stringify({operator,text,evidence_reference})}); }

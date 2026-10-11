@@ -42,6 +42,16 @@ flowchart LR
 2. **Investigation:** Source execution -> read-only normalized ETL facts -> historical record -> scoped evidence correlation -> alert -> notification -> operator review.
 3. **Security:** Identity -> allowed organizations/roles -> policy decision -> SQL scope. The UI's selected organizations are preferences only, never authorization.
 
+## Sprint 3 ETL evidence path
+
+The [Pentaho ETL implementation](../../PENTAHO_ETL_MONITORING.md) uses the existing scheduler, scoped Data Source/Collector and CollectorRun transaction. A platform-approved local collector reads a pinned, authenticated Carte inventory and exact-job status details. The worker validates Job Order/source ownership before credential resolution or network access. Failed polls preserve source facts and report collector ERROR.
+
+The ETL ingestion service deduplicates JobOrderHistory by Job Order/provider ID, preserves source timestamps and terminal facts, stores bounded redacted opt-in evidence, and persists job-entry results. Daily timezone/window/grace evaluation creates an explicit OpsControl No Run diagnosis only after complete successful inventory evidence; unknown source timing suppresses absence inference. Runtime thresholds are captured per execution. Condition changes append stable Job Order/condition references to AlertIncidentEvent; external ETL delivery and rule-catalog-based ETL activation are follow-up work.
+
+JobOrder has an explicit tenant-checked host Data Source association, so failure correlation reads actual same-organization host samples and native infrastructure alerts in its time window. Correlation is supporting evidence, not RCA. The read-only execution/evidence APIs back current ETL rows, logs, timelines and clickable retained history. Investigation reads do not create state, and authorized transitions/notes record the authenticated actor. Successful recovery never rewrites a failed history or resolves an investigation automatically.
+
+The controlled fixture uses actual authenticated HTTPS and a disposable real Linux process. Its evidence origin remains distinct from genuine Carte compatibility/retention acceptance. See the [Sprint 1–3 reassessment](../../SPRINT_REASSESSMENT.md) for the acceptance gates and remaining UI/release work.
+
 ## Deployment topology
 **Dev and CI:** React/Vite + one FastAPI app + PostgreSQL 17 + separately launched worker. CI uses ephemeral database and synthetic sources; no live customer integration. **Later deployment:** package existing modules into separate API/worker containers (same codebase) with managed PostgreSQL and external secrets. EKS/Helm/GitOps/Terraform follows functional acceptance rather than drives design.
 
@@ -52,8 +62,15 @@ flowchart LR
 - UI distinguishes `no data`, `loading`, `stale`, `collector unavailable`, and actual business failure.
 - Collection intervals and the UI's 5-second refresh are separate concerns; bound API query volume.
 
-## Known boundaries from implementation
-The current API adapter has a functioning **HTTP Basic** execution path and a confirmed metric sample; HTTPS currently needs correction (#4). WINDOWS, LINUX and PENTAHO are transport stubs (#7). Current wizard registers `OTEL` but the worker lacks an OTEL adapter (#8). Clarify whether OTEL is event ingestion via collector/agent or a polling adapter before production.
+## Implemented HTTP and infrastructure reference flows (Sprint 2)
+
+HTTP activation pins immutable Metric/Log/Alert Rule versions and binds an approved organization-scoped remote worker. Actual TLS health evidence reaches native samples/logs and alert OPEN → RESOLVED transitions. [HTTP golden path](../../HTTP_GOLDEN_PATH.md) contains the local browser/database evidence.
+
+Infrastructure activation uses the same versioned desired configuration and stable materialized identities. A platform administrator approves discovery/import and collection using local deployed workload identity; tenant administrators cannot enumerate provider inventory through a shared identity. AWS validates its expected account; Kubernetes uses only its in-cluster service account and approved Node names; host adapters inspect the machine running the worker. Discovery imports inactive inventory keyed by `(organization_id, discovery_external_id)`, so renaming does not create a second resource.
+
+Each local run persists `CollectorRun`, a sanitized `InfrastructureEvidence` observation carrying organization/source/collector/run ownership, available `MetricSample` rows and native alert evaluations. VM Health and Overview query scoped infrastructure endpoints. Missing or stale observations remain UNKNOWN; disabled collectors remain distinct. The HTTP remote agent cannot execute infrastructure tasks.
+
+[Infrastructure acceptance](../../INFRASTRUCTURE_MONITORING.md) records actual Linux observations and controlled AWS, authenticated TLS Kubernetes and Windows lifecycle evidence. Genuine AWS/cluster/Windows gates remain separate. The local scheduler requires a single-worker guarantee; multi-host routing and leases are not delivered by this slice. Deploy the host worker on its intended host; it cannot centrally poll arbitrary remote VMs. ETL/Pentaho genuine acceptance and wider UI/release work remain follow-ups.
 
 ## Open design choices
 OIDC identity provider, expected tenant scale, metrics cardinality, SLO targets, retention and data residency, first Pentaho read API, whether notification providers will be enabled in the first operational release.

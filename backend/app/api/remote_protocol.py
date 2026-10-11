@@ -280,6 +280,7 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
         if payload.outcome=="SUCCESS":
             collector.last_success_at=now
             collector.status="SUCCESS"
+            collector.last_error=None
         else:
             collector.last_error_at=now
             collector.status="ERROR"

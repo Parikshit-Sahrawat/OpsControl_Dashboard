@@ -53,20 +53,24 @@ def to_out(catalog,versions):
             "name":catalog.name,"kind":catalog.kind,
             "versions":[{"id":str(v.id),"version":v.version,"definition":v.definition} for v in versions]}
 
+from app.worker.infrastructure import METRICS
+
+HTTP_METRICS={"probe_up","http_response_time_ms","http_up","http_availability","response_time_ms"}
+
 def validate_definition(kind,definition):
     if not isinstance(definition,dict): raise HTTPException(422,"Rule definition must be JSON")
     if kind=="METRIC":
-        if definition.get("name") not in {"probe_up","http_response_time_ms","http_up","http_availability","response_time_ms"}:
-            raise HTTPException(422,"Only supported HTTP metric names can be activated in this slice")
+        if definition.get("name") not in HTTP_METRICS | set(METRICS):
+            raise HTTPException(422,"Unsupported monitoring metric name")
         if definition.get("metric_type","GAUGE")!="GAUGE":
-            raise HTTPException(422,"HTTP metrics require GAUGE type")
+            raise HTTPException(422,"Monitoring metrics require GAUGE type")
     elif kind=="LOG":
         if definition.get("source_type") not in {"HTTP","API"}:
             raise HTTPException(422,"Only HTTP/API structured event sources are supported")
         if definition.get("parser_type","RAW")!="RAW":
             raise HTTPException(422,"Only safe RAW structured event parsing is supported")
     elif kind=="ALERT":
-        if definition.get("metric_name") not in {"probe_up","http_response_time_ms","http_up","http_availability","response_time_ms"}:
+        if definition.get("metric_name") not in HTTP_METRICS | set(METRICS):
             raise HTTPException(422,"Alert metric_name must reference a supported active metric")
         if definition.get("operator") not in {"GT","GTE","LT","LTE","EQ","NE"}:
             raise HTTPException(422,"Unsupported alert operator")

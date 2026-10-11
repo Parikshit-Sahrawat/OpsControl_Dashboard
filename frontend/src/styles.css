@@ -172,3 +172,17 @@
 .monitoring-preview{border:1px solid #39566e;border-radius:8px;padding:14px;background:#0e2136;overflow-wrap:anywhere}
 .monitoring-preview p{margin:7px 0;color:#bccfe0}
 @media(max-width:700px){.monitoring-setup-grid{grid-template-columns:1fr}.monitoring-setup-actions button{width:100%}}
+
+/* Infrastructure evidence view */
+.vm-health .kpi-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin-bottom:18px}
+.vm-health .infrastructure-kpi{color:#e8eef7;text-align:left;font:inherit;cursor:pointer}
+.vm-health .infrastructure-kpi p{font-size:28px;font-weight:800;margin:8px 0 0}
+.vm-health .infrastructure-kpi[aria-pressed=true]{border-color:#71b2ff;background:#102942}
+.vm-health .monitoring-setup-grid{grid-template-columns:2fr 1fr 1fr;margin-bottom:18px}
+.vm-health label{display:grid;gap:6px;color:#a9bad0}
+.vm-health input,.vm-health select{width:100%;background:#091829;border:1px solid #32475e;border-radius:8px;color:#eef4ff;padding:10px;font:inherit}
+.vm-health button:not(.card):not(.text-link){border:1px solid #365777;border-radius:8px;background:#16314f;color:#eef4ff;padding:9px 12px;cursor:pointer}
+.vm-health button:focus-visible,.vm-health input:focus-visible,.vm-health select:focus-visible{outline:2px solid #71b2ff;outline-offset:3px}
+.vm-health pre{overflow:auto;padding:14px;background:#07111f;border-radius:8px;font-size:12px}
+.vm-health section{margin-bottom:18px;overflow-x:auto}
+@media(max-width:850px){.vm-health .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.vm-health .monitoring-setup-grid{grid-template-columns:1fr}}

@@ -5,7 +5,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
 from app.core.config import settings
-from app.api import etl, investigations, health, monitoring, organizations, resource_management, remote_protocol, rule_catalogs, activation, monitoring_diagnostics, discovery
+from app.api import infrastructure, etl, investigations, health, monitoring, organizations, resource_management, remote_protocol, rule_catalogs, activation, monitoring_diagnostics, discovery
 import app.services.rule_models  # register immutable rule/activation tables
 import app.worker.remote_models  # register remote job/evidence tables
 from app.security.http import IdentityMiddleware, router as identity_router, worker_router
@@ -51,6 +51,7 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 app.include_router(health.router)
+app.include_router(infrastructure.router)
 app.include_router(identity_router)
 app.include_router(worker_router)
 app.include_router(remote_protocol.worker_router)
