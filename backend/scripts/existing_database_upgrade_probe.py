@@ -6,6 +6,8 @@ and Data Source existed beforehand and survive unchanged.
 """
 import subprocess
 import uuid
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import text
 from app.db.session import engine
 
@@ -35,7 +37,8 @@ def main():
         """),{"id":source}).all()
         assert len(rows)==1 and rows[0].name=="Pre-existing fictional source" and rows[0].code=="UPGRADE-LAB",rows
         rev=connection.scalar(text("SELECT version_num FROM alembic_version"))
-        assert rev=="0018_pentaho_execution_identity",rev
+        expected_head=ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
+        assert rev==expected_head,(rev,expected_head)
         connection.execute(text("DELETE FROM data_sources WHERE id=:id"),{"id":source})
         connection.execute(text("DELETE FROM organizations WHERE id=:id"),{"id":org})
     print("NONEMPTY DATABASE MIGRATION PRESERVATION PASSED")

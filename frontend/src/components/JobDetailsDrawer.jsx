@@ -26,12 +26,8 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
     return () => { active = false; };
   }, [job?.id]);
   const runtimeSummary = useMemo(() => {
-    if (details?.slaStatus) return details.slaStatus;
-    if (job?.status === "SUCCESS") return "MET";
-    if (job?.status === "FAILED") return "NOT MET";
-    if (job?.status === "LONG_RUNNING") return "AT RISK";
-    return "ON TRACK";
-  }, [job?.status, details?.slaStatus]);
+    return details?.slaStatus || job?.slaStatus || "UNKNOWN";
+  }, [job?.slaStatus, details?.slaStatus]);
 
   const runCorrelation = async () => {
     setAnalyzingCorrelation(true);

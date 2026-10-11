@@ -47,11 +47,19 @@ Run `backend/.venv/bin/python scripts/etl-acceptance.py` with the guide's prereq
 
 **Evidence origin:** a controlled authenticated TLS Carte-shaped API and real local Linux telemetry. Genuine Carte acceptance is separately **pending**. [The Sprint 1–3 reassessment](docs/SPRINT_REASSESSMENT.md) records successful HTTP/infrastructure regressions and the remaining PR, live-provider, UI/reporting and release gates. Live AWS/Agent Toolkit setup is paused; controlled development can continue.
 
+## Sprint 4 — operational dashboards and reporting
+
+[Operational dashboards and virtual lab](docs/OPERATIONAL_DASHBOARDS.md) replaces the APIs, Incidents and Reports placeholders with organization-scoped backend evidence. Overview KPIs navigate to working screens; APIs show collector freshness and HTTP/alert history; local incidents connect source recovery, operator investigation and historical ETL/resource drill-downs. Reports provide bounded windows, HTTP sampled success, ETL runtime SLA with explicit exclusions, operational history and JSON export.
+
+Run `backend/.venv/bin/python scripts/operational-acceptance.py` in the prepared Python virtual environment. The disposable PostgreSQL/TLS/Chromium lab uses actual synthetic HTTP **200 → 503 → 200**, authenticated Carte-shaped reads and real local Linux telemetry. It checks every primary tab plus platform Access Management, report denominators/exports, organization-switch races, viewer/mixed-role/tenant/worker negatives, populated migration backfill, incident relapse and append-only activity. No live AWS or genuine Carte credentials are needed.
+
+**Local synthetic acceptance PASS (2026-10-11):** backend/security/tenant checks, frontend build and real browser journeys passed, with **31 actual Playwright PNGs** (20 NOC + 11 ETL regression). Separate HTTP and infrastructure regressions passed. Actual captures: [Overview](docs/screenshots/operational/overview.png), [VM Health](docs/screenshots/operational/vm-health.png), [APIs failure](docs/screenshots/operational/apis-failed.png), [operator investigation](docs/screenshots/operational/incident-operator-failed.png), [incident recovery/closure](docs/screenshots/operational/incident-operator-recovered.png), [Reports](docs/screenshots/operational/reports.png), [historical ETL drill-down](docs/screenshots/operational/reports-etl-history.png), [collector history](docs/screenshots/operational/reports-collector-history.png). The [guide](docs/OPERATIONAL_DASHBOARDS.md) links every primary screen and the [redacted runtime report](docs/screenshots/operational/report.json). Remote CI, independent review/merge and Sprint 5 release acceptance remain separate gates.
+
 ## UI Tour — Frontend
 
 The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.
 
-> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health** now has the Sprint 2 data-backed implementation and controlled browser evidence above. **APIs & Services**, **Incidents** and **Reports** remain placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
+> **Verified UI note:** The historical [Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md) describe earlier gaps. Sprints 2–4 add data-backed VM Health, APIs, Incidents and Reports; the actual PNG captures and runtime guides above record current evidence. Resource Manager configuration alone does not establish active monitoring. The SVG tour below remains illustrative.
 
 ### 1. Operations Overview
 

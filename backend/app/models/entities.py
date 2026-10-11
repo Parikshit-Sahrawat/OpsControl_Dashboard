@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, JSON
+from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, JSON
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -199,6 +199,45 @@ class AlertIncidentEvent(Base):
     severity: Mapped[str | None] = mapped_column(String(50))
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)
     history: Mapped["JobOrderHistory"] = relationship(back_populates="alert_events")
+
+class OperationalIncident(Base):
+    """One immutable source episode, separate from operator investigation state."""
+    __tablename__ = "operational_incidents"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    episode_key: Mapped[str] = mapped_column(String(120), nullable=False, unique=True)
+    source_kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    source_reference: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    alert_state_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("alert_states.id"))
+    history_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("job_order_histories.id"))
+    data_source_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("data_sources.id"))
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    severity: Mapped[str] = mapped_column(String(50), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="OPEN")
+    condition_status: Mapped[str] = mapped_column(String(20), nullable=False, default="ACTIVE")
+    opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    recovered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    organization: Mapped["Organization"] = relationship()
+    __table_args__ = (
+        CheckConstraint("status IN ('OPEN','ACKNOWLEDGED','INVESTIGATING','RESOLVED')", name="ck_incident_status"),
+        CheckConstraint("condition_status IN ('ACTIVE','RECOVERED')", name="ck_incident_condition"),
+        Index("ix_incident_org_opened", "organization_id", "opened_at"),
+    )
+
+class IncidentActivity(Base):
+    __tablename__ = "incident_activities"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    incident_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("operational_incidents.id"), nullable=False, index=True)
+    event_type: Mapped[str] = mapped_column(String(40), nullable=False)
+    actor: Mapped[str] = mapped_column(String(200), nullable=False)
+    occurred_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    text: Mapped[str | None] = mapped_column(Text)
+    previous_status: Mapped[str | None] = mapped_column(String(20))
+    new_status: Mapped[str | None] = mapped_column(String(20))
+    organization: Mapped["Organization"] = relationship()
+    incident: Mapped["OperationalIncident"] = relationship()
 
 
 class MonitoringTemplate(Base):

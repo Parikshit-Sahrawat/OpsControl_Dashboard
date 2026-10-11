@@ -1,0 +1,223 @@
+"""Tenant-scoped NOC evidence and bounded, observation-based reporting."""
+from datetime import datetime, timedelta, timezone
+from typing import Literal
+from uuid import UUID
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy import select, func, case
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models import (DataSource, Collector, CollectorRun, MetricDefinition, AlertState,
+    JobOrder, JobOrderHistory, OperationalIncident, IncidentActivity)
+from app.security.http import actor
+from app.services.incidents import activity
+
+router = APIRouter(prefix="/api/v1/operations", tags=["Operational Dashboards"])
+HTTP_TYPES = ("API", "HTTP", "HTTPS")
+def iso(value): return value.isoformat() if value else None
+def scoped(stmt, model, organization_id):
+    return stmt.where(model.organization_id.in_(organization_id)) if organization_id else stmt
+
+def run_item(run):
+    # Response bodies and transport credentials never belong in dashboard feeds.
+    return {"id": str(run.id), "collector_id": str(run.collector_id), "observed_at": iso(run.started_at),
+        "ended_at": iso(run.ended_at), "status": run.status, "outcome": run.outcome,
+        "http_status": run.http_status, "response_time_ms": run.response_time_ms}
+
+def service_snapshot(source, db):
+    collectors = db.scalars(select(Collector).where(Collector.data_source_id == source.id).order_by(Collector.name)).all()
+    values = []; now = datetime.now(timezone.utc)
+    for collector in collectors:
+        run = db.scalar(select(CollectorRun).where(CollectorRun.collector_id == collector.id)
+            .order_by(CollectorRun.started_at.desc(), CollectorRun.id.desc()).limit(1))
+        observed = run.started_at if run else None
+        if observed and not observed.tzinfo: observed = observed.replace(tzinfo=timezone.utc)
+        freshness = "NO_EVIDENCE" if not observed else "STALE" if (now-observed).total_seconds() > max(120, collector.interval_seconds*2+30) else "CURRENT"
+        values.append({"id": str(collector.id), "name": collector.name, "enabled": collector.enabled,
+            "status": collector.status, "freshness": freshness, "latest_run": run_item(run) if run else None})
+    metric_ids = select(MetricDefinition.id).where(MetricDefinition.data_source_id == source.id)
+    alerts = db.scalars(select(AlertState).where(AlertState.metric_definition_id.in_(metric_ids))
+        .order_by(AlertState.last_evaluated_at.desc()).limit(100)).all()
+    open_count = db.scalar(select(func.count()).select_from(AlertState).where(
+        AlertState.metric_definition_id.in_(metric_ids), AlertState.status == "OPEN")) or 0
+    enabled = [row for row in values if row["enabled"]]
+    if not source.enabled or not enabled: health = "DISABLED"
+    elif any(row["freshness"] != "CURRENT" for row in enabled): health = "UNKNOWN"
+    elif open_count or any(row["latest_run"]["status"] == "FAILED" for row in enabled): health = "CRITICAL"
+    elif any(row["latest_run"]["status"] != "SUCCESS" for row in enabled): health = "UNKNOWN"
+    else: health = "HEALTHY"
+    return {"id": str(source.id), "organization_id": str(source.organization_id), "name": source.name,
+        "health": health, "collectors": values, "open_alert_count": open_count,
+        "alerts": [{"id": str(row.id), "severity": row.severity, "status": row.status,
+            "message": row.message, "opened_at": iso(row.first_triggered_at), "resolved_at": iso(row.resolved_at)} for row in alerts]}
+
+@router.get("/services")
+def services(organization_id: list[UUID] = Query(default=[]), limit: int = Query(200, ge=1, le=500), db: Session = Depends(get_db)):
+    stmt = scoped(select(DataSource).where(DataSource.source_type.in_(HTTP_TYPES)), DataSource, organization_id)
+    total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = [service_snapshot(source, db) for source in db.scalars(stmt.order_by(DataSource.name).limit(limit)).all()]
+    return {"services": rows, "total": total, "truncated": total > len(rows),
+        "summary": {state: sum(row["health"] == state for row in rows) for state in ("HEALTHY", "CRITICAL", "UNKNOWN", "DISABLED")}}
+
+@router.get("/services/{source_id}")
+def service_detail(source_id: UUID, limit: int = Query(100, ge=1, le=500), db: Session = Depends(get_db)):
+    source = db.get(DataSource, source_id)
+    if not source or source.source_type not in HTTP_TYPES: raise HTTPException(404, "Service unavailable")
+    result = service_snapshot(source, db)
+    runs = db.scalars(select(CollectorRun).join(Collector).where(Collector.data_source_id == source.id)
+        .order_by(CollectorRun.started_at.desc(), CollectorRun.id.desc()).limit(limit)).all()
+    result["history"] = [run_item(run) for run in runs]
+    return result
+
+@router.get("/collectors/{collector_id}")
+def collector_detail(collector_id: UUID, limit: int = Query(100, ge=1, le=500), db: Session = Depends(get_db)):
+    collector = db.get(Collector, collector_id)
+    source = db.get(DataSource, collector.data_source_id) if collector else None
+    if not collector or not source: raise HTTPException(404, "Collector unavailable")
+    runs = db.scalars(select(CollectorRun).where(CollectorRun.collector_id == collector.id)
+        .order_by(CollectorRun.started_at.desc(), CollectorRun.id.desc()).limit(limit)).all()
+    return {"id": str(collector.id), "name": collector.name, "source_name": source.name,
+        "source_type": source.source_type, "organization_id": str(source.organization_id),
+        "status": collector.status, "enabled": collector.enabled, "history": [run_item(run) for run in runs]}
+
+def incident_item(row):
+    return {"id": str(row.id), "organization_id": str(row.organization_id), "title": row.title,
+        "source_kind": row.source_kind, "source_reference": row.source_reference,
+        "alert_state_id": str(row.alert_state_id) if row.alert_state_id else None,
+        "history_id": str(row.history_id) if row.history_id else None,
+        "data_source_id": str(row.data_source_id) if row.data_source_id else None,
+        "severity": row.severity, "status": row.status, "condition_status": row.condition_status,
+        "opened_at": iso(row.opened_at), "recovered_at": iso(row.recovered_at), "resolved_at": iso(row.resolved_at)}
+
+@router.get("/incidents")
+def incidents(organization_id: list[UUID] = Query(default=[]),
+    status: Literal["OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED"] | None = None,
+    source_kind: Literal["METRIC", "ETL"] | None = None, search: str = Query("", max_length=200),
+    limit: int = Query(200, ge=1, le=500), db: Session = Depends(get_db)):
+    stmt = scoped(select(OperationalIncident), OperationalIncident, organization_id)
+    if status: stmt = stmt.where(OperationalIncident.status == status)
+    if source_kind: stmt = stmt.where(OperationalIncident.source_kind == source_kind)
+    if search: stmt = stmt.where(OperationalIncident.title.ilike("%" + search + "%"))
+    total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
+    rows = db.scalars(stmt.order_by(OperationalIncident.opened_at.desc(), OperationalIncident.id.desc()).limit(limit)).all()
+    counts = dict(db.execute(scoped(select(OperationalIncident.status, func.count()).group_by(OperationalIncident.status),
+        OperationalIncident, organization_id)).all())
+    return {"incidents": [incident_item(row) for row in rows], "total": total, "truncated": total > len(rows),
+        "summary": {state: counts.get(state, 0) for state in ("OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED")}}
+
+def load_incident(db, incident_id, lock=False):
+    stmt = select(OperationalIncident).where(OperationalIncident.id == incident_id)
+    row = db.scalar(stmt.with_for_update() if lock else stmt)
+    if not row: raise HTTPException(404, "Incident unavailable")
+    return row
+
+@router.get("/incidents/{incident_id}")
+def incident_detail(incident_id: UUID, db: Session = Depends(get_db)):
+    row = load_incident(db, incident_id); result = incident_item(row)
+    source = db.get(DataSource, row.data_source_id) if row.data_source_id else None
+    result["source_type"] = source.source_type if source else None
+    events = db.scalars(select(IncidentActivity).where(IncidentActivity.incident_id == row.id)
+        .order_by(IncidentActivity.occurred_at.desc(), IncidentActivity.id.desc()).limit(200)).all()
+    result["activity"] = [{"id": str(e.id), "event_type": e.event_type, "actor": e.actor,
+        "occurred_at": iso(e.occurred_at), "text": e.text, "previous_status": e.previous_status, "new_status": e.new_status} for e in events]
+    return result
+
+class Transition(BaseModel):
+    new_status: Literal["ACKNOWLEDGED", "INVESTIGATING", "RESOLVED"]
+class Note(BaseModel):
+    text: str = Field(min_length=1, max_length=2000)
+
+def operator_for(row):
+    principal = actor()
+    if not principal.platform_admin and principal.roles.get(row.organization_id) not in {"operator", "org_admin"}:
+        raise HTTPException(403, "Organization operator required")
+    return principal
+
+@router.post("/incidents/{incident_id}/transitions")
+def transition(incident_id: UUID, payload: Transition, db: Session = Depends(get_db)):
+    row = load_incident(db, incident_id, True); principal = operator_for(row)
+    allowed = {"OPEN": {"ACKNOWLEDGED"}, "ACKNOWLEDGED": {"INVESTIGATING", "RESOLVED"}, "INVESTIGATING": {"RESOLVED"}, "RESOLVED": set()}
+    if payload.new_status not in allowed[row.status]: raise HTTPException(409, "Invalid incident transition")
+    if payload.new_status == "RESOLVED" and row.condition_status != "RECOVERED":
+        raise HTTPException(409, "Source condition must recover before incident resolution")
+    previous = row.status; row.status = payload.new_status; at = datetime.now(timezone.utc)
+    if row.status == "RESOLVED": row.resolved_at = at
+    activity(db, row, "OPERATOR_TRANSITION", at, principal.username, previous_status=previous, new_status=row.status)
+    db.commit(); return incident_detail(incident_id, db)
+
+@router.post("/incidents/{incident_id}/notes", status_code=201)
+def note(incident_id: UUID, payload: Note, db: Session = Depends(get_db)):
+    row = load_incident(db, incident_id, True); principal = operator_for(row)
+    if not payload.text.strip(): raise HTTPException(422, "Note text required")
+    activity(db, row, "OPERATOR_NOTE", datetime.now(timezone.utc), principal.username, text=payload.text.strip())
+    db.commit(); return incident_detail(incident_id, db)
+
+@router.get("/reports")
+def reports(organization_id: list[UUID] = Query(default=[]), days: int = Query(7, ge=1, le=90), db: Session = Depends(get_db)):
+    end = datetime.now(timezone.utc); start = end-timedelta(days=days)
+    # Aggregate every stored observation in the window, independently of UI limits.
+    http = scoped(select(DataSource.id, DataSource.name, func.count(CollectorRun.id),
+        func.sum(case((CollectorRun.status == "SUCCESS", 1), else_=0)),
+        func.sum(case((CollectorRun.status == "FAILED", 1), else_=0)),
+        func.avg(CollectorRun.response_time_ms), func.min(CollectorRun.started_at), func.max(CollectorRun.started_at))
+        .join(Collector, Collector.data_source_id == DataSource.id)
+        .join(CollectorRun, CollectorRun.collector_id == Collector.id)
+        .where(DataSource.source_type.in_(HTTP_TYPES), CollectorRun.started_at >= start, CollectorRun.started_at <= end)
+        .group_by(DataSource.id, DataSource.name), DataSource, organization_id)
+    service_rows = []
+    for sid, name, count, passed, failed, latency, first, last in db.execute(http).all():
+        evaluated = (passed or 0) + (failed or 0)
+        service_rows.append({"id": str(sid), "name": name, "observations": count, "success": passed or 0,
+            "failed": failed or 0, "unknown": count-evaluated, "sample_success_percent": round(100*passed/evaluated, 2) if evaluated else None,
+            "mean_response_time_ms": round(latency, 2) if latency is not None else None, "first_observed_at": iso(first), "last_observed_at": iso(last)})
+    terminal = JobOrderHistory.status.in_(["SUCCESS", "FAILED"])
+    timed = terminal & JobOrderHistory.started_at.is_not(None) & JobOrderHistory.ended_at.is_not(None) & (JobOrderHistory.ended_at >= JobOrderHistory.started_at) & (JobOrderHistory.sla_seconds > 0)
+    # Runtime SLA excludes in-progress executions, unknown timing and No Run.
+    etl = scoped(select(JobOrder.id, JobOrder.name, func.count(JobOrderHistory.id),
+        func.sum(case((JobOrderHistory.status == "SUCCESS", 1), else_=0)),
+        func.sum(case((JobOrderHistory.status == "FAILED", 1), else_=0)),
+        func.sum(case((JobOrderHistory.status == "NO_RUN", 1), else_=0)),
+        func.sum(case((timed & (JobOrderHistory.sla_status == "MET"), 1), else_=0)),
+        func.sum(case((timed & (JobOrderHistory.sla_status == "BREACHED"), 1), else_=0)))
+        .join(JobOrderHistory, JobOrderHistory.job_order_id == JobOrder.id)
+        .where(JobOrderHistory.detected_at >= start, JobOrderHistory.detected_at <= end)
+        .group_by(JobOrder.id, JobOrder.name), JobOrder, organization_id)
+    job_rows = []
+    for jid, name, count, success, failed, missing, met, breached in db.execute(etl).all():
+        evaluated = (met or 0) + (breached or 0)
+        job_rows.append({"id": str(jid), "name": name, "executions": count, "success": success or 0, "failed": failed or 0,
+            "no_run": missing or 0, "sla_met": met or 0, "sla_breached": breached or 0, "sla_excluded": count-evaluated,
+            "runtime_sla_percent": round(100*met/evaluated, 2) if evaluated else None})
+    grouped = db.execute(scoped(select(OperationalIncident.status, func.count()).where(
+        OperationalIncident.opened_at >= start, OperationalIncident.opened_at <= end).group_by(OperationalIncident.status), OperationalIncident, organization_id)).all()
+    return {"generated_at": iso(end), "window_start": iso(start), "window_end": iso(end), "days": days,
+        "methodology": {"http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
+            "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."},
+        "services": service_rows, "etl": job_rows, "incidents": dict(grouped)}
+
+@router.get("/history")
+def operational_history(organization_id: list[UUID] = Query(default=[]), days: int = Query(7, ge=1, le=90),
+    limit: int = Query(100, ge=1, le=500), db: Session = Depends(get_db)):
+    start = datetime.now(timezone.utc)-timedelta(days=days)
+    runs = db.execute(scoped(select(CollectorRun, DataSource).join(Collector, Collector.id == CollectorRun.collector_id)
+        .join(DataSource, DataSource.id == Collector.data_source_id).where(CollectorRun.started_at >= start)
+        .order_by(CollectorRun.started_at.desc()).limit(limit), DataSource, organization_id)).all()
+    jobs = db.execute(scoped(select(JobOrderHistory, JobOrder).join(JobOrder, JobOrder.id == JobOrderHistory.job_order_id)
+        .where(JobOrderHistory.detected_at >= start).order_by(JobOrderHistory.detected_at.desc()).limit(limit), JobOrder, organization_id)).all()
+    events = db.execute(scoped(select(IncidentActivity, OperationalIncident).join(OperationalIncident,
+        OperationalIncident.id == IncidentActivity.incident_id).where(IncidentActivity.occurred_at >= start)
+        .order_by(IncidentActivity.occurred_at.desc()).limit(limit), IncidentActivity, organization_id)).all()
+    rows = [{"id": str(run.id), "kind": "COLLECTOR", "name": source.name, "status": run.status, "at": iso(run.started_at),
+        "data_source_id": str(source.id), "source_type": source.source_type, "collector_id": str(run.collector_id)} for run, source in runs]
+    rows += [{"id": str(h.id), "kind": "ETL", "name": job.name, "status": h.status.value, "at": iso(h.detected_at), "history_id": str(h.id)} for h, job in jobs]
+    rows += [{"id": str(e.id), "kind": "INCIDENT", "name": row.title, "status": e.event_type, "at": iso(e.occurred_at), "incident_id": str(row.id)} for e, row in events]
+    return {"events": sorted(rows, key=lambda item: item["at"], reverse=True)[:limit], "limit": limit}
+
+@router.get("/jobs/{job_id}/history")
+def job_history(job_id: UUID, days: int = Query(7, ge=1, le=90), limit: int = Query(100, ge=1, le=500), db: Session = Depends(get_db)):
+    from app.api.etl import _item
+    if not db.get(JobOrder, job_id): raise HTTPException(404, "Job unavailable")
+    rows = db.scalars(select(JobOrderHistory).where(JobOrderHistory.job_order_id == job_id,
+        JobOrderHistory.detected_at >= datetime.now(timezone.utc)-timedelta(days=days))
+        .order_by(JobOrderHistory.detected_at.desc()).limit(limit)).all()
+    return [_item(row, db).model_dump(mode="json") for row in rows]

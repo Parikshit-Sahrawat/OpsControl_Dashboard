@@ -99,12 +99,19 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
 
     changed_state = None
     for rule in rules:
+        # Serialize episodes for a rule, including concurrent worker results.
+        db.execute(select(AlertRule.id).where(AlertRule.id == rule.id).with_for_update())
         try:
             threshold = float(rule.threshold_value)
         except (TypeError, ValueError):
             continue
         if rule.operator not in SUPPORTED_OPERATORS:
             continue
+
+        latest = db.scalar(select(AlertState).where(AlertState.alert_rule_id == rule.id)
+            .order_by(AlertState.last_evaluated_at.desc()).limit(1))
+        if latest is not None and sample.observed_at < latest.last_evaluated_at:
+            continue  # delayed observations cannot regress the current condition
 
         breach_count = _consecutive_breaches(db, rule, sample, threshold)
         breached = _breaches(sample.value_numeric, rule.operator, threshold)
@@ -118,7 +125,7 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
             .limit(1)
         )
 
-        if breached and breach_count >= rule.consecutive_breaches:
+        if breached and (breach_count >= rule.consecutive_breaches or state is not None):
             message = _message(rule, sample.value_numeric)
             if state is None:
                 state = AlertState(
@@ -143,7 +150,9 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
                 state.severity = rule.severity
                 state.message = message
             changed_state = state
-        elif state is not None:
+            from app.services.incidents import metric_episode
+            metric_episode(db, state)
+        elif state is not None and not breached:
             state.status = "RESOLVED"
             state.resolved_at = sample.observed_at
             state.last_evaluated_at = sample.observed_at
@@ -152,5 +161,7 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
             state.message = f"Resolved: {rule.name}; metric value recovered to {sample.value_numeric:g}"
             _queue_notifications(db, state, rule, "RESOLVED", state.message)
             changed_state = state
+            from app.services.incidents import metric_episode
+            metric_episode(db, state)
 
     return changed_state

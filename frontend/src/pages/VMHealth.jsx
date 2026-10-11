@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { authHeaders } from '../auth';
+import { evidenceTime } from '../operations';
 const BASE=import.meta.env.VITE_API_BASE_URL||'http://localhost:8000';
-export default function VMHealth({organizationIds}) {
+export default function VMHealth({organizationIds,initialSourceId}) {
   const [data,setData]=useState(null),[error,setError]=useState(''),[selected,setSelected]=useState(null),[history,setHistory]=useState([]);
   const generation=useRef(0);
+  const initialOpened=useRef(false);
+  useEffect(()=>{if(data&&initialSourceId&&!initialOpened.current){initialOpened.current=true;setSelected(data.resources.find(r=>r.id===initialSourceId)||null);}},[data,initialSourceId]);
   const [search,setSearch]=useState(''),[provider,setProvider]=useState('ALL'),[health,setHealth]=useState('ALL');
   const refresh=useCallback(async()=>{
     const requestGeneration=generation.current;
@@ -40,8 +43,8 @@ export default function VMHealth({organizationIds}) {
     </section>
     {selected&&<section className="card" data-testid="infrastructure-detail"><div className="section-heading-row"><h2>{selected.name}</h2><button onClick={()=>setSelected(null)}>Close resource</button></div>
       <h3>Collector evidence</h3>{selected.collectors.map(c=><div key={c.id}><p>{c.name} · {c.status} · {c.freshness}</p>{c.last_error&&<p role="alert">{c.last_error}</p>}<pre>{JSON.stringify(c.evidence,null,2)}</pre></div>)}
-      <h3>Alerts</h3>{selected.alerts.length?selected.alerts.map(a=><p key={a.id}>{a.status} · {a.severity} · {a.message}{a.resolved_at?` · resolved ${a.resolved_at}`:''}</p>):<p>No alert history for this resource.</p>}
-      <h3>Operational history</h3>{history.length?<table><thead><tr><th>Observed</th><th>Provider</th><th>Outcome</th></tr></thead><tbody>{history.map(e=><tr key={e.id}><td>{e.observed_at}</td><td>{e.provider}</td><td>{e.payload.outcome||'UNKNOWN'}</td></tr>)}</tbody></table>:<p>No collected evidence yet.</p>}
+      <h3>Alerts</h3>{selected.alerts.length?selected.alerts.map(a=><p key={a.id}>{a.status} · {a.severity} · {a.message}{a.resolved_at?` · resolved ${evidenceTime(a.resolved_at)}`:''}</p>):<p>No alert history for this resource.</p>}
+      <h3>Operational history</h3>{history.length?<table><thead><tr><th>Observed (IST)</th><th>Provider</th><th>Outcome</th></tr></thead><tbody>{history.map(e=><tr key={e.id}><td>{evidenceTime(e.observed_at)}</td><td>{e.provider}</td><td>{e.payload.outcome||'UNKNOWN'}</td></tr>)}</tbody></table>:<p>No collected evidence yet.</p>}
     </section>}
   </div>;
 }

@@ -26,6 +26,12 @@ def wait_url(url):
 def probe(command):run([PYTHON,'-m','scripts.etl_acceptance_probe',command],ROOT/'backend')
 def browser(phase):
     env.update(ETL_SESSION_FILE=str(private/'session.json'),ETL_EVIDENCE_DIR=str(OUT));run(['node','frontend/scripts/etl_acceptance.mjs',phase])
+def operations(command):
+    if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
+        run([PYTHON,'-m','scripts.operations_acceptance_probe',command],ROOT/'backend')
+def noc_browser(phase):
+    if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
+        run(['node','frontend/scripts/operations_acceptance.mjs',phase])
 def target():return start([PYTHON,'-c','import time;time.sleep(3600)'],label='linux-target')
 
 try:
@@ -54,15 +60,24 @@ try:
     env['TEST_API_BASE']='http://127.0.0.1:18800'
     run([PYTHON,'-m','scripts.auth_tenant_probe'],ROOT/'backend')
     run([PYTHON,'-c',"from scripts import security_release_probe as p;p.URL='http://127.0.0.1:18800';p.main()"],ROOT/'backend')
+    if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
+        run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
+        run([PYTHON,'-m','scripts.operations_migration_probe','seed'],ROOT/'backend')
+        for iteration in range(2):
+            run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
+            run([PYTHON,'-m','scripts.operations_migration_probe','verify'],ROOT/'backend')
+            if iteration==0:run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
     run([PYTHON,'-m','scripts.bootstrap_public_demo'],ROOT/'backend')
-    probe('setup');browser('configured')
+    probe('setup');operations('setup');browser('configured');noc_browser('configured')
     for phase in ('no-run','running','long-running','sla-breach','failed','poll-failed','recovered'):
         if phase=='failed':linux.terminate();linux.wait(timeout=5)
         if phase=='recovered':linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
         probe('collect-'+phase);probe(phase);browser(phase)
+        if phase in ('failed','recovered'):operations(phase);noc_browser(phase)
     probe('isolation')
+    operations('isolation')
     OUT.mkdir(parents=True,exist_ok=True);shutil.copyfile(private/'report.json',OUT/'report.json')
-    passed=True;print('SPRINT 3 CONTROLLED CARTE / LIVE HOST / BROWSER ACCEPTANCE PASS; genuine Carte acceptance remains pending')
+    passed=True;print('CONTROLLED CARTE / LIVE HOST / BROWSER ACCEPTANCE PASS; genuine Carte acceptance remains pending')
 except Exception:
     print('Acceptance failed; private service logs retained at',private,file=sys.stderr);raise
 finally:

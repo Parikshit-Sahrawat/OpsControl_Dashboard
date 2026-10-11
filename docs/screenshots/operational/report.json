@@ -1,0 +1,447 @@
+{
+  "origin": "SYNTHETIC_TLS_HTTP_AND_CARTE_WITH_LIVE_LINUX_HOST",
+  "genuine_providers": "PENDING",
+  "configured": "PASS",
+  "services_configured": {
+    "services": [
+      {
+        "id": "82e51d78-5568-47a5-b343-897095fc7f78",
+        "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+        "name": "Disabled NOC Service",
+        "health": "DISABLED",
+        "collectors": [],
+        "open_alert_count": 0,
+        "alerts": []
+      },
+      {
+        "id": "e6761265-563b-410e-acd9-d8b6c258fae2",
+        "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+        "name": "Fictional NOC HTTPS Portal",
+        "health": "HEALTHY",
+        "collectors": [
+          {
+            "id": "3d20e9ff-d938-54cb-bcc6-8e445713fd48",
+            "name": "opscontrol-http",
+            "enabled": true,
+            "status": "SUCCESS",
+            "freshness": "CURRENT",
+            "latest_run": {
+              "id": "cd23136f-74fd-49ea-a75e-73059b2884f7",
+              "collector_id": "3d20e9ff-d938-54cb-bcc6-8e445713fd48",
+              "observed_at": "2026-10-11T12:08:23.258257+00:00",
+              "ended_at": "2026-10-11T12:08:23.265849+00:00",
+              "status": "SUCCESS",
+              "outcome": "SUCCESS",
+              "http_status": 200,
+              "response_time_ms": 7
+            }
+          }
+        ],
+        "open_alert_count": 0,
+        "alerts": []
+      },
+      {
+        "id": "7daae049-adc5-46d5-8603-9af16811ed6d",
+        "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+        "name": "Unobserved NOC Service",
+        "health": "UNKNOWN",
+        "collectors": [
+          {
+            "id": "cfd962e6-8850-4c53-91ac-6a3c282a92be",
+            "name": "not-yet-observed",
+            "enabled": true,
+            "status": "STOPPED",
+            "freshness": "NO_EVIDENCE",
+            "latest_run": null
+          }
+        ],
+        "open_alert_count": 0,
+        "alerts": []
+      }
+    ],
+    "total": 3,
+    "truncated": false,
+    "summary": {
+      "HEALTHY": 1,
+      "CRITICAL": 0,
+      "UNKNOWN": 1,
+      "DISABLED": 1
+    }
+  },
+  "failed": {
+    "incidents": {
+      "incidents": [
+        {
+          "id": "1fe31e53-cab8-4a65-b474-35d74f8d2204",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional NOC HTTPS Portal \u00b7 noc-http-unavailable",
+          "source_kind": "METRIC",
+          "source_reference": "64390a1d-455d-4db3-b123-1dc82b163107",
+          "alert_state_id": "64390a1d-455d-4db3-b123-1dc82b163107",
+          "history_id": null,
+          "data_source_id": "e6761265-563b-410e-acd9-d8b6c258fae2",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "ACTIVE",
+          "opened_at": "2026-10-11T12:09:04.644622+00:00",
+          "recovered_at": null,
+          "resolved_at": null
+        },
+        {
+          "id": "790f0704-fbe4-4c94-9617-78c0cf67e62a",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 JOB_FAILED",
+          "source_kind": "ETL",
+          "source_reference": "87e40f82-657c-51fa-8a16-6c81ed8bc80c",
+          "alert_state_id": null,
+          "history_id": "cb40232a-bf53-477f-82b0-7e243695c6fd",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "ACTIVE",
+          "opened_at": "2026-10-11T12:08:54.238771+00:00",
+          "recovered_at": null,
+          "resolved_at": null
+        },
+        {
+          "id": "55f7ddcc-5635-442f-afca-7bba7dab74ea",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "ETL live Linux worker \u00b7 etl-host-health",
+          "source_kind": "METRIC",
+          "source_reference": "6193a520-bdbd-49e0-a736-f1914d4241d4",
+          "alert_state_id": "6193a520-bdbd-49e0-a736-f1914d4241d4",
+          "history_id": null,
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "ACTIVE",
+          "opened_at": "2026-10-11T12:08:54.146442+00:00",
+          "recovered_at": null,
+          "resolved_at": null
+        },
+        {
+          "id": "0b160cff-a7f0-4d9a-b520-f4b2386e797c",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 SLA_BREACH",
+          "source_kind": "ETL",
+          "source_reference": "fba4a901-0be6-5bd7-8517-aa00aaf30840",
+          "alert_state_id": null,
+          "history_id": "cf8d53dc-123a-4055-a521-4a345a29f78c",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:48.617833+00:00",
+          "recovered_at": "2026-10-11T12:08:54.238771+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "d4b7dac6-6652-448d-89ad-b901e74294be",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 LONG_RUNNING",
+          "source_kind": "ETL",
+          "source_reference": "74e17935-21b6-5b9a-86d6-b93ce14a3d34",
+          "alert_state_id": null,
+          "history_id": "12b38e12-0d7a-48de-b5fb-9fc408698fb9",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "WARNING",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:42.125812+00:00",
+          "recovered_at": "2026-10-11T12:08:54.238771+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "14632001-4423-42d9-867a-3401a19978b7",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 NO_RUN",
+          "source_kind": "ETL",
+          "source_reference": "4e2dd292-456b-5e3a-9d31-3b7ed65c8fbd",
+          "alert_state_id": null,
+          "history_id": "17dff190-b5b5-48da-ad27-da12c715eb6a",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:31.626699+00:00",
+          "recovered_at": "2026-10-11T12:08:36.550220+00:00",
+          "resolved_at": null
+        }
+      ],
+      "total": 6,
+      "truncated": false,
+      "summary": {
+        "OPEN": 6,
+        "ACKNOWLEDGED": 0,
+        "INVESTIGATING": 0,
+        "RESOLVED": 0
+      }
+    },
+    "reports": {
+      "generated_at": "2026-10-11T12:09:04.746329+00:00",
+      "window_start": "2026-10-04T12:09:04.746329+00:00",
+      "window_end": "2026-10-11T12:09:04.746329+00:00",
+      "days": 7,
+      "methodology": {
+        "http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
+        "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."
+      },
+      "services": [
+        {
+          "id": "e6761265-563b-410e-acd9-d8b6c258fae2",
+          "name": "Fictional NOC HTTPS Portal",
+          "observations": 2,
+          "success": 1,
+          "failed": 1,
+          "unknown": 0,
+          "sample_success_percent": 50.0,
+          "mean_response_time_ms": 6.0,
+          "first_observed_at": "2026-10-11T12:08:23.258257+00:00",
+          "last_observed_at": "2026-10-11T12:09:04.644622+00:00"
+        }
+      ],
+      "etl": [
+        {
+          "id": "4d56fef2-3722-407c-b820-8971d73fe4a9",
+          "name": "Fictional Daily Warehouse",
+          "executions": 5,
+          "success": 0,
+          "failed": 1,
+          "no_run": 1,
+          "sla_met": 1,
+          "sla_breached": 0,
+          "sla_excluded": 4,
+          "runtime_sla_percent": 100.0
+        }
+      ],
+      "incidents": {
+        "OPEN": 6
+      }
+    }
+  },
+  "recovered": {
+    "incidents": {
+      "incidents": [
+        {
+          "id": "1fe31e53-cab8-4a65-b474-35d74f8d2204",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional NOC HTTPS Portal \u00b7 noc-http-unavailable",
+          "source_kind": "METRIC",
+          "source_reference": "64390a1d-455d-4db3-b123-1dc82b163107",
+          "alert_state_id": "64390a1d-455d-4db3-b123-1dc82b163107",
+          "history_id": null,
+          "data_source_id": "e6761265-563b-410e-acd9-d8b6c258fae2",
+          "severity": "CRITICAL",
+          "status": "INVESTIGATING",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:09:04.644622+00:00",
+          "recovered_at": "2026-10-11T12:09:40.874107+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "790f0704-fbe4-4c94-9617-78c0cf67e62a",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 JOB_FAILED",
+          "source_kind": "ETL",
+          "source_reference": "87e40f82-657c-51fa-8a16-6c81ed8bc80c",
+          "alert_state_id": null,
+          "history_id": "cb40232a-bf53-477f-82b0-7e243695c6fd",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:54.238771+00:00",
+          "recovered_at": "2026-10-11T12:09:28.066595+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "55f7ddcc-5635-442f-afca-7bba7dab74ea",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "ETL live Linux worker \u00b7 etl-host-health",
+          "source_kind": "METRIC",
+          "source_reference": "6193a520-bdbd-49e0-a736-f1914d4241d4",
+          "alert_state_id": "6193a520-bdbd-49e0-a736-f1914d4241d4",
+          "history_id": null,
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:54.146442+00:00",
+          "recovered_at": "2026-10-11T12:09:27.863126+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "0b160cff-a7f0-4d9a-b520-f4b2386e797c",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 SLA_BREACH",
+          "source_kind": "ETL",
+          "source_reference": "fba4a901-0be6-5bd7-8517-aa00aaf30840",
+          "alert_state_id": null,
+          "history_id": "cf8d53dc-123a-4055-a521-4a345a29f78c",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:48.617833+00:00",
+          "recovered_at": "2026-10-11T12:08:54.238771+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "d4b7dac6-6652-448d-89ad-b901e74294be",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 LONG_RUNNING",
+          "source_kind": "ETL",
+          "source_reference": "74e17935-21b6-5b9a-86d6-b93ce14a3d34",
+          "alert_state_id": null,
+          "history_id": "12b38e12-0d7a-48de-b5fb-9fc408698fb9",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "WARNING",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:42.125812+00:00",
+          "recovered_at": "2026-10-11T12:08:54.238771+00:00",
+          "resolved_at": null
+        },
+        {
+          "id": "14632001-4423-42d9-867a-3401a19978b7",
+          "organization_id": "46f2d53b-64e0-4f22-88b6-a56e68a39087",
+          "title": "Fictional Daily Warehouse \u00b7 NO_RUN",
+          "source_kind": "ETL",
+          "source_reference": "4e2dd292-456b-5e3a-9d31-3b7ed65c8fbd",
+          "alert_state_id": null,
+          "history_id": "17dff190-b5b5-48da-ad27-da12c715eb6a",
+          "data_source_id": "a8d6bbc5-3207-4aef-9939-2df0d27edb95",
+          "severity": "CRITICAL",
+          "status": "OPEN",
+          "condition_status": "RECOVERED",
+          "opened_at": "2026-10-11T12:08:31.626699+00:00",
+          "recovered_at": "2026-10-11T12:08:36.550220+00:00",
+          "resolved_at": null
+        }
+      ],
+      "total": 6,
+      "truncated": false,
+      "summary": {
+        "OPEN": 5,
+        "ACKNOWLEDGED": 0,
+        "INVESTIGATING": 1,
+        "RESOLVED": 0
+      }
+    },
+    "reports": {
+      "generated_at": "2026-10-11T12:09:40.958729+00:00",
+      "window_start": "2026-10-04T12:09:40.958729+00:00",
+      "window_end": "2026-10-11T12:09:40.958729+00:00",
+      "days": 7,
+      "methodology": {
+        "http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
+        "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."
+      },
+      "services": [
+        {
+          "id": "e6761265-563b-410e-acd9-d8b6c258fae2",
+          "name": "Fictional NOC HTTPS Portal",
+          "observations": 3,
+          "success": 2,
+          "failed": 1,
+          "unknown": 0,
+          "sample_success_percent": 66.67,
+          "mean_response_time_ms": 8.33,
+          "first_observed_at": "2026-10-11T12:08:23.258257+00:00",
+          "last_observed_at": "2026-10-11T12:09:40.874107+00:00"
+        }
+      ],
+      "etl": [
+        {
+          "id": "4d56fef2-3722-407c-b820-8971d73fe4a9",
+          "name": "Fictional Daily Warehouse",
+          "executions": 6,
+          "success": 1,
+          "failed": 1,
+          "no_run": 1,
+          "sla_met": 2,
+          "sla_breached": 0,
+          "sla_excluded": 4,
+          "runtime_sla_percent": 100.0
+        }
+      ],
+      "incidents": {
+        "INVESTIGATING": 1,
+        "OPEN": 5
+      }
+    }
+  },
+  "report_denominator_negatives": "PASS",
+  "security": "PASS",
+  "relapse_and_resolution": "PASS",
+  "stale_evidence": "PASS",
+  "append_only_history": "PASS",
+  "audit_event_count": 202,
+  "browser_checks": [
+    {
+      "phase": "configured",
+      "checks": [
+        "API evidence, status, search, clickable health KPI and history"
+      ],
+      "page_errors": [],
+      "server_errors": [],
+      "chromium_version": "154.0.8037.57",
+      "status": "PASS"
+    },
+    {
+      "phase": "failed",
+      "checks": [
+        "API evidence, status, search, clickable health KPI and history",
+        "Viewer read-only; actual operator acknowledgement, investigation, note and gated resolution"
+      ],
+      "page_errors": [],
+      "server_errors": [],
+      "chromium_version": "154.0.8037.57",
+      "status": "PASS"
+    },
+    {
+      "phase": "recovered",
+      "checks": [
+        "API evidence, status, search, clickable health KPI and history",
+        "Viewer read-only; actual operator acknowledgement, investigation, note and gated resolution",
+        "Incident drill-down opens historical ETL failure and host correlation",
+        "Report window, exact denominators, JSON export, history filter and execution drill-down",
+        "All four Overview KPI targets, VM resource/collector/alert history and ETL rows",
+        "Resource Management, Monitoring Setup and platform Access Management backend screens",
+        "Authorized organization change ignores delayed old response; other tenant gets empty incident and report evidence"
+      ],
+      "page_errors": [],
+      "server_errors": [],
+      "chromium_version": "154.0.8037.57",
+      "status": "PASS"
+    }
+  ],
+  "populated_migration_backfill": "PASS",
+  "http_fixture_requests": [
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    }
+  ]
+}

@@ -15,6 +15,8 @@ const errors = [];
 page.on("pageerror", error => errors.push(String(error)));
 page.on("response", response => { if (response.url().includes(":8000") && response.status() >= 400) errors.push(response.status() + " " + response.url()); });
 page.on("requestfailed", request => {
+  // Scoped polling is cancelled when a tab unmounts or organization changes.
+  if (request.failure()?.errorText === "net::ERR_ABORTED") return;
   if (request.url().includes(":8000")) errors.push("API request failed: " + request.url() + " - " + request.failure()?.errorText);
 });
 

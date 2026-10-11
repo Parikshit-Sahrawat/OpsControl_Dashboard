@@ -2,7 +2,7 @@
 
 **Audience:** Independent developers, students, self-hosters and open-source contributors.
 
-**Current release status:** Early development / technical preview. The review branch now has an authentication implementation and login screen, but it requires a security review and validated negative tests before any public deployment. This guide starts the existing React UI, FastAPI API and PostgreSQL database locally. It does **not** claim production readiness, secure multi-tenancy, or working Kubernetes/EC2/Apache collectors. The default `main` branch may still lack security controls; the draft authentication review branch introduces server-enforced access but remains unapproved. **Run on your trusted computer only**, never on a publicly reachable server.
+**Current release status:** Early development / technical preview. This guide starts React, FastAPI and PostgreSQL locally. Authentication, roles and organization isolation have controlled negative-test evidence; Sprints 1–4 add synthetic monitoring and operational screens on feature branches. See their acceptance guides for exact evidence and pending review/merge gates; `main` can differ until those branches are merged. Genuine provider acceptance, independent security review and Sprint 5 release/deployment/UAT checks remain pending. Use a trusted local environment for this development workflow.
 
 ## What you'll learn in 10–20 minutes
 
@@ -103,11 +103,11 @@ The supplied frontend environment sets `VITE_API_BASE_URL=http://localhost:8000`
 
 ## 5 — Explore without connecting private infrastructure
 
-1. Open **Overview** to see the dashboard structure. Some KPI values are currently static/illustrative; empty operational tables are expected without data.
+1. Open **Overview** for scoped backend counts and clickable navigation KPIs. Missing evidence stays unknown; empty tables are expected before collection.
 2. Open **ETL Jobs** to explore search, filters and execution detail layout. Real external ETL monitoring is not connected by default.
 3. Open **Resource Management** to inspect Organizations, Data Sources, Collectors and Templates. Create only **fictional** organization names and test Data Sources on this trusted local instance.
-4. Open **VM Health**, **APIs & Services**, **Incidents** and **Reports** to see planned navigation placeholders. They are **not** implemented monitoring views.
-5. Browse the API at `/docs` and inspect the JSON schemas and endpoints. Because authorization is not implemented, **do not add private infrastructure URLs or secrets**. Authenticated builds require the bootstrap platform administrator before Resource Management can be used.
+4. Open **VM Health**, **APIs**, **Incidents** and **Reports** for collector evidence, local incident lifecycle and observation-based reports. Run the [Sprint 4 virtual lab](OPERATIONAL_DASHBOARDS.md) to generate actual synthetic HTTPS/ETL/host evidence and browser captures. These feature-branch capabilities are separately gated on review/merge.
+5. Browse `/docs` for schemas and endpoints. Authenticated builds require the bootstrap administrator and organization membership; configure live credentials only through supported secure references after approved provider setup. The lab needs only generated local credentials.
 
 ### Optional: worker process
 

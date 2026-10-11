@@ -43,6 +43,8 @@ _PATHS = {
     "InvestigationTransition": ("investigation", "history", "job_order", "organization"),
     "OperatorNote": ("investigation", "history", "job_order", "organization"),
     "AlertIncidentEvent": ("history", "job_order", "organization"),
+    "OperationalIncident": ("organization",),
+    "IncidentActivity": ("organization",),
     "DataSource": ("organization",),
     "Collector": ("data_source", "organization"),
     "InfrastructureEvidence": ("organization",),
@@ -155,7 +157,7 @@ def enforce_writes(db, flush_context, instances):
                 or (state.attrs.enabled.history.has_changes() and obj.enabled)):
                 raise HTTPException(403,'Platform administrator must authorize local provider collection')
         org_id = _resolve_org(db, obj)
-        can_investigate = (model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote", "CorrelationRecord", "CorrelationEvidence"}
+        can_investigate = (model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote", "CorrelationRecord", "CorrelationEvidence", "OperationalIncident", "IncidentActivity"}
                            and principal.roles.get(org_id) in {"operator", "org_admin"})
         if not (principal.can_edit(org_id) or can_investigate):
             raise HTTPException(403, "Organization permission required")
@@ -163,7 +165,7 @@ def enforce_writes(db, flush_context, instances):
         if state.persistent:
             for attr in ("organization_id", "data_source_id", "collector_id", "job_order_id",
                          "vm_id", "history_id", "metric_definition_id", "log_source_id",
-                         "alert_rule_id", "alert_state_id", "catalog_id", "activation_id", "rule_version_id", "host_data_source_id"):
+                         "alert_rule_id", "alert_state_id", "incident_id", "episode_key", "source_reference", "source_kind", "catalog_id", "activation_id", "rule_version_id", "host_data_source_id"):
                 if attr in state.attrs and state.attrs[attr].history.has_changes():
                     raise HTTPException(403, "Changing resource ownership is not supported")
         # All tenant-owned foreign keys must point to resources in the SAME org.
@@ -172,6 +174,7 @@ def enforce_writes(db, flush_context, instances):
                                   ("alert_rule_id", "AlertRule"), ("catalog_id", "MonitoringRuleCatalog"),
                                   ("activation_id", "MonitoringActivation"), ("rule_version_id", "MonitoringRuleVersion"), ("vm_id", "VM"),
                                   ("job_order_id", "JobOrder"), ("history_id", "JobOrderHistory"), ("host_data_source_id", "DataSource"),
+                                  ("incident_id", "OperationalIncident"), ("alert_state_id", "AlertState"),
                                   ("template_id", "MonitoringTemplate")):
             if not hasattr(obj, attr):
                 continue

@@ -45,9 +45,12 @@ def _alert(db, job, history, condition, active, observed):
     ).order_by(AlertIncidentEvent.timestamp.desc(), AlertIncidentEvent.id.desc()).limit(1))
     was_open = last is not None and last.event_type.endswith('_OPEN')
     if active == was_open: return
-    db.add(AlertIncidentEvent(history_id=history.id,
+    event = AlertIncidentEvent(history_id=history.id,
         event_type=condition + ('_OPEN' if active else '_RESOLVED'), source='ETL_MONITOR',
-        reference=reference, severity='WARNING' if condition == 'LONG_RUNNING' else 'CRITICAL', timestamp=observed))
+        reference=reference, severity='WARNING' if condition == 'LONG_RUNNING' else 'CRITICAL', timestamp=observed)
+    db.add(event); db.flush()
+    from app.services.incidents import etl_episode
+    etl_episode(db, job, event)
 
 def ingest_snapshot(collector, result, observed, db):
     payload = result.payload or {}
