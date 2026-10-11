@@ -92,3 +92,5 @@ Local cloud run on 2026-10-11: **PASS**. Seven runtime phases retained six JobOr
 | Other tenant sees no executions | [Other tenant](screenshots/etl/other-tenant.png) |
 
 The [CI workflow](../.github/workflows/etl-acceptance.yml) repeats this controlled gate; adding a workflow is not evidence that remote CI ran. Review, merge and production acceptance require their own evidence.
+
+Implementation commit: `084bea3`, published on `feature/sprint3-pentaho-monitoring`. Draft PR creation returned `Post "https://api.github.com/graphql": Forbidden`; native Git push succeeded. [Create the stacked PR](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/compare/feature%2Fsprint2-infrastructure-monitoring...feature%2Fsprint3-pentaho-monitoring?expand=1) against the Sprint 2 branch to review only this ETL slice. Independent review/merge and remote CI remain pending.

@@ -18,13 +18,13 @@ These results satisfy the local functional runtime gates for Sprints 1–3. The 
 
 | Requirement | Sprint 1 | Sprint 2 | Sprint 3 |
 |---|---|---|---|
-| Implementation committed on feature branch | `fb036f5` | `5033221`, follow-up `c3d68ab` | Sprint 3 feature branch; see Git history for final commit |
+| Implementation committed on feature branch | `fb036f5` | `5033221`, follow-up `c3d68ab` | `084bea3` on `feature/sprint3-pentaho-monitoring` |
 | Backend and frontend automated checks | Local gates PASS; previous baseline CI evidence separately recorded | Local gates/build PASS | Local ETL/provider/schedule tests, security/remote trust probes and build PASS |
 | Security and cross-org negatives | PASS | PASS | PASS |
 | Real or synthetic runtime evidence | Actual synthetic HTTPS | Live Linux + controlled provider environments | Actual authenticated synthetic Carte HTTPS + live Linux |
 | Actual browser screenshots | Five reference captures; fresh regression captures also generated | Five reference captures; fresh regression captures also generated | Eleven committed captures |
 | README, roadmap and architecture | Updated | Updated | Updated, with separate genuine Carte and reassessment ledgers |
-| PR review and merge after validation | Not established for sprint branch | Branch published; draft PR API previously Forbidden; review/merge pending | Review/merge pending; publication recorded in handoff |
+| PR review and merge after validation | Not established for sprint branch | Branch published; draft PR API previously Forbidden; review/merge pending | Branch pushed; draft PR creation returned GitHub API Forbidden; review/merge pending |
 
 ## Findings resolved during reassessment
 
