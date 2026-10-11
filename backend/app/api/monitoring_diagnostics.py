@@ -44,6 +44,11 @@ def diagnostics(source_id:uuid.UUID,db:Session=Depends(get_db)):
         AlertState.organization_id==source.organization_id,
         AlertRule.metric_definition_id.in_(ids),
         AlertState.status=="OPEN")) if ids else 0
+    resolved_alerts=db.scalar(select(func.count()).select_from(AlertState).join(
+        AlertRule,AlertRule.id==AlertState.alert_rule_id).where(
+        AlertState.organization_id==source.organization_id,
+        AlertRule.metric_definition_id.in_(ids),
+        AlertState.status=="RESOLVED")) if ids else 0
     now=datetime.now(timezone.utc)
     last=collector.last_run_at if collector else None
     if last and last.tzinfo is None: last=last.replace(tzinfo=timezone.utc)
@@ -70,8 +75,8 @@ def diagnostics(source_id:uuid.UUID,db:Session=Depends(get_db)):
                      "last_success_at":collector.last_success_at.isoformat() if collector.last_success_at else None,
                      "last_error":collector.last_error,
                      "next_run_at":collector.next_run_at.isoformat() if collector.next_run_at else None} if collector else None,
-        "health":health,"freshness":"STALE" if stale else "CURRENT" if last else "NO_EVIDENCE",
-        "metric_sample_count":samples or 0,"open_alert_count":open_alerts or 0,
+        "health":health,"freshness":"NO_EVIDENCE" if not last else "STALE" if stale else "CURRENT",
+        "metric_sample_count":samples or 0,"open_alert_count":open_alerts or 0,"resolved_alert_count":resolved_alerts or 0,
         "latest_evidence":{"observed_at":evidence.observed_at.isoformat(),
                            "outcome":evidence.result.get("outcome"),
                            "http_status":evidence.result.get("http_status"),

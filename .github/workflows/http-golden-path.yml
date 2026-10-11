@@ -1,0 +1,33 @@
+name: HTTP monitoring golden path
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  golden-path:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install frontend and isolated browser tools
+        run: |
+          cd frontend
+          npm ci --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/golden-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/golden-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Run real HTTPS lifecycle and browser assertions
+        env:
+          GOLDEN_EVIDENCE_DIR: ${{ runner.temp }}/golden-evidence
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/golden-tools/node_modules/playwright/index.mjs
+        run: scripts/http-golden-path.sh
+      - name: Upload actual screenshots and redacted database/audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: http-golden-path-evidence
+          path: ${{ runner.temp }}/golden-evidence
+          if-no-files-found: warn

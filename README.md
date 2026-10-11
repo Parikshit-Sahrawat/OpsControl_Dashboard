@@ -11,6 +11,24 @@ OpsControl Dashboard is an enterprise operations monitoring platform being desig
 
 ---
 
+## HTTP monitoring golden path
+
+The [HTTP golden path lab](docs/HTTP_GOLDEN_PATH.md) creates **Golden HTTP Lab** and its **Fictional HTTPS Portal** through authenticated APIs, publishes independent Metric/Log/Alert Rules, pins immutable versions, and activates a private-network collector. It drives an actual certificate-verified HTTPS fixture through HTTP **200 → 503 → 200**, checking PostgreSQL evidence and native alert **OPEN → RESOLVED** transitions. Playwright signs in through the real UI, exercises activation preview/reapply, checks visible diagnostics, and captures each state plus another tenant's empty view.
+
+Run `scripts/http-golden-path.sh` after installing the prerequisites in the [lab guide](docs/HTTP_GOLDEN_PATH.md). It uses a disposable database, random ephemeral credentials, internal Docker networks and loopback ports; cleanup preserves your development database. See the [CI workflow](.github/workflows/http-golden-path.yml) for automation. Local run results and CI status are recorded in the guide.
+
+These are **actual Playwright screenshots**, separate from the illustrative SVG tour below:
+
+| State | Browser capture | Evidence checked |
+|---|---|---|
+| Configured | [Before the first sample](docs/screenshots/http-golden-path/configured.png) | Active configuration, unknown health, zero samples |
+| Healthy | [HTTP 200](docs/screenshots/http-golden-path/healthy.png) | `probe_up=1`, no open alert |
+| Failed | [HTTP 503](docs/screenshots/http-golden-path/failed.png) | `probe_up=0`, one open alert |
+| Recovered | [HTTP 200 recovery](docs/screenshots/http-golden-path/recovered.png) | `probe_up=1`, zero open / one resolved alert; previous collector error cleared |
+| Other tenant | [Scoped empty view](docs/screenshots/http-golden-path/other-tenant.png) | First tenant's source and rules absent |
+
+The [redacted report](docs/screenshots/http-golden-path/report.json) records database phase checks and audit metadata. The harness checks anonymous/cross-tenant access, audit UPDATE/DELETE rejection and public egress denial. This is local synthetic HTTPS acceptance; real provider integrations, external alert delivery and production deployment remain separate validation work.
+
 ## UI Tour — Frontend
 
 The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.

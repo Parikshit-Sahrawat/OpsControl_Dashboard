@@ -227,7 +227,7 @@ export default function MonitoringSetup({organizationId,user}) {
           <p><b>Next scheduled:</b> {diagnostics.collector.next_run_at||"Not scheduled"}</p>
           {diagnostics.collector.last_error&&<p role="alert"><b>Collector issue:</b> {diagnostics.collector.last_error}</p>}
         </>}
-        <p><b>Evidence:</b> {diagnostics.metric_sample_count} metric samples · {diagnostics.open_alert_count} open alerts</p>
+        <p><b>Evidence:</b> {diagnostics.metric_sample_count} metric samples · {diagnostics.open_alert_count} open alerts · {diagnostics.resolved_alert_count??0} resolved alerts</p>
         {diagnostics.latest_evidence&&<p><b>Latest HTTP evidence:</b> {diagnostics.latest_evidence.outcome} · HTTP {diagnostics.latest_evidence.http_status??"N/A"} · {diagnostics.latest_evidence.response_time_ms??"N/A"} ms</p>}
         <h3>Recent job leases</h3>
         {diagnostics.jobs.length?<ul>{diagnostics.jobs.map(job=><li key={job.id}>{job.state} · attempts {job.attempts} · {new Date(job.planned_for).toLocaleString()}</li>)}</ul>:<p>No remote jobs dispatched yet.</p>}
