@@ -3,10 +3,12 @@ import { authHeaders } from "../auth";
 import KpiCard from "../components/KpiCard";
 import StatusBadge from "../components/StatusBadge";
 import WorldClock from "../components/WorldClock";
+import { useOperationalFeed, scopeQuery } from "../operations";
 
-export default function Overview({ jobs, onSelect, onNavigate, organizationIds=[] }) {
-  // Never represent hardcoded examples as operational health.
-  // Until these APIs are implemented, show unknown rather than healthy.
+export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, organizationIds=[] }) {
+  const services=useOperationalFeed("/services?"+scopeQuery(organizationIds));
+  const incidents=useOperationalFeed("/incidents?"+scopeQuery(organizationIds));
+  const activeIncidents=incidents.data?Object.entries(incidents.data.summary).filter(([state])=>state!=="RESOLVED").reduce((sum,[,value])=>sum+value,0):null;
   const [infrastructure,setInfrastructure]=useState(null);
   useEffect(()=>{
     let active=true;
@@ -27,8 +29,8 @@ export default function Overview({ jobs, onSelect, onNavigate, organizationIds=[
   const kpis = [
     { label: "ETL Jobs", value: String(jobs.length), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
     { label: "VM Health", value: infrastructure?String(infrastructure.total):"—", tone: infrastructure?.summary.CRITICAL?"critical-text":"", detail: infrastructure?`${infrastructure.summary.HEALTHY} healthy · ${infrastructure.summary.CRITICAL+infrastructure.summary.WARNING} need attention · ${infrastructure.summary.UNKNOWN} unknown`:"Infrastructure evidence unavailable", target: "VM Health" },
-    { label: "APIs & Services", value: "—", tone: "", detail: "Service monitoring not connected", target: "APIs" },
-    { label: "Active Incidents", value: "—", tone: "", detail: "Incident feed not connected", target: "Incidents" },
+    { label: "APIs & Services", value: services.data?String(services.data.total):"—", tone: services.data?.summary.CRITICAL?"critical-text":"", detail: services.data?`${services.data.summary.HEALTHY} healthy · ${services.data.summary.CRITICAL} critical · ${services.data.summary.UNKNOWN} unknown`:"Service evidence unavailable", target: "APIs" },
+    { label: "Active Incidents", value: activeIncidents!=null?String(activeIncidents):"—", tone: activeIncidents?"critical-text":"", detail: incidents.data?`${incidents.data.summary.INVESTIGATING} investigating · ${incidents.data.summary.RESOLVED} closed`:"Incident evidence unavailable", target: "Incidents" },
   ];
 
   return (
@@ -82,7 +84,9 @@ export default function Overview({ jobs, onSelect, onNavigate, organizationIds=[
               <h2>Active Incidents</h2>
               <button className="text-link" onClick={() => onNavigate?.("Incidents")}>View all</button>
             </div>
-            <div className="empty-inline">No live incident integration connected. Operational incidents will appear after the alert and incident feed is implemented.</div>
+            {incidents.data?.incidents.filter(row=>row.status!=="RESOLVED").slice(0,5).map(row=><p key={row.id}><button className="text-link" onClick={()=>onOpenIncident(row.id)}>{row.title}</button><small>{row.status} · source {row.condition_status}</small></p>)}
+            {incidents.data&&!activeIncidents&&<div className="empty-inline">No active incidents in the selected organization.</div>}
+            {!incidents.data&&<div className="empty-inline">Incident evidence unavailable.</div>}
           </section>
         </div>
       </div>

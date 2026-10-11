@@ -52,6 +52,16 @@ JobOrder has an explicit tenant-checked host Data Source association, so failure
 
 The controlled fixture uses actual authenticated HTTPS and a disposable real Linux process. Its evidence origin remains distinct from genuine Carte compatibility/retention acceptance. See the [Sprint 1–3 reassessment](../../SPRINT_REASSESSMENT.md) for the acceptance gates and remaining UI/release work.
 
+## Sprint 4 operational evidence path
+
+The [operational dashboards](../../OPERATIONAL_DASHBOARDS.md) expose scoped `/api/v1/operations` service, incident, report and history queries. HTTP views read sanitized CollectorRun fields and native AlertState records; infrastructure keeps its existing evidence API. Reports aggregate persisted observations within bounded windows and distinguish sampled probe success, runtime SLA, job outcomes and excluded/unknown evidence. Read endpoints never create incidents or investigations.
+
+`OperationalIncident` owns one source alert episode, while `IncidentActivity` appends source and authenticated operator events. Metric and ETL workers create/recover incidents in their existing evidence transaction. Source recovery and operator closure are separate states. Metric rules are locked during evaluation and reject older observations; repeat polls preserve identity, while relapse opens a distinct episode. Migration 0021 backfills historical episodes and recovery facts and installs a database activity mutation guard.
+
+Organization read scope, same-tenant foreign keys, immutable ownership and organization-specific operator permission cover the new tables and routes. A viewer membership cannot gain write rights because the user is an operator in another organization. React scope changes cancel/discard obsolete requests and reset open evidence. API/incident drawers connect source runs, alerts, historical ETL correlation and investigation. Unified history and JSON reports provide reusable read-only operational evidence.
+
+The Sprint 4 virtual lab uses disposable PostgreSQL, real certificate-verified synthetic HTTPS/Carte responses, real Linux host observations and actual password-authenticated Playwright journeys across every navigation tab. Genuine providers, remote CI, independent review, release hardening and deployment acceptance remain separate.
+
 ## Deployment topology
 **Dev and CI:** React/Vite + one FastAPI app + PostgreSQL 17 + separately launched worker. CI uses ephemeral database and synthetic sources; no live customer integration. **Later deployment:** package existing modules into separate API/worker containers (same codebase) with managed PostgreSQL and external secrets. EKS/Helm/GitOps/Terraform follows functional acceptance rather than drives design.
 

@@ -13,10 +13,15 @@ job='Fictional Daily Warehouse'
 class Handler(BaseHTTPRequestHandler):
     def log_message(self,*args): pass
     def response(self,status,body):
-        with (private/'carte-requests.jsonl').open('a') as journal:
+        journal_name='http-requests.jsonl' if urlsplit(self.path).path=='/ready' else 'carte-requests.jsonl'
+        with (private/journal_name).open('a') as journal:
             journal.write(json.dumps({'method':self.command,'path':urlsplit(self.path).path,'status':status})+'\n')
         self.send_response(status);self.send_header('Content-Type','application/xml');self.end_headers();self.wfile.write(body.encode())
     def do_GET(self):
+        # Optional Sprint 4 public readiness endpoint shares the controlled TLS
+        # server; Carte paths retain their separate read-only authentication.
+        if self.path == '/ready' and (private/'http-status').is_file():
+            return self.response(int((private/'http-status').read_text()), '<health>Controlled HTTPS service</health>')
         if self.headers.get('Authorization')!=expected:return self.response(401,'<error>Authentication required</error>')
         phase=(private/'phase').read_text().strip()
         if phase=='poll-failed':return self.response(503,'<error>Controlled unavailability</error>')

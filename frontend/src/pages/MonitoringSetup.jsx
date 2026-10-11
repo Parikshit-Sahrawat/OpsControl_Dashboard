@@ -30,7 +30,7 @@ const DEFAULTS={
   ALERT:{name:"availability_down",metric_name:"probe_up",operator:"LT",threshold_value:0.5,consecutive_breaches:1}
 };
 
-export default function MonitoringSetup({organizationId,user}) {
+export default function MonitoringSetup({organizationId,organizationName,user}) {
   const [sources,setSources]=useState([]),[catalogs,setCatalogs]=useState([]),[workers,setWorkers]=useState([]);
   const [sourceId,setSourceId]=useState(""),[workerId,setWorkerId]=useState("");
   const [selectedRules,setSelectedRules]=useState([]),[includeTemplates,setIncludeTemplates]=useState(false);
@@ -137,6 +137,7 @@ export default function MonitoringSetup({organizationId,user}) {
   return <div className="monitoring-setup">
     <div className="page-heading"><div><h1>Monitoring Setup</h1>
       <p>Independent versioned rules → approved collector → activation → verified evidence</p></div></div>
+    {organizationName&&<p className="monitoring-helper">Configuration organization: <b>{organizationName}</b>. Setup uses the first selected organization.</p>}
     {!organizationId&&<p className="card">Choose an organization first.</p>}
     {error&&<div className="error-box" role="alert">{error}</div>}
     {message&&<div className="card" role="status">{message}</div>}

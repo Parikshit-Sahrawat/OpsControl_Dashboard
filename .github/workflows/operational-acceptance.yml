@@ -1,0 +1,44 @@
+name: Synthetic operational dashboard acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  noc:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare virtual environment and isolated browser tools
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/noc-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/noc-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Provider boundaries and frontend build
+        run: |
+          (cd backend && .venv/bin/python -m scripts.etl_unit_probe)
+          (cd backend && .venv/bin/python -m scripts.infrastructure_unit_probe)
+          (cd backend && .venv/bin/python -m scripts.provider_unit_probe)
+          (cd backend && .venv/bin/python -m scripts.deep_checks_probe)
+          npm run build --prefix frontend
+      - name: Populated migrations, synthetic monitoring, tenancy and browser regression
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/noc-tools/node_modules/playwright/index.mjs
+          OPERATIONAL_EVIDENCE_DIR: ${{ runner.temp }}/noc-evidence
+        run: backend/.venv/bin/python scripts/operational-acceptance.py
+      - name: Upload actual browser captures and redacted database evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-noc-evidence
+          path: ${{ runner.temp }}/noc-evidence
+          if-no-files-found: warn
