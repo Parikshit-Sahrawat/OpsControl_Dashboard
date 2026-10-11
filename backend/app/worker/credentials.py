@@ -30,9 +30,11 @@ def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str
         if client_factory is None:
             try:
                 import boto3
+                from botocore.config import Config
             except ImportError as exc:
                 raise CredentialProviderError("Optional AWS provider dependencies required") from exc
-            client_factory=lambda requested_region:boto3.client("secretsmanager",region_name=requested_region)
+            client_factory=lambda requested_region:boto3.client("secretsmanager",region_name=requested_region,
+                config=Config(connect_timeout=5,read_timeout=10,retries={"total_max_attempts":2}))
         try:
             result=client_factory(region).get_secret_value(SecretId=arn)
             secret=result.get("SecretString")
@@ -43,7 +45,16 @@ def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str
             raise CredentialProviderError("Secret must be a JSON credential object")
         username,password=payload.get("username"),payload.get("password")
     else:
-        if os.getenv("ENVIRONMENT","development").lower()=="production":
+        # The API and workers must share Settings, including values loaded from
+        # .env. Reading os.getenv here silently bypassed production policy.
+        # Keep unauthenticated read-only transport importable in the existing
+        # stdlib-only private-network probe. Credentials require canonical
+        # Settings; missing configuration dependencies fail closed.
+        try:
+            from app.core.config import settings
+        except ImportError:
+            raise CredentialProviderError("Credential configuration dependencies required") from None
+        if settings.environment.lower()=="production":
             raise CredentialProviderError("Production forbids environment-backed collector credentials")
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}",credential_ref):
             raise CredentialProviderError("Invalid development credential reference")

@@ -17,14 +17,17 @@ def aws_ec2_candidates(config,session_factory=None,max_results=100):
         raise ProviderCheckError("Invalid AWS discovery region")
     if not isinstance(account,str) or not re.fullmatch(r"\d{12}",account):
         raise ProviderCheckError("AWS account ID required")
+    client_options = {}
     if session_factory is None:
         try: import boto3
         except ImportError as exc: raise ProviderCheckError("Install optional boto3 SDK") from exc
         session_factory=boto3.Session
+        from botocore.config import Config
+        client_options['config'] = Config(connect_timeout=5, read_timeout=15, retries={'total_max_attempts': 2})
     session=session_factory(region_name=region)
-    if session.client("sts").get_caller_identity().get("Account")!=account:
+    if session.client("sts", **client_options).get_caller_identity().get("Account")!=account:
         raise ProviderCheckError("AWS workload identity/account mismatch")
-    client=session.client("ec2")
+    client=session.client("ec2", **client_options)
     paginator=client.get_paginator("describe_instances")
     output=[]
     for page in paginator.paginate(PaginationConfig={"PageSize":50}):
@@ -63,7 +66,7 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
     # Namespace RBAC supplied by the authorized service account. The API cannot
     # escalate to cluster-wide listing or accept an arbitrary control-plane URL.
     result=client_factory.CoreV1Api().list_namespaced_pod(namespace=namespace,
-        limit=min(max_results,100)) if "POD" in kinds else type("Empty",(),{"items":[]})()
+        limit=min(max_results,100), _request_timeout=(5, 15)) if "POD" in kinds else type("Empty",(),{"items":[]})()
     output=[]
     for pod in result.items[:max_results]:
         if not pod.metadata or not pod.metadata.uid or not pod.metadata.name:continue
@@ -72,7 +75,7 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
             "pod_name":pod.metadata.name,"uid":str(pod.metadata.uid),
             "phase":pod.status.phase if pod.status else "Unknown"})
     if 'DEPLOYMENT' in kinds:
-        deployments=client_factory.AppsV1Api().list_namespaced_deployment(namespace=namespace,limit=min(max_results,100))
+        deployments=client_factory.AppsV1Api().list_namespaced_deployment(namespace=namespace,limit=min(max_results,100), _request_timeout=(5, 15))
         for deployment in deployments.items:
             if len(output)>=max_results:break
             output.append({'external_id':f'k8s:{namespace}:deployment:{deployment.metadata.uid}',
@@ -81,7 +84,7 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
     if 'NODE' in kinds:
         for name in nodes:
             if len(output)>=max_results:break
-            node=client_factory.CoreV1Api().read_node(name=name)
+            node=client_factory.CoreV1Api().read_node(name=name, _request_timeout=(5, 15))
             output.append({'external_id':f'k8s:node:{node.metadata.uid}',
                 'resource_type':'K8S_NODE','namespace':namespace,'node_name':node.metadata.name,
                 'uid':str(node.metadata.uid)})

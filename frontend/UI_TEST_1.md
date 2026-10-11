@@ -1,6 +1,6 @@
 # UI Test 1 — monitoring workspace redesign
 
-Branch: `feature/ui-test-1`. Base: main `02a9c25684ee9e7b267aaa3ecc2209aa7dea27bd`.
+Merged [PR #25](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/25) after owner screenshot approval on 2026-10-11 at 18:52:45 UTC. Merge: `fbe83badb47ee61b81fe60f23dde48c37b1ee1d0`; reviewed feature head: `b37b6ecc1a58bfdada8574a587705d5134a84895`. All sixteen head checks and post-merge Validation passed. The feature branch is deleted.
 
 The redesign introduces obsidian dark and paper/slate light themes, persistent appearance controls, a responsive navigation sidebar, asymmetric Overview cards, consistent engineering typography, semantic status washes, refined data tables and investigation surfaces. Values and histories remain backed by the existing monitoring APIs. There are no invented chart traces, health values or operational counters.
 

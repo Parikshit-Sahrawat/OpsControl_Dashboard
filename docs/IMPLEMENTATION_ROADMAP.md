@@ -1,79 +1,32 @@
-# OpsControl — Living Implementation Roadmap
+# OpsControl living implementation roadmap
 
-**Last reconciled:** 2026-10-11
-**Development baseline:** `main`, consolidated through [PR #22](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/22) and its dependency PRs.
-**Scope:** General-purpose, vendor-neutral open-source monitoring and observability. No organization-specific source data, private hostnames, business processes or customer credentials.
+Last reconciled 2026-10-11. Main baseline `fbe83badb47ee61b81fe60f23dde48c37b1ee1d0` includes PR #23 (ETL), #24 (operational dashboards) and #25 (approved modern dual-theme UI). All sixteen PR #25 checks passed at its feature head; post-merge [Validation](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38165657701) passed. GitHub API/PR creation and merge are operational. Historical Forbidden and pending development merge claims are superseded.
 
-> **Progress accounting:** "Implemented" means committed code exists on a branch; "CI verified" means specified automated checks passed on that branch; "Production ready" requires external security review, installation/deployment and user acceptance. The owner approved development consolidation into `main` on 2026-10-10 with live AWS and genuine Carte acceptance deferred. These remain follow-up acceptance tasks, not passed checks. See the [merge decision and evidence](PHASE2_FIELD_ACCEPTANCE.md). Do not claim implementation is production-ready merely because tests pass.
+Implementation, controlled evidence, remote CI, human review, merge and production acceptance are separate states. Owner-approved development merges do not certify independent security review. AWS Toolkit/live AWS setup remains paused.
 
-## Live priorities
+## Current development stage
 
-| Priority | Feature | Verified implementation status | Immediate next step | Evidence / dependencies |
-|---|---|---|---|---|
-| **P0** | Authentication and organization isolation | **Implemented + CI verified** in the development baseline; external review pending | Independent authorization review, real deployed-data upgrade and deployment hardening; disposable upgrade preservation passed | [PR #17](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/17), [PR #19](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/19), [security checklist](SECURITY_RELEASE_CHECKLIST.md) |
-| **P0** | Template activation and collector provisioning | **HTTP vertical slice implemented + disposable PostgreSQL CI verified**: preview, pinned rule/template resolution, idempotent remote HTTP collector, metric/log/alert provisioning, disable and preserved history; non-HTTP activation pending | Private HTTPS end-to-end acceptance passed in disposable Docker CI; HTTP browser diagnostics/activation journey passed locally; remote golden-path CI and non-HTTP activation still pending | [Phase 2 monitoring activation specification](sdlc/phase2/README.md); depend on organization RBAC and rule catalogs |
-| **P0** | Authenticated remote job dispatch and evidence ingestion | **HTTP MVP implemented + CI verified**: scoped workers, assignment, scheduled/leased jobs, nonce fencing, deduplicated evidence, CollectorRun, metric samples, native alert evaluation | Deployment threat-model review, HA/load/retention and integration with activation engine | [PR #20](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/20), [agent quickstart](REMOTE_AGENT_QUICKSTART.md) |
-| **P0** | Private-network egress protection | **Python egress guards + real Docker internal-network firewall test CI passed**; deployable Kubernetes NetworkPolicy and live CNI test script created, **disposable kind+Calico CNI acceptance passed** | kind+Calico test now runs in CI; verify deployment-specific CNI/firewall and real reverse proxy | [PR #20](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/20), [example NetworkPolicy](../deploy/examples/remote-agent-networkpolicy.yaml); not production approved |
-| **P1** | Independent Metric, Log and Alert Rule catalogs | **Independent METRIC/LOG/ALERT catalogs implemented + staging CI verified**: immutable versions, org RBAC, pinned bindings and validation | Immutable rule-version editor implemented; compatibility for non-HTTP providers and real-user acceptance remain | [Phase 2 rule catalog design](sdlc/phase2/09-RULE-CATALOG-DESIGN.md) |
-| **P1** | Live homepage world clock | **Implemented + Playwright browser verified** in foundation branch; no need to wait for backend polling | Preserve time-zone selection, DST correctness and UI refresh separation; UX polish only | [PR #16](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/16), staging CI |
-| **P1** | HTTP / Internal Application Health | **Authenticated golden path locally verified (2026-10-11)**: scoped API onboarding, immutable rule pinning, activation/reapply, actual TLS 200→503→200 evidence, one alert OPEN→RESOLVED, Playwright diagnostics and tenant isolation | CI workflow added, remote run pending; private CA rotation and operator UAT remain | [Golden path guide, actual screenshots and report](HTTP_GOLDEN_PATH.md), [CI harness](../.github/workflows/http-golden-path.yml) |
-| **P1** | AWS EC2 discovery/monitoring | **Read-only EC2 adapter/discovery/import implemented; offline mocks CI verified; no real AWS account tested** | OIDC-only read-only AWS field-test workflow added; NOT RUN without approved sandbox account, IAM role and instance | [Resource Discovery specification](sdlc/phase2/14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md) |
-| **P1** | Kubernetes Pod/Deployment discovery | **Pod/Deployment baseline plus Sprint 2 approved Node health/discovery and Deployment discovery; controlled authenticated TLS lifecycle exercised locally** | Deployment-specific cluster acceptance and remaining capability gaps | [Resource Discovery specification](sdlc/phase2/14-RESOURCE-DISCOVERY-INFRASTRUCTURE-MONITORING.md) |
-| **P1** | Generic sample data and developer onboarding | **One-command localhost Docker demo implemented and CI verified** with random local admin secret, fictional seed, PostgreSQL/FastAPI/React, protected ports; UI screenshot smoke added | Synthetic HTTPS golden-path lab and five actual screenshots passed locally; broader beginner docs remain | [Beginner Quickstart](QUICKSTART.md), README |
-| **P1 — parallel** | Pentaho and generic ETL job monitoring | **Sprint 3 controlled lifecycle/runtime/browser/security gate passed locally**: authenticated TLS inventory/status, No Run/grace, Long Running/runtime SLA, steps/logs/history, host correlation and investigation | Genuine Carte compatibility/retention acceptance, remote CI and independent review/merge remain pending | [ETL guide and 11 actual captures](PENTAHO_ETL_MONITORING.md), [Sprint 1–3 reassessment](SPRINT_REASSESSMENT.md); independent of live AWS setup |
-| **P2** | Apache/Tomcat deep monitoring, Linux/Windows process telemetry | **Read-only Linux host/process, Apache mod_status, Tomcat JVM parsers implemented with offline safety tests**; live service validation pending | Harden agent boundaries and test actual Apache/Tomcat fixtures | Starts after HTTP → EC2 → Kubernetes foundational slices |
-| **P2** | Enterprise security & deployment | **Security design/implementation underway**; **production release blocked** | External review, real Secrets Manager role, retention, TLS/ingress, audit management, DR and tenant load testing | [Issue #18](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/18), [SECURITY.md](../SECURITY.md) |
-| **P1 — Sprint 4** | Operational NOC dashboards and reporting | **Local synthetic gate PASS (2026-10-11)** on `feature/sprint4-operational-dashboards`: all primary tabs, evidence-backed APIs/local incidents/reports, investigation/collector drill-downs, real report export, scope-change race and security negatives; 31 actual browser captures; HTTP/infrastructure regressions PASS | Independent review, remote CI and merge pending; GitHub API requests return Forbidden while native Git works. Sprint 5 release checks follow | [Virtual lab, report definitions and actual captures](OPERATIONAL_DASHBOARDS.md), [CI harness](../.github/workflows/operational-acceptance.yml) |
-
-## Delivery order and verification gates
-
-| Stage | Deliverable | Done means |
+| Workstream | Verified state | Next gate |
 |---|---|---|
-| **0 — Security acceptance** | Authenticate all human/worker entry points; enforce tenant isolation and least privilege | Two-org negative tests; authorization/DB upgrade/security review complete; no unauthorized source access |
-| **1 — Rule catalogs** | Versioned, independently attachable Metric/Log/Alert Rules | Create, pin versions, list/filter, edit new version, compatibility errors, audit, cross-org negatives |
-| **2 — Activation engine** | Operational monitoring config from chosen rules/template | Preview → preflight → activate → real evidence → metric/log/alert → deactivation. Reapply is idempotent and rollback auditable |
-| **3 — HTTP golden path** | A new self-hoster monitors one synthetic local/private HTTPS service | No hardcoded provider specifics; documented first-run with screenshots and real detection/recovery |
-| **4 — EC2** | AWS resource discovery + read-only health | Candidate import and drift, denied-region/IAM tests, CloudWatch metric validation |
-| **5 — Kubernetes** | Namespace-scoped Pod/Deployment health | Fake/disposable cluster fixtures; watch reconnect; unavailable metrics API handled |
-| **6 — Apache/Tomcat** | Server and JVM/service health | Test containers, credentials/transport security and independent app-versus-host health |
-| **Parallel — ETL** | Production-like job runs, No Run and SLA evaluation | Fictional Pentaho fixture with read-only adapter; no AWS/K8s dependency |
+| Resource/rule management | Scoped sources, versioned independent rules, HTTP/infrastructure activation and collectors implemented and controlled-tested | Real provider/operator UAT and concurrency review |
+| Sprint 1 HTTP | Actual synthetic HTTPS health→failure→recovery; DB/audit/tenant and browser evidence; merged/CI tested | Target deployment egress, CA rotation and UAT |
+| Sprint 2 infrastructure | AWS SDK controlled collection, TLS K8s fixture, native Linux and controlled Windows; data-backed VM view; merged/CI tested | Genuine AWS/CloudWatch, native Windows, customer K8s acceptance |
+| Sprint 3 Pentaho | Read-only Carte-shaped lifecycle, No Run/Long Running/SLA/history/logs/host correlation; PR #23 merged | Genuine Carte compatibility/read-only acceptance |
+| Sprint 4 NOC | All primary tabs data-backed; incident/investigation/report/scope journeys; PR #24 merged | Fleet scale and operator UAT |
+| UI Test 1 | Persistent dark/light themes, responsive navigation/bento layout, actual browser regression; approved PR #25 merged | Preserve appearance/accessibility during reliability work |
+| Sprint 5 reliability | P0/P1 corrections and controlled populated restore/retention/TLS/resilience gate on separate feature branch | Exact-head CI/review, deployment-scale evidence and formal release acceptance |
 
-## Updating this roadmap after every stage
+## Implementation priorities
 
-For every significant implementation or validation:
-1. Update the affected row's **exact verified status** and next action; never promote "design" to "done" without runtime evidence.
-2. Link the branch/PR, migration, test suite and latest successful CI run (or mark pending/failed).
-3. Keep these states distinct: **Designed**, **Code committed**, **Automated tests passing**, **Reviewed**, **Merged**, **Release verified**.
-4. Prefer one manageable vertical slice with negative auth/network tests and a working local synthetic fixture.
-5. Keep the table synchronized with README and Quickstart. Do **not** silently merge draft PRs, deploy publicly or introduce employer/customer-specific artifacts.
+The canonical [P0–P3 matrix](RELEASE_RELIABILITY.md) records root causes, impact, implemented source paths and remaining acceptance. Resolve P0 safety/recovery/deployment gates before calling this a release candidate; continue P1 load, scale and onboarding validation without waiting for live providers.
 
-## Field acceptance and testing evidence
+- P0: reconciled evidence, independent authorization/security review, populated restore/retention, restricted runtime roles and TLS/proxy/SPA headers.
+- P1: bounded concurrent collection/recovery, dashboard inventory/query scale, clean Docker upgrade/rollback/operator UAT; genuine provider work deferred.
+- P2: real Apache/Tomcat, external incident delivery and duration-weighted SLO; dependency/archive scale follow-ups.
+- P3: operator-driven visual/usability improvements.
 
-See [Phase 2 Field Acceptance](PHASE2_FIELD_ACCEPTANCE.md) for precisely which real and synthetic environments were exercised; mark provider-specific claims as *pending* until their dedicated field tests pass. Do not infer production readiness from mock fixtures.
+## Acceptance references
 
-## Recent milestones
+[HTTP](HTTP_GOLDEN_PATH.md), [Infrastructure](INFRASTRUCTURE_MONITORING.md), [Pentaho](PENTAHO_ETL_MONITORING.md), [Operational UI](OPERATIONAL_DASHBOARDS.md), [Sprint reassessment](SPRINT_REASSESSMENT.md), [security checklist](SECURITY_RELEASE_CHECKLIST.md), [field evidence](PHASE2_FIELD_ACCEPTANCE.md).
 
-- **Phase 2 foundation** — PR #16: homepage world clock and non-placeholder overview status, browser tests.
-- **Auth/tenancy** — PR #17: user sessions, memberships, backend organization isolation.
-- **Security hardening** — PR #19: rate limiting, audit, revocation, admin UI, vulnerability/secret scans.
-- **Remote HTTP collector** — PR #20: scoped private agent, scheduled leases, strict outbound policy and safe evidence ingestion.
-- **Phase 2 integrations** — PR #21: versioned independent Metric/Log/Alert catalogs; HTTP activation/reconciliation, UI onboarding, EC2/K8s read-only adapters and discovery, Carte ETL status persistence, one-command fictional Docker demo and network-isolation CI.
-- **Field acceptance PR #22** — isolated real TLS probe and PostgreSQL alert/recovery test passed in disposable CI, diagnostics and immutable rule editor added, kind+Calico/RBAC, upgrade preservation, optional OIDC AWS field gate, scoped secret resolution and host/Apache/Tomcat read-only prototypes. See [Phase 2 field acceptance ledger](PHASE2_FIELD_ACCEPTANCE.md). Genuine AWS and Carte installations have **not** been validated. Development merge approved with real-provider tests deferred; production approval remains outstanding.
-
-- **HTTP golden path (2026-10-11, local cloud run)** — authenticated API onboarding, immutable v1 pinning after v2 publication, browser activation reapply, actual HTTPS failure/recovery, three native samples/logs, same alert resolution, second-tenant browser/API isolation, audit append-only checks and public egress denial passed. [Five actual screenshots and redacted report](HTTP_GOLDEN_PATH.md). CI workflow added; remote execution pending. Diagnostics now distinguish no evidence from stale evidence, show resolved alerts, and clear the previous collector error after recovery.
-
-## Sprint 2 — infrastructure reference slice (2026-10-11)
-
-`feature/sprint2-infrastructure-monitoring` extends the verified HTTP golden path with provider-compatible immutable rules, platform-authorized local activation, stable discovery identity independent of display name, sanitized organization-scoped infrastructure observations and native alert evaluation. Kubernetes now includes approved Node and Deployment discovery/health. Linux adds actual CPU sampling; Windows has a native psutil adapter with a platform guard. VM Health is data-backed, with filters, clickable status counts, collector freshness/errors, metrics and alert/evidence history; Overview derives infrastructure health from the same API.
-
-Controlled evidence uses real local Linux telemetry, AWS SDK stubs, an authenticated TLS Kubernetes API and controlled Windows inputs. Genuine sandbox AWS, cluster and native Windows gates remain pending. Local kind could not start with this cloud kernel. The [acceptance ledger and actual browser artifacts](INFRASTRUCTURE_MONITORING.md) distinguish these origins and explain reproduction. CI automation is added; no remote run, independent review or merge is claimed. This satisfies the real-or-controlled runtime path, not production acceptance. Sprint 3 now has the controlled ETL gate below; Sprint 4 completes remaining navigation screens, and Sprint 5 owns release-candidate hardening/UAT.
-
-## Sprint 3 — controlled ETL acceptance and reassessment (2026-10-11)
-
-`feature/sprint3-pentaho-monitoring` adds retained read-only Carte polling, source-time and terminal-fact preservation, daily No Run/grace and runtime SLA evaluation, stable ETL condition events, explicit scoped host correlation, source entries/logs/timeline and clickable execution history. Investigation reads are side-effect free and writes use authenticated actors. Local controlled acceptance passed seven phases, six histories, four stable condition references/eight transitions, 22 authenticated fixed-path GETs, eleven actual browser screenshots and security/tenant/remote-worker negatives. Migration 0020 and frontend build passed. Genuine Carte acceptance is separately pending.
-
-Sprints 1 and 2 were rerun successfully on this development branch. The [reassessment ledger](SPRINT_REASSESSMENT.md) separates functional runtime gates from the outstanding independent PR review/merge, remote CI and live-provider gates. AWS Agent Toolkit/live AWS work is paused at the user's request. Sprint 4's operational UI/reporting gate now passes locally; production rollout remains gated on Sprint 5 and formal acceptance.
-
-## Sprint 4 operational dashboards
-
-All primary tabs have functional backend evidence and actual browser journeys. The virtual lab verifies real synthetic HTTPS failure/recovery/relapse, local incident acknowledgement/investigation/notes/closure, retained ETL/host investigation, report denominators and JSON export, populated migration backfill, tenant/mixed-role negatives and delayed-response scope switching. Twenty NOC and eleven ETL captures are committed with redacted reports. Backend offline probes, frontend build and fresh HTTP/infrastructure regressions pass. Remote CI, independent review and merge are pending; Sprint 5 owns independent hardening, DR/retention, load/resilience/failover, deployment and UAT.
+Every new PR records exact head checks, artifacts, reviewer decision and merge separately. Preserve negative tests and real evidence; mocks are identified explicitly. Production rollout remains conditional on independent security/deployment review, target-volume recovery/resilience, operator UAT and formal acceptance.

@@ -3,6 +3,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
+from starlette.concurrency import run_in_threadpool
+from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api import operations
@@ -17,8 +19,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # In production require a TLS-terminating ingress with a verified
         # ASGI scheme (proxy headers only from a trusted ingress).
         if settings.environment.lower() == "production" and request.url.scheme != "https":
-            return JSONResponse({"detail": "HTTPS required"}, status_code=403)
-        response = await call_next(request)
+            response = JSONResponse({"detail": "HTTPS required"}, status_code=403)
+        else:
+            response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "no-referrer"
@@ -30,12 +33,18 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 production = settings.environment.lower() == "production"
+@asynccontextmanager
+async def lifespan(app):
+    from app.security.deployment import validate_runtime_database_role
+    await run_in_threadpool(validate_runtime_database_role)
+    yield
 if production and (
     not settings.cors_origin_list
     or any(not origin.startswith("https://") or "*" in origin for origin in settings.cors_origin_list)
 ):
     raise RuntimeError("Production requires an explicit HTTPS-only CORS origin allowlist")
 app = FastAPI(
+    lifespan=lifespan,
     title="OpsControl API", version="0.2.0",
     description="General-purpose open-source monitoring and configuration API.",
     docs_url=None if production else "/docs",

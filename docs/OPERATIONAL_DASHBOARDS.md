@@ -1,6 +1,6 @@
 # Sprint 4 — operational dashboards and reports
 
-Development branch: `feature/sprint4-operational-dashboards`, based on the Sprint 3 branch. This slice replaces the remaining navigation placeholders with backend evidence. AWS Toolkit/live AWS setup stays paused. Local synthetic acceptance, independent review, remote CI, merge and production acceptance are distinct gates.
+Merged development slice: PR #24, followed by approved UI PR #25 on main `fbe83ba`. This slice replaces the remaining navigation placeholders with backend evidence. AWS Toolkit/live AWS setup stays paused. Local synthetic acceptance, independent review, remote CI, merge and production acceptance are distinct gates.
 
 ## Operator workflow
 
@@ -34,7 +34,7 @@ HTTP sampled success = successful runs / runs with SUCCESS or FAILED status, mul
 
 ETL runtime SLA = terminal executions with MET / terminal executions with MET or BREACHED. Evaluation also requires source start/end times in order and a positive captured SLA budget. Running, No Run and unknown timing are excluded and shown explicitly. Job success/failure counts remain separate: a failed job can finish within its runtime budget. Reports use the execution detection time for the window; HTTP uses the run observation/start time. Incident counts use episode opening time and current operator status.
 
-Report aggregates cover all persisted observations within the selected window, independently of UI row limits. Service/incident lists default to 200 and allow up to 500; truncation is disclosed. Service and job detail history defaults to 100, incident activity to the latest 200, and unified history shows the latest 100 events. Report windows are bounded to 90 days. Pagination, time-weighted SLOs, retention, query optimization/load acceptance and external incident delivery remain follow-up work.
+Report aggregates cover all persisted observations within the selected window, independently of UI row limits. Service/incident lists default to 200 and allow up to 500; truncation is disclosed. Service and job detail history defaults to 100, incident activity to the latest 200, and unified history shows the latest 100 events. Report windows are bounded to 90 days. The separate reliability feature adds service/incident/infrastructure paging, true inventory totals, service prefetch and bounded raw evidence maintenance. History pagination, complete fleet health aggregation, infrastructure query optimization, load acceptance, time-weighted SLOs and external incident delivery remain open; see [current matrix](RELEASE_RELIABILITY.md).
 
 ## Reproduce the virtual lab
 
@@ -65,7 +65,7 @@ Local final run on **2026-10-11: PASS**, using the restored Python virtual envir
 - Reports checked at 50% and 66.67% HTTP sampled success; terminal ETL runtime SLA 2 met / 0 breached / 4 excluded at recovery. Separate negatives verify missing timing, in-progress SLA, unknown HTTP results, a breached terminal result and out-of-window exclusions.
 - Populated upgrade/downgrade/re-upgrade backfill passed twice: four archived episodes, six source activities, deterministic IDs and no invented operator closure.
 - Anonymous/worker/viewer/mixed-role/cross-organization negatives, stale evidence, invalid active-source resolution, append-only UPDATE/DELETE denial and redacted audit history passed. The [runtime report](screenshots/operational/report.json) records 202 audit events.
-- Four offline ETL/infrastructure/provider/deep-check probes and the frontend production build passed. Automated CI is added; its remote run remains **unverified**.
+- Four offline ETL/infrastructure/provider/deep-check probes and the frontend production build passed. Automated remote CI passed before the approved development merges.
 
 **31 actual Playwright PNGs**: twenty NOC captures plus eleven ETL regression captures. These are produced by real password login and actual backend responses, without mocked browser APIs.
 
@@ -85,12 +85,10 @@ Browser assertion ledgers: [configured](screenshots/operational/browser-configur
 
 Actual browser artifacts are produced under `screenshots/operational/`, with the ETL regression in its `etl/` subdirectory. The redacted `report.json` and phase-specific `browser-*.json` record assertions and real browser versions. The [CI workflow](../.github/workflows/operational-acceptance.yml) reproduces the gate and uploads artifacts; remote execution is separately recorded.
 
-Remaining gates: independent PR/security review, remote CI and merge; genuine provider/Carte acceptance; Sprint 5 backup/restore/retention, load/resilience/reconnect/failover, deployment/UAT and formal release acceptance. This synthetic lab does not establish production readiness.
+Remaining gates: independent human security review, genuine provider/Carte acceptance, and the [Sprint 5 reliability/UAT release gates](RELEASE_RELIABILITY.md). This synthetic lab does not establish production readiness.
 
 ## Publication and review
 
-Implementation commit **`21bd284`** is pushed to `feature/sprint4-operational-dashboards`. Sprint 3 merged in [PR #23](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/23), and Sprint 4 now targets `main` in [PR #24](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/24). GitHub REST/GraphQL access and PR creation were verified on 2026-10-11 after the earlier API Forbidden blocker.
+PR #23 (ETL), PR #24 (operational dashboards) and PR #25 (approved UI) are merged. GitHub API/PR creation is working; the earlier Forbidden blocker is resolved. PR #25's sixteen head checks passed, and [post-merge Validation](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38165657701) passed at main `fbe83ba` on 2026-10-11. Owner approval to merge is recorded separately from independent human security review, which remains pending.
 
-Remote workflows started successfully. The initial run passed HTTP, infrastructure, ETL, builds, dependency audits, secret scanning, private HTTPS and demo/network smoke checks. The staging preservation probe had a stale `0018` assertion; it now verifies the repository migration head and passed an actual disposable PostgreSQL upgrade test. The fix is pushed and reruns CI. Initial live HTTPS startup and Kubernetes provider/RBAC checks failed; the operational dashboard job was still running when this status was recorded. Final success is not claimed.
-
-Detailed Actions log downloads return proxy Forbidden at `results-receiver.actions.githubusercontent.com`. That exact hostname is saved in the cloud network draft while preserving `api.github.com` and package-manager presets. Review/save in environment settings and publish the environment to activate the saved configuration; saving the draft alone does not grant runtime access. Independent review and merge remain pending. The available identity is the PR author, and the repository currently lists no other collaborator; an eligible independent reviewer must provide review. Live AWS setup remains paused.
+The new reliability feature branch adds true inventory counts, paging and service prefetch; page-local health summaries/search and remaining infrastructure/history query bounds are explicitly listed in the [priority matrix](RELEASE_RELIABILITY.md). Its changes require their own head validation and review. AWS setup remains paused; controlled runtime evidence does not establish production acceptance.

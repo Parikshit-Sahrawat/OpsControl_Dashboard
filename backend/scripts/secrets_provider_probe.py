@@ -1,5 +1,7 @@
 """Offline scoped secret-provider acceptance; validates no credential leakage."""
 import os
+from unittest.mock import patch
+from app.core.config import settings
 from app.worker.credentials import resolve_basic_auth,CredentialProviderError
 def denied(fn):
     try:fn()
@@ -20,7 +22,8 @@ def main():
     try:
         os.environ["OPSCONTROL_CREDENTIAL_SYNTHETIC_USERNAME"]="read-only-monitor"
         os.environ["OPSCONTROL_CREDENTIAL_SYNTHETIC_PASSWORD"]="synthetic-private-value"
-        denied(lambda:resolve_basic_auth("synthetic"))
+        with patch.object(settings, "environment", "production"):
+            denied(lambda:resolve_basic_auth("synthetic"))
     finally:
         if old is None:os.environ.pop("ENVIRONMENT",None)
         else:os.environ["ENVIRONMENT"]=old

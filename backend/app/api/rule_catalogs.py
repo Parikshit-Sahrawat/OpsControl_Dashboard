@@ -74,7 +74,10 @@ def validate_definition(kind,definition):
             raise HTTPException(422,"Alert metric_name must reference a supported active metric")
         if definition.get("operator") not in {"GT","GTE","LT","LTE","EQ","NE"}:
             raise HTTPException(422,"Unsupported alert operator")
-        try: float(definition["threshold_value"])
+        try:
+            import math
+            if not math.isfinite(float(definition["threshold_value"])):
+                raise ValueError("Non-finite threshold")
         except (TypeError,KeyError,ValueError):
             raise HTTPException(422,"Numeric threshold required")
         if type(definition.get("consecutive_breaches",1)) is not int or not 1<=definition.get("consecutive_breaches",1)<=100:

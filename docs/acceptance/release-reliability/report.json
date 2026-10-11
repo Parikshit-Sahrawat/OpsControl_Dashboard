@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "created_at": "2026-10-11T19:11:04.912924+00:00",
+  "checks": [
+    "RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives",
+    "Actual authenticated Playwright pagination across 205-resource inventory in both themes",
+    "Atomic audit rollback/commit; bounded collector concurrency; retention rollback, pinning and audit preservation",
+    "Populated custom-format dump/restore: every row hash, FK/check constraint, migration head and audit trigger preserved",
+    "Backup overwrite, corrupted checksum and nonempty restore target refused",
+    "Certificate-verified TLS ingress, static SPA CSP/HSTS/security headers and rejected untrusted proxy spoof",
+    "Production non-owner API authentication; runtime DDL/audit mutation and owner startup refused; actual trusted legacy TLS transport"
+  ],
+  "database": {
+    "tables": 42,
+    "rows": 622,
+    "constraints": 143,
+    "restore_seconds": 0.632,
+    "dump_sha256": "5b8ca5593b3341713d7cdcd437a45db0f06a2114f128809278932ec39dc0835b"
+  },
+  "limitations": [
+    "Controlled small dataset, not a production RTO/RPO or load SLO",
+    "Independent human security review and operator UAT pending",
+    "Live AWS, Windows and genuine Carte acceptance deferred",
+    "Audit/incident/ETL history retained indefinitely; approved deletion/archive policy pending"
+  ]
+}
