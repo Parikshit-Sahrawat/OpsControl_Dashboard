@@ -5,6 +5,10 @@ name="opscontrol-netverify-$$"
 allowed="$name-allowed"
 denied="$name-denied"
 image="public.ecr.aws/docker/library/python:3.12-alpine"
+if ! docker image inspect "$image" >/dev/null 2>&1 && ! docker pull "$image"; then
+  image="python:3.12-alpine"
+  docker pull "$image"
+fi
 cleanup() {
   docker rm -f "$name-ok" "$name-blocked" >/dev/null 2>&1 || true
   docker network rm "$allowed" "$denied" >/dev/null 2>&1 || true

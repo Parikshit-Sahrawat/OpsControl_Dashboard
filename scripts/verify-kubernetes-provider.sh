@@ -63,6 +63,8 @@ from kubernetes import client,config
 from app.worker.provider_checks import kubernetes_health
 configuration=client.Configuration()
 config.load_kube_config(client_configuration=configuration)
+configuration.cert_file=None
+configuration.key_file=None
 configuration.api_key={'authorization':'Bearer '+os.environ['OPSCONTROL_TEST_READER_TOKEN']}
 configuration.api_key_prefix={}
 configuration.refresh_api_key_hook=None
