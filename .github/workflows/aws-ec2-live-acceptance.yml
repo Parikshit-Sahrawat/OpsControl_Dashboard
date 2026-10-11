@@ -37,9 +37,18 @@ jobs:
         working-directory: backend
         env:
           AWS_EC2_METADATA_DISABLED: "true"
+          APPROVED_ACCOUNT: ${{ inputs.aws_account_id }}
+          APPROVED_REGION: ${{ inputs.aws_region }}
+          APPROVED_INSTANCE: ${{ inputs.instance_id }}
         run: |
           python -m pip install 'boto3>=1.35,<2'
           PYTHONPATH=. python scripts/aws_live_acceptance.py \
-            --account "${{ inputs.aws_account_id }}" \
-            --region "${{ inputs.aws_region }}" \
-            --instance-id "${{ inputs.instance_id }}"
+            --account "$APPROVED_ACCOUNT" \
+            --region "$APPROVED_REGION" \
+            --instance-id "$APPROVED_INSTANCE" \
+            --evidence-output "$RUNNER_TEMP/aws-evidence.json"
+      - name: Upload genuine provider evidence after acceptance
+        uses: actions/upload-artifact@v4
+        with:
+          name: approved-aws-evidence
+          path: ${{ runner.temp }}/aws-evidence.json

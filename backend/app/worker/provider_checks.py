@@ -68,18 +68,23 @@ def ec2_health(config,session_factory=None):
 
 def kubernetes_health(config,client_factory=None):
     if not isinstance(config,dict): raise ProviderCheckError("Kubernetes config must be JSON")
-    if set(config)-{"namespace","pod_name","deployment_name"}:
+    if set(config)-{"namespace","pod_name","deployment_name","node_name"}:
         raise ProviderCheckError("Unapproved Kubernetes configuration key")
     namespace=config.get("namespace","")
     pod=config.get("pod_name")
     deployment=config.get("deployment_name")
+    node=config.get("node_name")
     if not isinstance(namespace,str) or not _DNS_LABEL.fullmatch(namespace):
         raise ProviderCheckError("Namespace must be explicit")
-    if bool(pod)==bool(deployment):
-        raise ProviderCheckError("Choose exactly one Pod or Deployment")
-    name=pod or deployment
-    if not isinstance(name,str) or not _DNS_LABEL.fullmatch(name):
+    if sum(bool(x) for x in (pod,deployment,node))!=1:
+        raise ProviderCheckError("Choose exactly one Pod, Deployment or Node")
+    name=pod or deployment or node
+    if not isinstance(name,str) or len(name)>253 or not all(_DNS_LABEL.fullmatch(part) for part in name.split(".")):
         raise ProviderCheckError("Invalid Pod/Deployment name")
+    if node:
+        import os
+        if node not in os.getenv('OPSCONTROL_K8S_ALLOWED_NODES','').split(','):
+            raise ProviderCheckError('Node is not explicitly approved for this worker')
     if client_factory is None:
         try:
             from kubernetes import client
@@ -88,6 +93,15 @@ def kubernetes_health(config,client_factory=None):
         from kubernetes import config as kconfig
         kconfig.load_incluster_config()  # service-account only; no arbitrary kubeconfig
         client_factory=client
+    if node:
+        obj=client_factory.CoreV1Api().read_node(name=name)
+        conditions={c.type:c.status for c in (obj.status.conditions or [])}
+        ready=conditions.get('Ready')=='True'
+        pressures={key: conditions.get(value)=='True' for key,value in (
+            ('memory_pressure','MemoryPressure'),('disk_pressure','DiskPressure'),('pid_pressure','PIDPressure'))}
+        return {'provider':'KUBERNETES','resource':'NODE','namespace':namespace,'name':name,
+            'node_ready':ready,'unschedulable':bool(obj.spec.unschedulable),**pressures,
+            'outcome':'SUCCESS' if ready and not any(pressures.values()) else 'DEGRADED'}
     if pod:
         obj=client_factory.CoreV1Api().read_namespaced_pod(name=name,namespace=namespace)
         status=obj.status

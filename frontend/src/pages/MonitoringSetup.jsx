@@ -42,6 +42,9 @@ export default function MonitoringSetup({organizationId,user}) {
   const [error,setError]=useState(""),[message,setMessage]=useState(""),[busy,setBusy]=useState(false);
   const [enrollName,setEnrollName]=useState("demo-runner"),[enrollHost,setEnrollHost]=useState("portal.example.test");
   const [enrollCIDR,setEnrollCIDR]=useState("10.20.0.0/16"),[oneTimeToken,setOneTimeToken]=useState("");
+  const sourceType=sources.find(source=>source.id===sourceId)?.source_type;
+  const infrastructure=['AWS_EC2','EC2','KUBERNETES','K8S','LINUX_HOST','WINDOWS_HOST'].includes(sourceType);
+  const canActivate=infrastructure?Boolean(user?.platform_admin):Boolean(user?.platform_admin||user?.memberships?.some(m=>m.organization_id===organizationId&&m.role==='org_admin'));
   const canWrite=Boolean(user?.platform_admin||user?.memberships?.some(m=>m.organization_id===organizationId&&m.role==="org_admin"));
 
   const reload=useCallback(async()=>{
@@ -73,14 +76,14 @@ export default function MonitoringSetup({organizationId,user}) {
       async result=>{setMessage("Versioned "+kind+" rule created.");setSelectedRules(ids=>[...ids,result.versions[0].id]);await reload();});
   }
   async function doPreview(){
-    if(!sourceId||!workerId){setError("Choose a Data Source and approved remote worker.");return;}
-    const payload={remote_worker_id:workerId,rule_version_ids:selectedRules,include_templates:includeTemplates};
+    if(!sourceId||(!infrastructure&&!workerId)){setError("Choose a Data Source and approved remote worker.");return;}
+    const payload={remote_worker_id:infrastructure?null:workerId,rule_version_ids:selectedRules,include_templates:includeTemplates};
     await run(()=>api(API+"/data-sources/"+sourceId+"/activation-preview",{
       method:"POST",body:JSON.stringify(payload)}),result=>{setPreview(result);setMessage("Activation preview validated; no collector changed.");});
   }
   async function doActivate(){
     if(!preview){setError("Run activation preview first.");return;}
-    const payload={remote_worker_id:workerId,rule_version_ids:selectedRules,include_templates:includeTemplates};
+    const payload={remote_worker_id:infrastructure?null:workerId,rule_version_ids:selectedRules,include_templates:includeTemplates};
     await run(()=>api(API+"/data-sources/"+sourceId+"/activations",{
       method:"POST",body:JSON.stringify(payload)}),result=>{
       setActivation(result);setPreview(null);
@@ -130,7 +133,7 @@ export default function MonitoringSetup({organizationId,user}) {
     return()=>window.clearInterval(timer);
   },[sourceId]);
   const versionRows=catalogs.flatMap(c=>c.versions.map(v=>({id:v.id,catalog:c,version:v})));
-  function setType(next){setKind(next);setDefinition(JSON.stringify(DEFAULTS[next],null,2));setRuleName(next.toLowerCase()+"-rule");}
+  function setType(next){setKind(next);const defaults={...DEFAULTS[next]};if(infrastructure&&next==='METRIC')defaults.name='infrastructure_up';if(infrastructure&&next==='ALERT')defaults.metric_name='infrastructure_up';setDefinition(JSON.stringify(defaults,null,2));setRuleName(next.toLowerCase()+"-rule");}
   return <div className="monitoring-setup">
     <div className="page-heading"><div><h1>Monitoring Setup</h1>
       <p>Independent versioned rules → approved collector → activation → verified evidence</p></div></div>
@@ -138,16 +141,17 @@ export default function MonitoringSetup({organizationId,user}) {
     {error&&<div className="error-box" role="alert">{error}</div>}
     {message&&<div className="card" role="status">{message}</div>}
     <section className="card monitoring-setup-panel">
-      <h2>1. Select a Data Source and private-network worker</h2>
+      <h2>1. Select a Data Source{infrastructure?"":" and private-network worker"}</h2>
+      {infrastructure&&<p>Infrastructure collection runs on a deployed local worker using its workload identity. A platform administrator must authorize activation.</p>}
       <div className="monitoring-setup-grid">
         <label>Data Source<select value={sourceId} onChange={e=>{setSourceId(e.target.value);setPreview(null);setActivation(null);}}>
           <option value="">Select resource</option>{sources.map(s=><option key={s.id} value={s.id}>{s.name} · {s.source_type}</option>)}
         </select></label>
-        <label>Approved remote worker<select value={workerId} onChange={e=>{setWorkerId(e.target.value);setPreview(null);}}>
+        {!infrastructure&&<label>Approved remote worker<select value={workerId} onChange={e=>{setWorkerId(e.target.value);setPreview(null);}}>
           <option value="">Select worker</option>{workers.map(w=><option key={w.id} value={w.id}>{w.name} · {w.allowed_hosts.join(", ")||"no hosts"}</option>)}
-        </select></label>
+        </select></label>}
       </div>
-      <p className="monitoring-helper">Remote workers must be enrolled and assigned explicit hostname/CIDR policies. A configured resource is not automatically monitored.</p>
+      {!infrastructure&&<p className="monitoring-helper">Remote workers must be enrolled and assigned explicit hostname/CIDR policies. A configured resource is not automatically monitored.</p>}
     </section>
     <section className="card monitoring-setup-panel">
       <h2>2. Choose independent Metric, Log and Alert Rules</h2>
@@ -193,13 +197,13 @@ export default function MonitoringSetup({organizationId,user}) {
     <section className="card monitoring-setup-panel">
       <h2>3. Preview and activate operational monitoring</h2>
       <div className="monitoring-setup-actions">
-        <button disabled={!canWrite||busy||!sourceId||!workerId} onClick={doPreview}>Validate & Preview</button>
-        <button disabled={!canWrite||busy||!preview} className="primary-button" onClick={doActivate}>Activate monitoring</button>
+        <button disabled={!canActivate||busy||!sourceId||(!infrastructure&&!workerId)} onClick={doPreview}>Validate & Preview</button>
+        <button disabled={!canActivate||busy||!preview} className="primary-button" onClick={doActivate}>Activate monitoring</button>
         <button disabled={!canWrite||busy||!sourceId} onClick={deactivate}>Deactivate</button>
       </div>
       {preview&&<div className="monitoring-preview"><b>{preview.status}</b>
         <p>Collector: {preview.plan.collector.name} · {preview.plan.collector.interval_seconds}s · {preview.plan.rules.length} rules</p>
-        <p>Target: {preview.plan.collector.configuration.url}</p>
+        <p>Execution: {preview.plan.execution_mode} · {JSON.stringify(preview.plan.collector.configuration)}</p>
         <p>Activation means scheduled collection is configured. Target health remains UNKNOWN until fresh evidence arrives.</p>
       </div>}
       {activation&&<div className="monitoring-preview" role="status">Monitoring state: <b>{activation.status}</b>
@@ -229,11 +233,11 @@ export default function MonitoringSetup({organizationId,user}) {
         </>}
         <p><b>Evidence:</b> {diagnostics.metric_sample_count} metric samples · {diagnostics.open_alert_count} open alerts · {diagnostics.resolved_alert_count??0} resolved alerts</p>
         {diagnostics.latest_evidence&&<p><b>Latest HTTP evidence:</b> {diagnostics.latest_evidence.outcome} · HTTP {diagnostics.latest_evidence.http_status??"N/A"} · {diagnostics.latest_evidence.response_time_ms??"N/A"} ms</p>}
-        <h3>Recent job leases</h3>
-        {diagnostics.jobs.length?<ul>{diagnostics.jobs.map(job=><li key={job.id}>{job.state} · attempts {job.attempts} · {new Date(job.planned_for).toLocaleString()}</li>)}</ul>:<p>No remote jobs dispatched yet.</p>}
+        {infrastructure?<p>See VM Health for collected infrastructure evidence and operational history.</p>:<><h3>Recent job leases</h3>
+        {diagnostics.jobs.length?<ul>{diagnostics.jobs.map(job=><li key={job.id}>{job.state} · attempts {job.attempts} · {new Date(job.planned_for).toLocaleString()}</li>)}</ul>:<p>No remote jobs dispatched yet.</p>}</>}
       </div>}
     </section>
-    {user?.platform_admin&&<section className="card monitoring-setup-panel">
+    {user?.platform_admin&&!infrastructure&&<section className="card monitoring-setup-panel">
       <h2>Optional — Enroll a private-network agent</h2>
       <form onSubmit={enroll} className="monitoring-rule-editor">
         <div className="monitoring-setup-grid">

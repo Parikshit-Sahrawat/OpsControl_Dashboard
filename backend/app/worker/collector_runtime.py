@@ -16,6 +16,7 @@ from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, R
 from sqlalchemy import delete, select
 
 from app.db.session import SessionLocal
+from app.security.models import WorkerIdentity  # Register collector FK metadata in standalone workers.
 from app.models import Collector, CollectorRun, DataSource, MetricDefinition, MetricSample
 from app.worker.alert_engine import evaluate_metric_sample
 from app.worker.credentials import CredentialProviderError, resolve_basic_auth
@@ -248,6 +249,17 @@ class LinuxHostMetricsAdapter(CollectorAdapter):
         except (DeepCheckError,ValueError,OSError):
             return CollectionResult(False,"Host configuration or metrics unavailable",{"outcome":"CONFIGURATION_ERROR"})
 
+class WindowsHostMetricsAdapter(CollectorAdapter):
+    collector_type="WINDOWS_HOST"
+
+    async def collect(self,collector):
+        from app.worker.deep_checks import windows_host_health,DeepCheckError
+        try:
+            payload=await asyncio.to_thread(windows_host_health,collector.configuration or {})
+            return CollectionResult(payload['outcome']=='SUCCESS','Read-only Windows host/process metrics',payload)
+        except (DeepCheckError,ValueError,OSError):
+            return CollectionResult(False,'Windows host metrics unavailable',{'outcome':'CONFIGURATION_ERROR'})
+
 class ApacheStatusAdapter(CollectorAdapter):
     collector_type="APACHE"
 
@@ -281,6 +293,7 @@ ADAPTERS = {
     "KUBERNETES": KubernetesAdapter(),
     "K8S": KubernetesAdapter(),
     "LINUX_HOST": LinuxHostMetricsAdapter(),
+    "WINDOWS_HOST": WindowsHostMetricsAdapter(),
     "APACHE": ApacheStatusAdapter(),
     "TOMCAT": TomcatStatusAdapter(),
 }
@@ -311,6 +324,9 @@ def _extract_metric_value(metric, result):
     if extract == "AVAILABILITY":
         return 1.0 if result.success else 0.0
     mapping = {
+        "HOST_CPU_PERCENT": payload.get("cpu_percent"),
+        "HOST_PROCESS_RUNNING": 1 if payload.get("process_running") is True else 0 if payload.get("process_running") is False else None,
+        "K8S_NODE_READY": 1 if payload.get("node_ready") is True else 0 if payload.get("node_ready") is False else None,
         "HOST_MEMORY_USED_PERCENT": payload.get("memory_used_percent"),
         "HOST_DISK_USED_PERCENT": payload.get("disk_used_percent"),
         "APACHE_BUSY_WORKERS": payload.get("busy_workers"),
@@ -328,7 +344,9 @@ def _extract_metric_value(metric, result):
     if value is None:
         return None
     try:
-        return float(value)
+        import math
+        numeric=float(value)
+        return numeric if math.isfinite(numeric) else None
     except (TypeError, ValueError):
         return None
 
@@ -446,6 +464,13 @@ async def execute_collector(collector_id):
 
         ended_at = datetime.now(timezone.utc)
         run = _persist_run(collector, result, started_at, ended_at, db)
+        from app.worker.infrastructure import INFRA_TYPES, normalize, safe_evidence
+        if collector.collector_type.upper() in INFRA_TYPES:
+            from app.models import InfrastructureEvidence
+            db.add(InfrastructureEvidence(organization_id=data_source.organization_id,
+                data_source_id=data_source.id,collector_id=collector.id,collector_run_id=run.id,
+                observed_at=ended_at,provider=normalize(collector.collector_type),
+                payload=safe_evidence(result.payload)))
         samples = _persist_metric_samples(collector, run, result, ended_at, db)
         _persist_pentaho_history(collector, result, ended_at, db)
         for sample in samples:

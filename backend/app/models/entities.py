@@ -249,6 +249,7 @@ class DataSource(Base):
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     source_type: Mapped[str] = mapped_column(String(100), nullable=False)
+    discovery_external_id: Mapped[str | None] = mapped_column(String(512))
     description: Mapped[str | None] = mapped_column(Text)
     endpoint: Mapped[str | None] = mapped_column(String(1000))
     auth_type: Mapped[str | None] = mapped_column(String(100))
@@ -264,7 +265,8 @@ class DataSource(Base):
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="data_source")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="data_source")
     template_attachments: Mapped[list["MonitoringTemplateAttachment"]] = relationship(back_populates="data_source", cascade="all, delete-orphan")
-    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_data_source_org_name"),)
+    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_data_source_org_name"),
+                      UniqueConstraint("organization_id","discovery_external_id",name="uq_data_source_org_discovery"))
 
 class Collector(Base):
     __tablename__ = "collectors"
@@ -489,3 +491,14 @@ class CorrelationEvidence(Base):
         Index("ix_correlation_evidence_corr_observed", "correlation_id", "observed_at"),
         Index("ix_correlation_evidence_resource_observed", "resource_id", "observed_at"),
     )
+
+class InfrastructureEvidence(Base):
+    __tablename__ = "infrastructure_evidence"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id"), nullable=False, index=True)
+    collector_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("collectors.id"), nullable=False, index=True)
+    collector_run_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("collector_runs.id", ondelete="CASCADE"), nullable=False, unique=True)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    provider: Mapped[str] = mapped_column(String(50), nullable=False)
+    payload: Mapped[dict] = mapped_column(JSON, nullable=False)

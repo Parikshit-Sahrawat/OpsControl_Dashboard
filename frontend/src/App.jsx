@@ -1,3 +1,4 @@
+import VMHealth from "./pages/VMHealth";
 import AccessManagement from "./pages/AccessManagement";
 import MonitoringSetup from "./pages/MonitoringSetup";
 import { useCallback, useEffect, useState } from "react";
@@ -49,11 +50,12 @@ export default function App({ user }) {
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
   return <div className="app-shell"><TopNav active={active} onChange={page=>{setActive(page);setSelectedId(null)}} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={setOrganizationIds} platformAdmin={user?.platform_admin}/><main className="content">
-    {active==="Overview"&&<Overview jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
+    {active==="Overview"&&<Overview organizationIds={organizationIds} jobs={jobs} onSelect={selectJob} onNavigate={page=>setActive(page)}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
     {active==="Access Management"&&user?.platform_admin&&<AccessManagement />}
     {active==="Resource Management"&&<ResourceManagement organizationId={organizationId} organizationIds={organizationIds}/>}
+    {active==="VM Health"&&<VMHealth organizationIds={organizationIds}/> }
     {active==="Monitoring Setup"&&<MonitoringSetup organizationId={organizationId} user={user}/> }
-    {![ "Overview","ETL Jobs","Resource Management","Access Management","Monitoring Setup" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
+    {![ "Overview","ETL Jobs","Resource Management","Access Management","Monitoring Setup","VM Health" ].includes(active)&&<div className="card placeholder"><h1>{active}</h1><p>Page structure reserved for the next implementation stage.</p></div>}
   </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote}/></div>;
 }

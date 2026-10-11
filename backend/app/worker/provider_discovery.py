@@ -40,7 +40,7 @@ def aws_ec2_candidates(config,session_factory=None,max_results=100):
     return output
 
 def k8s_pod_candidates(config,client_factory=None,max_results=100):
-    if not isinstance(config,dict) or set(config)-{"namespace"}:
+    if not isinstance(config,dict) or set(config)-{"namespace","resource_types","approved_nodes"}:
         raise ProviderCheckError("Kubernetes discovery requires one approved namespace")
     namespace=config.get("namespace","")
     if not isinstance(namespace,str) or not _DNS_LABEL.fullmatch(namespace):
@@ -51,10 +51,19 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
         except ImportError as exc:raise ProviderCheckError("Install optional Kubernetes SDK") from exc
         kconfig.load_incluster_config()  # cluster-scoped kubeconfig explicitly forbidden
         client_factory=client
+    kinds=config.get('resource_types',['POD'])
+    if not isinstance(kinds,list) or not kinds or set(kinds)-{'POD','DEPLOYMENT','NODE'}:
+        raise ProviderCheckError('Choose approved Pod, Deployment or Node resource types')
+    nodes=config.get('approved_nodes',[])
+    if 'NODE' in kinds:
+        import os
+        allowed=os.getenv('OPSCONTROL_K8S_ALLOWED_NODES','').split(',')
+        if not isinstance(nodes,list) or not nodes or any(n not in allowed for n in nodes):
+            raise ProviderCheckError('Node discovery requires explicitly approved node names')
     # Namespace RBAC supplied by the authorized service account. The API cannot
     # escalate to cluster-wide listing or accept an arbitrary control-plane URL.
     result=client_factory.CoreV1Api().list_namespaced_pod(namespace=namespace,
-        limit=min(max_results,100))
+        limit=min(max_results,100)) if "POD" in kinds else type("Empty",(),{"items":[]})()
     output=[]
     for pod in result.items[:max_results]:
         if not pod.metadata or not pod.metadata.uid or not pod.metadata.name:continue
@@ -62,4 +71,18 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
             "resource_type":"K8S_POD","namespace":namespace,
             "pod_name":pod.metadata.name,"uid":str(pod.metadata.uid),
             "phase":pod.status.phase if pod.status else "Unknown"})
+    if 'DEPLOYMENT' in kinds:
+        deployments=client_factory.AppsV1Api().list_namespaced_deployment(namespace=namespace,limit=min(max_results,100))
+        for deployment in deployments.items:
+            if len(output)>=max_results:break
+            output.append({'external_id':f'k8s:{namespace}:deployment:{deployment.metadata.uid}',
+                'resource_type':'K8S_DEPLOYMENT','namespace':namespace,
+                'deployment_name':deployment.metadata.name,'uid':str(deployment.metadata.uid)})
+    if 'NODE' in kinds:
+        for name in nodes:
+            if len(output)>=max_results:break
+            node=client_factory.CoreV1Api().read_node(name=name)
+            output.append({'external_id':f'k8s:node:{node.metadata.uid}',
+                'resource_type':'K8S_NODE','namespace':namespace,'node_name':node.metadata.name,
+                'uid':str(node.metadata.uid)})
     return output

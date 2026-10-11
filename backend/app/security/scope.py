@@ -45,6 +45,7 @@ _PATHS = {
     "AlertIncidentEvent": ("history", "job_order", "organization"),
     "DataSource": ("organization",),
     "Collector": ("data_source", "organization"),
+    "InfrastructureEvidence": ("organization",),
     "CollectorRun": ("collector", "data_source", "organization"),
     "MetricDefinition": ("organization",),
     "MetricSample": ("metric_definition", "organization"),
@@ -143,6 +144,15 @@ def enforce_writes(db, flush_context, instances):
             continue
         if model.__name__ not in _PATHS:
             raise HTTPException(403, "Resource cannot be modified through this API")
+        if model.__name__=='Collector' and not principal.platform_admin:
+            from app.worker.infrastructure import INFRA_TYPES
+            state=inspect(obj)
+            previous_types=state.attrs.collector_type.history.deleted
+            protected_type=obj.collector_type.upper() in INFRA_TYPES or any(str(t).upper() in INFRA_TYPES for t in previous_types)
+            if protected_type and (
+                (obj in db.new and obj.enabled) or (obj not in db.new and any(state.attrs[key].history.has_changes() for key in ('configuration','collector_type')))
+                or (state.attrs.enabled.history.has_changes() and obj.enabled)):
+                raise HTTPException(403,'Platform administrator must authorize infrastructure collection')
         org_id = _resolve_org(db, obj)
         can_investigate = (model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote"}
                            and principal.roles.get(org_id) in {"operator", "org_admin"})

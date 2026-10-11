@@ -1,16 +1,32 @@
+import { useEffect,useState } from "react";
+import { authHeaders } from "../auth";
 import KpiCard from "../components/KpiCard";
 import StatusBadge from "../components/StatusBadge";
 import WorldClock from "../components/WorldClock";
 
-export default function Overview({ jobs, onSelect, onNavigate }) {
+export default function Overview({ jobs, onSelect, onNavigate, organizationIds=[] }) {
   // Never represent hardcoded examples as operational health.
   // Until these APIs are implemented, show unknown rather than healthy.
+  const [infrastructure,setInfrastructure]=useState(null);
+  useEffect(()=>{
+    let active=true;
+    const refresh=async()=>{
+      try{
+        const params=new URLSearchParams();organizationIds.forEach(id=>params.append('organization_id',id));
+        const response=await fetch((import.meta.env.VITE_API_BASE_URL||'http://localhost:8000')+'/api/v1/infrastructure/resources?'+params,{headers:authHeaders()});
+        if(!response.ok)throw new Error('Infrastructure unavailable');
+        const value=await response.json();if(active)setInfrastructure(value);
+      }catch{if(active)setInfrastructure(null);}
+    };
+    setInfrastructure(null);refresh();const timer=setInterval(refresh,5000);
+    return()=>{active=false;clearInterval(timer);};
+  },[organizationIds]);
   const failed = jobs.filter(job => job.status === "FAILED").length;
   const running = jobs.filter(job => job.status === "RUNNING").length;
   const atRisk = jobs.filter(job => job.status === "LONG_RUNNING").length;
   const kpis = [
     { label: "ETL Jobs", value: String(jobs.length), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
-    { label: "VM Health", value: "—", tone: "", detail: "Health monitoring not connected", target: "VM Health" },
+    { label: "VM Health", value: infrastructure?String(infrastructure.total):"—", tone: infrastructure?.summary.CRITICAL?"critical-text":"", detail: infrastructure?`${infrastructure.summary.HEALTHY} healthy · ${infrastructure.summary.CRITICAL+infrastructure.summary.WARNING} need attention · ${infrastructure.summary.UNKNOWN} unknown`:"Infrastructure evidence unavailable", target: "VM Health" },
     { label: "APIs & Services", value: "—", tone: "", detail: "Service monitoring not connected", target: "APIs" },
     { label: "Active Incidents", value: "—", tone: "", detail: "Incident feed not connected", target: "Incidents" },
   ];
@@ -56,7 +72,9 @@ export default function Overview({ jobs, onSelect, onNavigate }) {
               <h2>Recent VM Issues</h2>
               <button className="text-link" onClick={() => onNavigate?.("VM Health")}>View all</button>
             </div>
-            <div className="empty-inline">No live VM health feed connected. Add a supported collector to see verified infrastructure status.</div>
+            {infrastructure?.resources.filter(r=>['WARNING','CRITICAL','UNKNOWN'].includes(r.health)).slice(0,5).map(r=><div key={r.id}>{r.name} · {r.health} · {r.open_alert_count} open alerts</div>)}
+            {infrastructure&&!infrastructure.resources.some(r=>['WARNING','CRITICAL','UNKNOWN'].includes(r.health))&&<div className="empty-inline">No current infrastructure issues in the selected scope.</div>}
+            {!infrastructure&&<div className="empty-inline">Infrastructure evidence unavailable.</div>}
           </section>
 
           <section className="card">

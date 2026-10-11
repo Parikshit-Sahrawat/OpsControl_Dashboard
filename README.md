@@ -3,7 +3,9 @@
 **Project implementation roadmap:** [Living Implementation Priorities & Verification Tracker](docs/IMPLEMENTATION_ROADMAP.md) — status, completed stages, current blockers and next testable workstreams. Update this table after each milestone; see linked draft PRs for evidence.
 
 
-**Private-network HTTPS monitoring:** [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) — scoped workers, scheduled jobs, strict egress and deduplicated evidence (draft feature, not production approved).\n\n**New to OpsControl?** Start with the [Beginner Quickstart](docs/QUICKSTART.md) to learn the basic monitoring concepts and run the current technical preview locally. This is a general-purpose open-source monitoring and observability project in development, not a production-ready release. The guide documents current limitations and uses only local/synthetic examples.
+**Private-network HTTPS monitoring:** [Outbound Remote Agent Quickstart](docs/REMOTE_AGENT_QUICKSTART.md) — scoped workers, scheduled jobs, strict egress and deduplicated evidence (draft feature, not production approved).
+
+**New to OpsControl?** Start with the [Beginner Quickstart](docs/QUICKSTART.md) to learn the basic monitoring concepts and run the current technical preview locally. This is a general-purpose open-source monitoring and observability project in development, not a production-ready release. The guide documents current limitations and uses only local/synthetic examples.
 
 OpsControl Dashboard is an enterprise operations monitoring platform being designed to give NOC, SLM, support, and engineering teams a single operational view of production ETL jobs, VMs, applications, APIs, incidents, alerts, and operational history.
 
@@ -29,11 +31,19 @@ These are **actual Playwright screenshots**, separate from the illustrative SVG 
 
 The [redacted report](docs/screenshots/http-golden-path/report.json) records database phase checks and audit metadata. The harness checks anonymous/cross-tenant access, audit UPDATE/DELETE rejection and public egress denial. This is local synthetic HTTPS acceptance; real provider integrations, external alert delivery and production deployment remain separate validation work.
 
+## Sprint 2 — infrastructure monitoring
+
+The [infrastructure acceptance guide](docs/INFRASTRUCTURE_MONITORING.md) documents the next slice of the HTTP reference architecture: scoped AWS/Kubernetes discovery, versioned metric/alert activation and an operational **VM Health** screen with collector freshness, filters, clickable status counts, evidence and alert history. Overview uses the same scoped health API.
+
+Run `backend/.venv/bin/python scripts/infrastructure-acceptance.py` with the guide's dependencies and Playwright settings. It verifies six resources through healthy → failed → recovered, PostgreSQL observations and stable alert resolution, real browser interactions, tenant negatives and audit history. [Runtime report](docs/screenshots/infrastructure/report.json) and actual screenshots: [configured](docs/screenshots/infrastructure/configured.png), [healthy](docs/screenshots/infrastructure/healthy.png), [failed](docs/screenshots/infrastructure/failed.png), [recovered](docs/screenshots/infrastructure/recovered.png), [other tenant](docs/screenshots/infrastructure/other-tenant.png).
+
+**Evidence origins:** Linux telemetry is live on the local worker. AWS uses controlled boto3/CloudWatch responses, Kubernetes uses an authenticated certificate-verified controlled API, and Windows uses controlled native API inputs. Genuine AWS sandbox, Kubernetes cluster and Windows installation acceptance remain pending. Native Windows collection requires a Windows worker. The guide lists sandbox inputs and deployment restrictions; remote CI, independent PR review and merge remain separate gates.
+
 ## UI Tour — Frontend
 
 The SVG images below are **illustrative UI diagrams**, not browser screenshots or proof of working functionality. They introduce the product direction and may differ from the current application.
 
-> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health**, **APIs & Services**, **Incidents** and **Reports** currently render placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
+> **Verified UI note (Phase 1 audit):** Playwright captures of the actual frontend are produced by [Phase 1 Staging Verification](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/workflows/phase1-staging.yml) and attached to workflow runs as downloadable screenshot artifacts. **Overview**, **ETL Jobs** and **Resource Management** have rendered page implementations; **VM Health** now has the Sprint 2 data-backed implementation and controlled browser evidence above. **APIs & Services**, **Incidents** and **Reports** remain placeholders. Resource Manager configuration is not evidence of an operational collector. See [the evidence-based Phase 1 audit](docs/sdlc/07-CODE-AUDIT.md) and [handoff](docs/sdlc/09-PHASE1-HANDOFF.md).
 
 ### 1. Operations Overview
 
@@ -73,7 +83,7 @@ Key features:
 
 **Purpose:** Provide a dedicated operational view for customer Data Sources and their infrastructure health.
 
-Planned/next-stage capabilities:
+Implemented in the Sprint 2 development branch, with the evidence origins described above:
 - CPU, memory and disk monitoring.
 - Service/process/application health.
 - Data Source-level status and conditions.

@@ -52,8 +52,15 @@ flowchart LR
 - UI distinguishes `no data`, `loading`, `stale`, `collector unavailable`, and actual business failure.
 - Collection intervals and the UI's 5-second refresh are separate concerns; bound API query volume.
 
-## Known boundaries from implementation
-The current API adapter has a functioning **HTTP Basic** execution path and a confirmed metric sample; HTTPS currently needs correction (#4). WINDOWS, LINUX and PENTAHO are transport stubs (#7). Current wizard registers `OTEL` but the worker lacks an OTEL adapter (#8). Clarify whether OTEL is event ingestion via collector/agent or a polling adapter before production.
+## Implemented HTTP and infrastructure reference flows (Sprint 2)
+
+HTTP activation pins immutable Metric/Log/Alert Rule versions and binds an approved organization-scoped remote worker. Actual TLS health evidence reaches native samples/logs and alert OPEN → RESOLVED transitions. [HTTP golden path](../../HTTP_GOLDEN_PATH.md) contains the local browser/database evidence.
+
+Infrastructure activation uses the same versioned desired configuration and stable materialized identities. A platform administrator approves discovery/import and collection using local deployed workload identity; tenant administrators cannot enumerate provider inventory through a shared identity. AWS validates its expected account; Kubernetes uses only its in-cluster service account and approved Node names; host adapters inspect the machine running the worker. Discovery imports inactive inventory keyed by `(organization_id, discovery_external_id)`, so renaming does not create a second resource.
+
+Each local run persists `CollectorRun`, a sanitized `InfrastructureEvidence` observation carrying organization/source/collector/run ownership, available `MetricSample` rows and native alert evaluations. VM Health and Overview query scoped infrastructure endpoints. Missing or stale observations remain UNKNOWN; disabled collectors remain distinct. The HTTP remote agent cannot execute infrastructure tasks.
+
+[Infrastructure acceptance](../../INFRASTRUCTURE_MONITORING.md) records actual Linux observations and controlled AWS, authenticated TLS Kubernetes and Windows lifecycle evidence. Genuine AWS/cluster/Windows gates remain separate. The local scheduler requires a single-worker guarantee; multi-host routing and leases are not delivered by this slice. Deploy the host worker on its intended host; it cannot centrally poll arbitrary remote VMs. ETL/Pentaho genuine acceptance and wider UI/release work remain follow-ups.
 
 ## Open design choices
 OIDC identity provider, expected tenant scale, metrics cardinality, SLO targets, retention and data residency, first Pentaho read API, whether notification providers will be enabled in the first operational release.
