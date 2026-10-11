@@ -25,6 +25,11 @@ jobs:
           "$RUNNER_TEMP/release-tools/node_modules/.bin/playwright" install --with-deps chromium
       - name: Offline security regression
         run: (cd backend && .venv/bin/python -m unittest discover -s tests -v)
+      - name: Non-root runtime image under a restrictive checkout umask
+        run: |
+          chmod -R go-rwx backend/app backend/scripts
+          docker build -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend
+          docker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print("Non-root read-only runtime imports PASS")'
       - name: Populated restore, bounded retention, multi-process recovery and actual TLS ingress
         env:
           RELEASE_EVIDENCE_DIR: ${{ runner.temp }}/release-evidence
