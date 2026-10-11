@@ -7,7 +7,6 @@ Never log secret values or expose provider errors to the API.
 import json
 import os
 import re
-from app.core.config import settings
 
 class CredentialProviderError(RuntimeError):
     pass
@@ -48,6 +47,13 @@ def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str
     else:
         # The API and workers must share Settings, including values loaded from
         # .env. Reading os.getenv here silently bypassed production policy.
+        # Keep unauthenticated read-only transport importable in the existing
+        # stdlib-only private-network probe. Credentials require canonical
+        # Settings; missing configuration dependencies fail closed.
+        try:
+            from app.core.config import settings
+        except ImportError:
+            raise CredentialProviderError("Credential configuration dependencies required") from None
         if settings.environment.lower()=="production":
             raise CredentialProviderError("Production forbids environment-backed collector credentials")
         if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}",credential_ref):
