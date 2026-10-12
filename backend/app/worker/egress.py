@@ -8,6 +8,8 @@ import ipaddress
 import socket
 import ssl
 import time
+import base64
+import os
 from urllib.parse import urlsplit
 
 class EgressDenied(ValueError): pass
@@ -83,14 +85,17 @@ def resolve_target(host, networks, resolver=socket.getaddrinfo):
     ips=[validate_ip(item[4][0],networks) for item in answers]
     return str(ips[0])
 
-def _pinned_https(host,ip,path,timeout):
+def _pinned_https(host,ip,path,timeout,authorization=None):
     context=ssl.create_default_context()
     sock=socket.create_connection((ip,443),timeout=timeout)
     sock.settimeout(timeout)
     try:
         secure=context.wrap_socket(sock,server_hostname=host)
         try:
-            request=(f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: OpsControl-RemoteProbe/1\r\nAccept: application/json\r\nConnection: close\r\n\r\n").encode("ascii")
+            auth_header = f"Authorization: {authorization}\r\n" if authorization else ""
+            if authorization and (len(authorization)>8192 or any(ord(c)<32 or ord(c)>126 for c in authorization)):
+                raise EgressDenied("Invalid authentication header encoding")
+            request=(f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: OpsControl-RemoteProbe/1\r\nAccept: application/json\r\n{auth_header}Connection: close\r\n\r\n").encode("ascii")
             secure.sendall(request)
             response=http.client.HTTPResponse(secure)
             response.begin()
@@ -109,13 +114,33 @@ def probe_https(config, hosts, cidrs):
     if type(expected) is not int or not 100<=expected<=599:
         raise EgressDenied("Invalid expected response status")
     ip=resolve_target(parts.hostname,networks)
+    authorization = None
+    reference = config.get("credential_ref")
+    if reference is not None:
+        # The control plane cannot select secrets outside operator-installed
+        # worker policy. Resolve only after destination/DNS policy succeeds.
+        approved = {item.strip() for item in os.getenv("OPSCONTROL_ALLOWED_CREDENTIAL_REFS", "").split(",") if item.strip()}
+        if not isinstance(reference, str) or reference not in approved:
+            raise EgressDenied("Credential reference is not approved for this worker")
+        from app.worker.credentials import resolve_basic_auth, CredentialProviderError
+        try:
+            username, password = resolve_basic_auth(reference)
+        except CredentialProviderError:
+            raise EgressDenied("Approved credential is unavailable") from None
+        if ':' in username:
+            raise EgressDenied("Invalid Basic authentication account encoding")
+        authorization = "Basic " + base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("ascii")
     path=parts.path or "/"
     if not path.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in path):
         raise EgressDenied("Target path contains unsafe characters")
     # No redirects are followed. 3xx is an observed result, not a new hop.
     timeout= min(max(int(config.get("timeout_seconds",8)),1),10)
     started=time.monotonic()
-    status,size=_pinned_https(parts.hostname,ip,path,timeout)
+    status,size=(_pinned_https(parts.hostname,ip,path,timeout,authorization) if authorization
+                 else _pinned_https(parts.hostname,ip,path,timeout))
     elapsed=min(int((time.monotonic()-started)*1000),600000)
-    return {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
-            "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
+    result = {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
+              "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
+    if authorization:
+        result["auth_mode"] = "BASIC"
+    return result

@@ -27,7 +27,7 @@ from app.security.throttle import failed_login, login_allowed, successful_login
 router = APIRouter(prefix="/api/v1/auth", tags=["Identity"])
 worker_router = APIRouter(prefix="/api/v1/worker", tags=["Worker Identity"])
 _ALLOWED_PUBLIC = {"/", "/health", "/health/db", "/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc", "/api/v1/auth/login"}
-_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami", "/api/v1/worker/claim", "/api/v1/worker/results"}
+_WORKER_PUBLIC_GATE = {"/api/v1/worker/whoami", "/api/v1/worker/claim", "/api/v1/worker/results", "/api/v1/worker/heartbeat"}
 _ROLE_VALUES = {"viewer", "operator", "org_admin"}
 _DUMMY_HASH = hash_password(secrets.token_urlsafe(24))  # uniform work for unknown usernames
 
@@ -383,4 +383,6 @@ def worker_whoami(request: Request):
         if row is None or not row.enabled or row.expires_at.replace(tzinfo=timezone.utc) <= datetime.now(timezone.utc):
             raise HTTPException(401, "Invalid or expired worker identity")
         return {"worker_id": str(row.id), "organization_id": str(row.organization_id),
-                "name": row.name, "capabilities": ["identity_only"]}
+                "name": row.name, "capabilities": ["https_probe", "https_basic_auth", "heartbeat"],
+                "capability_scope": "control_plane_protocol",
+                "last_seen_at": row.last_seen_at.isoformat() if row.last_seen_at else None}

@@ -62,7 +62,7 @@ def _message(rule: AlertRule, value: float) -> str:
 def _queue_notifications(db: Session, state: AlertState, rule: AlertRule, event_type: str, message: str):
     channels = [str(channel).upper() for channel in (rule.notification_channels or [])]
     allowed = {"EMAIL", "PAGERDUTY", "SERVICENOW"}
-    for channel in channels:
+    for channel in dict.fromkeys(channels):
         if channel not in allowed:
             continue
         db.add(

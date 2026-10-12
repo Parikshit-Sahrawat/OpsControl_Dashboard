@@ -1,0 +1,482 @@
+{
+  "source_id": "ef55e3dc-b21e-42eb-9945-877b5ed95f5f",
+  "organization_id": "f4386180-1dd1-4928-978a-557cad50427e",
+  "rule_versions": [
+    "8dbbe191-2156-43ef-8fea-57ffb325a783",
+    "25011599-5f90-4c6e-8fb4-b1f25562ab9b",
+    "c789aa2d-7326-46a4-8dda-05076945264d"
+  ],
+  "activation_idempotent": true,
+  "phases": [
+    {
+      "alert_id": null,
+      "phase": "healthy",
+      "http_status": 200,
+      "probe_up": 1.0,
+      "sample_count": 1,
+      "open_alerts": 0,
+      "resolved_alerts": 0,
+      "jobs_completed": 1,
+      "log_events": 1,
+      "observed_at": "2026-10-12T03:45:21.133070+00:00"
+    },
+    {
+      "alert_id": "5a11ba7f-af03-45b8-8405-14079abad01d",
+      "phase": "failed",
+      "http_status": 503,
+      "probe_up": 0.0,
+      "sample_count": 2,
+      "open_alerts": 1,
+      "resolved_alerts": 0,
+      "jobs_completed": 2,
+      "log_events": 2,
+      "observed_at": "2026-10-12T03:45:28.412299+00:00"
+    },
+    {
+      "alert_id": "5a11ba7f-af03-45b8-8405-14079abad01d",
+      "phase": "recovered",
+      "http_status": 200,
+      "probe_up": 1.0,
+      "sample_count": 3,
+      "open_alerts": 0,
+      "resolved_alerts": 1,
+      "jobs_completed": 3,
+      "log_events": 3,
+      "observed_at": "2026-10-12T03:45:35.758614+00:00"
+    }
+  ],
+  "tenant_isolation": "PASS",
+  "audit_events": [
+    {
+      "id": "db81588d-db51-4ff9-b523-95a3307d388a",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/resource-management/data-sources",
+      "outcome": "FAILURE",
+      "occurred_at": "2026-10-12T03:45:43.883884+00:00"
+    },
+    {
+      "id": "60ab2272-f9eb-4c35-ab95-2a6d387d1d73",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activations",
+      "outcome": "FAILURE",
+      "occurred_at": "2026-10-12T03:45:43.862941+00:00"
+    },
+    {
+      "id": "fb562d28-2646-47c1-993e-5ab217e9415d",
+      "event_type": "HTTP_AUTH_DENIED",
+      "actor_id": null,
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/diagnostics",
+      "outcome": "DENIED",
+      "occurred_at": "2026-10-12T03:45:43.754391+00:00"
+    },
+    {
+      "id": "a8b14d98-da4d-4ef4-a625-ebabb1e44b56",
+      "event_type": "LOGIN",
+      "actor_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:41.197241+00:00"
+    },
+    {
+      "id": "55bc05ec-3e2c-4914-83d6-c652d27ebf44",
+      "event_type": "LOGIN",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:39.286181+00:00"
+    },
+    {
+      "id": "ba2c39dd-29ff-4fe3-9132-7b6ec35fe49a",
+      "event_type": "LOGIN",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:31.882923+00:00"
+    },
+    {
+      "id": "d8c9dc4d-29b0-4b7f-b02c-29123e84fa73",
+      "event_type": "LOGIN",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:24.838078+00:00"
+    },
+    {
+      "id": "bfa0e9b4-bf7f-4f98-9d5d-4503c3b4d396",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:18.101331+00:00"
+    },
+    {
+      "id": "fc07eda5-49c3-4963-ace0-f8f8b954168c",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activation-preview",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:17.930893+00:00"
+    },
+    {
+      "id": "64fd0e6a-af37-487d-a256-91e192540ec0",
+      "event_type": "LOGIN",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:16.511541+00:00"
+    },
+    {
+      "id": "dc2a6edf-20de-4c74-b15f-271ac98b21ad",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:13.314423+00:00"
+    },
+    {
+      "id": "0e98cb87-c00c-48cb-8a6a-7a44ec8cd0ef",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:13.215855+00:00"
+    },
+    {
+      "id": "64af0e00-c6ad-4a4b-a854-82ab707b7789",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.920315+00:00"
+    },
+    {
+      "id": "fcf9a41b-8efd-4c29-bf69-561eaea4b071",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/data-sources/ef55e3dc-b21e-42eb-9945-877b5ed95f5f/activation-preview",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.644338+00:00"
+    },
+    {
+      "id": "380cd3eb-a714-4e37-aefa-d229059a764e",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.478519+00:00"
+    },
+    {
+      "id": "9ffde6c8-d8a2-4694-b8e9-9a882b8870ad",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.451921+00:00"
+    },
+    {
+      "id": "510f7677-4814-4bcc-9ea3-32e19f02cf85",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.437143+00:00"
+    },
+    {
+      "id": "96d8efa3-9f33-4ff2-8699-d4df416bc7f4",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.420119+00:00"
+    },
+    {
+      "id": "b5284fe8-2e56-44cc-ab3d-91d52caca54d",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs/ff519bec-715c-4fae-8b6a-76e3f04c0c6a/versions",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.397651+00:00"
+    },
+    {
+      "id": "3ce0f621-a321-44a5-8995-76348239b96d",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs/ff519bec-715c-4fae-8b6a-76e3f04c0c6a/versions",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.368806+00:00"
+    },
+    {
+      "id": "c55d535d-db4b-408b-809f-cf09da2b509d",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.337810+00:00"
+    },
+    {
+      "id": "f07294d7-1c00-487d-8d76-4ec9cf195a92",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/rule-catalogs",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.316850+00:00"
+    },
+    {
+      "id": "9ef96047-5ea4-48d1-9664-f845b4a43ec7",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/remote-probes/workers/89cb95c3-cbd8-4df9-adfc-177ff0f00cff/network-policy",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.294836+00:00"
+    },
+    {
+      "id": "ad31f5ee-d2ac-4b4a-a08e-ebbf986eb41c",
+      "event_type": "WORKER_POLICY",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": "f4386180-1dd1-4928-978a-557cad50427e",
+      "target_type": "worker",
+      "target_id": "89cb95c3-cbd8-4df9-adfc-177ff0f00cff",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.288414+00:00"
+    },
+    {
+      "id": "5cc2dc00-e4b0-41cc-9d16-b59ff79f9488",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/auth/workers",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.277023+00:00"
+    },
+    {
+      "id": "ac116427-78d4-473f-a7b0-7fe912965a7a",
+      "event_type": "WORKER_CREATE",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": "f4386180-1dd1-4928-978a-557cad50427e",
+      "target_type": "worker",
+      "target_id": "89cb95c3-cbd8-4df9-adfc-177ff0f00cff",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.270986+00:00"
+    },
+    {
+      "id": "58a7f67a-daef-40a8-80de-aeb6ed133028",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/resource-management/data-sources",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.256641+00:00"
+    },
+    {
+      "id": "6d411c2d-b184-4c6a-9718-4d68c223de86",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/resource-management/data-sources",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.240143+00:00"
+    },
+    {
+      "id": "1854fad2-c76b-4969-8d91-f6e73c22756d",
+      "event_type": "LOGIN",
+      "actor_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.208627+00:00"
+    },
+    {
+      "id": "a558a870-25f5-4f98-98ca-7eca51d98976",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/auth/memberships",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.065281+00:00"
+    },
+    {
+      "id": "235abe67-9faa-4ec1-93c6-1732ad076d33",
+      "event_type": "MEMBERSHIP_CREATE",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": "a706266e-71b9-4d6e-9c3b-891ab169a312",
+      "target_type": "membership",
+      "target_id": "5e2863d0-ae01-4007-9746-8551ce9c637c",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.059726+00:00"
+    },
+    {
+      "id": "bfc66df6-5d92-471f-9deb-9c558ad3166a",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/auth/users",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.032187+00:00"
+    },
+    {
+      "id": "62a98a99-129a-4a32-adf5-fb20437dd991",
+      "event_type": "USER_CREATE",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "user",
+      "target_id": "5c9399e0-4873-46fc-8e96-8ad9d4799789",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:12.022959+00:00"
+    },
+    {
+      "id": "4aa3536a-6fc4-4c3c-be87-290fc8b5912f",
+      "event_type": "LOGIN",
+      "actor_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.830530+00:00"
+    },
+    {
+      "id": "6a4c1ab2-3e23-47da-92d4-cd71dfca68ba",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/auth/memberships",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.655291+00:00"
+    },
+    {
+      "id": "db3ec795-df67-4e06-853c-89fcc8e397b6",
+      "event_type": "MEMBERSHIP_CREATE",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": "f4386180-1dd1-4928-978a-557cad50427e",
+      "target_type": "membership",
+      "target_id": "a3c8bd59-8d69-406a-aa38-2201465a839b",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.650798+00:00"
+    },
+    {
+      "id": "b980b822-6ea7-4c19-b1a7-b5a1a934c95b",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/auth/users",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.635846+00:00"
+    },
+    {
+      "id": "bbee2f75-8ce7-44e0-b425-39cff94af74b",
+      "event_type": "USER_CREATE",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "user",
+      "target_id": "1f3d6b5a-8109-4d87-baf7-2cde19603a17",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.630556+00:00"
+    },
+    {
+      "id": "a1e0ffbd-47f5-41a3-ae71-d4fad2427888",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/organizations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.448816+00:00"
+    },
+    {
+      "id": "79fb5878-a2e3-4967-848e-b820f8706b93",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/organizations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.443691+00:00"
+    },
+    {
+      "id": "5c819788-b1f4-4021-a4d9-dc1aae3cb4e2",
+      "event_type": "CONFIG_OR_ACTION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/organizations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.424548+00:00"
+    },
+    {
+      "id": "9d36db49-9fe9-4600-813d-bd3b2e4b3bf7",
+      "event_type": "CONFIG_MUTATION",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "route",
+      "target_id": "/api/v1/organizations",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.407290+00:00"
+    },
+    {
+      "id": "851ae13f-5067-46a2-90c3-256c46374a33",
+      "event_type": "LOGIN",
+      "actor_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "organization_id": null,
+      "target_type": "identity",
+      "target_id": "e323efe0-9071-464f-84d0-d235179554e2",
+      "outcome": "SUCCESS",
+      "occurred_at": "2026-10-12T03:45:11.282765+00:00"
+    }
+  ],
+  "audit_append_only": "PASS"
+}

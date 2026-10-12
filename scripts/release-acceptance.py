@@ -38,6 +38,11 @@ def run(args, *, env=None, input=None, expected=0):
     result = subprocess.run(args, cwd=ROOT, env=env or environment, input=input, capture_output=True, text=True, timeout=240)
     if result.returncode != expected:
         (private/'failed-command.log').write_text(result.stdout+'\n'+result.stderr)
+        if args == ['node','frontend/scripts/resource_crud_acceptance.mjs']:
+            for line in result.stderr.splitlines():
+                if line.startswith('RESOURCE_CRUD_FAILURE '):
+                    diagnostic = json.loads(line.removeprefix('RESOURCE_CRUD_FAILURE '))
+                    print('Resource browser failure:', diagnostic['phase'], diagnostic['type'], flush=True)
         raise RuntimeError('Acceptance command failed; see private diagnostics')
     return result.stdout.strip()
 
@@ -52,8 +57,13 @@ def module(name, *args, env=None):
 
 def start_api(env, host, port, proxy='127.0.0.1'):
     log = (private/f'api-{len(processes)}.log').open('w')
-    process = subprocess.Popen([PYTHON, '-m', 'uvicorn', 'app.main:app', '--host', host, '--port', str(port),
-        '--forwarded-allow-ips', proxy, '--no-access-log'], cwd=ROOT/'backend', env=env, stdout=log, stderr=subprocess.STDOUT)
+    args = [PYTHON, '-m', 'uvicorn', 'app.main:app', '--host', host, '--port', str(port),
+        '--forwarded-allow-ips', proxy, '--no-access-log']
+    if env.get('ENVIRONMENT')=='demo' and env.get('OPSCONTROL_RELEASE_ACCEPTANCE')=='1':
+        code = ('from scripts.eks_acceptance_fixture import configure;configure();import uvicorn;'
+                f'uvicorn.run("app.main:app",host={host!r},port={port!r},forwarded_allow_ips={proxy!r},access_log=False)')
+        args = [PYTHON,'-c',code]
+    process = subprocess.Popen(args, cwd=ROOT/'backend', env=env, stdout=log, stderr=subprocess.STDOUT)
     processes.append(process); return process
 
 def free_port():
@@ -96,6 +106,12 @@ try:
         (private/(probe+'.log')).write_text(result.stdout+'\n'+result.stderr)
         if result.returncode: raise RuntimeError(probe+' failed')
     record('RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives')
+    module('scripts.remote_telemetry_acceptance_probe')
+    record('Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations')
+    module('scripts.servicenow_acceptance_probe')
+    record('Native alert/correlation and real controlled ServiceNow TLS open/retry/resolve with leased delivery fencing')
+    module('scripts.eks_acceptance_probe')
+    record('Read-only EKS SDK list/describe, tenant denial, dry-run and idempotent unmonitored inventory import')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
@@ -103,8 +119,11 @@ try:
         ui = subprocess.Popen(['node','node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',str(ui_port),'--strictPort'],cwd=ROOT/'frontend',env=ui_environment,stdout=ui_log,stderr=subprocess.STDOUT)
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/eks_inventory_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
+        record('Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial')
     # Capability roles are reapplied after migrations. Runtime credentials are
     # composed by psycopg and never interpolated into shell commands.
     role_code = """
@@ -130,7 +149,7 @@ finally:
     development.terminate(); development.wait(timeout=10)
     # Concurrent-index migration rollback/upgrade on populated data.
     module('scripts.release_runtime_probe','snapshot')
-    module('alembic','downgrade','0021_operational_incidents'); module('alembic','upgrade','head')
+    module('scripts.release_runtime_probe','indexes-roundtrip')
     module('scripts.release_runtime_probe','verify')
     service = f"[source]\nhost=127.0.0.1\nport=5432\ndbname=opscontrol\nuser=opscontrol\npassword={environment['POSTGRES_PASSWORD']}\n[restored]\nhost=127.0.0.1\nport=5432\ndbname=restored\nuser=opscontrol\npassword={environment['POSTGRES_PASSWORD']}\n"
     (private/'pg_service.conf').write_text(service); (private/'pg_service.conf').chmod(0o600)

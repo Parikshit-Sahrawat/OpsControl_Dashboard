@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import DataSource,Collector
 from app.security.scope import current_principal
-from app.worker.provider_discovery import aws_ec2_candidates,k8s_pod_candidates
+from app.worker.provider_discovery import aws_ec2_candidates,k8s_pod_candidates,aws_eks_candidates
 from app.worker.provider_checks import ProviderCheckError
 
 router=APIRouter(prefix="/api/v1/resource-discovery",tags=["Resource Discovery"])
@@ -29,7 +29,7 @@ def source_access(db,source_id):
     principal=current_principal.get()
     if not principal or not principal.platform_admin:
         raise HTTPException(403,"Platform administrator must authorize discovery using deployment identity")
-    if source.source_type not in {"AWS_EC2","EC2","KUBERNETES","K8S"}:
+    if source.source_type not in {"AWS_EC2","EC2","AWS_EKS","KUBERNETES","K8S"}:
         raise HTTPException(422,"Source is not a supported resource-discovery connection")
     if not source.enabled:raise HTTPException(409,"Discovery source disabled")
     return source
@@ -38,6 +38,8 @@ def scan(source):
     try:
         if source.source_type in {"AWS_EC2","EC2"}:
             rows=aws_ec2_candidates(source.connection_config or {})
+        elif source.source_type == "AWS_EKS":
+            rows=aws_eks_candidates(source.connection_config or {})
         else:
             rows=k8s_pod_candidates(source.connection_config or {})
     except ProviderCheckError as exc:raise HTTPException(422,str(exc))
@@ -54,6 +56,8 @@ def capabilities():
     return [
         {"provider":"AWS_EC2","discovery":True,"monitoring":True,
          "authentication":"AWS workload IAM role; expected account ID"},
+        {"provider":"AWS_EKS","discovery":True,"monitoring":False,
+         "authentication":"AWS workload IAM role; expected account/region; list/describe only"},
         {"provider":"KUBERNETES","discovery":True,"monitoring":True,
          "authentication":"In-cluster service account; namespace-scoped RBAC"},
         {"provider":"HTTP","discovery":False,"monitoring":True,
@@ -94,6 +98,10 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
                 config={"region":candidate["region"],"account_id":candidate["account_id"],
                         "instance_id":candidate["instance_id"]}
                 ctype="AWS_EC2"
+            elif candidate['resource_type']=='EKS_CLUSTER':
+                config={'region':candidate['region'],'account_id':candidate['account_id'],
+                        'cluster_names':[candidate['cluster_name']]}
+                ctype='AWS_EKS'
             else:
                 key={'K8S_POD':'pod_name','K8S_DEPLOYMENT':'deployment_name','K8S_NODE':'node_name'}[candidate['resource_type']]
                 config={"namespace":candidate["namespace"],key:candidate[key]}
@@ -102,8 +110,11 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
                 source_type=ctype,connection_config=config,status="UNKNOWN",discovery_external_id=external_id,
                 description="Approved read-only resource inventory; monitoring not yet activated")
             db.add(new_source);db.flush()
-            db.add(Collector(data_source_id=new_source.id,name="provider-readonly",
-                collector_type=ctype,configuration=config,enabled=False,status="STOPPED"))
+            # EKS discovery does not imply a runnable host/Pod adapter. Avoid
+            # manufacturing an unsupported enabled or dormant collector.
+            if ctype != 'AWS_EKS':
+                db.add(Collector(data_source_id=new_source.id,name="provider-readonly",
+                    collector_type=ctype,configuration=config,enabled=False,status="STOPPED"))
             existing=new_source
         results.append({"external_id":external_id,"action":"WOULD_IMPORT" if payload.dry_run and new else
                         "IMPORTED" if new else "ALREADY_IMPORTED",

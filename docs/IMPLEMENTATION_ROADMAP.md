@@ -30,3 +30,7 @@ The canonical [P0–P3 matrix](RELEASE_RELIABILITY.md) records root causes, impa
 [HTTP](HTTP_GOLDEN_PATH.md), [Infrastructure](INFRASTRUCTURE_MONITORING.md), [Pentaho](PENTAHO_ETL_MONITORING.md), [Operational UI](OPERATIONAL_DASHBOARDS.md), [Sprint reassessment](SPRINT_REASSESSMENT.md), [security checklist](SECURITY_RELEASE_CHECKLIST.md), [field evidence](PHASE2_FIELD_ACCEPTANCE.md).
 
 Every new PR records exact head checks, artifacts, reviewer decision and merge separately. Preserve negative tests and real evidence; mocks are identified explicitly. Production rollout remains conditional on independent security/deployment review, target-volume recovery/resilience, operator UAT and formal acceptance.
+
+## 2026-10-12 ordered implementation sequence
+
+Main now includes approved reliability PR #26 at `277ec2c` with seventeen green head checks and green post-merge Validation. [The requested stabilization → activation → telemetry → alerts/ServiceNow → EKS/deployment sequence](OPERATIONAL_RELEASE_SEQUENCE.md) fixes remaining registration/transport/delivery gaps and captures controlled evidence on a separate feature branch. [Architecture](OPERATIONAL_ARCHITECTURE.md), [OWASP checklist](security/OWASP_API_2023_CHECKLIST.md), [ServiceNow](SERVICENOW_INTEGRATION.md), [EKS](EKS_DISCOVERY.md) and [UAT/rollback](DEPLOYMENT_UAT.md) document exact boundaries. New feature head CI/review/merge and formal production acceptance remain separate gates.
