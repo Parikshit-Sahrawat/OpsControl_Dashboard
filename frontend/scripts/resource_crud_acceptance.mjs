@@ -33,6 +33,10 @@ try {
   phase = 'locate created resource';
   await modal.waitFor({ state: 'hidden' });
   await page.locator('.resource-summary-card').filter({ hasText: 'Data Sources' }).click();
+  // Exercise the real filter before editing/capturing the created resource.
+  // Capturing all 400+ seeded rows produced a 27,838px screenshot and made
+  // this unrelated CRUD gate depend on runner rasterization performance.
+  await page.getByPlaceholder('Search hostname, role, product...').fill('wizard-sequence.example.test');
   let row = page.getByRole('row').filter({ hasText: 'Wizard sequence registration' });
   await row.waitFor();
   const token = await page.evaluate(() => sessionStorage.getItem('opscontrol.sessionToken'));
