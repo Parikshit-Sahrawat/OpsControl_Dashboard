@@ -10,12 +10,14 @@ page.on('pageerror', e => errors.push(e.message));
 page.on('response', r => { if (r.url().includes('/api/') && r.status() >= 500) serverErrors.push(r.status()); });
 const base = process.env.TEST_API_BASE;
 const password = 'testing-only-StrongPassword-123!';
+let phase = 'login';
 try {
   await page.goto(process.env.RELEASE_UI_BASE);
   await page.getByLabel('Username').fill('test-north');
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await page.getByRole('heading', { name: 'Overview', exact: true }).waitFor();
+  phase = 'open onboarding';
   await page.getByRole('button', { name: 'Resource Management', exact: true }).click();
   await page.getByRole('button', { name: '+ Add Data Source', exact: true }).click();
   let modal = page.getByRole('dialog', { name: 'Add Data Source', exact: true });
@@ -28,6 +30,7 @@ try {
   await modal.getByLabel('Agent Version', { exact: true }).fill('1.0-synthetic');
   await modal.getByRole('button', { name: 'Review →' }).click();
   await modal.getByRole('button', { name: 'Create Data Source + Agent Configuration', exact: true }).click();
+  phase = 'locate created resource';
   await modal.waitFor({ state: 'hidden' });
   await page.locator('.resource-summary-card').filter({ hasText: 'Data Sources' }).click();
   let row = page.getByRole('row').filter({ hasText: 'Wizard sequence registration' });
@@ -50,6 +53,7 @@ try {
     headers, data: { organization_id: source.organization_id, name: source.name, source_type: source.source_type },
   });
   assert.equal(duplicate.status(), 409);
+  phase = 'edit registration';
   await row.getByRole('button', { name: 'Edit', exact: true }).click();
   modal = page.getByRole('dialog', { name: 'Edit Data Source', exact: true });
   await modal.getByRole('button', { name: 'Next: Data Source →' }).click();
@@ -59,6 +63,7 @@ try {
   await modal.getByLabel('Agent Version', { exact: true }).fill('2.0-synthetic');
   await modal.getByRole('button', { name: 'Review →' }).click();
   await modal.getByRole('button', { name: 'Save Data Source', exact: true }).click();
+  phase = 'verify persisted registration';
   await modal.waitFor({ state: 'hidden' });
   registrations = await (await page.request.get(collectorPath, { headers })).json();
   assert.equal(registrations.length, 1);
@@ -78,6 +83,7 @@ try {
   assert.deepEqual(await crossRows.json(), []);
   await mkdir(process.env.RELEASE_EVIDENCE_DIR, { recursive: true });
   await page.screenshot({ path: process.env.RELEASE_EVIDENCE_DIR + '/resource-registration.png', fullPage: true });
+  phase = 'disable resource';
   page.once('dialog', dialog => dialog.accept());
   row = page.getByRole('row').filter({ hasText: 'Wizard sequence registration' });
   await row.getByRole('button', { name: 'Disable', exact: true }).click();
@@ -90,4 +96,8 @@ try {
       'OTEL registration stays inactive with no CollectorRun', 'Edit preserves ID and updates stored agent settings',
       'Other tenant cannot read registration or mutate source'], page_errors: errors, server_errors: serverErrors }, null, 2));
   console.log('RESOURCE WIZARD / INACTIVE REGISTRATION / CRUD / TENANT ACCEPTANCE PASS');
+} catch (error) {
+  // Only a fixture phase and error type leave the private diagnostics directory.
+  console.error('RESOURCE_CRUD_FAILURE ' + JSON.stringify({ phase, type: error.name }));
+  throw error;
 } finally { await browser.close(); }

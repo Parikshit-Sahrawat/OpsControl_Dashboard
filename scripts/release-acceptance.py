@@ -38,6 +38,11 @@ def run(args, *, env=None, input=None, expected=0):
     result = subprocess.run(args, cwd=ROOT, env=env or environment, input=input, capture_output=True, text=True, timeout=240)
     if result.returncode != expected:
         (private/'failed-command.log').write_text(result.stdout+'\n'+result.stderr)
+        if args == ['node','frontend/scripts/resource_crud_acceptance.mjs']:
+            for line in result.stderr.splitlines():
+                if line.startswith('RESOURCE_CRUD_FAILURE '):
+                    diagnostic = json.loads(line.removeprefix('RESOURCE_CRUD_FAILURE '))
+                    print('Resource browser failure:', diagnostic['phase'], diagnostic['type'], flush=True)
         raise RuntimeError('Acceptance command failed; see private diagnostics')
     return result.stdout.strip()
 
