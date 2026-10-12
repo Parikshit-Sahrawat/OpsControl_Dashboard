@@ -6,7 +6,7 @@ Implementation, controlled evidence, remote CI, human review, merge and producti
 
 ## P0 customer / internal access correction
 
-Dedicated unmerged feature branch `feature/customer-department-rbac` implements provider-owned departments, employee identity metadata, roles/permissions and paired customer grants with customer resources unchanged. Local PostgreSQL, browser, Docker, worker/tenant, ETL/incident and populated restore regressions are documented in the [implementation report](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Remote CI and independent review are separate PR gates. No production deployment or live AWS setup is authorized by these results. Full Alembic comparison reports 32 pre-existing non-access drift groups; new access tables/user metadata match the migration.
+Dedicated unmerged feature branch `feature/customer-department-rbac` implements provider-owned departments, employee identity metadata, roles/permissions and paired customer grants with customer resources unchanged. Local PostgreSQL, browser, Docker, worker/tenant, ETL/incident and populated restore regressions are documented in the [implementation report](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Remote CI and independent review are separate PR gates. All 32 pre-existing non-access drift groups are [resolved without schema/data changes](architecture/SCHEMA_MODEL_RECONCILIATION.md); the full Alembic comparison passes and is enforced in CI. The owner accepts single-provider runtime and is conducting independent security review/UAT locally. This correction needs no production deployment or production data modification. Live AWS setup remains paused.
 
 ## Current development stage
 

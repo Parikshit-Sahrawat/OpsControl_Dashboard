@@ -23,6 +23,8 @@ Resource Management manages external **Customers** and their monitored resources
 
 The global customer selector applies to operational screens only; Resource Management and Access Management use independent filters. Migration `0025_provider_department_rbac` preserves existing customer/resource UUIDs, user accounts, password hashes and sessions while introducing explicit, backend-enforced role/customer grants. See [authentication and administration](docs/AUTHENTICATION.md), the [architecture and safe rollback contract](docs/architecture/CUSTOMER_DEPARTMENT_RBAC.md), and [test results, browser captures and exact Docker verification](docs/architecture/ACCESS_IMPLEMENTATION_REPORT.md).
 
+The [full PostgreSQL schema/model reconciliation](docs/architecture/SCHEMA_MODEL_RECONCILIATION.md) eliminates all 32 previously reported drift groups without database changes. Automated acceptance requires a clean `alembic check`; single-provider operation is supported, with independent security review and UAT performed locally by the owner.
+
 ## HTTP monitoring golden path
 
 The [HTTP golden path lab](docs/HTTP_GOLDEN_PATH.md) creates **Golden HTTP Lab** and its **Fictional HTTPS Portal** through authenticated APIs, publishes independent Metric/Log/Alert Rules, pins immutable versions, and activates a private-network collector. It drives an actual certificate-verified HTTPS fixture through HTTP **200 → 503 → 200**, checking PostgreSQL evidence and native alert **OPEN → RESOLVED** transitions. Playwright signs in through the real UI, exercises activation preview/reapply, checks visible diagnostics, and captures each state plus another tenant's empty view.

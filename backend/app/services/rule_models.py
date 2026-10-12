@@ -1,8 +1,8 @@
 """Organization-owned immutable rule definitions and idempotent activations."""
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.session import Base
 
@@ -23,7 +23,7 @@ class MonitoringRuleVersion(Base):
     id:Mapped[uuid.UUID]=mapped_column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
     catalog_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("monitoring_rule_catalogs.id",ondelete="CASCADE"),nullable=False)
     version:Mapped[int]=mapped_column(Integer,nullable=False)
-    definition:Mapped[dict]=mapped_column(JSON,nullable=False)
+    definition:Mapped[dict]=mapped_column(JSONB,nullable=False)
     created_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False,default=utc_now)
     catalog=relationship("MonitoringRuleCatalog")
     __table_args__=(UniqueConstraint("catalog_id","version",name="uq_monitoring_rule_version"),
@@ -39,7 +39,7 @@ class MonitoringActivation(Base):
     fingerprint:Mapped[str]=mapped_column(String(64),nullable=False)
     version:Mapped[int]=mapped_column(Integer,nullable=False)
     applied_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False,default=utc_now)
-    details:Mapped[dict]=mapped_column(JSON,nullable=False,default=dict)
+    details:Mapped[dict]=mapped_column(JSONB,nullable=False,default=dict)
 
 class MonitoringRuleBinding(Base):
     __tablename__="monitoring_rule_bindings"

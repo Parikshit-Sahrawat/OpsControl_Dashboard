@@ -153,6 +153,7 @@ with engine.begin() as c:
     print(
         run([PYTHON, "-m", "scripts.access_schema_probe"], ROOT / "backend"), flush=True
     )
+    print(run([PYTHON, "-m", "alembic", "check"], ROOT / "backend"), flush=True)
     run(
         [PYTHON, "-m", "alembic", "downgrade", "0024_notification_leases"],
         ROOT / "backend",

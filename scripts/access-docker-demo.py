@@ -121,6 +121,10 @@ try:
     )
     current = run(compose + ["exec", "-T", "api", "python", "-m", "alembic", "current"])
     assert "0025_provider_department_rbac" in current
+    comparison = run(
+        compose + ["exec", "-T", "api", "python", "-m", "alembic", "check"]
+    )
+    assert "No new upgrade operations detected." in comparison
     run(compose + ["restart", "api"])
     for _ in range(120):
         try:
@@ -139,6 +143,7 @@ try:
                     "Three images/services built and ready",
                     "Frontend nginx response has security headers",
                     "Migration head 0025 installed",
+                    "Full image/schema Alembic check has zero pending operations",
                     "Provider departments/customer UUIDs separated",
                     "Bootstrap repeat retains UUIDs and user count",
                     "API restart retains valid pre-restart session",

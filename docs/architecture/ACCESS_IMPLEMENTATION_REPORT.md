@@ -20,22 +20,24 @@ Existing user UUIDs, password hashes, active/admin flags, customer UUIDs, resour
 
 Schema downgrade is refused. Retain the additive schema for an RBAC-capable application rollback. An older membership-only backend can ignore new restrictions and is an unsafe rollback target after access configuration changes. A pre-upgrade backup restoration is tested only in a separate owned database; production recovery needs separate approval and data reconciliation. See the [full mapping and rollback contract](CUSTOMER_DEPARTMENT_RBAC.md).
 
+The [schema/model reconciliation](SCHEMA_MODEL_RECONCILIATION.md) resolves all 32 previously reported non-access differences without changing historical migrations or the database. Full-schema drift now fails acceptance.
+
 ## Local verification results
 
 | Gate | Result and scope |
 |---|---|
-| Backend automated suite | 29 unittest cases passed; no skipped cases |
+| Backend automated suite | 35 unittest cases passed; no skipped cases |
 | Frontend unit suite | 4 Node tests passed, covering navigation/action scope, independent administrative pages, revocation and malformed cached selection |
 | Frontend production build | Vite build passed; no new application dependency |
 | Access migration/security runtime | 25 grouped real HTTP/PostgreSQL checks passed; populated 0024 upgrade, unknown-role transactional refusal, provider/department separation, grant precedence, self-escalation, protected credentials, concurrent contradictory grants, revocation and audit |
 | Access browser runtime | 7 grouped real Chromium journeys passed, including manual employee/department creation, assignment, rollback-only preview/confirmation, independent filters, direct denial, modified cached preference/URL, stale-session revocation and delayed-response save regression |
 | Legacy staging migration compatibility | Reversible 0024 smoke and populated 0016→0025 preservation pass before applying the protected head; probe refuses production/non-loopback or already-upgraded access databases |
 | New schema comparison | No differences for the nine access tables and modified users table; migration head 0025 confirmed; unsafe downgrade refused |
-| Full schema comparison | **Fails with 32 existing non-access drift groups**, explicitly recorded in schema evidence. No destructive reconciliation applied |
+| Full schema comparison | **Passes: zero differences across all 50 application tables**, real `alembic check` reports no new operations; no new migration or destructive DDL |
 | HTTP/ETL/incident/NOC regression | Controlled verified HTTPS, live Linux host, read-only Carte-shaped lifecycle, failure/recovery, logs/steps/investigation/history, incident acknowledgment/resolution, tenant/worker negatives and all primary tabs in both themes passed |
 | Release regression | Tenant/RBAC/secret/audit/worker negatives, Basic-auth HTTPS, controlled ServiceNow delivery, read-only EKS, collector contention/restart/recovery, paging over 205 resources, bounded retention, TLS/proxy/frontend headers and restricted production fixture roles passed |
 | Populated backup/restore | Every row fingerprint and FK/CHECK/migration/audit integrity preserved across 51 tables, 913 rows and 190 constraints in the owned fixture |
-| Docker demo | Final images rebuilt in an owned three-service project; head migration, random credentials, distinct customer/department UUIDs, idempotent bootstrap, frontend headers and API restart/session persistence passed; existing volumes untouched |
+| Docker demo | Final images rebuilt in an owned three-service project; head migration, zero-drift image-level Alembic check, random credentials, distinct customer/department UUIDs, idempotent bootstrap, frontend headers and API restart/session persistence passed; existing volumes untouched |
 | API inventory | All 154 HTTP routes inventoried; existing human API routes have an explicit permission policy |
 | Python syntax and diff hygiene | Compile and git diff whitespace checks passed |
 
@@ -89,6 +91,7 @@ To run the persistent fictional development demo after the isolated check:
 ```bash
 bash scripts/demo-up.sh
 docker compose -f docker-compose.demo.yml exec -T api alembic current
+docker compose -f docker-compose.demo.yml exec -T api alembic check
 docker compose -f docker-compose.demo.yml exec -T api python -m scripts.bootstrap_public_demo
 ```
 
@@ -124,9 +127,9 @@ CI adds `.github/workflows/access-architecture.yml` with these access/Docker gat
 
 ## Unresolved risks and production gates
 
-- Existing non-access Alembic/model drift (32 groups: index/constraint conventions and JSON/JSONB representations) remains. The new schema is consistent; reviewed non-destructive reconciliation is a separate follow-up before relying on global autogeneration. Do not apply an automatically generated drop/recreate migration.
-- Runtime authorization is deliberately single-provider. Customer/provider ownership, login context and shared template ownership need an explicit review before enabling multiple independent operating providers.
-- Independent human security review, operator UAT and deployment-scale authorization throughput are not proven by these controlled fixtures. Existing DB runtime credentials remain a trusted application boundary; ORM/API checks do not replace a separately reviewed DB isolation strategy.
+- The former 32 non-access drift groups are resolved by matching models to existing migration contracts; [the reconciliation inventory](SCHEMA_MODEL_RECONCILIATION.md) records each group. Full schema comparison is now a required CI gate. No production schema or data changes are needed.
+- The owner accepts deliberately single-provider runtime authorization. Customer/provider ownership, login context and shared template ownership need an explicit review before enabling multiple independent operating providers.
+- The owner is performing independent human security review and operator UAT locally; results remain owner-recorded acceptance gates. Deployment-scale authorization throughput is not proven by these controlled fixtures. Existing DB runtime credentials remain a trusted application boundary; ORM/API checks do not replace a separately reviewed DB isolation strategy.
 - Production RTO/RPO, distributed target failover/host affinity, genuine AWS/Windows/Carte acceptance and approved audit/incident/ETL archive retention remain separate release gates. No production deployment or production data modification was performed.
 - Schema rollback to older authorization software is unsafe after new grants/denies exist. Retain the additive schema and an RBAC-capable backend; follow the documented backup/recovery process.
 
@@ -136,6 +139,7 @@ The complete source/config/documentation list is recorded in `access-files-chang
 
 | Area | Exact paths |
 |---|---|
+| Existing schema reconciliation | `backend/app/models/entities.py`, `backend/app/services/rule_models.py`, `backend/app/worker/remote_models.py`, `backend/tests/test_schema_contract.py`, `SCHEMA_MODEL_RECONCILIATION.md` |
 | Models/catalog/resolver | `backend/app/security/access_models.py`, `permission_catalog.py`, `access_control.py`, `models.py`, `scope.py`, `http.py`, `deployment.py` |
 | Migration/API enforcement | `backend/migrations/versions/0025_provider_department_rbac.py`, `backend/app/api/access.py`, `activation.py`, `monitoring_diagnostics.py`, `operations.py`, `remote_protocol.py`, `rule_catalogs.py`, `backend/app/main.py` |
 | Frontend identity/filter/permission UX | `frontend/src/pages/AccessManagement.jsx`, `ResourceManagementV2.jsx`, `MonitoringSetup.jsx`, `Overview.jsx`, `Incidents.jsx`, `Reports.jsx`, `frontend/src/App.jsx`, `api.js`, `permissions.js`, `operations.js`, `access-management.css`, `components/AuthGate.jsx`, `TopNav.jsx` |

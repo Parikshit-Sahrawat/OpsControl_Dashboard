@@ -1,4 +1,4 @@
-"""Validate this additive schema; report existing schema/model drift separately."""
+"""Require zero schema/model drift across the complete migrated PostgreSQL schema."""
 
 import json, os
 from pathlib import Path
@@ -36,7 +36,8 @@ def main():
             CustomerAccessGrant,
         )
     }
-    with create_engine(settings.database_url).connect() as db:
+    engine = create_engine(settings.database_url)
+    with engine.connect() as db:
         full = compare_metadata(
             MigrationContext.configure(db, opts={"compare_type": True}), Base.metadata
         )
@@ -51,23 +52,34 @@ def main():
             Base.metadata,
         )
         assert not access, "New access schema differs from declared models"
+        assert not full, f"Full schema differs from declared models: {len(full)} groups"
+        invalid_indexes = db.exec_driver_sql(
+            "SELECT count(*) FROM pg_index i JOIN pg_class t ON t.oid = i.indrelid "
+            "JOIN pg_namespace n ON n.oid = t.relnamespace "
+            "WHERE n.nspname = current_schema() AND NOT i.indisvalid"
+        ).scalar()
+        assert invalid_indexes == 0, "Migrated schema contains invalid indexes"
         assert (
             db.exec_driver_sql("SELECT version_num FROM alembic_version").scalar()
             == "0025_provider_department_rbac"
         )
+    engine.dispose()
     report = {
         "status": "PASS",
         "validated_tables": sorted(tables),
         "new_schema_differences": 0,
         "existing_schema_model_differences": len(full),
         "existing_drift": repr(full),
-        "global_alembic_check": "FAIL: existing non-access drift" if full else "PASS",
+        "total_schema_model_differences": 0,
+        "invalid_indexes": invalid_indexes,
+        "metadata_tables_compared": len(Base.metadata.tables),
+        "global_alembic_check": "PASS",
     }
     out = Path(os.environ["ACCESS_EVIDENCE_DIR"])
     out.mkdir(parents=True, exist_ok=True)
     (out / "schema.json").write_text(json.dumps(report, indent=2))
     print(
-        f"New access schema / immutable additive migration head PASS; existing non-access drift groups: {len(full)}"
+        f"Full PostgreSQL schema / models PASS: {len(Base.metadata.tables)} tables, zero drift; immutable additive migration head PASS"
     )
 
 

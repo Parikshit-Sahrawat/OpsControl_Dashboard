@@ -2,7 +2,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, JSON
+from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Float, ForeignKey, Index, Integer, String, Text, UniqueConstraint, JSON, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -134,6 +134,10 @@ class JobOrderHistory(Base):
     alert_events: Mapped[list["AlertIncidentEvent"]] = relationship(back_populates="history", cascade="all, delete-orphan")
     correlation: Mapped["CorrelationRecord | None"] = relationship(back_populates="history", uselist=False, cascade="all, delete-orphan")
 
+    __table_args__ = (
+        Index("uq_etl_job_provider_execution", "job_order_id", "provider_execution_id", unique=True),
+    )
+
 class JobStepExecution(Base):
     __tablename__ = "job_step_executions"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -258,7 +262,7 @@ class MonitoringTemplate(Base):
 class MonitoringTemplateVersion(Base):
     __tablename__ = "monitoring_template_versions"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id"), nullable=False, index=True)
+    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id", ondelete="CASCADE"), nullable=False, index=True)
     version: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String(30), nullable=False, default="COMMITTED")
     package_config: Mapped[dict] = mapped_column(JSON, nullable=False)
@@ -270,8 +274,8 @@ class MonitoringTemplateVersion(Base):
 class MonitoringTemplateAttachment(Base):
     __tablename__ = "monitoring_template_attachments"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id", ondelete="CASCADE"), nullable=False, index=True)
-    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id", ondelete="RESTRICT"), nullable=False, index=True)
+    data_source_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("data_sources.id", ondelete="CASCADE"), nullable=False)
+    template_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("monitoring_templates.id", ondelete="RESTRICT"), nullable=False)
     template_version: Mapped[int] = mapped_column(Integer, nullable=False)
     priority: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
     overrides: Mapped[dict | None] = mapped_column(JSON)
@@ -282,6 +286,8 @@ class MonitoringTemplateAttachment(Base):
     template: Mapped["MonitoringTemplate"] = relationship()
     __table_args__ = (
         UniqueConstraint("data_source_id", "template_id", name="uq_template_attachment_source_template"),
+        Index("ix_template_attachment_data_source_id", "data_source_id"),
+        Index("ix_template_attachment_template_id", "template_id"),
     )
 
 class DataSource(Base):
@@ -331,7 +337,11 @@ class Collector(Base):
     metric_definitions: Mapped[list["MetricDefinition"]] = relationship(back_populates="collector")
     log_sources: Mapped[list["LogSource"]] = relationship(back_populates="collector")
     runs: Mapped[list["CollectorRun"]] = relationship(back_populates="collector", cascade="all, delete-orphan")
-    __table_args__ = (UniqueConstraint("data_source_id", "name", name="uq_collector_source_name"),)
+    __table_args__ = (
+        UniqueConstraint("data_source_id", "name", name="uq_collector_source_name"),
+        Index("ix_collectors_due_local", "next_run_at", "id",
+              postgresql_where=text("enabled AND remote_worker_id IS NULL")),
+    )
 
 class CollectorRun(Base):
     __tablename__ = "collector_runs"
@@ -347,6 +357,10 @@ class CollectorRun(Base):
     response_body: Mapped[str | None] = mapped_column(Text)
     error_message: Mapped[str | None] = mapped_column(Text)
     collector: Mapped["Collector"] = relationship(back_populates="runs")
+
+    __table_args__ = (
+        Index("ix_collector_runs_latest", collector_id, started_at.desc(), id.desc()),
+    )
 
 class MetricDefinition(Base):
     __tablename__ = "metric_definitions"
@@ -375,7 +389,8 @@ class MetricDefinition(Base):
 class MetricSample(Base):
     __tablename__ = "metric_samples"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    # The existing (organization_id, observed_at) B-tree covers customer-only lookups too.
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False)
     metric_definition_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("metric_definitions.id"), nullable=False, index=True)
     collector_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collectors.id"), index=True)
     collector_run_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("collector_runs.id"), index=True)
@@ -478,6 +493,11 @@ class AlertState(Base):
     organization: Mapped["Organization"] = relationship(back_populates="alert_states")
     alert_rule: Mapped["AlertRule"] = relationship(back_populates="alert_states")
 
+    __table_args__ = (
+        Index("uq_alert_states_open_rule", "alert_rule_id", unique=True,
+              postgresql_where=text("status = 'OPEN'")),
+    )
+
 class AlertNotificationDelivery(Base):
     __tablename__ = "alert_notification_deliveries"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -496,11 +516,15 @@ class AlertNotificationDelivery(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     alert_state: Mapped["AlertState"] = relationship()
 
+    __table_args__ = (
+        Index("ix_alert_notification_pending", "status", "created_at"),
+    )
+
 class CorrelationRecord(Base):
     __tablename__ = "correlation_records"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
-    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, unique=True, index=True)
+    history_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_order_histories.id"), nullable=False, index=True)
     anchor_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     window_start: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     window_end: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
@@ -515,6 +539,8 @@ class CorrelationRecord(Base):
     organization: Mapped["Organization"] = relationship(back_populates="correlation_records")
     history: Mapped["JobOrderHistory"] = relationship(back_populates="correlation")
     evidence: Mapped[list["CorrelationEvidence"]] = relationship(back_populates="correlation", cascade="all, delete-orphan")
+
+    __table_args__ = (UniqueConstraint("history_id", name="correlation_records_history_id_key"),)
 
 class CorrelationEvidence(Base):
     __tablename__ = "correlation_evidence"
@@ -545,3 +571,6 @@ class InfrastructureEvidence(Base):
     observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     provider: Mapped[str] = mapped_column(String(50), nullable=False)
     payload: Mapped[dict] = mapped_column(JSON, nullable=False)
+    __table_args__ = (
+        Index("ix_infra_evidence_latest", collector_id, observed_at.desc(), id.desc()),
+    )
