@@ -2,7 +2,43 @@
 
 **Audience:** Independent developers, students, self-hosters and open-source contributors.
 
-**Current release status:** Early development / technical preview. This guide starts React, FastAPI and PostgreSQL locally. Authentication, roles and organization isolation have controlled negative-test evidence; Sprints 1–4 add synthetic monitoring and operational screens on feature branches. See their acceptance guides for exact evidence and pending review/merge gates; `main` can differ until those branches are merged. Genuine provider acceptance, independent security review and Sprint 5 release/deployment/UAT checks remain pending. Use a trusted local environment for this development workflow.
+**Current release status:** Development / technical preview. Approved PRs #25 (UI), #26 (release hardening) and #27 (ordered monitoring lifecycle) are merged into `main`. PR #27 passed all 17 checks at `c3250e0` and merged as `2b33b9f`. Controlled monitoring, security, restoration and browser evidence is available in the acceptance guides. Genuine provider validation, independent production security review and operator UAT remain separate gates.
+
+## Recommended: run the complete application with Docker
+
+Requirements: Git, a running Docker Engine/Desktop with Compose and BuildKit, Python 3 for private password generation, and Bash (Linux/macOS or WSL2 on Windows). You do not need host Python packages, Node.js or PostgreSQL. Ports **8000** and **5173** must be free.
+
+```bash
+git clone https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git
+cd OpsControl_Dashboard
+git switch main
+git pull --ff-only origin main
+bash scripts/demo-up.sh
+docker compose -f docker-compose.demo.yml ps
+```
+
+For an existing checkout, preserve any local edits before switching/pulling. The startup command builds frontend/API images, starts PostgreSQL, applies migrations and creates a fictional organization and demo administrator. Wait for API startup before signing in. Open `http://127.0.0.1:5173`, use **demo-admin**, and read its generated password locally from **.demo-private/admin-password**. Keep this ignored file private; do not paste it into issues or logs. No real infrastructure or outbound incident destination is configured.
+
+Verify startup and schema:
+
+```bash
+curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null
+curl -fsS http://127.0.0.1:5173/ >/dev/null
+docker compose -f docker-compose.demo.yml exec -T api alembic current
+```
+
+Expected migration head: `0024_notification_leases`. Sign in and confirm the fictional **DEMO-LAB** organization in Resource Management; socket checks alone do not validate authentication. Missing observations remain unknown. The default demo does not start a monitoring worker; use the linked disposable acceptance labs for synthetic collection and alert recovery.
+
+```bash
+# Stop while preserving local database contents and the generated password.
+bash scripts/demo-down.sh
+# Resume with the same startup command.
+bash scripts/demo-up.sh
+```
+
+API/frontend bind only to loopback and PostgreSQL has no published host port. Do not expose this development profile publicly. Avoid `down --volumes` unless you intend to erase its data. If dependency installation reports certificate errors, use your trusted organization CA through the optional ephemeral BuildKit override described in [deployment/UAT](DEPLOYMENT_UAT.md); never disable TLS verification. A read-only Docker configuration directory can be handled with a writable `BUILDX_CONFIG` outside the checkout.
+
+The sections below describe the alternative host-based development workflow, which uses the separate `docker-compose.yml` database rather than the complete demo profile.
 
 ## What you'll learn in 10–20 minutes
 
@@ -11,8 +47,8 @@
 - **Metric:** A numeric observation (availability, CPU %, runtime seconds).
 - **Log:** A time-stamped event or message.
 - **Alert Rule:** A condition evaluated against metrics/logs that changes alert state.
-- **Monitoring Template:** Currently a configuration package; attaching one **does not automatically start monitoring**. Future designs separate reusable Metric Rules, Log Rules and Alert Rules and add explicit activation.
-- **Organization:** A logical grouping of resources. The current UI filter is **not a security boundary**.
+- **Monitoring Template:** A versioned configuration package. Attaching one **does not automatically start monitoring**; explicitly activate its pinned monitoring rules through Monitoring Setup.
+- **Organization:** An authenticated tenant boundary enforced by backend authorization and scoped database access. The UI selector selects a view; it does not grant access.
 
 ### How the components relate
 
@@ -45,7 +81,7 @@ git clone https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git
 cd OpsControl_Dashboard
 ```
 
-> **Branch note:** The Phase 1 staging fixes and this guide are currently on review branches. Until they are merged, run `git switch docs/sdlc-phase-2` after cloning. The default `main` branch may not include the fresh-install migration fix or the latest documentation.
+> **Branch note:** Use `main`. Historical staging/feature branches are already merged; do not switch to an old documentation branch.
 
 ## 2 — Start a local database
 
@@ -79,14 +115,16 @@ python -m scripts.create_admin --username admin
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-The administrator command prompts for a new strong password and refuses to create a predictable default account. See [authentication and role guide](AUTHENTICATION.md). Sign in to the UI using this new account.\n\nExpected: FastAPI starts. Open [http://localhost:8000/docs](http://localhost:8000/docs) to explore its interactive OpenAPI documentation, or run:
+The administrator command prompts for a new strong password and refuses to create a predictable default account. See [authentication and role guide](AUTHENTICATION.md). Sign in to the UI using this new account.
+
+Expected: FastAPI starts. Open [http://localhost:8000/docs](http://localhost:8000/docs) to explore its interactive OpenAPI documentation, or run:
 
 ```bash
 curl http://localhost:8000/
 curl http://localhost:8000/openapi.json
 ```
 
-If the first `alembic upgrade head` fails with a duplicate `executiontype` PostgreSQL enum, ensure you're using the review branch containing the tested migration fix. Do not run a destructive database reset on a database containing anything you need.
+If the first `alembic upgrade head` fails with a duplicate `executiontype` PostgreSQL enum, ensure your checkout is updated to current `main`, which contains the tested migration fix. Do not run a destructive database reset on a database containing anything you need.
 
 ## 4 — Start the frontend
 
@@ -95,7 +133,7 @@ In terminal B, from the repository root:
 ```bash
 cd frontend
 cp .env.example .env
-npm install
+npm ci
 npm run dev -- --host 127.0.0.1 --port 5173
 ```
 
@@ -106,7 +144,7 @@ The supplied frontend environment sets `VITE_API_BASE_URL=http://localhost:8000`
 1. Open **Overview** for scoped backend counts and clickable navigation KPIs. Missing evidence stays unknown; empty tables are expected before collection.
 2. Open **ETL Jobs** to explore search, filters and execution detail layout. Real external ETL monitoring is not connected by default.
 3. Open **Resource Management** to inspect Organizations, Data Sources, Collectors and Templates. Create only **fictional** organization names and test Data Sources on this trusted local instance.
-4. Open **VM Health**, **APIs**, **Incidents** and **Reports** for collector evidence, local incident lifecycle and observation-based reports. Run the [Sprint 4 virtual lab](OPERATIONAL_DASHBOARDS.md) to generate actual synthetic HTTPS/ETL/host evidence and browser captures. These feature-branch capabilities are separately gated on review/merge.
+4. Open **VM Health**, **APIs**, **Incidents** and **Reports** for collector evidence, local incident lifecycle and observation-based reports. Run the [Sprint 4 virtual lab](OPERATIONAL_DASHBOARDS.md) to generate actual synthetic HTTPS/ETL/host evidence and browser captures. These capabilities are merged into `main`; controlled tests remain distinct from genuine provider acceptance.
 5. Browse `/docs` for schemas and endpoints. Authenticated builds require the bootstrap administrator and organization membership; configure live credentials only through supported secure references after approved provider setup. The lab needs only generated local credentials.
 
 ### Optional: worker process
@@ -119,7 +157,7 @@ source .venv/bin/activate
 python -m scripts.run_collector_worker
 ```
 
-It polls **enabled, supported** collectors in the database. It does not magically discover hosts or install agents. Stop with Ctrl+C. A template attachment alone does not create operational collectors. Kubernetes, EC2, Windows/Linux, OTEL and Pentaho integrations are not ready to promise in this preview.
+It polls **enabled, supported** collectors in the database. It does not magically discover hosts or install agents. Stop with Ctrl+C. A template attachment alone does not create operational collectors. Linux, controlled EC2/Kubernetes/Windows/Carte and HTTPS adapters have runtime evidence; genuine provider acceptance is separately recorded. OTEL install registration is descriptive and remains inactive without a supported runtime adapter.
 
 ### About the existing demo seed
 

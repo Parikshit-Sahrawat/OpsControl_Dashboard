@@ -1,5 +1,7 @@
 # OpsControl Dashboard
 
+**Local Docker run (main):** `bash scripts/demo-up.sh` builds and starts the complete fictional demo. Open `http://127.0.0.1:5173`, sign in as `demo-admin` using the private generated `.demo-private/admin-password` file, and stop with `bash scripts/demo-down.sh` (database preserved). Requires Docker Compose, Python 3 and Bash; see the [complete Docker quickstart](docs/QUICKSTART.md#recommended-run-the-complete-application-with-docker). PRs #25, #26 and #27 are merged; independent production/provider acceptance remains pending.
+
 **Project implementation roadmap:** [Living Implementation Priorities & Verification Tracker](docs/IMPLEMENTATION_ROADMAP.md) — status, completed stages, current blockers and next testable workstreams. Update this table after each milestone; see linked draft PRs for evidence.
 
 
