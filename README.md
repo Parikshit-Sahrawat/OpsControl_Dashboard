@@ -2223,3 +2223,7 @@ Organization → Data Source → Templates → Agent & Collector → Review
 - Log collection rules define source path, collection mode, parser, timestamp format, multiline behavior, include/exclude patterns, interval and retention.
 - Resource Management summary cards are clickable and open the corresponding list.
 - `.github/workflows/validation.yml` validates Python syntax, SQLAlchemy mapper relationships and the production frontend build on pushes and pull requests.
+
+## Ordered operational release validation
+
+The [current implementation sequence](docs/OPERATIONAL_RELEASE_SEQUENCE.md) follows stabilization → activation → telemetry → alerting/correlation → deployment. The [OWASP API Security Top 10 self-audit](docs/security/OWASP_API_2023_CHECKLIST.md) provides exact verification steps, expected results and production-only evidence gaps for every risk category. A self-audit does not constitute independent production approval.

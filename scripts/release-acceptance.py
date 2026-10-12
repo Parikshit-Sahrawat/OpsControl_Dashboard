@@ -103,8 +103,10 @@ try:
         ui = subprocess.Popen(['node','node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',str(ui_port),'--strictPort'],cwd=ROOT/'frontend',env=ui_environment,stdout=ui_log,stderr=subprocess.STDOUT)
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
+        record('Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial')
     # Capability roles are reapplied after migrations. Runtime credentials are
     # composed by psycopg and never interpolated into shell commands.
     role_code = """
