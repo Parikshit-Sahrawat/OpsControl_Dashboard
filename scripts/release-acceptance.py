@@ -98,6 +98,8 @@ try:
     record('RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives')
     module('scripts.remote_telemetry_acceptance_probe')
     record('Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations')
+    module('scripts.servicenow_acceptance_probe')
+    record('Native alert/correlation and real controlled ServiceNow TLS open/retry/resolve with leased delivery fencing')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
