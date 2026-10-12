@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { canNavigate, administrationPage } from "../permissions";
 import ThemeToggle from "./ThemeToggle";
 import NavIcon from "./NavIcon";
 
 const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management", "Monitoring Setup"];
 
-export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange, platformAdmin = false }) {
+export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange, platformAdmin = false, user }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  useEffect(() => setOpen(false), [active, user?.authorization_revision]);
 
   useEffect(() => {
     const close = event => {
@@ -18,10 +20,10 @@ export default function TopNav({ active, onChange, organizations = [], organizat
 
   const allSelected = organizations.length > 0 && organizationIds.length === organizations.length;
   const label = allSelected
-    ? "All organizations"
+    ? "All customers"
     : organizationIds.length === 1
-      ? (organizations.find(o => o.id === organizationIds[0])?.name || "1 organization")
-      : `${organizationIds.length} organizations`;
+      ? (organizations.find(o => o.id === organizationIds[0])?.name || "1 customer")
+      : `${organizationIds.length} customers`;
 
   const toggleOrganization = id => {
     const next = organizationIds.includes(id)
@@ -44,16 +46,16 @@ export default function TopNav({ active, onChange, organizations = [], organizat
       <div className="workspace-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><b>{active}</b></div>
       <nav aria-label="Primary navigation">
         <span className="nav-section-label">WORKSPACE</span>
-        {[...items, ...(platformAdmin ? ["Access Management"] : [])].map(item => (
+        {[...items, "Access Management"].filter(item => canNavigate(user,item)).map(item => (
           <button key={item} aria-current={active === item ? "page" : undefined} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
             <NavIcon name={item}/><span>{item}</span>
           </button>
         ))}
         <div className="sidebar-footnote"><span className="sidebar-footnote-mark" aria-hidden="true">◈</span><b>Your operations.<br/>One clear view.</b><small>Health · Evidence · Investigation</small></div>
       </nav>
-      <div className="global-context" ref={ref}>
-        <span className="context-label">Organization</span>
-        <button className={open ? "org-context-button open" : "org-context-button"} onClick={() => setOpen(value => !value)} aria-haspopup="true" aria-expanded={open}>
+      {administrationPage(active) ? <div className="global-context" aria-label="Administration context"><span className="muted">{active === "Access Management" ? "Service provider · internal access" : "Customer inventory · independent filters"}</span></div> : <div className="global-context" ref={ref}>
+        <span className="context-label">Customer</span>
+        <button disabled={!organizations.length} className={open ? "org-context-button open" : "org-context-button"} onClick={() => setOpen(value => !value)} aria-haspopup="true" aria-expanded={open}>
           <span className="org-context-label">{label}</span>
           <span className="org-context-chevron">▾</span>
         </button>
@@ -61,7 +63,7 @@ export default function TopNav({ active, onChange, organizations = [], organizat
           <div className="org-menu">
             <label className="org-option org-option-all">
               <input type="checkbox" checked={allSelected} onChange={toggleAll} />
-              <span><b>All organizations</b><small>Select every organization</small></span>
+              <span><b>All customers</b><small>Select every authorized customer</small></span>
             </label>
             <div className="org-menu-divider" />
             {organizations.map(org => (
@@ -70,10 +72,10 @@ export default function TopNav({ active, onChange, organizations = [], organizat
                 <span><b>{org.name}</b><small>{org.code}</small></span>
               </label>
             ))}
-            {!organizations.length && <div className="org-empty">No organizations configured.</div>}
+            {!organizations.length && <div className="org-empty">No authorized customers.</div>}
           </div>
         )}
-      </div>
+      </div>}
       <ThemeToggle />
     </header>
   );

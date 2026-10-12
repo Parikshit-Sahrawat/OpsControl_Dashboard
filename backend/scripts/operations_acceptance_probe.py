@@ -100,9 +100,10 @@ def isolation():
         api(401,'GET',prefix+path,state['http_worker_token'])
     for path in ('/services/'+sid,'/collectors/'+state['http_collector_id'],'/incidents/'+iid,'/jobs/'+state['job_id']+'/history'):
         api(404,'GET',prefix+path,state['other_token'])
-    for token in (state['reader_token'],state['mixed_token']):
-        api(403,'POST',prefix+'/incidents/'+iid+'/notes',token,{'text':'forbidden'})
-        api(403,'POST',prefix+'/incidents/'+iid+'/transitions',token,{'new_status':'RESOLVED'})
+    for token,status in ((state['reader_token'],403),(state['mixed_token'],404)):
+        # Read-only scope cannot expose a record through mutation-scoped reads.
+        api(status,'POST',prefix+'/incidents/'+iid+'/notes',token,{'text':'forbidden'})
+        api(status,'POST',prefix+'/incidents/'+iid+'/transitions',token,{'new_status':'RESOLVED'})
     api(404,'POST',prefix+'/incidents/'+iid+'/notes',state['other_token'],{'text':'forbidden'})
     # Explicit foreign organization filters intersect server ownership.
     assert api(200,'GET',prefix+'/incidents?organization_id='+state['org_id'],state['other_token'])['total']==0

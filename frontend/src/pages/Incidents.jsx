@@ -1,3 +1,4 @@
+import { hasPermission } from "../permissions";
 import { useEffect,useState } from "react";
 import { operations,useOperationalFeed,scopeQuery,evidenceTime } from "../operations";
 import EvidenceDrawer from "../components/EvidenceDrawer";
@@ -14,7 +15,7 @@ export default function Incidents({organizationIds,user,initialIncidentId,onSele
   useEffect(()=>{let live=true;setDetail(null);setActionError("");if(id)operations("/incidents/"+id).then(value=>{if(live)setDetail(value);}).catch(e=>{if(live)setActionError(e.message);});return()=>{live=false;};},[id,revision]);
   // Preserve an operator's draft while refreshing source recovery and activity.
   useEffect(()=>{let live=true;if(id&&data)operations("/incidents/"+id).then(value=>{if(live)setDetail(value);}).catch(e=>{if(live)setActionError(e.message);});return()=>{live=false;};},[id,data]);
-  const canWrite=detail&&!!(user?.platform_admin||user?.memberships?.some(m=>m.organization_id===detail.organization_id&&["operator","org_admin"].includes(m.role)));
+  const canWrite=detail&&hasPermission(user,"incidents.manage",detail.organization_id);
   const act=async(path,body)=>{if(busy)return;setBusy(true);setActionError("");try{const value=await operations("/incidents/"+id+path,{method:"POST",body:JSON.stringify(body)});setDetail(value);if(path==="/notes")setText("");refresh();}catch(e){setActionError(e.message);}finally{setBusy(false);}};
   const transitions=detail?.status==="OPEN"?["ACKNOWLEDGED"]:detail?.status==="ACKNOWLEDGED"?["INVESTIGATING",...(detail.condition_status==="RECOVERED"?["RESOLVED"]:[])]:detail?.status==="INVESTIGATING"&&detail.condition_status==="RECOVERED"?["RESOLVED"]:[];
   return <div className="operations-page"><div className="page-heading"><div><h1>Incidents</h1><p>Local alert episodes · source recovery and operator closure tracked separately</p></div><button onClick={()=>{refresh();setRevision(v=>v+1);}}>Refresh incidents</button></div>{error&&<p role="alert">{error}</p>}
@@ -25,7 +26,7 @@ export default function Incidents({organizationIds,user,initialIncidentId,onSele
       <InventoryPager data={data} onOffsetChange={setOffset}/>
     </section>
     {id&&<EvidenceDrawer title={detail?.title||"Incident investigation"} onClose={()=>setId(null)}>{actionError&&<p role="alert">{actionError}</p>}{detail&&<><p><b>{detail.status}</b> · {detail.severity} · Source {detail.condition_status}</p><p>Opened {evidenceTime(detail.opened_at)}<br/>Source recovered {evidenceTime(detail.recovered_at)}<br/>Operator resolved {evidenceTime(detail.resolved_at)}</p>
-      <div className="operational-actions">{detail.history_id&&<button onClick={()=>{setId(null);onSelectExecution(detail.history_id);}}>Investigate ETL execution</button>}{detail.data_source_id&&<button onClick={()=>{setId(null);onOpenSource(detail.data_source_id,detail.source_type);}}>Open resource evidence</button>}{canWrite&&transitions.map(state=><button disabled={busy} key={state} onClick={()=>act("/transitions",{new_status:state})}>Mark {state}</button>)}</div>
+      <div className="operational-actions">{detail.history_id&&<button onClick={()=>{setId(null);onSelectExecution(detail.history_id);}}>Investigate ETL execution</button>}{detail.data_source_id&&<button onClick={()=>{setId(null);onOpenSource(detail.data_source_id,detail.source_type);}}>Open resource evidence</button>}{transitions.filter(state=>detail&&hasPermission(user,state==="ACKNOWLEDGED"?"incidents.acknowledge":"incidents.manage",detail.organization_id)).map(state=><button disabled={busy} key={state} onClick={()=>act("/transitions",{new_status:state})}>Mark {state}</button>)}</div>
       {canWrite&&detail.condition_status==="ACTIVE"&&detail.status!=="RESOLVED"&&<p>Resolution becomes available after source recovery.</p>}
       {canWrite&&<form className="incident-note" onSubmit={e=>{e.preventDefault();act("/notes",{text});}}><label>Investigation note<textarea value={text} disabled={busy} maxLength={2000} onChange={e=>setText(e.target.value)} placeholder="Add incident evidence or operator observation"/></label><button disabled={busy||!text.trim()}>Save incident note</button></form>}
       <h3>Investigation and alert history</h3>{detail.activity.map(e=><div key={e.id} className="evidence-event"><b>{e.event_type}{e.new_status?" · "+e.new_status:""}</b><small>{evidenceTime(e.occurred_at)} · {e.actor}</small>{e.text&&<p>{e.text}</p>}</div>)}</>}</EvidenceDrawer>}

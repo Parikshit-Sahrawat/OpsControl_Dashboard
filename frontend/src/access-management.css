@@ -1,0 +1,124 @@
+.access-tabs,
+.access-filters,
+.access-pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.access-tabs {
+  margin: 20px 0;
+}
+.access-tabs .active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.access-table {
+  margin-top: 18px;
+  padding: 22px;
+  min-width: 0;
+}
+.access-table td {
+  vertical-align: top;
+}
+.access-table td small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+}
+.access-uuid {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  margin: 6px 0;
+  color: var(--muted);
+}
+.access-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.access-pagination {
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.access-pagination span {
+  margin-right: auto;
+  color: var(--muted);
+  font-size: 12px;
+}
+.access-dialog {
+  max-width: 780px;
+  max-height: 90vh;
+  overflow: auto;
+}
+.access-permission-matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+.access-permission-matrix fieldset {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+.access-permission-matrix legend {
+  font-weight: 700;
+}
+.access-permission-matrix .access-checkbox {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+.access-effective h3 {
+  margin-top: 20px;
+}
+.access-scope {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin: 10px 0;
+}
+.access-scope .chip-row {
+  margin-top: 10px;
+}
+.access-page .resource-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.access-page .resource-toolbar h2 {
+  margin: 0;
+}
+.access-page .mini-chip {
+  white-space: normal;
+}
+.access-page .info-box {
+  margin: 14px 0;
+}
+.access-page .table-wrap {
+  margin-top: 18px;
+}
+@media (max-width: 800px) {
+  .access-table {
+    padding: 14px;
+  }
+  .access-filters {
+    width: 100%;
+  }
+  .access-filters input {
+    min-width: 0;
+    flex: 1;
+  }
+  .access-dialog {
+    width: 95vw;
+  }
+  .access-tabs .filter-button {
+    flex: 1;
+  }
+  .access-page .table-wrap {
+    overflow-x: auto;
+  }
+}

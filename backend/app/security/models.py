@@ -5,10 +5,16 @@ from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint, 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
+from app.security.permission_catalog import PROVIDER_ID
 
 class User(Base):
     __tablename__ = "users"
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    service_provider_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("service_providers.id", ondelete="RESTRICT"), nullable=False, default=lambda: PROVIDER_ID, index=True)
+    employee_id: Mapped[str | None] = mapped_column(String(80))
+    full_name: Mapped[str] = mapped_column(String(160), nullable=False, default=lambda ctx: ctx.get_current_parameters().get("username", ""))
+    work_email: Mapped[str | None] = mapped_column(String(254))
+    __table_args__ = (UniqueConstraint("id", "service_provider_id", name="uq_user_provider"), UniqueConstraint("service_provider_id", "employee_id", name="uq_employee_id"))
     username: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
@@ -62,3 +68,6 @@ class WorkerIdentity(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_worker_org_name"),)
+
+# Register the additive access tables for API, CLI and Alembic consumers.
+import app.security.access_models  # noqa: E402,F401

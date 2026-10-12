@@ -123,7 +123,7 @@ try{
     await admin.getByText('Fictional NOC HTTPS Portal',{exact:true}).first().waitFor();await shot(admin,'resource-management');
     await tab(admin,'Monitoring Setup');await admin.getByRole('heading',{name:'Monitoring Setup',exact:true}).waitFor();
     await admin.getByRole('option',{name:/Fictional NOC HTTPS Portal/}).waitFor({state:'attached'});await shot(admin,'monitoring-setup');
-    await tab(admin,'Access Management');await admin.getByRole('cell',{name:'etl-operator',exact:true}).first().waitFor();await shot(admin,'access-management');
+    await tab(admin,'Access Management');await admin.getByRole('row').filter({hasText:'etl-operator'}).first().waitFor();await shot(admin,'access-management');
     checks.push('Resource Management, Monitoring Setup and platform Access Management backend screens');
     await tab(admin,'APIs');await admin.getByTestId('service-row').filter({hasText:'Fictional NOC HTTPS Portal'}).waitFor();
     // Delay real responses to expose races when changing authorized UI scope.

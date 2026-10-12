@@ -80,7 +80,7 @@ async function tab(page, name) {
   } else if (name === 'Monitoring Setup') {
     await page.getByRole('option', { name: /Fictional NOC HTTPS Portal/ }).waitFor({ state: 'attached' });
   } else if (name === 'Access Management') {
-    await page.getByRole('cell', { name: 'etl-operator', exact: true }).first().waitFor();
+    await page.getByRole('row').filter({hasText:'etl-operator'}).first().waitFor();
   }
 }
 

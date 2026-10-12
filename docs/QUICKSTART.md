@@ -27,7 +27,7 @@ curl -fsS http://127.0.0.1:5173/ >/dev/null
 docker compose -f docker-compose.demo.yml exec -T api alembic current
 ```
 
-Expected migration head: `0024_notification_leases`. Sign in and confirm the fictional **DEMO-LAB** organization in Resource Management; socket checks alone do not validate authentication. Missing observations remain unknown. The default demo does not start a monitoring worker; use the linked disposable acceptance labs for synthetic collection and alert recovery.
+Expected migration head: `0025_provider_department_rbac`. Sign in and confirm the fictional **DEMO-LAB** organization in Resource Management; socket checks alone do not validate authentication. Missing observations remain unknown. The default demo does not start a monitoring worker; use the linked disposable acceptance labs for synthetic collection and alert recovery.
 
 ```bash
 # Stop while preserving local database contents and the generated password.
@@ -143,9 +143,9 @@ The supplied frontend environment sets `VITE_API_BASE_URL=http://localhost:8000`
 
 1. Open **Overview** for scoped backend counts and clickable navigation KPIs. Missing evidence stays unknown; empty tables are expected before collection.
 2. Open **ETL Jobs** to explore search, filters and execution detail layout. Real external ETL monitoring is not connected by default.
-3. Open **Resource Management** to inspect Organizations, Data Sources, Collectors and Templates. Create only **fictional** organization names and test Data Sources on this trusted local instance.
+3. Open **Resource Management** to inspect Customers, Data Sources, Collectors and Templates. Create only **fictional** organization names and test Data Sources on this trusted local instance.
 4. Open **VM Health**, **APIs**, **Incidents** and **Reports** for collector evidence, local incident lifecycle and observation-based reports. Run the [Sprint 4 virtual lab](OPERATIONAL_DASHBOARDS.md) to generate actual synthetic HTTPS/ETL/host evidence and browser captures. These capabilities are merged into `main`; controlled tests remain distinct from genuine provider acceptance.
-5. Browse `/docs` for schemas and endpoints. Authenticated builds require the bootstrap administrator and organization membership; configure live credentials only through supported secure references after approved provider setup. The lab needs only generated local credentials.
+5. Browse `/docs` for schemas and endpoints. Authenticated builds require the bootstrap administrator and explicit customer grants (legacy customer memberships remain compatible); configure live credentials only through supported secure references after approved provider setup. The lab needs only generated local credentials.
 
 ### Optional: worker process
 
@@ -211,3 +211,7 @@ This stops PostgreSQL and **retains** its named volume. `docker compose down -v`
 - [GitHub issues](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues)
 
 Contributions should use synthetic data and generic infrastructure names. A future beginner learning path will cover **metrics → logs → alerts → collectors → dashboards → observability integrations** with safe hands-on exercises. Licensing, security policy and contribution governance are planned and must be finalized before claiming a mature open-source release.
+
+## Customer and internal department administration
+
+Customers own monitored resources. Internal service-provider departments contain existing employee identities and paired role/customer grants; these are separate entities. Access Management requires `access.view` and its mutation-specific permissions. The global selector is hidden on both administration screens. Follow [authentication and access management](AUTHENTICATION.md) and [isolated Docker/security verification](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Migration 0025 is additive; schema downgrade and older membership-only backend rollback are unsafe after new grants/denies exist.

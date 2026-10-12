@@ -108,10 +108,12 @@ def main():
     expect(403,"POST",org,a,{"name":"Forged","code":"FORGED"})
     expect(403,"POST",source,reader,{"organization_id":ids["a"],"name":"illegal","source_type":"API"})
     result=expect(200,"GET",org,mixed); assert {x["id"] for x in result}=={ids["a"],ids["b"]}
-    expect(403,"PATCH",source+"/"+ids["sb"],mixed,{"name":"cross-tenant-mutation"})
-    expect(403,"POST",source,mixed,{"organization_id":ids["b"],"name":"mixed-forge","source_type":"API"})
+    # A read-only grant for B does not reveal B through a mutation-scoped query.
+    expect(404,"PATCH",source+"/"+ids["sb"],mixed,{"name":"cross-tenant-mutation"})
+    expect(404,"POST",source,mixed,{"organization_id":ids["b"],"name":"mixed-forge","source_type":"API"})
     result=expect(200,"GET",org,b); assert {x["id"] for x in result}=={ids["b"]}
-    result=expect(200,"GET",org,admin); assert {x["id"] for x in result}=={ids["a"],ids["b"]}
+    with SessionLocal() as db: complete_customer_ids={str(id) for id in db.scalars(select(Organization.id))}
+    result=expect(200,"GET",org,admin); assert {x["id"] for x in result}==complete_customer_ids
     expect(201,"POST",source,a,{"organization_id":ids["a"],"name":"authorized-probe","source_type":"API"})
     expect(204,"POST","/api/v1/auth/logout",a)
     expect(401,"GET",org,a)

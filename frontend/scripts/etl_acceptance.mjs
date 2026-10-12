@@ -1,16 +1,17 @@
 // Real password login and data-backed ETL drawer checks; no mocked API responses.
 import assert from 'node:assert/strict';
-import {readFile,mkdir} from 'node:fs/promises';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 const {chromium}=await import(process.env.PLAYWRIGHT_MODULE?pathToFileURL(process.env.PLAYWRIGHT_MODULE).href:'playwright');
 const state=JSON.parse(await readFile(process.env.ETL_SESSION_FILE,'utf8'));
 const phase=process.argv[2],output=process.env.ETL_EVIDENCE_DIR;
 await mkdir(output,{recursive:true});
 const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE?{executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE}:{})});
-const errors=[];
+const errors=[],networkErrors=[];
 async function login(who){
   const page=await browser.newPage({viewport:{width:1600,height:1100}});
   page.on('pageerror',e=>errors.push(e.message));
+  page.on('requestfailed',r=>networkErrors.push({path:new URL(r.url()).pathname,reason:r.failure()?.errorText}));
   await page.goto('http://127.0.0.1:15174');
   await page.getByRole('textbox',{name:'Username'}).fill(state[who+'_username']);
   await page.getByLabel('Password').fill(state[who+'_password']);
@@ -68,5 +69,6 @@ try{
 }catch(error){
   const page=browser.contexts().flatMap(context=>context.pages())[0];
   if(page)await page.screenshot({path:'/tmp/etl-browser-failure.png',fullPage:true});
+  await writeFile(`${output}/browser-failure.json`,JSON.stringify({phase,error_type:error.name,page_errors:errors,network_errors:networkErrors},null,2));
   throw error;
 }finally{await browser.close();}

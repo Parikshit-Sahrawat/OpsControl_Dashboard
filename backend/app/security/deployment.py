@@ -22,13 +22,13 @@ def validate_runtime_database_role() -> None:
         return
     # Do not disclose DSNs, credentials or provider exception details on failure.
     with engine.connect() as connection:
-        required = {('worker_identities', 'last_seen_at'),
+        required = {('users','service_provider_id'),('users','employee_id'),('departments','service_provider_id'),('customer_access_grants','organization_id'),('worker_identities', 'last_seen_at'),
                     ('alert_notification_deliveries', 'lease_token'),
                     ('alert_notification_deliveries', 'lease_expires_at')}
         available = set(connection.execute(text("""
             SELECT table_name, column_name FROM information_schema.columns
             WHERE table_schema='public'
-              AND table_name IN ('worker_identities', 'alert_notification_deliveries')
+              AND table_name IN ('users','departments','customer_access_grants','worker_identities', 'alert_notification_deliveries')
         """)).all())
         if not required <= available:
             raise RuntimeError("Database migrations must be applied before production runtime starts")
