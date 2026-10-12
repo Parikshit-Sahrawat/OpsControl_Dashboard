@@ -267,20 +267,26 @@ export default function ResourceManagementV2({ organizationIds = [] }) {
   const [orgEditor, setOrgEditor] = useState(null);
   const [wizard, setWizard] = useState(null);
   const [templateEditor, setTemplateEditor] = useState(null);
+  const reloadGeneration = useRef(0);
   const reload = async () => {
+    const generation = ++reloadGeneration.current;
     setLoading(true); setError("");
     try {
       const orgs = await fetchOrganizations();
-      setOrganizations(orgs);
       const ids = organizationIds.length ? organizationIds : orgs.map(o => o.id);
       const sources = ids.length ? await fetchDataSources({ organization_id: ids }) : [];
-      setDataSources(sources);
       const sourceIds = sources.map(s => s.id);
-      setCollectors(sourceIds.length ? await fetchCollectors({ data_source_id: sourceIds }) : []);
+      const registrations = sourceIds.length ? await fetchCollectors({ data_source_id: sourceIds }) : [];
       const remote = await fetchMonitoringTemplates();
+      // Publish one complete snapshot. An older refresh must never replace a
+      // newer scope or expose rows before their registration settings arrive.
+      if (generation !== reloadGeneration.current) return;
+      setOrganizations(orgs);
+      setDataSources(sources);
+      setCollectors(registrations);
       setTemplates(remote.map(normalizeTemplate));
-    } catch (e) { setError(e.message || "Unable to load Resource Management"); }
-    finally { setLoading(false); }
+    } catch (e) { if (generation === reloadGeneration.current) setError(e.message || "Unable to load Resource Management"); }
+    finally { if (generation === reloadGeneration.current) setLoading(false); }
   };
   useEffect(() => { reload(); }, [JSON.stringify(organizationIds)]);
   const orgMap = useMemo(() => new Map(organizations.map(x => [x.id, x])), [organizations]);
@@ -293,8 +299,19 @@ export default function ResourceManagementV2({ organizationIds = [] }) {
     return collectors.filter(c => { const s = dataSources.find(x => x.id === c.data_source_id); return !q || [c.name, s?.name, meta(s).visible_name].join(" ").toLowerCase().includes(q); });
   }, [collectors, dataSources, query]);
   const editSource = async source => {
-    const m = meta(source); const a = await fetchDataSourceTemplates(source.id).catch(() => []);
-    setWizard({ initial: { ...source, agent_registration: collectors.find(c => c.data_source_id === source.id && c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: m.os_type || "Windows", workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "SLM", product: m.product || "SPM", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
+    const generation = reloadGeneration.current;
+    try {
+      const m = meta(source);
+      // Editing needs the current persisted settings, not a bounded inventory
+      // cache. Failed reads must not silently turn assignments into defaults.
+      const [a, registrations] = await Promise.all([
+        fetchDataSourceTemplates(source.id), fetchCollectors({ data_source_id: source.id }),
+      ]);
+      if (generation !== reloadGeneration.current) return;
+      setWizard({ initial: { ...source, agent_registration: registrations.find(c => c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: m.os_type || "Windows", workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "SLM", product: m.product || "SPM", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
+    } catch (e) {
+      if (generation === reloadGeneration.current) setError(e.message || "Unable to load saved Data Source settings");
+    }
   };
   const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
   const selectedOrganizations = organizations.filter(o => !organizationIds.length || organizationIds.includes(o.id));

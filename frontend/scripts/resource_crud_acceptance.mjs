@@ -85,6 +85,40 @@ try {
   assert.equal(cross.status(), 404);
   const crossRows = await page.request.get(collectorPath, { headers: otherHeaders });
   assert.deepEqual(await crossRows.json(), []);
+  phase = 'overlapping refresh ordering';
+  // Delay an unchanged, authenticated backend response; no fabricated rows.
+  // A second refresh must win even when the first snapshot arrives last.
+  let signalCaptured, releaseOlder;
+  const captured = new Promise(resolve => { signalCaptured = resolve; });
+  const held = new Promise(resolve => { releaseOlder = resolve; });
+  let first = true;
+  const inventoryRoute = '**/api/v1/resource-management/data-sources?*';
+  await page.route(inventoryRoute, async route => {
+    if (!first) return route.continue();
+    first = false;
+    const response = await route.fetch();
+    signalCaptured();
+    await held;
+    await route.fulfill({ response });
+  });
+  try {
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+    await captured;
+    const renamed = 'wizard-sequence-refreshed.example.test';
+    const updated = await page.request.patch(base + '/api/v1/resource-management/data-sources/' + source.id, {
+      headers, data: { name: renamed },
+    });
+    assert.equal(updated.status(), 200);
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+    await page.locator('b').filter({ hasText: 'Wizard sequence registration' }).waitFor();
+    await page.locator('b[title="' + renamed + '"]').waitFor();
+    releaseOlder();
+    await page.waitForLoadState('networkidle');
+    assert.equal(await page.locator('b[title="' + renamed + '"]').count(), 1);
+  } finally {
+    releaseOlder();
+    await page.unroute(inventoryRoute);
+  }
   await mkdir(process.env.RELEASE_EVIDENCE_DIR, { recursive: true });
   await page.screenshot({ path: process.env.RELEASE_EVIDENCE_DIR + '/resource-registration.png', fullPage: true });
   phase = 'disable resource';
@@ -98,7 +132,8 @@ try {
   await writeFile(process.env.RELEASE_EVIDENCE_DIR + '/resource-crud.json', JSON.stringify({ status: 'PASS',
     checks: ['Browser create/read/update/disable persisted', 'Duplicate source returns 409',
       'OTEL registration stays inactive with no CollectorRun', 'Edit preserves ID and updates stored agent settings',
-      'Other tenant cannot read registration or mutate source'], page_errors: errors, server_errors: serverErrors }, null, 2));
+      'Other tenant cannot read registration or mutate source',
+      'Older authenticated inventory refresh cannot overwrite newer persisted state'], page_errors: errors, server_errors: serverErrors }, null, 2));
   console.log('RESOURCE WIZARD / INACTIVE REGISTRATION / CRUD / TENANT ACCEPTANCE PASS');
 } catch (error) {
   // Only a fixture phase and error type leave the private diagnostics directory.
