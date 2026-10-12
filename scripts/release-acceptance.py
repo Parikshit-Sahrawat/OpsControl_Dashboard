@@ -96,6 +96,8 @@ try:
         (private/(probe+'.log')).write_text(result.stdout+'\n'+result.stderr)
         if result.returncode: raise RuntimeError(probe+' failed')
     record('RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives')
+    module('scripts.remote_telemetry_acceptance_probe')
+    record('Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
@@ -132,7 +134,7 @@ finally:
     development.terminate(); development.wait(timeout=10)
     # Concurrent-index migration rollback/upgrade on populated data.
     module('scripts.release_runtime_probe','snapshot')
-    module('alembic','downgrade','0021_operational_incidents'); module('alembic','upgrade','head')
+    module('scripts.release_runtime_probe','indexes-roundtrip')
     module('scripts.release_runtime_probe','verify')
     service = f"[source]\nhost=127.0.0.1\nport=5432\ndbname=opscontrol\nuser=opscontrol\npassword={environment['POSTGRES_PASSWORD']}\n[restored]\nhost=127.0.0.1\nport=5432\ndbname=restored\nuser=opscontrol\npassword={environment['POSTGRES_PASSWORD']}\n"
     (private/'pg_service.conf').write_text(service); (private/'pg_service.conf').chmod(0o600)

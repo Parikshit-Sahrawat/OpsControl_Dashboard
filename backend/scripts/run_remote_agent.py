@@ -71,6 +71,7 @@ def execute_claim(job,hosts,cidrs):
     return probe_https(config,requested_hosts,server_policy["allowed_cidrs"])
 
 def run_once(base,token,hosts,cidrs):
+    call(base,token,"/api/v1/worker/heartbeat",{})
     claimed=call(base,token,"/api/v1/worker/claim",{})
     job=claimed.get("job")
     if not job: return False

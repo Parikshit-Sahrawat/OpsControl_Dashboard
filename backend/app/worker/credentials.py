@@ -17,7 +17,7 @@ _SECRET_ARN=re.compile(
     r"(?P<account>\d{12}):secret:[A-Za-z0-9/_+=.@-]{1,250}$"
 )
 
-def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str]:
+def validate_credential_reference(credential_ref: str) -> str:
     if not isinstance(credential_ref,str) or not credential_ref or len(credential_ref)>350:
         raise CredentialProviderError("Valid credential reference required")
     if credential_ref.startswith("aws-secretsmanager://"):
@@ -27,6 +27,14 @@ def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str
         match=_SECRET_ARN.fullmatch(arn)
         if not match or not _REGION.fullmatch(region) or match["region"]!=region:
             raise CredentialProviderError("Secrets Manager ARN/region mismatch")
+    elif not re.fullmatch(r"[A-Za-z0-9_-]{1,100}",credential_ref):
+        raise CredentialProviderError("Invalid development credential reference")
+    return credential_ref
+
+def resolve_basic_auth(credential_ref: str,client_factory=None) -> tuple[str,str]:
+    validate_credential_reference(credential_ref)
+    if credential_ref.startswith("aws-secretsmanager://"):
+        region,arn=credential_ref.removeprefix("aws-secretsmanager://").split("/",1)
         if client_factory is None:
             try:
                 import boto3

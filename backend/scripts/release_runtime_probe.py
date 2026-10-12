@@ -275,6 +275,23 @@ def snapshot():
                     raise AssertionError('Restored CHECK not enforced: '+constraint)
         print('Full populated restore fingerprints, FKs/checks and audit trigger PASS')
 
+def indexes_roundtrip():
+    # Exercise the concurrent index migration's actual downgrade/upgrade DDL
+    # without downgrading later data-bearing migrations (e.g. worker liveness).
+    import importlib
+    from alembic.migration import MigrationContext
+    from alembic.operations import Operations
+    migration = importlib.import_module('migrations.versions.0022_runtime_query_indexes')
+    with engine.connect() as connection:
+        context = MigrationContext.configure(connection)
+        with context.begin_transaction(), Operations.context(context):
+            migration.downgrade()
+            migration.upgrade()
+        names = connection.scalars(text("SELECT indexname FROM pg_indexes WHERE schemaname='public'")).all()
+        assert {'ix_collectors_due_local', 'ix_collector_runs_latest',
+                'ix_infra_evidence_latest', 'ix_security_audit_occurred'} <= set(names)
+    print('Concurrent-index migration DDL rollback/upgrade PASS; later populated columns preserved')
+
 def main():
     if os.environ.get('OPSCONTROL_RELEASE_ACCEPTANCE') != '1' or os.environ.get('ENVIRONMENT') != 'demo':
         raise SystemExit('Explicit disposable release acceptance only')
@@ -283,6 +300,7 @@ def main():
     elif action == 'exercise': atomic_audit(); last_admin_concurrency(); asyncio.run(concurrent_collectors()); multi_process_lock_recovery(); retention(); scale()
     elif action == 'collect-once': collect_once()
     elif action in ('snapshot', 'verify'): snapshot()
+    elif action == 'indexes-roundtrip': indexes_roundtrip()
     else: raise SystemExit('Unknown acceptance phase')
 
 if __name__ == '__main__':

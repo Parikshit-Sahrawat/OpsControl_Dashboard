@@ -149,7 +149,7 @@ export default function MonitoringSetup({organizationId,organizationName,user}) 
           <option value="">Select resource</option>{sources.map(s=><option key={s.id} value={s.id}>{s.name} · {s.source_type}</option>)}
         </select></label>
         {!infrastructure&&<label>Approved remote worker<select value={workerId} onChange={e=>{setWorkerId(e.target.value);setPreview(null);}}>
-          <option value="">Select worker</option>{workers.map(w=><option key={w.id} value={w.id}>{w.name} · {w.allowed_hosts.join(", ")||"no hosts"}</option>)}
+          <option value="">Select worker</option>{workers.map(w=><option key={w.id} value={w.id}>{w.name} · {w.allowed_hosts.join(", ")||"no hosts"} · {w.last_seen_at ? "heartbeat " + new Date(w.last_seen_at).toISOString() : "no heartbeat"}</option>)}
         </select></label>}
       </div>
       {!infrastructure&&<p className="monitoring-helper">Remote workers must be enrolled and assigned explicit hostname/CIDR policies. A configured resource is not automatically monitored.</p>}

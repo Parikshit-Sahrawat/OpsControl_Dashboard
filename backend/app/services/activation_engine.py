@@ -101,6 +101,19 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
         config={"url":cc.get("url") or source.endpoint,
                 "expected_status":cc.get("expected_status",200),
                 "timeout_seconds":cc.get("timeout_seconds",8)}
+        reference = cc.get("credential_ref")
+        if reference is None and str(source.auth_type or "").upper() == "BASIC":
+            reference = (source.connection_config or {}).get("credential_ref")
+        if reference is not None:
+            from app.worker.credentials import validate_credential_reference, CredentialProviderError
+            try: config["credential_ref"] = validate_credential_reference(reference)
+            except CredentialProviderError:
+                raise HTTPException(422,"Invalid collector credential reference") from None
+            from app.core.config import settings
+            if settings.environment == "production" and not reference.startswith("aws-secretsmanager://"):
+                raise HTTPException(422,"Production requires an external credential reference")
+        elif str(source.auth_type or "").upper() == "BASIC":
+            raise HTTPException(422,"Basic authentication requires an approved credential reference")
         if not isinstance(config["url"],str): raise HTTPException(422,"Target HTTPS URL is missing")
         try: check_target(config["url"],worker.allowed_hosts,worker.allowed_cidrs)
         except EgressDenied as exc:raise HTTPException(422,str(exc))
