@@ -2227,3 +2227,5 @@ Organization → Data Source → Templates → Agent & Collector → Review
 ## Ordered operational release validation
 
 The [current implementation sequence](docs/OPERATIONAL_RELEASE_SEQUENCE.md) follows stabilization → activation → telemetry → alerting/correlation → deployment. The [OWASP API Security Top 10 self-audit](docs/security/OWASP_API_2023_CHECKLIST.md) provides exact verification steps, expected results and production-only evidence gaps for every risk category. A self-audit does not constitute independent production approval.
+
+Read-only [EKS inventory](docs/EKS_DISCOVERY.md), credential-reference-only [remote Basic Auth/heartbeats](docs/REMOTE_AGENT_QUICKSTART.md), and controlled [ServiceNow delivery](docs/SERVICENOW_INTEGRATION.md) extend the existing lifecycle. Actual browser captures: [EKS light](docs/acceptance/operational-sequence/eks-light.png), [EKS dark](docs/acceptance/operational-sequence/eks-dark.png), [resource registration](docs/acceptance/operational-sequence/resource-registration.png). [Clean installation and UAT/rollback instructions](docs/DEPLOYMENT_UAT.md) distinguish controlled acceptance from pending production gates.

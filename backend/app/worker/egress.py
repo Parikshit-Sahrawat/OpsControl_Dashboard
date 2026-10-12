@@ -139,5 +139,8 @@ def probe_https(config, hosts, cidrs):
     status,size=(_pinned_https(parts.hostname,ip,path,timeout,authorization) if authorization
                  else _pinned_https(parts.hostname,ip,path,timeout))
     elapsed=min(int((time.monotonic()-started)*1000),600000)
-    return {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
-            "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
+    result = {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
+              "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
+    if authorization:
+        result["auth_mode"] = "BASIC"
+    return result

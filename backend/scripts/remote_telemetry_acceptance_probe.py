@@ -101,9 +101,26 @@ def main():
             from uuid import UUID
             assert db.get(WorkerIdentity,UUID(worker['id'])).last_seen_at is not None
             assert db.scalar(select(func.count()).select_from(MetricSample).where(MetricSample.metric_definition_id==ids['metric']))==0
+            future = datetime.now(timezone.utc)+timedelta(seconds=10)
+            db.get(WorkerIdentity,UUID(worker['id'])).last_seen_at=future
+            db.commit()
+        next_beat = protocol.check(200,'POST','/api/v1/worker/heartbeat',token,{})
+        assert datetime.fromisoformat(next_beat['last_seen_at'])>=future
         protocol.check(200,'PUT',f"/api/v1/remote-probes/workers/{worker['id']}/network-policy",admin,
             {'allowed_hosts':[HOSTNAME],'allowed_cidrs':[host+'/32']})
         protocol.check(200,'PUT','/api/v1/remote-probes/collectors/'+ids['collector']+'/assignment',admin,{'worker_id':worker['id']})
+        old_job = str(uuid4())
+        protocol.check(201,'POST','/api/v1/remote-probes/jobs',admin,
+            {'collector_id':ids['collector'],'worker_id':worker['id'],'idempotency_key':old_job})
+        old_claim = protocol.check(200,'POST','/api/v1/worker/claim',token,{})['job']
+        unsupported = {'event_id':str(uuid4()),'job_id':old_job,'lease_nonce':old_claim['lease_nonce'],
+                       'observed_at':datetime.now(timezone.utc).isoformat(),'outcome':'SUCCESS','http_status':200}
+        protocol.check(422,'POST','/api/v1/worker/results',token,unsupported)
+        protocol.check(422,'POST','/api/v1/worker/results',token,{**unsupported,'auth_mode':'NONE'})
+        from app.worker.remote_models import RemoteProbeJob
+        with SessionLocal() as db:
+            cancelled = db.get(RemoteProbeJob,UUID(old_job))
+            cancelled.state='CANCELLED'; cancelled.lease_nonce_hash=None; db.commit()
         with patch.dict(os.environ, environment), patch('app.worker.egress.resolve_target',
                 side_effect=lambda name, networks: resolve_target(name, networks, resolver=dns)):
             cfg = {'url':'https://'+HOSTNAME+'/ready','credential_ref':'basic-fixture'}

@@ -67,6 +67,8 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     if source is None: raise HTTPException(404,"Data source not found")
     if not source.enabled: raise HTTPException(409,"Data source disabled")
     provider=normalize(source.source_type)
+    if provider == 'AWS_EKS':
+        raise HTTPException(422,'EKS inventory is discovery-only; use an approved in-cluster Kubernetes source for workload monitoring')
     infrastructure=provider in INFRA_TYPES
     worker=db.get(WorkerIdentity,worker_id) if worker_id else None
     if not infrastructure and (worker is None or not worker.enabled or worker.organization_id!=source.organization_id or worker.expires_at.replace(tzinfo=timezone.utc)<=now()):

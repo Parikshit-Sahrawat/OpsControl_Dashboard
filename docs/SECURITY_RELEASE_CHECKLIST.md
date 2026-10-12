@@ -37,3 +37,7 @@ Reconciled 2026-10-11. Security PR #19 and remote-worker PR #20 are merged; curr
 - [ ] Formal release/production acceptance granted
 
 [Detailed priority matrix, root causes, source paths and verification](RELEASE_RELIABILITY.md). Development merge approval is separate from these production gates; live AWS setup remains paused.
+
+## OWASP self-audit package and ordered fixes
+
+[OWASP API Security 2023 verification](security/OWASP_API_2023_CHECKLIST.md) supplies case IDs, exact steps, expected HTTP/DB outcomes, evidence recording and unrun production variants for each risk. [124-route inventory](security/api-inventory.json) is a coverage input; all rows retain REVIEW REQUIRED. The [ordered implementation](OPERATIONAL_RELEASE_SEQUENCE.md) contains controlled evidence for the new transport, liveness, delivery and discovery controls. Owner-approved PR #26 is merged at `277ec2c`; self-audit/CI do not replace independent production review.

@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "origin": "Real HTTP API and PostgreSQL; actual boto3/botocore Stubber controlled responses, no AWS request",
+  "checks": [
+    "STS expected account checked before read-only EKS list/describe",
+    "Cluster endpoint/certificate omitted",
+    "Tenant administrator/foreign tenant discovery denied",
+    "Dry run writes no inventory",
+    "Approved import is idempotent and remains UNKNOWN with no collector",
+    "Unapproved endpoint/reference rejected"
+  ],
+  "candidates": 2,
+  "imported_clusters": 1,
+  "limitations": [
+    "Genuine EKS workload IAM/API acceptance deferred; live AWS remains paused",
+    "Inventory is not Pod/Deployment/Node health; use approved in-cluster collector"
+  ]
+}

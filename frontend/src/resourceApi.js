@@ -38,7 +38,21 @@ export const createDataSource = payload => request("/api/v1/resource-management/
 export const updateDataSource = (id, payload) => request("/api/v1/resource-management/data-sources/" + id, { method: "PATCH", body: JSON.stringify(payload) });
 export const disableDataSource = id => request("/api/v1/resource-management/data-sources/" + id, { method: "DELETE" });
 
-export const fetchCollectors = (params = {}) => request("/api/v1/resource-management/collectors" + qs(params));
+export const fetchCollectors = async (params = {}) => {
+  const ids = params.data_source_id;
+  if (!Array.isArray(ids) || ids.length <= 50) {
+    return request("/api/v1/resource-management/collectors" + qs(params));
+  }
+  // Keep each request line below common ingress limits. Use bounded sequential
+  // batches rather than a burst proportional to the complete resource list.
+  const rows = [];
+  for (let offset = 0; offset < ids.length; offset += 50) {
+    rows.push(...await request("/api/v1/resource-management/collectors" + qs({
+      ...params, data_source_id: ids.slice(offset, offset + 50),
+    })));
+  }
+  return rows;
+};
 export const createCollector = payload => request("/api/v1/resource-management/collectors", { method: "POST", body: JSON.stringify(payload) });
 export const updateCollector = (id, payload) => request("/api/v1/resource-management/collectors/" + id, { method: "PATCH", body: JSON.stringify(payload) });
 export const disableCollector = id => request("/api/v1/resource-management/collectors/" + id, { method: "DELETE" });

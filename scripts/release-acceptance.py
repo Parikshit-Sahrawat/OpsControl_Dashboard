@@ -52,8 +52,13 @@ def module(name, *args, env=None):
 
 def start_api(env, host, port, proxy='127.0.0.1'):
     log = (private/f'api-{len(processes)}.log').open('w')
-    process = subprocess.Popen([PYTHON, '-m', 'uvicorn', 'app.main:app', '--host', host, '--port', str(port),
-        '--forwarded-allow-ips', proxy, '--no-access-log'], cwd=ROOT/'backend', env=env, stdout=log, stderr=subprocess.STDOUT)
+    args = [PYTHON, '-m', 'uvicorn', 'app.main:app', '--host', host, '--port', str(port),
+        '--forwarded-allow-ips', proxy, '--no-access-log']
+    if env.get('ENVIRONMENT')=='demo' and env.get('OPSCONTROL_RELEASE_ACCEPTANCE')=='1':
+        code = ('from scripts.eks_acceptance_fixture import configure;configure();import uvicorn;'
+                f'uvicorn.run("app.main:app",host={host!r},port={port!r},forwarded_allow_ips={proxy!r},access_log=False)')
+        args = [PYTHON,'-c',code]
+    process = subprocess.Popen(args, cwd=ROOT/'backend', env=env, stdout=log, stderr=subprocess.STDOUT)
     processes.append(process); return process
 
 def free_port():
@@ -100,6 +105,8 @@ try:
     record('Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations')
     module('scripts.servicenow_acceptance_probe')
     record('Native alert/correlation and real controlled ServiceNow TLS open/retry/resolve with leased delivery fencing')
+    module('scripts.eks_acceptance_probe')
+    record('Read-only EKS SDK list/describe, tenant denial, dry-run and idempotent unmonitored inventory import')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
@@ -108,6 +115,7 @@ try:
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/eks_inventory_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
         record('Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial')

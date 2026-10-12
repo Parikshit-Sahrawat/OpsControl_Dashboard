@@ -89,3 +89,65 @@ def k8s_pod_candidates(config,client_factory=None,max_results=100):
                 'resource_type':'K8S_NODE','namespace':namespace,'node_name':node.metadata.name,
                 'uid':str(node.metadata.uid)})
     return output
+
+
+def aws_eks_candidates(config, session_factory=None, max_results=100):
+    """List/describe approved EKS control-plane inventory; never fetch its endpoint.
+
+    Workload namespace/node monitoring remains the separately deployed,
+    service-account-scoped Kubernetes collector. Discovery is not health proof.
+    """
+    if not isinstance(config,dict) or set(config)-{'region','account_id','cluster_names'}:
+        raise ProviderCheckError('EKS discovery requires approved account/region and optional cluster selectors')
+    if type(max_results) is not int or not 1<=max_results<=100:
+        raise ProviderCheckError('EKS discovery limit must be 1..100')
+    region, account = config.get('region',''), config.get('account_id','')
+    if not isinstance(region,str) or not _AWS_REGION.fullmatch(region):
+        raise ProviderCheckError('Explicit EKS region required')
+    if not isinstance(account,str) or not re.fullmatch(r'\d{12}',account):
+        raise ProviderCheckError('Expected EKS account required')
+    approved=config.get('cluster_names')
+    def valid_name(name): return isinstance(name,str) and re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,99}',name)
+    if approved is not None and (not isinstance(approved,list) or not 1<=len(approved)<=50
+            or any(not valid_name(name) for name in approved) or len(set(approved))!=len(approved)):
+        raise ProviderCheckError('Invalid explicit EKS cluster selectors')
+    client_options={}
+    if session_factory is None:
+        try:
+            import boto3
+            from botocore.config import Config
+        except ImportError as exc: raise ProviderCheckError('Install optional AWS provider SDK') from exc
+        session_factory=boto3.Session
+        client_options['config']=Config(connect_timeout=5,read_timeout=15,retries={'total_max_attempts':2})
+    session=session_factory(region_name=region)
+    if session.client('sts',**client_options).get_caller_identity().get('Account')!=account:
+        raise ProviderCheckError('EKS workload identity/account mismatch')
+    client=session.client('eks',**client_options)
+    names=[]
+    if approved is not None: names=list(approved)[:max_results]
+    else:
+        pages=client.get_paginator('list_clusters').paginate(PaginationConfig={'PageSize':50,'MaxItems':max_results})
+        for page_index, page in enumerate(pages):
+            if page_index>=max_results: raise ProviderCheckError('EKS pagination exceeds bounded request budget')
+            clusters=page.get('clusters')
+            if not isinstance(clusters,list) or any(not valid_name(name) for name in clusters):
+                raise ProviderCheckError('Invalid EKS inventory response')
+            for name in clusters:
+                if name not in names: names.append(name)
+                if len(names)>=max_results: break
+            if len(names)>=max_results: break
+    partition='aws-cn' if region.startswith('cn-') else 'aws-us-gov' if region.startswith('us-gov-') else 'aws'
+    rows=[]
+    for name in names:
+        result=client.describe_cluster(name=name)
+        cluster=result.get('cluster') if isinstance(result,dict) else None
+        expected=f'arn:{partition}:eks:{region}:{account}:cluster/{name}'
+        if not isinstance(cluster,dict) or cluster.get('name')!=name or cluster.get('arn')!=expected:
+            raise ProviderCheckError('EKS cluster identity does not match approved scope')
+        status,version=cluster.get('status'),cluster.get('version')
+        if status not in {'CREATING','ACTIVE','DELETING','FAILED','UPDATING','PENDING'} or not isinstance(version,str) or not re.fullmatch(r'\d{1,2}\.\d{1,2}',version):
+            raise ProviderCheckError('Invalid EKS control-plane facts')
+        rows.append({'external_id':f'aws:{account}:{region}:eks:{name}','resource_type':'EKS_CLUSTER',
+                     'cluster_name':name,'region':region,'account_id':account,'arn':expected,
+                     'provider_status':status,'kubernetes_version':version})
+    return rows

@@ -1,0 +1,1732 @@
+[
+  {
+    "path": "/",
+    "methods": [
+      "GET"
+    ],
+    "name": "root",
+    "tags": [],
+    "include_in_schema": true,
+    "endpoint": "app.main.root",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/audit",
+    "methods": [
+      "GET"
+    ],
+    "name": "audit_events",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.audit_events",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/login",
+    "methods": [
+      "POST"
+    ],
+    "name": "login",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.login",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/logout",
+    "methods": [
+      "POST"
+    ],
+    "name": "logout",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.logout",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/me",
+    "methods": [
+      "GET"
+    ],
+    "name": "me",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.me",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/memberships",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_memberships",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.list_memberships",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/memberships",
+    "methods": [
+      "POST"
+    ],
+    "name": "assign_membership",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.assign_membership",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/memberships/{membership_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "delete_membership",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.delete_membership",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/memberships/{membership_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "change_membership",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.change_membership",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/users",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_users",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.list_users",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/users",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_user",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.create_user",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/users/{user_id}/password",
+    "methods": [
+      "POST"
+    ],
+    "name": "reset_password",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.reset_password",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/users/{user_id}/status",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "change_user_status",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.change_user_status",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/workers",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_worker",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.create_worker",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/auth/workers/{worker_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "revoke_worker",
+    "tags": [
+      "Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.revoke_worker",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/data-sources/{source_id}/activation",
+    "methods": [
+      "GET"
+    ],
+    "name": "activation_state",
+    "tags": [
+      "Monitoring Activation"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.activation.activation_state",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/data-sources/{source_id}/activation-preview",
+    "methods": [
+      "POST"
+    ],
+    "name": "activation_preview",
+    "tags": [
+      "Monitoring Activation"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.activation.activation_preview",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/data-sources/{source_id}/activations",
+    "methods": [
+      "POST"
+    ],
+    "name": "activation_apply",
+    "tags": [
+      "Monitoring Activation"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.activation.activation_apply",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/data-sources/{source_id}/deactivation",
+    "methods": [
+      "POST"
+    ],
+    "name": "activation_disable",
+    "tags": [
+      "Monitoring Activation"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.activation.activation_disable",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/data-sources/{source_id}/diagnostics",
+    "methods": [
+      "GET"
+    ],
+    "name": "diagnostics",
+    "tags": [
+      "Monitoring Diagnostics"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring_diagnostics.diagnostics",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_executions",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.list_executions",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{execution_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_execution",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.get_execution",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{execution_id}/evidence",
+    "methods": [
+      "GET"
+    ],
+    "name": "execution_evidence",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.execution_evidence",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{history_id}/correlation",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_execution_correlation",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.get_execution_correlation",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{history_id}/correlation",
+    "methods": [
+      "POST"
+    ],
+    "name": "analyze_execution_correlation",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.analyze_execution_correlation",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{history_id}/investigation",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_investigation",
+    "tags": [
+      "Investigations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.investigations.get_investigation",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{history_id}/investigation/notes",
+    "methods": [
+      "POST"
+    ],
+    "name": "add_note",
+    "tags": [
+      "Investigations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.investigations.add_note",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/executions/{history_id}/investigation/transitions",
+    "methods": [
+      "POST"
+    ],
+    "name": "transition",
+    "tags": [
+      "Investigations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.investigations.transition",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/job-orders",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_job_order",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.create_job_order",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/etl/job-orders/{job_order_id}/executions",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_execution",
+    "tags": [
+      "ETL"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.etl.create_execution",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/infrastructure/resources",
+    "methods": [
+      "GET"
+    ],
+    "name": "resources",
+    "tags": [
+      "Infrastructure Health"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.infrastructure.resources",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/infrastructure/resources/{source_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "resource",
+    "tags": [
+      "Infrastructure Health"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.infrastructure.resource",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/infrastructure/resources/{source_id}/history",
+    "methods": [
+      "GET"
+    ],
+    "name": "history",
+    "tags": [
+      "Infrastructure Health"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.infrastructure.history",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alert-rules",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_alert_rules",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_alert_rules",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alert-rules",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_alert_rule",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_alert_rule",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alert-rules/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_alert_rule",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_alert_rule",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alert-rules/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_alert_rule",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_alert_rule",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alert-rules/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_alert_rule",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_alert_rule",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alerts",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_alert_states",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_alert_states",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alerts/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_alert_state",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_alert_state",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/alerts/{item_id}/notifications",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_alert_notifications",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_alert_notifications",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_collectors",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_collectors",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_collector",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_collector",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_collector",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_collector",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/collectors/{item_id}/runs",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_collector_runs",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_collector_runs",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/correlations/{history_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_correlation",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_correlation",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_data_sources",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_data_sources",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_data_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_data_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_data_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_data_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}/effective-configuration",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_effective_data_source_configuration",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_effective_data_source_configuration",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}/templates",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_data_source_templates",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_data_source_templates",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}/templates",
+    "methods": [
+      "POST"
+    ],
+    "name": "attach_data_source_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.attach_data_source_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}/templates/{template_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "detach_data_source_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.detach_data_source_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/data-sources/{item_id}/templates/{template_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_data_source_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_data_source_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_log_sources",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_log_sources",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_log_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_log_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_log_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_log_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_log_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_log_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_log_source",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_log_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs/{item_id}/events",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_log_events",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_log_events",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/logs/{item_id}/events",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_log_event",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_log_event",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_metrics",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_metrics",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_metric",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_metric",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_metric",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_metric",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_metric",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_metric",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_metric",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.update_metric",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/metrics/{item_id}/samples",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_metric_samples",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_metric_samples",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/organizations",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_organizations",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_organizations",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_monitoring_templates",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_monitoring_templates",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_monitoring_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.create_monitoring_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates/{item_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_monitoring_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.disable_monitoring_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates/{item_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_monitoring_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.get_monitoring_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates/{item_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "commit_monitoring_template",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.commit_monitoring_template",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/monitoring/templates/{item_id}/versions",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_monitoring_template_versions",
+    "tags": [
+      "Monitoring Configuration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.monitoring.list_monitoring_template_versions",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/collectors/{collector_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "collector_detail",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.collector_detail",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/history",
+    "methods": [
+      "GET"
+    ],
+    "name": "operational_history",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.operational_history",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/incidents",
+    "methods": [
+      "GET"
+    ],
+    "name": "incidents",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.incidents",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/incidents/{incident_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "incident_detail",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.incident_detail",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/incidents/{incident_id}/notes",
+    "methods": [
+      "POST"
+    ],
+    "name": "note",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.note",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/incidents/{incident_id}/transitions",
+    "methods": [
+      "POST"
+    ],
+    "name": "transition",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.transition",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/jobs/{job_id}/history",
+    "methods": [
+      "GET"
+    ],
+    "name": "job_history",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.job_history",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/reports",
+    "methods": [
+      "GET"
+    ],
+    "name": "reports",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.reports",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/services",
+    "methods": [
+      "GET"
+    ],
+    "name": "services",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.services",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/operations/services/{source_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "service_detail",
+    "tags": [
+      "Operational Dashboards"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.operations.service_detail",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/organizations",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_organizations",
+    "tags": [
+      "Organizations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.organizations.list_organizations",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/organizations",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_organization",
+    "tags": [
+      "Organizations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.organizations.create_organization",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/organizations/{organization_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_organization",
+    "tags": [
+      "Organizations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.organizations.disable_organization",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/organizations/{organization_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_organization",
+    "tags": [
+      "Organizations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.organizations.get_organization",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/organizations/{organization_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_organization",
+    "tags": [
+      "Organizations"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.organizations.update_organization",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/collectors/{collector_id}/assignment",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "unassign_collector",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.unassign_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/collectors/{collector_id}/assignment",
+    "methods": [
+      "PUT"
+    ],
+    "name": "assign_collector",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.assign_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/jobs",
+    "methods": [
+      "POST"
+    ],
+    "name": "enqueue_probe",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.enqueue_probe",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/jobs/{job_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_remote_job",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.get_remote_job",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/workers",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_authorized_workers",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.list_authorized_workers",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/remote-probes/workers/{worker_id}/network-policy",
+    "methods": [
+      "PUT"
+    ],
+    "name": "update_network_policy",
+    "tags": [
+      "Remote Probe Administration"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.update_network_policy",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-discovery/capabilities",
+    "methods": [
+      "GET"
+    ],
+    "name": "capabilities",
+    "tags": [
+      "Resource Discovery"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.discovery.capabilities",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-discovery/sources/{source_id}/import",
+    "methods": [
+      "POST"
+    ],
+    "name": "import_candidates",
+    "tags": [
+      "Resource Discovery"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.discovery.import_candidates",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-discovery/sources/{source_id}/scan",
+    "methods": [
+      "POST"
+    ],
+    "name": "scan_source",
+    "tags": [
+      "Resource Discovery"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.discovery.scan_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/collectors",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_scoped_collectors",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.list_scoped_collectors",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/collectors",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_scoped_collector",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.create_scoped_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/collectors/{collector_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_scoped_collector",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.disable_scoped_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/collectors/{collector_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_scoped_collector",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.update_scoped_collector",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/data-sources",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_scoped_data_sources",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.list_scoped_data_sources",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/data-sources",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_scoped_data_source",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.create_scoped_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/data-sources/{data_source_id}",
+    "methods": [
+      "DELETE"
+    ],
+    "name": "disable_scoped_data_source",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.disable_scoped_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/resource-management/data-sources/{data_source_id}",
+    "methods": [
+      "PATCH"
+    ],
+    "name": "update_scoped_data_source",
+    "tags": [
+      "Resource Management"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.resource_management.update_scoped_data_source",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/rule-catalogs",
+    "methods": [
+      "GET"
+    ],
+    "name": "list_catalogs",
+    "tags": [
+      "Independent Monitoring Rules"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.rule_catalogs.list_catalogs",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/rule-catalogs",
+    "methods": [
+      "POST"
+    ],
+    "name": "create_catalog",
+    "tags": [
+      "Independent Monitoring Rules"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.rule_catalogs.create_catalog",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/rule-catalogs/{catalog_id}",
+    "methods": [
+      "GET"
+    ],
+    "name": "get_catalog",
+    "tags": [
+      "Independent Monitoring Rules"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.rule_catalogs.get_catalog",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/rule-catalogs/{catalog_id}/versions",
+    "methods": [
+      "POST"
+    ],
+    "name": "add_version",
+    "tags": [
+      "Independent Monitoring Rules"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.rule_catalogs.add_version",
+    "identity_hint": "human-bearer/route-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/worker/claim",
+    "methods": [
+      "POST"
+    ],
+    "name": "claim_probe",
+    "tags": [
+      "Remote Probe Workers"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.claim_probe",
+    "identity_hint": "worker-bearer",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/worker/heartbeat",
+    "methods": [
+      "POST"
+    ],
+    "name": "heartbeat",
+    "tags": [
+      "Remote Probe Workers"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.heartbeat",
+    "identity_hint": "worker-bearer",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/worker/results",
+    "methods": [
+      "POST"
+    ],
+    "name": "ingest_probe",
+    "tags": [
+      "Remote Probe Workers"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.remote_protocol.ingest_probe",
+    "identity_hint": "worker-bearer",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/api/v1/worker/whoami",
+    "methods": [
+      "GET"
+    ],
+    "name": "worker_whoami",
+    "tags": [
+      "Worker Identity"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.security.http.worker_whoami",
+    "identity_hint": "worker-bearer",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/docs",
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "name": "swagger_ui_html",
+    "tags": [],
+    "include_in_schema": false,
+    "endpoint": "fastapi.applications.FastAPI.setup.<locals>.swagger_ui_html",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/docs/oauth2-redirect",
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "name": "swagger_ui_redirect",
+    "tags": [],
+    "include_in_schema": false,
+    "endpoint": "fastapi.applications.FastAPI.setup.<locals>.swagger_ui_redirect",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/health",
+    "methods": [
+      "GET"
+    ],
+    "name": "health",
+    "tags": [
+      "Health"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.health.health",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/health/db",
+    "methods": [
+      "GET"
+    ],
+    "name": "db_health",
+    "tags": [
+      "Health"
+    ],
+    "include_in_schema": true,
+    "endpoint": "app.api.health.db_health",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/openapi.json",
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "name": "openapi",
+    "tags": [],
+    "include_in_schema": false,
+    "endpoint": "fastapi.applications.FastAPI.setup.<locals>.openapi",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  },
+  {
+    "path": "/redoc",
+    "methods": [
+      "GET",
+      "HEAD"
+    ],
+    "name": "redoc_html",
+    "tags": [],
+    "include_in_schema": false,
+    "endpoint": "fastapi.applications.FastAPI.setup.<locals>.redoc_html",
+    "identity_hint": "public/ingress-policy",
+    "authorization_review": "REQUIRED"
+  }
+]

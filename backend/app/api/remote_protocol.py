@@ -12,7 +12,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -99,6 +99,7 @@ class EvidenceInput(BaseModel):
     http_status: int | None = Field(default=None,ge=100,le=599)
     response_time_ms: int | None = Field(default=None,ge=0,le=600000)
     response_size_bytes: int | None = Field(default=None,ge=0,le=65536)
+    auth_mode: Literal["NONE", "BASIC"] | None = None
 
 def worker_from_request(request: Request):
     raw=request.headers.get("authorization","").split()
@@ -125,14 +126,15 @@ def heartbeat(payload: HeartbeatInput, request: Request):
         # grant liveness to a stale credential. Client timestamps are forbidden.
         changed = db.execute(update(WorkerIdentity).where(
             WorkerIdentity.id == worker["id"], WorkerIdentity.enabled.is_(True),
-            WorkerIdentity.expires_at > observed,
+            WorkerIdentity.expires_at > func.clock_timestamp(),
             WorkerIdentity.organization_id.in_(select(Organization.id).where(Organization.active.is_(True)))
-            ).values(last_seen_at=observed)).rowcount
-        if changed != 1:
+            ).values(last_seen_at=func.greatest(WorkerIdentity.last_seen_at, func.clock_timestamp()))
+            .returning(WorkerIdentity.last_seen_at)).scalar_one_or_none()
+        if changed is None:
             raise HTTPException(401,"Invalid or expired worker identity")
         db.commit()
     return {"worker_id": str(worker["id"]), "organization_id": str(worker["organization_id"]),
-            "last_seen_at": observed.isoformat()}
+            "last_seen_at": changed.isoformat()}
 
 @admin_router.get("/workers")
 def list_authorized_workers(organization_id:uuid.UUID,db:Session=Depends(get_db)):
@@ -271,7 +273,11 @@ def claim_probe(identity=Depends(worker_from_request)):
 
 def canonical_result(payload:EvidenceInput):
     # Never accept arbitrary messages, response bodies, headers or credentials.
-    return payload.model_dump(mode="json",exclude={"lease_nonce"})
+    result = payload.model_dump(mode="json",exclude={"lease_nonce"})
+    # Preserve canonical hashes for legacy anonymous evidence/replays.
+    if payload.auth_mode in (None, "NONE"):
+        result.pop("auth_mode", None)
+    return result
 
 @worker_router.post("/results",status_code=202)
 def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
@@ -299,6 +305,11 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
         source=db.get(DataSource,collector.data_source_id) if collector else None
         if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=identity["organization_id"] or collector.remote_worker_id!=identity["id"]:
             raise HTTPException(409,"Collector no longer authorized")
+        expects_basic = (job.config_snapshot or {}).get("credential_ref") is not None
+        if expects_basic and payload.auth_mode != "BASIC":
+            raise HTTPException(422,"Assigned probe requires Basic authentication support")
+        if not expects_basic and payload.auth_mode == "BASIC":
+            raise HTTPException(422,"Authentication mode does not match assigned probe")
         if db.scalar(select(RemoteProbeEvidence).where(RemoteProbeEvidence.event_id==payload.event_id)):
             raise HTTPException(409,"Event id already used")
         evidence=RemoteProbeEvidence(event_id=payload.event_id,job_id=job.id,

@@ -2,7 +2,7 @@
 
 This is a project-specific self-audit derived from the **OWASP API Security Top 10 (2023)** risk categories, for an independent reviewer to execute. OWASP's Top 10 is a risk catalog, not a complete official certification checklist. A developer self-audit, passing CI, or owner-approved merge is not an independent production security sign-off.
 
-Source: [official OWASP risk catalog](https://owasp.org/API-Security/editions/2023/0x11-t10/) and [OWASP-maintained source](https://github.com/OWASP/API-Security/blob/master/editions/2023/en/0x11-t10.md). Category names were checked against the official source. The cloud proxy denies direct owasp.org access; the official repository was read through GitHub instead.
+Source: [official OWASP risk catalog](https://owasp.org/API-Security/editions/2023/0x11-t10/) and [OWASP-maintained source](https://github.com/OWASP/API-Security/blob/33cea37b2ffde3e2e62f6b5d79a029a22a846633/editions/2023/en/0x11-t10.md). Category names were checked against the official source. The cloud proxy denies direct owasp.org access; the official repository was read through GitHub instead.
 
 ## Review contract and evidence
 
@@ -104,7 +104,7 @@ JWT `alg=none` tests are N/A for the current opaque-token design, with the reaso
 | Case | Exact steps | Expected result and evidence |
 |---|---|---|
 | A3.1 Forbidden input properties | R2; viewer/org-admin sends `platform_admin`, `organization_id`, `data_source_id`, `remote_worker_id`, actor/status overrides to routes whose schema excludes those fields. Record schema disposition and compare persisted row/authorization before and after. | Privilege/ownership must not change. Strict schemas return 422; schemas that ignore unknown fields may return normal status but ignored fields remain unchanged. Do not count a harmless 200 as unauthorized mutation. |
-| A3.2 Secret input and legacy output | R1/R2: nested password keys and mixed-case HTTPS URL userinfo must be rejected. Seed legacy credentials in disposable DB, then read every source/config/rule endpoint. | 422 without rejected secret in error; legacy values/URL credentials redacted. Worker claim exposes an approved reference only, never the resolved username/password. |
+| A3.2 Secret input and legacy output | R1/R2: nested password keys and mixed-case HTTPS URL userinfo must be rejected. Seed legacy credentials in disposable DB, then read every source/config/rule endpoint. | 422 without rejected secret in error; legacy values/URL credentials redacted. Worker claim exposes an approved reference only, never the resolved username/password. Basic jobs reject anonymous-only result markers. |
 | A3.3 Worker result projection | R2: submit `response_body`, arbitrary headers, fake actor and unsupported result properties; submit valid bounded evidence. | 422 for forbidden result fields; accepted evidence contains only declared native facts. DB sample/event IDs match authenticated worker job and server-linked organization. |
 | A3.4 Report/evidence serialization | R3; export reports and drill down collector/ETL incidents; search outputs for fixture secret markers and unrelated-tenant IDs. | No passwords, tokens, raw transport response bodies or unrelated-tenant data in report/export/evidence. Inventory additional serializers independently. |
 
@@ -112,7 +112,7 @@ JWT `alg=none` tests are N/A for the current opaque-token design, with the reaso
 
 | Case | Exact steps | Expected result and evidence |
 |---|---|---|
-| A4.1 Bounds and body size | R2: worker claim with >8192-byte JSON is 413; missing Content-Length is 411; non-JSON content type is 415. At real ingress POST a generated 1,048,577-byte body; test chunked transfer separately. | Ingress 1 MiB limit enforces 413 including chunked bodies. App worker size checks alone are not proof of general/streaming limits. Capture upstream request count to prove rejection before expensive work. |
+| A4.1 Bounds and body size | R2 automatically tests worker claim >8192-byte JSON (413). Additionally test missing Content-Length on the direct disposable ASGI/API (411) and non-JSON type (415). An ingress may buffer/dechunk and add Content-Length; verify its streaming size policy separately. At real ingress POST a generated 1,048,577-byte body; test chunked transfer separately. | Ingress 1 MiB limit enforces 413 including chunked bodies. App worker size checks alone are not proof of general/streaming limits. Capture upstream request count to prove rejection before expensive work. |
 | A4.2 Query/config limits | Authenticated GET `/api/v1/operations/services?limit=501`, `/reports?days=91`, `/api/v1/infrastructure/resources?limit=501`; POST >100 activation rule versions; malformed UUID/NaN/infinity threshold. | 422; no 500, no work beyond validated bounds. Existing list pagination defaults are not complete-fleet aggregation. |
 | A4.3 Collector admission/pool recovery | R2 runtime probe: eight controlled collectors, capacity two, six concurrent calls for one collector; run another process and kill lock owner. | Peak active <=2, only one competing run persists, process death releases lock and a fresh run succeeds; no unbounded pending queue. |
 | A4.4 Deployed quotas and overload | On an approved staging replica set define request rate, concurrency, duration, tenant quota and p95/error budget **before testing**. Drive authenticated report/login/job-creation workloads, including valid-password CPU cost and long-running providers. Record per-tenant queued jobs, DB connections, RSS/CPU and other tenant latency. | Meets recorded budgets, bounded queue/cost, fair recovery and no unauthorized writes. Currently needs target-scale evidence; absence of general rate/quota enforcement must be a finding, not PASS. |
@@ -172,17 +172,7 @@ Use the same method/path/body with each role, including PUT/PATCH/DELETE and nes
 Offline route inventory (does not connect to DB or expose credentials):
 
 ```bash
-(cd backend && ENVIRONMENT=development .venv/bin/python - <<'PY'
-import json
-from fastapi.routing import APIRoute
-from app.main import app
-rows = [{'path':r.path, 'methods':sorted(r.methods), 'name':r.name, 'tags':r.tags,
-         'authorization_review':'REQUIRED'} for r in app.routes if isinstance(r, APIRoute)]
-with open('/tmp/opscontrol-api-inventory.json','w') as f:
-    json.dump(sorted(rows,key=lambda r:(r['path'],r['methods'])),f,indent=2)
-print('Inventory routes:',len(rows))
-PY
-)
+(cd backend && ENVIRONMENT=development .venv/bin/python -m scripts.export_api_inventory /tmp/opscontrol-api-inventory.json)
 ```
 
 ## API10:2023 — Unsafe Consumption of APIs
@@ -205,3 +195,9 @@ PY
 - [ ] Operator UAT completed; independent reviewer signs findings/remediation evidence.
 
 Open controls remain release findings even when the local/CI suite passes. This checklist supplies repeatable verification steps, not a numerical production-success guarantee.
+
+The [checked-in development route inventory](api-inventory.json) includes lazy/nested FastAPI routers and documentation/health routes. Identity hints follow middleware routing, not a complete permission proof; every row retains authorization_review=REQUIRED. Production docs routes are absent under ENVIRONMENT=production.
+
+## Executed controlled status (2026-10-12)
+
+The final branch has 24 passing focused unit/security/SDK cases, complete 124-route inventory, real browser CRUD/tenant checks, Basic TLS/heartbeat/native evidence, ServiceNow-shaped TLS/fenced delivery, EKS SDK/API/import/browser checks, populated restore/retention/restricted-role/TLS checks, full NOC/ETL/theme regression and clean Compose/restart/old read compatibility. [Ordered evidence ledger](../OPERATIONAL_RELEASE_SEQUENCE.md). These cover parts of all ten risk categories; remaining deployment/quota/real-provider/human-review cases above are UNRUN or pending acceptance, not full OWASP PASS.

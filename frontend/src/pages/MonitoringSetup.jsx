@@ -146,7 +146,7 @@ export default function MonitoringSetup({organizationId,organizationName,user}) 
       {infrastructure&&<p>Infrastructure collection runs on a deployed local worker using its workload identity. A platform administrator must authorize activation.</p>}
       <div className="monitoring-setup-grid">
         <label>Data Source<select value={sourceId} onChange={e=>{setSourceId(e.target.value);setPreview(null);setActivation(null);}}>
-          <option value="">Select resource</option>{sources.map(s=><option key={s.id} value={s.id}>{s.name} · {s.source_type}</option>)}
+          <option value="">Select resource</option>{sources.map(s=><option key={s.id} value={s.id} disabled={s.source_type === "AWS_EKS"}>{s.name} · {s.source_type}{s.source_type === "AWS_EKS" ? " (discovery only)" : ""}</option>)}
         </select></label>
         {!infrastructure&&<label>Approved remote worker<select value={workerId} onChange={e=>{setWorkerId(e.target.value);setPreview(null);}}>
           <option value="">Select worker</option>{workers.map(w=><option key={w.id} value={w.id}>{w.name} · {w.allowed_hosts.join(", ")||"no hosts"} · {w.last_seen_at ? "heartbeat " + new Date(w.last_seen_at).toISOString() : "no heartbeat"}</option>)}

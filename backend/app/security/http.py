@@ -384,4 +384,5 @@ def worker_whoami(request: Request):
             raise HTTPException(401, "Invalid or expired worker identity")
         return {"worker_id": str(row.id), "organization_id": str(row.organization_id),
                 "name": row.name, "capabilities": ["https_probe", "https_basic_auth", "heartbeat"],
+                "capability_scope": "control_plane_protocol",
                 "last_seen_at": row.last_seen_at.isoformat() if row.last_seen_at else None}
