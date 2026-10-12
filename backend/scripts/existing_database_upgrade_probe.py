@@ -5,6 +5,8 @@ The script self-manages revision 0016 -> HEAD and verifies an organization
 and Data Source existed beforehand and survive unchanged.
 """
 import subprocess
+import sys
+from app.core.config import settings
 import uuid
 from alembic.config import Config
 from alembic.script import ScriptDirectory
@@ -12,9 +14,15 @@ from sqlalchemy import text
 from app.db.session import engine
 
 def alembic(*args):
-    subprocess.run(["alembic",*args],check=True)
+    subprocess.run([sys.executable,"-m","alembic",*args],check=True)
 
 def main():
+    if settings.environment != "test" or engine.url.host not in {"localhost", "127.0.0.1"}:
+        raise SystemExit("Disposable loopback test database required; no production downgrade")
+    with engine.connect() as connection:
+        current = connection.scalar(text("SELECT version_num FROM alembic_version"))
+        if current != "0024_notification_leases":
+            raise SystemExit("Run this preservation gate at disposable revision 0024 before the protected 0025 upgrade; do not downgrade populated access configuration")
     alembic("downgrade","0016_remote_collector_assignment")
     org=uuid.uuid4()
     source=uuid.uuid4()

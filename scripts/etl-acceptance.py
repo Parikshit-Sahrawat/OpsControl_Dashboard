@@ -49,8 +49,17 @@ try:
         if subprocess.run(['docker','exec',container,'pg_isready','-U','opscontrol'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:break
         time.sleep(.3)
     else:raise RuntimeError('Disposable PostgreSQL not ready')
-    run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
+    run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
     run([PYTHON,'-m','alembic','downgrade','0019_infrastructure_evidence'],ROOT/'backend')
+    run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
+    # Exercise older reversible migrations before applying the additive RBAC head.
+    if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
+        run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
+        run([PYTHON,'-m','scripts.operations_migration_probe','seed'],ROOT/'backend')
+        for iteration in range(2):
+            run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
+            run([PYTHON,'-m','scripts.operations_migration_probe','verify'],ROOT/'backend')
+            if iteration==0:run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
     run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
     linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
     run(['docker','run','-d','--name',fixture,'-p',host+':443:443','-e','ETL_FIXTURE_BIND=0.0.0.0',
@@ -62,13 +71,6 @@ try:
     env['TEST_API_BASE']='http://127.0.0.1:18800'
     run([PYTHON,'-m','scripts.auth_tenant_probe'],ROOT/'backend')
     run([PYTHON,'-c',"from scripts import security_release_probe as p;p.URL='http://127.0.0.1:18800';p.main()"],ROOT/'backend')
-    if env.get('OPSCONTROL_SPRINT4_ACCEPTANCE')=='1':
-        run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
-        run([PYTHON,'-m','scripts.operations_migration_probe','seed'],ROOT/'backend')
-        for iteration in range(2):
-            run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
-            run([PYTHON,'-m','scripts.operations_migration_probe','verify'],ROOT/'backend')
-            if iteration==0:run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
     run([PYTHON,'-m','scripts.bootstrap_public_demo'],ROOT/'backend')
     probe('setup');operations('setup');browser('configured');noc_browser('configured')
     for phase in ('no-run','running','long-running','sla-breach','failed','poll-failed','recovered'):

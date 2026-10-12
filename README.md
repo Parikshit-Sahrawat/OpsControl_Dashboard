@@ -107,3 +107,13 @@ The current baseline does not include unrestricted OTLP ingestion, a generic pub
 Use [GitHub Issues](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues) for reproducible bugs and feature requests. Include the version, affected workflow, and sanitized evidence. Report suspected vulnerabilities through [GitHub's private security reporting channel](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/security) where enabled; keep credentials and sensitive customer data out of public issues.
 
 For changes, follow the existing architecture and conventions, use a feature branch, run the checks relevant to the change, and describe the resulting behavior and validation in the pull request. Historical design and development notes are preserved in the [README archive](docs/archive/product-readme-history.md).
+
+## Customer ownership and internal access
+
+
+Resource Management manages external **Customers** and their monitored resources. Access Management manages the operating provider’s independent **Employees**, **Departments**, **Roles & Permissions**, **Customer Access** and **Access Audit**. Department membership never changes resource ownership, and customer selection never grants permissions. Access administrators do not automatically receive operational access.
+
+The global customer selector applies to operational screens only; Resource Management and Access Management use independent filters. Migration `0025_provider_department_rbac` preserves existing customer/resource UUIDs, user accounts, password hashes and sessions while introducing explicit, backend-enforced role/customer grants. See [authentication and administration](docs/AUTHENTICATION.md), the [architecture and safe rollback contract](docs/architecture/CUSTOMER_DEPARTMENT_RBAC.md), and [test results, browser captures and exact Docker verification](docs/architecture/ACCESS_IMPLEMENTATION_REPORT.md).
+
+The [full PostgreSQL schema/model reconciliation](docs/architecture/SCHEMA_MODEL_RECONCILIATION.md) eliminates all 32 previously reported drift groups without database changes. Automated acceptance requires a clean `alembic check`; single-provider operation is supported, with independent security review and UAT performed locally by the owner.
+

@@ -18,11 +18,11 @@ class ActivationRequest(BaseModel):
     rule_version_ids:list[uuid.UUID]=Field(default_factory=list,max_length=100)
     include_templates:bool=True
 
-def can_manage(db,source_id):
+def can_manage(db,source_id,permission="collectors.manage"):
     source=db.get(DataSource,source_id)
     if not source:raise HTTPException(404,"Data source not found")
     principal=current_principal.get()
-    if not principal or not principal.can_edit(source.organization_id):
+    if not principal or not principal.allows(permission,source.organization_id):
         raise HTTPException(403,"Organization administrator required")
     return source
 
@@ -38,7 +38,7 @@ def activation_apply(source_id:uuid.UUID,payload:ActivationRequest,db:Session=De
 
 @router.get("/{source_id}/activation")
 def activation_state(source_id:uuid.UUID,db:Session=Depends(get_db)):
-    can_manage(db,source_id)
+    can_manage(db,source_id,"collectors.view")
     record=db.scalar(select(MonitoringActivation).where(MonitoringActivation.data_source_id==source_id))
     if not record:return {"status":"NOT_CONFIGURED","version":0,"collector_id":None}
     return {"status":record.status,"version":record.version,

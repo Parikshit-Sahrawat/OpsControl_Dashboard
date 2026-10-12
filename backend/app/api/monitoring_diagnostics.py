@@ -17,7 +17,7 @@ def diagnostics(source_id:uuid.UUID,db:Session=Depends(get_db)):
     principal=current_principal.get()
     source=db.get(DataSource,source_id)
     if source is None: raise HTTPException(404,"Data source unavailable")
-    if not principal or not (principal.platform_admin or source.organization_id in principal.roles):
+    if not principal or not principal.allows("collectors.view",source.organization_id):
         raise HTTPException(404,"Data source unavailable")
     activation=db.scalar(select(MonitoringActivation).where(
         MonitoringActivation.data_source_id==source.id))

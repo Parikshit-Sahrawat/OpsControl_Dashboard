@@ -8,7 +8,7 @@ from sqlalchemy import select, func, case
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import (DataSource, Collector, CollectorRun, MetricDefinition, AlertState,
-    JobOrder, JobOrderHistory, OperationalIncident, IncidentActivity)
+    JobOrder, JobOrderHistory, OperationalIncident, IncidentActivity, Organization)
 from app.security.http import actor
 from app.services.incidents import activity
 
@@ -164,15 +164,15 @@ class Transition(BaseModel):
 class Note(BaseModel):
     text: str = Field(min_length=1, max_length=2000)
 
-def operator_for(row):
+def operator_for(row,permission="incidents.manage"):
     principal = actor()
-    if not principal.platform_admin and principal.roles.get(row.organization_id) not in {"operator", "org_admin"}:
+    if not principal.allows(permission,row.organization_id):
         raise HTTPException(403, "Organization operator required")
     return principal
 
 @router.post("/incidents/{incident_id}/transitions")
 def transition(incident_id: UUID, payload: Transition, db: Session = Depends(get_db)):
-    row = load_incident(db, incident_id, True); principal = operator_for(row)
+    row = load_incident(db, incident_id, True); principal = operator_for(row,"incidents.acknowledge" if payload.new_status=="ACKNOWLEDGED" else "incidents.manage")
     allowed = {"OPEN": {"ACKNOWLEDGED"}, "ACKNOWLEDGED": {"INVESTIGATING", "RESOLVED"}, "INVESTIGATING": {"RESOLVED"}, "RESOLVED": set()}
     if payload.new_status not in allowed[row.status]: raise HTTPException(409, "Invalid incident transition")
     if payload.new_status == "RESOLVED" and row.condition_status != "RECOVERED":
@@ -258,3 +258,13 @@ def job_history(job_id: UUID, days: int = Query(7, ge=1, le=90), limit: int = Qu
         JobOrderHistory.detected_at >= datetime.now(timezone.utc)-timedelta(days=days))
         .order_by(JobOrderHistory.detected_at.desc()).limit(limit)).all()
     return [_item(row, db).model_dump(mode="json") for row in rows]
+
+@router.get("/overview")
+def overview_counts(organization_id:list[UUID]=Query(default=[]),db:Session=Depends(get_db)):
+    # Count-only overview authority does not grant resource/detail APIs.
+    customers=select(func.count()).select_from(Organization)
+    if organization_id:customers=customers.where(Organization.id.in_(organization_id))
+    resources=scoped(select(func.count()).select_from(DataSource),DataSource,organization_id)
+    jobs=scoped(select(func.count()).select_from(JobOrder),JobOrder,organization_id)
+    incidents=scoped(select(func.count()).select_from(OperationalIncident).where(OperationalIncident.status!="RESOLVED"),OperationalIncident,organization_id)
+    return {"customers":db.scalar(customers),"resources":db.scalar(resources),"etl_jobs":db.scalar(jobs),"active_incidents":db.scalar(incidents)}

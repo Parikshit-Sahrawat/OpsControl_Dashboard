@@ -1,0 +1,47 @@
+name: Customer ownership and internal access acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  access-rbac:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare locked frontend, backend and isolated browser tooling
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/access-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/access-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Backend and frontend automated tests and build
+        run: |
+          (cd backend && .venv/bin/python -m unittest discover -s tests -v)
+          npm test --prefix frontend
+          npm run build --prefix frontend
+      - name: Populated migration, provider/department/customer security and actual browser journeys
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/access-tools/node_modules/playwright/index.mjs
+          ACCESS_EVIDENCE_DIR: ${{ runner.temp }}/access-evidence
+          ACCESS_BROWSER_ACCEPTANCE: '1'
+        run: backend/.venv/bin/python scripts/access-acceptance.py
+      - name: Clean owned Docker demo build, idempotency and restart
+        env:
+          ACCESS_DOCKER_EVIDENCE_DIR: ${{ runner.temp }}/access-evidence/docker
+        run: backend/.venv/bin/python scripts/access-docker-demo.py
+      - name: Upload actual browser captures and redacted migration/security evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-department-access-evidence
+          path: ${{ runner.temp }}/access-evidence
+          if-no-files-found: warn

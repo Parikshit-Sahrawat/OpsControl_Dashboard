@@ -15,6 +15,7 @@ from app.models import (DataSource, Collector, MetricDefinition, MetricSample, L
     JobOrder, JobOrderHistory, CollectorRun, CorrelationRecord, CorrelationEvidence)
 from app.security.models import SecurityAuditEvent, User, AccessSession
 from app.security.scope import Principal, configure_request_session, current_principal
+from app.security.permission_catalog import PROVIDER_ID
 from app.services.retention import prune_batch
 from app.worker.collector_runtime import execute_collector, ADAPTERS, CollectionResult
 from scripts.database_integrity import fingerprint
@@ -94,7 +95,7 @@ def last_admin_concurrency():
         db.add(second); db.flush(); first_id, second_id = admin.id, second.id; db.commit()
     barrier = Barrier(2)
     def disable(uid):
-        context = current_principal.set(Principal(first_id, 'test-admin', True, {}))
+        context = current_principal.set(Principal(first_id, 'test-admin', True, {}, service_provider_id=PROVIDER_ID))
         try:
             barrier.wait(timeout=5)
             try:

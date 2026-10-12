@@ -4,6 +4,10 @@ Last reconciled 2026-10-11. Main baseline `fbe83badb47ee61b81fe60f23dde48c37b1ee
 
 Implementation, controlled evidence, remote CI, human review, merge and production acceptance are separate states. Owner-approved development merges do not certify independent security review. AWS Toolkit/live AWS setup remains paused.
 
+## P0 customer / internal access correction
+
+Dedicated unmerged feature branch `feature/customer-department-rbac` implements provider-owned departments, employee identity metadata, roles/permissions and paired customer grants with customer resources unchanged. Local PostgreSQL, browser, Docker, worker/tenant, ETL/incident and populated restore regressions are documented in the [implementation report](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Remote CI and independent review are separate PR gates. All 32 pre-existing non-access drift groups are [resolved without schema/data changes](architecture/SCHEMA_MODEL_RECONCILIATION.md); the full Alembic comparison passes and is enforced in CI. The owner accepts single-provider runtime and is conducting independent security review/UAT locally. This correction needs no production deployment or production data modification. Live AWS setup remains paused.
+
 ## Current development stage
 
 | Workstream | Verified state | Next gate |

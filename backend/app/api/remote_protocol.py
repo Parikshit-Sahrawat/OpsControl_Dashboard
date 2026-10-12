@@ -139,7 +139,7 @@ def heartbeat(payload: HeartbeatInput, request: Request):
 @admin_router.get("/workers")
 def list_authorized_workers(organization_id:uuid.UUID,db:Session=Depends(get_db)):
     principal=current_principal.get()
-    if not principal or not principal.can_edit(organization_id):
+    if not principal or not principal.allows("collectors.manage",organization_id):
         raise HTTPException(403,"Organization administrator required")
     records=db.scalars(select(WorkerIdentity).where(
         WorkerIdentity.organization_id==organization_id,

@@ -26,10 +26,11 @@ def fingerprint(connection) -> dict:
         raise AssertionError('Unvalidated database constraint')
     # pg_dump/restore reparses CHECK expressions. PostgreSQL can move a
     # varchar[] -> text[] coercion to each array element without changing its
-    # meaning. Recognize ONLY these three exact approved simple text checks;
+    # meaning. Recognize ONLY these exact approved simple text checks;
     # all other definitions, operators, values and constraint metadata must
     # still compare byte-for-byte. Runtime probes also test rejected values.
     approved = {
+        ('user_role_assignments', 'ck_employee_role_effect'): "CHECKeffect=ANYARRAY['ALLOW','DENY']",
         ('monitoring_rule_catalogs', 'ck_monitoring_catalog_kind'): "CHECKkind=ANYARRAY['METRIC','LOG','ALERT']",
         ('operational_incidents', 'ck_incident_condition'): "CHECKcondition_status=ANYARRAY['ACTIVE','RECOVERED']",
         ('operational_incidents', 'ck_incident_status'): "CHECKstatus=ANYARRAY['OPEN','ACKNOWLEDGED','INVESTIGATING','RESOLVED']",

@@ -19,12 +19,35 @@ class Principal:
     platform_admin: bool
     roles: dict[UUID, str]
 
+    service_provider_id: UUID | None = None
+    permissions: frozenset[str] = frozenset()
+    customer_permissions: dict[UUID, frozenset[str]] | None = None
+    provenance: tuple = ()
+    role_ids: frozenset[UUID] = frozenset()
+    denied_customers: frozenset[UUID] = frozenset()
+    denied_permissions: frozenset[str] = frozenset()
+    authorization_revision: str = "legacy"
+
+    def allows(self, permission: str, organization_id: UUID | None = None) -> bool:
+        if self.platform_admin: return True
+        if self.customer_permissions is None:
+            from app.security.permission_catalog import READ, LEGACY_ADMIN, LEGACY_OPERATOR
+            mapping={"viewer":READ,"operator":LEGACY_OPERATOR,"org_admin":LEGACY_ADMIN}
+            if organization_id is not None: return permission in mapping.get(self.roles.get(organization_id), ())
+            return any(permission in mapping.get(role, ()) for role in self.roles.values())
+        if organization_id is not None: return permission in self.customer_permissions.get(organization_id, ())
+        return permission in self.permissions
+
     @property
     def organizations(self) -> tuple[UUID, ...]:
-        return tuple(self.roles)
+        from app.security.access_control import request_permissions
+        required=request_permissions.get()
+        return tuple(org for org in self.roles if not required or any(self.allows(key,org) for key in required))
 
     def can_edit(self, organization_id: UUID) -> bool:
-        return self.platform_admin or self.roles.get(organization_id) == "org_admin"
+        from app.security.access_control import request_permissions
+        required=request_permissions.get()
+        return any(self.allows(key,organization_id) for key in required) if required else self.allows("resources.update",organization_id)
 
 current_principal: ContextVar[Principal | None] = ContextVar("opscontrol_principal", default=None)
 
@@ -157,9 +180,10 @@ def enforce_writes(db, flush_context, instances):
                 or (state.attrs.enabled.history.has_changes() and obj.enabled)):
                 raise HTTPException(403,'Platform administrator must authorize local provider collection')
         org_id = _resolve_org(db, obj)
-        can_investigate = (model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote", "CorrelationRecord", "CorrelationEvidence", "OperationalIncident", "IncidentActivity"}
-                           and principal.roles.get(org_id) in {"operator", "org_admin"})
-        if not (principal.can_edit(org_id) or can_investigate):
+        from app.security.access_control import request_permissions
+        can_investigate = (not request_permissions.get() and model.__name__ in {"Investigation", "InvestigationTransition", "OperatorNote", "CorrelationRecord", "CorrelationEvidence", "OperationalIncident", "IncidentActivity"}
+                           and (principal.allows("etl.investigate",org_id) or principal.allows("incidents.manage",org_id) or principal.allows("incidents.acknowledge",org_id)))
+        if not (principal.can_edit(org_id) or can_investigate or (model.__name__ == "Organization" and obj in db.new and principal.allows("customers.create"))):
             raise HTTPException(403, "Organization permission required")
         state = inspect(obj)
         if state.persistent:

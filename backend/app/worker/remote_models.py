@@ -1,8 +1,8 @@
 """Durable leased monitoring jobs; no untrusted code or remote shell."""
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint, Index
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, UniqueConstraint, Index
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 
@@ -15,7 +15,7 @@ class RemoteProbeJob(Base):
     collector_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("collectors.id",ondelete="CASCADE"),nullable=False)
     assigned_worker_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("worker_identities.id",ondelete="CASCADE"),nullable=False)
     planned_for:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False)
-    config_snapshot:Mapped[dict]=mapped_column(JSON,nullable=False)
+    config_snapshot:Mapped[dict]=mapped_column(JSONB,nullable=False)
     state:Mapped[str]=mapped_column(String(24),nullable=False,default="QUEUED")
     attempts:Mapped[int]=mapped_column(Integer,nullable=False,default=0)
     lease_nonce_hash:Mapped[str|None]=mapped_column(String(64))
@@ -25,7 +25,8 @@ class RemoteProbeJob(Base):
     completed_at:Mapped[datetime|None]=mapped_column(DateTime(timezone=True))
     __table_args__=(UniqueConstraint("collector_id","planned_for",name="uq_remote_collector_planned"),
                      CheckConstraint("attempts >= 0 AND attempts <= 3",name="ck_remote_job_attempts"),
-                     Index("ix_remote_job_worker_state","assigned_worker_id","state","planned_for"))
+                     Index("ix_remote_job_worker_state","assigned_worker_id","state","planned_for"),
+                     Index("ix_remote_job_org_id", "organization_id"))
 
 class RemoteProbeEvidence(Base):
     __tablename__="remote_probe_evidence"
@@ -35,7 +36,7 @@ class RemoteProbeEvidence(Base):
     organization_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("organizations.id",ondelete="CASCADE"),nullable=False)
     worker_id:Mapped[uuid.UUID]=mapped_column(ForeignKey("worker_identities.id"),nullable=False)
     observed_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False)
-    result:Mapped[dict]=mapped_column(JSON,nullable=False)
+    result:Mapped[dict]=mapped_column(JSONB,nullable=False)
     payload_sha256:Mapped[str]=mapped_column(String(64),nullable=False)
     received_at:Mapped[datetime]=mapped_column(DateTime(timezone=True),nullable=False,default=now_utc)
     __table_args__=(Index("ix_remote_evidence_org_observed","organization_id","observed_at"),)

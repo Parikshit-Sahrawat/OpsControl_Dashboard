@@ -1,3 +1,4 @@
+import { hasPermission } from "../permissions";
 import { useCallback, useEffect, useState } from "react";
 import { authHeaders } from "../auth";
 
@@ -44,8 +45,8 @@ export default function MonitoringSetup({organizationId,organizationName,user}) 
   const [enrollCIDR,setEnrollCIDR]=useState("10.20.0.0/16"),[oneTimeToken,setOneTimeToken]=useState("");
   const sourceType=sources.find(source=>source.id===sourceId)?.source_type;
   const infrastructure=['AWS_EC2','EC2','KUBERNETES','K8S','LINUX_HOST','WINDOWS_HOST'].includes(sourceType);
-  const canActivate=infrastructure?Boolean(user?.platform_admin):Boolean(user?.platform_admin||user?.memberships?.some(m=>m.organization_id===organizationId&&m.role==='org_admin'));
-  const canWrite=Boolean(user?.platform_admin||user?.memberships?.some(m=>m.organization_id===organizationId&&m.role==="org_admin"));
+  const canActivate=infrastructure?Boolean(user?.platform_admin):hasPermission(user,"collectors.manage",organizationId);
+  const canWrite=hasPermission(user,"collectors.manage",organizationId);
 
   const reload=useCallback(async()=>{
     if(!organizationId){setSources([]);setCatalogs([]);setWorkers([]);return;}

@@ -45,7 +45,7 @@ class NewVersion(BaseModel):
 
 def require_org_write(org_id):
     principal=current_principal.get()
-    if not principal or not principal.can_edit(org_id):
+    if not principal or not principal.allows("templates.manage",org_id):
         raise HTTPException(403,"Organization administrator required")
 
 def to_out(catalog,versions):
