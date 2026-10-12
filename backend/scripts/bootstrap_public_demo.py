@@ -6,6 +6,8 @@ from sqlalchemy import select
 from app.db.session import SessionLocal
 from app.models import Organization,VM,JobOrder,JobOrderHistory,ExecutionStatus,ExecutionType,DataSource,Collector
 from app.security.models import User
+from app.security.access_models import Department
+from app.security.permission_catalog import PROVIDER_ID
 from app.security.passwords import hash_password
 
 def main():
@@ -21,6 +23,11 @@ def main():
         username="demo-admin"
         if db.scalar(select(User).where(User.username==username)) is None:
             db.add(User(username=username,password_hash=hash_password(password),platform_admin=True))
+        # Internal departments have their own UUIDs; demo customers never double
+        # as departments. Seeding assigns no employee/customer privileges.
+        for code, name in (("NOC", "NOC"), ("SYSTEMS", "Systems"), ("APP-SUPPORT", "Application Support")):
+            if db.scalar(select(Department.id).where(Department.service_provider_id == PROVIDER_ID, Department.code == code)) is None:
+                db.add(Department(service_provider_id=PROVIDER_ID, code=code, name=name, description="Fictional internal demo department"))
         org=db.scalar(select(Organization).where(Organization.code=="DEMO-LAB"))
         if org is None:
             org=Organization(name="Fictional Observatory Demo",code="DEMO-LAB")

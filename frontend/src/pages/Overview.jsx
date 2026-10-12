@@ -1,3 +1,4 @@
+import { hasPermission } from "../permissions";
 import { useEffect,useState } from "react";
 import { authHeaders } from "../auth";
 import KpiCard from "../components/KpiCard";
@@ -15,9 +16,10 @@ function MetricIcon({ kind }) {
   return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[kind]}</svg>;
 }
 
-export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, organizationIds=[] }) {
-  const services=useOperationalFeed("/services?"+scopeQuery(organizationIds));
-  const incidents=useOperationalFeed("/incidents?"+scopeQuery(organizationIds));
+export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, organizationIds=[], user }) {
+  const summary=useOperationalFeed("/overview?"+scopeQuery(organizationIds));
+  const services=useOperationalFeed(hasPermission(user,"resources.view")?"/services?"+scopeQuery(organizationIds):null);
+  const incidents=useOperationalFeed(hasPermission(user,"incidents.view")?"/incidents?"+scopeQuery(organizationIds):null);
   const activeIncidents=incidents.data?Object.entries(incidents.data.summary).filter(([state])=>state!=="RESOLVED").reduce((sum,[,value])=>sum+value,0):null;
   const [infrastructure,setInfrastructure]=useState(null);
   useEffect(()=>{
@@ -30,17 +32,18 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
         const value=await response.json();if(active)setInfrastructure(value);
       }catch{if(active)setInfrastructure(null);}
     };
+    if(!hasPermission(user,"resources.view"))return;
     setInfrastructure(null);refresh();const timer=setInterval(refresh,5000);
     return()=>{active=false;clearInterval(timer);};
-  },[organizationIds]);
+  },[organizationIds,user?.authorization_revision]);
   const failed = jobs.filter(job => job.status === "FAILED").length;
   const running = jobs.filter(job => job.status === "RUNNING").length;
   const atRisk = jobs.filter(job => job.status === "LONG_RUNNING").length;
   const kpis = [
-    { label: "ETL Jobs", value: String(jobs.length), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
+    { label: "ETL Jobs", value: String(hasPermission(user,"etl.view")?jobs.length:summary.data?.etl_jobs??"—"), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
     { label: "VM Health", value: infrastructure?String(infrastructure.total):"—", tone: infrastructure?.summary.CRITICAL?"critical-text":"", detail: infrastructure?`${infrastructure.summary.HEALTHY} healthy · ${infrastructure.summary.CRITICAL+infrastructure.summary.WARNING} need attention · ${infrastructure.summary.UNKNOWN} unknown`:"Infrastructure evidence unavailable", target: "VM Health" },
     { label: "APIs & Services", value: services.data?String(services.data.total):"—", tone: services.data?.summary.CRITICAL?"critical-text":"", detail: services.data?`${services.data.summary.HEALTHY} healthy · ${services.data.summary.CRITICAL} critical · ${services.data.summary.UNKNOWN} unknown`:"Service evidence unavailable", target: "APIs" },
-    { label: "Active Incidents", value: activeIncidents!=null?String(activeIncidents):"—", tone: activeIncidents?"critical-text":"", detail: incidents.data?`${incidents.data.summary.INVESTIGATING} investigating · ${incidents.data.summary.RESOLVED} closed`:"Incident evidence unavailable", target: "Incidents" },
+    { label: "Active Incidents", value: activeIncidents!=null?String(activeIncidents):String(summary.data?.active_incidents??"—"), tone: activeIncidents?"critical-text":"", detail: incidents.data?`${incidents.data.summary.INVESTIGATING} investigating · ${incidents.data.summary.RESOLVED} closed`:"Incident evidence unavailable", target: "Incidents" },
   ];
 
   return (
@@ -52,7 +55,7 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
 
       <div className="kpi-grid overview-kpi-grid">
         {kpis.map(kpi => (
-          <button key={kpi.label} className={`kpi-link${kpi.target === "Incidents" ? " overview-kpi-featured" : ""}${kpi.target === "ETL Jobs" ? " overview-kpi-wide" : ""}`} onClick={() => onNavigate?.(kpi.target)} aria-label={`Open ${kpi.label}`}>
+          <button key={kpi.label} className={`kpi-link${kpi.target === "Incidents" ? " overview-kpi-featured" : ""}${kpi.target === "ETL Jobs" ? " overview-kpi-wide" : ""}`} disabled={!hasPermission(user,kpi.target==="ETL Jobs"?"etl.view":kpi.target==="Incidents"?"incidents.view":"resources.view")} onClick={() => onNavigate?.(kpi.target)} aria-label={`Open ${kpi.label}`}>
             <KpiCard label={kpi.label} value={kpi.value} tone={kpi.tone} detail={kpi.detail} icon={<MetricIcon kind={kpi.target} />} featured={kpi.target === "Incidents"} />
           </button>
         ))}
@@ -62,7 +65,7 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
         <section className="card overview-jobs">
           <div className="section-heading-row">
             <div><span className="overview-kicker">Execution activity</span><h2>Recent ETL Jobs</h2></div>
-            <button className="text-link" onClick={() => onNavigate?.("ETL Jobs")}>View all</button>
+            <button className="text-link" disabled={!hasPermission(user,"etl.view")} onClick={() => onNavigate?.("ETL Jobs")}>View all</button>
           </div>
           <div className="table-wrap">
           <table>
@@ -84,7 +87,7 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
           <section className="card overview-issues">
             <div className="section-heading-row">
               <div><span className="overview-kicker">Infrastructure signals</span><h2>Recent VM Issues</h2></div>
-              <button className="text-link" onClick={() => onNavigate?.("VM Health")}>View all</button>
+              <button className="text-link" disabled={!hasPermission(user,"resources.view")} onClick={() => onNavigate?.("VM Health")}>View all</button>
             </div>
             {infrastructure?.resources.filter(r=>['WARNING','CRITICAL','UNKNOWN'].includes(r.health)).slice(0,5).map(r=><div className="overview-signal-row" key={r.id}><span className="overview-signal-icon" aria-hidden="true"><MetricIcon kind="VM Health" /></span><div className="overview-signal-copy"><b>{r.name}</b><small><span className="data-mono">{r.open_alert_count}</span> open alerts</small></div><StatusBadge status={r.health} /></div>)}
             {infrastructure&&!infrastructure.resources.some(r=>['WARNING','CRITICAL','UNKNOWN'].includes(r.health))&&<div className="empty-inline overview-empty">No current infrastructure issues in the selected scope.</div>}

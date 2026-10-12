@@ -70,13 +70,8 @@ def identify(db, token: str):
     user = db.get(User, row.user_id)
     if user is None or not user.active:
         return None
-    from app.models import Organization
-    memberships = db.execute(
-        select(OrganizationMembership.organization_id, OrganizationMembership.role)
-        .join(Organization, Organization.id == OrganizationMembership.organization_id)
-        .where(OrganizationMembership.user_id == user.id, Organization.active.is_(True))
-    ).all()
-    return Principal(user.id, user.username, user.platform_admin, dict(memberships))
+    from app.security.access_control import resolve_access
+    return resolve_access(db,user)
 
 def actor():
     principal = current_principal.get()
@@ -111,7 +106,7 @@ def _identify_token(token: str):
 
 def _audit_action(principal, status: int, path: str):
     with SessionLocal() as db:
-        log_event(db, event_type="CONFIG_OR_ACTION", outcome="SUCCESS" if status < 400 else "FAILURE",
+        log_event(db, event_type="CONFIG_OR_ACTION", outcome="SUCCESS" if status < 400 else "DENIED" if status == 403 else "FAILURE",
                   actor_id=principal.user_id, target_type="route", target_id=path)
         db.commit()
 
@@ -137,27 +132,20 @@ class IdentityMiddleware(BaseHTTPMiddleware):
         principal = await run_in_threadpool(_identify_token, parts[1])
         if principal is None:
             return await run_in_threadpool(_audit_denial, None, 401, path)
-        if request.method not in {"GET", "HEAD", "OPTIONS"}:
-            if path == "/api/v1/auth/logout":
-                pass
-            elif path.startswith("/api/v1/auth/") and not principal.platform_admin:
-                return await run_in_threadpool(_audit_denial, principal, 403, path)
-            elif path.startswith("/api/v1/organizations") and request.method == "POST" and not principal.platform_admin:
-                return await run_in_threadpool(_audit_denial, principal, 403, path)
-            elif path.startswith("/api/v1/monitoring/templates") and not principal.platform_admin:
-                return await run_in_threadpool(_audit_denial, principal, 403, path)
-            elif not principal.platform_admin and not any(role == "org_admin" for role in principal.roles.values()):
-                investigation_route = "/investigation/" in path or path.endswith('/correlation') or path.startswith('/api/v1/operations/incidents/')
-                if not (investigation_route and any(role == "operator" for role in principal.roles.values())):
-                    return await run_in_threadpool(_audit_denial, principal, 403, path)
+        from app.security.access_control import route_permissions, request_permissions
+        required=route_permissions(request.method,path)
+        if required and not any(principal.allows(key) for key in required):
+            return await run_in_threadpool(_audit_denial, principal, 403, path)
+        permission_ctx=request_permissions.set(required)
         ctx = current_principal.set(principal)
         try:
             response = await call_next(request)
-            if request.method not in {"GET", "HEAD", "OPTIONS"}:
+            if request.method not in {"GET", "HEAD", "OPTIONS"} or response.status_code in {401,403}:
                 await run_in_threadpool(_audit_action, principal, response.status_code, path)
             return response
         finally:
             current_principal.reset(ctx)
+            request_permissions.reset(permission_ctx)
 
 @router.post("/login")
 def login(payload: Login, request: Request):
@@ -170,7 +158,10 @@ def login(payload: Login, request: Request):
             raise HTTPException(429, "Too many login attempts; try again later", headers={"Retry-After": "900"})
         user = db.scalar(select(User).where(User.username == username))
         valid_password = verify_password(payload.password, user.password_hash if user else _DUMMY_HASH)
-        if user is None or not user.active or not valid_password:
+        from app.security.access_models import ServiceProvider
+        from app.security.permission_catalog import PROVIDER_ID
+        provider=db.get(ServiceProvider,user.service_provider_id) if user else None
+        if user is None or not user.active or not valid_password or provider is None or not provider.active or user.service_provider_id!=PROVIDER_ID:
             failed_login(db, username, ip)
             log_event(db, event_type="LOGIN", outcome="FAILURE", target_type="identity")
             db.commit()
@@ -186,9 +177,20 @@ def login(payload: Login, request: Request):
 @router.get("/me")
 def me():
     principal = actor()
+    from app.security.access_control import effective_document
     return {"id": str(principal.user_id), "username": principal.username,
             "platform_admin": principal.platform_admin,
-            "memberships": [{"organization_id": str(k), "role": v} for k, v in principal.roles.items()]}
+            "memberships": [{"organization_id": str(k), "role": v} for k, v in principal.roles.items()],
+            **effective_document(principal)}
+
+@router.get("/customer-scope")
+def authorized_customer_scope():
+    principal=actor()
+    from app.models import Organization
+    with SessionLocal() as db:
+        stmt=select(Organization).where(Organization.active.is_(True))
+        if not principal.platform_admin:stmt=stmt.where(Organization.id.in_(tuple(principal.roles)))
+        return [{"id":str(o.id),"name":o.name,"code":o.code,"active":o.active} for o in db.scalars(stmt.order_by(Organization.name)).all()]
 
 @router.post("/logout", status_code=204)
 def logout(request: Request):
@@ -224,7 +226,7 @@ def list_users():
     require_admin()
     with SessionLocal() as db:
         return [{"id": str(u.id), "username": u.username, "active": u.active, "platform_admin": u.platform_admin}
-                for u in db.scalars(select(User).order_by(User.username)).all()]
+                for u in db.scalars(select(User).where(User.service_provider_id==actor().service_provider_id).order_by(User.username)).all()]
 
 @router.patch("/users/{user_id}/status")
 def change_user_status(user_id: UUID, payload: UserStatus):
@@ -235,10 +237,10 @@ def change_user_status(user_id: UUID, payload: UserStatus):
         from sqlalchemy import text
         db.execute(text("SELECT pg_advisory_xact_lock(782104, 1)"))
         user = db.get(User, user_id)
-        if user is None:
+        if user is None or user.service_provider_id!=principal.service_provider_id:
             raise HTTPException(404, "User not found")
         if not payload.active and user.platform_admin:
-            remaining = db.scalar(select(func.count()).select_from(User).where(User.platform_admin.is_(True), User.active.is_(True)))
+            remaining = db.scalar(select(func.count()).select_from(User).where(User.platform_admin.is_(True), User.active.is_(True),User.service_provider_id==principal.service_provider_id))
             if remaining <= 1:
                 raise HTTPException(409, "Cannot disable the last active platform administrator")
         user.active = payload.active
@@ -253,7 +255,7 @@ def reset_password(user_id: UUID, payload: PasswordReset):
     principal = require_admin()
     with SessionLocal() as db:
         user = db.get(User, user_id)
-        if user is None:
+        if user is None or user.service_provider_id!=principal.service_provider_id:
             raise HTTPException(404, "User not found")
         user.password_hash = hash_password(payload.new_password)
         revoke_sessions(db, user_id)
@@ -268,7 +270,7 @@ def list_memberships():
     with SessionLocal() as db:
         return [{"id": str(m.id), "user_id": str(m.user_id),
                  "organization_id": str(m.organization_id), "role": m.role}
-                for m in db.scalars(select(OrganizationMembership)).all()]
+                for m in db.scalars(select(OrganizationMembership).join(User,User.id==OrganizationMembership.user_id).where(User.service_provider_id==actor().service_provider_id)).all()]
 
 @router.post("/memberships", status_code=201)
 def assign_membership(payload: MemberCreate):
@@ -277,7 +279,8 @@ def assign_membership(payload: MemberCreate):
     if payload.role not in _ROLE_VALUES:
         raise HTTPException(422, "Unsupported membership role")
     with SessionLocal() as db:
-        if db.get(User, payload.user_id) is None or db.get(Organization, payload.organization_id) is None:
+        target=db.get(User, payload.user_id)
+        if target is None or target.service_provider_id!=principal.service_provider_id or db.get(Organization, payload.organization_id) is None:
             raise HTTPException(404, "User or organization not found")
         row = OrganizationMembership(**payload.model_dump())
         db.add(row)
@@ -300,7 +303,7 @@ def change_membership(membership_id: UUID, payload: MemberPatch):
         raise HTTPException(422, "Unsupported membership role")
     with SessionLocal() as db:
         row = db.get(OrganizationMembership, membership_id)
-        if row is None:
+        if row is None or db.get(User,row.user_id).service_provider_id!=principal.service_provider_id:
             raise HTTPException(404, "Membership not found")
         row.role = payload.role
         revoke_sessions(db, row.user_id)
@@ -314,7 +317,7 @@ def delete_membership(membership_id: UUID):
     principal = require_admin()
     with SessionLocal() as db:
         row = db.get(OrganizationMembership, membership_id)
-        if row is None:
+        if row is None or db.get(User,row.user_id).service_provider_id!=principal.service_provider_id:
             raise HTTPException(404, "Membership not found")
         revoke_sessions(db, row.user_id)
         log_event(db, event_type="MEMBERSHIP_DELETE", outcome="SUCCESS", actor_id=principal.user_id,

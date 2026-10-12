@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "created_at": "2026-10-12T15:18:04.245090+00:00",
+  "checks": [
+    "RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives",
+    "Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations",
+    "Native alert/correlation and real controlled ServiceNow TLS open/retry/resolve with leased delivery fencing",
+    "Read-only EKS SDK list/describe, tenant denial, dry-run and idempotent unmonitored inventory import",
+    "Actual authenticated Playwright pagination across 205-resource inventory in both themes",
+    "Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial",
+    "Atomic audit rollback/commit; bounded collector concurrency; retention rollback, pinning and audit preservation",
+    "Populated custom-format dump/restore: every row hash, FK/check constraint, migration head and audit trigger preserved",
+    "Backup overwrite, corrupted checksum and nonempty restore target refused",
+    "Certificate-verified TLS ingress, static SPA CSP/HSTS/security headers and rejected untrusted proxy spoof",
+    "Production non-owner API authentication; runtime DDL/audit mutation and owner startup refused; actual trusted legacy TLS transport"
+  ],
+  "database": {
+    "tables": 51,
+    "rows": 913,
+    "constraints": 190,
+    "restore_seconds": 0.416,
+    "dump_sha256": "8ce91e0158da28273159065553c3cf8509da8fd9bb5fa06e45f758557a84064a"
+  },
+  "limitations": [
+    "Controlled small dataset, not a production RTO/RPO or load SLO",
+    "Independent human security review and operator UAT pending",
+    "Live AWS, Windows and genuine Carte acceptance deferred",
+    "Audit/incident/ETL history retained indefinitely; approved deletion/archive policy pending"
+  ]
+}

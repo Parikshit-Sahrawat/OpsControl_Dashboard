@@ -49,10 +49,12 @@ jobs:
       - name: Apply migrations against disposable PostgreSQL
         working-directory: backend
         run: |
-          alembic upgrade head
+          # Exercise reversible revisions before the protected access upgrade.
+          # The populated preservation probe in the next step applies HEAD.
+          alembic upgrade 0024_notification_leases
           alembic current
           alembic downgrade -1
-          alembic upgrade head
+          alembic upgrade 0024_notification_leases
           alembic current
           python - <<'PY'
           from sqlalchemy import inspect

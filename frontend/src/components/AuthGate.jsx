@@ -12,6 +12,17 @@ export default function AuthGate() {
     if (!readToken()) return;
     sessionUser().then(setUser).catch(() => { clearToken(); setUser(null); }).finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+    if (!user) return;
+    let live=true,pending=false;
+    const refresh=async()=>{if(pending)return;pending=true;const token=readToken();
+      try{const next=await sessionUser();if(live&&readToken()===token)setUser(current=>current?.authorization_revision===next.authorization_revision?current:next);}
+      catch {if(live&&readToken()===token){clearToken();setUser(null);}}
+      finally{pending=false;}
+    };
+    const timer=setInterval(refresh,5000);window.addEventListener("focus",refresh);
+    return()=>{live=false;clearInterval(timer);window.removeEventListener("focus",refresh);};
+  },[user?.id]);
   async function submit(event) {
     event.preventDefault();
     setBusy(true); setError("");
@@ -22,7 +33,7 @@ export default function AuthGate() {
   }
   async function logout() { await signOut(); setUser(null); }
   if (loading) return <main className="login-layout"><p>Checking session…</p></main>;
-  if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App user={user} /></>;
+  if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App key={user.id} user={user} /></>;
   return <main className="login-layout"><div className="login-appearance"><ThemeToggle /></div><form className="login-card" onSubmit={submit}>
     <span className="login-eyebrow">MONITORING WORKSPACE</span>
     <h1>OpsControl</h1><p>Sign in to view your authorized monitoring resources.</p>

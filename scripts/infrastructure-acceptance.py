@@ -39,7 +39,7 @@ try:
         if ready.returncode==0:break
         time.sleep(.3)
     else:raise RuntimeError('Disposable database readiness timed out')
-    run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
+    run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
     run([PYTHON,'-m','alembic','downgrade','-1'],ROOT/'backend')
     run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
     linux=target();env['LINUX_TARGET_PID']=str(linux.pid)

@@ -19,6 +19,7 @@ export function useOperationalFeed(path) {
       try{const data=await operations(path,{signal:controller.signal});if(live)setState({data,error:""});}
       catch(error){if(live&&error.name!=="AbortError")setState({data:null,error:error.message});}
       finally{pending=false;controllers.delete(controller);}};
+    if(!path)return;
     refresh();const timer=setInterval(refresh,5000);
     return()=>{live=false;clearInterval(timer);controllers.forEach(c=>c.abort());};
   },[path,revision]);

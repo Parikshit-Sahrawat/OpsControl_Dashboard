@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
+from app.security.access_control import authorize_route
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -7,7 +8,7 @@ from starlette.concurrency import run_in_threadpool
 from contextlib import asynccontextmanager
 
 from app.core.config import settings
-from app.api import operations
+from app.api import operations, access
 from app.api import infrastructure, etl, investigations, health, monitoring, organizations, resource_management, remote_protocol, rule_catalogs, activation, monitoring_diagnostics, discovery
 import app.services.rule_models  # register immutable rule/activation tables
 import app.worker.remote_models  # register remote job/evidence tables
@@ -60,22 +61,23 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
-app.include_router(health.router)
-app.include_router(infrastructure.router)
-app.include_router(operations.router)
-app.include_router(identity_router)
-app.include_router(worker_router)
-app.include_router(remote_protocol.worker_router)
-app.include_router(remote_protocol.admin_router)
-app.include_router(rule_catalogs.router)
-app.include_router(activation.router)
-app.include_router(monitoring_diagnostics.router)
-app.include_router(discovery.router)
-app.include_router(etl.router)
-app.include_router(investigations.router)
-app.include_router(monitoring.router)
-app.include_router(organizations.router)
-app.include_router(resource_management.router)
+app.include_router(access.router, dependencies=[Depends(authorize_route)])
+app.include_router(health.router, dependencies=[Depends(authorize_route)])
+app.include_router(infrastructure.router, dependencies=[Depends(authorize_route)])
+app.include_router(operations.router, dependencies=[Depends(authorize_route)])
+app.include_router(identity_router, dependencies=[Depends(authorize_route)])
+app.include_router(worker_router, dependencies=[Depends(authorize_route)])
+app.include_router(remote_protocol.worker_router, dependencies=[Depends(authorize_route)])
+app.include_router(remote_protocol.admin_router, dependencies=[Depends(authorize_route)])
+app.include_router(rule_catalogs.router, dependencies=[Depends(authorize_route)])
+app.include_router(activation.router, dependencies=[Depends(authorize_route)])
+app.include_router(monitoring_diagnostics.router, dependencies=[Depends(authorize_route)])
+app.include_router(discovery.router, dependencies=[Depends(authorize_route)])
+app.include_router(etl.router, dependencies=[Depends(authorize_route)])
+app.include_router(investigations.router, dependencies=[Depends(authorize_route)])
+app.include_router(monitoring.router, dependencies=[Depends(authorize_route)])
+app.include_router(organizations.router, dependencies=[Depends(authorize_route)])
+app.include_router(resource_management.router, dependencies=[Depends(authorize_route)])
 
 @app.get("/")
 def root():

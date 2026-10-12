@@ -56,7 +56,7 @@ try {
   }
   await page.waitForTimeout(1500);
   for (const [label, filename] of [
-    ["Organizations", "11-organizations"],
+    ["Customers", "11-organizations"],
     ["Data Sources", "12-data-sources"],
     ["Collectors", "13-collectors"],
     ["Templates", "14-templates"]

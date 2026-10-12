@@ -1,3 +1,4 @@
+import { hasPermission, canNavigate, administrationPage, NAV_PERMISSIONS, parseCustomerSelection } from "./permissions";
 import VMHealth from "./pages/VMHealth";
 import AccessManagement from "./pages/AccessManagement";
 import MonitoringSetup from "./pages/MonitoringSetup";
@@ -9,7 +10,7 @@ import TopNav from "./components/TopNav";
 import JobDetailsDrawer from "./components/JobDetailsDrawer";
 import Overview from "./pages/Overview";
 import ETLJobs from "./pages/ETLJobs";
-import { fetchExecution, fetchExecutionEvidence, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote, fetchOrganizations, mapExecution } from "./api";
+import { fetchExecution, fetchExecutionEvidence, fetchExecutions, fetchInvestigation, transitionInvestigation, addInvestigationNote, mapExecution, fetchAuthorizedCustomers } from "./api";
 import ResourceManagement from "./pages/ResourceManagementV2";
 
 function mapDetail(execution, investigation, evidence) {
@@ -31,43 +32,45 @@ function mapDetail(execution, investigation, evidence) {
 }
 
 export default function App({ user }) {
-  const [active,setActive]=useState("Overview"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
+  const [active,setActive]=useState(() => Object.keys(NAV_PERMISSIONS).find(page => canNavigate(user,page)) || "Unauthorized"),[jobs,setJobs]=useState([]),[details,setDetails]=useState({}),[selectedId,setSelectedId]=useState(null),[loading,setLoading]=useState(true),[error,setError]=useState(null);
   const [organizations,setOrganizations]=useState([]);
   const [scopeReady,setScopeReady]=useState(false),[target,setTarget]=useState({});
   const generation=useRef(0);
-  const [organizationIds,setOrganizationIds]=useState(()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}});
+  const [organizationIds,setOrganizationIds]=useState(()=>{try{return parseCustomerSelection(window.localStorage.getItem("opscontrol.organizationIds"));}catch{return [];}});
   const selected=jobs.find(job=>job.id===selectedId)||details[selectedId]?.job||null;
-  const refresh=useCallback(async()=>{if(!scopeReady)return;const version=generation.current;try{const value=await fetchExecutions({latest_only:true,organization_ids:organizationIds});if(version===generation.current){setError(null);setJobs(value);}}catch(e){if(version===generation.current)setError(e.message||"Unable to load ETL executions");}finally{if(version===generation.current)setLoading(false);}},[organizationIds,scopeReady]);
-  useEffect(()=>{fetchOrganizations().then(orgs=>{setOrganizations(orgs);
-    const saved = (()=>{try{return JSON.parse(window.localStorage.getItem("opscontrol.organizationIds") || "[]");}catch{return [];}})();
-    const valid = saved.filter(id => orgs.some(o => o.id === id));
-    const selected = valid.length ? valid : orgs.map(o => o.id);
-    setOrganizationIds(selected);
-    setScopeReady(true);
-    window.localStorage.setItem("opscontrol.organizationIds", JSON.stringify(selected));
-  }).catch(e=>setError(e.message||"Unable to load organizations"));},[]);
+  const refresh=useCallback(async()=>{if(!scopeReady || !hasPermission(user,"etl.view") || administrationPage(active))return;const version=generation.current;try{const value=await fetchExecutions({latest_only:true,organization_ids:organizationIds});if(version===generation.current){setError(null);setJobs(value);}}catch(e){if(version===generation.current)setError(e.message||"Unable to load ETL executions");}finally{if(version===generation.current)setLoading(false);}},[organizationIds,scopeReady,active,user?.authorization_revision]);
+  useEffect(()=>{
+    let live=true;generation.current++;setScopeReady(false);setJobs([]);setDetails({});setSelectedId(null);setTarget({});
+    if(!canNavigate(user,active))setActive(Object.keys(NAV_PERMISSIONS).find(page=>canNavigate(user,page)) || "Unauthorized");
+    fetchAuthorizedCustomers().then(orgs=>{if(!live)return;setOrganizations(orgs);
+      const saved=(()=>{try{return parseCustomerSelection(window.localStorage.getItem("opscontrol.organizationIds"));}catch{return [];}})();
+      const valid=saved.filter(id=>orgs.some(o=>o.id===id));setOrganizationIds(valid.length?valid:orgs.map(o=>o.id));setScopeReady(true);setError(null);
+    }).catch(e=>{if(live){setOrganizations([]);setOrganizationIds([]);setScopeReady(true);setError(e.message);}});
+    return()=>{live=false;generation.current++;};
+  },[user?.authorization_revision]);
   useEffect(()=>{window.localStorage.setItem("opscontrol.organizationIds",JSON.stringify(organizationIds));},[organizationIds]);
   const organizationId = organizationIds[0] || "";
   useEffect(()=>{generation.current++;refresh();const timer=window.setInterval(refresh,5000);return()=>{generation.current++;window.clearInterval(timer);};},[refresh]);
-  const selectJob=async job=>{const id=typeof job==="string"?job:job.id,version=generation.current;setSelectedId(id);try{const execution=await fetchExecution(id);const evidence=await fetchExecutionEvidence(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch(e){if(e.message!=="Investigation not found")throw e;}if(version===generation.current)setDetails(current=>({...current,[id]:mapDetail(execution,investigation,evidence)}));}catch(e){if(version===generation.current)setError(e.message||"Unable to load execution details");}};
+  const selectJob=async job=>{if(!hasPermission(user,"etl.view"))return;const id=typeof job==="string"?job:job.id,version=generation.current;setSelectedId(id);try{const execution=await fetchExecution(id);const evidence=await fetchExecutionEvidence(id);let investigation=null;try{investigation=await fetchInvestigation(id);}catch(e){if(e.message!=="Investigation not found")throw e;}if(version===generation.current)setDetails(current=>({...current,[id]:mapDetail(execution,investigation,evidence)}));}catch(e){if(version===generation.current)setError(e.message||"Unable to load execution details");}};
   useEffect(()=>{if(selectedId)selectJob(selectedId);},[jobs,selectedId]);
   const updateInvestigation=async(jobId,next)=>{try{await transitionInvestigation(jobId,next);await selectJob(jobId);}catch(e){setError(e.message||"Unable to update investigation");}};
   const addNote=async(jobId,text)=>{try{await addInvestigationNote(jobId,text);await selectJob(jobId);}catch(e){setError(e.message||"Unable to add note");}};
-  const navigate=page=>{setTarget({});setActive(page);setSelectedId(null);};
-  const openSource=(id,type)=>{setSelectedId(null);setTarget({sourceId:id});setActive(["API","HTTP","HTTPS"].includes(type)?"APIs":"VM Health");};
-  const openIncident=id=>{setSelectedId(null);setTarget({incidentId:id});setActive("Incidents");};
-  const scopeKey=organizationIds.join(",");
-  return <div className="app-shell"><TopNav active={active} onChange={navigate} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={ids=>{generation.current++;setSelectedId(null);setDetails({});setJobs([]);setLoading(true);setTarget({});setOrganizationIds(ids)}} platformAdmin={user?.platform_admin}/><main className="content">
+  const navigate=page=>{if(!canNavigate(user,page))return;setTarget({});setActive(page);setSelectedId(null);};
+  const openSource=(id,type)=>{if(!hasPermission(user,"resources.view"))return;setSelectedId(null);setTarget({sourceId:id});setActive(["API","HTTP","HTTPS"].includes(type)?"APIs":"VM Health");};
+  const openIncident=id=>{if(!hasPermission(user,"incidents.view"))return;setSelectedId(null);setTarget({incidentId:id});setActive("Incidents");};
+  const scopeKey=(user?.authorization_revision||"")+organizationIds.join(",");
+  return <div className="app-shell"><TopNav active={active} onChange={navigate} organizations={organizations} organizationIds={organizationIds} onOrganizationChange={ids=>{generation.current++;setSelectedId(null);setDetails({});setJobs([]);setLoading(true);setTarget({});setOrganizationIds(ids)}} platformAdmin={user?.platform_admin} user={user}/><main className="content">
     {!scopeReady&&<p>{error||"Loading authorized organizations…"}</p>}
     {scopeReady&&error&&active!=="ETL Jobs"&&<p role="alert">{error}</p>}
-    {scopeReady&&active==="Overview"&&<Overview key={scopeKey} organizationIds={organizationIds} jobs={jobs} onSelect={selectJob} onNavigate={navigate} onOpenIncident={openIncident}/>}
+    {scopeReady&&active==="Overview"&&<Overview key={scopeKey} organizationIds={organizationIds} jobs={jobs} onSelect={selectJob} onNavigate={navigate} onOpenIncident={openIncident} user={user}/>}
     {active==="ETL Jobs"&&<ETLJobs jobs={jobs} loading={loading} error={error} onRetry={()=>{setLoading(true);refresh()}} onSelect={selectJob}/>}
-    {active==="Access Management"&&user?.platform_admin&&<AccessManagement />}
-    {scopeReady&&active==="Resource Management"&&<ResourceManagement key={scopeKey} organizationId={organizationId} organizationIds={organizationIds}/>}
+    {active==="Access Management"&&hasPermission(user,"access.view")&&<AccessManagement key={user.authorization_revision} user={user}/>}
+    {scopeReady&&active==="Resource Management"&&<ResourceManagement key={user?.authorization_revision} user={user}/>}
     {scopeReady&&active==="VM Health"&&<VMHealth key={scopeKey+target.sourceId} organizationIds={organizationIds} initialSourceId={target.sourceId}/> }
     {scopeReady&&active==="Monitoring Setup"&&<MonitoringSetup key={scopeKey} organizationId={organizationId} organizationName={organizations.find(org=>org.id===organizationId)?.name} user={user}/> }
     {scopeReady&&active==="APIs"&&<APIs key={scopeKey+target.sourceId} organizationIds={organizationIds} initialSourceId={target.sourceId} onNavigate={navigate}/>}
     {scopeReady&&active==="Incidents"&&<Incidents key={scopeKey+target.incidentId} organizationIds={organizationIds} user={user} initialIncidentId={target.incidentId} onSelectExecution={selectJob} onOpenSource={openSource}/>}
-    {scopeReady&&active==="Reports"&&<Reports key={scopeKey} organizationIds={organizationIds} onSelectExecution={selectJob} onOpenSource={openSource} onOpenIncident={openIncident}/>}
-  </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote} onSelectExecution={selectJob} canInvestigate={!!(user?.platform_admin || user?.memberships?.some(m=>m.organization_id===selected?.organizationId && ["operator","org_admin"].includes(m.role)))}/></div>;
+    {scopeReady&&active==="Reports"&&<Reports key={scopeKey} organizationIds={organizationIds} onSelectExecution={selectJob} onOpenSource={openSource} onOpenIncident={openIncident} user={user}/>}
+    {active==="Unauthorized"&&<section className="card state-panel"><h1>No assigned access</h1><p>Ask your service-provider administrator for a role and explicit customer scope.</p></section>}
+  </main><JobDetailsDrawer job={selected} details={selected?details[selected.id]:null} onClose={()=>setSelectedId(null)} onInvestigationChange={updateInvestigation} onAddNote={addNote} onSelectExecution={selectJob} canInvestigate={Boolean(selected?.organizationId) && hasPermission(user,"etl.investigate",selected.organizationId)}/></div>;
 }
