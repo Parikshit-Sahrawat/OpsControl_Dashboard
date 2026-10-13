@@ -30,6 +30,8 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
     }:
         return ()
     if path.startswith("/api/v1/unified/"):
+        if path == "/api/v1/unified/import/validate":
+            return ("templates.view",)
         if "/parameters/" in path:
             return (
                 ("templates.view",)
@@ -46,6 +48,10 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
             return ("reports.view",)
         if "/overview" in path:
             return ("overview.view",)
+        if path.endswith("/domain-state/ETL"):
+            return ("etl.view",)
+        if path == "/api/v1/unified/alerts":
+            return ("alerts.view",)
         if "/correlations" in path:
             return ("alerts.view",)
         return (

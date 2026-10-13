@@ -34,6 +34,7 @@ from app.security.models import (
 )  # Register collector FK metadata in standalone workers.
 from app.models import (
     Collector,
+    Organization,
     CollectorRun,
     DataSource,
     MetricDefinition,
@@ -568,6 +569,59 @@ def _persist_run(collector, result, started_at, ended_at, db):
         response_body=payload.get("response_body"),
         error_message=None if result.success else result.message[:MAX_ERROR_LENGTH],
     )
+    if collector.collector_type == "NATIVE_API":
+        from app.unified.models import (
+            MonitoringResource,
+            ParameterVersion,
+            ParameterActivation,
+        )
+
+        root = db.scalar(
+            select(MonitoringResource).where(
+                MonitoringResource.primary_collector_id == collector.id,
+                MonitoringResource.domain == "API",
+            )
+        )
+        policy = (
+            db.scalar(
+                select(ParameterVersion)
+                .join(
+                    ParameterActivation,
+                    (ParameterActivation.resource_id == ParameterVersion.resource_id)
+                    & (
+                        ParameterActivation.parameter_version
+                        == ParameterVersion.version
+                    ),
+                )
+                .where(
+                    ParameterActivation.resource_id == root.id,
+                    ParameterActivation.effective_from <= ended_at,
+                    (
+                        ParameterActivation.effective_to.is_(None)
+                        | (ParameterActivation.effective_to > ended_at)
+                    ),
+                )
+            )
+            if root
+            else None
+        )
+        if policy:
+            run.source_metadata = {
+                **(run.source_metadata or {}),
+                "policy_version": policy.version,
+                "policy_sha256": policy.sha256,
+                "expected_statuses": policy.configuration["expected_statuses"],
+            }
+            if run.http_status is not None:
+                matched = run.http_status in policy.configuration["expected_statuses"]
+                run.outcome = "SUCCESS" if matched else "ASSERTION_FAILED"
+                run.status = "SUCCESS" if matched else "FAILED"
+                result.success = matched
+        else:
+            run.source_metadata = {
+                **(run.source_metadata or {}),
+                "policy_assessed": False,
+            }
     db.add(run)
     db.flush()
     return run
@@ -703,7 +757,15 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
         return
 
     data_source = db.get(DataSource, collector.data_source_id)
-    if not data_source or not data_source.enabled:
+    customer = (
+        db.get(Organization, data_source.organization_id) if data_source else None
+    )
+    if (
+        not data_source
+        or not data_source.enabled
+        or not customer
+        or not customer.active
+    ):
         collector.status = "STOPPED"
         collector.last_error = "Data source is disabled or missing"
         db.commit()
@@ -781,7 +843,11 @@ def _due_collector_ids(limit, excluded=()):
         return list(
             db.scalars(
                 select(Collector.id)
+                .join(DataSource, Collector.data_source_id == DataSource.id)
+                .join(Organization, DataSource.organization_id == Organization.id)
                 .where(
+                    DataSource.enabled.is_(True),
+                    Organization.active.is_(True),
                     Collector.enabled.is_(True),
                     func.upper(Collector.collector_type) != "OTEL",
                     Collector.remote_worker_id.is_(None),
@@ -831,7 +897,7 @@ async def scheduler_loop(poll_seconds=5):
     # Reserve a connection for polling/maintenance; retain at most this many
     # task objects, instead of queuing an unbounded fleet behind a semaphore.
     capacity = min(
-        settings.collector_max_concurrency, max(1, settings.database_pool_size - 1)
+        settings.collector_max_concurrency, max(1, settings.database_pool_size - 2)
     )
     pending = {}
     notifications = asyncio.create_task(_notification_loop(poll_seconds))

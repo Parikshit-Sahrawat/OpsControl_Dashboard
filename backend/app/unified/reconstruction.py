@@ -163,6 +163,8 @@ def reduce_execution(db, resource, identity):
         step.source_evidence = {"event_ids": [str(f.id) for f in facts]}
         if step.status == "FAILED":
             history.failed_step = step.name
+    if history.status == ExecutionStatus.SUCCESS:
+        history.failed_step = None
     history.source_result = "NATIVE_EXECUTION_RECONSTRUCTION"
     history.source_evidence = {
         **(history.source_evidence or {}),
@@ -199,6 +201,11 @@ def ingest_logs(db, resource, version, limit=200):
                 select(NormalizedEvent.id).where(
                     NormalizedEvent.resource_id == resource.id,
                     NormalizedEvent.log_event_id == LogEvent.id,
+                    __import__("sqlalchemy").or_(
+                        NormalizedEvent.processing_status == "PROCESSED",
+                        NormalizedEvent.parameter_version == version.version,
+                        NormalizedEvent.processing_error == "DUPLICATE_EVIDENCE",
+                    ),
                 )
             ),
         )
@@ -277,6 +284,7 @@ def ingest_logs(db, resource, version, limit=200):
                 log.observed_at,
                 log.id,
             )
+            event.parameter_version = version.version
             event.processing_error = str(error)
             event.processing_status = (
                 "IGNORED"
@@ -311,7 +319,7 @@ def ingest_connector(db, resource, version, limit=100):
                 db,
                 resource,
                 fact["event"],
-                "IICS",
+                resource.configuration.get("platform", "IICS"),
                 fact["key"],
                 datetime.fromisoformat(fact["observed_at"]),
             )

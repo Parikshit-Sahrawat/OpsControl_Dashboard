@@ -2,10 +2,11 @@
 
 import hashlib, json, statistics, uuid
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, text
 from app.db.session import SessionLocal
 from app.models import (
     DataSource,
+    Organization,
     Collector,
     CollectorRun,
     JobOrder,
@@ -42,6 +43,15 @@ def active_parameters(db, r):
 
 def source_readiness(db, r, observed=None):
     observed = observed or utc()
+    from app.models import Organization
+
+    customer = db.get(Organization, r.organization_id)
+    if not customer or not customer.active:
+        return {
+            "ready": False,
+            "checks": [{"name": "Customer active", "passed": False}],
+            "reason": "CUSTOMER_INACTIVE",
+        }
     checks = []
     if r.domain == "ETL" and r.linked_vm_id and not r.primary_collector_id:
         parent = db.scalar(
@@ -163,7 +173,39 @@ def source_readiness(db, r, observed=None):
         and observed - a.last_seen_at <= timedelta(seconds=90)
         and a.health == "RUNNING"
     )
+    desired_methods = (
+        db.scalars(
+            select(CollectorMethod).where(CollectorMethod.collector_id == c.id)
+        ).all()
+        if c
+        else []
+    )
+    applied_methods = {str(m["id"]): m for m in cfg.method_snapshot} if cfg else {}
+    configuration_current = (
+        bool(cfg)
+        and len(desired_methods) == len(applied_methods)
+        and all(
+            str(m.id) in applied_methods
+            and m.revision == applied_methods[str(m.id)].get("revision")
+            and m.enabled == applied_methods[str(m.id)].get("enabled")
+            for m in desired_methods
+        )
+    )
+    desired_agent = (c.configuration or {}) if c else {}
+    configuration_current = configuration_current and all(
+        (cfg.agent_configuration or {}).get(key, default)
+        == desired_agent.get(source, default)
+        for key, source, default in [
+            ("services", "services", []),
+            ("processes", "processes", []),
+            ("native_os_metrics", "os_metrics", False),
+        ]
+    )
     checks = [
+        {
+            "name": "Desired configuration matches applied revision",
+            "passed": configuration_current,
+        },
         {"name": "Authenticated agent heartbeat/runtime", "passed": connected},
         {
             "name": "Validated configuration actually applied",
@@ -209,28 +251,33 @@ def source_readiness(db, r, observed=None):
         checks.append(
             {"name": "At least one explicit telemetry signal", "passed": False}
         )
-    for service in (cfg.agent_configuration if cfg else {}).get("services", []):
-        point = db.scalar(
-            select(MetricSample)
-            .join(MetricDefinition)
-            .where(
-                MetricDefinition.collector_id == c.id,
-                MetricDefinition.query_config["otel_metric_name"].as_string()
-                == "opscontrol.service.up",
-                MetricSample.dimensions["service.name"].as_string() == service,
+    observations = [
+        ("services", "opscontrol.service.up", "service.name"),
+        ("processes", "opscontrol.process.count", "process.name"),
+    ]
+    for kind, metric_name, dimension in observations:
+        for service in (cfg.agent_configuration if cfg else {}).get(kind, []):
+            point = db.scalar(
+                select(MetricSample)
+                .join(MetricDefinition)
+                .where(
+                    MetricDefinition.collector_id == c.id,
+                    MetricDefinition.query_config["otel_metric_name"].as_string()
+                    == metric_name,
+                    MetricSample.dimensions[dimension].as_string() == service,
+                )
+                .order_by(MetricSample.observed_at.desc())
+                .limit(1)
             )
-            .order_by(MetricSample.observed_at.desc())
-            .limit(1)
-        )
-        # A service being down is valid evidence, not absent instrumentation.
-        checks.append(
-            {
-                "name": "Observed service " + service,
-                "passed": bool(
-                    point and observed - point.observed_at <= timedelta(seconds=120)
-                ),
-            }
-        )
+            # A service being down is valid evidence, not absent instrumentation.
+            checks.append(
+                {
+                    "name": "Observed " + kind + " " + service,
+                    "passed": bool(
+                        point and observed - point.observed_at <= timedelta(seconds=120)
+                    ),
+                }
+            )
     return {
         "ready": all(c["passed"] for c in checks),
         "checks": checks,
@@ -305,6 +352,14 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
             )
             db.add(metric)
             db.flush()
+        rule_name = (
+            r.name[:60]
+            + ": "
+            + message[:100]
+            + " ["
+            + hashlib.sha256((str(r.id) + ":" + key).encode()).hexdigest()[:16]
+            + "]"
+        )
         rule = db.scalar(
             select(AlertRule).where(AlertRule.metric_definition_id == metric.id)
         )
@@ -312,7 +367,7 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
             rule = AlertRule(
                 organization_id=r.organization_id,
                 metric_definition_id=metric.id,
-                name=message[:200],
+                name=rule_name,
                 severity=severity,
                 operator="GT",
                 threshold_value="0.5",
@@ -322,6 +377,7 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
             db.add(rule)
             db.flush()
         rule.severity = severity
+        rule.name = rule_name
         sample = MetricSample(
             organization_id=r.organization_id,
             metric_definition_id=metric.id,
@@ -440,6 +496,17 @@ def evaluate_schedule(db, r, p, observed):
                 window.evidence,
                 run.started_at,
             )
+            condition(
+                db,
+                r,
+                "DEPENDENCY_BLOCKED",
+                "DEPENDENCY_BLOCKED",
+                False,
+                "WARNING",
+                "Execution dependency condition recovered",
+                window.evidence,
+                run.started_at,
+            )
         elif observed >= window.deadline:
             dependencies = db.scalars(
                 select(ResourceDependency).where(
@@ -484,6 +551,17 @@ def evaluate_schedule(db, r, p, observed):
                     observed,
                 )
             else:
+                condition(
+                    db,
+                    r,
+                    "DEPENDENCY_BLOCKED",
+                    "DEPENDENCY_BLOCKED",
+                    False,
+                    "WARNING",
+                    "Observed dependency condition recovered",
+                    {"window_id": str(window.id)},
+                    observed,
+                )
                 window.status = "NO_RUN"
                 window.evidence = {
                     "source_verified": True,
@@ -518,6 +596,17 @@ def evaluate_executions(db, r, p, observed):
         .limit(200)
     ).all()
     readiness = source_readiness(db, r, observed)
+    condition(
+        db,
+        r,
+        "ETL_TELEMETRY",
+        "TELEMETRY_UNKNOWN",
+        not readiness["ready"],
+        "WARNING",
+        "Execution telemetry is unavailable; job failure is not inferred",
+        json_safe(readiness),
+        observed,
+    )
     for h in histories:
         if not h.started_at:
             continue
@@ -572,6 +661,8 @@ def evaluate_executions(db, r, p, observed):
             h.ended_at or observed,
         )
         if terminal:
+            if h.status not in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
+                continue
             condition(
                 db,
                 r,
@@ -637,15 +728,63 @@ def evaluate_vm(db, r, p, observed):
         if r.data_source_id
         else []
     )
+    activation = db.scalar(
+        select(ParameterActivation).where(
+            ParameterActivation.resource_id == r.id,
+            ParameterActivation.effective_to.is_(None),
+        )
+    )
+    mapping_grace_expired = bool(
+        activation
+        and observed - activation.effective_from
+        >= timedelta(seconds=config["missing_telemetry_seconds"])
+    )
     for spec in config["thresholds"]:
         matched = [
             m
             for m in metrics
-            if m.name == spec["metric_name"]
-            or (m.query_config or {}).get("otel_metric_name") == spec["metric_name"]
+            if (
+                str(m.id) == spec["metric_definition_id"]
+                if spec.get("metric_definition_id")
+                else (
+                    m.name == spec["metric_name"]
+                    or (m.query_config or {}).get("otel_metric_name")
+                    == spec["metric_name"]
+                )
+            )
         ]
+        mapping_key = (
+            "METRIC_MAPPING:"
+            + hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()[:20]
+        )
+        condition(
+            db,
+            r,
+            mapping_key,
+            "MISSING_METRIC",
+            not matched and mapping_grace_expired,
+            "WARNING",
+            "Configured metric has no observed matching series",
+            {"metric_name": spec["metric_name"], "expected_unit": spec["unit"]},
+            observed,
+        )
         for metric in matched:
             if metric.unit != spec["unit"]:
+                condition(
+                    db,
+                    r,
+                    "METRIC_UNIT:" + str(metric.id),
+                    "METRIC_UNIT_MISMATCH",
+                    True,
+                    "WARNING",
+                    "Observed metric unit does not match the activated rule",
+                    {
+                        "metric_id": str(metric.id),
+                        "expected_unit": spec["unit"],
+                        "observed_unit": metric.unit,
+                    },
+                    observed,
+                )
                 continue
             points = db.scalars(
                 select(MetricSample)
@@ -664,12 +803,45 @@ def evaluate_vm(db, r, p, observed):
                 .order_by(MetricSample.observed_at.desc())
                 .limit(10001)
             ).all()
-            if (
+            missing = (
                 not points
                 or len(points) > 10000
                 or observed - points[0].observed_at
                 > timedelta(seconds=config["missing_telemetry_seconds"])
-            ):
+            )
+            condition(
+                db,
+                r,
+                "METRIC_MISSING:" + str(metric.id),
+                "MISSING_METRIC",
+                missing and mapping_grace_expired,
+                "WARNING",
+                "Configured metric has no recent usable observation",
+                {
+                    "metric_definition_id": str(metric.id),
+                    "last_sample_id": str(points[0].id) if points else None,
+                },
+                observed,
+            )
+            if missing:
+                continue
+            unit_mismatch = points[0].unit != spec["unit"]
+            condition(
+                db,
+                r,
+                "METRIC_UNIT:" + str(metric.id),
+                "METRIC_UNIT_MISMATCH",
+                unit_mismatch,
+                "WARNING",
+                "Observed metric unit does not match the activated rule",
+                {
+                    "metric_id": str(metric.id),
+                    "expected_unit": spec["unit"],
+                    "observed_unit": points[0].unit,
+                },
+                observed,
+            )
+            if unit_mismatch:
                 continue
             baseline = [
                 s.value_numeric
@@ -759,11 +931,19 @@ def evaluate_vm(db, r, p, observed):
                     },
                     points[0].observed_at,
                 )
-    for service in config["services"]:
+    monitored = [
+        (name, "opscontrol.service.up", "service.name", "SERVICE", "SERVICE_DOWN")
+        for name in config["services"]
+    ]
+    monitored += [
+        (name, "opscontrol.process.count", "process.name", "PROCESS", "PROCESS_DOWN")
+        for name in config.get("processes", [])
+    ]
+    for service, metric_name, dimension, prefix, condition_type in monitored:
         series = [
             m
             for m in metrics
-            if (m.query_config or {}).get("otel_metric_name") == "opscontrol.service.up"
+            if (m.query_config or {}).get("otel_metric_name") == metric_name
         ]
         ids = [m.id for m in series]
         points = (
@@ -771,7 +951,7 @@ def evaluate_vm(db, r, p, observed):
                 select(MetricSample)
                 .where(
                     MetricSample.metric_definition_id.in_(ids),
-                    MetricSample.dimensions["service.name"].as_string() == service,
+                    MetricSample.dimensions[dimension].as_string() == service,
                     MetricSample.observed_at <= observed,
                 )
                 .order_by(MetricSample.observed_at.desc())
@@ -790,11 +970,11 @@ def evaluate_vm(db, r, p, observed):
         condition(
             db,
             r,
-            "SERVICE:" + service,
-            "SERVICE_DOWN",
+            prefix + ":" + service,
+            condition_type,
             active,
             "CRITICAL",
-            "Service " + service + " is not running",
+            prefix.title() + " " + service + " is not running",
             {"service_identity": service, "sample_ids": [str(s.id) for s in points]},
             points[0].observed_at,
         )
@@ -817,11 +997,47 @@ def evaluate_api(db, r, p, observed):
     )
     if not runs:
         return
+    # Native probes snapshot the active policy at measurement time. Never
+    # reinterpret historical results under a newly activated assertion.
+    native = db.get(Collector, r.primary_collector_id)
+    native_policy = native and native.collector_type == "NATIVE_API"
+    activation = db.scalar(
+        select(ParameterActivation).where(
+            ParameterActivation.resource_id == r.id,
+            ParameterActivation.parameter_version == p.version,
+            ParameterActivation.effective_to.is_(None),
+        )
+    )
     valid = [
         run
         for run in runs
         if run.outcome in {"SUCCESS", "ASSERTION_FAILED", "TIMEOUT", "NETWORK_ERROR"}
+        and (
+            not native_policy
+            or (
+                (run.source_metadata or {}).get("policy_version") == p.version
+                and activation
+                and run.ended_at >= activation.effective_from
+            )
+        )
     ]
+    # Consecutive observations must not bridge an outage or configuration error.
+    consecutive = []
+    for run in valid:
+        if (
+            consecutive
+            and (consecutive[-1].ended_at - run.ended_at).total_seconds()
+            > cfg["missing_results_seconds"]
+        ):
+            break
+        if any(
+            run.ended_at < invalid.ended_at < valid[0].ended_at
+            for invalid in runs
+            if invalid not in valid
+        ):
+            break
+        consecutive.append(run)
+    valid = consecutive
     if not valid:
         return
     latest = valid[0]
@@ -839,9 +1055,12 @@ def evaluate_api(db, r, p, observed):
         {"last_run_id": str(latest.id)},
         observed,
     )
-    good = lambda run: run.http_status in cfg[
-        "expected_statuses"
-    ] and run.outcome not in {"TIMEOUT", "NETWORK_ERROR"}
+    good = lambda run: (
+        run.outcome == "SUCCESS"
+        if native_policy
+        else run.http_status in cfg["expected_statuses"]
+        and run.outcome not in {"TIMEOUT", "NETWORK_ERROR"}
+    )
     head = []
     for run in valid:
         if good(run):
@@ -909,6 +1128,10 @@ def evaluate_api(db, r, p, observed):
         run
         for run in window
         if run.outcome in {"SUCCESS", "ASSERTION_FAILED", "TIMEOUT", "NETWORK_ERROR"}
+        and (
+            not native_policy
+            or (run.source_metadata or {}).get("policy_version") == p.version
+        )
     ]
     if observed_window:
         availability = (
@@ -932,6 +1155,14 @@ def evaluate_api(db, r, p, observed):
 
 
 def correlate(db, organization_id, environment, observed):
+    # A resource lease alone does not serialize a group shared by many resources.
+    # Skip a busy group rather than deadlocking workers holding different roots.
+    key = "arch001-correlation:" + str(organization_id) + ":" + environment
+    if not db.scalar(
+        text("SELECT pg_try_advisory_xact_lock(hashtextextended(:key, 0))"),
+        {"key": key},
+    ):
+        return
     roots = db.scalars(
         select(MonitoringResource).where(
             MonitoringResource.organization_id == organization_id,
@@ -1033,6 +1264,7 @@ def correlate(db, organization_id, environment, observed):
                             },
                         )
                     )
+    db.flush()
     # A relation becoming inactive does not prove health recovery. Resolve only
     # after every member's independently evaluated condition has recovered.
     for group in db.scalars(
@@ -1059,47 +1291,69 @@ def correlate(db, organization_id, environment, observed):
 def cycle(limit=20, observed=None):
     observed = observed or utc()
     count = 0
-    for _ in range(limit):
-        with SessionLocal() as db:
-            r = db.scalar(
-                select(MonitoringResource)
-                .where(
-                    MonitoringResource.active.is_(True),
-                    MonitoringResource.activation_status == "ACTIVE",
-                    or_(
-                        MonitoringResource.last_engine_success_at.is_(None),
-                        MonitoringResource.last_engine_success_at
-                        < observed - timedelta(seconds=4),
-                    ),
-                )
-                .order_by(
-                    MonitoringResource.last_engine_success_at.nullsfirst(),
-                    MonitoringResource.id,
-                )
-                .with_for_update(skip_locked=True)
-                .limit(1)
+    with SessionLocal() as db:
+        ids = db.scalars(
+            select(MonitoringResource.id)
+            .join(Organization, Organization.id == MonitoringResource.organization_id)
+            .where(
+                Organization.active.is_(True),
+                MonitoringResource.active.is_(True),
+                MonitoringResource.activation_status == "ACTIVE",
+                or_(
+                    MonitoringResource.last_engine_attempt_at.is_(None),
+                    MonitoringResource.last_engine_attempt_at
+                    < observed - timedelta(seconds=4),
+                ),
             )
-            if not r:
-                break
-            p = active_parameters(db, r)
-            if not p:
+            .order_by(
+                MonitoringResource.last_engine_attempt_at.nullsfirst(),
+                MonitoringResource.id,
+            )
+            .limit(limit)
+        ).all()
+    for id in ids:
+        try:
+            with SessionLocal() as db:
+                r = db.scalar(
+                    select(MonitoringResource)
+                    .where(
+                        MonitoringResource.id == id,
+                        or_(
+                            MonitoringResource.last_engine_attempt_at.is_(None),
+                            MonitoringResource.last_engine_attempt_at
+                            < observed - timedelta(seconds=4),
+                        ),
+                    )
+                    .with_for_update(skip_locked=True)
+                )
+                if not r:
+                    continue
+                p = active_parameters(db, r)
+                if p:
+                    if r.domain == "ETL":
+                        if r.primary_collector_id:
+                            ingest_connector(db, r, p)
+                        else:
+                            ingest_logs(db, r, p)
+                        evaluate_schedule(db, r, p, observed)
+                        evaluate_executions(db, r, p, observed)
+                    elif r.domain == "VM":
+                        evaluate_vm(db, r, p, observed)
+                    else:
+                        evaluate_api(db, r, p, observed)
+                    correlate(db, r.organization_id, r.environment, observed)
+                r.last_engine_attempt_at = observed
                 r.last_engine_success_at = observed
+                r.last_engine_error = None
                 db.commit()
-                continue
-            if r.domain == "ETL":
-                if r.primary_collector_id:
-                    ingest_connector(db, r, p)
-                else:
-                    ingest_logs(db, r, p)
-                evaluate_schedule(db, r, p, observed)
-                evaluate_executions(db, r, p, observed)
-            elif r.domain == "VM":
-                evaluate_vm(db, r, p, observed)
-            else:
-                evaluate_api(db, r, p, observed)
-            correlate(db, r.organization_id, r.environment, observed)
-            r.last_engine_success_at = observed
-            r.last_engine_error = None
-            db.commit()
-            count += 1
+                count += 1
+        except Exception:
+            # Isolate a poison resource and leave its transaction rolled back.
+            # Other resources still progress; no sensitive exception is logged.
+            with SessionLocal() as db:
+                failed = db.get(MonitoringResource, id)
+                if failed:
+                    failed.last_engine_attempt_at = observed
+                    failed.last_engine_error = "EVALUATION_FAILED"
+                    db.commit()
     return count

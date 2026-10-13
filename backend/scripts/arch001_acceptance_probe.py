@@ -272,6 +272,27 @@ def api():
         201,
     )
     assert linux["organization_id"] != f["org"]
+    call(
+        "/api/v1/unified/parameters/" + linux["id"] + "/preview",
+        "POST",
+        {
+            "expected_resource_revision": linux["revision"],
+            "configuration": {
+                "domain": "VM",
+                "thresholds": [
+                    {
+                        "metric_name": "system.cpu.utilization",
+                        "metric_definition_id": str(uuid.uuid4()),
+                        "unit": "%",
+                        "critical": 80,
+                    }
+                ],
+            },
+        },
+        token,
+        422,
+    )
+
     etl = call(
         "/api/v1/unified/resources/etl",
         "POST",
@@ -313,6 +334,8 @@ def api():
         {
             "name": "Cloud workload",
             "platform": "IICS",
+            "connector_url": "https://metadata.example.test/records",
+            "credential_ref": "env:CONTROLLED_PROVIDER_TOKEN",
             "organization_id": f["org"],
             "environment": "PROD",
             "jobchain": "Cloud task",
@@ -511,6 +534,342 @@ def api():
     )
     print(
         "ARCH-001 VM/customer/ETL/API onboarding, inheritance, safe imports/versioning, telemetry-gated activation and scope negatives PASS"
+    )
+
+
+def engines():
+    from datetime import datetime, timedelta, timezone
+    from unittest.mock import patch
+    from app.unified.reconstruction import ingest_logs
+    from app.unified.engines import (
+        evaluate_executions,
+        evaluate_schedule,
+        condition,
+        correlate,
+    )
+
+    f = json.loads((PRIVATE / "fixture.json").read_text())
+    now = datetime.now(timezone.utc)
+    base = now - timedelta(hours=3)
+    with SessionLocal() as db:
+        r = db.get(MonitoringResource, uuid.UUID(f["etl_resource"]["id"]))
+        r.created_at = base - timedelta(hours=1)
+        p = db.scalar(
+            select(ParameterVersion).where(
+                ParameterVersion.resource_id == r.id,
+                ParameterVersion.status == "ACTIVE",
+            )
+        )
+        parent = db.get(MonitoringResource, uuid.UUID(f["vm_resource"]["id"]))
+        logs = LogSource(
+            organization_id=r.organization_id,
+            data_source_id=parent.data_source_id,
+            collector_id=parent.primary_collector_id,
+            name="Controlled reconstruction fixture",
+            source_type="FILE",
+            resource_type="ETL",
+        )
+        db.add(logs)
+        db.flush()
+        path = r.configuration["log_paths"][0]
+
+        def add(identity, event, offset, status="RUNNING", step=None, attempt=1):
+            payload = {
+                "execution_id": identity,
+                "event": event,
+                "status": status,
+                "jobchain": r.configuration["jobchain"],
+                "step": step,
+                "attempt": attempt,
+                "timestamp": (base + timedelta(seconds=offset)).isoformat(),
+            }
+            db.add(
+                LogEvent(
+                    organization_id=r.organization_id,
+                    log_source_id=logs.id,
+                    observed_at=base + timedelta(seconds=offset),
+                    message=json.dumps(payload),
+                    attributes={
+                        "log.file.path": path,
+                        "origin": "CONTROLLED_TEST_FIXTURE",
+                    },
+                )
+            )
+            db.flush()
+
+        add("complete-1", "END", 10, "SUCCESS")
+        ingest_logs(db, r, p)
+        h = db.scalar(
+            select(JobOrderHistory).where(
+                JobOrderHistory.job_order_id == r.job_order_id,
+                JobOrderHistory.provider_execution_id == "complete-1",
+            )
+        )
+        assert h.status == ExecutionStatus.SUCCESS and h.started_at is None
+        add("complete-1", "START", 0)
+        add("complete-1", "STEP_START", 1, step="Load")
+        add("complete-1", "STEP_FAILED", 3, "FAILED", step="Load")
+        add("complete-1", "STEP_START", 4, step="Load", attempt=2)
+        add("complete-1", "STEP_END", 8, "SUCCESS", step="Load", attempt=2)
+        add("complete-1", "END", 10, "SUCCESS")
+        add("parallel-2", "START", 2)
+        ingest_logs(db, r, p)
+        db.flush()
+        assert h.started_at == base and h.ended_at == base + timedelta(seconds=10)
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(JobOrderHistory)
+                .where(JobOrderHistory.job_order_id == r.job_order_id)
+            )
+            == 2
+        )
+        steps = db.scalars(
+            select(JobStepExecution)
+            .where(JobStepExecution.history_id == h.id)
+            .order_by(JobStepExecution.attempt)
+        ).all()
+        assert [(step.attempt, step.status) for step in steps] == [
+            (1, "FAILED"),
+            (2, "SUCCESS"),
+        ]
+        before = db.scalar(
+            select(func.count())
+            .select_from(NormalizedEvent)
+            .where(NormalizedEvent.resource_id == r.id)
+        )
+        ingest_logs(db, r, p)
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(NormalizedEvent)
+                .where(NormalizedEvent.resource_id == r.id)
+            )
+            == before
+        )
+        # The source readiness substitution is explicitly a controlled engine
+        # boundary fixture, never live telemetry or production health evidence.
+        config = {
+            **p.configuration,
+            "long_running_seconds": 5,
+            "no_response_seconds": 30,
+            "schedule": {
+                "frequency": "HOURLY",
+                "time": "00:00",
+                "timezone": "UTC",
+                "weekdays": list(range(7)),
+                "month_day": 1,
+                "cron": None,
+                "exceptions": [],
+                "dst_policy": "FIRST",
+                "catchup_hours": 24,
+            },
+            "no_run_grace_seconds": 5,
+        }
+        newer = ParameterVersion(
+            organization_id=r.organization_id,
+            resource_id=r.id,
+            version=p.version + 1,
+            configuration=config,
+            sha256="0" * 64,
+            status="VALIDATED",
+        )
+        db.add(newer)
+        db.flush()
+        with patch(
+            "app.unified.engines.source_readiness",
+            return_value={
+                "ready": True,
+                "checks": [],
+                "origin": "CONTROLLED_ENGINE_FIXTURE",
+            },
+        ):
+            evaluate_executions(db, r, newer, base + timedelta(seconds=120))
+        running = db.scalar(
+            select(JobOrderHistory).where(
+                JobOrderHistory.job_order_id == r.job_order_id,
+                JobOrderHistory.provider_execution_id == "parallel-2",
+            )
+        )
+        assert (
+            running.status == ExecutionStatus.RUNNING
+            and running.monitoring_conditions["LONG_RUNNING"]
+            and running.monitoring_conditions["NO_RESPONSE"]
+        )
+        long_condition = db.scalar(
+            select(ResourceCondition).where(
+                ResourceCondition.resource_id == r.id,
+                ResourceCondition.condition_type == "LONG_RUNNING",
+                ResourceCondition.active.is_(True),
+            )
+        )
+        assert long_condition.alert_state_id
+        add("parallel-2", "END", 150, "SUCCESS")
+        ingest_logs(db, r, p)
+        with patch(
+            "app.unified.engines.source_readiness",
+            return_value={"ready": True, "checks": []},
+        ):
+            evaluate_executions(db, r, newer, base + timedelta(seconds=151))
+        assert running.status == ExecutionStatus.SUCCESS and not long_condition.active
+        assert db.get(AlertState, long_condition.alert_state_id).status == "RESOLVED"
+        r.schedule_watermark = now.replace(
+            minute=0, second=0, microsecond=0
+        ) - timedelta(hours=2)
+        with patch(
+            "app.unified.engines.source_readiness",
+            return_value={
+                "ready": False,
+                "checks": [],
+                "origin": "CONTROLLED_OUTAGE_FIXTURE",
+            },
+        ):
+            evaluate_schedule(db, r, newer, now)
+        windows = db.scalars(
+            select(ExpectedExecutionWindow).where(
+                ExpectedExecutionWindow.resource_id == r.id
+            )
+        ).all()
+        assert windows and any(w.status == "UNKNOWN" for w in windows)
+        count = len(windows)
+        with patch(
+            "app.unified.engines.source_readiness",
+            return_value={
+                "ready": True,
+                "checks": [],
+                "origin": "CONTROLLED_ENGINE_FIXTURE",
+            },
+        ):
+            evaluate_schedule(db, r, newer, now)
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(ExpectedExecutionWindow)
+                .where(ExpectedExecutionWindow.resource_id == r.id)
+            )
+            == count
+        )
+        assert any(w.status == "NO_RUN" for w in windows)
+        no_run = db.scalar(
+            select(ResourceCondition).where(
+                ResourceCondition.resource_id == r.id,
+                ResourceCondition.condition_type == "NO_RUN",
+                ResourceCondition.active.is_(True),
+            )
+        )
+        assert no_run and no_run.alert_state_id
+        first_alert = no_run.alert_state_id
+        with patch(
+            "app.unified.engines.source_readiness",
+            return_value={"ready": True, "checks": []},
+        ):
+            evaluate_schedule(db, r, newer, now + timedelta(seconds=1))
+        assert no_run.alert_state_id == first_alert
+        parent_condition = condition(
+            db,
+            parent,
+            "SERVICE:Scheduler",
+            "SERVICE_DOWN",
+            True,
+            "CRITICAL",
+            "Observed scheduler stopped",
+            {"service_identity": "Scheduler", "origin": "CONTROLLED_TEST_FIXTURE"},
+            now,
+        )
+        child_condition = condition(
+            db,
+            r,
+            "DEPENDENCY_TEST",
+            "DEPENDENCY_BLOCKED",
+            True,
+            "WARNING",
+            "Observed dependency prevented start",
+            {"origin": "CONTROLLED_TEST_FIXTURE"},
+            now,
+        )
+        link = ResourceDependency(
+            organization_id=r.organization_id,
+            resource_id=r.id,
+            depends_on_id=parent.id,
+            relationship_type="REQUIRES_SERVICE",
+            service_identity="Scheduler",
+        )
+        db.add(link)
+        db.flush()
+        correlate(db, r.organization_id, r.environment, now)
+        group = db.scalar(
+            select(EventCorrelationGroup).where(
+                EventCorrelationGroup.group_key.like(
+                    "dependency:" + str(link.id) + ":%"
+                )
+            )
+        )
+        assert group and group.confidence == "RELATIONSHIP_SUPPORTED"
+        assert "not proven" in group.evidence["statement"]
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(EventCorrelationMember)
+                .where(EventCorrelationMember.group_id == group.id)
+            )
+            >= 2
+        )
+        # Recover all independently observed group members; changing only the
+        # relation would not count as recovery evidence.
+        for member in db.scalars(
+            select(ResourceCondition)
+            .join(
+                EventCorrelationMember,
+                EventCorrelationMember.condition_id == ResourceCondition.id,
+            )
+            .where(EventCorrelationMember.group_id == group.id)
+        ):
+            condition(
+                db,
+                db.get(MonitoringResource, member.resource_id),
+                member.condition_key,
+                member.condition_type,
+                False,
+                member.severity,
+                "Controlled recovery observation",
+                {"origin": "CONTROLLED_TEST_FIXTURE"},
+                now + timedelta(seconds=2),
+            )
+        correlate(db, r.organization_id, r.environment, now + timedelta(seconds=2))
+        assert group.status == "RESOLVED"
+        db.commit()
+    for domain in ("ETL", "VM", "API"):
+        report = call("/api/v1/unified/reports/" + domain, token=f["token"])
+        assert report["domain"] == domain and isinstance(report["history"], list)
+    assert (
+        call("/api/v1/unified/reports/ETL", token=f["token"])["summary"][
+            "observed_executions"
+        ]
+        > 0
+    )
+    assert "domains" in call("/api/v1/unified/overview", token=f["token"])
+    assert "items" in call("/api/v1/unified/domain-state/VM", token=f["token"])
+    (OUT / "engines.json").write_text(
+        json.dumps(
+            {
+                "status": "PASS",
+                "origin": "CONTROLLED_EVENTS_AND_ACTUAL_POSTGRES",
+                "terminal_before_start": True,
+                "duplicate_idempotency": True,
+                "parallel_runs_and_step_retries": True,
+                "terminal_status_separate_from_conditions": True,
+                "persisted_schedule_restart": True,
+                "collector_outage_not_job_failure": True,
+                "alert_dedup_recovery": True,
+                "dependency_evidence_correlation": True,
+                "not_genuine_provider_acceptance": True,
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    print(
+        "Native reconstruction/retry/parallel/late events, durable schedule windows, outage uncertainty, alert dedup/recovery and relationship correlation PASS (controlled engine boundary fixtures)"
     )
 
 

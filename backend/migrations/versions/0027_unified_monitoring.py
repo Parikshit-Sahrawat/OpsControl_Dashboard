@@ -13,12 +13,12 @@ down_revision = "0026_managed_telemetry_uat"
 branch_labels = None
 depends_on = None
 DDL = (
-    "\nCREATE TABLE event_correlation_groups (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tenvironment VARCHAR(20) NOT NULL, \n\tgroup_key VARCHAR(200) NOT NULL, \n\ttitle VARCHAR(300) NOT NULL, \n\tstatus VARCHAR(20) NOT NULL, \n\tconfidence VARCHAR(20) NOT NULL, \n\tevidence JSONB NOT NULL, \n\topened_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tlast_observed_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tresolved_at TIMESTAMP WITH TIME ZONE, \n\tPRIMARY KEY (id), \n\tCONSTRAINT uq_correlation_group_org_id UNIQUE (organization_id, id), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tUNIQUE (group_key)\n)\n\n",
+    "\nCREATE TABLE event_correlation_groups (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tenvironment VARCHAR(20) NOT NULL, \n\tgroup_key VARCHAR(200) NOT NULL, \n\ttitle VARCHAR(300) NOT NULL, \n\tstatus VARCHAR(20) NOT NULL, \n\tconfidence VARCHAR(40) NOT NULL, \n\tevidence JSONB NOT NULL, \n\topened_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tlast_observed_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tresolved_at TIMESTAMP WITH TIME ZONE, \n\tPRIMARY KEY (id), \n\tCONSTRAINT uq_correlation_group_org_id UNIQUE (organization_id, id), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tUNIQUE (group_key)\n)\n\n",
     "CREATE INDEX ix_correlation_group_inventory ON event_correlation_groups (organization_id, environment, opened_at, id)",
     "CREATE INDEX ix_event_correlation_groups_organization_id ON event_correlation_groups (organization_id)",
     "\nCREATE TABLE resource_mapping_issues (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tentity_type VARCHAR(50) NOT NULL, \n\tentity_id UUID NOT NULL, \n\treason VARCHAR(100) NOT NULL, \n\tcandidates JSONB NOT NULL, \n\tresolved_at TIMESTAMP WITH TIME ZONE, \n\tPRIMARY KEY (id), \n\tCONSTRAINT uq_mapping_issue_entity UNIQUE (entity_type, entity_id), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id)\n)\n\n",
     "CREATE INDEX ix_resource_mapping_issues_organization_id ON resource_mapping_issues (organization_id)",
-    "\nCREATE TABLE monitoring_resources (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tdomain VARCHAR(10) NOT NULL, \n\tname VARCHAR(200) NOT NULL, \n\tenvironment VARCHAR(20) NOT NULL, \n\tvm_id UUID, \n\tjob_order_id UUID, \n\tdata_source_id UUID, \n\tprimary_collector_id UUID, \n\tlinked_vm_id UUID, \n\tconfiguration JSONB NOT NULL, \n\trevision INTEGER NOT NULL, \n\tactive BOOLEAN NOT NULL, \n\tactivation_status VARCHAR(30) NOT NULL, \n\tschedule_watermark TIMESTAMP WITH TIME ZONE, \n\tlast_engine_success_at TIMESTAMP WITH TIME ZONE, \n\tlast_engine_error VARCHAR(80), \n\tcreated_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tupdated_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT uq_monitoring_resource_org_id UNIQUE (organization_id, id), \n\tCONSTRAINT ck_resource_domain CHECK (domain IN ('VM','ETL','API')), \n\tCONSTRAINT ck_resource_environment CHECK (environment IN ('PROD','QA','TEST','DEV','SANDBOX')), \n\tCONSTRAINT ck_resource_binding CHECK ((domain='VM' AND vm_id IS NOT NULL AND job_order_id IS NULL) OR (domain='ETL' AND job_order_id IS NOT NULL AND vm_id IS NULL) OR (domain='API' AND data_source_id IS NOT NULL AND vm_id IS NULL AND job_order_id IS NULL)), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tUNIQUE (vm_id), \n\tFOREIGN KEY(vm_id) REFERENCES vms (id), \n\tUNIQUE (job_order_id), \n\tFOREIGN KEY(job_order_id) REFERENCES job_orders (id), \n\tUNIQUE (data_source_id), \n\tFOREIGN KEY(data_source_id) REFERENCES data_sources (id), \n\tFOREIGN KEY(primary_collector_id) REFERENCES collectors (id), \n\tFOREIGN KEY(linked_vm_id) REFERENCES vms (id)\n)\n\n",
+    "\nCREATE TABLE monitoring_resources (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tdomain VARCHAR(10) NOT NULL, \n\tname VARCHAR(200) NOT NULL, \n\tenvironment VARCHAR(20) NOT NULL, \n\tvm_id UUID, \n\tjob_order_id UUID, \n\tdata_source_id UUID, \n\tprimary_collector_id UUID, \n\tlinked_vm_id UUID, \n\tconfiguration JSONB NOT NULL, \n\trevision INTEGER NOT NULL, \n\tactive BOOLEAN NOT NULL, \n\tactivation_status VARCHAR(30) NOT NULL, \n\tschedule_watermark TIMESTAMP WITH TIME ZONE, \n\tlast_engine_attempt_at TIMESTAMP WITH TIME ZONE, \n\tlast_engine_success_at TIMESTAMP WITH TIME ZONE, \n\tlast_engine_error VARCHAR(80), \n\tcreated_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tupdated_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT uq_monitoring_resource_org_id UNIQUE (organization_id, id), \n\tCONSTRAINT ck_resource_domain CHECK (domain IN ('VM','ETL','API')), \n\tCONSTRAINT ck_resource_environment CHECK (environment IN ('PROD','QA','TEST','DEV','SANDBOX')), \n\tCONSTRAINT ck_resource_binding CHECK ((domain='VM' AND vm_id IS NOT NULL AND job_order_id IS NULL) OR (domain='ETL' AND job_order_id IS NOT NULL AND vm_id IS NULL) OR (domain='API' AND data_source_id IS NOT NULL AND vm_id IS NULL AND job_order_id IS NULL)), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tUNIQUE (vm_id), \n\tFOREIGN KEY(vm_id) REFERENCES vms (id), \n\tUNIQUE (job_order_id), \n\tFOREIGN KEY(job_order_id) REFERENCES job_orders (id), \n\tUNIQUE (data_source_id), \n\tFOREIGN KEY(data_source_id) REFERENCES data_sources (id), \n\tFOREIGN KEY(primary_collector_id) REFERENCES collectors (id), \n\tFOREIGN KEY(linked_vm_id) REFERENCES vms (id)\n)\n\n",
     "CREATE INDEX ix_monitoring_resources_linked_vm_id ON monitoring_resources (linked_vm_id)",
     "CREATE INDEX ix_monitoring_resources_organization_id ON monitoring_resources (organization_id)",
     "CREATE INDEX ix_resource_domain_inventory ON monitoring_resources (organization_id, domain, environment, name, id)",
@@ -46,6 +46,10 @@ DDL = (
     "CREATE INDEX ix_resource_conditions_alert_state_id ON resource_conditions (alert_state_id)",
     "CREATE INDEX ix_resource_conditions_organization_id ON resource_conditions (organization_id)",
     "CREATE INDEX ix_resource_conditions_resource_id ON resource_conditions (resource_id)",
+    "\nCREATE TABLE resource_parameter_activations (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tresource_id UUID NOT NULL, \n\tparameter_version INTEGER NOT NULL, \n\teffective_from TIMESTAMP WITH TIME ZONE NOT NULL, \n\teffective_to TIMESTAMP WITH TIME ZONE, \n\tactor_id UUID, \n\tPRIMARY KEY (id), \n\tCONSTRAINT fk_parameter_activation_scope FOREIGN KEY(organization_id, resource_id) REFERENCES monitoring_resources (organization_id, id), \n\tCONSTRAINT fk_parameter_activation_version FOREIGN KEY(resource_id, parameter_version) REFERENCES resource_parameter_versions (resource_id, version), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tFOREIGN KEY(actor_id) REFERENCES users (id)\n)\n\n",
+    "CREATE INDEX ix_resource_parameter_activations_organization_id ON resource_parameter_activations (organization_id)",
+    "CREATE INDEX ix_resource_parameter_activations_resource_id ON resource_parameter_activations (resource_id)",
+    "CREATE UNIQUE INDEX uq_current_parameter_activation ON resource_parameter_activations (resource_id) WHERE effective_to IS NULL",
     "\nCREATE TABLE event_correlation_members (\n\tid UUID NOT NULL, \n\torganization_id UUID NOT NULL, \n\tgroup_id UUID NOT NULL, \n\tcondition_id UUID NOT NULL, \n\trelationship_id UUID, \n\tadded_at TIMESTAMP WITH TIME ZONE NOT NULL, \n\tevidence JSONB NOT NULL, \n\tPRIMARY KEY (id), \n\tCONSTRAINT fk_member_group_scope FOREIGN KEY(organization_id, group_id) REFERENCES event_correlation_groups (organization_id, id), \n\tCONSTRAINT fk_member_condition_scope FOREIGN KEY(organization_id, condition_id) REFERENCES resource_conditions (organization_id, id), \n\tCONSTRAINT uq_correlation_member UNIQUE (group_id, condition_id), \n\tFOREIGN KEY(organization_id) REFERENCES organizations (id), \n\tFOREIGN KEY(relationship_id) REFERENCES resource_dependencies (id)\n)\n\n",
     "CREATE INDEX ix_event_correlation_members_condition_id ON event_correlation_members (condition_id)",
     "CREATE INDEX ix_event_correlation_members_group_id ON event_correlation_members (group_id)",
@@ -60,6 +64,7 @@ TABLES = (
     "resource_dependencies",
     "resource_parameter_versions",
     "resource_conditions",
+    "resource_parameter_activations",
     "event_correlation_members",
 )
 
@@ -68,6 +73,13 @@ def upgrade():
     op.execute("ALTER TYPE executionstatus ADD VALUE IF NOT EXISTS 'DELAYED'")
     op.execute("ALTER TYPE executionstatus ADD VALUE IF NOT EXISTS 'UNKNOWN'")
     op.alter_column("job_orders", "vm_id", nullable=True)
+    op.create_index(
+        "uq_saas_job_order_identity",
+        "job_orders",
+        ["organization_id", "name", "environment"],
+        unique=True,
+        postgresql_where=sa.text("vm_id IS NULL"),
+    )
     op.add_column(
         "collector_runs",
         sa.Column("source_metadata", postgresql.JSONB(), nullable=True),
@@ -148,6 +160,17 @@ def upgrade():
       UPDATE monitoring_resources r SET primary_collector_id=c.ids[1] FROM candidates c
       WHERE r.domain='VM' AND r.data_source_id=c.data_source_id AND cardinality(c.ids)=1"""
     )
+    op.execute(
+        """WITH candidates AS (SELECT data_source_id,array_agg(id) AS ids FROM collectors WHERE upper(collector_type) IN ('API','NATIVE_API') GROUP BY data_source_id)
+      UPDATE monitoring_resources r SET primary_collector_id=c.ids[1] FROM candidates c
+      WHERE r.domain='API' AND r.data_source_id=c.data_source_id AND cardinality(c.ids)=1"""
+    )
+    op.execute(
+        """UPDATE monitoring_resources r SET configuration=r.configuration||jsonb_build_object('legacy_template_attachments',a.docs)
+      FROM (SELECT j.id,jsonb_agg(jsonb_build_object('template_id',t.template_id,'version',t.template_version,'enabled',t.enabled)) AS docs
+      FROM job_orders j JOIN monitoring_template_attachments t ON t.data_source_id=j.host_data_source_id GROUP BY j.id) a
+      WHERE r.job_order_id=a.id"""
+    )
     # Deterministic UUIDs avoid introducing a pgcrypto installation dependency.
     op.execute(
         """INSERT INTO resource_mapping_issues(id,organization_id,entity_type,entity_id,reason,candidates)
@@ -188,12 +211,12 @@ def upgrade():
     )
     op.execute(
         """CREATE FUNCTION opscontrol_parameter_immutable() RETURNS trigger LANGUAGE plpgsql AS $$
-      BEGIN IF NEW.configuration IS DISTINCT FROM OLD.configuration OR NEW.resource_id IS DISTINCT FROM OLD.resource_id
+      BEGIN IF TG_OP='DELETE' THEN RAISE EXCEPTION 'parameter versions are immutable'; END IF; IF NEW.configuration IS DISTINCT FROM OLD.configuration OR NEW.resource_id IS DISTINCT FROM OLD.resource_id
       OR NEW.version IS DISTINCT FROM OLD.version OR NEW.sha256 IS DISTINCT FROM OLD.sha256
       OR NEW.organization_id IS DISTINCT FROM OLD.organization_id THEN RAISE EXCEPTION 'parameter versions are immutable'; END IF; RETURN NEW; END $$"""
     )
     op.execute(
-        "CREATE TRIGGER parameter_version_immutable BEFORE UPDATE ON resource_parameter_versions FOR EACH ROW EXECUTE FUNCTION opscontrol_parameter_immutable()"
+        "CREATE TRIGGER parameter_version_immutable BEFORE UPDATE OR DELETE ON resource_parameter_versions FOR EACH ROW EXECUTE FUNCTION opscontrol_parameter_immutable()"
     )
 
 
@@ -203,6 +226,16 @@ def downgrade():
         raise RuntimeError(
             "VM-less executions prevent safe downgrade; retain additive schema"
         )
+    for query in (
+        "SELECT count(*) FROM collector_config_versions WHERE agent_configuration <> '{}'::jsonb",
+        "SELECT count(*) FROM job_order_histories WHERE monitoring_conditions IS NOT NULL",
+        "SELECT count(*) FROM job_step_executions WHERE external_step_id IS NOT NULL OR attempt<>1 OR source_evidence IS NOT NULL",
+        "SELECT count(*) FROM collector_runs WHERE source_metadata IS NOT NULL AND source_metadata<>'{}'::jsonb",
+    ):
+        if bind.scalar(sa.text(query)):
+            raise RuntimeError(
+                "Populated native evidence/configuration prevents data-losing downgrade"
+            )
     for table in TABLES:
         if bind.scalar(sa.text("SELECT count(*) FROM " + table)):
             raise RuntimeError(
@@ -222,5 +255,6 @@ def downgrade():
     op.drop_column("job_order_histories", "monitoring_conditions")
     op.drop_column("collector_runs", "source_metadata")
     op.drop_column("collector_config_versions", "agent_configuration")
+    op.drop_index("uq_saas_job_order_identity", table_name="job_orders")
     op.alter_column("job_orders", "vm_id", nullable=False)
     # Enum labels are additive; dropping them would require rewriting history.

@@ -54,6 +54,9 @@ class MonitoringResource(Base):
         String(30), nullable=False, default="CONFIGURED"
     )
     schedule_watermark: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_engine_attempt_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
     last_engine_success_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True)
     )
@@ -310,7 +313,7 @@ class EventCorrelationGroup(Base):
     group_key: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="OPEN")
-    confidence: Mapped[str] = mapped_column(String(20), nullable=False)
+    confidence: Mapped[str] = mapped_column(String(40), nullable=False)
     evidence: Mapped[dict] = mapped_column(JSONB, nullable=False)
     opened_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     last_observed_at: Mapped[datetime] = mapped_column(
@@ -380,4 +383,44 @@ class ResourceMappingIssue(Base):
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     __table_args__ = (
         UniqueConstraint("entity_type", "entity_id", name="uq_mapping_issue_entity"),
+    )
+
+
+class ParameterActivation(Base):
+    __tablename__ = "resource_parameter_activations"
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    resource_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
+    parameter_version: Mapped[int] = mapped_column(Integer, nullable=False)
+    effective_from: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=now
+    )
+    effective_to: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"))
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["organization_id", "resource_id"],
+            ["monitoring_resources.organization_id", "monitoring_resources.id"],
+            name="fk_parameter_activation_scope",
+        ),
+        ForeignKeyConstraint(
+            ["resource_id", "parameter_version"],
+            [
+                "resource_parameter_versions.resource_id",
+                "resource_parameter_versions.version",
+            ],
+            name="fk_parameter_activation_version",
+        ),
+        Index(
+            "uq_current_parameter_activation",
+            "resource_id",
+            unique=True,
+            postgresql_where=__import__("sqlalchemy").text("effective_to IS NULL"),
+        ),
     )

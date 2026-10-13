@@ -103,7 +103,10 @@ def request(url, configuration, metadata=False):
             ).decode()
             headers["Authorization"] = "Basic " + value
         else:
-            headers["Authorization"] = "Bearer " + value
+            header = configuration.get("credential_header", "Authorization")
+            if header not in {"Authorization", "icSessionId", "INFA-SESSION-ID"}:
+                raise ValueError("Unsupported managed authentication header")
+            headers[header] = "Bearer " + value if header == "Authorization" else value
     start = time.perf_counter()
     try:
         connection.request(

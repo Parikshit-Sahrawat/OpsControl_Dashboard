@@ -57,6 +57,7 @@ class VMCreate(ResourceIdentity):
     vm_type: Literal["VM", "EC2"] = "VM"
     native_os_metrics: bool = True
     services: list[str] = Field(default_factory=list, max_length=50)
+    processes: list[str] = Field(default_factory=list, max_length=50)
 
     @model_validator(mode="after")
     def valid(self):
@@ -65,6 +66,10 @@ class VMCreate(ResourceIdentity):
             raise ValueError("Environment required")
         if bool(self.organization_id) == bool(self.new_customer):
             raise ValueError("Select or create exactly one customer")
+        if len(set(self.processes)) != len(self.processes) or any(
+            not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,200}", v) for v in self.processes
+        ):
+            raise ValueError("Invalid or duplicate process names")
         if len(set(self.services)) != len(self.services) or any(
             not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,200}", v) for v in self.services
         ):
@@ -100,6 +105,10 @@ class LogParser(Strict):
         str, Literal["START", "END", "STEP_START", "STEP_END", "STEP_FAILED", "STATUS"]
     ] = Field(default_factory=dict)
     timezone: str = "UTC"
+    execution_type_mapping: dict[str, Literal["SCHEDULED", "MANUAL"]] = Field(
+        default_factory=lambda: {"SCHEDULED": "SCHEDULED", "MANUAL": "MANUAL"}
+    )
+    default_execution_type: Literal["SCHEDULED", "MANUAL"] = "SCHEDULED"
     execution_identity_fields: list[str] = Field(
         default_factory=lambda: ["execution_id", "order_id"], min_length=1, max_length=8
     )
@@ -120,6 +129,8 @@ class LogParser(Strict):
             "error",
             "execution_type",
             "scheduled_at",
+            "started_at",
+            "ended_at",
         }
         if set(self.field_mapping) - allowed:
             raise ValueError("Unsupported normalized field mapping")
@@ -132,6 +143,8 @@ class LogParser(Strict):
             "execution_id",
             "order_id",
             "scheduled_at",
+            "started_at",
+            "ended_at",
         }:
             raise ValueError("Invalid execution identification fields")
         try:
@@ -168,6 +181,8 @@ class Schedule(Strict):
     def valid(self):
         from datetime import date
 
+        if not re.fullmatch(r"\d{2}:\d{2}", self.time):
+            raise ValueError("Use minute precision HH:MM")
         time.fromisoformat(self.time)
         try:
             ZoneInfo(self.timezone)
@@ -200,6 +215,9 @@ class ETLCreate(ResourceIdentity):
     frequency_seconds: int = Field(default=30, ge=5, le=86400)
     connector_url: str | None = Field(default=None, max_length=1000)
     credential_ref: str | None = None
+    credential_header: Literal["Authorization", "icSessionId", "INFA-SESSION-ID"] = (
+        "INFA-SESSION-ID"
+    )
     connector_records_field: str = Field(
         default="records", pattern=r"^[A-Za-z_][A-Za-z0-9_.]{0,100}$"
     )
@@ -269,6 +287,8 @@ class APICreate(ResourceIdentity):
             raise ValueError(
                 "TLS verification cannot be disabled; configure trusted certificates"
             )
+        if self.credential_ref:
+            env_reference(self.credential_ref)
         if self.auth_type != "NONE":
             if self.protocol != "HTTPS" or not self.credential_ref:
                 raise ValueError("Authentication requires HTTPS and a secret reference")
@@ -284,6 +304,7 @@ class APICreate(ResourceIdentity):
 
 
 class Threshold(Strict):
+    metric_definition_id: UUID | None = None
     metric_name: str = Field(min_length=1, max_length=200)
     operator: Literal["GT", "GTE", "LT", "LTE"] = "GT"
     warning: float | None = None
@@ -341,6 +362,7 @@ class VMParameters(Strict):
     thresholds: list[Threshold] = Field(default_factory=list, max_length=100)
     missing_telemetry_seconds: int = Field(default=120, ge=30, le=86400)
     services: list[str] = Field(default_factory=list, max_length=50)
+    processes: list[str] = Field(default_factory=list, max_length=50)
     service_failures: int = Field(default=2, ge=1, le=100)
     overrides: dict = Field(default_factory=dict)
 
@@ -405,7 +427,8 @@ def validate_parameters(domain, config):
         result[key] = value
     result = PARAMETERS[domain].model_validate(result).model_dump(mode="json")
     if domain == "VM" and any(
-        not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,200}", v) for v in result["services"]
+        not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,200}", v)
+        for v in result["services"] + result["processes"]
     ):
         raise ValueError("Invalid service identity")
     return result

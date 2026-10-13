@@ -1,6 +1,6 @@
 """Native read-only HTTP and cloud execution adapters; target acceptance is separate."""
 
-import asyncio, hashlib, json, socket
+import asyncio, hashlib, json, socket, ssl
 from datetime import datetime, timezone
 from app.unified.transport import request
 from app.unified.normalization import normalize, NormalizationError, lookup
@@ -8,8 +8,10 @@ from app.worker.egress import EgressDenied
 
 
 class NativeAPIAdapter:
-    async def collect(self, configuration):
+    async def collect(self, collector):
         from app.worker.collector_runtime import CollectionResult
+
+        configuration = collector.configuration or {}
 
         try:
             evidence, _ = await asyncio.to_thread(
@@ -20,11 +22,23 @@ class NativeAPIAdapter:
                 "Actual native endpoint observation",
                 evidence,
             )
+        except ssl.SSLCertVerificationError:
+            return CollectionResult(
+                False,
+                "Native TLS trust verification failed",
+                {"outcome": "CONFIGURATION_ERROR"},
+            )
         except (socket.timeout, TimeoutError):
             return CollectionResult(
                 False,
                 "Native probe timeout",
                 {"outcome": "TIMEOUT", "probe_location": "NATIVE_BACKEND"},
+            )
+        except (ValueError, KeyError, RuntimeError):
+            return CollectionResult(
+                False,
+                "Native probe configuration/authentication reference is unavailable",
+                {"outcome": "CONFIGURATION_ERROR"},
             )
         except EgressDenied:
             return CollectionResult(
@@ -41,8 +55,10 @@ class NativeAPIAdapter:
 
 
 class IICSAdapter:
-    async def collect(self, configuration):
+    async def collect(self, collector):
         from app.worker.collector_runtime import CollectionResult
+
+        configuration = collector.configuration or {}
 
         try:
             evidence, body = await asyncio.to_thread(
@@ -66,28 +82,57 @@ class IICSAdapter:
                     if str(error) != "OTHER_JOBCHAIN":
                         unresolved += 1
                     continue
-                if not record.get("timestamp") and not lookup(
-                    record,
-                    parser.get("field_mapping", {}).get("timestamp", "timestamp"),
-                ):
-                    unresolved += 1
-                    continue
-                events.append(
-                    {
-                        "event": event,
-                        "observed_at": instant.isoformat(),
-                        "key": "iics:"
-                        + hashlib.sha256(
-                            json.dumps(event, sort_keys=True).encode()
-                        ).hexdigest(),
-                    }
-                )
+                facts = []
+                if event.get("started_at"):
+                    facts.append(
+                        {
+                            **event,
+                            "event_type": "START",
+                            "status": "RUNNING",
+                            "source_status": "RUNNING",
+                            "timestamp": event["started_at"],
+                            "ended_at": None,
+                            "error": None,
+                        }
+                    )
+                if event.get("ended_at"):
+                    facts.append(
+                        {**event, "event_type": "END", "timestamp": event["ended_at"]}
+                    )
+                if facts and event["status"] == "RUNNING":
+                    facts.append(
+                        {
+                            **event,
+                            "event_type": "STATUS",
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                            "observed_provider_status": True,
+                        }
+                    )
+                if not facts:
+                    if not record.get("timestamp") and not lookup(
+                        record,
+                        parser.get("field_mapping", {}).get("timestamp", "timestamp"),
+                    ):
+                        unresolved += 1
+                        continue
+                    facts = [event]
+                for fact in facts:
+                    events.append(
+                        {
+                            "event": fact,
+                            "observed_at": fact["timestamp"],
+                            "key": "metadata:"
+                            + hashlib.sha256(
+                                json.dumps(fact, sort_keys=True).encode()
+                            ).hexdigest(),
+                        }
+                    )
             return CollectionResult(
                 True,
                 "Read-only cloud execution inventory received",
                 {
                     **evidence,
-                    "provider": "IICS",
+                    "provider": configuration.get("platform", "IICS"),
                     "inventory_complete": unresolved == 0
                     and not any(
                         body.get(key)
@@ -102,7 +147,10 @@ class IICSAdapter:
             return CollectionResult(
                 False,
                 "Cloud execution destination is not approved",
-                {"outcome": "CONFIGURATION_ERROR", "provider": "IICS"},
+                {
+                    "outcome": "CONFIGURATION_ERROR",
+                    "provider": configuration.get("platform", "IICS"),
+                },
             )
         except Exception:
             return CollectionResult(
@@ -110,7 +158,7 @@ class IICSAdapter:
                 "Cloud execution metadata is unavailable or incompatible",
                 {
                     "outcome": "PROVIDER_ERROR",
-                    "provider": "IICS",
+                    "provider": configuration.get("platform", "IICS"),
                     "inventory_complete": False,
                 },
             )

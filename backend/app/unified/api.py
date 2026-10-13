@@ -77,6 +77,27 @@ def commit(db):
         ) from None
 
 
+def checked_resource_parameters(db, r, configuration):
+    config = checked_parameters(r.domain, configuration)
+    if r.domain == "VM":
+        for spec in config["thresholds"]:
+            if not spec.get("metric_definition_id"):
+                continue
+            metric = db.get(MetricDefinition, uuid.UUID(spec["metric_definition_id"]))
+            if (
+                not metric
+                or metric.organization_id != r.organization_id
+                or metric.data_source_id != r.data_source_id
+                or metric.metric_type == "DERIVED_CONDITION"
+                or metric.unit != spec["unit"]
+            ):
+                raise HTTPException(
+                    422,
+                    "Select an observed metric and matching unit belonging to this VM Resource",
+                )
+    return config
+
+
 def resource(db, id, permission="resources.view", write=False):
     query = select(MonitoringResource).where(MonitoringResource.id == id)
     item = db.scalar(query.with_for_update() if write else query)
@@ -118,6 +139,19 @@ def linked_vm(db, id, permission="resources.view"):
 
 def binding(db, r):
     config = dict(r.configuration or {})
+    if r.domain == "API" and config.get("legacy"):
+        from urllib.parse import urlsplit
+
+        source = db.get(DataSource, r.data_source_id)
+        parsed = urlsplit(source.endpoint or "")
+        config.update(
+            {
+                "dns": parsed.hostname,
+                "port": parsed.port or (443 if parsed.scheme == "https" else 80),
+                "protocol": parsed.scheme.upper(),
+                "path": parsed.path or "/",
+            }
+        )
     parent = None
     if r.linked_vm_id:
         parent = db.scalar(
@@ -273,6 +307,7 @@ def issues(limit: int = Query(100, ge=1, le=500), db=Depends(get_db)):
 
 @router.post("/resources/vm", status_code=201)
 def create_vm(payload: VMCreate, db=Depends(get_db)):
+    db.info["unified_manual_binding"] = True
     org = customer(db, payload)
     require_permission("resources.create", org.id)
     require_permission("collectors.manage", org.id)
@@ -312,6 +347,7 @@ def create_vm(payload: VMCreate, db=Depends(get_db)):
         configuration={
             "os_metrics": payload.native_os_metrics,
             "services": payload.services,
+            "processes": payload.processes,
         },
     )
     db.add(collector)
@@ -346,6 +382,7 @@ def create_vm(payload: VMCreate, db=Depends(get_db)):
 
 @router.post("/resources/etl", status_code=201)
 def create_etl(payload: ETLCreate, db=Depends(get_db)):
+    db.info["unified_manual_binding"] = True
     parent = linked_vm(db, payload.vm_resource_id) if payload.vm_resource_id else None
     if parent:
         require_permission("resources.create", parent.organization_id)
@@ -395,6 +432,39 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
         configuration=config,
         active=payload.active,
     )
+    if payload.connector_url:
+        require_permission("collectors.manage", org.id)
+        source = DataSource(
+            organization_id=org.id,
+            name=payload.name + " metadata",
+            source_type=payload.platform,
+            endpoint=payload.connector_url,
+            enabled=True,
+            connection_config={"opscontrol": {"environment": env}},
+        )
+        db.add(source)
+        db.flush()
+        collector = Collector(
+            data_source_id=source.id,
+            name=payload.name + " read-only metadata",
+            collector_type="IICS_NATIVE",
+            enabled=False,
+            interval_seconds=payload.frequency_seconds,
+            configuration={
+                "resource_id": str(r.id),
+                "url": payload.connector_url,
+                "credential_ref": payload.credential_ref,
+                "credential_header": payload.credential_header,
+                "records_field": payload.connector_records_field,
+                "platform": payload.platform,
+                "parser": payload.parser.model_dump(mode="json"),
+                "jobchain": payload.jobchain,
+            },
+        )
+        db.add(collector)
+        db.flush()
+        r.data_source_id = source.id
+        r.primary_collector_id = collector.id
     db.add(r)
     db.flush()
     if parent:
@@ -418,9 +488,12 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
                     method_type="FILE_LOG",
                     configuration={"paths": [path]},
                 )
-                validate_method(
-                    method, host_os(db.get(DataSource, parent.data_source_id))
-                )
+                try:
+                    validate_method(
+                        method, host_os(db.get(DataSource, parent.data_source_id))
+                    )
+                except ValueError as error:
+                    raise HTTPException(422, str(error)) from None
                 db.add(
                     CollectorMethod(
                         organization_id=org.id,
@@ -429,37 +502,6 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
                         validation_status="SCHEMA_VALID"
                     )
                 )
-    if payload.connector_url:
-        require_permission("collectors.manage", org.id)
-        source = DataSource(
-            organization_id=org.id,
-            name=payload.name + " metadata",
-            source_type=payload.platform,
-            endpoint=payload.connector_url,
-            enabled=True,
-            connection_config={"opscontrol": {"environment": env}},
-        )
-        db.add(source)
-        db.flush()
-        collector = Collector(
-            data_source_id=source.id,
-            name=payload.name + " read-only metadata",
-            collector_type="IICS_NATIVE",
-            enabled=False,
-            interval_seconds=payload.frequency_seconds,
-            configuration={
-                "resource_id": str(r.id),
-                "url": payload.connector_url,
-                "credential_ref": payload.credential_ref,
-                "records_field": payload.connector_records_field,
-                "parser": payload.parser.model_dump(mode="json"),
-                "jobchain": payload.jobchain,
-            },
-        )
-        db.add(collector)
-        db.flush()
-        r.data_source_id = source.id
-        r.primary_collector_id = collector.id
     audit(db, r, "ARCH_RESOURCE_CREATE")
     commit(db)
     return output(db, r)
@@ -467,6 +509,7 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
 
 @router.post("/resources/api", status_code=201)
 def create_api(payload: APICreate, db=Depends(get_db)):
+    db.info["unified_manual_binding"] = True
     org = customer(db, payload)
     require_permission("resources.create", org.id)
     require_permission("collectors.manage", org.id)
@@ -614,16 +657,29 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
             c.configuration = {
                 **(c.configuration or {}),
                 "services": typed.services,
+                "processes": typed.processes,
                 "os_metrics": typed.native_os_metrics,
             }
         # Parent identity propagation never edits a saved threshold override.
         for child in db.scalars(
             select(MonitoringResource).where(MonitoringResource.linked_vm_id == r.vm_id)
         ):
-            if child.domain == "ETL":
+            if child.domain in {"ETL", "API"}:
                 child.environment = payload.environment
                 child.revision += 1
-                db.get(JobOrder, child.job_order_id).environment = payload.environment
+                if child.job_order_id:
+                    db.get(JobOrder, child.job_order_id).environment = (
+                        payload.environment
+                    )
+                if child.domain == "API" and child.data_source_id:
+                    cs = db.get(DataSource, child.data_source_id)
+                    cs.connection_config = {
+                        **(cs.connection_config or {}),
+                        "opscontrol": {
+                            **(cs.connection_config or {}).get("opscontrol", {}),
+                            "environment": payload.environment,
+                        },
+                    }
     elif r.domain == "ETL":
         parent = (
             db.scalar(
@@ -702,7 +758,7 @@ class ParameterInput(Strict):
 @router.post("/parameters/{id}/preview")
 def preview(id: uuid.UUID, payload: ParameterInput, db=Depends(get_db)):
     r = resource(db, id, "templates.view")
-    config = checked_parameters(r.domain, payload.configuration)
+    config = checked_resource_parameters(db, r, payload.configuration)
     inherited = binding(db, r)
     attributes = [
         {"name": k, "value": v, "provenance": "INHERITED", "read_only": True}
@@ -745,7 +801,7 @@ def save_parameters(id: uuid.UUID, payload: ParameterInput, db=Depends(get_db)):
     r = resource(db, id, "templates.manage", True)
     if r.revision != payload.expected_resource_revision:
         raise HTTPException(409, "Inherited identity changed; reload effective preview")
-    config = checked_parameters(r.domain, payload.configuration)
+    config = checked_resource_parameters(db, r, payload.configuration)
     version = (
         db.scalar(
             select(func.max(ParameterVersion.version)).where(
@@ -787,7 +843,7 @@ def import_parameters(
         parsed = import_document(payload.content, payload.format)
     except ValueError as error:
         raise HTTPException(422, str(error)) from None
-    config = checked_parameters(r.domain, parsed)
+    config = checked_resource_parameters(db, r, parsed)
     args = ParameterInput(
         expected_resource_revision=payload.expected_resource_revision,
         configuration=config,
@@ -802,6 +858,15 @@ def versions(id: uuid.UUID, db=Depends(get_db)):
     r = resource(db, id, "templates.view")
     return {
         "inherited": binding(db, r),
+        "activations": [
+            document(a)
+            for a in db.scalars(
+                select(ParameterActivation)
+                .where(ParameterActivation.resource_id == id)
+                .order_by(ParameterActivation.effective_from.desc())
+                .limit(100)
+            )
+        ],
         "versions": [
             document(p)
             for p in db.scalars(
@@ -832,7 +897,26 @@ def activate_parameters(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     )
     if not p:
         raise HTTPException(404, "Parameter version unavailable")
-    config = checked_parameters(r.domain, p.configuration)
+    config = checked_resource_parameters(db, r, p.configuration)
+    current = db.scalar(
+        select(ParameterActivation).where(
+            ParameterActivation.resource_id == id,
+            ParameterActivation.effective_to.is_(None),
+        )
+    )
+    if current and current.parameter_version == p.version and p.status == "ACTIVE":
+        return document(p)
+    if current:
+        current.effective_to = utc()
+    db.flush()
+    db.add(
+        ParameterActivation(
+            organization_id=r.organization_id,
+            resource_id=id,
+            parameter_version=p.version,
+            actor_id=current_principal.get().user_id,
+        )
+    )
     for old in db.scalars(
         select(ParameterVersion).where(
             ParameterVersion.resource_id == id, ParameterVersion.status == "ACTIVE"
@@ -855,9 +939,16 @@ def activate_parameters(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
                 "jobchain": r.configuration["jobchain"],
             }
     if r.domain == "VM" and r.primary_collector_id:
-        require_permission("collectors.manage", r.organization_id)
         c = db.get(Collector, r.primary_collector_id)
-        c.configuration = {**(c.configuration or {}), "services": config["services"]}
+        if not set(config["services"]).issubset(
+            (c.configuration or {}).get("services", [])
+        ) or not set(config["processes"]).issubset(
+            (c.configuration or {}).get("processes", [])
+        ):
+            raise HTTPException(
+                422,
+                "Configure service/process collection in the VM Resource before activating monitoring parameters",
+            )
     audit(db, r, "ARCH_PARAMETERS_ACTIVATE")
     commit(db)
     return document(p)
@@ -939,6 +1030,20 @@ class DependencyInput(Strict):
 
 @router.post("/resources/{id}/dependencies", status_code=201)
 def add_dependency(id: uuid.UUID, payload: DependencyInput, db=Depends(get_db)):
+    r = resource(db, id, "resources.update")
+    db.execute(
+        select(
+            func.pg_advisory_xact_lock(
+                int.from_bytes(
+                    hashlib.sha256(
+                        ("arch001-dependency:" + str(r.organization_id)).encode()
+                    ).digest()[:8],
+                    "big",
+                    signed=True,
+                )
+            )
+        )
+    )
     r = resource(db, id, "resources.update", True)
     parent = resource(db, payload.depends_on_id)
     if (
@@ -949,6 +1054,30 @@ def add_dependency(id: uuid.UUID, payload: DependencyInput, db=Depends(get_db)):
         raise HTTPException(
             422,
             "Dependency must reference a different resource in the same customer/environment",
+        )
+    if payload.relationship_type == "REQUIRES_SERVICE":
+        c = (
+            db.get(Collector, parent.primary_collector_id)
+            if parent.primary_collector_id
+            else None
+        )
+        configured = (
+            set(
+                (c.configuration or {}).get("services", [])
+                + (c.configuration or {}).get("processes", [])
+            )
+            if c
+            else set()
+        )
+        if parent.domain != "VM" or payload.service_identity not in configured:
+            raise HTTPException(
+                422, "Select an actual configured VM service/process identity"
+            )
+    if payload.relationship_type == "HOSTED_ON" and (
+        parent.domain != "VM" or r.linked_vm_id != parent.vm_id
+    ):
+        raise HTTPException(
+            422, "Host relationships must match resource onboarding inheritance"
         )
     seen = {r.id}
     queue = [parent.id]
@@ -1041,5 +1170,56 @@ def windows(id: uuid.UUID, limit: int = Query(100, ge=1, le=500), db=Depends(get
             .where(ExpectedExecutionWindow.resource_id == id)
             .order_by(ExpectedExecutionWindow.scheduled_at.desc())
             .limit(limit)
+        )
+    ]
+
+
+class StandaloneImport(Strict):
+    domain: Literal["ETL", "VM", "API"]
+    content: str
+    format: Literal["JSON", "YAML"]
+
+
+@router.post("/import/validate")
+def validate_import(payload: StandaloneImport):
+    require_permission("templates.view")
+    try:
+        parsed = import_document(payload.content, payload.format)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from None
+    return {
+        "configuration": checked_parameters(payload.domain, parsed),
+        "validated": True,
+        "saved": False,
+        "activated": False,
+    }
+
+
+@router.get("/resources/{id}/metrics")
+def available_metrics(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id)
+    source = r.data_source_id
+    if r.linked_vm_id and r.domain == "ETL":
+        vm = db.scalar(
+            select(MonitoringResource).where(MonitoringResource.vm_id == r.linked_vm_id)
+        )
+        source = vm.data_source_id if vm else None
+    if not source:
+        return []
+    return [
+        {
+            "id": m.id,
+            "name": (m.query_config or {}).get("otel_metric_name", m.name),
+            "unit": m.unit,
+            "dimensions": (m.query_config or {}).get("dimensions", {}),
+        }
+        for m in db.scalars(
+            select(MetricDefinition)
+            .where(
+                MetricDefinition.data_source_id == source,
+                MetricDefinition.metric_type != "DERIVED_CONDITION",
+            )
+            .order_by(MetricDefinition.name)
+            .limit(500)
         )
     ]

@@ -180,3 +180,45 @@ class CalendarTests(unittest.TestCase):
             )
         )
         self.assertEqual(custom, [datetime(2026, 1, 12, 12, tzinfo=utc)])
+
+
+class NativeAdapterContractTests(unittest.IsolatedAsyncioTestCase):
+    async def test_worker_entity_contract_and_tls_failure_are_not_health(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        import ssl
+        from app.unified.adapters import NativeAPIAdapter
+
+        collector = SimpleNamespace(
+            configuration={"url": "https://approved.example.test/health"}
+        )
+
+        def actual_request(url, configuration):
+            self.assertEqual(url, collector.configuration["url"])
+            raise ssl.SSLCertVerificationError("controlled trust failure")
+
+        with patch("app.unified.adapters.request", side_effect=actual_request):
+            result = await NativeAPIAdapter().collect(collector)
+        self.assertFalse(result.success)
+        self.assertEqual(result.payload["outcome"], "CONFIGURATION_ERROR")
+
+    async def test_cloud_adapter_accepts_the_existing_worker_entity(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from app.unified.adapters import IICSAdapter
+
+        collector = SimpleNamespace(
+            configuration={
+                "url": "https://approved.example.test/records",
+                "records_field": "records",
+                "parser": LogParser().model_dump(),
+                "jobchain": "Controlled task",
+            }
+        )
+        with patch(
+            "app.unified.adapters.request",
+            return_value=({"outcome": "SUCCESS"}, {"records": []}),
+        ):
+            result = await IICSAdapter().collect(collector)
+        self.assertTrue(result.success)
+        self.assertTrue(result.payload["inventory_complete"])

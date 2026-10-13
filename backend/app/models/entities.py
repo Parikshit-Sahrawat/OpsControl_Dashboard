@@ -187,6 +187,14 @@ class JobOrder(Base):
         UniqueConstraint(
             "organization_id", "vm_id", "name", name="uq_job_order_identity"
         ),
+        Index(
+            "uq_saas_job_order_identity",
+            "organization_id",
+            "name",
+            "environment",
+            unique=True,
+            postgresql_where=text("vm_id IS NULL"),
+        ),
     )
 
 

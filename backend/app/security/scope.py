@@ -136,6 +136,7 @@ _PATHS.update(
             "MonitoringResource",
             "ResourceDependency",
             "ParameterVersion",
+            "ParameterActivation",
             "NormalizedEvent",
             "ExpectedExecutionWindow",
             "ResourceCondition",
@@ -361,6 +362,7 @@ def enforce_writes(db, flush_context, instances):
             ("group_id", "EventCorrelationGroup"),
             ("condition_id", "ResourceCondition"),
         ):
+            if attr=='resource_id' and model.__name__=='MetricDefinition':continue  # Legacy untyped reference; organization/source ownership remains enforced.
             if not hasattr(obj, attr):
                 continue
             parent_id = getattr(obj, attr)

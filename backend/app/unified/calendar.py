@@ -43,7 +43,7 @@ def occurrences(configuration, after, before, limit=1000):
             return
         if naive.date().isoformat() in s.exceptions:
             continue
-        if s.frequency == "DAILY" and naive.weekday() not in s.weekdays:
+        if s.frequency != "CUSTOM" and naive.weekday() not in s.weekdays:
             continue
         yield instant
         returned += 1

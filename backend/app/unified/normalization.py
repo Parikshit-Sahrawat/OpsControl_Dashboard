@@ -15,6 +15,12 @@ def timestamp(value, parser):
     if not value:
         raise NormalizationError("MISSING_SOURCE_TIMESTAMP")
     try:
+        if parser.timestamp_format in {"epoch_millis", "epoch_seconds"}:
+            return datetime.fromtimestamp(
+                float(value)
+                / (1000 if parser.timestamp_format == "epoch_millis" else 1),
+                timezone.utc,
+            )
         result = (
             datetime.strptime(str(value), parser.timestamp_format)
             if parser.timestamp_format
@@ -78,6 +84,8 @@ def normalize(message, configuration, observed_at, jobchain):
             "error",
             "execution_type",
             "scheduled_at",
+            "started_at",
+            "ended_at",
         )
     }
     if data["jobchain"] and str(data["jobchain"]) != jobchain:
@@ -145,8 +153,26 @@ def normalize(message, configuration, observed_at, jobchain):
         "attempt": attempt,
         "error": str(data["error"])[:2000] if data["error"] else None,
         "execution_type": (
-            "MANUAL" if str(data["execution_type"]).upper() == "MANUAL" else "SCHEDULED"
+            parser.execution_type_mapping.get(
+                str(data["execution_type"]).upper(), parser.default_execution_type
+            )
+            if data["execution_type"] is None
+            or str(data["execution_type"]).upper() in parser.execution_type_mapping
+            else None
         ),
         "scheduled_at": data["scheduled_at"],
+        "started_at": (
+            timestamp(data["started_at"], parser).isoformat()
+            if data.get("started_at")
+            else None
+        ),
+        "ended_at": (
+            timestamp(data["ended_at"], parser).isoformat()
+            if data.get("ended_at")
+            else None
+        ),
+        "source_status": source_status,
     }
+    if event["execution_type"] is None:
+        raise NormalizationError("UNMAPPED_EXECUTION_TYPE")
     return event, instant

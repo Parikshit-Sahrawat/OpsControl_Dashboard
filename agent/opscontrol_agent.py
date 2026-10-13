@@ -6,7 +6,7 @@ from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHand
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 RUNTIME_VERSION = "0.123.0"
 
 
@@ -268,7 +268,10 @@ class Agent:
                         running = self.process.poll() is None
                     except Exception:
                         error = "COLLECTOR_RESTART_FAILED"
-                if running and self.agent_configuration.get("services"):
+                if running and any(
+                    self.agent_configuration.get(k)
+                    for k in ("services", "processes", "native_os_metrics")
+                ):
                     try:
                         from service_health import envelope
 
@@ -276,6 +279,8 @@ class Agent:
                             self.agent_configuration["services"],
                             platform.system(),
                             platform.node(),
+                            self.agent_configuration.get("processes", []),
+                            self.agent_configuration.get("native_os_metrics", False),
                         )
                         self.request("/otlp/v1/metrics", telemetry)
                         if failures and not error:

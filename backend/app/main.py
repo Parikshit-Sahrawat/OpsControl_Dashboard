@@ -10,6 +10,8 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.api import operations, access
 from app.unified import api as unified
+import app.unified.reporting
+import app.unified.compatibility
 from app.telemetry import api as agent_control, ingestion, rules
 import app.telemetry.models
 import app.unified.models

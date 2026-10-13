@@ -234,6 +234,8 @@ def generate(collector, source, methods, ingestion_url):
                 receiver = "filelog/" + suffix
                 cfg = {
                     "include": c["paths"],
+                    "include_file_path":True,
+                    "include_file_name":True,
                     "exclude": c["exclusions"]
                     + ["${env:OPSCONTROL_AGENT_STATE_DIR}/**"],
                     "start_at": c["start_at"],

@@ -1,6 +1,6 @@
 # OpsControl Agent
 
-Collector is the logical Resource Management entity. OpsControl Agent is the installed host service; it supervises the pinned upstream OpenTelemetry Collector Contrib 0.123.0 runtime. It never accepts remote shell commands. One Collector binds one agent/host; each Collector can contain multiple independently identified File Log, Metric Scrape and OTLP Receiver methods. Native OS Metrics uses hostmetrics. Journald and Windows Event Log are File Log source options.
+Collector is the logical Resource Management entity. OpsControl Agent is the installed host service; it supervises the pinned upstream OpenTelemetry Collector Contrib 0.123.0 runtime. It never accepts remote shell commands. One Collector binds one agent/host; each Collector can contain multiple independently identified File Log, Metric Scrape, OTLP Receiver and secured Syslog Receiver methods. Native OS Metrics uses hostmetrics. Journald and Windows Event Log are File Log source options.
 
 ## Build and download an approved package
 
@@ -55,3 +55,6 @@ Management errors, unreadable/nonexistent log paths, invalid Collector configura
 For a loopback HTTP OTLP method, set `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318` and `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` in the application SDK. For gRPC use the configured endpoint and `grpc`. Enable only the configured Logs, Metrics and/or Traces SDK exporters. Remote application listeners require explicit binding approval, TLS certificate/key and authentication; loopback is the default. The host Collector exports to OpsControl's authenticated OTLP/HTTP ingestion endpoint over HTTPS.
 
 File Log methods need actual target files/permissions. Prometheus targets must expose compatible metrics; authentication references require TLS. Do not expose OTLP ports publicly through a firewall merely because a UI path was saved. No secure remote installation channel is implemented; host IP inventory does not authorize installation.
+
+
+Agent 1.1.0 also reports configured OS service/process observations and host uptime. Configuration snapshots are revision-bound; query or permission failures remain unavailable/error evidence. Linux uses read-only systemd queries and `/proc`; Windows uses fixed SCM/tasklist queries. Collection configuration does not grant OS filesystem/service permissions. See [ARCH-001 operations](../docs/ARCH_001_OPERATIONS.md) for VM-associated onboarding and actual acceptance boundaries.

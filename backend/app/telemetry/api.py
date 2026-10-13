@@ -294,6 +294,18 @@ def save_version(id: uuid.UUID, db=Depends(get_db)):
             or len(set(services)) != len(services)
         ):
             raise ValueError("Invalid service identities")
+        processes = (c.configuration or {}).get("processes", [])
+        if (
+            not isinstance(processes, list)
+            or len(processes) > 50
+            or any(
+                not isinstance(v, str)
+                or not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,200}", v)
+                for v in processes
+            )
+            or len(set(processes)) != len(processes)
+        ):
+            raise ValueError("Invalid process identities")
         valid = bool(os.getenv("OPSCONTROL_OTEL_BINARY"))
         if valid:
             validate_binary(text)
@@ -315,7 +327,11 @@ def save_version(id: uuid.UUID, db=Depends(get_db)):
         sha256=hashlib.sha256(text.encode()).hexdigest(),
         runtime_version=RUNTIME_VERSION,
         validation_status="VALIDATED" if valid else "UNVALIDATED",
-        agent_configuration={"services": services},
+        agent_configuration={
+            "services": services,
+            "processes": processes,
+            "native_os_metrics": bool((c.configuration or {}).get("os_metrics")),
+        },
         method_snapshot=[json.loads(json.dumps(item(m), default=str)) for m in methods],
     )
     db.add(version)
