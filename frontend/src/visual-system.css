@@ -205,3 +205,25 @@ input::placeholder,textarea::placeholder { color: var(--muted); opacity: 1; }
   .drawer { width: min(100vw,600px); } .status { font-size: 8px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .kpi-link:hover .kpi-card { transform: none; } }
+/* UAT: containers can shrink, long identifiers wrap, wide tables scroll. */
+.content,.card,.modal,.drawer,.resource-main,.form-field,.form-grid>* {min-width:0;max-width:100%}
+.card,.modal,.drawer {overflow-wrap:anywhere}
+input,select,textarea {min-width:0;max-width:100%;box-sizing:border-box}
+.form-grid {grid-template-columns:repeat(2,minmax(0,1fr))}
+.table-wrap {max-width:100%;overflow-x:auto}
+.table-wrap table {min-width:640px}
+td,th {overflow-wrap:anywhere;vertical-align:top}
+.row-actions,.form-footer,.resource-toolbar,.page-heading {flex-wrap:wrap;gap:10px}
+.row-actions {white-space:normal}
+pre,.configuration-preview {max-width:100%;overflow:auto;white-space:pre;word-break:normal}
+.enrollment-secret {display:block;overflow-wrap:anywhere}
+.sidebar-toggle {width:100%;margin-bottom:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px}
+:root[data-sidebar="collapsed"] {--sidebar-width:72px}
+.sidebar-collapsed .nav-button>span,.sidebar-collapsed .nav-section-label,.sidebar-collapsed .sidebar-footnote {display:none}
+.sidebar-collapsed .nav-button {justify-content:center;padding:14px}
+@media(max-width:850px){.form-grid{grid-template-columns:minmax(0,1fr)}.resource-layout{grid-template-columns:minmax(0,1fr)}.modal-backdrop{padding:8px}.modal{padding:16px;width:100%}.table-wrap table{min-width:580px}}
+@media(min-width:701px){:root[data-sidebar="collapsed"] .topbar nav{width:72px;padding:16px 8px}:root[data-sidebar="collapsed"] .content{margin-left:72px}}
+@media(max-width:700px){.sidebar-toggle{width:auto;flex:0 0 auto;margin:0}.sidebar-collapsed .nav-button{padding:8px}.sidebar-collapsed{width:100%}}
+.resource-onboarding-modal button:not(.primary-button):not(.close-button),.access-dialog button:not(.primary-button):not(.close-button),.resource-section-stack button:not(.primary-button):not(.resource-tab){background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.resource-onboarding-modal button:hover,.access-dialog button:hover{border-color:var(--border-strong)}
+button:disabled{cursor:not-allowed;opacity:.5}

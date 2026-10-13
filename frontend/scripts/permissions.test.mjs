@@ -8,7 +8,7 @@ import {
 } from "../src/permissions.js";
 const user = {
   permissions: ["access.view", "resources.view"],
-  customer_permissions: { a: ["resources.view"], b: ["incidents.view"] },
+  customer_permissions: { a: ["resources.view"], b: ["alerts.view"] },
 };
 test("navigation and customer actions default deny", () => {
   assert.equal(canNavigate({}, "Access Management"), false);
@@ -22,10 +22,10 @@ test("administrative pages use independent filters", () => {
   assert.equal(administrationPage("Resource Management"), true);
   for (const page of [
     "Overview",
-    "ETL Jobs",
+    "Data Pipelines",
     "VM Health",
     "APIs",
-    "Incidents",
+    "Alerts",
     "Reports",
   ])
     assert.equal(administrationPage(page), false);

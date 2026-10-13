@@ -2060,7 +2060,7 @@ Organization / Customer
 ```
 
 ### Organization
-Represents a PTC customer such as Trane or Philips. The organization will own customer services, ServiceNow configuration, distributed lists and application definitions.
+Represents a PTC customer such as Trane or Example East Operations. The organization will own customer services, ServiceNow configuration, distributed lists and application definitions.
 
 ### Data Source
 Represents a customer machine or VM. The Data Source uses a Zabbix-inspired host identity model: Host Name, Visible Name, Organization, Environment, Server Type, OS Type, Product Family, Product, Host Groups and Templates.

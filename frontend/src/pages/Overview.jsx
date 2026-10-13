@@ -8,19 +8,19 @@ import { useOperationalFeed, scopeQuery } from "../operations";
 
 function MetricIcon({ kind }) {
   const paths = {
-    "ETL Jobs": <><rect x="4" y="3" width="7" height="6" rx="1.5" /><rect x="13" y="15" width="7" height="6" rx="1.5" /><path d="M7.5 9v8a1 1 0 0 0 1 1H13M16.5 15V7a1 1 0 0 0-1-1H11" /></>,
+    "Data Pipelines": <><rect x="4" y="3" width="7" height="6" rx="1.5" /><rect x="13" y="15" width="7" height="6" rx="1.5" /><path d="M7.5 9v8a1 1 0 0 0 1 1H13M16.5 15V7a1 1 0 0 0-1-1H11" /></>,
     "VM Health": <><rect x="3" y="3" width="18" height="7" rx="2" /><rect x="3" y="14" width="18" height="7" rx="2" /><path d="M7 6.5h.01M7 17.5h.01M11 6.5h6M11 17.5h6" /></>,
     "APIs": <><path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16" /></>,
-    "Incidents": <><path d="m12 3 8 4v6c0 4-5 7-8 8-3-1-8-4-8-8V7l8-4Z" /><path d="M12 8v5m0 3h.01" /></>,
+    "Alerts": <><path d="m12 3 8 4v6c0 4-5 7-8 8-3-1-8-4-8-8V7l8-4Z" /><path d="M12 8v5m0 3h.01" /></>,
   };
   return <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[kind]}</svg>;
 }
 
-export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, organizationIds=[], user }) {
+export default function Overview({ jobs, onSelect, onNavigate, onOpenAlert, organizationIds=[], user }) {
   const summary=useOperationalFeed("/overview?"+scopeQuery(organizationIds));
   const services=useOperationalFeed(hasPermission(user,"resources.view")?"/services?"+scopeQuery(organizationIds):null);
-  const incidents=useOperationalFeed(hasPermission(user,"incidents.view")?"/incidents?"+scopeQuery(organizationIds):null);
-  const activeIncidents=incidents.data?Object.entries(incidents.data.summary).filter(([state])=>state!=="RESOLVED").reduce((sum,[,value])=>sum+value,0):null;
+  const alerts=useOperationalFeed(hasPermission(user,"alerts.view")?"/alerts?"+scopeQuery(organizationIds):null);
+  const activeAlerts=alerts.data?.summary.OPEN??null;
   const [infrastructure,setInfrastructure]=useState(null);
   useEffect(()=>{
     let active=true;
@@ -40,10 +40,10 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
   const running = jobs.filter(job => job.status === "RUNNING").length;
   const atRisk = jobs.filter(job => job.status === "LONG_RUNNING").length;
   const kpis = [
-    { label: "ETL Jobs", value: String(hasPermission(user,"etl.view")?jobs.length:summary.data?.etl_jobs??"—"), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "ETL Jobs" },
+    { label: "Data Pipelines", value: String(hasPermission(user,"etl.view")?jobs.length:summary.data?.etl_jobs??"—"), tone: failed ? "critical-text" : "", detail: `${failed} failed · ${running} running · ${atRisk} at risk`, target: "Data Pipelines" },
     { label: "VM Health", value: infrastructure?String(infrastructure.total):"—", tone: infrastructure?.summary.CRITICAL?"critical-text":"", detail: infrastructure?`${infrastructure.summary.HEALTHY} healthy · ${infrastructure.summary.CRITICAL+infrastructure.summary.WARNING} need attention · ${infrastructure.summary.UNKNOWN} unknown`:"Infrastructure evidence unavailable", target: "VM Health" },
     { label: "APIs & Services", value: services.data?String(services.data.total):"—", tone: services.data?.summary.CRITICAL?"critical-text":"", detail: services.data?`${services.data.summary.HEALTHY} healthy · ${services.data.summary.CRITICAL} critical · ${services.data.summary.UNKNOWN} unknown`:"Service evidence unavailable", target: "APIs" },
-    { label: "Active Incidents", value: activeIncidents!=null?String(activeIncidents):String(summary.data?.active_incidents??"—"), tone: activeIncidents?"critical-text":"", detail: incidents.data?`${incidents.data.summary.INVESTIGATING} investigating · ${incidents.data.summary.RESOLVED} closed`:"Incident evidence unavailable", target: "Incidents" },
+    { label: "Active Alerts", value: activeAlerts!=null?String(activeAlerts):String(summary.data?.active_alerts??"—"), tone: activeAlerts?"critical-text":"", detail: alerts.data?`${alerts.data.summary.OPEN} open · ${alerts.data.summary.RESOLVED} recovered`:"Alert evidence unavailable", target: "Alerts" },
   ];
 
   return (
@@ -55,8 +55,8 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
 
       <div className="kpi-grid overview-kpi-grid">
         {kpis.map(kpi => (
-          <button key={kpi.label} className={`kpi-link${kpi.target === "Incidents" ? " overview-kpi-featured" : ""}${kpi.target === "ETL Jobs" ? " overview-kpi-wide" : ""}`} disabled={!hasPermission(user,kpi.target==="ETL Jobs"?"etl.view":kpi.target==="Incidents"?"incidents.view":"resources.view")} onClick={() => onNavigate?.(kpi.target)} aria-label={`Open ${kpi.label}`}>
-            <KpiCard label={kpi.label} value={kpi.value} tone={kpi.tone} detail={kpi.detail} icon={<MetricIcon kind={kpi.target} />} featured={kpi.target === "Incidents"} />
+          <button key={kpi.label} className={`kpi-link${kpi.target === "Alerts" ? " overview-kpi-featured" : ""}${kpi.target === "Data Pipelines" ? " overview-kpi-wide" : ""}`} disabled={!hasPermission(user,kpi.target==="Data Pipelines"?"etl.view":kpi.target==="Alerts"?"alerts.view":"resources.view")} onClick={() => onNavigate?.(kpi.target)} aria-label={`Open ${kpi.label}`}>
+            <KpiCard label={kpi.label} value={kpi.value} tone={kpi.tone} detail={kpi.detail} icon={<MetricIcon kind={kpi.target} />} featured={kpi.target === "Alerts"} />
           </button>
         ))}
       </div>
@@ -64,8 +64,8 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
       <div className="overview-grid">
         <section className="card overview-jobs">
           <div className="section-heading-row">
-            <div><span className="overview-kicker">Execution activity</span><h2>Recent ETL Jobs</h2></div>
-            <button className="text-link" disabled={!hasPermission(user,"etl.view")} onClick={() => onNavigate?.("ETL Jobs")}>View all</button>
+            <div><span className="overview-kicker">Execution activity</span><h2>Recent Data Pipelines</h2></div>
+            <button className="text-link" disabled={!hasPermission(user,"etl.view")} onClick={() => onNavigate?.("Data Pipelines")}>View all</button>
           </div>
           <div className="table-wrap">
           <table>
@@ -94,14 +94,14 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenIncident, o
             {!infrastructure&&<div className="empty-inline overview-empty">Infrastructure evidence unavailable.</div>}
           </section>
 
-          <section className="card overview-incidents">
+          <section className="card overview-alerts">
             <div className="section-heading-row">
-              <div><span className="overview-kicker">Needs attention</span><h2>Active Incidents</h2></div>
-              <button className="text-link" onClick={() => onNavigate?.("Incidents")}>View all</button>
+              <div><span className="overview-kicker">Needs attention</span><h2>Active Alerts</h2></div>
+              <button className="text-link" onClick={() => onNavigate?.("Alerts")}>View all</button>
             </div>
-            {incidents.data?.incidents.filter(row=>row.status!=="RESOLVED").slice(0,5).map(row=><div className="overview-signal-row" key={row.id}><span className="overview-signal-icon" aria-hidden="true"><MetricIcon kind="Incidents" /></span><div className="overview-signal-copy"><button className="text-link" onClick={()=>onOpenIncident(row.id)}>{row.title}</button><small>{row.status} · source {row.condition_status}</small></div></div>)}
-            {incidents.data&&!activeIncidents&&<div className="empty-inline overview-empty">No active incidents in the selected organization.</div>}
-            {!incidents.data&&<div className="empty-inline overview-empty">Incident evidence unavailable.</div>}
+            {alerts.data?.alerts.filter(row=>row.status!=="RESOLVED").slice(0,5).map(row=><div className="overview-signal-row" key={row.id}><span className="overview-signal-icon" aria-hidden="true"><MetricIcon kind="Alerts" /></span><div className="overview-signal-copy"><button className="text-link" onClick={()=>onOpenAlert(row.id)}>{row.message}</button><small>{row.status} · source {row.status}</small></div></div>)}
+            {alerts.data&&!activeAlerts&&<div className="empty-inline overview-empty">No active alerts in the selected organization.</div>}
+            {!alerts.data&&<div className="empty-inline overview-empty">Alert evidence unavailable.</div>}
           </section>
         </div>
       </div>

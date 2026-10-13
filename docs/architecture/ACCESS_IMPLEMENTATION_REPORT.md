@@ -1,10 +1,12 @@
+> Historical acceptance report for PR #31, now merged. The current UAT feature supersedes the multi-department creation workflow and retires ITSM; see [current implementation](../CONSOLIDATED_UAT.md). Recorded evidence below remains tied to its original source hashes.
+
 # P0 implementation report: customers, departments and access
 
 Validated locally on 2026-10-12 on dedicated branch `feature/customer-department-rbac`, based on main `a845291a83cde941859dafe64134595cb5bd697c`. This report records development acceptance, not production deployment or independent human approval. The pull request remains unmerged.
 
 ## Implemented vertical slice
 
-External Customers retain the `organizations` table and all existing resource foreign keys. Internal Departments and Employees belong to the independent operating provider (default PTC). Existing employee identities may join multiple departments; departments and employees have independent immutable UUIDs, optional unique codes/employee IDs, active status and provider-consistent foreign keys.
+External Customers retain the `organizations` table and all existing resource foreign keys. Internal Departments and Employees belong to the independent operating provider (default OpsControl Services). Existing employee identities may join multiple departments; departments and employees have independent immutable UUIDs, optional unique codes/employee IDs, active status and provider-consistent foreign keys.
 
 A fixed implemented permission catalog, immutable reviewed default roles, configurable custom roles, department/user assignments and paired role/customer grants enforce default deny. User customer denies and role restrictions narrow inherited access. Access Administrators receive identity administration and explicit monitoring-delegation authority without automatic monitoring access. Reserved administration identities and protected platform administrators cannot be taken over through a lower administrator's password reset, status change, inactive-role edit or department lifecycle change. The last active platform administrator remains protected.
 

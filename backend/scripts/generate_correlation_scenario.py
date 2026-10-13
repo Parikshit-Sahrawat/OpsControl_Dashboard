@@ -68,7 +68,7 @@ def create_scenario(db, scenario_name: str):
         organization_id=org.id,
         vm_id=vm.id,
         pentaho_instance_id=pentaho.id,
-        name="DEMO_Pricing_Daily",
+        name="DEMO_Inventory_Daily",
         environment="PROD",
         expected_runtime_seconds=1200,
         sla_seconds=1800,
@@ -98,7 +98,7 @@ def create_scenario(db, scenario_name: str):
         source_error_code="DEMO_DB_TIMEOUT",
         source_error_message="Demo database connection timeout",
         source_exception="DemoConnectionTimeout: database did not respond within 30 seconds",
-        source_log_location="demo://pentaho/DEMO_Pricing_Daily/execution.log",
+        source_log_location="demo://pentaho/DEMO_Inventory_Daily/execution.log",
         source_result="ERROR",
     )
     db.add(history)
@@ -116,7 +116,7 @@ def create_scenario(db, scenario_name: str):
         ),
         JobStepExecution(
             history_id=history.id,
-            name="Transform Pricing",
+            name="Transform Inventory",
             step_type="Transformation",
             status="SUCCESS",
             started_at=start_at + timedelta(minutes=1),

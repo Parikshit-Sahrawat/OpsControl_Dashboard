@@ -1,10 +1,10 @@
 // UI affordances only. API dependencies and customer scope remain authoritative.
 export const NAV_PERMISSIONS = {
   Overview: "overview.view",
-  "ETL Jobs": "etl.view",
+  "Data Pipelines": "etl.view",
   "VM Health": "resources.view",
   APIs: "resources.view",
-  Incidents: "incidents.view",
+  Alerts: "alerts.view",
   Reports: "reports.view",
   "Resource Management": "customers.view",
   "Monitoring Setup": "collectors.view",

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPBasicAuthHandler, HTTPPasswordMgrWithPriorAuth, HTTPSHandler, HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
-from sqlalchemy import select, text
+from sqlalchemy import select, func, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -503,7 +503,7 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
 def _due_collector_ids(limit, excluded=()):
     with SessionLocal() as db:
         return list(db.scalars(select(Collector.id).where(
-            Collector.enabled.is_(True), Collector.remote_worker_id.is_(None), Collector.id.not_in(excluded),
+            Collector.enabled.is_(True), func.upper(Collector.collector_type) != "OTEL", Collector.remote_worker_id.is_(None), Collector.id.not_in(excluded),
             (Collector.next_run_at.is_(None) | (Collector.next_run_at <= datetime.now(timezone.utc)))
         ).order_by(Collector.next_run_at.nullsfirst(), Collector.id).limit(limit)))
 

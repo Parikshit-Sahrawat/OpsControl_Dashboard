@@ -1,12 +1,14 @@
+> Current stage (2026-10-13): existing PRs #30/#31 are merged. `feature/consolidated-manual-uat` implements managed OTel telemetry, organization tables, single-department onboarding and independent alert/notification delivery; its dedicated PR follows owner-authorized merge after automated validation. See [UAT implementation and exact verification](CONSOLIDATED_UAT.md). Historical rows below record earlier milestones; incident/ServiceNow features are retired rather than planned release dependencies.
+
 # OpsControl living implementation roadmap
 
-Last reconciled 2026-10-11. Main baseline `fbe83badb47ee61b81fe60f23dde48c37b1ee1d0` includes PR #23 (ETL), #24 (operational dashboards) and #25 (approved modern dual-theme UI). All sixteen PR #25 checks passed at its feature head; post-merge [Validation](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38165657701) passed. GitHub API/PR creation and merge are operational. Historical Forbidden and pending development merge claims are superseded.
+Last reconciled 2026-10-13. Main baseline `e5f51181754324b1c274b2ad0128d951e62bd5a5` includes approved PRs #30 and #31, plus PR #23 (ETL), #24 (operational dashboards) and #25 (approved modern dual-theme UI). All sixteen PR #25 checks passed at its feature head; post-merge [Validation](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38165657701) passed. GitHub API/PR creation and merge are operational. Historical Forbidden and pending development merge claims are superseded.
 
 Implementation, controlled evidence, remote CI, human review, merge and production acceptance are separate states. Owner-approved development merges do not certify independent security review. AWS Toolkit/live AWS setup remains paused.
 
 ## P0 customer / internal access correction
 
-Dedicated unmerged feature branch `feature/customer-department-rbac` implements provider-owned departments, employee identity metadata, roles/permissions and paired customer grants with customer resources unchanged. Local PostgreSQL, browser, Docker, worker/tenant, ETL/incident and populated restore regressions are documented in the [implementation report](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Remote CI and independent review are separate PR gates. All 32 pre-existing non-access drift groups are [resolved without schema/data changes](architecture/SCHEMA_MODEL_RECONCILIATION.md); the full Alembic comparison passes and is enforced in CI. The owner accepts single-provider runtime and is conducting independent security review/UAT locally. This correction needs no production deployment or production data modification. Live AWS setup remains paused.
+Merged PR #31 (`feature/customer-department-rbac`) implements provider-owned departments, employee identity metadata, roles/permissions and paired customer grants with customer resources unchanged. Local PostgreSQL, browser, Docker, worker/tenant, ETL/incident and populated restore regressions are documented in the [implementation report](architecture/ACCESS_IMPLEMENTATION_REPORT.md). All 18 PR #31 checks passed before its approved merge; independent owner review remains distinct from automated checks. All 32 pre-existing non-access drift groups are [resolved without schema/data changes](architecture/SCHEMA_MODEL_RECONCILIATION.md); the full Alembic comparison passes and is enforced in CI. The owner accepts single-provider runtime and is conducting independent security review/UAT locally. This correction needs no production deployment or production data modification. Live AWS setup remains paused.
 
 ## Current development stage
 
@@ -16,9 +18,9 @@ Dedicated unmerged feature branch `feature/customer-department-rbac` implements 
 | Sprint 1 HTTP | Actual synthetic HTTPS health→failure→recovery; DB/audit/tenant and browser evidence; merged/CI tested | Target deployment egress, CA rotation and UAT |
 | Sprint 2 infrastructure | AWS SDK controlled collection, TLS K8s fixture, native Linux and controlled Windows; data-backed VM view; merged/CI tested | Genuine AWS/CloudWatch, native Windows, customer K8s acceptance |
 | Sprint 3 Pentaho | Read-only Carte-shaped lifecycle, No Run/Long Running/SLA/history/logs/host correlation; PR #23 merged | Genuine Carte compatibility/read-only acceptance |
-| Sprint 4 NOC | All primary tabs data-backed; incident/investigation/report/scope journeys; PR #24 merged | Fleet scale and operator UAT |
+| Sprint 4 NOC | Data-backed tabs and investigation/report/scope journeys; PR #24 merged; consolidated UAT replaces incident workflows with monitoring Alerts | Fleet scale and operator UAT |
 | UI Test 1 | Persistent dark/light themes, responsive navigation/bento layout, actual browser regression; approved PR #25 merged | Preserve appearance/accessibility during reliability work |
-| Sprint 5 reliability | P0/P1 corrections and controlled populated restore/retention/TLS/resilience gate on separate feature branch | Exact-head CI/review, deployment-scale evidence and formal release acceptance |
+| Sprint 5 reliability | Approved reliability corrections merged via PR #26; retained restore/retention/TLS/resilience regression passes on the UAT branch | Exact-head CI/review, deployment-scale evidence and formal release acceptance |
 
 ## Implementation priorities
 

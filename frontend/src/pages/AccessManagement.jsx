@@ -10,13 +10,14 @@ import { authHeaders } from "../auth";
 import { hasPermission } from "../permissions";
 import useDialogFocus from "../components/useDialogFocus";
 import "../access-management.css";
+import AccessOnboarding from "./AccessOnboarding";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const TABS = [
   "Employees",
   "Departments",
   "Roles & Permissions",
-  "Customer Access",
+  "Organization Access",
   "Access Audit",
 ];
 const PAGE = 25;
@@ -117,7 +118,7 @@ function Effective({ value, customers }) {
         {!value.permissions?.length &&
           "Default deny — no permissions assigned."}
       </div>
-      <h3>Customer scopes</h3>
+      <h3>Organization scopes</h3>
       {Object.entries(value.customer_permissions || {}).map(([id, keys]) => (
         <div className="access-scope" key={id}>
           <b>{customers.find((c) => c.id === id)?.name || id}</b>
@@ -166,7 +167,7 @@ function Effective({ value, customers }) {
 
 export default function AccessManagement({ user }) {
   const can = (key) => hasPermission(user, `access.${key}`);
-  const [tab, setTab] = useState("Employees"),
+  const [tab, setTab] = useState("Departments"),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
     [department, setDepartment] = useState(""),
@@ -190,6 +191,7 @@ export default function AccessManagement({ user }) {
     [members, setMembers] = useState([]),
     [draft, setDraft] = useState({}),
     [preview, setPreview] = useState(null);
+  const [onboarding, setOnboarding] = useState(false);
   const epoch = useRef(0),
     detailEpoch = useRef(0);
   const reload = useCallback(async () => {
@@ -202,7 +204,7 @@ export default function AccessManagement({ user }) {
           ? `/employees?${params({ search, active: status, department_id: department, role_id: roleFilter, limit: PAGE, offset })}`
           : tab === "Departments"
             ? `/departments?${params({ search, active: status, limit: PAGE, offset })}`
-            : tab === "Customer Access"
+            : tab === "Organization Access"
               ? `/customer-grants?${params({ organization_id: customerFilter, department_id: department, limit: PAGE, offset })}`
               : tab === "Access Audit"
                 ? `/audit?limit=${PAGE}&offset=${offset}`
@@ -331,6 +333,7 @@ export default function AccessManagement({ user }) {
     if (kind === "employee")
       setDraft({
         username: row.username || "",
+        department_id: row.department_id || "",
         full_name: row.full_name || "",
         employee_id: row.employee_id || "",
         work_email: row.work_email || "",
@@ -398,7 +401,7 @@ export default function AccessManagement({ user }) {
       return act("/customer-grants", "POST", grantPayload());
     }
     if (kind === "employee") {
-      const { password, username, ...edit } = draft;
+      const { password, username, department_id, ...edit } = draft;
       const payload = {
         ...edit,
         employee_id: edit.employee_id || null,
@@ -408,7 +411,7 @@ export default function AccessManagement({ user }) {
       return act(
         row.id ? `/employees/${row.id}` : "/employees",
         row.id ? "PATCH" : "POST",
-        row.id ? payload : { ...payload, username, password },
+        row.id ? payload : { ...payload, username, password, department_id },
       );
     }
     if (kind === "department")
@@ -436,11 +439,13 @@ export default function AccessManagement({ user }) {
         "Password reset. All employee sessions revoked.",
       );
     if (kind === "employee-department")
-      return act(`/departments/${draft.department_id}/members`, "POST", {
-        user_id: row.id,
+      return act(`/employees/${row.id}/department`, "PUT", {
+        department_id: draft.department_id,
       });
     if (kind === "member")
-      return act(`/departments/${row.id}/members`, "POST", draft);
+      return act(`/employees/${draft.user_id}/department`, "PUT", {
+        department_id: row.id,
+      });
     if (kind === "assignment")
       return act(
         `/${row.kind === "employee" ? "employees" : "departments"}/${row.id}/roles`,
@@ -546,6 +551,40 @@ export default function AccessManagement({ user }) {
           Refresh
         </button>
       </div>
+      {onboarding && (
+        <AccessOnboarding
+          user={user}
+          departments={departments}
+          roles={roles}
+          organizations={customers}
+          onClose={() => setOnboarding(false)}
+          onComplete={async () => {
+            setOnboarding(false);
+            await directories();
+            await reload();
+          }}
+        />
+      )}
+      <div className="row-actions">
+        <button
+          disabled={busy || !can("manage_users")}
+          onClick={() => setOnboarding(true)}
+        >
+          Guided Department → Employee → Permissions
+        </button>
+        <button
+          disabled={busy || !can("manage_departments")}
+          onClick={() => open("department")}
+        >
+          Create Department
+        </button>
+        <button
+          disabled={busy || !can("manage_users")}
+          onClick={() => open("employee")}
+        >
+          Create Employee
+        </button>
+      </div>
       <nav className="access-tabs" aria-label="Access Management sections">
         {TABS.filter(
           (t) => t !== "Access Audit" || hasPermission(user, "audit.view"),
@@ -613,7 +652,7 @@ export default function AccessManagement({ user }) {
                 <option value="false">Inactive</option>
               </select>
             )}
-            {["Employees", "Customer Access"].includes(tab) && (
+            {["Employees", "Organization Access"].includes(tab) && (
               <select
                 aria-label="Department filter"
                 value={department}
@@ -647,7 +686,7 @@ export default function AccessManagement({ user }) {
                 ))}
               </select>
             )}
-            {tab === "Customer Access" && (
+            {tab === "Organization Access" && (
               <select
                 aria-label="Customer grant filter"
                 value={customerFilter}
@@ -687,7 +726,7 @@ export default function AccessManagement({ user }) {
                   Create role
                 </button>
               )}
-            {tab === "Customer Access" && can("manage_permissions") && (
+            {tab === "Organization Access" && can("manage_permissions") && (
               <button className="primary-button" onClick={() => open("grant")}>
                 Grant customer access
               </button>
@@ -731,7 +770,7 @@ export default function AccessManagement({ user }) {
                             "Status",
                             "Actions",
                           ]
-                        : tab === "Customer Access"
+                        : tab === "Organization Access"
                           ? [
                               "Subject",
                               "Customer",
@@ -866,7 +905,7 @@ export default function AccessManagement({ user }) {
                         </td>
                       </>
                     )}
-                    {tab === "Customer Access" && (
+                    {tab === "Organization Access" && (
                       <>
                         <td>
                           {row.user_id
@@ -1009,7 +1048,7 @@ export default function AccessManagement({ user }) {
           ))}
           {selected.kind === "employee" ? (
             <>
-              <h3>Department memberships</h3>
+              <h3>Department assignment</h3>
               {can("manage_users") && can("manage_departments") && (
                 <button
                   className="filter-button"
@@ -1094,7 +1133,7 @@ export default function AccessManagement({ user }) {
                       ))}
                   </div>
                   <p className="muted">
-                    Customer scopes:{" "}
+                    Organization scopes:{" "}
                     {selected.customer_access
                       .filter((g) => g.role_id === a.id)
                       .map((g) => customerName(g.organization_id))
@@ -1117,7 +1156,7 @@ export default function AccessManagement({ user }) {
                 : dialog.kind === "employee-department"
                   ? "Assign employee department"
                   : dialog.kind === "member"
-                    ? "Add employee to department"
+                    ? "Assign employee to department"
                     : dialog.kind === "password"
                       ? "Reset employee password"
                       : `${dialog.row.id ? "Edit" : "Create"} ${dialog.kind}`
@@ -1163,6 +1202,24 @@ export default function AccessManagement({ user }) {
                     onChange={(e) => change("work_email", e.target.value)}
                   />
                 </Field>
+                {!dialog.row.id && (
+                  <Field label="Department (exactly one)">
+                    <select
+                      required
+                      value={draft.department_id}
+                      onChange={(e) => change("department_id", e.target.value)}
+                    >
+                      <option value="">Select existing department</option>
+                      {departments
+                        .filter((d) => d.active)
+                        .map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name}
+                          </option>
+                        ))}
+                    </select>
+                  </Field>
+                )}
                 {!dialog.row.id && (
                   <Field label="Initial password">
                     <input
@@ -1333,9 +1390,10 @@ export default function AccessManagement({ user }) {
                   </select>
                 </Field>
                 <p className="info-box">
-                  This employee inherits the department’s assigned roles and
-                  paired customer scopes. Review the department permission
-                  summary before saving.
+                  This replaces the employee’s current department. The employee
+                  inherits this department’s roles and paired organization
+                  scopes. Review the department permission summary before
+                  saving.
                 </p>
               </>
             )}

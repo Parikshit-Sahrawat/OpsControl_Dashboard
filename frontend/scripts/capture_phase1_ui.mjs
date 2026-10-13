@@ -22,7 +22,7 @@ page.on("requestfailed", request => {
 
 const categories = [
   ["Overview", "01-overview"],
-  ["ETL Jobs", "02-etl-jobs"],
+  ["Data Pipelines", "02-etl-jobs"],
   ["VM Health", "03-vm-health"],
   ["APIs", "04-apis"],
   ["Incidents", "05-incidents"],

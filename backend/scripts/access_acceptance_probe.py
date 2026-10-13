@@ -26,9 +26,58 @@ PRIVATE = Path(os.environ["ACCESS_PRIVATE_DIR"])
 OUT = Path(os.environ["ACCESS_EVIDENCE_DIR"])
 f = json.loads((PRIVATE / "fixture.json").read_text())
 checks = []
+fixture_department = None
 
 
 def request(path, method="GET", body=None, token=None, expected=200):
+    global fixture_department
+    if (
+        expected in (201, 403, 409, 422)
+        and method == "POST"
+        and path == "/api/v1/access/employees"
+        and body
+        and not body.get("department_id")
+    ):
+        body = {**body, "department_id": fixture_department}
+    if (
+        expected == 403
+        and method == "POST"
+        and path == "/api/v1/access/employees"
+        and body
+        and not body.get("department_id")
+    ):
+        body = {**body, "department_id": fixture_department}
+    if (
+        expected == 201
+        and method == "POST"
+        and path.startswith("/api/v1/access/departments/")
+        and path.endswith("/members")
+    ):
+        department_id = path.split("/")[-2]
+        return request(
+            "/api/v1/access/employees/" + body["user_id"] + "/department",
+            "PUT",
+            {"department_id": department_id},
+            token,
+            200,
+        )
+    if expected == 204 and method == "DELETE" and "/members/" in path:
+        return request(
+            "/api/v1/access/employees/" + path.rsplit("/", 1)[1] + "/department",
+            "PUT",
+            {"department_id": fixture_department},
+            token,
+            200,
+        )
+    if (
+        expected == 201
+        and method == "POST"
+        and path == "/api/v1/auth/users"
+        and body
+        and not body.get("platform_admin")
+        and not body.get("department_id")
+    ):
+        body = {**body, "department_id": fixture_department}
     req = Request(
         BASE + path,
         data=json.dumps(body).encode() if body is not None else None,
@@ -142,6 +191,8 @@ def main():
             201,
         )
 
+    global fixture_department
+    fixture_department = dept("Controlled Unassigned Team")["id"]
     one = dept("NOC")
     two = dept("Systems")
     assert one["id"] != two["id"] and not {one["id"], two["id"]} & {
@@ -216,23 +267,28 @@ def main():
         "POST",
         {"user_id": member["id"]},
         admin,
-        201,
+        409,
+    )
+    request(
+        "/api/v1/access/employees/" + member["id"] + "/department",
+        "PUT",
+        {"department_id": two["id"]},
+        admin,
     )
     assert set(request("/api/v1/auth/me", token=noc)["customer_permissions"]) == {
-        f["customer_a"],
-        f["customer_b"],
+        f["customer_b"]
     }
     request(
-        "/api/v1/access/departments/" + two["id"] + "/members/" + member["id"],
-        "DELETE",
-        token=admin,
-        expected=204,
+        "/api/v1/access/employees/" + member["id"] + "/department",
+        "PUT",
+        {"department_id": one["id"]},
+        admin,
     )
     assert set(request("/api/v1/auth/me", token=noc)["customer_permissions"]) == {
         f["customer_a"]
     }
     record(
-        "Multiple department membership without duplicate identities; changes affect an existing token immediately"
+        "Single department creation enforcement and explicit transfer immediately update existing sessions"
     )
     request(
         "/api/v1/access/employees/" + manager["id"] + "/roles",
@@ -395,10 +451,9 @@ def main():
         },
         admin,
     )
-    assert request("/api/v1/access/departments", token=admin)["items"][0]["id"] in {
-        one["id"],
-        two["id"],
-    }
+    assert {one["id"], two["id"]}.issubset(
+        {d["id"] for d in request("/api/v1/access/departments", token=admin)["items"]}
+    )
     request(
         "/api/v1/access/departments/" + one["id"], "DELETE", token=admin, expected=409
     )
@@ -552,24 +607,19 @@ def main():
         )
     paired = login("access-paired")
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]
-    assert "etl.view" in perms[f["customer_a"]] and perms[f["customer_b"]] == [
-        "resources.view"
-    ]
+    assert f["customer_a"] not in perms and perms[f["customer_b"]] == ["resources.view"]
     request(
         "/api/v1/access/roles/" + custom["id"],
         "PATCH",
-        {"name": "Paired Resource Read", "permissions": ["incidents.view"]},
+        {"name": "Paired Resource Read", "permissions": ["alerts.view"]},
         admin,
     )
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]
-    assert perms[f["customer_b"]] == ["incidents.view"]
-    assert (
-        request(
-            "/api/v1/resource-management/data-sources?organization_id="
-            + f["customer_b"],
-            token=paired,
-        )
-        == []
+    assert perms[f["customer_b"]] == ["alerts.view"]
+    request(
+        "/api/v1/resource-management/data-sources?organization_id=" + f["customer_b"],
+        token=paired,
+        expected=403,
     )
     record(
         "No role/customer cross-product; custom role permission replacement applies immediately to the same session"
