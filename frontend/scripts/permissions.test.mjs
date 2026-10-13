@@ -22,9 +22,9 @@ test("administrative pages use independent filters", () => {
   assert.equal(administrationPage("Resource Management"), true);
   for (const page of [
     "Overview",
-    "Data Pipelines",
+    "ETL Monitoring",
     "VM Health",
-    "APIs",
+    "API Monitoring",
     "Alerts",
     "Reports",
   ])
@@ -49,4 +49,11 @@ test("malformed cached customer preferences cannot corrupt selector state", () =
   for (const raw of ["{}", "42", "null", "broken-json"])
     assert.deepEqual(parseCustomerSelection(raw), []);
   assert.deepEqual(parseCustomerSelection('["a",null,17,"a","b"]'), ["a", "b"]);
+});
+
+
+test("retired navigation cannot be enabled by cached permissions", () => {
+  for (const page of ["Incidents", "Monitoring Setup", "Organizations", "Collectors"])
+    assert.equal(canNavigate({platform_admin: true}, page), false);
+  assert.equal(canNavigate({permissions:["etl.view"]}, "ETL Monitoring"), true);
 });

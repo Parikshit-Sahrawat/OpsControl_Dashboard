@@ -17,7 +17,6 @@ const TABS = [
   "Employees",
   "Departments",
   "Roles & Permissions",
-  "Organization Access",
   "Access Audit",
 ];
 const PAGE = 25;
@@ -171,8 +170,7 @@ export default function AccessManagement({ user }) {
     [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
     [department, setDepartment] = useState(""),
-    [roleFilter, setRoleFilter] = useState(""),
-    [customerFilter, setCustomerFilter] = useState("");
+    [roleFilter, setRoleFilter] = useState("");
   const [offset, setOffset] = useState(0),
     [data, setData] = useState({ items: [], total: 0 }),
     [roles, setRoles] = useState([]),
@@ -204,11 +202,9 @@ export default function AccessManagement({ user }) {
           ? `/employees?${params({ search, active: status, department_id: department, role_id: roleFilter, limit: PAGE, offset })}`
           : tab === "Departments"
             ? `/departments?${params({ search, active: status, limit: PAGE, offset })}`
-            : tab === "Organization Access"
-              ? `/customer-grants?${params({ organization_id: customerFilter, department_id: department, limit: PAGE, offset })}`
-              : tab === "Access Audit"
-                ? `/audit?limit=${PAGE}&offset=${offset}`
-                : "/roles";
+            : tab === "Access Audit"
+              ? `/audit?limit=${PAGE}&offset=${offset}`
+              : "/roles";
       const result = await api(path);
       if (current === epoch.current)
         setData(
@@ -231,7 +227,7 @@ export default function AccessManagement({ user }) {
     } finally {
       if (current === epoch.current) setLoading(false);
     }
-  }, [tab, search, status, department, roleFilter, customerFilter, offset]);
+  }, [tab, search, status, department, roleFilter, offset]);
   const latestReload = useRef(reload);
   latestReload.current = reload;
   const directories = useCallback(async () => {
@@ -359,47 +355,14 @@ export default function AccessManagement({ user }) {
     if (kind === "member") setDraft({ user_id: "" });
     if (kind === "employee-department") setDraft({ department_id: "" });
     if (kind === "password") setDraft({ new_password: "" });
-    if (kind === "grant")
-      setDraft({
-        subject: row.kind || "employee",
-        subject_id: row.id || "",
-        organization_id: "",
-        role_id: "",
-        effect: "ALLOW",
-      });
   }
   function change(key, value) {
     setDraft((d) => ({ ...d, [key]: value }));
     setPreview(null);
   }
-  function grantPayload() {
-    return {
-      [draft.subject === "employee" ? "user_id" : "department_id"]:
-        draft.subject_id,
-      organization_id: draft.organization_id,
-      role_id: draft.effect === "ALLOW" ? draft.role_id : null,
-      effect: draft.effect,
-    };
-  }
   async function save(event) {
     event.preventDefault();
     const { kind, row } = dialog;
-    if (kind === "grant") {
-      if (!preview) {
-        setBusy(true);
-        try {
-          setPreview(
-            await api("/customer-grants/preview", "POST", grantPayload()),
-          );
-        } catch (e) {
-          setError(e.message);
-        } finally {
-          setBusy(false);
-        }
-        return;
-      }
-      return act("/customer-grants", "POST", grantPayload());
-    }
     if (kind === "employee") {
       const { password, username, department_id, ...edit } = draft;
       const payload = {
@@ -456,12 +419,6 @@ export default function AccessManagement({ user }) {
   function confirmAction(message, path, method, body) {
     if (window.confirm(message)) act(path, method, body);
   }
-  const subject =
-    draft.subject === "department"
-      ? departments.find((d) => d.id === draft.subject_id)
-      : people.find((p) => p.id === draft.subject_id);
-  const subjectRoles =
-    subject?.roles?.filter((a) => a.effect !== "DENY").map((a) => a.id) || [];
   const protectedTarget = (row) =>
     !user.platform_admin && row.protected_administration && row.id !== user.id;
   const protectedDepartment = (row) =>
@@ -652,7 +609,7 @@ export default function AccessManagement({ user }) {
                 <option value="false">Inactive</option>
               </select>
             )}
-            {["Employees", "Organization Access"].includes(tab) && (
+            {tab === "Employees" && (
               <select
                 aria-label="Department filter"
                 value={department}
@@ -686,23 +643,6 @@ export default function AccessManagement({ user }) {
                 ))}
               </select>
             )}
-            {tab === "Organization Access" && (
-              <select
-                aria-label="Customer grant filter"
-                value={customerFilter}
-                onChange={(e) => {
-                  setCustomerFilter(e.target.value);
-                  setOffset(0);
-                }}
-              >
-                <option value="">All customer grants</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            )}
             {tab === "Employees" && can("manage_users") && (
               <button
                 className="primary-button"
@@ -726,11 +666,6 @@ export default function AccessManagement({ user }) {
                   Create role
                 </button>
               )}
-            {tab === "Organization Access" && can("manage_permissions") && (
-              <button className="primary-button" onClick={() => open("grant")}>
-                Grant customer access
-              </button>
-            )}
           </div>
         </div>
         {loading ? (
@@ -770,21 +705,13 @@ export default function AccessManagement({ user }) {
                             "Status",
                             "Actions",
                           ]
-                        : tab === "Organization Access"
-                          ? [
-                              "Subject",
-                              "Customer",
-                              "Role / effect",
-                              "Source",
-                              "Actions",
-                            ]
-                          : [
-                              "Timestamp",
-                              "Actor UUID",
-                              "Action",
-                              "Target",
-                              "Outcome",
-                            ]
+                        : [
+                            "Timestamp",
+                            "Actor UUID",
+                            "Action",
+                            "Target",
+                            "Outcome",
+                          ]
                   ).map((h) => (
                     <th key={h}>{h}</th>
                   ))}
@@ -905,43 +832,6 @@ export default function AccessManagement({ user }) {
                         </td>
                       </>
                     )}
-                    {tab === "Organization Access" && (
-                      <>
-                        <td>
-                          {row.user_id
-                            ? employeeName(row.user_id)
-                            : departmentName(row.department_id)}
-                          <small>
-                            {row.user_id ? "Employee" : "Department"}
-                          </small>
-                        </td>
-                        <td>{customerName(row.organization_id)}</td>
-                        <td>
-                          {row.effect} ·{" "}
-                          {row.role_id
-                            ? roleName(row.role_id)
-                            : "All customer access denied"}
-                        </td>
-                        <td>{row.source}</td>
-                        <td>
-                          {can("manage_permissions") && (
-                            <button
-                              className="danger-button"
-                              disabled={busy}
-                              onClick={() =>
-                                confirmAction(
-                                  "Revoke this customer grant? Existing sessions immediately lose this source of access.",
-                                  `/customer-grants/${row.id}`,
-                                  "DELETE",
-                                )
-                              }
-                            >
-                              Revoke
-                            </button>
-                          )}
-                        </td>
-                      </>
-                    )}
                     {tab === "Access Audit" && (
                       <>
                         <td>
@@ -1015,14 +905,6 @@ export default function AccessManagement({ user }) {
               onClick={() => open("assignment", selected)}
             >
               Assign role
-            </button>
-          )}
-          {can("manage_permissions") && (
-            <button
-              className="filter-button"
-              onClick={() => open("grant", selected)}
-            >
-              Grant customer access
             </button>
           )}
           <h3>Direct role assignments</h3>
@@ -1149,17 +1031,15 @@ export default function AccessManagement({ user }) {
       {dialog && (
         <Dialog
           title={
-            dialog.kind === "grant"
-              ? "Grant customer access"
-              : dialog.kind === "assignment"
-                ? "Assign role"
-                : dialog.kind === "employee-department"
-                  ? "Assign employee department"
-                  : dialog.kind === "member"
-                    ? "Assign employee to department"
-                    : dialog.kind === "password"
-                      ? "Reset employee password"
-                      : `${dialog.row.id ? "Edit" : "Create"} ${dialog.kind}`
+            dialog.kind === "assignment"
+              ? "Assign role"
+              : dialog.kind === "employee-department"
+                ? "Assign employee department"
+                : dialog.kind === "member"
+                  ? "Assign employee to department"
+                  : dialog.kind === "password"
+                    ? "Reset employee password"
+                    : `${dialog.row.id ? "Edit" : "Create"} ${dialog.kind}`
           }
           onClose={() => !busy && setDialog(null)}
         >
@@ -1519,121 +1399,6 @@ export default function AccessManagement({ user }) {
                 </p>
               </>
             )}
-            {dialog.kind === "grant" && (
-              <>
-                <Field label="Subject type">
-                  <select
-                    value={draft.subject}
-                    onChange={(e) => {
-                      change("subject", e.target.value);
-                      change("subject_id", "");
-                      change("role_id", "");
-                      change("effect", "ALLOW");
-                    }}
-                  >
-                    <option value="employee">Employee</option>
-                    <option value="department">Department</option>
-                  </select>
-                </Field>
-                <Field
-                  label={
-                    draft.subject === "employee" ? "Employee" : "Department"
-                  }
-                >
-                  <select
-                    required
-                    value={draft.subject_id}
-                    onChange={(e) => {
-                      change("subject_id", e.target.value);
-                      change("role_id", "");
-                    }}
-                  >
-                    <option value="">Select subject</option>
-                    {(draft.subject === "employee" ? people : departments).map(
-                      (s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.full_name || s.name}
-                        </option>
-                      ),
-                    )}
-                  </select>
-                </Field>
-                <Field label="Customer">
-                  <select
-                    required
-                    value={draft.organization_id}
-                    onChange={(e) => change("organization_id", e.target.value)}
-                  >
-                    <option value="">Select customer</option>
-                    {customers.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                {draft.subject === "employee" && (
-                  <Field label="Grant effect">
-                    <select
-                      value={draft.effect}
-                      onChange={(e) => change("effect", e.target.value)}
-                    >
-                      <option value="ALLOW">
-                        Allow assigned role for this customer
-                      </option>
-                      <option value="DENY">
-                        Deny all access to this customer
-                      </option>
-                    </select>
-                  </Field>
-                )}
-                {draft.effect === "ALLOW" && (
-                  <Field label="Assigned role">
-                    <select
-                      required
-                      value={draft.role_id}
-                      onChange={(e) => change("role_id", e.target.value)}
-                    >
-                      <option value="">Select already assigned role</option>
-                      {roles
-                        .filter((r) => subjectRoles.includes(r.id))
-                        .map((r) => (
-                          <option key={r.id} value={r.id}>
-                            {r.name}
-                          </option>
-                        ))}
-                    </select>
-                  </Field>
-                )}
-                {preview ? (
-                  <>
-                    <p className="info-box">
-                      Server-verified preview. No changes have been saved.{" "}
-                      {preview.department_member_count != null &&
-                        `${preview.department_member_count} active members inherit this grant.`}
-                    </p>
-                    {preview.effective && (
-                      <Effective
-                        value={preview.effective}
-                        customers={customers}
-                      />
-                    )}
-                    <div className="chip-row">
-                      {preview.role_permissions?.map((k) => (
-                        <code className="mini-chip" key={k}>
-                          {k}
-                        </code>
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <p className="muted">
-                    Review effective access before confirming. The server
-                    validates delegation and paired role assignment.
-                  </p>
-                )}
-              </>
-            )}
             <div className="form-footer">
               <button
                 className="filter-button"
@@ -1644,13 +1409,7 @@ export default function AccessManagement({ user }) {
                 Cancel
               </button>
               <button className="primary-button" disabled={busy}>
-                {busy
-                  ? "Checking…"
-                  : dialog.kind === "grant" && !preview
-                    ? "Preview effective access"
-                    : dialog.kind === "grant"
-                      ? "Confirm customer grant"
-                      : "Save changes"}
+                {busy ? "Checking…" : "Save changes"}
               </button>
             </div>
           </form>

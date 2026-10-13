@@ -318,72 +318,12 @@ export default function AccessOnboarding({
             >
               Assign Role
             </button>
-            <label className="form-field">
-              <span>Organization scope (optional explicit grant)</span>
-              <select
-                value={organization}
-                onChange={(e) => {
-                  setOrganization(e.target.value);
-                  setPreview(null);
-                }}
-              >
-                <option value="">Select organization</option>
-                {organizations.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              disabled={
-                busy ||
-                !employeeId ||
-                !role ||
-                !organization ||
-                !hasPermission(user, "access.manage_permissions")
-              }
-              onClick={() =>
-                action(async () =>
-                  setPreview(
-                    await control(
-                      "/api/v1/access/customer-grants/preview",
-                      "POST",
-                      payload,
-                    ),
-                  ),
-                )
-              }
-            >
-              Preview Organization Grant
-            </button>
-            {preview && (
-              <>
-                <pre>{JSON.stringify(preview, null, 2)}</pre>
-                <button
-                  disabled={busy}
-                  onClick={() =>
-                    action(async () => {
-                      await control(
-                        "/api/v1/access/customer-grants",
-                        "POST",
-                        payload,
-                      );
-                      setPreview(null);
-                      setEffective(
-                        await control(
-                          "/api/v1/access/employees/" +
-                            employeeId +
-                            "/effective-permissions",
-                        ),
-                      );
-                    })
-                  }
-                >
-                  Confirm Organization Grant
-                </button>
-              </>
-            )}
+            <p className="muted">
+              This workflow manages internal role assignments. Existing
+              customer-scoped grants remain enforced by the backend;
+              customer-grant administration is handled through the authorized
+              access API.
+            </p>
             <h3>Effective permissions</h3>
             {effective ? (
               <pre>{JSON.stringify(effective, null, 2)}</pre>

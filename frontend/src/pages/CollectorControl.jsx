@@ -316,7 +316,9 @@ export default function CollectorControl({
                         <td>{m.name}</td>
                         <td>{m.method_type}</td>
                         <td>
-                          {m.method_type === "FILE_LOG"
+                          {["FILE_LOG", "SYSLOG_RECEIVER"].includes(
+                            m.method_type,
+                          )
                             ? "Logs"
                             : m.method_type === "METRIC_SCRAPE"
                               ? "Metrics"
@@ -563,6 +565,83 @@ export default function CollectorControl({
                           }
                         />
                       </Field>
+                    </>
+                  )}
+                  {method.method_type === "SYSLOG_RECEIVER" && (
+                    <>
+                      <Field label="Syslog binding">
+                        <input
+                          value={cfg.bind}
+                          onChange={(e) => change("bind", e.target.value)}
+                        />
+                      </Field>
+                      <Field label="Syslog port">
+                        <input
+                          type="number"
+                          min="1024"
+                          max="65535"
+                          value={cfg.port}
+                          onChange={(e) =>
+                            change("port", Number(e.target.value))
+                          }
+                        />
+                      </Field>
+                      <Field label="Syslog transport">
+                        <select
+                          value={cfg.protocol}
+                          onChange={(e) => change("protocol", e.target.value)}
+                        >
+                          <option>TCP</option>
+                          <option>UDP</option>
+                        </select>
+                      </Field>
+                      <Field label="Syslog format">
+                        <select
+                          value={cfg.format}
+                          onChange={(e) => change("format", e.target.value)}
+                        >
+                          <option>RFC5424</option>
+                          <option>RFC3164</option>
+                        </select>
+                      </Field>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={cfg.allow_remote}
+                          onChange={(e) =>
+                            change("allow_remote", e.target.checked)
+                          }
+                        />{" "}
+                        Explicitly allow remote syslog with mutual TLS
+                      </label>
+                      <Field label="Syslog TLS certificate path">
+                        <input
+                          value={cfg.tls_certificate || ""}
+                          onChange={(e) =>
+                            change("tls_certificate", e.target.value || null)
+                          }
+                        />
+                      </Field>
+                      <Field label="Syslog TLS key file reference">
+                        <input
+                          value={cfg.tls_key_ref || ""}
+                          onChange={(e) =>
+                            change("tls_key_ref", e.target.value || null)
+                          }
+                        />
+                      </Field>
+                      <Field label="Syslog client CA path">
+                        <input
+                          value={cfg.client_ca || ""}
+                          onChange={(e) =>
+                            change("client_ca", e.target.value || null)
+                          }
+                        />
+                      </Field>
+                      <p className="muted">
+                        Loopback is the default. Unprotected public UDP/TCP
+                        listeners are rejected.
+                      </p>
                     </>
                   )}
                   {method.method_type === "OTLP_RECEIVER" && (

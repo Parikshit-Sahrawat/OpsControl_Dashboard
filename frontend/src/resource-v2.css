@@ -5,3 +5,17 @@
 .template-rule-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:9px;padding:12px}
 .builder-section{border:1px dashed var(--border);background:var(--surface-raised);border-radius:9px;padding:14px;display:grid;gap:10px}
 .template-rule-card .form-field textarea{min-height:58px}
+
+/* Native domain controls share the existing palette and compact geometry. */
+.unified-resources [role="tablist"]{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.unified-resources button:not(.primary-button),.unified-overview button,.unified-parameters button{font:inherit;color:var(--text);border:1px solid var(--border);background:var(--surface-raised);padding:7px 11px;border-radius:8px;cursor:pointer;max-width:100%;overflow-wrap:anywhere}
+.unified-resources [role="tab"][aria-selected="true"]{color:var(--accent);background:var(--accent-wash);border-color:var(--accent)}
+.unified-resources button:disabled{opacity:.5;cursor:not-allowed}
+.unified-resources button:focus-visible,.unified-parameters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.unified-modal{width:min(960px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}
+.unified-resources,.unified-parameters,.unified-resource-detail{min-width:0}
+.unified-resources td,.unified-parameters td{overflow-wrap:anywhere}
+.unified-resource-detail{margin-top:16px;display:grid;gap:14px}
+.unified-parameters textarea{width:100%;min-height:100px;box-sizing:border-box;font-family:var(--font-mono,monospace)}
+.environment-selector select{max-width:180px;padding:8px;border:1px solid var(--border);border-radius:8px;background:var(--surface-raised);color:var(--text)}
+@media(max-width:640px){.environment-selector select{max-width:130px}.unified-modal{padding:16px}.unified-resources [role="tablist"]{gap:4px}}

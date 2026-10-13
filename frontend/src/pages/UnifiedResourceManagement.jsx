@@ -1,0 +1,1428 @@
+import { useEffect, useRef, useState } from "react";
+import { control, downloadPackage } from "../controlPlane";
+import { hasPermission } from "../permissions";
+import { fetchAuthorizedCustomers } from "../api";
+import useDialogFocus from "../components/useDialogFocus";
+import CollectorControl from "./CollectorControl";
+import DomainParameters, { Field } from "./DomainParameters";
+const base = "/api/v1/unified";
+const domainNames = {
+  ETL: "ETL Resources",
+  VM: "VM Resources",
+  API: "API Resources",
+};
+const parameterNames = {
+  ETL: "ETL Parameters",
+  VM: "VM Health Parameters",
+  API: "API Parameters",
+};
+const blank = (domain) => ({
+  name: "",
+  organization_id: "",
+  new_customer: null,
+  environment: "PROD",
+  description: "",
+  tags: {},
+  active: true,
+  ...(domain === "VM"
+    ? {
+        hostname: "",
+        address: "",
+        os_type: "Linux",
+        vm_type: "VM",
+        native_os_metrics: true,
+        services: [],
+        processes: [],
+      }
+    : domain === "ETL"
+      ? {
+          platform: "PENTAHO",
+          vm_resource_id: null,
+          jobchain: "",
+          scheduler: "",
+          log_paths: [],
+          frequency_seconds: 30,
+          connector_url: null,
+          credential_ref: null,
+          connector_records_field: "records",
+        }
+      : {
+          dns: "",
+          port: 443,
+          protocol: "HTTPS",
+          path: "/",
+          frequency_seconds: 30,
+          method: "GET",
+          auth_type: "NONE",
+          credential_ref: null,
+          timeout_seconds: 10,
+          headers: {},
+          tls_validation: true,
+          linked_vm_resource_id: null,
+          probe_location: "NATIVE",
+        }),
+});
+function Modal({ title, onClose, children, focus = true }) {
+  const ref = useRef(null);
+  useDialogFocus(ref, focus, onClose);
+  return (
+    <div className="modal-backdrop">
+      <section
+        ref={ref}
+        className="modal resource-onboarding-modal unified-modal"
+        role="dialog"
+        aria-label={title}
+        aria-modal="true"
+      >
+        <div className="page-heading">
+          <h2>{title}</h2>
+          <button aria-label="Close resource form" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        {children}
+      </section>
+    </div>
+  );
+}
+export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
+  const [area, setArea] = useState("resources"),
+    [domain, setDomain] = useState("VM"),
+    [customers, setCustomers] = useState([]),
+    [customer, setCustomer] = useState(""),
+    [environment, setEnvironment] = useState(""),
+    [search, setSearch] = useState(""),
+    [offset, setOffset] = useState(0),
+    [data, setData] = useState(null),
+    [error, setError] = useState(""),
+    [selected, setSelected] = useState(null),
+    [form, setForm] = useState(null),
+    [reload, setReload] = useState(0),
+    [collector, setCollector] = useState(null),
+    [source, setSource] = useState(null),
+    [issues, setIssues] = useState([]),
+    [link, setLink] = useState({
+      depends_on_id: "",
+      relationship_type: "DEPENDS_ON",
+      service_identity: "",
+    }),
+    [parents, setParents] = useState([]),
+    [busy, setBusy] = useState(false);
+  const seq = useRef(0);
+  const allowed = (key, org) => hasPermission(user, key, org);
+  const refresh = () => setReload((v) => v + 1);
+  useEffect(() => {
+    let live = true;
+    fetchAuthorizedCustomers()
+      .then((v) => live && setCustomers(v))
+      .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [reload, user.authorization_revision]);
+  useEffect(() => {
+    const version = ++seq.current;
+    setData(null);
+    setError("");
+    const q = new URLSearchParams({
+      domain,
+      limit: "50",
+      offset: String(offset),
+      search,
+    });
+    if (customer) q.append("organization_id", customer);
+    if (environment) q.set("environment", environment);
+    control(base + "/resources?" + q)
+      .then((v) => {
+        if (seq.current === version) setData(v);
+      })
+      .catch((e) => seq.current === version && setError(e.message));
+    return () => {
+      seq.current++;
+    };
+  }, [domain, customer, environment, search, offset, reload]);
+  useEffect(() => {
+    setSelected(null);
+    setOffset(0);
+  }, [domain, customer, environment]);
+  useEffect(() => {
+    let live = true;
+    if (selected)
+      Promise.all([
+        control(base + "/resources/" + selected.id),
+        control(base + "/resources?limit=200"),
+      ])
+        .then(([v, p]) => {
+          if (live) {
+            setSelected((current) => (current?.id === v.id ? v : current));
+            setParents(p.items);
+          }
+        })
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [selected?.id, reload]);
+  const inspect = (r) => {
+    setSelected(r);
+    setError("");
+  };
+  const action = async (fn) => {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+      refresh();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const openCollector = async (r) => {
+    try {
+      if (!r.primary_collector_id)
+        throw Error(
+          "This legacy VM requires explicit Collector reconciliation",
+        );
+      const c = await control(
+        "/api/v1/monitoring/collectors/" + r.primary_collector_id,
+      );
+      const s = await control(
+        "/api/v1/monitoring/data-sources/" + r.data_source_id,
+      );
+      setCollector(c);
+      setSource(s);
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+  return (
+    <div className="resource-management-v2 unified-resources">
+      <div className="page-heading">
+        <div>
+          <h1>Resource Management</h1>
+          <p>
+            VM-associated collection, native ETL execution monitoring and
+            endpoint probes.
+          </p>
+        </div>
+        <button className="filter-button" onClick={refresh}>
+          Refresh
+        </button>
+      </div>
+      <div
+        role="tablist"
+        aria-label="Resource Management sections"
+        className="heading-actions"
+      >
+        <button
+          role="tab"
+          aria-selected={area === "resources"}
+          onClick={() => setArea("resources")}
+        >
+          Data Resources
+        </button>
+        <button
+          role="tab"
+          aria-selected={area === "parameters"}
+          onClick={() => setArea("parameters")}
+        >
+          Event Parameters
+        </button>
+      </div>
+      <div
+        role="tablist"
+        aria-label={
+          area === "resources"
+            ? "Data Resource domains"
+            : "Event Parameter domains"
+        }
+        className="heading-actions"
+      >
+        {["ETL", "VM", "API"].map((v) => (
+          <button
+            key={v}
+            role="tab"
+            aria-selected={domain === v}
+            onClick={() => setDomain(v)}
+          >
+            {area === "resources" ? domainNames[v] : parameterNames[v]}
+          </button>
+        ))}
+      </div>
+      <div className="resource-toolbar">
+        <Field label="Resource customer filter">
+          <select
+            value={customer}
+            onChange={(e) => {
+              setCustomer(e.target.value);
+              setOffset(0);
+            }}
+          >
+            <option value="">All authorized customers</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Resource environment filter">
+          <select
+            value={environment}
+            onChange={(e) => {
+              setEnvironment(e.target.value);
+              setOffset(0);
+            }}
+          >
+            <option value="">All environments</option>
+            {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((e) => (
+              <option key={e}>{e}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Search resources">
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setOffset(0);
+            }}
+          />
+        </Field>
+        {area === "resources" && allowed("resources.create") && (
+          <button
+            className="primary-button"
+            onClick={() => setForm({ domain })}
+          >
+            Create {domain === "ETL" ? "ETL" : domain === "VM" ? "VM" : "API"}{" "}
+            Resource
+          </button>
+        )}
+      </div>
+      {error && (
+        <p role="alert" className="error-banner">
+          {error}
+        </p>
+      )}
+      {!data && !error && <p>Loading authorized resources…</p>}
+      <section className="card table-wrap">
+        <h2>
+          {area === "resources" ? domainNames[domain] : parameterNames[domain]}
+        </h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Resource</th>
+              <th>Customer</th>
+              <th>Environment</th>
+              <th>{domain === "ETL" ? "Platform / VM" : "Identity"}</th>
+              <th>Monitoring</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.items.map((r) => (
+              <tr key={r.id}>
+                <td>
+                  <button
+                    className="resource-name-link"
+                    onClick={() => inspect(r)}
+                  >
+                    {r.name}
+                  </button>
+                  <small>{r.id}</small>
+                </td>
+                <td>{r.inherited.customer}</td>
+                <td>{r.environment}</td>
+                <td>
+                  {domain === "ETL"
+                    ? r.configuration.platform +
+                      " · " +
+                      (r.inherited.hostname || "SaaS / no VM")
+                    : domain === "VM"
+                      ? r.configuration.hostname
+                      : r.inherited.dns || r.configuration.endpoint}
+                </td>
+                <td>
+                  {r.activation_status}
+                  <small>
+                    {r.active ? "Enabled configuration" : "Inactive"}
+                  </small>
+                </td>
+                <td>
+                  <div className="row-actions">
+                    <button onClick={() => inspect(r)}>
+                      {area === "parameters"
+                        ? "Configure parameters"
+                        : "Details"}
+                    </button>
+                    {area === "resources" &&
+                      allowed("resources.update", r.organization_id) &&
+                      !r.configuration.legacy && (
+                        <button onClick={() => setForm({ domain, item: r })}>
+                          Edit
+                        </button>
+                      )}
+                    {domain === "VM" &&
+                      area === "resources" &&
+                      r.primary_collector_id &&
+                      allowed("collectors.view", r.organization_id) && (
+                        <button onClick={() => openCollector(r)}>
+                          Collector Configuration
+                        </button>
+                      )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {data && !data.items.length && (
+          <p>No resources match these authorized filters.</p>
+        )}
+      </section>
+      {data && (
+        <div className="form-footer">
+          <span>
+            {data.total} resources · page {Math.floor(offset / 50) + 1}
+          </span>
+          <button
+            disabled={!offset}
+            onClick={() => setOffset((v) => Math.max(0, v - 50))}
+          >
+            Previous
+          </button>
+          <button
+            disabled={!data.has_more}
+            onClick={() => setOffset((v) => v + 50)}
+          >
+            Next
+          </button>
+        </div>
+      )}
+      {selected && (
+        <section
+          className="card unified-resource-detail"
+          aria-label="Resource details"
+        >
+          <div className="page-heading">
+            <h2>{selected.name}</h2>
+            <button onClick={() => setSelected(null)}>Close details</button>
+          </div>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Inherited identity</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(selected.inherited).map(([k, v]) => (
+                  <tr key={k}>
+                    <td>{k}</td>
+                    <td>{String(v ?? "Unmapped")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {selected.configuration.legacy && (
+            <p className="muted">
+              Existing identity/history is preserved. Review legacy
+              source/template mappings before activating the new engines.
+            </p>
+          )}
+          {area === "parameters" ? (
+            <DomainParameters
+              key={selected.id + selected.revision}
+              resource={selected}
+              user={user}
+              onSaved={refresh}
+            />
+          ) : (
+            <>
+              {selected.domain === "VM" && (
+                <button
+                  className="primary-button"
+                  disabled={!selected.primary_collector_id}
+                  onClick={() => openCollector(selected)}
+                >
+                  Agent Installation and Collector Configuration
+                </button>
+              )}
+              <button
+                onClick={() =>
+                  action(async () => {
+                    const v = await control(
+                      base + "/resources/" + selected.id + "/verification",
+                    );
+                    setSelected((r) => ({ ...r, verification: v }));
+                  })
+                }
+              >
+                Verify telemetry
+              </button>
+              {selected.verification && (
+                <Verification data={selected.verification} />
+              )}
+              {["API", "ETL"].includes(selected.domain) &&
+                selected.primary_collector_id &&
+                user.platform_admin && (
+                  <button
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Approve read-only native collection for this configured deployment-approved destination?",
+                        )
+                      )
+                        action(() =>
+                          control(
+                            base + "/resources/" + selected.id + "/start-probe",
+                            "POST",
+                            { approve: true },
+                          ),
+                        );
+                    }}
+                  >
+                    Approve native probe / metadata collection
+                  </button>
+                )}
+              <button
+                onClick={() => {
+                  setArea("parameters");
+                }}
+              >
+                Open {parameterNames[selected.domain]}
+              </button>
+              {allowed("resources.update", selected.organization_id) && (
+                <button
+                  disabled={busy}
+                  onClick={() => {
+                    if (
+                      confirm(
+                        "Activate monitoring only if parameter validation and actual telemetry checks pass?",
+                      )
+                    )
+                      action(() =>
+                        control(
+                          base + "/resources/" + selected.id + "/activate",
+                          "POST",
+                          { approve: true },
+                        ),
+                      );
+                  }}
+                >
+                  Activate monitoring
+                </button>
+              )}
+              <h3>Resource relationships</h3>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Dependency resource</th>
+                      <th>Relationship</th>
+                      <th>Service/process</th>
+                      <th>Valid from / to</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selected.dependencies?.map((d) => (
+                      <tr key={d.id}>
+                        <td>
+                          {parents.find((r) => r.id === d.depends_on_id)
+                            ?.name || d.depends_on_id}
+                        </td>
+                        <td>{d.relationship_type}</td>
+                        <td>{d.service_identity || "Resource"}</td>
+                        <td>
+                          {d.valid_from}
+                          <small>{d.valid_to || "Current"}</small>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {allowed("resources.update", selected.organization_id) && (
+                <div className="form-grid">
+                  <Field label="Dependency resource">
+                    <select
+                      value={link.depends_on_id}
+                      onChange={(e) =>
+                        setLink((l) => ({
+                          ...l,
+                          depends_on_id: e.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Select authorized resource</option>
+                      {parents
+                        .filter(
+                          (r) =>
+                            r.id !== selected.id &&
+                            r.organization_id === selected.organization_id &&
+                            r.environment === selected.environment,
+                        )
+                        .map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                    </select>
+                  </Field>
+                  <Field label="Relationship type">
+                    <select
+                      value={link.relationship_type}
+                      onChange={(e) =>
+                        setLink((l) => ({
+                          ...l,
+                          relationship_type: e.target.value,
+                        }))
+                      }
+                    >
+                      <option>DEPENDS_ON</option>
+                      <option>REQUIRES_SERVICE</option>
+                    </select>
+                  </Field>
+                  {link.relationship_type === "REQUIRES_SERVICE" && (
+                    <Field label="Configured service/process identity">
+                      <input
+                        value={link.service_identity}
+                        onChange={(e) =>
+                          setLink((l) => ({
+                            ...l,
+                            service_identity: e.target.value,
+                          }))
+                        }
+                      />
+                    </Field>
+                  )}
+                  <button
+                    disabled={!link.depends_on_id || busy}
+                    onClick={() =>
+                      action(() =>
+                        control(
+                          base + "/resources/" + selected.id + "/dependencies",
+                          "POST",
+                          link,
+                        ),
+                      )
+                    }
+                  >
+                    Save dependency
+                  </button>
+                </div>
+              )}
+              <h3>Current conditions</h3>
+              <ConditionTable rows={selected.conditions || []} />
+            </>
+          )}
+        </section>
+      )}
+      <details>
+        <summary>Legacy mapping reconciliation</summary>
+        <button
+          onClick={() =>
+            action(async () =>
+              setIssues(await control(base + "/mapping-issues")),
+            )
+          }
+        >
+          Load mapping issues
+        </button>
+        {issues.map((i) => (
+          <p key={i.id}>
+            {i.entity_type} · {i.entity_id} · {i.reason}
+          </p>
+        ))}
+        <p className="muted">
+          Unmapped records are retained. No resource or history is deleted by
+          this view.
+        </p>
+      </details>
+      {form && (
+        <ResourceForm
+          {...form}
+          user={user}
+          customers={customers}
+          onClose={() => setForm(null)}
+          onSaved={(r) => {
+            refresh();
+            setSelected(r);
+            onCustomerCreated?.();
+          }}
+        />
+      )}
+      {collector && source && (
+        <CollectorControl
+          collector={collector}
+          sources={[source]}
+          user={user}
+          onClose={() => {
+            setCollector(null);
+            setSource(null);
+            refresh();
+          }}
+          onSaved={refresh}
+        />
+      )}
+    </div>
+  );
+}
+export function ConditionTable({ rows }) {
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Condition</th>
+            <th>Severity</th>
+            <th>State</th>
+            <th>Evidence</th>
+            <th>Last observed</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((c) => (
+            <tr key={c.id}>
+              <td>{c.message}</td>
+              <td>{c.severity}</td>
+              <td>{c.active ? "OPEN" : "RESOLVED"}</td>
+              <td>
+                <details>
+                  <summary>Supporting evidence</summary>
+                  <pre>{JSON.stringify(c.evidence, null, 2)}</pre>
+                </details>
+              </td>
+              <td>{c.last_observed_at}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {!rows.length && <p>No evaluated conditions.</p>}
+    </div>
+  );
+}
+export function Verification({ data }) {
+  return (
+    <section aria-label="Telemetry verification">
+      <h3>
+        Telemetry verification · {data.ready ? "Verified" : "Not verified"}
+      </h3>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Required check</th>
+              <th>Observed result</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.checks.map((c) => (
+              <tr key={c.name}>
+                <td>{c.name}</td>
+                <td>
+                  {c.passed ? "PASS" : "NOT VERIFIED"}
+                  {c.last_received_at && <small>{c.last_received_at}</small>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+  const [form, setForm] = useState(
+      item
+        ? {
+            ...blank(domain),
+            ...item.configuration,
+            name: item.name,
+            organization_id: item.organization_id,
+            environment: item.environment,
+            active: item.active,
+          }
+        : blank(domain),
+    ),
+    [vms, setVMs] = useState([]),
+    [inline, setInline] = useState(false),
+    [customerName, setCustomerName] = useState(""),
+    [customerCode, setCustomerCode] = useState(""),
+    [step, setStep] = useState(1),
+    [created, setCreated] = useState(item || null),
+    [source, setSource] = useState(null),
+    [collector, setCollector] = useState(null),
+    [openCollector, setOpenCollector] = useState(false),
+    [verification, setVerification] = useState(null),
+    [approved, setApproved] = useState(false),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState(""),
+    [imported, setImported] = useState(null),
+    [fileName, setFileName] = useState("");
+  useEffect(() => {
+    let live = true;
+    if (domain !== "VM")
+      control(base + "/resources?domain=VM&limit=200")
+        .then((v) => live && setVMs(v.items))
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [domain]);
+  useEffect(() => {
+    let live = true;
+    if (created?.primary_collector_id && domain === "VM")
+      Promise.all([
+        control("/api/v1/monitoring/data-sources/" + created.data_source_id),
+        control(
+          "/api/v1/monitoring/collectors/" + created.primary_collector_id,
+        ),
+      ])
+        .then(([s, c]) => {
+          if (live) {
+            setSource(s);
+            setCollector(c);
+          }
+        })
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [created?.id, domain]);
+  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const inherited =
+    domain === "ETL" ? vms.find((r) => r.id === form.vm_resource_id) : null;
+  const action = async (fn) => {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const save = () =>
+    action(async () => {
+      if (!form.name.trim()) throw Error("Resource name required");
+      let payload = {
+        ...form,
+        new_customer: inline
+          ? { name: customerName, code: customerCode }
+          : null,
+        organization_id: inline ? null : form.organization_id || null,
+      };
+      if (inherited) {
+        payload.organization_id = inherited.organization_id;
+        payload.environment = inherited.environment;
+        payload.new_customer = null;
+      }
+      delete payload.legacy;
+      delete payload.legacy_template_attachments;
+      let r = created;
+      if (item) {
+        const config = { ...form };
+        for (const key of [
+          "name",
+          "organization_id",
+          "new_customer",
+          "environment",
+          "active",
+        ])
+          delete config[key];
+        r = await control(base + "/resources/" + item.id, "PUT", {
+          expected_revision: item.revision,
+          name: form.name,
+          environment: form.environment,
+          configuration: config,
+          active: form.active,
+        });
+      } else if (!r)
+        r = await control(
+          base + "/resources/" + domain.toLowerCase(),
+          "POST",
+          payload,
+        );
+      setCreated(r);
+      await onSaved(r);
+      if (imported) {
+        await control(base + "/parameters/" + r.id, "POST", {
+          expected_resource_revision: r.revision,
+          configuration: imported.configuration,
+        });
+        setImported(null);
+      }
+      if (domain === "VM" && !item) setStep(2);
+      else onClose();
+    });
+  const chooseVM = (id) => {
+    const vm = vms.find((r) => r.id === id);
+    update(
+      domain === "ETL" ? "vm_resource_id" : "linked_vm_resource_id",
+      id || null,
+    );
+    if (vm) {
+      update("organization_id", vm.organization_id);
+      update("environment", vm.environment);
+      setInline(false);
+    }
+  };
+  const visibleStep = domain === "VM" && !item && created ? step : 1;
+  return (
+    <Modal
+      title={
+        (item ? "Edit " : "Create ") +
+        (domain === "ETL" ? "ETL" : domain === "VM" ? "VM" : "API") +
+        " Resource"
+      }
+      onClose={onClose}
+      focus={!openCollector}
+    >
+      {error && (
+        <p className="error-banner" role="alert">
+          {error}
+        </p>
+      )}
+      {domain === "VM" && !item && (
+        <ol className="onboarding-steps" aria-label="VM onboarding steps">
+          {[
+            "Resource Identity",
+            "Collector Configuration",
+            "Agent Installation",
+            "Verification",
+            "Activation",
+          ].map((s, i) => (
+            <li key={s} className={visibleStep === i + 1 ? "active" : ""}>
+              {i + 1}. {s}
+            </li>
+          ))}
+        </ol>
+      )}
+      {visibleStep === 1 && (
+        <>
+          <div className="form-grid">
+            <Field label="Resource name">
+              <input
+                required
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+              />
+            </Field>
+            {domain === "ETL" && (
+              <Field label="ETL platform">
+                <select
+                  value={form.platform}
+                  onChange={(e) => update("platform", e.target.value)}
+                >
+                  <option>PENTAHO</option>
+                  <option>IICS</option>
+                </select>
+              </Field>
+            )}
+            {domain !== "VM" && (
+              <Field
+                label={
+                  domain === "ETL" ? "Associated VM" : "Linked VM (optional)"
+                }
+              >
+                <select
+                  value={
+                    form.vm_resource_id || form.linked_vm_resource_id || ""
+                  }
+                  onChange={(e) => chooseVM(e.target.value)}
+                >
+                  <option value="">No VM / SaaS</option>
+                  {vms.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name} · {r.environment}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
+            <Field label="Customer">
+              <select
+                disabled={!!inherited || inline || !!item}
+                value={form.organization_id || ""}
+                onChange={(e) => update("organization_id", e.target.value)}
+              >
+                <option value="">Select existing customer</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              {inherited && <small>INHERITED from selected VM</small>}
+            </Field>
+            <Field label="Environment">
+              <select
+                value={form.environment}
+                disabled={!!inherited}
+                onChange={(e) => update("environment", e.target.value)}
+              >
+                {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((e) => (
+                  <option key={e}>{e}</option>
+                ))}
+              </select>
+              {inherited && <small>INHERITED from selected VM</small>}
+            </Field>
+          </div>
+          {!inherited && !item && hasPermission(user, "customers.create") && (
+            <label>
+              <input
+                type="checkbox"
+                checked={inline}
+                disabled={!user.platform_admin}
+                onChange={(e) => setInline(e.target.checked)}
+              />{" "}
+              Create customer inline{" "}
+              {!user.platform_admin && (
+                <small>
+                  Platform administration is required for a new customer scope.
+                </small>
+              )}
+            </label>
+          )}
+          {inline && (
+            <div className="form-grid">
+              <Field label="New customer name">
+                <input
+                  required
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                />
+              </Field>
+              <Field label="New customer code">
+                <input
+                  required
+                  value={customerCode}
+                  onChange={(e) => setCustomerCode(e.target.value)}
+                />
+              </Field>
+            </div>
+          )}
+          {domain === "VM" && (
+            <>
+              <div className="form-grid">
+                <Field label="Hostname">
+                  <input
+                    required
+                    value={form.hostname}
+                    disabled={!!item}
+                    onChange={(e) => update("hostname", e.target.value)}
+                  />
+                </Field>
+                <Field label="DNS / IP address">
+                  <input
+                    required
+                    value={form.address}
+                    onChange={(e) => update("address", e.target.value)}
+                  />
+                </Field>
+                <Field label="OS">
+                  <select
+                    value={form.os_type}
+                    disabled={!!item}
+                    onChange={(e) => update("os_type", e.target.value)}
+                  >
+                    <option>Linux</option>
+                    <option>Windows</option>
+                  </select>
+                </Field>
+                <Field label="VM type">
+                  <select
+                    value={form.vm_type}
+                    onChange={(e) => update("vm_type", e.target.value)}
+                  >
+                    <option>VM</option>
+                    <option>EC2</option>
+                  </select>
+                </Field>
+              </div>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={form.native_os_metrics}
+                  onChange={(e) =>
+                    update("native_os_metrics", e.target.checked)
+                  }
+                />{" "}
+                Collect native host metrics
+              </label>
+              <Field label="Service names (one per line)">
+                <textarea
+                  value={form.services.join("\n")}
+                  onChange={(e) =>
+                    update(
+                      "services",
+                      e.target.value.split("\n").filter(Boolean),
+                    )
+                  }
+                />
+              </Field>
+              <Field label="Process names (one per line)">
+                <textarea
+                  value={form.processes.join("\n")}
+                  onChange={(e) =>
+                    update(
+                      "processes",
+                      e.target.value.split("\n").filter(Boolean),
+                    )
+                  }
+                />
+              </Field>
+            </>
+          )}
+          {domain === "ETL" && (
+            <>
+              <div className="form-grid">
+                <Field label="Jobchain name">
+                  <input
+                    value={form.jobchain}
+                    disabled={!!item}
+                    onChange={(e) => update("jobchain", e.target.value)}
+                  />
+                </Field>
+                <Field label="Scheduler details">
+                  <input
+                    value={form.scheduler || ""}
+                    onChange={(e) => update("scheduler", e.target.value)}
+                  />
+                </Field>
+                <Field label="Collection frequency (seconds)">
+                  <input
+                    type="number"
+                    min="5"
+                    value={form.frequency_seconds}
+                    onChange={(e) =>
+                      update("frequency_seconds", Number(e.target.value))
+                    }
+                  />
+                </Field>
+              </div>
+              {inherited && (
+                <p>
+                  INHERITED · {inherited.inherited.hostname} · Collector{" "}
+                  {inherited.primary_collector_id || "Requires reconciliation"}
+                </p>
+              )}
+              {form.platform === "PENTAHO" && (
+                <Field label="Log file paths (one per line)">
+                  <textarea
+                    value={form.log_paths.join("\n")}
+                    onChange={(e) =>
+                      update(
+                        "log_paths",
+                        e.target.value.split("\n").filter(Boolean),
+                      )
+                    }
+                  />
+                </Field>
+              )}
+              {form.platform === "IICS" && (
+                <div className="form-grid">
+                  <Field label="Read-only execution metadata URL">
+                    <input
+                      value={form.connector_url || ""}
+                      placeholder="https://approved-region.example/activity"
+                      onChange={(e) =>
+                        update("connector_url", e.target.value || null)
+                      }
+                    />
+                  </Field>
+                  <Field label="Cloud token secret reference">
+                    <input
+                      value={form.credential_ref || ""}
+                      placeholder="env:IICS_ACCESS_TOKEN"
+                      onChange={(e) =>
+                        update("credential_ref", e.target.value || null)
+                      }
+                    />
+                  </Field>
+                  <Field label="Execution inventory field">
+                    <input
+                      value={form.connector_records_field}
+                      onChange={(e) =>
+                        update("connector_records_field", e.target.value)
+                      }
+                    />
+                  </Field>
+                </div>
+              )}
+              <Field label="ETL YAML/JSON configuration">
+                <input
+                  type="file"
+                  accept=".yaml,.yml,.json"
+                  onChange={(e) =>
+                    action(async () => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+                      if (file.size > 262144)
+                        throw Error("Import exceeds 256 KiB");
+                      const v = await control(
+                        base + "/import/validate",
+                        "POST",
+                        {
+                          domain: "ETL",
+                          format: file.name.endsWith(".json") ? "JSON" : "YAML",
+                          content: await file.text(),
+                        },
+                      );
+                      setImported(v);
+                      setFileName(file.name);
+                      update("parser", v.configuration.parser);
+                      update("schedule", v.configuration.schedule);
+                    })
+                  }
+                />
+              </Field>
+              {imported && (
+                <>
+                  <p>{fileName} · validated, not activated</p>
+                  <pre>{JSON.stringify(imported.configuration, null, 2)}</pre>
+                </>
+              )}
+            </>
+          )}
+          {domain === "API" && (
+            <div className="form-grid">
+              <Field label="DNS / hostname">
+                <input
+                  value={form.dns}
+                  disabled={!!item}
+                  onChange={(e) => update("dns", e.target.value)}
+                />
+              </Field>
+              <Field label="Port">
+                <input
+                  type="number"
+                  min="1"
+                  max="65535"
+                  value={form.port}
+                  disabled={!!item}
+                  onChange={(e) => update("port", Number(e.target.value))}
+                />
+              </Field>
+              <Field label="Protocol">
+                <select
+                  value={form.protocol}
+                  disabled={!!item}
+                  onChange={(e) => update("protocol", e.target.value)}
+                >
+                  <option>HTTPS</option>
+                  <option>HTTP</option>
+                </select>
+              </Field>
+              <Field label="URL path">
+                <input
+                  value={form.path}
+                  disabled={!!item}
+                  onChange={(e) => update("path", e.target.value)}
+                />
+              </Field>
+              <Field label="Check frequency (seconds)">
+                <input
+                  type="number"
+                  min="5"
+                  value={form.frequency_seconds}
+                  onChange={(e) =>
+                    update("frequency_seconds", Number(e.target.value))
+                  }
+                />
+              </Field>
+              <Field label="Request method">
+                <select
+                  value={form.method}
+                  onChange={(e) => update("method", e.target.value)}
+                >
+                  <option>GET</option>
+                  <option>HEAD</option>
+                  <option>OPTIONS</option>
+                </select>
+              </Field>
+              <Field label="Authentication">
+                <select
+                  value={form.auth_type}
+                  onChange={(e) => update("auth_type", e.target.value)}
+                >
+                  <option>NONE</option>
+                  <option>BASIC</option>
+                  <option>BEARER</option>
+                </select>
+              </Field>
+              {form.auth_type !== "NONE" && (
+                <Field label="Authentication secret reference">
+                  <input
+                    value={form.credential_ref || ""}
+                    onChange={(e) =>
+                      update("credential_ref", e.target.value || null)
+                    }
+                  />
+                </Field>
+              )}
+              <Field label="Timeout (seconds)">
+                <input
+                  type="number"
+                  min="1"
+                  max="120"
+                  value={form.timeout_seconds}
+                  onChange={(e) =>
+                    update("timeout_seconds", Number(e.target.value))
+                  }
+                />
+              </Field>
+              <p>
+                TLS is verified. Outbound hosts, ports and CIDRs require
+                deployment approval.
+              </p>
+            </div>
+          )}
+          <Field label="Description">
+            <textarea
+              value={form.description || ""}
+              onChange={(e) => update("description", e.target.value)}
+            />
+          </Field>
+          <div className="form-footer">
+            <button onClick={onClose}>Cancel</button>
+            <button className="primary-button" disabled={busy} onClick={save}>
+              {busy
+                ? "Saving…"
+                : item
+                  ? "Save resource"
+                  : "Save resource identity"}
+            </button>
+          </div>
+        </>
+      )}
+      {visibleStep === 2 && (
+        <>
+          <h3>Collector Configuration</h3>
+          <p>
+            One VM-associated OpsControl Agent; independently configured
+            telemetry methods.
+          </p>
+          <button disabled={!collector} onClick={() => setOpenCollector(true)}>
+            Configure Collection Methods
+          </button>
+          <button className="primary-button" onClick={() => setStep(3)}>
+            Next: Agent Installation
+          </button>
+        </>
+      )}
+      {visibleStep === 3 && (
+        <>
+          <h3>Agent Installation</h3>
+          <p>
+            Install the OpsControl Agent locally as a Windows service or Linux
+            systemd service. The Agent supervises pinned OTel Collector Contrib.
+            A host address alone does not authorize remote installation.
+          </p>
+          <button disabled={!collector} onClick={() => setOpenCollector(true)}>
+            Agent Registration and installation instructions
+          </button>
+          <button
+            onClick={() =>
+              action(() =>
+                downloadPackage(
+                  "/api/v1/agent-control/packages/" +
+                    (form.os_type === "Windows" ? "windows" : "linux"),
+                  "opscontrol-agent-" + form.os_type.toLowerCase() + ".zip",
+                ),
+              )
+            }
+          >
+            Download approved agent package
+          </button>
+          <button className="primary-button" onClick={() => setStep(4)}>
+            Next: Verification
+          </button>
+        </>
+      )}
+      {visibleStep === 4 && (
+        <>
+          <h3>Verification</h3>
+          <button
+            disabled={busy}
+            onClick={() =>
+              action(async () =>
+                setVerification(
+                  await control(
+                    base + "/resources/" + created.id + "/verification",
+                  ),
+                ),
+              )
+            }
+          >
+            Verify telemetry
+          </button>
+          {verification && <Verification data={verification} />}
+          <button
+            className="primary-button"
+            disabled={!verification?.ready}
+            onClick={() => setStep(5)}
+          >
+            Next: Activation
+          </button>
+        </>
+      )}
+      {visibleStep === 5 && (
+        <>
+          <h3>Activation</h3>
+          <DomainParameters resource={created} user={user} />
+          <label>
+            <input
+              type="checkbox"
+              checked={approved}
+              onChange={(e) => setApproved(e.target.checked)}
+            />{" "}
+            Approve verified monitoring activation
+          </label>
+          <button
+            className="primary-button"
+            disabled={!approved || busy}
+            onClick={() =>
+              action(async () => {
+                const r = await control(
+                  base + "/resources/" + created.id + "/activate",
+                  "POST",
+                  { approve: true },
+                );
+                await onSaved(r);
+                onClose();
+              })
+            }
+          >
+            Activate monitoring
+          </button>
+        </>
+      )}
+      {visibleStep > 1 && (
+        <button onClick={() => setStep((s) => Math.max(2, s - 1))}>
+          Previous step
+        </button>
+      )}
+      {openCollector && collector && source && (
+        <CollectorControl
+          collector={collector}
+          sources={[source]}
+          user={user}
+          onClose={() => setOpenCollector(false)}
+          onSaved={async () =>
+            setCollector(
+              await control("/api/v1/monitoring/collectors/" + collector.id),
+            )
+          }
+        />
+      )}
+    </Modal>
+  );
+}

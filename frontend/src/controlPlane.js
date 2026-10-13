@@ -1,8 +1,9 @@
 import { authHeaders } from "./auth";
 const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-export async function control(path, method = "GET", payload) {
+export async function control(path, method = "GET", payload, options = {}) {
   const response = await fetch(base + path, {
     method,
+    signal: options.signal,
     headers: { "Content-Type": "application/json", ...authHeaders() },
     ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
   });
@@ -26,6 +27,16 @@ export function downloadText(name, text) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export const methodDefaults = {
+  SYSLOG_RECEIVER: {
+    bind: "127.0.0.1",
+    port: 1514,
+    protocol: "TCP",
+    format: "RFC5424",
+    allow_remote: false,
+    tls_certificate: null,
+    tls_key_ref: null,
+    client_ca: null,
+  },
   FILE_LOG: {
     source: "FILE",
     paths: [],
