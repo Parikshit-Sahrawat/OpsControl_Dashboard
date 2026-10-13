@@ -16,7 +16,7 @@ async function login(who){
   await page.getByRole('textbox',{name:'Username'}).fill(state[who+'_username']);
   await page.getByLabel('Password').fill(state[who+'_password']);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'ETL Jobs',exact:true}).click();return page;
+  await page.getByRole('button',{name:'Data Pipelines',exact:true}).click();return page;
 }
 try{
   const page=await login('reader');

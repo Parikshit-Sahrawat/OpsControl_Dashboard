@@ -1,3 +1,5 @@
+> Current UAT contract: Resource Management uses Organizations; new employee workflows require exactly one department. Legacy multiple memberships survive migration. See [consolidated UAT](../CONSOLIDATED_UAT.md).
+
 # Customer ownership and internal access architecture
 
 ## Impact inventory before implementation
@@ -60,7 +62,7 @@ erDiagram
 | Legacy org_admin membership | Equivalent Legacy Customer Administrator paired grant; no global customer-creation/access-administration privilege added |
 | Unknown legacy role | Upgrade aborts transactionally; operator must review an explicit safe mapping |
 | Internal departments and employee memberships | Independent new records; existing customers never reused; no automatic department memberships |
-| Default service provider and catalog | PTC/DEFAULT provider plus reviewed implemented permissions/roles; ordinary role assignment never creates the platform-admin flag |
+| Default service provider and catalog | OpsControl Services/DEFAULT provider plus reviewed implemented permissions/roles; ordinary role assignment never creates the platform-admin flag |
 
 User-specific customer DENY requires no role. Role-based ALLOW grants reference an actual assignment by composite FK. Department/customer and employee/customer uniqueness prevent duplicate grants. Provider composite FKs reject cross-provider identity relationships. UUID/provider-owner update triggers protect persistent identities. Manager references are provider-local metadata only. Department deletion is refused; deactivate instead.
 

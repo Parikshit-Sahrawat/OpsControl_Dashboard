@@ -23,6 +23,7 @@ try {
   await nav.waitFor();
   await nav.click();
   await page.getByRole("heading", { name: "Access Management" }).waitFor();
+  await page.getByRole("navigation", { name: "Access Management sections" }).getByRole("button", { name: "Employees", exact: true }).click();
   await page.locator("table tbody tr td").getByText("test-north", { exact: true }).first().waitFor();
   await page.getByRole("navigation", { name: "Access Management sections" }).getByRole("button", { name: "Departments", exact: true }).waitFor();
   if (errors.length) throw new Error(errors.join("; "));

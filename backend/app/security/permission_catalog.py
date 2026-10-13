@@ -15,9 +15,8 @@ PERMISSIONS = {
     "etl.view": "View ETL executions and evidence",
     "etl.configure": "Configure customer ETL definitions",
     "etl.investigate": "Manage ETL investigations (not execute/restart jobs)",
-    "incidents.view": "View incident evidence",
-    "incidents.acknowledge": "Acknowledge incidents",
-    "incidents.manage": "Investigate, annotate and resolve incidents",
+    "alerts.view": "View monitoring alert evidence",
+    "alerts.acknowledge": "Acknowledge monitoring alerts",
     "templates.view": "View policies",
     "templates.manage": "Manage customer policies (shared global catalog remains break-glass controlled)",
     "collectors.view": "View collector configuration/history",
@@ -44,16 +43,14 @@ LEGACY_ADMIN = READ | {
     "resources.delete",
     "etl.configure",
     "etl.investigate",
-    "incidents.acknowledge",
-    "incidents.manage",
+    "alerts.acknowledge",
     "templates.manage",
     "collectors.manage",
     "logs.manage",
 }
 LEGACY_OPERATOR = READ | {
     "etl.investigate",
-    "incidents.acknowledge",
-    "incidents.manage",
+    "alerts.acknowledge",
 }
 ROLE_SPECS = {
     "platform-administrator": ("Platform Administrator", set(PERMISSIONS)),
@@ -67,11 +64,11 @@ ROLE_SPECS = {
     ),
     "noc-operator": (
         "NOC Operator",
-        set(READ) | {"etl.investigate", "incidents.acknowledge"},
+        set(READ) | {"etl.investigate", "alerts.acknowledge"},
     ),
     "incident-operator": (
-        "Incident Operator",
-        set(READ) | {"incidents.manage", "incidents.acknowledge"},
+        "Alert Operator",
+        set(READ) | {"alerts.acknowledge"},
     ),
     "read-only-viewer": ("Read-Only Viewer", set(READ)),
     "legacy-customer-administrator": (

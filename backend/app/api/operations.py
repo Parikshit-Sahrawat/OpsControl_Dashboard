@@ -8,9 +8,8 @@ from sqlalchemy import select, func, case
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import (DataSource, Collector, CollectorRun, MetricDefinition, AlertState,
-    JobOrder, JobOrderHistory, OperationalIncident, IncidentActivity, Organization)
+    JobOrder, JobOrderHistory, Organization)
 from app.security.http import actor
-from app.services.incidents import activity
 
 router = APIRouter(prefix="/api/v1/operations", tags=["Operational Dashboards"])
 HTTP_TYPES = ("API", "HTTP", "HTTPS")
@@ -116,79 +115,6 @@ def collector_detail(collector_id: UUID, limit: int = Query(100, ge=1, le=500), 
         "source_type": source.source_type, "organization_id": str(source.organization_id),
         "status": collector.status, "enabled": collector.enabled, "history": [run_item(run) for run in runs]}
 
-def incident_item(row):
-    return {"id": str(row.id), "organization_id": str(row.organization_id), "title": row.title,
-        "source_kind": row.source_kind, "source_reference": row.source_reference,
-        "alert_state_id": str(row.alert_state_id) if row.alert_state_id else None,
-        "history_id": str(row.history_id) if row.history_id else None,
-        "data_source_id": str(row.data_source_id) if row.data_source_id else None,
-        "severity": row.severity, "status": row.status, "condition_status": row.condition_status,
-        "opened_at": iso(row.opened_at), "recovered_at": iso(row.recovered_at), "resolved_at": iso(row.resolved_at)}
-
-@router.get("/incidents")
-def incidents(organization_id: list[UUID] = Query(default=[]),
-    status: Literal["OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED"] | None = None,
-    source_kind: Literal["METRIC", "ETL"] | None = None, search: str = Query("", max_length=200),
-    limit: int = Query(200, ge=1, le=500), offset: int = Query(0, ge=0, le=1000000), db: Session = Depends(get_db)):
-    stmt = scoped(select(OperationalIncident), OperationalIncident, organization_id)
-    if status: stmt = stmt.where(OperationalIncident.status == status)
-    if source_kind: stmt = stmt.where(OperationalIncident.source_kind == source_kind)
-    if search: stmt = stmt.where(OperationalIncident.title.ilike("%" + search + "%"))
-    total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-    rows = db.scalars(stmt.order_by(OperationalIncident.opened_at.desc(), OperationalIncident.id.desc()).offset(offset).limit(limit)).all()
-    counts = dict(db.execute(scoped(select(OperationalIncident.status, func.count()).group_by(OperationalIncident.status),
-        OperationalIncident, organization_id)).all())
-    return {"incidents": [incident_item(row) for row in rows], "total": total, "offset": offset, "limit": limit,
-        "has_more": offset + len(rows) < total, "truncated": total > len(rows),
-        "summary": {state: counts.get(state, 0) for state in ("OPEN", "ACKNOWLEDGED", "INVESTIGATING", "RESOLVED")}}
-
-def load_incident(db, incident_id, lock=False):
-    stmt = select(OperationalIncident).where(OperationalIncident.id == incident_id)
-    row = db.scalar(stmt.with_for_update() if lock else stmt)
-    if not row: raise HTTPException(404, "Incident unavailable")
-    return row
-
-@router.get("/incidents/{incident_id}")
-def incident_detail(incident_id: UUID, db: Session = Depends(get_db)):
-    row = load_incident(db, incident_id); result = incident_item(row)
-    source = db.get(DataSource, row.data_source_id) if row.data_source_id else None
-    result["source_type"] = source.source_type if source else None
-    events = db.scalars(select(IncidentActivity).where(IncidentActivity.incident_id == row.id)
-        .order_by(IncidentActivity.occurred_at.desc(), IncidentActivity.id.desc()).limit(200)).all()
-    result["activity"] = [{"id": str(e.id), "event_type": e.event_type, "actor": e.actor,
-        "occurred_at": iso(e.occurred_at), "text": e.text, "previous_status": e.previous_status, "new_status": e.new_status} for e in events]
-    return result
-
-class Transition(BaseModel):
-    new_status: Literal["ACKNOWLEDGED", "INVESTIGATING", "RESOLVED"]
-class Note(BaseModel):
-    text: str = Field(min_length=1, max_length=2000)
-
-def operator_for(row,permission="incidents.manage"):
-    principal = actor()
-    if not principal.allows(permission,row.organization_id):
-        raise HTTPException(403, "Organization operator required")
-    return principal
-
-@router.post("/incidents/{incident_id}/transitions")
-def transition(incident_id: UUID, payload: Transition, db: Session = Depends(get_db)):
-    row = load_incident(db, incident_id, True); principal = operator_for(row,"incidents.acknowledge" if payload.new_status=="ACKNOWLEDGED" else "incidents.manage")
-    allowed = {"OPEN": {"ACKNOWLEDGED"}, "ACKNOWLEDGED": {"INVESTIGATING", "RESOLVED"}, "INVESTIGATING": {"RESOLVED"}, "RESOLVED": set()}
-    if payload.new_status not in allowed[row.status]: raise HTTPException(409, "Invalid incident transition")
-    if payload.new_status == "RESOLVED" and row.condition_status != "RECOVERED":
-        raise HTTPException(409, "Source condition must recover before incident resolution")
-    previous = row.status; row.status = payload.new_status; at = datetime.now(timezone.utc)
-    if row.status == "RESOLVED": row.resolved_at = at
-    activity(db, row, "OPERATOR_TRANSITION", at, principal.username, previous_status=previous, new_status=row.status)
-    db.commit(); return incident_detail(incident_id, db)
-
-@router.post("/incidents/{incident_id}/notes", status_code=201)
-def note(incident_id: UUID, payload: Note, db: Session = Depends(get_db)):
-    row = load_incident(db, incident_id, True); principal = operator_for(row)
-    if not payload.text.strip(): raise HTTPException(422, "Note text required")
-    activity(db, row, "OPERATOR_NOTE", datetime.now(timezone.utc), principal.username, text=payload.text.strip())
-    db.commit(); return incident_detail(incident_id, db)
-
 @router.get("/reports")
 def reports(organization_id: list[UUID] = Query(default=[]), days: int = Query(7, ge=1, le=90), db: Session = Depends(get_db)):
     end = datetime.now(timezone.utc); start = end-timedelta(days=days)
@@ -225,12 +151,10 @@ def reports(organization_id: list[UUID] = Query(default=[]), days: int = Query(7
         job_rows.append({"id": str(jid), "name": name, "executions": count, "success": success or 0, "failed": failed or 0,
             "no_run": missing or 0, "sla_met": met or 0, "sla_breached": breached or 0, "sla_excluded": count-evaluated,
             "runtime_sla_percent": round(100*met/evaluated, 2) if evaluated else None})
-    grouped = db.execute(scoped(select(OperationalIncident.status, func.count()).where(
-        OperationalIncident.opened_at >= start, OperationalIncident.opened_at <= end).group_by(OperationalIncident.status), OperationalIncident, organization_id)).all()
     return {"generated_at": iso(end), "window_start": iso(start), "window_end": iso(end), "days": days,
         "methodology": {"http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
             "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."},
-        "services": service_rows, "etl": job_rows, "incidents": dict(grouped)}
+        "services": service_rows, "etl": job_rows}
 
 @router.get("/history")
 def operational_history(organization_id: list[UUID] = Query(default=[]), days: int = Query(7, ge=1, le=90),
@@ -241,13 +165,9 @@ def operational_history(organization_id: list[UUID] = Query(default=[]), days: i
         .order_by(CollectorRun.started_at.desc()).limit(limit), DataSource, organization_id)).all()
     jobs = db.execute(scoped(select(JobOrderHistory, JobOrder).join(JobOrder, JobOrder.id == JobOrderHistory.job_order_id)
         .where(JobOrderHistory.detected_at >= start).order_by(JobOrderHistory.detected_at.desc()).limit(limit), JobOrder, organization_id)).all()
-    events = db.execute(scoped(select(IncidentActivity, OperationalIncident).join(OperationalIncident,
-        OperationalIncident.id == IncidentActivity.incident_id).where(IncidentActivity.occurred_at >= start)
-        .order_by(IncidentActivity.occurred_at.desc()).limit(limit), IncidentActivity, organization_id)).all()
     rows = [{"id": str(run.id), "kind": "COLLECTOR", "name": source.name, "status": run.status, "at": iso(run.started_at),
         "data_source_id": str(source.id), "source_type": source.source_type, "collector_id": str(run.collector_id)} for run, source in runs]
     rows += [{"id": str(h.id), "kind": "ETL", "name": job.name, "status": h.status.value, "at": iso(h.detected_at), "history_id": str(h.id)} for h, job in jobs]
-    rows += [{"id": str(e.id), "kind": "INCIDENT", "name": row.title, "status": e.event_type, "at": iso(e.occurred_at), "incident_id": str(row.id)} for e, row in events]
     return {"events": sorted(rows, key=lambda item: item["at"], reverse=True)[:limit], "limit": limit}
 
 @router.get("/jobs/{job_id}/history")
@@ -266,5 +186,5 @@ def overview_counts(organization_id:list[UUID]=Query(default=[]),db:Session=Depe
     if organization_id:customers=customers.where(Organization.id.in_(organization_id))
     resources=scoped(select(func.count()).select_from(DataSource),DataSource,organization_id)
     jobs=scoped(select(func.count()).select_from(JobOrder),JobOrder,organization_id)
-    incidents=scoped(select(func.count()).select_from(OperationalIncident).where(OperationalIncident.status!="RESOLVED"),OperationalIncident,organization_id)
-    return {"customers":db.scalar(customers),"resources":db.scalar(resources),"etl_jobs":db.scalar(jobs),"active_incidents":db.scalar(incidents)}
+    alerts=scoped(select(func.count()).select_from(AlertState).where(AlertState.status=="OPEN"),AlertState,organization_id)
+    return {"customers":db.scalar(customers),"resources":db.scalar(resources),"etl_jobs":db.scalar(jobs),"active_alerts":db.scalar(alerts)}

@@ -26,6 +26,9 @@ def request(method, path, token=None, payload=None):
         return e.code, json.loads(e.read() or b"null"), {k.lower(): v for k, v in e.headers.items()}
 
 def check(expected, method, path, token=None, payload=None):
+    if expected==201 and method=="POST" and path=="/api/v1/auth/users" and payload and not payload.get("platform_admin") and not payload.get("department_id"):
+        from scripts.fixture_employee import with_department
+        payload=with_department(payload,lambda value:check(201,"POST","/api/v1/access/departments",token,value)[0])
     got, result, headers = request(method, path, token, payload)
     assert got == expected, (method, path, expected, got, result)
     print("PASS", expected, method, path)

@@ -9,6 +9,8 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api import operations, access
+from app.telemetry import api as agent_control, ingestion, rules
+import app.telemetry.models
 from app.api import infrastructure, etl, investigations, health, monitoring, organizations, resource_management, remote_protocol, rule_catalogs, activation, monitoring_diagnostics, discovery
 import app.services.rule_models  # register immutable rule/activation tables
 import app.worker.remote_models  # register remote job/evidence tables
@@ -46,7 +48,7 @@ if production and (
     raise RuntimeError("Production requires an explicit HTTPS-only CORS origin allowlist")
 app = FastAPI(
     lifespan=lifespan,
-    title="OpsControl API", version="0.2.0",
+    title="OpsControl API", version="0.3.0",
     description="General-purpose open-source monitoring and configuration API.",
     docs_url=None if production else "/docs",
     redoc_url=None if production else "/redoc",
@@ -61,6 +63,9 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+app.include_router(rules.router, dependencies=[Depends(authorize_route)])
+app.include_router(agent_control.router, dependencies=[Depends(authorize_route)])
+app.include_router(agent_control.agent_router)
 app.include_router(access.router, dependencies=[Depends(authorize_route)])
 app.include_router(health.router, dependencies=[Depends(authorize_route)])
 app.include_router(infrastructure.router, dependencies=[Depends(authorize_route)])

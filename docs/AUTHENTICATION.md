@@ -14,7 +14,7 @@ The command prompts for the password, hashes it server-side and refuses to creat
 
 ## Ownership and roles
 
-The `organizations` table represents **Customers**. Its resource, application, VM, ETL, collector, monitoring, incident and evidence relationships remain unchanged. The operating provider (default display name **PTC**) owns independent **Departments** and **Employees**. An employee has one immutable user UUID and may join multiple departments. Departments never reuse customer UUIDs. A manager designation grants no authority.
+The `organizations` table represents **Customers**. Its resource, application, VM, ETL, collector, monitoring, incident and evidence relationships remain unchanged. The operating provider (default display name **OpsControl Services**) owns independent **Departments** and **Employees**. An employee has one immutable user UUID. New creation/assignment requires exactly one existing department; legacy unassigned or multiple memberships are preserved until explicitly transferred. Departments never reuse customer UUIDs. A manager designation grants no authority.
 
 | Role | Internal administration | Customer operational rights |
 |---|---|---|

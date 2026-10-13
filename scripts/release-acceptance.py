@@ -108,8 +108,8 @@ try:
     record('RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives')
     module('scripts.remote_telemetry_acceptance_probe')
     record('Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations')
-    module('scripts.servicenow_acceptance_probe')
-    record('Native alert/correlation and real controlled ServiceNow TLS open/retry/resolve with leased delivery fencing')
+    module('scripts.alert_notification_acceptance_probe')
+    record('Native alert recovery and independent in-app leased delivery; retired ITSM rejected')
     module('scripts.eks_acceptance_probe')
     record('Read-only EKS SDK list/describe, tenant denial, dry-run and idempotent unmonitored inventory import')
     module('scripts.release_runtime_probe','seed')
@@ -123,7 +123,7 @@ try:
         run(['node','frontend/scripts/eks_inventory_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
-        record('Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial')
+        record('Browser resource CRUD, logical OTEL configuration persistence and cross-tenant denial')
     # Capability roles are reapplied after migrations. Runtime credentials are
     # composed by psycopg and never interpolated into shell commands.
     role_code = """

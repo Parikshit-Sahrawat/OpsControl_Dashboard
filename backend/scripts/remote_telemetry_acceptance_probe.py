@@ -146,7 +146,7 @@ def main():
             assert len(states)==1 and states[0].status=='RESOLVED'
             assert states[0].resolved_at is not None
             incident = db.scalar(select(OperationalIncident).where(OperationalIncident.source_reference==str(states[0].id)))
-            assert incident is not None and incident.condition_status=='RECOVERED'
+            assert incident is None, 'Retired ITSM must not project monitoring alerts into incidents'
             serial = json.dumps([sample.dimensions for sample in samples])
             assert password not in serial
         protocol.check(204,'DELETE',f"/api/v1/auth/workers/{worker['id']}",admin)
@@ -156,7 +156,7 @@ def main():
         report = {'status':'PASS','origin':'Controlled DNS mapping; actual certificate-verified Basic HTTPS, authenticated control plane and PostgreSQL',
             'checks':['Unapproved credential denies before target request','Redirect never followed','Human/forged/revoked heartbeat denied',
                       'Server liveness creates no health sample','Five real authenticated probes persist [1,0,0,0,1]',
-                      'Consecutive breach opens once, deduplicates, resolves and correlates'], 'authenticated_https_reads':6}
+                      'Consecutive breach opens once, deduplicates, resolves without ITSM projection'], 'authenticated_https_reads':6}
         output = Path(os.environ.get('RELEASE_EVIDENCE_DIR','/tmp/opscontrol-release-evidence')); output.mkdir(parents=True,exist_ok=True)
         (output/'remote-telemetry.json').write_text(json.dumps(report,indent=2)+'\n')
         print('ACTUAL BASIC TLS / HEARTBEAT / NATIVE TELEMETRY / ALERT CORRELATION PASS')

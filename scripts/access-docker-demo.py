@@ -119,8 +119,10 @@ try:
         before == after
         and len(call("/api/v1/access/employees", token=token)["items"]) == 1
     )
+    runtime=run(compose+["exec","-T","api","/usr/local/bin/otelcol-contrib","--version"])
+    assert "0.123.0" in runtime
     current = run(compose + ["exec", "-T", "api", "python", "-m", "alembic", "current"])
-    assert "0025_provider_department_rbac" in current
+    assert "0026_managed_telemetry_uat" in current
     comparison = run(
         compose + ["exec", "-T", "api", "python", "-m", "alembic", "check"]
     )
@@ -142,7 +144,7 @@ try:
                 "checks": [
                     "Three images/services built and ready",
                     "Frontend nginx response has security headers",
-                    "Migration head 0025 installed",
+                    "Migration head 0026 installed",
                     "Full image/schema Alembic check has zero pending operations",
                     "Provider departments/customer UUIDs separated",
                     "Bootstrap repeat retains UUIDs and user count",

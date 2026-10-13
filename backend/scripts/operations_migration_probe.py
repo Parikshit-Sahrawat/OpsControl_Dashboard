@@ -2,7 +2,7 @@
 import json, os, sys
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import select
+from sqlalchemy import select, text
 from app.db.session import SessionLocal
 from app.models import (Organization, VM, JobOrder, JobOrderHistory, ExecutionType, ExecutionStatus,
     DataSource, MetricDefinition, AlertRule, AlertState, AlertIncidentEvent, OperationalIncident, IncidentActivity)
@@ -16,10 +16,13 @@ def seed():
         history=JobOrderHistory(job_order_id=job.id,execution_type=ExecutionType.SCHEDULED,status=ExecutionStatus.FAILED,detected_at=now-timedelta(days=2));db.add(history);db.flush()
         source=DataSource(organization_id=org.id,name='Historical HTTP source',source_type='API');db.add(source);db.flush()
         metric=MetricDefinition(organization_id=org.id,data_source_id=source.id,name='archive-up',resource_type='APPLICATION',metric_type='GAUGE');db.add(metric);db.flush()
-        rule=AlertRule(organization_id=org.id,metric_definition_id=metric.id,name='archive-outage',operator='LT',threshold_value='.5');db.add(rule);db.flush()
+        # Target is intentionally the old 0020 schema: do not INSERT current
+        # ORM-only acknowledgment/evaluation columns into that historical DB.
+        import uuid
+        rule_id=uuid.uuid4()
+        db.execute(text("INSERT INTO alert_rules(id,organization_id,metric_definition_id,name,severity,operator,threshold_value,evaluation_window_seconds,consecutive_breaches,enabled,created_at,updated_at) VALUES (:id,:org,:metric,'archive-outage','WARNING','LT','.5',60,1,true,:now,:now)"),{'id':rule_id,'org':org.id,'metric':metric.id,'now':now})
         for status in ('OPEN','RESOLVED'):
-            db.add(AlertState(organization_id=org.id,alert_rule_id=rule.id,metric_definition_id=metric.id,status=status,severity='CRITICAL',
-                first_triggered_at=now-timedelta(days=2),last_evaluated_at=now-timedelta(days=1),resolved_at=now-timedelta(days=1) if status=='RESOLVED' else None,last_value=0,message='Controlled archived alert'))
+            db.execute(text("INSERT INTO alert_states(id,organization_id,alert_rule_id,metric_definition_id,status,severity,first_triggered_at,last_evaluated_at,resolved_at,last_value,breach_count,message,created_at,updated_at) VALUES (:id,:org,:rule,:metric,:status,'CRITICAL',:first,:last,:resolved,0,0,'Controlled archived alert',:now,:now)"),{'id':uuid.uuid4(),'org':org.id,'rule':rule_id,'metric':metric.id,'status':status,'first':now-timedelta(days=2),'last':now-timedelta(days=1),'resolved':now-timedelta(days=1) if status=='RESOLVED' else None,'now':now})
         for index,event_type in enumerate(('JOB_FAILED_OPEN','JOB_FAILED_RESOLVED','JOB_FAILED_OPEN')):
             db.add(AlertIncidentEvent(history_id=history.id,event_type=event_type,source='ETL_MONITOR',reference='archive-condition',severity='CRITICAL',timestamp=now-timedelta(days=2)+timedelta(seconds=index)))
         db.commit()

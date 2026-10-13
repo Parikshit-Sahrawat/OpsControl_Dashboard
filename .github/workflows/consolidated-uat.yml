@@ -1,0 +1,48 @@
+name: Consolidated manual UAT and managed telemetry
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  managed-telemetry-uat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare dependencies and pinned upstream Collector
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/uat-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/uat-browser/node_modules/.bin/playwright" install --with-deps chromium
+          docker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+          docker create --name uat-binary --network none otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+          docker cp uat-binary:/otelcol-contrib "$RUNNER_TEMP/otelcol-contrib"
+          docker rm uat-binary
+      - name: Focused suites and production build
+        run: |
+          (cd backend && .venv/bin/python -m unittest discover -s tests -v)
+          npm test --prefix frontend
+          npm run build --prefix frontend
+          bash -n agent/install-linux.sh
+      - name: Populated migration, real TLS OTel reception and actual browser journeys
+        env:
+          OPSCONTROL_OTEL_BINARY: ${{ runner.temp }}/otelcol-contrib
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/uat-browser/node_modules/playwright/index.mjs
+          UAT_BROWSER_ACCEPTANCE: '1'
+          UAT_EVIDENCE_DIR: ${{ runner.temp }}/uat-evidence
+        run: backend/.venv/bin/python scripts/uat/acceptance.py
+      - name: Upload redacted runtime evidence and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consolidated-uat-evidence
+          path: ${{ runner.temp }}/uat-evidence

@@ -61,7 +61,7 @@ def main():
         assert invalid_indexes == 0, "Migrated schema contains invalid indexes"
         assert (
             db.exec_driver_sql("SELECT version_num FROM alembic_version").scalar()
-            == "0025_provider_department_rbac"
+            == "0026_managed_telemetry_uat"
         )
     engine.dispose()
     report = {

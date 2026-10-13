@@ -138,7 +138,8 @@ def delegate(db, role):
     keys = set(
         db.scalars(
             select(RolePermission.permission_key).where(
-                RolePermission.role_id == role.id
+                RolePermission.role_id == role.id,
+                RolePermission.permission_key.in_(PERMISSIONS),
             )
         )
     )
@@ -190,6 +191,7 @@ class Strict(BaseModel):
 
 
 class EmployeeCreate(Strict):
+    department_id: uuid.UUID
     username: str = Field(min_length=1, max_length=120)
     full_name: str = Field(min_length=1, max_length=160)
     employee_id: str | None = Field(default=None, max_length=80)
@@ -413,6 +415,15 @@ def create_employee(payload: EmployeeCreate, db=Depends(session)):
         raise HTTPException(
             403, "Only break-glass administration may create a platform administrator"
         )
+    department = own(db, Department, payload.department_id, lock=True)
+    if not department.active:
+        raise HTTPException(422, "Select an active department")
+    for assignment in db.scalars(
+        select(DepartmentRoleAssignment).where(
+            DepartmentRoleAssignment.department_id == department.id
+        )
+    ):
+        delegate(db, own(db, Role, assignment.role_id))
     username = payload.username.lower()
     if db.scalar(select(User.id).where(func.lower(User.username) == username)):
         raise HTTPException(409, "Username already exists")
@@ -427,6 +438,13 @@ def create_employee(payload: EmployeeCreate, db=Depends(session)):
     )
     db.add(u)
     db.flush()
+    db.add(
+        DepartmentMembership(
+            user_id=u.id,
+            department_id=department.id,
+            service_provider_id=department.service_provider_id,
+        )
+    )
     commit(db, "EMPLOYEE_CREATE", "employee", u.id)
     return employee_documents(db, [u])[0]
 
@@ -669,6 +687,17 @@ def add_member(department_id: uuid.UUID, payload: MemberIn, db=Depends(session))
             DepartmentMembership.user_id == u.id,
         )
     )
+    if db.scalar(
+        select(DepartmentMembership.id).where(
+            DepartmentMembership.user_id == u.id,
+            DepartmentMembership.active.is_(True),
+            DepartmentMembership.department_id != d.id,
+        )
+    ):
+        raise HTTPException(
+            409,
+            "Employee already has a department; use the explicit department transfer action",
+        )
     if row and row.active:
         raise HTTPException(409, "Employee is already a member")
     if row:
@@ -726,7 +755,11 @@ def role_list(db=Depends(session)):
         .order_by(Role.name)
     ).all()
     perms = list(
-        db.execute(select(RolePermission.role_id, RolePermission.permission_key)).all()
+        db.execute(
+            select(RolePermission.role_id, RolePermission.permission_key).where(
+                RolePermission.permission_key.in_(PERMISSIONS)
+            )
+        ).all()
     )
     return [
         {
@@ -736,7 +769,7 @@ def role_list(db=Depends(session)):
             "description": r.description,
             "active": r.active,
             "system": r.system,
-            "permissions": [k for rid, k in perms if rid == r.id],
+            "permissions": [k for rid, k in perms if rid == r.id and k in PERMISSIONS],
         }
         for r in rows
     ]
@@ -1068,7 +1101,8 @@ def preview_grant(payload: GrantIn, db=Depends(session)):
             sorted(
                 db.scalars(
                     select(RolePermission.permission_key).where(
-                        RolePermission.role_id == g.role_id
+                        RolePermission.role_id == g.role_id,
+                        RolePermission.permission_key.in_(PERMISSIONS),
                     )
                 )
             )
@@ -1178,3 +1212,45 @@ def access_audit(
         limit,
         offset,
     )
+
+
+class DepartmentTransfer(Strict):
+    department_id: uuid.UUID
+
+
+@router.put("/employees/{user_id}/department")
+def transfer_department(
+    user_id: uuid.UUID, payload: DepartmentTransfer, db=Depends(session)
+):
+    allowed("access.manage_users")
+    allowed("access.manage_departments")
+    u = own(db, User, user_id, lock=True)
+    protect_employee(db, u, True)
+    d = own(db, Department, payload.department_id, lock=True)
+    if not d.active:
+        raise HTTPException(422, "Select an active department")
+    for assignment in db.scalars(
+        select(DepartmentRoleAssignment).where(
+            DepartmentRoleAssignment.department_id == d.id
+        )
+    ):
+        delegate(db, own(db, Role, assignment.role_id))
+    rows = db.scalars(
+        select(DepartmentMembership).where(DepartmentMembership.user_id == u.id)
+    ).all()
+    for row in rows:
+        row.active = False
+    db.flush()
+    selected = next((r for r in rows if r.department_id == d.id), None)
+    if selected:
+        selected.active = True
+    else:
+        db.add(
+            DepartmentMembership(
+                user_id=u.id,
+                department_id=d.id,
+                service_provider_id=d.service_provider_id,
+            )
+        )
+    commit(db, "EMPLOYEE_DEPARTMENT_TRANSFER", "employee", u.id)
+    return employee_documents(db, [u])[0]

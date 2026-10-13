@@ -10,7 +10,7 @@ const password = await readFile(join(process.env.ETL_PRIVATE_DIR, 'admin-passwor
 const output = join(process.env.OPERATIONAL_EVIDENCE_DIR, 'ui-test-1');
 const origin = process.env.UI_THEME_BASE_URL || 'http://127.0.0.1:15174';
 const storageKey = 'opscontrol.theme';
-const primaryTabs = ['Overview', 'ETL Jobs', 'VM Health', 'APIs', 'Incidents', 'Reports', 'Resource Management', 'Monitoring Setup'];
+const primaryTabs = ['Overview', 'Data Pipelines', 'VM Health', 'APIs', 'Alerts', 'Reports', 'Resource Management', 'Monitoring Setup'];
 const checks = [], screenshots = [], pageErrors = [], serverErrors = [], contrast = [];
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE });
@@ -63,14 +63,14 @@ async function tab(page, name) {
   await page.getByRole('button', { name, exact: true }).first().click();
   await page.getByRole('heading', { name, exact: true }).waitFor();
   // Wait for genuine fixture evidence, rather than capturing a loading screen.
-  if (name === 'Overview' || name === 'ETL Jobs') {
+  if (name === 'Overview' || name === 'Data Pipelines') {
     await page.getByRole('row').filter({ hasText: 'Fictional Daily Warehouse' }).first().waitFor();
   } else if (name === 'VM Health') {
     await page.getByTestId('infrastructure-row').filter({ hasText: 'ETL live Linux worker' }).waitFor();
   } else if (name === 'APIs') {
     await page.getByTestId('service-row').filter({ hasText: 'Fictional NOC HTTPS Portal' }).waitFor();
-  } else if (name === 'Incidents') {
-    await page.getByTestId('incident-row').filter({ hasText: 'noc-http-unavailable' }).first().waitFor();
+  } else if (name === 'Alerts') {
+    await page.getByTestId('alert-row').filter({ hasText: 'noc-http-unavailable' }).first().waitFor();
   } else if (name === 'Reports') {
     await page.getByRole('heading', { name: 'HTTP sampled success', exact: true }).waitFor();
     await page.getByRole('row').filter({ hasText: 'Fictional NOC HTTPS Portal' }).first().waitFor();
@@ -80,6 +80,7 @@ async function tab(page, name) {
   } else if (name === 'Monitoring Setup') {
     await page.getByRole('option', { name: /Fictional NOC HTTPS Portal/ }).waitFor({ state: 'attached' });
   } else if (name === 'Access Management') {
+    await page.getByRole('button',{name:'Employees',exact:true}).click();
     await page.getByRole('row').filter({hasText:'etl-operator'}).first().waitFor();
   }
 }
@@ -152,7 +153,7 @@ try {
     await screenshot(page, `${mode}-investigation`);
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'hidden' });
-    await tab(page, 'ETL Jobs');
+    await tab(page, 'Data Pipelines');
     await page.getByRole('row').filter({ hasText: 'Fictional Daily Warehouse' }).click();
     const execution = page.getByRole('dialog');
     await execution.getByRole('button', { name: 'Close drawer', exact: true }).waitFor();

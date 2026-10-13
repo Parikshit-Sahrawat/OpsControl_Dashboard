@@ -29,6 +29,12 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         "/api/v1/auth/customer-scope",
     }:
         return ()
+    if path.startswith("/api/v1/agent-control"):
+        return ("collectors.view",) if read else ("collectors.manage",)
+    if path.startswith("/api/v1/event-parameters") or path.startswith(
+        "/api/v1/notification-delivery"
+    ):
+        return ("templates.view",) if read else ("templates.manage",)
     if path.startswith("/api/v1/access"):
         return ("access.view",)  # Individual services require their exact action too.
     if path.startswith("/api/v1/auth/"):
@@ -54,14 +60,8 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         )
     if path.startswith("/api/v1/operations/overview"):
         return ("overview.view",)
-    if path.startswith("/api/v1/operations/incidents"):
-        if read:
-            return ("incidents.view",)
-        return (
-            ("incidents.manage",)
-            if path.endswith("/notes")
-            else ("incidents.acknowledge", "incidents.manage")
-        )
+    if path.startswith("/api/v1/operations/alerts"):
+        return ("alerts.view",) if read else ("alerts.acknowledge",)
     if path.startswith("/api/v1/operations/reports") or path.startswith(
         "/api/v1/operations/history"
     ):
@@ -90,7 +90,7 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         if "/collectors" in path:
             return ("collectors.view",) if read else ("collectors.manage",)
         if "/alerts" in path or "/correlations" in path:
-            return ("incidents.view",)
+            return ("alerts.view",)
         if "/logs" in path:
             return ("logs.view",) if read else ("logs.manage",)
         return (
@@ -173,6 +173,8 @@ def resolve_access(db, user):
     for rid, key in db.execute(
         select(RolePermission.role_id, RolePermission.permission_key)
     ):
+        if key not in PERMISSIONS:
+            continue
         if rid in roles:
             permissions[rid].add(key)
     assignments = list(

@@ -1,0 +1,403 @@
+import { useEffect, useRef, useState } from "react";
+import { control } from "../controlPlane";
+import useDialogFocus from "../components/useDialogFocus";
+import { hasPermission } from "../permissions";
+export default function AccessOnboarding({
+  user,
+  departments,
+  roles,
+  organizations,
+  onClose,
+  onComplete,
+}) {
+  const [step, setStep] = useState(1),
+    [department, setDepartment] = useState(""),
+    [newDepartment, setNewDepartment] = useState(""),
+    [code, setCode] = useState(""),
+    [employee, setEmployee] = useState({
+      username: "",
+      full_name: "",
+      password: "",
+      work_email: "",
+    }),
+    [employeeId, setEmployeeId] = useState(""),
+    [search, setSearch] = useState(""),
+    [people, setPeople] = useState([]),
+    [role, setRole] = useState(""),
+    [organization, setOrganization] = useState(""),
+    [effective, setEffective] = useState(null),
+    [preview, setPreview] = useState(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const ref = useRef(null);
+  useDialogFocus(ref, true, onClose);
+  const [options, setOptions] = useState(departments);
+  useEffect(
+    () =>
+      setOptions((previous) => [
+        ...new Map(
+          [...previous, ...departments].map((d) => [d.id, d]),
+        ).values(),
+      ]),
+    [departments],
+  );
+  const action = async (fn) => {
+    setBusy(true);
+    setError("");
+    try {
+      await fn();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    let live = true;
+    if (step === 3)
+      control(
+        "/api/v1/access/employees?limit=50&search=" +
+          encodeURIComponent(search),
+      )
+        .then((data) => live && setPeople(data.items))
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [step, search]);
+  useEffect(() => {
+    let live = true;
+    setEffective(null);
+    setPreview(null);
+    if (employeeId)
+      control(
+        "/api/v1/access/employees/" + employeeId + "/effective-permissions",
+      )
+        .then((v) => live && setEffective(v))
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [employeeId]);
+  const payload = {
+    user_id: employeeId,
+    organization_id: organization,
+    role_id: role,
+    effect: "ALLOW",
+  };
+  return (
+    <div className="modal-backdrop">
+      <section
+        className="modal access-dialog"
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Department Employee Permissions onboarding"
+      >
+        <div className="modal-header">
+          <h2>Department → Employee → Permissions</h2>
+          <button
+            disabled={busy}
+            onClick={onClose}
+            aria-label="Close onboarding"
+          >
+            ×
+          </button>
+        </div>
+        <nav className="access-tabs">
+          {["Department", "Employee", "Permissions"].map((label, i) => (
+            <button
+              type="button"
+              key={label}
+              disabled={busy || (i + 1 === 2 && !department)}
+              aria-current={step === i + 1 ? "step" : undefined}
+              onClick={() => setStep(i + 1)}
+            >
+              {i + 1}. {label}
+            </button>
+          ))}
+        </nav>
+        {error && <p role="alert">{error}</p>}
+        {step === 1 && (
+          <div className="resource-form">
+            <label className="form-field">
+              <span>Select existing department</span>
+              <select
+                aria-label="Select existing department"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+              >
+                <option value="">Select department</option>
+                {options
+                  .filter((d) => d.active)
+                  .map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <h3>Or create a department</h3>
+            <label className="form-field">
+              <span>Department name</span>
+              <input
+                value={newDepartment}
+                onChange={(e) => setNewDepartment(e.target.value)}
+              />
+            </label>
+            <label className="form-field">
+              <span>Optional department code</span>
+              <input value={code} onChange={(e) => setCode(e.target.value)} />
+            </label>
+            <button
+              disabled={
+                busy ||
+                !newDepartment ||
+                !hasPermission(user, "access.manage_departments")
+              }
+              onClick={() =>
+                action(async () => {
+                  const d = await control(
+                    "/api/v1/access/departments",
+                    "POST",
+                    {
+                      name: newDepartment,
+                      code: code || null,
+                      description: "",
+                      active: true,
+                    },
+                  );
+                  setOptions((o) => [...o, d]);
+                  setDepartment(d.id);
+                  setNewDepartment("");
+                })
+              }
+            >
+              Create Department
+            </button>
+            <button
+              className="primary-button"
+              disabled={busy || !department}
+              onClick={() => setStep(2)}
+            >
+              Continue to Employee
+            </button>
+          </div>
+        )}
+        {step === 2 && (
+          <form
+            className="resource-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              action(async () => {
+                const p = await control("/api/v1/access/employees", "POST", {
+                  ...employee,
+                  work_email: employee.work_email || null,
+                  department_id: department,
+                });
+                setEmployeeId(p.id);
+                setEmployee({
+                  username: "",
+                  full_name: "",
+                  password: "",
+                  work_email: "",
+                });
+                setStep(3);
+              });
+            }}
+          >
+            <p>
+              Exactly one existing department:{" "}
+              {options.find((d) => d.id === department)?.name}
+            </p>
+            {[
+              ["full_name", "Full name"],
+              ["username", "Username"],
+              ["work_email", "Work email"],
+              ["password", "Initial password"],
+            ].map(([key, label]) => (
+              <label className="form-field" key={key}>
+                <span>{label}</span>
+                <input
+                  required={key !== "work_email"}
+                  type={
+                    key === "password"
+                      ? "password"
+                      : key === "work_email"
+                        ? "email"
+                        : "text"
+                  }
+                  minLength={key === "password" ? 12 : undefined}
+                  autoComplete={key === "password" ? "new-password" : undefined}
+                  value={employee[key]}
+                  onChange={(e) =>
+                    setEmployee((d) => ({ ...d, [key]: e.target.value }))
+                  }
+                />
+              </label>
+            ))}
+            <button
+              className="primary-button"
+              disabled={busy || !hasPermission(user, "access.manage_users")}
+            >
+              Create Employee
+            </button>
+          </form>
+        )}
+        {step === 3 && (
+          <div className="resource-form">
+            <label className="form-field">
+              <span>Search existing employees</span>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Name, username or employee ID"
+              />
+            </label>
+            <label className="form-field">
+              <span>Employee</span>
+              <select
+                aria-label="Employee"
+                value={employeeId}
+                onChange={(e) => setEmployeeId(e.target.value)}
+              >
+                <option value="">Select employee</option>
+                {people.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.full_name} · {p.username}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="form-field">
+              <span>Role / configured permissions</span>
+              <select
+                value={role}
+                onChange={(e) => {
+                  setRole(e.target.value);
+                  setPreview(null);
+                }}
+              >
+                <option value="">Select existing role</option>
+                {roles
+                  .filter((r) => r.active)
+                  .map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <p>
+              {roles.find((r) => r.id === role)?.permissions?.join(", ") ||
+                "Role permissions are configured in Roles & Permissions."}
+            </p>
+            <button
+              disabled={
+                busy ||
+                !employeeId ||
+                !role ||
+                !hasPermission(user, "access.manage_roles")
+              }
+              onClick={() =>
+                action(async () => {
+                  await control(
+                    "/api/v1/access/employees/" + employeeId + "/roles",
+                    "POST",
+                    { role_id: role, effect: "ALLOW" },
+                  );
+                  setEffective(
+                    await control(
+                      "/api/v1/access/employees/" +
+                        employeeId +
+                        "/effective-permissions",
+                    ),
+                  );
+                })
+              }
+            >
+              Assign Role
+            </button>
+            <label className="form-field">
+              <span>Organization scope (optional explicit grant)</span>
+              <select
+                value={organization}
+                onChange={(e) => {
+                  setOrganization(e.target.value);
+                  setPreview(null);
+                }}
+              >
+                <option value="">Select organization</option>
+                {organizations.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              disabled={
+                busy ||
+                !employeeId ||
+                !role ||
+                !organization ||
+                !hasPermission(user, "access.manage_permissions")
+              }
+              onClick={() =>
+                action(async () =>
+                  setPreview(
+                    await control(
+                      "/api/v1/access/customer-grants/preview",
+                      "POST",
+                      payload,
+                    ),
+                  ),
+                )
+              }
+            >
+              Preview Organization Grant
+            </button>
+            {preview && (
+              <>
+                <pre>{JSON.stringify(preview, null, 2)}</pre>
+                <button
+                  disabled={busy}
+                  onClick={() =>
+                    action(async () => {
+                      await control(
+                        "/api/v1/access/customer-grants",
+                        "POST",
+                        payload,
+                      );
+                      setPreview(null);
+                      setEffective(
+                        await control(
+                          "/api/v1/access/employees/" +
+                            employeeId +
+                            "/effective-permissions",
+                        ),
+                      );
+                    })
+                  }
+                >
+                  Confirm Organization Grant
+                </button>
+              </>
+            )}
+            <h3>Effective permissions</h3>
+            {effective ? (
+              <pre>{JSON.stringify(effective, null, 2)}</pre>
+            ) : (
+              <p>
+                Select an employee to review direct and inherited permissions.
+              </p>
+            )}
+            <button disabled={busy} onClick={onComplete}>
+              Finish
+            </button>
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}

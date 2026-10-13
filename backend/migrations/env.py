@@ -6,6 +6,7 @@ from app.models import entities
 from app.core.config import settings
 import app.security.models
 import app.worker.remote_models
+import app.telemetry.models
 import app.services.rule_models
 config=context.config
 # Use the same environment-configured database as FastAPI, not an outdated localhost URL.

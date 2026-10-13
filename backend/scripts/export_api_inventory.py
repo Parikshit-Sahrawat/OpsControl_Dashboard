@@ -7,7 +7,7 @@ import argparse
 import json
 from pathlib import Path
 from app.main import app
-from app.security.http import _ALLOWED_PUBLIC, _WORKER_PUBLIC_GATE
+from app.security.http import _ALLOWED_PUBLIC, _WORKER_PUBLIC_GATE, _AGENT_GATE
 
 def inventory():
     rows=[]
@@ -18,7 +18,8 @@ def inventory():
             path=getattr(route,'path',None)
             if not path: continue
             methods=sorted(getattr(route,'methods',None) or ['WEBSOCKET'])
-            identity=('worker-bearer' if path in _WORKER_PUBLIC_GATE else
+            identity=('agent-enrollment-or-bearer' if path in _AGENT_GATE or path.startswith('/api/v1/agent/') else
+                      'worker-bearer' if path in _WORKER_PUBLIC_GATE else
                       'public/ingress-policy' if path in _ALLOWED_PUBLIC else 'human-bearer/route-policy')
             endpoint=getattr(route,'endpoint',None)
             rows.append({'path':path,'methods':methods,'name':getattr(route,'name',None),

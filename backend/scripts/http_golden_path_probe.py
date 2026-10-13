@@ -27,6 +27,9 @@ BASE = 'http://127.0.0.1:8000'
 
 
 def api(status, method, path, token=None, body=None):
+    if status==201 and method=='POST' and path=='/api/v1/auth/users' and body and not body.get('platform_admin') and not body.get('department_id'):
+        from scripts.fixture_employee import with_department
+        body=with_department(body,lambda value:api(201,'POST','/api/v1/access/departments',token,value))
     req = urllib.request.Request(BASE + path, method=method,
         data=json.dumps(body).encode() if body is not None else None,
         headers={'Content-Type': 'application/json', **({'Authorization': 'Bearer '+token} if token else {})})

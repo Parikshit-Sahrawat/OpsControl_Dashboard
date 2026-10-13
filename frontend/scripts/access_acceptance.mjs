@@ -111,25 +111,23 @@ try {
   await navigate(admin, "Resource Management");
   assert.equal(await admin.locator(".org-context-button").count(), 0);
   await admin
-    .locator(".organization-card")
+    .locator("tbody tr")
     .filter({ hasText: "Customer B (synthetic)" })
     .waitFor();
   assert.equal(
-    await admin.getByLabel("Resource customer filter").inputValue(),
+    await admin.getByLabel("Resource organization filter").inputValue(),
     "",
   );
   await admin
-    .getByLabel("Resource customer filter")
+    .getByLabel("Resource organization filter")
     .selectOption(fixture.customer_b);
-  await admin
-    .locator(".organization-card")
-    .filter({ hasText: "Customer B" })
-    .waitFor();
-  assert.equal(await admin.locator(".organization-card").count(), 1);
+  await admin.locator("tbody tr").filter({ hasText: "Customer B" }).waitFor();
+  assert.equal(await admin.locator("tbody tr").count(), 1);
   checks.push(
     "Global Customer A selection does not filter Resource Management; its independent customer filter works",
   );
   await navigate(admin, "Access Management");
+  await section(admin, "Employees");
   assert.equal(await admin.locator(".org-context-button").count(), 0);
   await admin
     .getByRole("row")
@@ -150,6 +148,9 @@ try {
   await dialog
     .getByLabel("Initial password", { exact: true })
     .fill(fixture.admin_password);
+  await dialog
+    .getByLabel("Department (exactly one)")
+    .selectOption({ label: "NOC renamed" });
   await dialog
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
@@ -305,7 +306,7 @@ try {
   for (const [tab, file] of [
     ["Departments", "departments-dark"],
     ["Roles & Permissions", "roles-dark"],
-    ["Customer Access", "customer-access-dark"],
+    ["Organization Access", "customer-access-dark"],
     ["Access Audit", "access-audit-dark"],
   ]) {
     await section(admin, tab);
@@ -381,8 +382,16 @@ try {
   );
   await call(
     admin,
-    "/api/v1/access/departments/" + department.id + "/members/" + employee.id,
-    "DELETE",
+    "/api/v1/access/employees/" + employee.id + "/department",
+    "PUT",
+    {
+      department_id: (
+        await call(
+          admin,
+          "/api/v1/access/departments?search=Controlled Unassigned Team",
+        )
+      ).data.items[0].id,
+    },
   );
   await worker
     .getByRole("heading", { name: "No assigned access", exact: true })

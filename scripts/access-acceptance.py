@@ -262,7 +262,7 @@ with create_engine(settings.database_url).begin() as c:
             {
                 "status": "PASS",
                 "from": "0024_notification_leases",
-                "to": "0025_provider_department_rbac",
+                "to": "0026_managed_telemetry_uat",
                 "preserved": [
                     "User UUIDs/password hashes/admin flags",
                     "Existing human sessions",

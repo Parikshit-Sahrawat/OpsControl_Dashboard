@@ -50,6 +50,15 @@ def seed():
         db.add(SecurityAuditEvent(event_type='RETENTION_FIXTURE', outcome='SUCCESS', occurred_at=NOW-timedelta(days=1000)))
         from app.services.rule_models import MonitoringRuleCatalog
         db.add(MonitoringRuleCatalog(organization_id=source.organization_id, name='release-check-fixture', kind='METRIC'))
+        # Historical fixture only: prove retired ITSM records/checks survive restore.
+        # No monitoring event creates these records in the running application.
+        from app.models import OperationalIncident
+        db.add(OperationalIncident(organization_id=source.organization_id,
+            episode_key='archived-release-fixture', source_kind='METRIC',
+            source_reference='historical-synthetic-fixture', title='Archived synthetic record',
+            severity='WARNING', status='RESOLVED', condition_status='RECOVERED',
+            opened_at=NOW-timedelta(days=30), recovered_at=NOW-timedelta(days=29),
+            resolved_at=NOW-timedelta(days=29)))
         # Enough resources to prove counts cannot be inferred from a capped page.
         for index in range(205):
             db.add(DataSource(organization_id=source.organization_id, name=f'Scale fixture {index:03}', source_type='LINUX_HOST'))

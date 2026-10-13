@@ -45,7 +45,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
   const steps = details?.steps ?? [];
   const timeline = details?.timeline ?? [];
   const recentHistory = details?.recentHistory ?? [];
-  const incidentHistory = details?.incidentHistory ?? [];
+  const alertHistory = details?.alertHistory ?? [];
   const isInvestigable = ["FAILED", "NO_RUN", "NO_RESPONSE", "LONG_RUNNING"].includes(job.status);
   const next = isInvestigable ? nextState(investigation.status) : null;
   const addNote = async () => {
@@ -69,7 +69,7 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
             ["Environment", job.environment], ["Pentaho", details?.pentahoInstance ?? "—"], ["Execution", job.executionType],
             ["Start", job.start ? `${job.start} IST` : "Not started"], ["End / Failure", job.end ? `${job.end} IST` : "Not completed"],
             ["Duration", job.duration ?? "—"], ["Expected Runtime", job.expectedRuntime ?? "—"], ["SLA", job.sla ?? "—"],
-            ["SLA Status", runtimeSummary], ["Incident", job.incident ?? "—"], ["Monitor", details?.monitoringStatus ?? "UNKNOWN"], ["Provider Execution", details?.providerExecutionId ?? "—"], ["Detected", details?.detected ?? "—"], ["Last Update", details?.lastUpdate ?? "—"],
+            ["SLA Status", runtimeSummary], ["Monitor", details?.monitoringStatus ?? "UNKNOWN"], ["Provider Execution", details?.providerExecutionId ?? "—"], ["Detected", details?.detected ?? "—"], ["Last Update", details?.lastUpdate ?? "—"],
           ].map(([label, value]) => <div className="kv" key={label}><span>{label}</span><b>{value}</b></div>)}
         </div></section>
 
@@ -118,12 +118,12 @@ export default function JobDetailsDrawer({ job, details, onClose, onInvestigatio
           {correlationError && <div className="error-box">{correlationError}</div>}
         </section>
 
-        <section className="drawer-section"><h3>Alert & Incident History</h3>
-          {incidentHistory.length ? incidentHistory.map((item, i) => <div className="list-row" key={item.time + item.event + i}><span><b>{item.time}</b> · {item.event}</span><span className="muted small">{item.reference ?? "—"}</span></div>) : <div className="empty-inline">No operational alert or incident events recorded.</div>}
+        <section className="drawer-section"><h3>Alert & Alert History</h3>
+          {alertHistory.length ? alertHistory.map((item, i) => <div className="list-row" key={item.time + item.event + i}><span><b>{item.time}</b> · {item.event}</span><span className="muted small">{item.reference ?? "—"}</span></div>) : <div className="empty-inline">No monitoring alert events recorded.</div>}
         </section>
 
         <section className="drawer-section"><h3>Recent History · Same Job Order</h3>
-          {recentHistory.length ? recentHistory.map((item, i) => <div className="list-row" key={item.id || item.time + i}><button className="text-link" onClick={()=>onSelectExecution?.(item.id)}>{item.time} · <b>{item.status}</b> · {item.reason ?? "—"}</button><span className="muted small">{item.duration ?? ""} {item.incident ? `· ${item.incident}` : ""}</span></div>) : <div className="empty-inline">No previous execution history available.</div>}
+          {recentHistory.length ? recentHistory.map((item, i) => <div className="list-row" key={item.id || item.time + i}><button className="text-link" onClick={()=>onSelectExecution?.(item.id)}>{item.time} · <b>{item.status}</b> · {item.reason ?? "—"}</button><span className="muted small">{item.duration ?? ""} </span></div>) : <div className="empty-inline">No previous execution history available.</div>}
         </section>
 
         {isInvestigable && <section className="drawer-section">
