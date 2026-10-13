@@ -46,9 +46,22 @@ class OTLPReceiver(Strict):
     credential_ref: str | None = None
 
 
+class SyslogReceiver(Strict):
+    bind: str = "127.0.0.1"
+    port: int = Field(default=1514, ge=1024, le=65535)
+    protocol: Literal["TCP", "UDP"] = "TCP"
+    format: Literal["RFC5424", "RFC3164"] = "RFC5424"
+    allow_remote: bool = False
+    tls_certificate: str | None = None
+    tls_key_ref: str | None = None
+    client_ca: str | None = None
+
+
 class MethodInput(Strict):
     name: str = Field(min_length=1, max_length=160)
-    method_type: Literal["FILE_LOG", "METRIC_SCRAPE", "OTLP_RECEIVER"]
+    method_type: Literal[
+        "FILE_LOG", "METRIC_SCRAPE", "OTLP_RECEIVER", "SYSLOG_RECEIVER"
+    ]
     configuration: dict
     enabled: bool = True
     expected_revision: int | None = Field(default=None, ge=1)
@@ -60,6 +73,7 @@ class MethodInput(Strict):
             "FILE_LOG": FileLog,
             "METRIC_SCRAPE": MetricScrape,
             "OTLP_RECEIVER": OTLPReceiver,
+            "SYSLOG_RECEIVER": SyslogReceiver,
         }[self.method_type]
         self.configuration = schema.model_validate(self.configuration).model_dump()
         return self
@@ -139,6 +153,32 @@ def validate_method(method, os_type):
             env_reference(c["credential_ref"])
         if c["credential_ref"] and not c["tls"]:
             raise ValueError("Authenticated scraping requires TLS")
+    elif method.method_type == "SYSLOG_RECEIVER":
+        try:
+            local = ipaddress.ip_address(c["bind"]).is_loopback
+        except ValueError:
+            local = c["bind"] == "localhost"
+        if not re.fullmatch(r"[A-Za-z0-9.:-]{1,255}", c["bind"]):
+            raise ValueError("Invalid syslog binding")
+        if not local and not (
+            c["allow_remote"]
+            and c["protocol"] == "TCP"
+            and c["tls_certificate"]
+            and c["tls_key_ref"]
+            and c["client_ca"]
+        ):
+            raise ValueError(
+                "Remote syslog requires TCP and mutual TLS; public UDP is forbidden"
+            )
+        if c["protocol"] == "UDP" and any(
+            c.get(k) for k in ("tls_certificate", "tls_key_ref", "client_ca")
+        ):
+            raise ValueError("UDP cannot provide TLS authentication")
+        if bool(c["tls_certificate"]) != bool(c["tls_key_ref"]):
+            raise ValueError("Syslog TLS certificate/key must be configured together")
+        for key in ("tls_certificate", "tls_key_ref", "client_ca"):
+            if c[key]:
+                safe_path(c[key], os_type)
     else:
         try:
             local = ipaddress.ip_address(c["bind"]).is_loopback
@@ -225,6 +265,27 @@ def generate(collector, source, methods, ingestion_url):
                 }
             cfg = {"config": {"scrape_configs": [scrape]}}
             signals = ["metrics"]
+        elif method.method_type == "SYSLOG_RECEIVER":
+            pair = (c["bind"], c["port"])
+            if pair in ports:
+                raise ValueError("Enabled methods cannot share a listener")
+            ports.add(pair)
+            receiver = "syslog/" + suffix
+            endpoint = (
+                ("[" + c["bind"] + "]" if ":" in c["bind"] else c["bind"])
+                + ":"
+                + str(c["port"])
+            )
+            listen = {"listen_address": endpoint}
+            if c["tls_certificate"]:
+                listen["tls"] = {
+                    "cert_file": c["tls_certificate"],
+                    "key_file": c["tls_key_ref"],
+                }
+                if c["client_ca"]:
+                    listen["tls"]["client_ca_file"] = c["client_ca"]
+            cfg = {c["protocol"].lower(): listen, "protocol": c["format"].lower()}
+            signals = ["logs"]
         else:
             pair = (c["bind"], c["port"])
             if pair in ports:

@@ -27,6 +27,7 @@ class Agent:
         self.stop = stop or threading.Event()
         self.process = None
         self.applied = None
+        self.agent_configuration = {"services": []}
         parsed = urlsplit(self.backend)
         if (
             parsed.scheme != "https"
@@ -50,7 +51,13 @@ class Agent:
             else None
         )
         if self.state.exists():
-            self.applied = json.loads(self.state.read_text()).get("applied_revision")
+            state = json.loads(self.state.read_text())
+            self.applied = state.get("applied_revision")
+            from service_health import configuration
+
+            self.agent_configuration = configuration(
+                state.get("agent_configuration", {})
+            )
         result = subprocess.run(
             [self.runtime, "--version"], capture_output=True, text=True, timeout=10
         )
@@ -153,6 +160,9 @@ class Agent:
         text = version["yaml_text"]
         if hashlib.sha256(text.encode()).hexdigest() != version["sha256"]:
             raise RuntimeError("CONFIG_CHECKSUM_MISMATCH")
+        from service_health import configuration
+
+        runtime_configuration = configuration(version.get("agent_configuration", {}))
         self.preflight(version)
         candidate = self.home / "candidate.yaml"
         self.write_private(candidate, text)
@@ -179,9 +189,16 @@ class Agent:
                 self.start_runtime()
             raise RuntimeError("COLLECTOR_START_FAILED")
         self.applied = version["revision"]
+        self.agent_configuration = runtime_configuration
         self.write_private(
             self.state,
-            json.dumps({"applied_revision": self.applied, "sha256": version["sha256"]}),
+            json.dumps(
+                {
+                    "applied_revision": self.applied,
+                    "sha256": version["sha256"],
+                    "agent_configuration": self.agent_configuration,
+                }
+            ),
         )
 
     def start_runtime(self):
@@ -251,6 +268,21 @@ class Agent:
                         running = self.process.poll() is None
                     except Exception:
                         error = "COLLECTOR_RESTART_FAILED"
+                if running and self.agent_configuration.get("services"):
+                    try:
+                        from service_health import envelope
+
+                        telemetry, failures = envelope(
+                            self.agent_configuration["services"],
+                            platform.system(),
+                            platform.node(),
+                        )
+                        self.request("/otlp/v1/metrics", telemetry)
+                        if failures and not error:
+                            error = "SERVICE_QUERY_UNAVAILABLE"
+                    except Exception:
+                        if not error:
+                            error = "SERVICE_TELEMETRY_UNAVAILABLE"
                 try:
                     self.request(
                         "/heartbeat",

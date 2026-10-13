@@ -4,6 +4,9 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.models.entities import ExecutionStatus, ExecutionType
 class StepCreate(BaseModel):
     name: str
+    attempt: int = Field(default=1, ge=1)
+    external_step_id: str | None = None
+    source_evidence: dict | None = None
     step_type: str | None = None
     status: str
     started_at: datetime | None = None
@@ -55,6 +58,7 @@ class ExecutionListItem(BaseModel):
     duration_seconds: int | None = None
     provider_execution_id: str | None = None
     monitoring_status: str = 'UNKNOWN'
+    monitoring_conditions: dict | None = None
 class ExecutionOut(ExecutionListItem):
     source_error_code: str | None
     source_error_message: str | None

@@ -33,7 +33,7 @@ if digest != args.sha256:
 name = "otelcol-contrib.exe" if args.os == "windows" else "otelcol-contrib"
 args.output.parent.mkdir(parents=True, exist_ok=True)
 with zipfile.ZipFile(args.output, "x", compression=zipfile.ZIP_DEFLATED) as z:
-    for filename in ("opscontrol_agent.py", "README.md") + (
+    for filename in ("opscontrol_agent.py", "service_health.py", "README.md") + (
         ("install-linux.sh",)
         if args.os == "linux"
         else ("install-windows.ps1", "windows_service.py", "requirements-windows.txt")

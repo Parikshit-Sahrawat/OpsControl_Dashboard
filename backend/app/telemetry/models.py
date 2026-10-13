@@ -112,6 +112,7 @@ class CollectorConfigVersion(Base):
     validation_status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="VALIDATED"
     )
+    agent_configuration: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     method_snapshot: Mapped[list] = mapped_column(JSONB, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=now

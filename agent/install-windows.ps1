@@ -13,7 +13,7 @@ New-Item -Force -ItemType Directory "$Root\bin","$Root\state" | Out-Null
 icacls $Root /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' '*S-1-5-19:(OI)(CI)RX' | Out-Null
 icacls "$Root\state" /grant:r '*S-1-5-19:(OI)(CI)M' | Out-Null
 Copy-Item $Binary "$Root\bin\otelcol-contrib.exe" -Force
-Copy-Item "$PSScriptRoot\opscontrol_agent.py","$PSScriptRoot\windows_service.py" "$Root\bin" -Force
+Copy-Item "$PSScriptRoot\opscontrol_agent.py","$PSScriptRoot\windows_service.py","$PSScriptRoot\service_health.py" "$Root\bin" -Force
 Copy-Item $EnrollmentFile "$Root\state\enrollment" -Force
 @{backend=$Backend} | ConvertTo-Json | Set-Content "$Root\service.json"
 # Install the approved Python/pywin32 environment before invoking this script.

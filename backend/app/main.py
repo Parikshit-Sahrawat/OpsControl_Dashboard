@@ -9,8 +9,10 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api import operations, access
+from app.unified import api as unified
 from app.telemetry import api as agent_control, ingestion, rules
 import app.telemetry.models
+import app.unified.models
 from app.api import infrastructure, etl, investigations, health, monitoring, organizations, resource_management, remote_protocol, rule_catalogs, activation, monitoring_diagnostics, discovery
 import app.services.rule_models  # register immutable rule/activation tables
 import app.worker.remote_models  # register remote job/evidence tables
@@ -63,6 +65,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+app.include_router(unified.router, dependencies=[Depends(authorize_route)])
 app.include_router(rules.router, dependencies=[Depends(authorize_route)])
 app.include_router(agent_control.router, dependencies=[Depends(authorize_route)])
 app.include_router(agent_control.agent_router)
@@ -96,3 +99,13 @@ async def redacted_validation_error(request: Request, exc: RequestValidationErro
                     "type": str(err.get("type", "value_error"))}
                    for err in exc.errors()]
     return JSONResponse({"detail": "Invalid input", "errors": safe_errors}, status_code=422)
+
+# Constraint failures never expose SQL statements, passwords or bound values.
+from sqlalchemy.exc import IntegrityError
+from pydantic import ValidationError
+@app.exception_handler(IntegrityError)
+async def constraint_conflict(request: Request, exc: IntegrityError):
+    return JSONResponse({"detail":"Duplicate identity or invalid relationship"},status_code=409)
+@app.exception_handler(ValidationError)
+async def schema_conflict(request: Request, exc: ValidationError):
+    return JSONResponse({"detail":"Invalid configuration"},status_code=422)

@@ -15,6 +15,7 @@ install -d -m 755 /opt/opscontrol-agent
 install -d -o opscontrol-agent -g opscontrol-agent -m 700 /var/lib/opscontrol-agent
 install -m 755 "$agent_package/otelcol-contrib" /opt/opscontrol-agent/otelcol-contrib
 install -m 644 "$agent_package/opscontrol_agent.py" /opt/opscontrol-agent/opscontrol_agent.py
+install -m 644 "$agent_package/service_health.py" /opt/opscontrol-agent/service_health.py
 install -o opscontrol-agent -g opscontrol-agent -m 600 "$agent_enrollment" /var/lib/opscontrol-agent/enrollment
 cat > /etc/systemd/system/opscontrol-agent.service <<EOF
 [Unit]

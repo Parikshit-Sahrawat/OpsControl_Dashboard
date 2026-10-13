@@ -1,0 +1,1045 @@
+"""Scoped ARCH-001 control plane. Existing contracts remain available for compatibility."""
+
+import hashlib, json, uuid
+from datetime import datetime, timezone, timedelta
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+from pydantic import Field
+from sqlalchemy import select, func, or_
+from sqlalchemy.exc import IntegrityError
+from app.db.session import get_db
+from app.models import (
+    Organization,
+    VM,
+    JobOrder,
+    DataSource,
+    Collector,
+    MetricDefinition,
+    MetricSample,
+    LogSource,
+    LogEvent,
+    JobOrderHistory,
+    JobStepExecution,
+    CollectorRun,
+)
+from app.telemetry.models import (
+    ManagedAgent,
+    CollectorMethod,
+    CollectorConfigVersion,
+    TelemetryReceipt,
+)
+from app.telemetry.configuration import MethodInput, validate_method, host_os
+from app.security.access_control import require_permission
+from app.security.audit import log_event
+from app.security.scope import current_principal
+from app.unified.models import *
+from app.unified.schemas import *
+
+router = APIRouter(prefix="/api/v1/unified", tags=["Unified Monitoring"])
+
+
+def checked_parameters(domain, configuration):
+    try:
+        return validate_parameters(domain, configuration)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from None
+
+
+def utc():
+    return datetime.now(timezone.utc)
+
+
+def document(row):
+    from app.telemetry.api import item
+
+    return item(row)
+
+
+def audit(db, resource, action):
+    p = current_principal.get()
+    log_event(
+        db,
+        event_type=action,
+        outcome="SUCCESS",
+        actor_id=p.user_id,
+        organization_id=resource.organization_id,
+        target_type="monitoring_resource",
+        target_id=resource.id,
+    )
+
+
+def commit(db):
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            409, "Duplicate identity or invalid resource relationship"
+        ) from None
+
+
+def resource(db, id, permission="resources.view", write=False):
+    query = select(MonitoringResource).where(MonitoringResource.id == id)
+    item = db.scalar(query.with_for_update() if write else query)
+    if item is None:
+        raise HTTPException(404, "Resource unavailable")
+    require_permission(permission, item.organization_id)
+    return item
+
+
+def customer(db, payload):
+    if payload.new_customer:
+        require_permission("customers.create")
+        # Preserve the existing no-implicit-grant contract. Inline creation by
+        # a non-break-glass user requires separate, explicit grant assignment.
+        if not current_principal.get().platform_admin:
+            raise HTTPException(
+                403,
+                "Inline customer creation/onboarding requires a platform administrator; existing customer scopes remain unchanged",
+            )
+        org = Organization(**payload.new_customer.model_dump())
+        db.add(org)
+        db.flush()
+        return org
+    if not payload.organization_id:
+        raise HTTPException(422, "Customer required")
+    require_permission("resources.create", payload.organization_id)
+    org = db.get(Organization, payload.organization_id)
+    if org is None or not org.active:
+        raise HTTPException(404, "Customer unavailable")
+    return org
+
+
+def linked_vm(db, id, permission="resources.view"):
+    parent = resource(db, id, permission)
+    if parent.domain != "VM":
+        raise HTTPException(422, "Select a VM Resource")
+    return parent
+
+
+def binding(db, r):
+    config = dict(r.configuration or {})
+    parent = None
+    if r.linked_vm_id:
+        parent = db.scalar(
+            select(MonitoringResource).where(MonitoringResource.vm_id == r.linked_vm_id)
+        )
+    inherited = {
+        "resource_id": str(r.id),
+        "customer_id": str(r.organization_id),
+        "customer": db.get(Organization, r.organization_id).name,
+        "environment": r.environment,
+        "domain": r.domain,
+    }
+    if parent:
+        inherited.update(
+            {
+                "vm_resource_id": str(parent.id),
+                "vm_id": str(parent.vm_id),
+                "hostname": (parent.configuration or {}).get("hostname"),
+                "collector_id": (
+                    str(parent.primary_collector_id)
+                    if parent.primary_collector_id
+                    else None
+                ),
+            }
+        )
+    elif r.domain == "VM":
+        inherited.update(
+            {
+                "vm_id": str(r.vm_id),
+                "hostname": config.get("hostname"),
+                "collector_id": (
+                    str(r.primary_collector_id) if r.primary_collector_id else None
+                ),
+            }
+        )
+    if r.domain == "API":
+        inherited.update(
+            {
+                k: config.get(k)
+                for k in (
+                    "dns",
+                    "port",
+                    "protocol",
+                    "path",
+                    "frequency_seconds",
+                    "probe_location",
+                )
+            }
+        )
+    if r.domain == "ETL":
+        inherited.update(
+            {
+                k: config.get(k)
+                for k in (
+                    "platform",
+                    "jobchain",
+                    "scheduler",
+                    "frequency_seconds",
+                    "log_paths",
+                )
+            }
+        )
+    return inherited
+
+
+def output(db, r):
+    return {
+        **document(r),
+        "inherited": binding(db, r),
+        "has_collector": bool(
+            r.primary_collector_id
+            or (r.linked_vm_id and binding(db, r).get("collector_id"))
+        ),
+    }
+
+
+@router.get("/resources")
+def inventory(
+    domain: Literal["VM", "ETL", "API"] | None = None,
+    organization_id: list[uuid.UUID] = Query(default=[]),
+    environment: Environment | None = None,
+    search: str = "",
+    active: bool | None = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    query = select(MonitoringResource)
+    if domain:
+        query = query.where(MonitoringResource.domain == domain)
+    if organization_id:
+        query = query.where(MonitoringResource.organization_id.in_(organization_id))
+    if environment:
+        query = query.where(MonitoringResource.environment == environment)
+    if search:
+        query = query.where(MonitoringResource.name.ilike("%" + search[:200] + "%"))
+    if active is not None:
+        query = query.where(MonitoringResource.active == active)
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
+    rows = db.scalars(
+        query.order_by(MonitoringResource.name, MonitoringResource.id)
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    return {
+        "items": [output(db, r) for r in rows],
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "has_more": offset + len(rows) < total,
+    }
+
+
+@router.get("/resources/{id}")
+def details(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id)
+    deps = db.scalars(
+        select(ResourceDependency)
+        .where(ResourceDependency.resource_id == id)
+        .order_by(ResourceDependency.valid_from.desc())
+    ).all()
+    versions = db.scalars(
+        select(ParameterVersion)
+        .where(ParameterVersion.resource_id == id)
+        .order_by(ParameterVersion.version.desc())
+        .limit(50)
+    ).all()
+    conditions = db.scalars(
+        select(ResourceCondition)
+        .where(ResourceCondition.resource_id == id)
+        .order_by(ResourceCondition.last_observed_at.desc())
+        .limit(100)
+    ).all()
+    return {
+        **output(db, r),
+        "dependencies": [document(v) for v in deps],
+        "parameter_versions": [document(v) for v in versions],
+        "conditions": [document(v) for v in conditions],
+    }
+
+
+@router.get("/mapping-issues")
+def issues(limit: int = Query(100, ge=1, le=500), db=Depends(get_db)):
+    return [
+        document(v)
+        for v in db.scalars(
+            select(ResourceMappingIssue)
+            .where(ResourceMappingIssue.resolved_at.is_(None))
+            .limit(limit)
+        )
+    ]
+
+
+@router.post("/resources/vm", status_code=201)
+def create_vm(payload: VMCreate, db=Depends(get_db)):
+    org = customer(db, payload)
+    require_permission("resources.create", org.id)
+    require_permission("collectors.manage", org.id)
+    vm = VM(
+        organization_id=org.id,
+        hostname=payload.hostname,
+        environment=payload.environment,
+        os=payload.os_type,
+        monitoring_enabled=False,
+    )
+    db.add(vm)
+    db.flush()
+    source = DataSource(
+        organization_id=org.id,
+        name=payload.hostname,
+        source_type=payload.os_type.upper(),
+        endpoint=payload.address,
+        description=payload.description,
+        enabled=True,
+        connection_config={
+            "opscontrol": {
+                "hostname": payload.hostname,
+                "os_type": payload.os_type,
+                "environment": payload.environment,
+                "visible_name": payload.name,
+                "vm_id": str(vm.id),
+            }
+        },
+    )
+    db.add(source)
+    db.flush()
+    collector = Collector(
+        data_source_id=source.id,
+        name=payload.name + " Agent Configuration",
+        collector_type="OTEL",
+        enabled=True,
+        configuration={
+            "os_metrics": payload.native_os_metrics,
+            "services": payload.services,
+        },
+    )
+    db.add(collector)
+    db.flush()
+    r = MonitoringResource(
+        id=vm.id,
+        organization_id=org.id,
+        domain="VM",
+        name=payload.name,
+        environment=payload.environment,
+        vm_id=vm.id,
+        data_source_id=source.id,
+        primary_collector_id=collector.id,
+        configuration=payload.model_dump(
+            mode="json",
+            exclude={
+                "organization_id",
+                "new_customer",
+                "environment",
+                "name",
+                "active",
+            },
+        ),
+        active=payload.active,
+    )
+    db.add(r)
+    db.flush()
+    audit(db, r, "ARCH_RESOURCE_CREATE")
+    commit(db)
+    return output(db, r)
+
+
+@router.post("/resources/etl", status_code=201)
+def create_etl(payload: ETLCreate, db=Depends(get_db)):
+    parent = linked_vm(db, payload.vm_resource_id) if payload.vm_resource_id else None
+    if parent:
+        require_permission("resources.create", parent.organization_id)
+        require_permission("etl.configure", parent.organization_id)
+        if (
+            payload.organization_id
+            and payload.organization_id != parent.organization_id
+        ):
+            raise HTTPException(422, "Customer is inherited from the VM")
+        if payload.environment and payload.environment != parent.environment:
+            raise HTTPException(422, "Environment is inherited from the VM")
+        org = db.get(Organization, parent.organization_id)
+        env = parent.environment
+    else:
+        org = customer(db, payload)
+        env = payload.environment
+        require_permission("etl.configure", org.id)
+    job = JobOrder(
+        organization_id=org.id,
+        vm_id=parent.vm_id if parent else None,
+        host_data_source_id=parent.data_source_id if parent else None,
+        name=payload.jobchain,
+        environment=env,
+        monitoring_enabled=False,
+    )
+    db.add(job)
+    db.flush()
+    config = payload.model_dump(
+        mode="json",
+        exclude={
+            "organization_id",
+            "new_customer",
+            "environment",
+            "name",
+            "active",
+            "vm_resource_id",
+        },
+    )
+    r = MonitoringResource(
+        id=job.id,
+        organization_id=org.id,
+        domain="ETL",
+        name=payload.name,
+        environment=env,
+        job_order_id=job.id,
+        linked_vm_id=parent.vm_id if parent else None,
+        configuration=config,
+        active=payload.active,
+    )
+    db.add(r)
+    db.flush()
+    if parent:
+        db.add(
+            ResourceDependency(
+                organization_id=org.id,
+                resource_id=r.id,
+                depends_on_id=parent.id,
+                relationship_type="HOSTED_ON",
+            )
+        )
+        if payload.log_paths:
+            if not parent.primary_collector_id or not parent.data_source_id:
+                raise HTTPException(
+                    409, "Reconcile the VM Collector before adding ETL log paths"
+                )
+            require_permission("collectors.manage", org.id)
+            for index, path in enumerate(payload.log_paths):
+                method = MethodInput(
+                    name=payload.name + " log " + str(index + 1),
+                    method_type="FILE_LOG",
+                    configuration={"paths": [path]},
+                )
+                validate_method(
+                    method, host_os(db.get(DataSource, parent.data_source_id))
+                )
+                db.add(
+                    CollectorMethod(
+                        organization_id=org.id,
+                        collector_id=parent.primary_collector_id,
+                        **method.model_dump(exclude={"expected_revision"}),
+                        validation_status="SCHEMA_VALID"
+                    )
+                )
+    if payload.connector_url:
+        require_permission("collectors.manage", org.id)
+        source = DataSource(
+            organization_id=org.id,
+            name=payload.name + " metadata",
+            source_type=payload.platform,
+            endpoint=payload.connector_url,
+            enabled=True,
+            connection_config={"opscontrol": {"environment": env}},
+        )
+        db.add(source)
+        db.flush()
+        collector = Collector(
+            data_source_id=source.id,
+            name=payload.name + " read-only metadata",
+            collector_type="IICS_NATIVE",
+            enabled=False,
+            interval_seconds=payload.frequency_seconds,
+            configuration={
+                "resource_id": str(r.id),
+                "url": payload.connector_url,
+                "credential_ref": payload.credential_ref,
+                "records_field": payload.connector_records_field,
+                "parser": payload.parser.model_dump(mode="json"),
+                "jobchain": payload.jobchain,
+            },
+        )
+        db.add(collector)
+        db.flush()
+        r.data_source_id = source.id
+        r.primary_collector_id = collector.id
+    audit(db, r, "ARCH_RESOURCE_CREATE")
+    commit(db)
+    return output(db, r)
+
+
+@router.post("/resources/api", status_code=201)
+def create_api(payload: APICreate, db=Depends(get_db)):
+    org = customer(db, payload)
+    require_permission("resources.create", org.id)
+    require_permission("collectors.manage", org.id)
+    parent = (
+        linked_vm(db, payload.linked_vm_resource_id)
+        if payload.linked_vm_resource_id
+        else None
+    )
+    if parent and (
+        parent.organization_id != org.id or parent.environment != payload.environment
+    ):
+        raise HTTPException(422, "Linked VM customer/environment must match")
+    address = "[" + payload.dns + "]" if ":" in payload.dns else payload.dns
+    url = (
+        payload.protocol.lower()
+        + "://"
+        + address
+        + ":"
+        + str(payload.port)
+        + payload.path
+    )
+    source = DataSource(
+        organization_id=org.id,
+        name=payload.name,
+        source_type="API",
+        endpoint=url,
+        enabled=True,
+        connection_config={
+            "opscontrol": {"environment": payload.environment},
+            "credential_ref": payload.credential_ref,
+        },
+    )
+    db.add(source)
+    db.flush()
+    configuration = payload.model_dump(
+        mode="json",
+        exclude={
+            "organization_id",
+            "new_customer",
+            "environment",
+            "name",
+            "active",
+            "linked_vm_resource_id",
+        },
+    )
+    collector = Collector(
+        data_source_id=source.id,
+        name=payload.name + " native probe",
+        collector_type="NATIVE_API",
+        enabled=False,
+        interval_seconds=payload.frequency_seconds,
+        configuration={**configuration, "url": url},
+    )
+    db.add(collector)
+    db.flush()
+    r = MonitoringResource(
+        id=source.id,
+        organization_id=org.id,
+        domain="API",
+        name=payload.name,
+        environment=payload.environment,
+        data_source_id=source.id,
+        primary_collector_id=collector.id,
+        linked_vm_id=parent.vm_id if parent else None,
+        configuration=configuration,
+        active=payload.active,
+    )
+    db.add(r)
+    db.flush()
+    if parent:
+        db.add(
+            ResourceDependency(
+                organization_id=org.id,
+                resource_id=r.id,
+                depends_on_id=parent.id,
+                relationship_type="HOSTED_ON",
+            )
+        )
+    audit(db, r, "ARCH_RESOURCE_CREATE")
+    commit(db)
+    return output(db, r)
+
+
+class ResourceEdit(Strict):
+    expected_revision: int = Field(ge=1)
+    name: str = Field(min_length=1, max_length=200)
+    environment: Environment
+    configuration: dict
+    active: bool = True
+
+
+@router.put("/resources/{id}")
+def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
+    r = resource(db, id, "resources.update", True)
+    if payload.expected_revision != r.revision:
+        raise HTTPException(409, "Resource changed; reload before editing")
+    config = dict(payload.configuration)
+    require_safe_config(config)
+    base = {
+        "name": payload.name,
+        "organization_id": str(r.organization_id),
+        "environment": payload.environment,
+        "active": payload.active,
+        **config,
+    }
+    base.pop("legacy", None)
+    if r.domain == "VM":
+        typed = VMCreate.model_validate(base)
+        config = typed.model_dump(
+            mode="json",
+            exclude={
+                "name",
+                "organization_id",
+                "new_customer",
+                "environment",
+                "active",
+            },
+        )
+        if typed.hostname != (r.configuration or {}).get(
+            "hostname", db.get(VM, r.vm_id).hostname
+        ):
+            raise HTTPException(
+                409,
+                "Host identity is immutable; preserve history by onboarding a new host",
+            )
+        if r.data_source_id:
+            source = db.get(DataSource, r.data_source_id)
+            if typed.os_type != host_os(source):
+                raise HTTPException(
+                    409, "Changing an enrolled host OS requires deliberate migration"
+                )
+            source.endpoint = typed.address
+            source.connection_config = {
+                **(source.connection_config or {}),
+                "opscontrol": {
+                    **(source.connection_config or {}).get("opscontrol", {}),
+                    "environment": payload.environment,
+                    "visible_name": payload.name,
+                },
+            }
+        db.get(VM, r.vm_id).environment = payload.environment
+        if r.primary_collector_id:
+            require_permission("collectors.manage", r.organization_id)
+            c = db.get(Collector, r.primary_collector_id)
+            c.configuration = {
+                **(c.configuration or {}),
+                "services": typed.services,
+                "os_metrics": typed.native_os_metrics,
+            }
+        # Parent identity propagation never edits a saved threshold override.
+        for child in db.scalars(
+            select(MonitoringResource).where(MonitoringResource.linked_vm_id == r.vm_id)
+        ):
+            if child.domain == "ETL":
+                child.environment = payload.environment
+                child.revision += 1
+                db.get(JobOrder, child.job_order_id).environment = payload.environment
+    elif r.domain == "ETL":
+        parent = (
+            db.scalar(
+                select(MonitoringResource).where(
+                    MonitoringResource.vm_id == r.linked_vm_id
+                )
+            )
+            if r.linked_vm_id
+            else None
+        )
+        if parent and payload.environment != parent.environment:
+            raise HTTPException(422, "ETL environment is inherited")
+        typed = ETLCreate.model_validate(
+            {**base, "vm_resource_id": str(parent.id) if parent else None}
+        )
+        config = typed.model_dump(
+            mode="json",
+            exclude={
+                "name",
+                "organization_id",
+                "new_customer",
+                "environment",
+                "active",
+                "vm_resource_id",
+            },
+        )
+        job = db.get(JobOrder, r.job_order_id)
+        if typed.jobchain != job.name:
+            raise HTTPException(
+                409, "Jobchain identity is immutable; create a new resource"
+            )
+    else:
+        typed = APICreate.model_validate(base)
+        config = typed.model_dump(
+            mode="json",
+            exclude={
+                "name",
+                "organization_id",
+                "new_customer",
+                "environment",
+                "active",
+                "linked_vm_resource_id",
+            },
+        )
+        if any(
+            config.get(k) != (r.configuration or {}).get(k)
+            for k in ("dns", "port", "protocol", "path")
+        ):
+            raise HTTPException(
+                409,
+                "Endpoint identity is immutable; preserve history by creating a new endpoint",
+            )
+        if r.primary_collector_id:
+            require_permission("collectors.manage", r.organization_id)
+            c = db.get(Collector, r.primary_collector_id)
+            c.interval_seconds = typed.frequency_seconds
+            c.configuration = {**(c.configuration or {}), **config}
+    r.name = payload.name
+    r.environment = payload.environment
+    r.configuration = config
+    r.active = payload.active
+    r.revision += 1
+    r.updated_at = utc()
+    if not r.active:
+        r.activation_status = "PAUSED"
+    audit(db, r, "ARCH_RESOURCE_UPDATE")
+    commit(db)
+    return output(db, r)
+
+
+class ParameterInput(Strict):
+    expected_resource_revision: int = Field(ge=1)
+    configuration: dict
+
+
+@router.post("/parameters/{id}/preview")
+def preview(id: uuid.UUID, payload: ParameterInput, db=Depends(get_db)):
+    r = resource(db, id, "templates.view")
+    config = checked_parameters(r.domain, payload.configuration)
+    inherited = binding(db, r)
+    attributes = [
+        {"name": k, "value": v, "provenance": "INHERITED", "read_only": True}
+        for k, v in inherited.items()
+    ]
+    attributes += [
+        {
+            "name": k,
+            "value": v,
+            "provenance": "OVERRIDDEN" if k in config["overrides"] else "CONFIGURED",
+            "read_only": False,
+        }
+        for k, v in config.items()
+        if k not in {"domain", "overrides"}
+    ]
+    if r.primary_collector_id:
+        last = db.scalar(
+            select(func.max(TelemetryReceipt.received_at))
+            .join(ManagedAgent, ManagedAgent.id == TelemetryReceipt.agent_id)
+            .where(ManagedAgent.collector_id == r.primary_collector_id)
+        )
+        attributes.append(
+            {
+                "name": "last_telemetry_receipt",
+                "value": last,
+                "provenance": "TELEMETRY_DERIVED",
+                "read_only": True,
+            }
+        )
+    return {
+        "resource_revision": r.revision,
+        "configuration": config,
+        "attributes": attributes,
+        "identity_overrides_allowed": False,
+    }
+
+
+@router.post("/parameters/{id}", status_code=201)
+def save_parameters(id: uuid.UUID, payload: ParameterInput, db=Depends(get_db)):
+    r = resource(db, id, "templates.manage", True)
+    if r.revision != payload.expected_resource_revision:
+        raise HTTPException(409, "Inherited identity changed; reload effective preview")
+    config = checked_parameters(r.domain, payload.configuration)
+    version = (
+        db.scalar(
+            select(func.max(ParameterVersion.version)).where(
+                ParameterVersion.resource_id == id
+            )
+        )
+        or 0
+    ) + 1
+    p = ParameterVersion(
+        organization_id=r.organization_id,
+        resource_id=id,
+        version=version,
+        configuration=config,
+        sha256=hashlib.sha256(
+            json.dumps(config, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest(),
+        actor_id=current_principal.get().user_id,
+    )
+    db.add(p)
+    db.flush()
+    audit(db, r, "ARCH_PARAMETERS_SAVE")
+    commit(db)
+    return document(p)
+
+
+class ImportInput(Strict):
+    content: str
+    format: Literal["YAML", "JSON"]
+    expected_resource_revision: int = Field(ge=1)
+    save: bool = False
+
+
+@router.post("/parameters/{id}/import")
+def import_parameters(
+    id: uuid.UUID, payload: ImportInput, response: Response, db=Depends(get_db)
+):
+    r = resource(db, id, "templates.manage" if payload.save else "templates.view")
+    try:
+        parsed = import_document(payload.content, payload.format)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from None
+    config = checked_parameters(r.domain, parsed)
+    args = ParameterInput(
+        expected_resource_revision=payload.expected_resource_revision,
+        configuration=config,
+    )
+    if payload.save:
+        response.status_code = 201
+    return save_parameters(id, args, db) if payload.save else preview(id, args, db)
+
+
+@router.get("/parameters/{id}")
+def versions(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id, "templates.view")
+    return {
+        "inherited": binding(db, r),
+        "versions": [
+            document(p)
+            for p in db.scalars(
+                select(ParameterVersion)
+                .where(ParameterVersion.resource_id == id)
+                .order_by(ParameterVersion.version.desc())
+                .limit(100)
+            )
+        ],
+    }
+
+
+class Approval(Strict):
+    approve: bool
+    version: int | None = None
+
+
+@router.post("/parameters/{id}/activate")
+def activate_parameters(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
+    r = resource(db, id, "templates.manage", True)
+    if not payload.approve or not payload.version:
+        raise HTTPException(422, "Explicit version approval required")
+    p = db.scalar(
+        select(ParameterVersion).where(
+            ParameterVersion.resource_id == id,
+            ParameterVersion.version == payload.version,
+        )
+    )
+    if not p:
+        raise HTTPException(404, "Parameter version unavailable")
+    config = checked_parameters(r.domain, p.configuration)
+    for old in db.scalars(
+        select(ParameterVersion).where(
+            ParameterVersion.resource_id == id, ParameterVersion.status == "ACTIVE"
+        )
+    ):
+        old.status = "SUPERSEDED"
+    db.flush()
+    p.status = "ACTIVE"
+    if r.domain == "ETL":
+        job = db.get(JobOrder, r.job_order_id)
+        job.expected_runtime_seconds = config["long_running_seconds"]
+        job.sla_seconds = config["completion_sla_seconds"]
+        job.no_run_grace_seconds = config["no_run_grace_seconds"]
+        if r.primary_collector_id:
+            require_permission("collectors.manage", r.organization_id)
+            c = db.get(Collector, r.primary_collector_id)
+            c.configuration = {
+                **(c.configuration or {}),
+                "parser": config["parser"],
+                "jobchain": r.configuration["jobchain"],
+            }
+    if r.domain == "VM" and r.primary_collector_id:
+        require_permission("collectors.manage", r.organization_id)
+        c = db.get(Collector, r.primary_collector_id)
+        c.configuration = {**(c.configuration or {}), "services": config["services"]}
+    audit(db, r, "ARCH_PARAMETERS_ACTIVATE")
+    commit(db)
+    return document(p)
+
+
+@router.get("/resources/{id}/verification")
+def verification(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id)
+    from app.unified.engines import source_readiness
+
+    return {
+        "resource_id": id,
+        **source_readiness(db, r),
+        "activation_status": r.activation_status,
+    }
+
+
+@router.post("/resources/{id}/activate")
+def activate_resource(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
+    r = resource(db, id, "resources.update", True)
+    if not payload.approve:
+        raise HTTPException(422, "Explicit activation approval required")
+    if not db.scalar(
+        select(ParameterVersion.id).where(
+            ParameterVersion.resource_id == id, ParameterVersion.status == "ACTIVE"
+        )
+    ):
+        raise HTTPException(409, "Activate a validated parameter version first")
+    from app.unified.engines import source_readiness
+
+    evidence = source_readiness(db, r)
+    if not evidence["ready"]:
+        raise HTTPException(
+            409,
+            {
+                "message": "Required telemetry verification has not passed",
+                "checks": evidence,
+            },
+        )
+    r.activation_status = "ACTIVE"
+    r.active = True
+    if r.vm_id:
+        db.get(VM, r.vm_id).monitoring_enabled = True
+    if r.job_order_id:
+        db.get(JobOrder, r.job_order_id).monitoring_enabled = True
+    audit(db, r, "ARCH_RESOURCE_ACTIVATE")
+    commit(db)
+    return output(db, r)
+
+
+@router.post("/resources/{id}/start-probe")
+def start_probe(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
+    r = resource(db, id, "collectors.manage", True)
+    if r.domain not in {"API", "ETL"} or not r.primary_collector_id:
+        raise HTTPException(422, "No native probe/connector configured")
+    if not current_principal.get().platform_admin or not payload.approve:
+        raise HTTPException(
+            403,
+            "Platform administrator approval is required for native outbound probes",
+        )
+    c = db.get(Collector, r.primary_collector_id)
+    if c.remote_worker_id:
+        raise HTTPException(409, "Use the assigned remote worker control plane")
+    c.enabled = True
+    c.next_run_at = utc()
+    r.activation_status = "VERIFYING"
+    audit(db, r, "ARCH_NATIVE_PROBE_APPROVE")
+    commit(db)
+    return {"status": "APPROVED_PENDING_REAL_COLLECTION", "collector_id": c.id}
+
+
+class DependencyInput(Strict):
+    depends_on_id: uuid.UUID
+    relationship_type: Literal["HOSTED_ON", "REQUIRES_SERVICE", "DEPENDS_ON"] = (
+        "DEPENDS_ON"
+    )
+    service_identity: str = Field(default="", max_length=200)
+
+
+@router.post("/resources/{id}/dependencies", status_code=201)
+def add_dependency(id: uuid.UUID, payload: DependencyInput, db=Depends(get_db)):
+    r = resource(db, id, "resources.update", True)
+    parent = resource(db, payload.depends_on_id)
+    if (
+        r.organization_id != parent.organization_id
+        or r.environment != parent.environment
+        or r.id == parent.id
+    ):
+        raise HTTPException(
+            422,
+            "Dependency must reference a different resource in the same customer/environment",
+        )
+    seen = {r.id}
+    queue = [parent.id]
+    while queue:
+        item = queue.pop()
+        if item == r.id:
+            raise HTTPException(409, "Dependency cycle detected")
+        if item in seen:
+            continue
+        seen.add(item)
+        queue.extend(
+            db.scalars(
+                select(ResourceDependency.depends_on_id).where(
+                    ResourceDependency.resource_id == item,
+                    ResourceDependency.valid_to.is_(None),
+                )
+            ).all()
+        )
+        if len(seen) > 1000:
+            raise HTTPException(409, "Dependency graph exceeds validation bound")
+    d = ResourceDependency(
+        organization_id=r.organization_id, resource_id=id, **payload.model_dump()
+    )
+    db.add(d)
+    db.flush()
+    audit(db, r, "ARCH_DEPENDENCY_CREATE")
+    commit(db)
+    return document(d)
+
+
+@router.delete("/resources/{id}/dependencies/{dependency_id}", status_code=204)
+def remove_dependency(id: uuid.UUID, dependency_id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id, "resources.update", True)
+    d = db.get(ResourceDependency, dependency_id)
+    if not d or d.resource_id != id:
+        raise HTTPException(404, "Dependency unavailable")
+    if d.relationship_type == "HOSTED_ON":
+        raise HTTPException(
+            409, "Inherited host relationship cannot be removed independently"
+        )
+    d.valid_to = utc()
+    audit(db, r, "ARCH_DEPENDENCY_RETIRE")
+    commit(db)
+
+
+@router.get("/resources/{id}/executions")
+def executions(
+    id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    r = resource(db, id, "etl.view")
+    if r.domain != "ETL":
+        raise HTTPException(422, "ETL Resource required")
+    query = select(JobOrderHistory).where(
+        JobOrderHistory.job_order_id == r.job_order_id
+    )
+    rows = db.scalars(
+        query.order_by(JobOrderHistory.created_at.desc(), JobOrderHistory.id)
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    return {
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            {
+                **document(h),
+                "steps": [
+                    document(s)
+                    for s in db.scalars(
+                        select(JobStepExecution).where(
+                            JobStepExecution.history_id == h.id
+                        )
+                    ).all()
+                ],
+            }
+            for h in rows
+        ],
+    }
+
+
+@router.get("/resources/{id}/schedule-windows")
+def windows(id: uuid.UUID, limit: int = Query(100, ge=1, le=500), db=Depends(get_db)):
+    r = resource(db, id, "etl.view")
+    return [
+        document(w)
+        for w in db.scalars(
+            select(ExpectedExecutionWindow)
+            .where(ExpectedExecutionWindow.resource_id == id)
+            .order_by(ExpectedExecutionWindow.scheduled_at.desc())
+            .limit(limit)
+        )
+    ]

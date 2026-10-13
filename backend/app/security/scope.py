@@ -133,6 +133,15 @@ _PATHS.update(
             "TelemetryReceipt",
             "TraceSpan",
             "NotificationDestination",
+            "MonitoringResource",
+            "ResourceDependency",
+            "ParameterVersion",
+            "NormalizedEvent",
+            "ExpectedExecutionWindow",
+            "ResourceCondition",
+            "EventCorrelationGroup",
+            "EventCorrelationMember",
+            "ResourceMappingIssue",
         )
     }
 )
@@ -249,7 +258,7 @@ def enforce_writes(db, flush_context, instances):
 
             state = inspect(obj)
             previous_types = state.attrs.collector_type.history.deleted
-            protected_types = INFRA_TYPES | {"PENTAHO", "API"}
+            protected_types = INFRA_TYPES | {"PENTAHO", "API", "NATIVE_API", "IICS_NATIVE"}
             protected_type = obj.collector_type.upper() in protected_types or any(
                 str(t).upper() in protected_types for t in previous_types
             )
@@ -320,6 +329,10 @@ def enforce_writes(db, flush_context, instances):
                 "activation_id",
                 "rule_version_id",
                 "host_data_source_id",
+                "resource_id",
+                "depends_on_id",
+                "group_id",
+                "condition_id",
             ):
                 if attr in state.attrs and state.attrs[attr].history.has_changes():
                     raise HTTPException(
@@ -342,6 +355,11 @@ def enforce_writes(db, flush_context, instances):
             ("incident_id", "OperationalIncident"),
             ("alert_state_id", "AlertState"),
             ("template_id", "MonitoringTemplate"),
+            ("linked_vm_id", "VM"),
+            ("resource_id", "MonitoringResource"),
+            ("depends_on_id", "MonitoringResource"),
+            ("group_id", "EventCorrelationGroup"),
+            ("condition_id", "ResourceCondition"),
         ):
             if not hasattr(obj, attr):
                 continue

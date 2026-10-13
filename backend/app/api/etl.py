@@ -23,7 +23,7 @@ def _item(h, db=None):
             elif collector.last_success_at and (instant-collector.last_success_at).total_seconds()<=max(120,collector.interval_seconds*2+30): monitor='CURRENT'
             else: monitor='STALE'
     duration=int(max(0,((h.ended_at or datetime.now(timezone.utc))-h.started_at).total_seconds())) if h.started_at and (h.ended_at or h.status in {ExecutionStatus.RUNNING,ExecutionStatus.LONG_RUNNING}) else None
-    return ExecutionListItem(id=h.id,job_order_id=h.job_order_id,execution_type=h.execution_type,status=h.status,started_at=h.started_at,ended_at=h.ended_at,detected_at=h.detected_at,expected_runtime_seconds=h.expected_runtime_seconds,sla_seconds=h.sla_seconds,sla_status=h.sla_status,failed_step=h.failed_step,incident_number=h.incident_number,job_name=h.job_order.name,server=h.job_order.vm.hostname,environment=h.job_order.environment,organization=h.job_order.organization.name,organization_id=h.job_order.organization_id,duration_seconds=duration,provider_execution_id=h.provider_execution_id,monitoring_status=monitor)
+    return ExecutionListItem(id=h.id,job_order_id=h.job_order_id,execution_type=h.execution_type,status=h.status,started_at=h.started_at,ended_at=h.ended_at,detected_at=h.detected_at,expected_runtime_seconds=h.expected_runtime_seconds,sla_seconds=h.sla_seconds,sla_status=h.sla_status,failed_step=h.failed_step,incident_number=h.incident_number,job_name=h.job_order.name,server=h.job_order.vm.hostname if h.job_order.vm else "SaaS",environment=h.job_order.environment,organization=h.job_order.organization.name,organization_id=h.job_order.organization_id,duration_seconds=duration,provider_execution_id=h.provider_execution_id,monitoring_status=monitor,monitoring_conditions=h.monitoring_conditions)
 def _load(eid,db):
     stmt=select(JobOrderHistory).options(joinedload(JobOrderHistory.job_order).joinedload(JobOrder.vm),joinedload(JobOrderHistory.job_order).joinedload(JobOrder.organization),joinedload(JobOrderHistory.steps)).where(JobOrderHistory.id==eid)
     return db.scalars(stmt).unique().first()
@@ -31,7 +31,7 @@ def _out(h,db=None):
     return ExecutionOut(**_item(h,db).model_dump(),source_error_code=h.source_error_code,source_error_message=h.source_error_message,source_exception=h.source_exception,source_log_location=h.source_log_location,source_result=h.source_result,steps=[StepOut.model_validate(s) for s in h.steps],source_evidence=h.source_evidence)
 @router.get("/executions",response_model=list[ExecutionListItem])
 def list_executions(status:ExecutionStatus|None=None,environment:str|None=None,execution_type:ExecutionType|None=None,search:str|None=None,organization_ids:list[UUID]|None=Query(default=None),limit:int=Query(100,ge=1,le=500),latest_only:bool=False,db:Session=Depends(get_db)):
-    stmt=select(JobOrderHistory).join(JobOrder).join(JobOrder.vm).options(joinedload(JobOrderHistory.job_order).joinedload(JobOrder.vm),joinedload(JobOrderHistory.job_order).joinedload(JobOrder.organization))
+    stmt=select(JobOrderHistory).join(JobOrder).outerjoin(JobOrder.vm).options(joinedload(JobOrderHistory.job_order).joinedload(JobOrder.vm),joinedload(JobOrderHistory.job_order).joinedload(JobOrder.organization))
     if organization_ids: stmt=stmt.where(JobOrder.organization_id.in_(organization_ids))
     if status: stmt=stmt.where(JobOrderHistory.status==status)
     if environment: stmt=stmt.where(JobOrder.environment==environment)

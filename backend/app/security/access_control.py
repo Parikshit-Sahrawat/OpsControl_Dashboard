@@ -29,6 +29,36 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         "/api/v1/auth/customer-scope",
     }:
         return ()
+    if path.startswith("/api/v1/unified/"):
+        if "/parameters/" in path:
+            return (
+                ("templates.view",)
+                if read or path.endswith("/preview") or path.endswith("/import")
+                else ("templates.manage",)
+            )
+        if path.endswith("/start-probe"):
+            return ("collectors.manage",)
+        if path.endswith("/activate") or "/dependencies" in path:
+            return ("resources.view",) if read else ("resources.update",)
+        if path.endswith("/executions") or path.endswith("/schedule-windows"):
+            return ("etl.view",)
+        if "/reports" in path:
+            return ("reports.view",)
+        if "/overview" in path:
+            return ("overview.view",)
+        if "/correlations" in path:
+            return ("alerts.view",)
+        return (
+            ("resources.view",)
+            if read
+            else (
+                {
+                    "POST": "resources.create",
+                    "PUT": "resources.update",
+                    "DELETE": "resources.delete",
+                }.get(method, "unsupported"),
+            )
+        )
     if path.startswith("/api/v1/agent-control"):
         return ("collectors.view",) if read else ("collectors.manage",)
     if path.startswith("/api/v1/event-parameters") or path.startswith(
