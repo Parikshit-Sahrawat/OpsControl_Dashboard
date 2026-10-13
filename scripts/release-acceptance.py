@@ -123,7 +123,7 @@ try:
         run(['node','frontend/scripts/eks_inventory_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
-        record('Browser resource CRUD, inactive OTEL registration edit persistence and cross-tenant denial')
+        record('Browser resource CRUD, logical OTEL configuration persistence and cross-tenant denial')
     # Capability roles are reapplied after migrations. Runtime credentials are
     # composed by psycopg and never interpolated into shell commands.
     role_code = """
