@@ -64,3 +64,7 @@ Populated downgrades refuse data loss or privilege resurrection. Retain additive
 - Long-interval sources must be reviewed against freshness windows; the current control plane expects frequent Agent heartbeat and recent activation evidence. Do not infer missing-data health from saved configuration.
 - Large inventories, sustained high-volume logs, multi-agent outages, regional failover and production capacity/RTO/RPO require broader load and resilience acceptance. The bounded local load test does not cover those scenarios.
 - Independent security review and operator UAT remain the owner's local acceptance activities. Local test success does not authorize live rollout.
+
+## Git delivery
+
+Verified implementation commit on `main`: `ac01704` (`feat: deliver ARCH-001 V1.5 agents monitoring incidents and verified local UAT`). Earlier architecture checkpoints are `51a989c`, `e54891a` and `72b3550`. The subsequent documentation commit records delivery metadata only; application source remains the validated implementation. Remote CI is a separate gate and is not replaced by local success.
