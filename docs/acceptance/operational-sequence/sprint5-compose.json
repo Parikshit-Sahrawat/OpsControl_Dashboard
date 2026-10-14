@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Clean Compose startup and random admin login",
+    "Fictional organization visible through authenticated API",
+    "Persisted source identity survives API restart",
+    "Previous main 277ec2c API authentication/read works against additive schema, without migration downgrade",
+    "API/frontend publish loopback only; PostgreSQL has no published port"
+  ],
+  "limitations": [
+    "Local demo with development owner role, not production deployment",
+    "Live external providers not connected",
+    "Before application rollback, stop dispatch and align agent/API versions; old API lacks heartbeat/Basic/EKS features"
+  ],
+  "schema_head": "0024_notification_leases"
+}

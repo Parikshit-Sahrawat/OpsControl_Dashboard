@@ -1,0 +1,8 @@
+# Only an exact, reviewed false positive. Do not broadly ignore main.py or credentials.
+# Gitleaks v8 generic-api-key flagged this hard-coded HTTPS validation expression;
+# the line contains no token, password, credential or secret.
+[[allowlists]]
+description = "False positive: security check ensuring HTTPS-only allowed browser origins"
+paths = ['''^backend/app/main\.py$''']
+regexTarget = "line"
+regexes = ['''^\s*or any\(not origin\.startswith\("https://"\) or "\*" in origin for origin in settings\.cors_origin_list\)\s*$''']

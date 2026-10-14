@@ -1,6 +1,17 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
+from app.security.secret_refs import require_safe_config, redact_config, require_safe_url, redact_url
+import math
+
+def finite_threshold(value):
+    if value is not None:
+        try:
+            if not math.isfinite(float(value)):
+                raise ValueError("Non-finite threshold")
+        except (TypeError, ValueError, OverflowError):
+            raise ValueError("Threshold must be a finite number") from None
+    return value
 
 
 class DataSourceBase(BaseModel):
@@ -17,6 +28,16 @@ class DataSourceCreate(DataSourceBase):
     organization_id: UUID
 
 
+    @field_validator("connection_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
+    @field_validator("endpoint")
+    @classmethod
+    def prevent_url_credentials(cls, value):
+        return require_safe_url(value)
+
 class DataSourceUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     source_type: str | None = Field(default=None, min_length=1, max_length=100)
@@ -26,6 +47,16 @@ class DataSourceUpdate(BaseModel):
     connection_config: dict | None = None
     enabled: bool | None = None
 
+
+    @field_validator("connection_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
+    @field_validator("endpoint")
+    @classmethod
+    def prevent_url_credentials(cls, value):
+        return require_safe_url(value)
 
 class DataSourceOut(DataSourceBase):
     model_config = ConfigDict(from_attributes=True)
@@ -37,6 +68,14 @@ class DataSourceOut(DataSourceBase):
     created_at: datetime
     updated_at: datetime
 
+
+    @field_serializer("connection_config")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
+
+    @field_serializer("endpoint")
+    def serialize_safe_endpoint(self, value):
+        return redact_url(value)
 
 class CollectorBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
@@ -50,6 +89,11 @@ class CollectorCreate(CollectorBase):
     data_source_id: UUID
 
 
+    @field_validator("configuration")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class CollectorUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     collector_type: str | None = Field(default=None, min_length=1, max_length=100)
@@ -58,9 +102,15 @@ class CollectorUpdate(BaseModel):
     configuration: dict | None = None
 
 
+    @field_validator("configuration")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class CollectorOut(CollectorBase):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
+    remote_worker_id: UUID | None
     data_source_id: UUID
     status: str
     last_run_at: datetime | None
@@ -71,6 +121,10 @@ class CollectorOut(CollectorBase):
     created_at: datetime
     updated_at: datetime
 
+
+    @field_serializer("configuration")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
 
 class MetricDefinitionBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
@@ -92,6 +146,11 @@ class MetricDefinitionCreate(MetricDefinitionBase):
     collector_id: UUID | None = None
 
 
+    @field_validator("query_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class MetricDefinitionUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
@@ -108,6 +167,11 @@ class MetricDefinitionUpdate(BaseModel):
     collector_id: UUID | None = None
 
 
+    @field_validator("query_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class MetricDefinitionOut(MetricDefinitionBase):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -117,6 +181,10 @@ class MetricDefinitionOut(MetricDefinitionBase):
     created_at: datetime
     updated_at: datetime
 
+
+    @field_serializer("query_config")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
 
 class LogSourceBase(BaseModel):
     name: str = Field(min_length=1, max_length=200)
@@ -138,6 +206,11 @@ class LogSourceCreate(LogSourceBase):
     collector_id: UUID | None = None
 
 
+    @field_validator("parser_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class LogSourceUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     source_type: str | None = Field(default=None, max_length=100)
@@ -154,6 +227,11 @@ class LogSourceUpdate(BaseModel):
     collector_id: UUID | None = None
 
 
+    @field_validator("parser_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class LogSourceOut(LogSourceBase):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -164,6 +242,10 @@ class LogSourceOut(LogSourceBase):
     updated_at: datetime
 
 
+    @field_serializer("parser_config")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
+
 class OrganizationOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -173,6 +255,7 @@ class OrganizationOut(BaseModel):
 
 
 class AlertRuleBase(BaseModel):
+    _validate_threshold = field_validator("threshold_value")(finite_threshold)
     name: str = Field(min_length=1, max_length=200)
     severity: str = Field(default="WARNING", max_length=50)
     operator: str = Field(default="GT", max_length=20)
@@ -189,6 +272,7 @@ class AlertRuleCreate(AlertRuleBase):
 
 
 class AlertRuleUpdate(BaseModel):
+    _validate_threshold = field_validator("threshold_value")(finite_threshold)
     name: str | None = Field(default=None, min_length=1, max_length=200)
     severity: str | None = Field(default=None, max_length=50)
     operator: str | None = Field(default=None, max_length=20)
@@ -341,6 +425,11 @@ class MonitoringTemplateCreate(BaseModel):
     committed_by: str | None = Field(default="Admin", max_length=200)
 
 
+    @field_validator("package_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class MonitoringTemplateUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
@@ -348,6 +437,11 @@ class MonitoringTemplateUpdate(BaseModel):
     package_config: dict | None = None
     committed_by: str | None = Field(default="Admin", max_length=200)
 
+
+    @field_validator("package_config")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
 
 class MonitoringTemplateOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -364,6 +458,10 @@ class MonitoringTemplateOut(BaseModel):
     updated_at: datetime
 
 
+    @field_serializer("package_config")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
+
 class MonitoringTemplateAttachmentCreate(BaseModel):
     template_id: UUID
     template_version: int | None = Field(default=None, ge=1)
@@ -371,12 +469,22 @@ class MonitoringTemplateAttachmentCreate(BaseModel):
     overrides: dict | None = None
 
 
+    @field_validator("overrides")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
+
 class MonitoringTemplateAttachmentUpdate(BaseModel):
     template_version: int | None = Field(default=None, ge=1)
     priority: int | None = Field(default=None, ge=0, le=100000)
     overrides: dict | None = None
     enabled: bool | None = None
 
+
+    @field_validator("overrides")
+    @classmethod
+    def validate_no_embedded_secrets(cls, value):
+        return require_safe_config(value)
 
 class MonitoringTemplateAttachmentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -391,6 +499,10 @@ class MonitoringTemplateAttachmentOut(BaseModel):
     updated_at: datetime
 
 
+    @field_serializer("overrides")
+    def serialize_safe_config(self, value):
+        return redact_config(value)
+
 class MonitoringTemplateVersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: UUID
@@ -400,3 +512,7 @@ class MonitoringTemplateVersionOut(BaseModel):
     package_config: dict
     committed_at: datetime
     committed_by: str | None
+
+    @field_serializer("package_config")
+    def serialize_safe_config(self, value):
+        return redact_config(value)

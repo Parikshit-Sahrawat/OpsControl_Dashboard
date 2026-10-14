@@ -1,0 +1,169 @@
+name: OpsControl Security Release Gate
+
+on:
+  push:
+    branches: [docs/sdlc-phase-1]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  staging-smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: public.ecr.aws/docker/library/postgres:17
+        env:
+          POSTGRES_USER: opscontrol
+          POSTGRES_PASSWORD: opscontrol
+          POSTGRES_DB: opscontrol
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U opscontrol -d opscontrol"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      OPSCONTROL_CREDENTIAL_STAGING_USERNAME: staging
+      OPSCONTROL_CREDENTIAL_STAGING_PASSWORD: ci-example-only
+      PYTHONPATH: .
+      DATABASE_URL: postgresql+psycopg://opscontrol:opscontrol@localhost:5432/opscontrol
+      SEED_DEMO_DATA: "false"
+      ENVIRONMENT: test
+      CORS_ORIGINS: "http://127.0.0.1:5173,http://localhost:5173"
+      VITE_API_BASE_URL: "http://127.0.0.1:8000"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install backend dependencies
+        run: python -m pip install -r backend/requirements.txt
+      - name: Compile and import backend
+        working-directory: backend
+        run: |
+          python -m compileall -q app migrations
+          python -c "from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('mapper/app import OK')"
+      - name: Apply migrations against disposable PostgreSQL
+        working-directory: backend
+        run: |
+          # Exercise reversible revisions before the protected access upgrade.
+          # The populated preservation probe in the next step applies HEAD.
+          alembic upgrade 0024_notification_leases
+          alembic current
+          alembic downgrade -1
+          alembic upgrade 0024_notification_leases
+          alembic current
+          python - <<'PY'
+          from sqlalchemy import inspect
+          from app.db.session import engine
+          tables = set(inspect(engine).get_table_names())
+          required = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}
+          required |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities", "remote_probe_jobs", "remote_probe_evidence", "monitoring_rule_catalogs", "monitoring_rule_versions", "monitoring_activations", "monitoring_rule_bindings"}
+          assert required <= tables, f"Missing tables: {required - tables}"
+          print(f"Migration smoke OK; {len(tables)} tables")
+          PY
+      - name: Preserve existing organization and data source through incremental migrations
+        working-directory: backend
+        run: python scripts/existing_database_upgrade_probe.py
+      - name: Start API and check HTTP endpoints
+        working-directory: backend
+        run: |
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/opscontrol-api.log 2>&1 &
+          echo $! > /tmp/opscontrol-api.pid
+          python - <<'PY'
+          import json, time, urllib.request
+          for i in range(30):
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:8000/openapi.json", timeout=2) as r:
+                      payload=json.load(r)
+                      assert "/api/v1/organizations" in payload["paths"]
+                      print("API startup/OpenAPI OK")
+                      break
+              except Exception:
+                  if i == 29: raise
+                  time.sleep(1)
+          PY
+      - name: Assert identity and tenant isolation against disposable PostgreSQL
+        working-directory: backend
+        run: python scripts/auth_tenant_probe.py
+      - name: Assert nested metric, log, and alert authorization boundaries
+        working-directory: backend
+        run: python scripts/deep_tenant_security_probe.py
+      - name: Assert throttling, audit, revocation and worker credentials
+        working-directory: backend
+        run: python scripts/security_release_probe.py
+      - name: Reject DNS rebinding, metadata, and unsafe targets
+        working-directory: backend
+        run: python scripts/test_remote_egress.py
+      - name: Assert secure remote dispatch and evidence ingestion
+        working-directory: backend
+        run: python scripts/remote_protocol_probe.py
+      - name: Verify read-only EC2, Kubernetes and Pentaho collectors with offline fakes
+        working-directory: backend
+        run: python scripts/provider_unit_probe.py
+      - name: Verify Pentaho Carte read-only history persistence and deduplication
+        working-directory: backend
+        run: python scripts/phase2_pentaho_persistence_probe.py
+      - name: Verify production credential references and secret redaction policy
+        working-directory: backend
+        run: python scripts/secrets_provider_probe.py
+      - name: Verify read-only Linux/Apache/Tomcat collectors and unsafe-config rejection
+        working-directory: backend
+        run: python scripts/deep_checks_probe.py
+      - name: Verify separate rules → activation → remote run → alerts end-to-end
+        working-directory: backend
+        run: python scripts/phase2_activation_probe.py
+      - name: Verify expired-session cleanup maintenance command
+        working-directory: backend
+        run: python -m scripts.prune_security_sessions
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run frontend for browser evidence
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &
+          echo $! > /tmp/opscontrol-vite.pid
+      - name: Capture authenticated React UI with Playwright
+        working-directory: frontend
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node scripts/capture_phase1_ui.mjs
+      - name: Assert homepage live clock behavior
+        working-directory: frontend
+        run: node scripts/test_world_clock.mjs
+      - name: Verify authenticated HTTP onboarding and rule/activation UI
+        working-directory: frontend
+        run: node scripts/test_monitoring_setup.mjs
+      - name: Assert platform-admin navigation is role-restricted
+        working-directory: frontend
+        run: node scripts/test_access_management.mjs
+      - name: Upload API logs and tenant evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase1-staging-evidence
+          path: |
+            frontend/phase1-screenshots/
+            /tmp/opscontrol-api.log
+            /tmp/opscontrol-vite.log
+          if-no-files-found: ignore
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install and build frontend
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build

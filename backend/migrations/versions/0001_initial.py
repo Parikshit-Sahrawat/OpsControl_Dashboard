@@ -8,11 +8,11 @@ down_revision = None
 branch_labels = None
 depends_on = None
 
-execution_type = sa.Enum("SCHEDULED", "MANUAL", name="executiontype")
-execution_status = sa.Enum("SUCCESS", "FAILED", "RUNNING", "LONG_RUNNING", "NO_RUN", "NO_RESPONSE", name="executionstatus")
-investigation_status = sa.Enum(
+execution_type = postgresql.ENUM("SCHEDULED", "MANUAL", name="executiontype", create_type=False)
+execution_status = postgresql.ENUM("SUCCESS", "FAILED", "RUNNING", "LONG_RUNNING", "NO_RUN", "NO_RESPONSE", name="executionstatus", create_type=False)
+investigation_status = postgresql.ENUM(
     "NEW", "ACKNOWLEDGED", "INVESTIGATING", "ROOT_CAUSE_IDENTIFIED",
-    "RECOVERY_IN_PROGRESS", "MONITORING", "RESOLVED", name="investigationstatus"
+    "RECOVERY_IN_PROGRESS", "MONITORING", "RESOLVED", name="investigationstatus", create_type=False
 )
 
 

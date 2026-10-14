@@ -41,6 +41,7 @@ from app.schemas.monitoring import (
 )
 
 from app.services.template_resolution import attach_template, detach_template, list_template_attachments, resolve_data_source_configuration
+from app.security.secret_refs import redact_config
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring Configuration"])
 
@@ -167,7 +168,7 @@ def detach_data_source_template(item_id: UUID, template_id: UUID, db: Session = 
 
 @router.get("/data-sources/{item_id}/effective-configuration")
 def get_effective_data_source_configuration(item_id: UUID, db: Session = Depends(get_db)):
-    return resolve_data_source_configuration(db, item_id)
+    return redact_config(resolve_data_source_configuration(db, item_id))
 
 
 @router.get("/collectors", response_model=list[CollectorOut])

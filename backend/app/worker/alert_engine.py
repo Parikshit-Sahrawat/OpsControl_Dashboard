@@ -31,8 +31,12 @@ def _breaches(value: float, operator: str, threshold: float) -> bool:
     return False
 
 
-def _consecutive_breaches(db: Session, rule: AlertRule, current: MetricSample, threshold: float) -> int:
-    window_start = current.observed_at - timedelta(seconds=rule.evaluation_window_seconds)
+def _consecutive_breaches(
+    db: Session, rule: AlertRule, current: MetricSample, threshold: float
+) -> int:
+    window_start = current.observed_at - timedelta(
+        seconds=rule.evaluation_window_seconds
+    )
     samples = db.scalars(
         select(MetricSample)
         .where(
@@ -59,11 +63,16 @@ def _message(rule: AlertRule, value: float) -> str:
     )
 
 
-def _queue_notifications(db: Session, state: AlertState, rule: AlertRule, event_type: str, message: str):
-    channels = [str(channel).upper() for channel in (rule.notification_channels or [])]
-    allowed = {"EMAIL", "PAGERDUTY", "SERVICENOW"}
-    for channel in channels:
-        if channel not in allowed:
+def _queue_notifications(
+    db: Session, state: AlertState, rule: AlertRule, event_type: str, message: str
+):
+    channels = [
+        str(channel) if str(channel).startswith("DEST:") else str(channel).upper()
+        for channel in (rule.notification_channels or [])
+    ]
+    allowed = {"EMAIL", "WEBHOOK", "IN_APP"}
+    for channel in dict.fromkeys(channels):
+        if channel not in allowed and not channel.startswith("DEST:"):
             continue
         db.add(
             AlertNotificationDelivery(
@@ -77,6 +86,7 @@ def _queue_notifications(db: Session, state: AlertState, rule: AlertRule, event_
                     "metric_definition_id": str(rule.metric_definition_id),
                     "severity": rule.severity,
                     "message": message,
+                    "group_key": str(rule.organization_id) + ":" + str(rule.id),
                     "value": state.last_value,
                 },
             )
@@ -99,12 +109,29 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
 
     changed_state = None
     for rule in rules:
+        # Serialize episodes for a rule, including concurrent worker results.
+        db.execute(
+            select(AlertRule.id).where(AlertRule.id == rule.id).with_for_update()
+        )
         try:
-            threshold = float(rule.threshold_value)
+            from app.telemetry.rules import dynamic_threshold, sustained
+
+            threshold = dynamic_threshold(db, rule, sample)
+            if threshold is None:
+                continue
         except (TypeError, ValueError):
             continue
         if rule.operator not in SUPPORTED_OPERATORS:
             continue
+
+        latest = db.scalar(
+            select(AlertState)
+            .where(AlertState.alert_rule_id == rule.id)
+            .order_by(AlertState.last_evaluated_at.desc())
+            .limit(1)
+        )
+        if latest is not None and sample.observed_at < latest.last_evaluated_at:
+            continue  # delayed observations cannot regress the current condition
 
         breach_count = _consecutive_breaches(db, rule, sample, threshold)
         breached = _breaches(sample.value_numeric, rule.operator, threshold)
@@ -118,7 +145,13 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
             .limit(1)
         )
 
-        if breached and breach_count >= rule.consecutive_breaches:
+        if breached and (
+            (
+                breach_count >= rule.consecutive_breaches
+                and sustained(db, rule, sample, threshold)
+            )
+            or state is not None
+        ):
             message = _message(rule, sample.value_numeric)
             if state is None:
                 state = AlertState(
@@ -143,7 +176,7 @@ def evaluate_metric_sample(db: Session, sample: MetricSample) -> AlertState | No
                 state.severity = rule.severity
                 state.message = message
             changed_state = state
-        elif state is not None:
+        elif state is not None and not breached:
             state.status = "RESOLVED"
             state.resolved_at = sample.observed_at
             state.last_evaluated_at = sample.observed_at

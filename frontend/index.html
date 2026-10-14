@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#07111f" />
+    <meta name="theme-color" content="#09090b" />
+    <script>
+      /* Apply appearance before first paint; no credential or application state. */
+      (() => {
+        let theme;
+        try { theme = localStorage.getItem("opscontrol.theme"); } catch {}
+        if (theme !== "dark" && theme !== "light") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
     <title>OpsControl Dashboard</title>
   </head>
   <body>

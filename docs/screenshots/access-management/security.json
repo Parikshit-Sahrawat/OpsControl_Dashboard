@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Existing users, hashes, sessions and exact legacy customer viewer scope survive migration",
+    "Customer directory changes invalidate authorization revision and refresh authorized selector metadata",
+    "Customers and internal departments are independent UUID entities; same department role has separate customer scopes",
+    "No access.view means 403 for direct or indirect identity/department/permission APIs; anonymous receives 401",
+    "Multiple department membership without duplicate identities; changes affect an existing token immediately",
+    "Access administrators manage identities but gain no monitoring/customer access and cannot escalate/self-grant/mass-assign",
+    "Last active break-glass administrator is protected from disable or demotion",
+    "Customer lists/details/mutations independently reject or hide the other customer",
+    "Explicit employee customer deny wins over inherited scope; removal restores only valid inheritance",
+    "Department UUID remains stable across edit/deactivation; soft deactivation removes inherited access and deletion is refused",
+    "PostgreSQL rejects invalid memberships, role effects and UUID mutation",
+    "Server-validated effective preview leaves no persisted grant or privilege",
+    "Concurrent ALLOW/DENY attempts serialize per employee; exactly one grant survives and contradictory request is 409",
+    "No role/customer cross-product; custom role permission replacement applies immediately to the same session",
+    "Employee-specific permission restriction narrows inherited roles; revocation restores only paired access",
+    "Provider-owned identity queries and composite foreign keys reject another provider employee",
+    "Department-only administration cannot modify identity roles or protected platform capability",
+    "DENY/inactive own roles cannot be edited to self-escalate; department reactivation checks protected delegation",
+    "Department codes/employee IDs are unique; both employee and department UUIDs are immutable",
+    "Disabled employees cannot authenticate and prior sessions are unusable",
+    "Service identities retain exact customer identity and cannot retrieve internal employee APIs",
+    "Reserved administration credentials/account lifecycle and protected-department deactivation cannot bypass delegation authority",
+    "Authorized ordinary employee password reset works, revokes all old sessions and rejects the prior password",
+    "Post-migration legacy API/CLI memberships remain visible as customer grants and explicit revocation removes the authoritative source",
+    "Administrative audit records actor/target/action/outcome/time without credentials"
+  ],
+  "customer_resource_relationships_preserved": true,
+  "legacy_source": "organization_memberships remains customer grant compatibility, never a department"
+}

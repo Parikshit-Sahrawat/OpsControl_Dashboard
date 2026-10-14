@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from "react";
+import { canNavigate, administrationPage } from "../permissions";
+import ThemeToggle from "./ThemeToggle";
+import NavIcon from "./NavIcon";
 
-const items = ["Overview", "ETL Jobs", "VM Health", "APIs", "Incidents", "Reports", "Resource Management"];
+const items = ["Overview", "Data Pipelines", "VM Health", "APIs", "Alerts", "Reports", "Resource Management", "Monitoring Setup"];
 
-export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange }) {
+export default function TopNav({ active, onChange, organizations = [], organizationIds = [], onOrganizationChange, platformAdmin = false, user }) {
   const [open, setOpen] = useState(false);
+  const [collapsed,setCollapsed]=useState(()=>localStorage.getItem("opscontrol.sidebarCollapsed")==="true");
+  useEffect(()=>{document.documentElement.dataset.sidebar=collapsed?"collapsed":"expanded";localStorage.setItem("opscontrol.sidebarCollapsed",String(collapsed))},[collapsed]);
   const ref = useRef(null);
+  useEffect(() => setOpen(false), [active, user?.authorization_revision]);
 
   useEffect(() => {
     const close = event => {
@@ -36,19 +42,23 @@ export default function TopNav({ active, onChange, organizations = [], organizat
     <header className="topbar">
       <div className="brand">
         <button className="brand-link" onClick={() => onChange("Overview")} aria-label="Go to Overview">
-          OpsControl
+          <span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span><span>OpsControl<span className="brand-caption">MONITORING WORKSPACE</span></span>
         </button>
       </div>
-      <nav>
-        {items.map(item => (
-          <button key={item} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
-            {item}
+      <div className="workspace-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><b>{active}</b></div>
+      <nav aria-label="Primary navigation" className={collapsed?"sidebar-collapsed":""}>
+        <button className="sidebar-toggle" aria-label={collapsed?"Expand sidebar":"Collapse sidebar"} aria-expanded={!collapsed} onClick={()=>setCollapsed(v=>!v)}>{collapsed?"→":"←"}</button>
+        <span className="nav-section-label">WORKSPACE</span>
+        {[...items, "Access Management"].filter(item => canNavigate(user,item)).map(item => (
+          <button key={item} aria-label={item} title={collapsed?item:undefined} aria-current={active === item ? "page" : undefined} className={active === item ? "nav-button active" : "nav-button"} onClick={() => onChange(item)}>
+            <NavIcon name={item}/><span>{item}</span>
           </button>
         ))}
+        <div className="sidebar-footnote"><span className="sidebar-footnote-mark" aria-hidden="true">◈</span><b>Your operations.<br/>One clear view.</b><small>Health · Evidence · Investigation</small></div>
       </nav>
-      <div className="global-context" ref={ref}>
+      {administrationPage(active) ? <div className="global-context" aria-label="Administration context"><span className="muted">{active === "Access Management" ? "Service provider · internal access" : "Organization inventory · independent filters"}</span></div> : <div className="global-context" ref={ref}>
         <span className="context-label">Organization</span>
-        <button className={open ? "org-context-button open" : "org-context-button"} onClick={() => setOpen(value => !value)} aria-haspopup="true" aria-expanded={open}>
+        <button disabled={!organizations.length} className={open ? "org-context-button open" : "org-context-button"} onClick={() => setOpen(value => !value)} aria-haspopup="true" aria-expanded={open}>
           <span className="org-context-label">{label}</span>
           <span className="org-context-chevron">▾</span>
         </button>
@@ -56,7 +66,7 @@ export default function TopNav({ active, onChange, organizations = [], organizat
           <div className="org-menu">
             <label className="org-option org-option-all">
               <input type="checkbox" checked={allSelected} onChange={toggleAll} />
-              <span><b>All organizations</b><small>Select every organization</small></span>
+              <span><b>All organizations</b><small>Select every authorized organization</small></span>
             </label>
             <div className="org-menu-divider" />
             {organizations.map(org => (
@@ -65,10 +75,11 @@ export default function TopNav({ active, onChange, organizations = [], organizat
                 <span><b>{org.name}</b><small>{org.code}</small></span>
               </label>
             ))}
-            {!organizations.length && <div className="org-empty">No organizations configured.</div>}
+            {!organizations.length && <div className="org-empty">No authorized organizations.</div>}
           </div>
         )}
-      </div>
+      </div>}
+      <ThemeToggle />
     </header>
   );
 }

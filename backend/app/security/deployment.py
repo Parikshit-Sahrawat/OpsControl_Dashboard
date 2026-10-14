@@ -1,0 +1,47 @@
+"""Fail-closed runtime identity checks; migrations use a separate owner."""
+import ipaddress
+from sqlalchemy import text
+from app.core.config import settings
+from app.db.session import engine
+
+def trusted_proxies(value: str) -> str:
+    entries = [item.strip() for item in value.split(",") if item.strip()]
+    if not entries:
+        raise ValueError("An explicit trusted proxy address list is required")
+    for entry in entries:
+        try:
+            network = ipaddress.ip_network(entry, strict=False)
+        except ValueError:
+            raise ValueError("Trusted proxies must be IP addresses or bounded CIDRs") from None
+        if network.prefixlen == 0:
+            raise ValueError("Trusting every proxy is forbidden")
+    return ",".join(entries)
+
+def validate_runtime_database_role() -> None:
+    if settings.environment != "production":
+        return
+    # Do not disclose DSNs, credentials or provider exception details on failure.
+    with engine.connect() as connection:
+        required = {('users','service_provider_id'),('users','employee_id'),('departments','service_provider_id'),('customer_access_grants','organization_id'),('worker_identities', 'last_seen_at'),
+                    ('alert_notification_deliveries', 'lease_token'),
+                    ('alert_notification_deliveries', 'lease_expires_at')}
+        available = set(connection.execute(text("""
+            SELECT table_name, column_name FROM information_schema.columns
+            WHERE table_schema='public'
+              AND table_name IN ('users','departments','customer_access_grants','worker_identities', 'alert_notification_deliveries')
+        """)).all())
+        if not required <= available:
+            raise RuntimeError("Database migrations must be applied before production runtime starts")
+        unsafe = connection.scalar(text("""
+            SELECT r.rolsuper OR r.rolcreaterole OR r.rolcreatedb OR r.rolbypassrls
+                OR pg_has_role(current_user, d.datdba, 'MEMBER')
+                OR EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+                    WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+                    AND pg_has_role(current_user, c.relowner, 'MEMBER'))
+                OR has_schema_privilege(current_user, 'public', 'CREATE')
+                OR has_table_privilege(current_user, 'security_audit_events', 'UPDATE,DELETE,TRUNCATE')
+            FROM pg_roles r JOIN pg_database d ON d.datname = current_database()
+            WHERE r.rolname = current_user
+        """))
+        if unsafe is not False:
+            raise RuntimeError("Production requires a restricted non-owner runtime database identity with append-only audit privileges")
