@@ -14,13 +14,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      OPSCONTROL_TEST_EVIDENCE_DIR: ${{ runner.temp }}/v15-quality
       OPSCONTROL_COVERAGE_MIN: '80'
-      PRETTIER_BIN: ${{ runner.temp }}/v15-tools/node_modules/.bin/prettier
-      PLAYWRIGHT_MODULE: ${{ runner.temp }}/v15-tools/node_modules/playwright/index.mjs
-      OPSCONTROL_OTEL_BINARY: ${{ runner.temp }}/otelcol-contrib
     steps:
+      - name: Configure runner-local evidence and tool paths
+        shell: bash
+        run: |
+          echo "OPSCONTROL_TEST_EVIDENCE_DIR=$RUNNER_TEMP/v15-quality" >> "$GITHUB_ENV"
+          echo "PRETTIER_BIN=$RUNNER_TEMP/v15-tools/node_modules/.bin/prettier" >> "$GITHUB_ENV"
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/v15-tools/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          echo "OPSCONTROL_OTEL_BINARY=$RUNNER_TEMP/otelcol-contrib" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
+      - name: Validate workflow contracts
+        run: bash scripts/check-workflows.sh
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
