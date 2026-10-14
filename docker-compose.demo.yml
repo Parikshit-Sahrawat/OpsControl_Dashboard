@@ -15,27 +15,71 @@ services:
       retries: 20
     networks: [demo_backend]
   api:
-    build:
+    build: &backend_build
       context: ./backend
       dockerfile: Dockerfile.demo
-    environment:
+    environment: &backend_environment
       ENVIRONMENT: demo
       AWS_EC2_METADATA_DISABLED: "true"
-      OPSCONTROL_PUBLIC_INGESTION_URL: ${OPSCONTROL_PUBLIC_INGESTION_URL:-}
+      OPSCONTROL_PUBLIC_INGESTION_URL: ${OPSCONTROL_PUBLIC_INGESTION_URL:-https://localhost:8443}
       OPSCONTROL_NOTIFICATION_ALLOWED_HOSTS: ${OPSCONTROL_NOTIFICATION_ALLOWED_HOSTS:-}
       OPSCONTROL_NOTIFICATION_ALLOWED_CIDRS: ${OPSCONTROL_NOTIFICATION_ALLOWED_CIDRS:-}
+      OPSCONTROL_NATIVE_ALLOWED_HOSTS: ${OPSCONTROL_NATIVE_ALLOWED_HOSTS:-}
+      OPSCONTROL_NATIVE_ALLOWED_CIDRS: ${OPSCONTROL_NATIVE_ALLOWED_CIDRS:-}
+      OPSCONTROL_NATIVE_ALLOWED_PORTS: ${OPSCONTROL_NATIVE_ALLOWED_PORTS:-443}
+      OPSCONTROL_NATIVE_ALLOW_HTTP: ${OPSCONTROL_NATIVE_ALLOW_HTTP:-0}
       SEED_DEMO_DATA: "false"
       DATABASE_URL: postgresql+psycopg://opscontrol:demo-db-local-only@postgres:5432/opscontrol
       CORS_ORIGINS: http://127.0.0.1:5173,http://localhost:5173
       OPSCONTROL_DEMO_PASSWORD_FILE: /run/secrets/demo_admin_password
+      OPSCONTROL_AGENT_PACKAGE_DIR: /opt/opscontrol/packages
     volumes:
       - ./.demo-private/admin-password:/run/secrets/demo_admin_password:ro
+      - ./.demo-private/packages:/opt/opscontrol/packages:ro
     depends_on:
       postgres:
         condition: service_healthy
     networks: [demo_backend]
     ports:
       - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  worker:
+    build: *backend_build
+    command: ["python", "-m", "scripts.run_collector_worker"]
+    environment: *backend_environment
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [demo_backend]
+    restart: unless-stopped
+  ingestion-gateway:
+    image: nginx:1.28-alpine
+    command: ["nginx", "-g", "daemon off;"]
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE]
+    tmpfs: [/tmp, /var/run, /var/cache/nginx]
+    volumes:
+      - ./deploy/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./.demo-private/gateway/tls.crt:/etc/opscontrol/tls/tls.crt:ro
+      - ./.demo-private/gateway/tls.key:/etc/opscontrol/tls/tls.key:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [demo_backend]
+    ports:
+      - "127.0.0.1:${OPSCONTROL_GATEWAY_PORT:-8443}:8443"
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && test -s /var/run/nginx.pid && kill -0 $$(cat /var/run/nginx.pid)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
   frontend:
     build:
       context: ./frontend

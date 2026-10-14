@@ -14,8 +14,9 @@ try {
   await page.getByRole('heading',{name:'Overview',exact:true}).waitFor();
   for (const theme of ['Dark','Light']) {
     await page.getByRole('button',{name:theme+' theme',exact:true}).click();
-    for (const tab of ['VM Health','APIs']) {
+    for (const tab of ['Compute Health','API Endpoint Monitoring']) {
       await page.getByRole('button',{name:tab,exact:true}).click();
+      await page.getByRole('button',{name:tab === 'Compute Health' ? 'Show existing infrastructure adapters' : 'Show existing service probes',exact:true}).click();
       const pager = page.getByRole('navigation',{name:'Inventory pagination'});
       await pager.getByRole('button',{name:'Next page',exact:true}).waitFor();
       assert.equal(await pager.getByRole('button',{name:'Previous page'}).isDisabled(),true);
@@ -23,7 +24,7 @@ try {
       await page.waitForFunction(()=>document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent.startsWith('201–'));
       assert.equal(await pager.getByRole('button',{name:'Next page'}).isDisabled(),true);
       await mkdir(process.env.RELEASE_EVIDENCE_DIR,{recursive:true});
-      await page.screenshot({path:`${process.env.RELEASE_EVIDENCE_DIR}/${theme.toLowerCase()}-${tab==='APIs'?'services':'infrastructure'}-page2.png`,fullPage:true});
+      await page.screenshot({path:`${process.env.RELEASE_EVIDENCE_DIR}/${theme.toLowerCase()}-${tab==='API Endpoint Monitoring'?'services':'infrastructure'}-page2.png`,fullPage:true});
       await pager.getByRole('button',{name:'Previous page',exact:true}).click();
       await page.waitForFunction(()=>document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent.startsWith('1–'));
     }

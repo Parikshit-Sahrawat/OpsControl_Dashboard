@@ -122,3 +122,84 @@
     overflow-x: auto;
   }
 }
+/* Identity columns stay readable while the table scrolls inside its card. */
+.access-page {
+  min-width: 0;
+}
+.access-page .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.access-table table {
+  width: 100%;
+}
+.access-table th,
+.access-table td {
+  overflow-wrap: anywhere;
+}
+.access-table td {
+  max-width: 26rem;
+}
+.access-page .page-heading > div,
+.access-page .resource-toolbar > * {
+  min-width: 0;
+}
+.access-dialog .resource-form,
+.access-dialog .form-field {
+  min-width: 0;
+}
+.access-dialog input,
+.access-dialog select,
+.access-dialog textarea {
+  max-width: 100%;
+}
+.access-effective p {
+  overflow-wrap: anywhere;
+}
+.access-dialog .chip-row {
+  max-width: 100%;
+}
+@media (max-width: 800px) {
+  .access-table table {
+    min-width: 760px;
+  }
+  .access-dialog .form-footer {
+    flex-wrap: wrap;
+  }
+}
+
+.notifications-control {
+  position: relative;
+  min-width: 0;
+}
+.notifications-control > section {
+  position: absolute;
+  z-index: 60;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: min(420px, calc(100vw - 2rem));
+  max-height: 70vh;
+  overflow: auto;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 12px 36px #0003;
+}
+.notifications-control li {
+  overflow-wrap: anywhere;
+  margin-block: 0.75rem;
+}
+.notifications-control time {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.access-table table:has(th:nth-child(8)) {
+  min-width: 1200px;
+}
+.access-table th:last-child,
+.access-table td:last-child {
+  min-width: 180px;
+  width: 180px;
+}

@@ -18,8 +18,12 @@ try {
   await page.getByRole('textbox',{name:'Username'}).fill(state.operator_username);
   await page.getByLabel('Password').fill(state.operator_password);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'Monitoring Setup',exact:true}).click();
-  await page.getByLabel(/^Data Source/).selectOption(state.source_id);
+  await page.getByRole('button',{name:'Resource Management',exact:true}).click();
+  await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
+  await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
+  await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
+  assert.equal(await page.getByLabel(/^Data Source/).inputValue(), state.source_id);
+  assert.equal(await page.getByLabel(/^Data Source/).isDisabled(), true);
   const diag=page.getByTestId('monitoring-diagnostics');
   await diag.locator('p').filter({hasText:/Activation: ACTIVE/}).waitFor();
   if(phase==='configured') {
@@ -50,10 +54,11 @@ try {
     await other.getByRole('textbox',{name:'Username'}).fill(state.other_username);
     await other.getByLabel('Password').fill(state.other_password);
     await other.getByRole('button',{name:'Sign in'}).click();
-    await other.getByRole('button',{name:'Monitoring Setup',exact:true}).click();
-    await other.getByText('No rule versions yet. Create a Metric Rule to get started.',{exact:true}).waitFor();
-    assert.equal(await other.getByLabel(/^Data Source/).locator('option').count(),1);
-    assert.equal(await other.getByText('Fictional HTTPS Portal',{exact:true}).count(),0);
+    await other.getByRole('button',{name:'Resource Management',exact:true}).click();
+    await other.getByRole('tab',{name:'API Endpoints',exact:true}).click();
+    await other.getByText('No resources match these authorized filters.',{exact:true}).waitFor();
+    assert.equal(await other.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).count(),0);
+    assert.equal(await other.getByLabel(/^Data Source/).count(),0);
     await other.screenshot({path:`${output}/other-tenant.png`,fullPage:true});
   }
   assert.deepEqual(errors,[]);

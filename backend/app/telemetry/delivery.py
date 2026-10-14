@@ -16,10 +16,24 @@ def validate_destination(channel, c):
     allowed = {
         "SMTP": {"host", "port", "sender", "recipients", "credential_ref"},
         "WEBHOOK": {"url", "credential_ref"},
-        "IN_APP": set(),
+        "IN_APP": {"user_ids", "department_ids"},
     }[channel]
     if set(c) - allowed:
         raise ValueError("Unsupported destination fields")
+    if channel == "IN_APP":
+        for key in ("user_ids", "department_ids"):
+            ids = c.get(key, [])
+            if (
+                not isinstance(ids, list)
+                or len(ids) > 100
+                or any(not isinstance(value, str) for value in ids)
+                or len(set(ids)) != len(ids)
+            ):
+                raise ValueError("Recipient IDs must be a unique bounded array")
+            for value in ids:
+                if not isinstance(value, str):
+                    raise ValueError("Recipient IDs must be UUID strings")
+                uuid.UUID(value)
     if c.get("credential_ref"):
         env_reference(c["credential_ref"])
     if channel == "SMTP":
@@ -88,7 +102,9 @@ def send_destination(delivery, state):
         channel, c = row.channel, dict(row.configuration)
     validate_destination(channel, c)
     if channel == "IN_APP":
-        return "in-app:" + str(delivery.id)
+        from app.telemetry.inbox import persist
+
+        return persist(delivery, state, c)
     if channel == "WEBHOOK":
         p, ip = target(c["url"])
         body = json.dumps(

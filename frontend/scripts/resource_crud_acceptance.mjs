@@ -31,45 +31,42 @@ try {
     .getByRole("button", { name: "Resource Management", exact: true })
     .click();
   await page
-    .getByRole("button", { name: "+ Add Data Source", exact: true })
+    .getByRole("button", { name: "Create Compute Instance", exact: true })
     .click();
   let modal = page.getByRole("dialog", {
-    name: "Add Data Source",
+    name: "Create Compute Instance",
     exact: true,
   });
-  await modal.getByRole("button", { name: "Next: Data Source →" }).click();
   await modal
-    .getByLabel("Host Name", { exact: true })
+    .getByLabel("Resource name", { exact: true })
+    .fill("Wizard sequence registration");
+  const customerOption = modal
+    .getByLabel("Customer", { exact: true })
+    .locator("option")
+    .nth(1);
+  await modal
+    .getByLabel("Customer", { exact: true })
+    .selectOption(await customerOption.getAttribute("value"));
+  await modal.getByLabel(/^Environment/).selectOption("DEV");
+  await modal
+    .getByLabel("Hostname", { exact: true })
     .fill("wizard-sequence.example.test");
   await modal
-    .getByLabel("Visible Name", { exact: true })
-    .fill("Wizard sequence registration");
-  await modal.getByRole("button", { name: "Next: Templates →" }).click();
+    .getByLabel("DNS / IP address", { exact: true })
+    .fill("203.0.113.75");
   await modal
-    .getByRole("button", { name: "Next: Collector Configuration →" })
+    .getByRole("button", { name: "Save resource identity", exact: true })
     .click();
   await modal
-    .getByLabel("Collector name", { exact: true })
-    .fill("wizard-registration");
-  await modal.getByRole("button", { name: "Review", exact: true }).click();
+    .getByRole("heading", { name: "Collector Configuration", exact: true })
+    .waitFor();
   await modal
-    .getByRole("button", {
-      name: "Create Data Source + Collector",
-      exact: true,
-    })
+    .getByRole("button", { name: "Close resource form", exact: true })
     .click();
   phase = "locate created resource";
-  await modal.waitFor({ state: "hidden" });
   await page
-    .locator(".resource-summary-card")
-    .filter({ hasText: "Data Sources" })
-    .click();
-  // Exercise the real filter before editing/capturing the created resource.
-  // Capturing all 400+ seeded rows produced a 27,838px screenshot and made
-  // this unrelated CRUD gate depend on runner rasterization performance.
-  await page
-    .getByPlaceholder("Search hostname, role, product...")
-    .fill("wizard-sequence.example.test");
+    .getByLabel("Search resources", { exact: true })
+    .fill("Wizard sequence registration");
   let row = page
     .getByRole("row")
     .filter({ hasText: "Wizard sequence registration" });
@@ -97,7 +94,10 @@ try {
   assert.equal(registration.collector_type, "OTEL");
   assert.equal(registration.enabled, true);
   assert.equal(registration.status, "STOPPED");
-  assert.equal(registration.name, "wizard-registration");
+  assert.equal(
+    registration.name,
+    "Wizard sequence registration Agent Configuration",
+  );
   const duplicate = await page.request.post(
     base + "/api/v1/resource-management/data-sources",
     {
@@ -111,23 +111,18 @@ try {
   );
   assert.equal(duplicate.status(), 409);
   phase = "edit registration";
-  await row.getByRole("button", { name: "Edit", exact: true }).click();
-  modal = page.getByRole("dialog", { name: "Edit Data Source", exact: true });
-  await modal.getByRole("button", { name: "Next: Data Source →" }).click();
-  await modal.getByRole("button", { name: "Next: Templates →" }).click();
-  await modal
-    .getByRole("button", { name: "Next: Collector Configuration →" })
+  await row
+    .getByRole("button", { name: "Collector Configuration", exact: true })
     .click();
-  assert.equal(
-    await modal.getByLabel("Collector name", { exact: true }).inputValue(),
-    "wizard-registration",
-  );
+  modal = page.getByRole("dialog", { name: "Collector Details", exact: true });
   await modal
     .getByLabel("Collector name", { exact: true })
     .fill("wizard-registration-updated");
-  await modal.getByRole("button", { name: "Review", exact: true }).click();
   await modal
-    .getByRole("button", { name: "Save Data Source", exact: true })
+    .getByRole("button", { name: "Save Collector Details", exact: true })
+    .click();
+  await modal
+    .getByRole("button", { name: "Close Collector Details", exact: true })
     .click();
   phase = "verify persisted registration";
   await modal.waitFor({ state: "hidden" });
@@ -173,7 +168,7 @@ try {
     releaseOlder = resolve;
   });
   let first = true;
-  const inventoryRoute = "**/api/v1/resource-management/data-sources?*";
+  const inventoryRoute = "**/api/v1/unified/resources?*";
   await page.route(inventoryRoute, async (route) => {
     if (!first) return route.continue();
     first = false;
@@ -185,24 +180,37 @@ try {
   try {
     await page.getByRole("button", { name: "Refresh", exact: true }).click();
     await captured;
-    const renamed = "wizard-sequence-refreshed.example.test";
-    const updated = await page.request.patch(
-      base + "/api/v1/resource-management/data-sources/" + source.id,
+    const inventory = await (
+      await page.request.get(
+        base +
+          "/api/v1/unified/resources?domain=VM&search=Wizard%20sequence%20registration",
+        { headers },
+      )
+    ).json();
+    const resource = inventory.items.find(
+      (r) => r.data_source_id === source.id,
+    );
+    assert(resource);
+    const renamed = "Wizard sequence refreshed";
+    const updated = await page.request.put(
+      base + "/api/v1/unified/resources/" + resource.id,
       {
         headers,
-        data: { name: renamed },
+        data: { expected_revision: resource.revision, name: renamed },
       },
     );
     assert.equal(updated.status(), 200);
-    await page.getByRole("button", { name: "Refresh", exact: true }).click();
     await page
-      .locator("b")
-      .filter({ hasText: "Wizard sequence registration" })
-      .waitFor();
-    await page.locator('b[title="' + renamed + '"]').waitFor();
+      .getByLabel("Search resources", { exact: true })
+      .fill("Wizard sequence");
+    await page.getByRole("button", { name: "Refresh", exact: true }).click();
+    await page.getByRole("button", { name: renamed, exact: true }).waitFor();
     releaseOlder();
     await page.waitForLoadState("networkidle");
-    assert.equal(await page.locator('b[title="' + renamed + '"]').count(), 1);
+    assert.equal(
+      await page.getByRole("button", { name: renamed, exact: true }).count(),
+      1,
+    );
   } finally {
     releaseOlder();
     await page.unroute(inventoryRoute);
@@ -213,23 +221,27 @@ try {
     fullPage: true,
   });
   phase = "disable resource";
-  page.once("dialog", (dialog) => dialog.accept());
-  row = page
-    .getByRole("row")
-    .filter({ hasText: "Wizard sequence registration" });
-  await row.getByRole("button", { name: "Disable", exact: true }).click();
-  await row
-    .getByRole("button", { name: "Disable", exact: true })
-    .waitFor({ state: "hidden" });
+  row = page.getByRole("row").filter({ hasText: "Wizard sequence refreshed" });
+  await row.getByRole("button", { name: "Edit", exact: true }).click();
+  modal = page.getByRole("dialog", {
+    name: "Edit Compute Instance",
+    exact: true,
+  });
+  await modal.getByLabel("Enable resource", { exact: true }).uncheck();
+  await modal
+    .getByRole("button", { name: "Save resource", exact: true })
+    .click();
+  await modal.waitFor({ state: "hidden" });
   const disabled = (
     await (
       await page.request.get(
-        base + "/api/v1/resource-management/data-sources",
+        base +
+          "/api/v1/unified/resources?domain=VM&search=Wizard%20sequence%20refreshed",
         { headers },
       )
     ).json()
-  ).find((s) => s.id === source.id);
-  assert.equal(disabled.enabled, false);
+  ).items.find((r) => r.data_source_id === source.id);
+  assert.equal(disabled.active, false);
   assert.deepEqual(errors, []);
   assert.deepEqual(serverErrors, []);
   await writeFile(

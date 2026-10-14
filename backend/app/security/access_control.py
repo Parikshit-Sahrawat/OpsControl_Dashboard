@@ -29,6 +29,18 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         "/api/v1/auth/customer-scope",
     }:
         return ()
+    if path.startswith("/api/v1/notifications"):
+        return ("alerts.view",)
+    if path.startswith("/api/v1/attribute-registry"):
+        return ("resources.view", "collectors.view", "etl.view")
+    if path.startswith("/api/v1/resource-drafts"):
+        return ("resources.create",)
+    if path.startswith("/api/v1/native-incidents"):
+        return (
+            ("incidents.view",)
+            if read
+            else ("incidents.acknowledge", "incidents.manage")
+        )
     if path.startswith("/api/v1/unified/"):
         if path == "/api/v1/unified/import/validate":
             return ("templates.view",)
@@ -38,6 +50,12 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
                 if read or path.endswith("/preview") or path.endswith("/import")
                 else ("templates.manage",)
             )
+        if path.endswith("/alert-setup"):
+            return ("alerts.view",) if read else ("templates.manage",)
+        if "/pipeline-platforms/" in path:
+            return ("etl.view",)
+        if path.endswith("/test-connection"):
+            return ("etl.configure",)
         if path.endswith("/start-probe"):
             return ("collectors.manage",)
         if path.endswith("/activate") or "/dependencies" in path:
@@ -207,7 +225,9 @@ def resolve_access(db, user):
     }
     permissions = defaultdict(set)
     for rid, key in db.execute(
-        select(RolePermission.role_id, RolePermission.permission_key)
+        select(RolePermission.role_id, RolePermission.permission_key).where(
+            RolePermission.active.is_(True)
+        )
     ):
         if key not in PERMISSIONS:
             continue
@@ -270,17 +290,23 @@ def resolve_access(db, user):
                 for k in permissions[rid]
                 if k.startswith("access.") or k in {"audit.view", "customers.create"}
             } - deny
-            if keys:
-                provenance.append(
-                    {
-                        "source": source,
-                        "subject_id": str(subject_id),
-                        "scope": "provider",
-                        "role_id": str(rid),
-                        "role": roles[rid].name,
-                        "permissions": sorted(keys),
-                    }
-                )
+            provenance.append(
+                {
+                    "source": source,
+                    "subject_id": str(subject_id),
+                    "scope": "provider",
+                    "role_id": str(rid),
+                    "role": roles[rid].name,
+                    "permissions": sorted(keys),
+                    "customer_scope_required": any(
+                        not (
+                            key.startswith("access.")
+                            or key in {"audit.view", "customers.create"}
+                        )
+                        for key in permissions[rid]
+                    ),
+                }
+            )
     grants = list(
         db.scalars(
             select(CustomerAccessGrant).where(

@@ -21,6 +21,7 @@ import {
   fetchAuthorizedCustomers,
 } from "./api";
 import ResourceManagement from "./pages/UnifiedResourceManagement";
+import NativeIncidents from "./pages/NativeIncidents";
 import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
 import DomainReports from "./pages/DomainReports";
@@ -294,7 +295,9 @@ export default function App({ user }) {
     setSelectedId(null);
     setTarget({ sourceId: id });
     setActive(
-      ["API", "HTTP", "HTTPS"].includes(type) ? "API Monitoring" : "VM Health",
+      ["API", "HTTP", "HTTPS"].includes(type)
+        ? "API Endpoint Monitoring"
+        : "Compute Health",
     );
   };
   const openAlert = (id) => {
@@ -338,7 +341,7 @@ export default function App({ user }) {
       />
       <main className="content">
         {!scopeReady && <p>{error || "Loading authorized organizations…"}</p>}
-        {scopeReady && error && active !== "ETL Monitoring" && (
+        {scopeReady && error && active !== "Data Pipeline Monitoring" && (
           <p role="alert">{error}</p>
         )}
         {scopeReady && active === "Overview" && (
@@ -351,16 +354,16 @@ export default function App({ user }) {
             onSelectResource={(id, domain) =>
               navigate(
                 domain === "ETL"
-                  ? "ETL Monitoring"
+                  ? "Data Pipeline Monitoring"
                   : domain === "VM"
-                    ? "VM Health"
-                    : "API Monitoring",
+                    ? "Compute Health"
+                    : "API Endpoint Monitoring",
                 { resourceId: id },
               )
             }
           />
         )}
-        {scopeReady && active === "ETL Monitoring" && (
+        {scopeReady && active === "Data Pipeline Monitoring" && (
           <DomainMonitoring
             key={scopeKey + target.resourceId}
             domain="ETL"
@@ -385,7 +388,7 @@ export default function App({ user }) {
             onCustomerCreated={() => setCustomerRefresh((v) => v + 1)}
           />
         )}
-        {scopeReady && active === "VM Health" && (
+        {scopeReady && active === "Compute Health" && (
           <DomainMonitoring
             key={scopeKey + target.resourceId}
             domain="VM"
@@ -395,7 +398,7 @@ export default function App({ user }) {
             initialResourceId={target.resourceId}
           />
         )}
-        {scopeReady && active === "API Monitoring" && (
+        {scopeReady && active === "API Endpoint Monitoring" && (
           <DomainMonitoring
             key={scopeKey + target.resourceId}
             domain="API"
@@ -412,6 +415,13 @@ export default function App({ user }) {
             environment={environment}
             user={user}
             initialFilter={target}
+          />
+        )}
+        {scopeReady && active === "Incidents" && (
+          <NativeIncidents
+            organizationIds={organizationIds}
+            environment={environment}
+            user={user}
           />
         )}
         {scopeReady && active === "Reports" && (

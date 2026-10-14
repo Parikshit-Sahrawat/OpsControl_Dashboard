@@ -20,8 +20,8 @@ from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
     ExportTraceServiceResponse,
 )
 from app.db.session import SessionLocal
-from app.models import MetricDefinition, MetricSample, LogSource, LogEvent
-from app.telemetry.models import TelemetryReceipt, TraceSpan
+from app.models import MetricDefinition, MetricSample, LogSource, LogEvent, AlertRule
+from app.telemetry.models import TelemetryReceipt, TraceSpan, CollectorConfigVersion
 from app.telemetry.api import agent_router, authenticate, utc
 from app.worker.alert_engine import evaluate_metric_sample
 
@@ -126,6 +126,50 @@ async def ingest(signal: str, request: Request):
     return Response(reply.SerializeToString(), media_type="application/x-protobuf")
 
 
+def approved_method_signals(versions):
+    allowed = {}
+    for version in versions:
+        for method in version.method_snapshot:
+            if not method.get("enabled"):
+                continue
+            kind = method["method_type"]
+            signals = (
+                {value.lower() for value in method["configuration"].get("signals", [])}
+                if kind == "OTLP_RECEIVER"
+                else (
+                    {"logs"}
+                    if kind in {"FILE_LOG", "SYSLOG_RECEIVER"}
+                    else (
+                        {"metrics"}
+                        if kind in {"HOST_METRICS", "SERVICES", "METRIC_SCRAPE"}
+                        else set()
+                    )
+                )
+            )
+            allowed.setdefault(str(method["id"]), set()).update(signals)
+    return allowed
+
+
+def validate_method_identity(attrs, allowed, signal):
+    values = [
+        attrs[key]
+        for key in ("opscontrol.method.id", "opscontrol_method_id")
+        if key in attrs
+    ]
+    if not values:
+        return None  # Explicit legacy compatibility; authenticated Collector boundary still applies.
+    if any(not isinstance(value, str) for value in values) or len(set(values)) != 1:
+        raise HTTPException(
+            422, "Telemetry method identity is invalid or contradictory"
+        )
+    value = values[0]
+    if value not in allowed or signal not in allowed[value]:
+        raise HTTPException(
+            422, "Telemetry method/signal is not in this Agent's approved configuration"
+        )
+    return value
+
+
 def store(obj, signal, request, digest):
     with SessionLocal() as db:
         a, c, s, w = authenticate(db, request)
@@ -137,6 +181,26 @@ def store(obj, signal, request, digest):
             )
         ):
             return
+        approved_versions = db.scalars(
+            select(CollectorConfigVersion).where(
+                CollectorConfigVersion.collector_id == c.id,
+                CollectorConfigVersion.revision.in_(
+                    [
+                        revision
+                        for revision in (a.applied_revision, a.desired_revision)
+                        if revision is not None
+                    ]
+                ),
+                CollectorConfigVersion.validation_status == "VALIDATED",
+            )
+        ).all()
+        # Runtime starts before its first heartbeat; accept approved desired IDs too,
+        # without treating incoming telemetry as an apply acknowledgment.
+        method_signals = approved_method_signals(approved_versions)
+
+        def method_identity(attrs):
+            return validate_method_identity(attrs, method_signals, signal)
+
         count = 0
 
         def increment():
@@ -172,6 +236,12 @@ def store(obj, signal, request, digest):
                             if isinstance(body, str)
                             else json.dumps(body, ensure_ascii=False)
                         )
+                        method_identity(
+                            {
+                                **attributes(resource.resource.attributes),
+                                **attributes(record.attributes),
+                            }
+                        )
                         db.add(
                             LogEvent(
                                 organization_id=a.organization_id,
@@ -190,12 +260,44 @@ def store(obj, signal, request, digest):
                             )
                         )
         elif signal == "metrics":
+            # Host batches contain many points. Load a bounded series cache and
+            # configured rule IDs once, rather than querying/flushing every
+            # unalerted point while holding the Collector's ingestion lock.
+            definitions = {
+                definition.name: definition
+                for definition in db.scalars(
+                    select(MetricDefinition)
+                    .where(MetricDefinition.collector_id == c.id)
+                    .order_by(MetricDefinition.id)
+                    .limit(10000)
+                )
+            }
+            rule_metrics = set(
+                db.scalars(
+                    select(AlertRule.metric_definition_id)
+                    .join(
+                        MetricDefinition,
+                        MetricDefinition.id == AlertRule.metric_definition_id,
+                    )
+                    .where(
+                        MetricDefinition.collector_id == c.id,
+                        AlertRule.enabled.is_(True),
+                        AlertRule.organization_id == a.organization_id,
+                    )
+                )
+            )
 
             def sample(metric, point, v, suffix=""):
                 increment()
                 if not math.isfinite(float(v)):
                     raise HTTPException(422, "Non-finite metric value")
                 series = attributes(point.attributes)
+                identity = method_identity(
+                    {**attributes(resource.resource.attributes), **series}
+                )
+                if identity:
+                    series["opscontrol.method.id"] = identity
+                point_series = dict(series)
                 resource_identity = {
                     key: value
                     for key, value in attributes(resource.resource.attributes).items()
@@ -223,12 +325,15 @@ def store(obj, signal, request, digest):
                 )
                 if utilization:
                     v *= 100
-                definition = db.scalar(
-                    select(MetricDefinition).where(
-                        MetricDefinition.collector_id == c.id,
-                        MetricDefinition.name == name,
+                definition = definitions.get(name)
+                if definition is None:
+                    # A bounded cache miss must still find historical series.
+                    definition = db.scalar(
+                        select(MetricDefinition).where(
+                            MetricDefinition.collector_id == c.id,
+                            MetricDefinition.name == name,
+                        )
                     )
-                )
                 if definition is None:
                     definition = MetricDefinition(
                         organization_id=a.organization_id,
@@ -249,7 +354,8 @@ def store(obj, signal, request, digest):
                         ),
                     )
                     db.add(definition)
-                    db.flush()
+                    db.flush([definition])
+                definitions[name] = definition
                 row = MetricSample(
                     organization_id=a.organization_id,
                     metric_definition_id=definition.id,
@@ -257,11 +363,14 @@ def store(obj, signal, request, digest):
                     observed_at=timestamp(point.time_unix_nano),
                     value_numeric=v,
                     unit=definition.unit,
-                    dimensions=attributes(point.attributes),
+                    dimensions=point_series,
                 )
                 db.add(row)
-                db.flush()
-                evaluate_metric_sample(db, row)
+                if definition.id in rule_metrics:
+                    # Configured rules retain sequential, persisted evidence
+                    # and their existing dedup/recovery semantics.
+                    db.flush()
+                    evaluate_metric_sample(db, row)
 
             for resource in obj.resource_metrics:
                 for scope in resource.scope_metrics:
@@ -287,6 +396,12 @@ def store(obj, signal, request, digest):
                         end = timestamp(span.end_time_unix_nano)
                         if end < start:
                             raise HTTPException(422, "Span ends before it starts")
+                        method_identity(
+                            {
+                                **attributes(resource.resource.attributes),
+                                **attributes(span.attributes),
+                            }
+                        )
                         db.add(
                             TraceSpan(
                                 organization_id=a.organization_id,

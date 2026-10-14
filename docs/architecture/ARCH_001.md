@@ -1,6 +1,6 @@
 # ARCH-001 implementation assessment and migration design
 
-Baseline: main `fc63455121a9a6fbb98f060622a6b816e097bff5`; implementation branch `feature/arch-001-unified-monitoring`.
+Baseline: main `fc63455121a9a6fbb98f060622a6b816e097bff5`; V1.5 implementation target `main` (owner-authorized local development).
 
 ## Assessment and gaps
 
@@ -12,7 +12,7 @@ Baseline: main `fc63455121a9a6fbb98f060622a6b816e097bff5`; implementation branch
 | ETL | Carte execution history, steps, daily schedule observation and investigation | Log reconstruction, retry/parallel-step identity, terminal status independent of conditions, persisted timezone-aware expected windows |
 | Parameters | Versioned monitoring packages, activation and sustained metric evaluation | Exactly ETL/VM/API parameter editors with identity inheritance, explicit override provenance and effective preview |
 | Correlation | Time-window evidence attached to ETL executions | Explicit dependency graph and cross-domain evidence groups; proximity alone must not establish cause |
-| Incidents | Historic native tables retained; active native/ITSM behavior retired by PR #32 | Owner clarified: remove incident functionality and retain alerts/correlation; historical incident records remain intact |
+| Incidents | Historic native tables retained; active native/ITSM behavior retired by PR #32 | V1.5 supersedes the earlier removal decision: native incident lifecycle, recovery and evidence restored; external ITSM remains outside scope |
 | Reports/UI | Data-backed operational views, dual themes and compact tables | Approved navigation, unified onboarding, domain reports, environment filtering and filtered KPI drill-downs |
 
 ## Affected modules
@@ -40,8 +40,8 @@ A populated additive schema is retained for application rollback. Downgrade is a
 3. Durable event normalization/reconstruction and calendar schedule evaluation.
 4. VM service/syslog telemetry, secure API probes and dependency-based correlation.
 5. Resource/event navigation, inheritance UI, operational overview and domain reports.
-6. Alert/correlation recovery and domain reporting; no incident lifecycle or external ITSM.
-7. Disposable PostgreSQL migrations, security/integration/worker tests, actual OTel evidence, browser/build/Docker validation and documentation/PR delivery.
+6. Alert/correlation recovery and domain reporting; native incident lifecycle and recovery validation; no external ITSM.
+7. Disposable PostgreSQL migrations, security/integration/worker tests, actual OTel evidence, browser/build/Docker validation and documentation/direct-main delivery.
 
 Each phase is committed after its relevant checks pass. Completion is evidence-based; unsupported/genuine provider and target-host acceptance remain explicitly recorded.
 
@@ -51,10 +51,27 @@ Legacy JobOrder serializers assume a non-null VM; coordinated API/schema/UI chan
 
 ## Phase evidence
 
-Foundation validation uses `scripts/arch001-acceptance.py`: owned PostgreSQL 17, old-schema fixtures, additive upgrade, full Alembic comparison, immutable-history/identity checks, tenant constraints and an actual FastAPI process. Resource/parameter API tests verify inline customer creation, Windows/Linux onboarding, VM-less IICS, inherited ETL paths, safe YAML/JSON imports, immutable versions, scoped denials and refused activation without telemetry. `backend/tests/test_unified_monitoring.py` verifies safe schemas and timezone/DST calendar boundaries. The complete backend unit suite passes 57 tests at this foundation stage.
+Foundation validation uses `scripts/arch001-acceptance.py`: owned PostgreSQL 17, old-schema fixtures, additive upgrade, full Alembic comparison, immutable-history/identity checks, tenant constraints and an actual FastAPI process. Resource/parameter API tests verify inline customer creation, Windows/Linux onboarding, VM-less IICS, inherited ETL paths, safe YAML/JSON imports, immutable versions, scoped denials and refused activation without telemetry. `backend/tests/test_unified_monitoring.py` verifies safe schemas and timezone/DST calendar boundaries. The foundation suite passed 57 backend tests; the completed native adapter regression suite passes 59 backend tests.
 
 Pinned Contrib 0.123.0 validates the new loopback syslog receiver and log pipeline. Remote syslog requires TCP with mutual TLS; unprotected public UDP listeners are rejected. Native outbound API/IICS collectors require platform approval plus deployment-owned host, CIDR and port allowlists. HTTP requires a separate explicit deployment flag and cannot carry authentication. HTTPS always verifies TLS and pins an allowed DNS answer; no redirects are followed.
 
 Agent configuration revisions now retain configured service identities. Read-only systemd/Windows SCM observations use fixed commands with validated argument lists and no shell. Failed queries produce unavailable/error evidence, not healthy values. Target OS service execution is a separate acceptance gate.
 
-Engine replay, actual service/transport, domain UI and broader regression gates are not certified by these foundation checks; they are validated in subsequent phases.
+Subsequent phases passed actual PostgreSQL reconstruction/retry/parallel/out-of-order cases, durable schedule restart/outage handling, alert deduplication/recovery, dependency correlation, actual Agent 1.1.0 + Contrib 0.123.0 logs/metrics/traces over verified TLS, native HTTPS failure/recovery and authenticated controlled IICS-style metadata. The existing managed telemetry regression passed source-read errors, approved rollback and independent notification delivery. Actual Playwright produced five resource/parameter/report/mobile screenshots. Access acceptance passed 25 security check groups across 68 tables with zero schema/model differences. The isolated four-service Docker build/bootstrap/worker/restart/session suite passed. See [operations and acceptance boundaries](../ARCH_001_OPERATIONS.md) and checked-in evidence. Genuine provider/Windows/systemd and production acceptance remain separate; older browser suites targeting removed tabs are not certified against this navigation.
+
+## V1.5 extensions
+
+Migrations 0028–0031 add the immutable Attribute/Capability Registry, actor-owned
+onboarding drafts, transactionally persisted provider checkpoints, Agent revision
+and credential lifecycle fields, native incident detail/alert associations, and durable per-user notification inbox/preferences.
+Retired role-permission links are preserved inactive; new incident permission
+definitions do not grant existing employees privileges. Role editing preserves
+revocations instead of deleting historical links.
+
+The three domains use official UI terms Compute Instances, Data Pipelines and API
+Endpoints. Five collection methods share one compiler and server schema registry.
+Nine platform adapters preserve source evidence and platform semantics. Native
+incidents reuse retained history; database ownership remains customer-scoped.
+The local stack adds a TLS ingestion gateway; its generated CA is development-only.
+Current verification and unresolved gates are recorded in
+[ARCH-001_IMPLEMENTATION_STATUS.md](../../ARCH-001_IMPLEMENTATION_STATUS.md).

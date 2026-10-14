@@ -560,6 +560,7 @@ def _persist_run(collector, result, started_at, ended_at, db):
                 "probe_location",
                 "execution_records",
                 "unresolved_record_count",
+                "provider_evidence",
             )
             if k in payload
         },
@@ -781,15 +782,20 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
 
     adapter = ADAPTERS.get(collector.collector_type.upper())
     try:
-        result = (
-            await adapter.collect(collector)
-            if adapter
-            else CollectionResult(
-                False,
-                f"No adapter registered for {collector.collector_type}",
-                {"outcome": "UNSUPPORTED_COLLECTOR"},
+        if collector.collector_type.upper() == "PIPELINE_NATIVE":
+            from app.registry.runtime import collect_pipeline
+
+            result = await collect_pipeline(db, collector, data_source)
+        else:
+            result = (
+                await adapter.collect(collector)
+                if adapter
+                else CollectionResult(
+                    False,
+                    f"No adapter registered for {collector.collector_type}",
+                    {"outcome": "UNSUPPORTED_COLLECTOR"},
+                )
             )
-        )
     except Exception:
         logger.error("Collector %s execution failed", collector.id)
         result = CollectionResult(
@@ -884,6 +890,15 @@ async def _native_engine_loop(poll_seconds):
     while True:
         try:
             await asyncio.to_thread(cycle)
+
+            def incidents_once():
+                from app.native_incidents.service import process_incidents
+
+                with SessionLocal() as db:
+                    process_incidents(db)
+                    db.commit()
+
+            await asyncio.to_thread(incidents_once)
         except Exception:
             logger.error(
                 "Native engine evaluation unavailable; durable state will retry"

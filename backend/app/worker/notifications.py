@@ -97,7 +97,8 @@ def deliver(delivery, state):
     if delivery.channel == "EMAIL":
         return send_email(delivery, state)
     if delivery.channel == "IN_APP":
-        return "in-app:" + str(delivery.id)
+        from app.telemetry.inbox import persist
+        return persist(delivery, state)
     raise RuntimeError("Unsupported or retired notification channel")
 
 

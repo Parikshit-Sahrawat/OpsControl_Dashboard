@@ -15,7 +15,7 @@ async function login(who){
   await page.getByRole('textbox',{name:'Username'}).fill(state[who+'_username']);
   await page.getByLabel('Password').fill(state[who+'_password']);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'VM Health',exact:true}).click();return page;
+  await page.getByRole('button',{name:'Compute Health',exact:true}).click();await page.getByRole('button',{name:'Show existing infrastructure adapters',exact:true}).click();return page;
 }
 try{
   const page=await login('reader');

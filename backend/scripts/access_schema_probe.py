@@ -4,6 +4,8 @@ import json, os
 from pathlib import Path
 from alembic.autogenerate import compare_metadata
 from alembic.migration import MigrationContext
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine
 from app.core.config import settings
 from app.main import app  # register all mapper metadata
@@ -61,7 +63,7 @@ def main():
         assert invalid_indexes == 0, "Migrated schema contains invalid indexes"
         assert (
             db.exec_driver_sql("SELECT version_num FROM alembic_version").scalar()
-            == "0027_unified_monitoring"
+            == ScriptDirectory.from_config(Config("alembic.ini")).get_current_head()
         )
     engine.dispose()
     report = {

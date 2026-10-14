@@ -277,7 +277,7 @@ finally:
             p.wait()
     if started:
         subprocess.run(
-            ["docker", "rm", "-f", name],
+            ["docker", "rm", "-f", "-v", name],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )

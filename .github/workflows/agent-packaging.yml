@@ -1,0 +1,77 @@
+name: Agent native packaging
+on:
+  workflow_dispatch:
+    inputs:
+      linux_runtime_url:
+        description: Approved HTTPS Linux x64 runtime archive URL (Contrib 0.123.0)
+        required: true
+      windows_runtime_url:
+        description: Approved HTTPS Windows x64 runtime archive URL (Contrib 0.123.0)
+        required: true
+      windows_archive_sha256:
+        description: Independently verified Windows archive SHA-256
+        required: true
+      linux_archive_sha256:
+        description: Independently verified Linux archive SHA-256
+        required: true
+jobs:
+  package:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Linux package
+        if: runner.os == 'Linux'
+        env:
+          RUNTIME_URL: ${{ inputs.linux_runtime_url }}
+          ARCHIVE_SHA: ${{ inputs.linux_archive_sha256 }}
+        run: |
+          [[ "$RUNTIME_URL" == https://* ]] || exit 1
+          [[ "$ARCHIVE_SHA" =~ ^[0-9a-fA-F]{64}$ ]] || exit 1
+          curl --fail --proto '=https' --tlsv1.2 "$RUNTIME_URL" -o /tmp/runtime.tar.gz
+          echo "$ARCHIVE_SHA  /tmp/runtime.tar.gz" | sha256sum -c -
+          mkdir /tmp/runtime
+          tar -xzf /tmp/runtime.tar.gz -C /tmp/runtime
+          python scripts/build-agent-package.py --os linux --runtime /tmp/runtime/otelcol-contrib --sha256 "$(sha256sum /tmp/runtime/otelcol-contrib | cut -d' ' -f1)" --output opscontrol-agent-linux.zip
+          bash -n agent/install-linux.sh agent/uninstall-linux.sh
+      - name: Windows EXE package
+        if: runner.os == 'Windows'
+        env:
+          RUNTIME_URL: ${{ inputs.windows_runtime_url }}
+          ARCHIVE_SHA: ${{ inputs.windows_archive_sha256 }}
+        shell: pwsh
+        run: |
+          if (-not $env:RUNTIME_URL.StartsWith('https://')) { throw 'HTTPS required' }
+          if ($env:ARCHIVE_SHA -notmatch '^[0-9a-fA-F]{64}$') { throw 'SHA-256 required' }
+          Invoke-WebRequest $env:RUNTIME_URL -OutFile "$env:TEMP\runtime.tar.gz"
+          if ((Get-FileHash "$env:TEMP\runtime.tar.gz" -Algorithm SHA256).Hash.ToLowerInvariant() -ne $env:ARCHIVE_SHA.ToLowerInvariant()) { throw 'Archive checksum mismatch' }
+          New-Item -ItemType Directory "$env:TEMP\runtime"
+          tar -xzf "$env:TEMP\runtime.tar.gz" -C "$env:TEMP\runtime"
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup --yes --no-progress; if ($LASTEXITCODE) { throw "Inno Setup installation failed" } }
+          $runtime = "$env:TEMP\runtime\otelcol-contrib.exe"
+          & agent/packaging/build-windows.ps1 -Runtime $runtime -RuntimeSha256 (Get-FileHash $runtime -Algorithm SHA256).Hash
+      - name: Native Windows source and executable checks
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {
+            $tokens=$null; $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null
+            if ($errors.Count) { throw "PowerShell parse failed: $file" }
+          }
+          & agent/packaging/stage/OpsControlService.exe --help
+          if (-not (Test-Path agent/packaging/output/OpsControlAgent-1.5.0-Windows-x64.exe)) { throw 'Compiled installer missing' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agent-${{ runner.os }}
+          path: |
+            opscontrol-agent-linux.zip
+            agent/packaging/output/*.exe
+          if-no-files-found: error

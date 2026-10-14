@@ -10,9 +10,11 @@ try{
   await page.getByRole("textbox",{name:"Username"}).fill("test-admin");
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button",{name:"Sign in"}).click();
-  await page.getByRole("button",{name:"Monitoring Setup"}).waitFor();
-  await page.getByRole("button",{name:"Monitoring Setup"}).click();
-  await page.getByRole("heading",{name:"Monitoring Setup"}).waitFor();
+  await page.getByRole("button",{name:"Resource Management",exact:true}).click();
+  await page.getByRole("tab",{name:"API Endpoints",exact:true}).click();
+  await page.locator(".resource-name-link").first().click();
+  await page.getByRole("button",{name:"Open legacy monitoring configuration",exact:true}).click();
+  await page.getByRole("heading",{name:"Legacy monitoring configuration",exact:true}).waitFor();
   await page.getByText("Select a Data Source and private-network worker").waitFor();
   await page.getByText("Choose independent Metric, Log and Alert Rules").waitFor();
   await page.getByRole("button",{name:"Validate & Preview"}).waitFor();

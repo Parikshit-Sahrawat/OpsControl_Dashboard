@@ -272,6 +272,63 @@ def api():
         201,
     )
     assert linux["organization_id"] != f["org"]
+    registry = call("/api/v1/attribute-registry", token=token)
+    assert {
+        "VM",
+        "ETL",
+        "API",
+        "PARAM_ETL",
+        "HOST_METRICS",
+        "PLATFORM_AIRFLOW",
+    } <= registry["definitions"].keys()
+    draft = call(
+        "/api/v1/resource-drafts",
+        "POST",
+        {
+            "domain": "VM",
+            "name": "Controlled saved draft",
+            "organization_id": f["org"],
+            "stage": 2,
+            "configuration": {
+                "name": "Draft",
+                "hostname": "",
+                "organization_id": f["org"],
+                "environment": "QA",
+                "os_type": "Linux",
+            },
+        },
+        token,
+        201,
+    )
+    assert call("/api/v1/resource-drafts/" + draft["id"], token=token)["stage"] == 2
+    call(
+        "/api/v1/resource-drafts/" + draft["id"],
+        "PUT",
+        {
+            "domain": "VM",
+            "name": "Controlled saved draft",
+            "organization_id": f["org"],
+            "stage": 3,
+            "configuration": draft["configuration"],
+            "expected_revision": draft["revision"],
+        },
+        token,
+    )
+    call(
+        "/api/v1/resource-drafts/" + draft["id"],
+        "PUT",
+        {
+            "domain": "VM",
+            "name": "Stale draft",
+            "organization_id": f["org"],
+            "stage": 3,
+            "configuration": draft["configuration"],
+            "expected_revision": draft["revision"],
+        },
+        token,
+        409,
+    )
+
     call(
         "/api/v1/unified/parameters/" + linux["id"] + "/preview",
         "POST",
@@ -514,6 +571,19 @@ def api():
         cloud_resource=cloud,
         api_resource=endpoint,
         token=token,
+    )
+    active = call("/api/v1/unified/parameters/" + etl["id"], token=token)
+    version = next(v["version"] for v in active["versions"] if v["status"] == "ACTIVE")
+    call(
+        "/api/v1/unified/resources/" + etl["id"] + "/alert-setup",
+        "POST",
+        {
+            "enabled": True,
+            "parameter_version": version,
+            "severities": ["WARNING", "CRITICAL"],
+            "in_app": True,
+        },
+        token,
     )
     (PRIVATE / "fixture.json").write_text(json.dumps(f))
     (OUT / "api.json").write_text(
@@ -870,6 +940,95 @@ def engines():
     )
     print(
         "Native reconstruction/retry/parallel/late events, durable schedule windows, outage uncertainty, alert dedup/recovery and relationship correlation PASS (controlled engine boundary fixtures)"
+    )
+
+
+def incidents():
+    from scripts.native_incidents_acceptance_probe import run
+
+    result = run(json.loads((PRIVATE / "fixture.json").read_text()), call)
+    (OUT / "native-incidents.json").write_text(json.dumps(result, indent=2) + "\n")
+    print("Native incident HTTP lifecycle / recovery / customer authorization PASS")
+    from scripts.native_incidents_acceptance_probe import emit_metric
+    from app.worker.notifications import dispatch_pending_notifications
+    from app.security.models import User
+
+    fixture = json.loads((PRIVATE / "fixture.json").read_text())
+    reader = call(
+        "/api/v1/auth/login",
+        "POST",
+        {"username": "arch001-reader", "password": fixture["password"]},
+    )["access_token"]
+    with SessionLocal() as db:
+        employee = db.scalar(select(User).where(User.username == "arch001-reader"))
+        recipient_id = str(employee.id)
+    destination = call(
+        "/api/v1/notification-delivery",
+        "POST",
+        {
+            "organization_id": fixture["org"],
+            "name": "Controlled directed in-app " + uuid.uuid4().hex,
+            "channel": "IN_APP",
+            "configuration": {"user_ids": [recipient_id]},
+        },
+        fixture["token"],
+        201,
+    )
+    call(
+        "/api/v1/notification-delivery",
+        "POST",
+        {
+            "organization_id": fixture["other"],
+            "name": "Denied recipient scope",
+            "channel": "IN_APP",
+            "configuration": {"user_ids": [recipient_id]},
+        },
+        fixture["token"],
+        422,
+    )
+    call("/api/v1/notifications/preferences", "PUT", {"in_app": False}, reader)
+    before = call("/api/v1/notifications", token=reader)["total"]
+    disabled = emit_metric(
+        fixture["org"], "Controlled preference-off", ["DEST:" + destination["id"]]
+    )
+    dispatch_pending_notifications()
+    assert call("/api/v1/notifications", token=reader)["total"] == before
+    call("/api/v1/notifications/preferences", "PUT", {"in_app": True}, reader)
+    facts = emit_metric(
+        fixture["org"],
+        "Controlled directed notification",
+        ["DEST:" + destination["id"]],
+    )
+    dispatch_pending_notifications()
+    notes = call("/api/v1/notifications", token=reader)
+    assert any(row["alert_state_id"] == facts["alert_id"] for row in notes["items"])
+    assert not any(
+        row["alert_state_id"] == facts["alert_id"]
+        for row in call("/api/v1/notifications", token=fixture["token"])["items"]
+    )
+    with SessionLocal() as db:
+        from app.telemetry.models import InAppNotification
+
+        count = db.scalar(select(func.count()).select_from(InAppNotification))
+    dispatch_pending_notifications()
+    with SessionLocal() as db:
+        assert db.scalar(select(func.count()).select_from(InAppNotification)) == count
+    (OUT / "notifications.json").write_text(
+        json.dumps(
+            {
+                "status": "PASS",
+                "origin": "CONTROLLED_ALERTS_ACTUAL_QUEUE_HTTP_POSTGRES",
+                "recipient_isolation": True,
+                "customer_authorization": True,
+                "preferences": True,
+                "delivery_idempotency": True,
+            },
+            indent=2,
+        )
+        + "\n"
+    )
+    print(
+        "Actual queued user-targeted in-app delivery / preferences / customer scopes / idempotency PASS"
     )
 
 

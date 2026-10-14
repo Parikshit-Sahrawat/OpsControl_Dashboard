@@ -34,9 +34,9 @@ page.on("requestfailed", (request) => {
 
 const categories = [
   ["Overview", "01-overview"],
-  ["Data Pipelines", "02-etl-jobs"],
-  ["VM Health", "03-vm-health"],
-  ["APIs", "04-apis"],
+  ["Data Pipeline Monitoring", "02-etl-jobs"],
+  ["Compute Health", "03-vm-health"],
+  ["API Endpoint Monitoring", "04-apis"],
   ["Alerts", "05-alerts"],
   ["Reports", "06-reports"],
   ["Resource Management", "10-resource-management"],

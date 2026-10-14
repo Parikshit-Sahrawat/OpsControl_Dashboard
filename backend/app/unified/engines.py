@@ -41,6 +41,33 @@ def active_parameters(db, r):
     )
 
 
+def readable_idle_file(method, agent, configuration, observed):
+    """A quiet readable tailer is available; it is not evidence of log reception."""
+    if (
+        method.get("method_type") != "FILE_LOG"
+        or method.get("configuration", {}).get("source", "FILE") != "FILE"
+    ):
+        return False
+    observation = (
+        (agent.method_health or {}).get(str(method["id"]), {}) if agent else {}
+    )
+    try:
+        timestamp = datetime.fromisoformat(observation.get("observed_at", ""))
+        age = (observed - timestamp).total_seconds()
+    except (ValueError, TypeError):
+        return False
+    return bool(
+        configuration
+        and agent.configuration_sha256 == configuration.sha256
+        and observation.get("applied_revision") == configuration.revision
+        and 0 <= age <= 90
+        and observation.get("state") == "IDLE"
+        and observation.get("sources_found", 0) > 0
+        and observation.get("sources_readable") == observation.get("sources_found")
+        and not observation.get("error_code")
+    )
+
+
 def source_readiness(db, r, observed=None):
     observed = observed or utc()
     from app.models import Organization
@@ -192,14 +219,40 @@ def source_readiness(db, r, observed=None):
         )
     )
     desired_agent = (c.configuration or {}) if c else {}
-    configuration_current = configuration_current and all(
-        (cfg.agent_configuration or {}).get(key, default)
-        == desired_agent.get(source, default)
-        for key, source, default in [
-            ("services", "services", []),
-            ("processes", "processes", []),
-            ("native_os_metrics", "os_metrics", False),
-        ]
+    applied_methods_enabled = [
+        m for m in (cfg.method_snapshot if cfg else []) if m.get("enabled")
+    ]
+    expected_services = sorted(
+        set(desired_agent.get("services", []))
+        | {
+            name
+            for m in applied_methods_enabled
+            if m["method_type"] == "SERVICES"
+            for name in m["configuration"].get("services", [])
+        }
+    )
+    expected_processes = sorted(
+        set(desired_agent.get("processes", []))
+        | {
+            name
+            for m in applied_methods_enabled
+            if m["method_type"] == "SERVICES"
+            for name in m["configuration"].get("processes", [])
+        }
+    )
+    expected_metrics = bool(
+        desired_agent.get("os_metrics")
+        or any(m["method_type"] == "HOST_METRICS" for m in applied_methods_enabled)
+    )
+    configuration_current = (
+        configuration_current
+        and bool(cfg)
+        and sorted((cfg.agent_configuration or {}).get("services", []))
+        == expected_services
+        and sorted((cfg.agent_configuration or {}).get("processes", []))
+        == expected_processes
+        and bool((cfg.agent_configuration or {}).get("native_os_metrics"))
+        == expected_metrics
     )
     checks = [
         {
@@ -212,6 +265,9 @@ def source_readiness(db, r, observed=None):
             "passed": bool(cfg and cfg.validation_status == "VALIDATED"),
         },
     ]
+    enabled_methods = [
+        m for m in (cfg.method_snapshot if cfg else []) if m.get("enabled")
+    ]
     signals = (
         {"metrics"}
         if ((c.configuration if c else {}) or {}).get("os_metrics")
@@ -221,7 +277,7 @@ def source_readiness(db, r, observed=None):
         if m.get("enabled"):
             if m["method_type"] in {"FILE_LOG", "SYSLOG_RECEIVER"}:
                 signals.add("logs")
-            elif m["method_type"] == "METRIC_SCRAPE":
+            elif m["method_type"] in {"METRIC_SCRAPE", "HOST_METRICS", "SERVICES"}:
                 signals.add("metrics")
             elif m["method_type"] == "OTLP_RECEIVER":
                 signals.update(s.lower() for s in m["configuration"]["signals"])
@@ -236,12 +292,37 @@ def source_readiness(db, r, observed=None):
             if a
             else None
         )
+        received = bool(
+            receipt
+            and a.applied_at
+            and a.applied_at <= receipt <= observed
+            and observed - receipt <= timedelta(seconds=120)
+        )
+        log_methods = [
+            m
+            for m in enabled_methods
+            if m["method_type"] in {"FILE_LOG", "SYSLOG_RECEIVER"}
+            or (
+                m["method_type"] == "OTLP_RECEIVER"
+                and "Logs" in m["configuration"]["signals"]
+            )
+        ]
+        idle = bool(
+            signal == "logs"
+            and connected
+            and configuration_current
+            and log_methods
+            and all(readable_idle_file(m, a, cfg, observed) for m in log_methods)
+        )
         checks.append(
             {
-                "name": "Actual " + signal + " reception",
-                "passed": bool(
-                    receipt and observed - receipt <= timedelta(seconds=120)
+                "name": (
+                    "Actual " + signal + " reception"
+                    if not idle or received
+                    else "Readable quiet File Logs (IDLE; no receipt)"
                 ),
+                "passed": received or idle,
+                "state": "RECEIVING" if received else "IDLE" if idle else "NO_DATA",
                 "last_received_at": receipt,
             }
         )
@@ -327,7 +408,21 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
         row.evidence = evidence
     if not active:
         row.resolved_at = observed
-    if changed:
+    setup = (r.configuration or {}).get("alert_setup") or {}
+    current_version = active_parameters(db, r)
+    alert_enabled = bool(
+        setup.get("enabled")
+        and current_version
+        and setup.get("parameter_version") == current_version.version
+        and severity in setup.get("severities", [])
+    )
+    pending_recovery = bool(
+        not active
+        and row.alert_state_id
+        and (state := db.get(AlertState, row.alert_state_id))
+        and state.status == "OPEN"
+    )
+    if alert_enabled and (changed or active or pending_recovery):
         name = (
             "native-condition:"
             + str(r.id)
@@ -372,10 +467,15 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
                 operator="GT",
                 threshold_value="0.5",
                 consecutive_breaches=1,
-                notification_channels=["IN_APP"],
+                notification_channels=(["IN_APP"] if setup.get("in_app") else [])
+                + ["DEST:" + str(v) for v in setup.get("destinations", [])],
             )
             db.add(rule)
             db.flush()
+        rule.enabled = True
+        rule.notification_channels = (["IN_APP"] if setup.get("in_app") else []) + [
+            "DEST:" + str(value) for value in setup.get("destinations", [])
+        ]
         rule.severity = severity
         rule.name = rule_name
         sample = MetricSample(
@@ -609,15 +709,34 @@ def evaluate_executions(db, r, p, observed):
     )
     for h in histories:
         if not h.started_at:
+            if h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
+                condition(
+                    db,
+                    r,
+                    "ETL_FAILURE",
+                    "ETL_FAILURE",
+                    h.status == ExecutionStatus.FAILED,
+                    "CRITICAL",
+                    "Terminal provider status observed; duration unknown",
+                    {
+                        "execution_id": str(h.id),
+                        "source_evidence": h.source_evidence,
+                        "observed_duration_seconds": None,
+                    },
+                    observed,
+                )
+                h.sla_status = "UNKNOWN"
             continue
-        terminal = h.ended_at is not None
+        terminal = h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
         duration = ((h.ended_at or observed) - h.started_at).total_seconds()
         long = (
             not terminal
             and h.status in {ExecutionStatus.RUNNING, ExecutionStatus.LONG_RUNNING}
             and duration >= cfg["long_running_seconds"]
         )
-        sla = duration >= cfg["completion_sla_seconds"]
+        sla = (not terminal or h.ended_at is not None) and duration >= cfg[
+            "completion_sla_seconds"
+        ]
         h.sla_status = "BREACHED" if sla else "MET" if terminal else "ON_TRACK"
         last = __import__("datetime").datetime.fromisoformat(
             (h.source_evidence or {}).get("observed_at", h.started_at.isoformat())
@@ -676,7 +795,7 @@ def evaluate_executions(db, r, p, observed):
                     else "Execution failure condition recovered"
                 ),
                 evidence,
-                h.ended_at,
+                h.ended_at or last,
             )
             condition(
                 db,
@@ -687,7 +806,7 @@ def evaluate_executions(db, r, p, observed):
                 "WARNING",
                 "Completion SLA exceeded",
                 evidence,
-                h.ended_at,
+                h.ended_at or last,
             )
         else:
             condition(
@@ -1329,6 +1448,20 @@ def cycle(limit=20, observed=None):
                 if not r:
                     continue
                 p = active_parameters(db, r)
+                if not p and r.domain == "ETL":
+                    from types import SimpleNamespace
+                    from app.unified.schemas import ETLParameters
+
+                    resource_parser = SimpleNamespace(
+                        version=None,
+                        configuration=ETLParameters(
+                            parser=r.configuration.get("parser", {})
+                        ).model_dump(mode="json"),
+                    )
+                    if r.primary_collector_id:
+                        ingest_connector(db, r, resource_parser)
+                    else:
+                        ingest_logs(db, r, resource_parser)
                 if p:
                     if r.domain == "ETL":
                         if r.primary_collector_id:

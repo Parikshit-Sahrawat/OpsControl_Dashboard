@@ -22,7 +22,17 @@ def port():
         return sock.getsockname()[1]
 
 
-api_port, ui_port = port(), port()
+api_port, ui_port, gateway_port = port(), port(), port()
+subprocess.run(
+    [
+        str(ROOT / "backend/.venv/bin/python"),
+        str(ROOT / "scripts/init-demo-gateway.py"),
+        "--directory",
+        str(private / "gateway"),
+    ],
+    check=True,
+    capture_output=True,
+)
 password = secrets.token_urlsafe(36)
 db_password = secrets.token_urlsafe(36)
 (private / "admin-password").write_text(password)
@@ -37,10 +47,21 @@ db_password = secrets.token_urlsafe(36)
     environment:
       DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
       CORS_ORIGINS: http://127.0.0.1:{ui_port}
+      OPSCONTROL_PUBLIC_INGESTION_URL: https://localhost:{gateway_port}
     ports: !override
       - "127.0.0.1:{api_port}:8000"
     volumes: !override
       - "{private}/admin-password:/run/secrets/demo_admin_password:ro"
+  worker:
+    environment:
+      DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
+  ingestion-gateway:
+    ports: !override
+      - "127.0.0.1:{gateway_port}:8443"
+    volumes: !override
+      - "{ROOT}/deploy/gateway/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "{private}/gateway/tls.crt:/etc/opscontrol/tls/tls.crt:ro"
+      - "{private}/gateway/tls.key:/etc/opscontrol/tls/tls.key:ro"
   frontend:
     build:
       args:
@@ -91,7 +112,7 @@ def call(path, method="GET", body=None, token=None):
 
 try:
     run(compose + ["up", "--build", "--detach"])
-    print("Owned three-service Docker demo built", flush=True)
+    print("Owned five-service Docker demo built", flush=True)
     for _ in range(120):
         try:
             call("/health")
@@ -102,9 +123,41 @@ try:
             time.sleep(0.5)
     else:
         raise RuntimeError("Docker demo readiness failed")
+    import ssl
+    from urllib.error import HTTPError
+
+    trust = ssl.create_default_context(cafile=str(private / "gateway/ca.crt"))
+    with urlopen(
+        f"https://localhost:{gateway_port}/health", context=trust, timeout=10
+    ) as response:
+        assert response.status == 200
+    try:
+        urlopen(
+            Request(
+                f"https://localhost:{gateway_port}/api/v1/agent/heartbeat",
+                data=b'{"health":"RUNNING","version":"1.5.0","runtime_version":"0.123.0"}',
+                headers={"Content-Type": "application/json"},
+            ),
+            context=trust,
+        )
+    except HTTPError as error:
+        assert error.code == 401
+    else:
+        raise AssertionError("Unauthenticated gateway request was accepted")
     token = call(
         "/api/v1/auth/login", "POST", {"username": "demo-admin", "password": password}
     )["access_token"]
+    resources = call("/api/v1/unified/resources", token=token)
+    assert resources["total"] > 0
+    assert "domains" in call("/api/v1/unified/overview", token=token)
+    for _ in range(60):
+        if "OpsControl collector runtime started" in run(
+            compose + ["logs", "--no-color", "worker"]
+        ):
+            break
+        time.sleep(0.5)
+    else:
+        raise RuntimeError("Native Docker worker did not start")
     departments = call("/api/v1/access/departments", token=token)["items"]
     employees = call("/api/v1/access/employees", token=token)["items"]
     customers = call("/api/v1/organizations", token=token)
@@ -119,10 +172,12 @@ try:
         before == after
         and len(call("/api/v1/access/employees", token=token)["items"]) == 1
     )
-    runtime=run(compose+["exec","-T","api","/usr/local/bin/otelcol-contrib","--version"])
+    runtime = run(
+        compose + ["exec", "-T", "api", "/usr/local/bin/otelcol-contrib", "--version"]
+    )
     assert "0.123.0" in runtime
     current = run(compose + ["exec", "-T", "api", "python", "-m", "alembic", "current"])
-    assert "0026_managed_telemetry_uat" in current
+    assert "0031_in_app_notifications" in current
     comparison = run(
         compose + ["exec", "-T", "api", "python", "-m", "alembic", "check"]
     )
@@ -142,9 +197,9 @@ try:
             {
                 "status": "PASS",
                 "checks": [
-                    "Three images/services built and ready",
+                    "API/frontend/PostgreSQL/native worker/TLS ingestion gateway built and ready",
                     "Frontend nginx response has security headers",
-                    "Migration head 0026 installed",
+                    "Migration head 0031 installed",
                     "Full image/schema Alembic check has zero pending operations",
                     "Provider departments/customer UUIDs separated",
                     "Bootstrap repeat retains UUIDs and user count",

@@ -69,10 +69,24 @@ class ManagedAgent(Base):
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     desired_revision: Mapped[int | None] = mapped_column(Integer)
     applied_revision: Mapped[int | None] = mapped_column(Integer)
+    downloaded_revision: Mapped[int | None] = mapped_column(Integer)
+    verified_revision: Mapped[int | None] = mapped_column(Integer)
+    last_working_revision: Mapped[int | None] = mapped_column(Integer)
+    configuration_sha256: Mapped[str | None] = mapped_column(String(64))
+    applied_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    credential_renewed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    previous_token_hash: Mapped[str | None] = mapped_column(String(64))
+    previous_token_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
     health: Mapped[str] = mapped_column(
         String(30), nullable=False, default="REGISTERED"
     )
     last_error: Mapped[str | None] = mapped_column(String(500))
+    method_health: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
 
@@ -112,7 +126,9 @@ class CollectorConfigVersion(Base):
     validation_status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="VALIDATED"
     )
-    agent_configuration: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    agent_configuration: Mapped[dict] = mapped_column(
+        JSONB, nullable=False, default=dict
+    )
     method_snapshot: Mapped[list] = mapped_column(JSONB, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=now
@@ -210,4 +226,27 @@ class NotificationDestination(Base):
         UniqueConstraint(
             "organization_id", "name", name="uq_notification_destination_name"
         ),
+    )
+
+
+class InAppNotification(Base):
+    __tablename__ = "in_app_notifications"
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    organization_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("organizations.id"), nullable=False, index=True
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    delivery_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("alert_notification_deliveries.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=now
+    )
+    __table_args__ = (
+        UniqueConstraint("delivery_id", "user_id", name="uq_in_app_delivery_user"),
     )

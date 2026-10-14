@@ -22,9 +22,9 @@ test("administrative pages use independent filters", () => {
   assert.equal(administrationPage("Resource Management"), true);
   for (const page of [
     "Overview",
-    "ETL Monitoring",
-    "VM Health",
-    "API Monitoring",
+    "Data Pipeline Monitoring",
+    "Compute Health",
+    "API Endpoint Monitoring",
     "Alerts",
     "Reports",
   ])
@@ -51,9 +51,26 @@ test("malformed cached customer preferences cannot corrupt selector state", () =
   assert.deepEqual(parseCustomerSelection('["a",null,17,"a","b"]'), ["a", "b"]);
 });
 
-
 test("retired navigation cannot be enabled by cached permissions", () => {
-  for (const page of ["Incidents", "Monitoring Setup", "Organizations", "Collectors"])
-    assert.equal(canNavigate({platform_admin: true}, page), false);
-  assert.equal(canNavigate({permissions:["etl.view"]}, "ETL Monitoring"), true);
+  for (const page of [
+    "ETL Monitoring",
+    "VM Health",
+    "API Monitoring",
+    "Monitoring Setup",
+    "Organizations",
+    "Collectors",
+  ])
+    assert.equal(canNavigate({ platform_admin: true }, page), false);
+  assert.equal(
+    canNavigate({ permissions: ["etl.view"] }, "Data Pipeline Monitoring"),
+    true,
+  );
+});
+
+test("native incident visibility requires its backend permission", () => {
+  assert.equal(canNavigate({}, "Incidents"), false);
+  assert.equal(
+    canNavigate({ permissions: ["incidents.view"] }, "Incidents"),
+    true,
+  );
 });

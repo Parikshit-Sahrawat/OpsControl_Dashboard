@@ -7,6 +7,7 @@ import {
 } from "../controlPlane";
 import { createCollector, updateCollector } from "../resourceApi";
 import useDialogFocus from "../components/useDialogFocus";
+import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import { hasPermission } from "../permissions";
 function Field({ label, children }) {
   return (
@@ -78,6 +79,8 @@ export default function CollectorControl({
     }));
   const saveMethod = () =>
     action(async () => {
+      if (ref.current?.querySelector('[aria-invalid="true"]'))
+        throw new Error("Correct invalid collection attributes before saving");
       await control(
         prefix + "/methods" + (method.id ? "/" + method.id : ""),
         method.id ? "PUT" : "POST",
@@ -320,14 +323,30 @@ export default function CollectorControl({
                             m.method_type,
                           )
                             ? "Logs"
-                            : m.method_type === "METRIC_SCRAPE"
+                            : [
+                                  "METRIC_SCRAPE",
+                                  "HOST_METRICS",
+                                  "SERVICES",
+                                ].includes(m.method_type)
                               ? "Metrics"
                               : m.configuration.signals.join(", ")}
                         </td>
                         <td>{m.enabled ? "Yes" : "No"}</td>
                         <td>
                           {m.validation_status} · {m.binary_validation}
-                          <small>{m.deployment_status}</small>
+                          <small>
+                            {m.deployment_status} ·{" "}
+                            {m.collection_status || "NO_DATA"}
+                          </small>
+                          <small>
+                            {m.record_count || 0} records · last receipt{" "}
+                            {m.last_received_at || "Never"}
+                          </small>
+                          {m.method_observation?.error_code && (
+                            <small role="alert">
+                              {m.method_observation.error_code}
+                            </small>
+                          )}
                         </td>
                         <td>{m.revision}</td>
                         <td>
@@ -441,303 +460,45 @@ export default function CollectorControl({
                       }
                     >
                       {Object.keys(methodDefaults).map((type) => (
-                        <option key={type}>{type}</option>
+                        <option key={type} value={type}>
+                          {
+                            {
+                              HOST_METRICS: "Host Metrics",
+                              SERVICES: "Services",
+                              SYSLOG_RECEIVER: "Syslog",
+                              FILE_LOG: "File Logs",
+                              METRIC_SCRAPE: "OpsControl Scrape",
+                              OTLP_RECEIVER:
+                                "OTLP Receiver (advanced transport)",
+                            }[type]
+                          }
+                        </option>
                       ))}
                     </select>
                   </Field>
+                  <DynamicConfigurationForm
+                    definition={method.method_type}
+                    context={{ os_type: snapshot.os_type }}
+                    value={cfg}
+                    disabled={!can}
+                    onChange={(configuration) =>
+                      setMethod((m) => ({ ...m, configuration }))
+                    }
+                  />
                   {method.method_type === "FILE_LOG" && (
-                    <>
-                      <Field label="Log source">
-                        <select
-                          value={cfg.source}
-                          onChange={(e) => change("source", e.target.value)}
-                        >
-                          <option>FILE</option>
-                          {snapshot.os_type === "Linux" && (
-                            <option>JOURNALD</option>
-                          )}
-                          {snapshot.os_type === "Windows" && (
-                            <option>WINDOWS_EVENT</option>
-                          )}
-                        </select>
-                      </Field>
-                      {cfg.source === "FILE" ? (
-                        <>
-                          <Field label="Paths (one absolute path per line)">
-                            <textarea
-                              value={(cfg.paths || []).join("\n")}
-                              onChange={(e) =>
-                                change(
-                                  "paths",
-                                  e.target.value.split("\n").filter(Boolean),
-                                )
-                              }
-                            />
-                          </Field>
-                          <Field label="Exclusions">
-                            <textarea
-                              value={(cfg.exclusions || []).join("\n")}
-                              onChange={(e) =>
-                                change(
-                                  "exclusions",
-                                  e.target.value.split("\n").filter(Boolean),
-                                )
-                              }
-                            />
-                          </Field>
-                          <Field label="Format">
-                            <select
-                              value={cfg.format}
-                              onChange={(e) => change("format", e.target.value)}
-                            >
-                              <option>TEXT</option>
-                              <option>JSON</option>
-                            </select>
-                          </Field>
-                          <Field label="Multiline start pattern (optional)">
-                            <input
-                              value={cfg.multiline_pattern || ""}
-                              onChange={(e) =>
-                                change(
-                                  "multiline_pattern",
-                                  e.target.value || null,
-                                )
-                              }
-                            />
-                          </Field>
-                        </>
-                      ) : (
-                        cfg.source === "WINDOWS_EVENT" && (
-                          <Field label="Windows channel">
-                            <input
-                              value={cfg.channel || "Application"}
-                              onChange={(e) =>
-                                change("channel", e.target.value)
-                              }
-                            />
-                          </Field>
-                        )
-                      )}
-                    </>
-                  )}
-                  {method.method_type === "METRIC_SCRAPE" && (
-                    <>
-                      <Field label="Targets (host:port, one per line)">
-                        <textarea
-                          value={cfg.targets.join("\n")}
-                          onChange={(e) =>
-                            change(
-                              "targets",
-                              e.target.value.split("\n").filter(Boolean),
-                            )
-                          }
-                        />
-                      </Field>
-                      <Field label="Scrape interval (seconds)">
-                        <input
-                          type="number"
-                          min="5"
-                          value={cfg.interval_seconds}
-                          onChange={(e) =>
-                            change("interval_seconds", Number(e.target.value))
-                          }
-                        />
-                      </Field>
-                      <Field label="Metrics path">
-                        <input
-                          value={cfg.path}
-                          onChange={(e) => change("path", e.target.value)}
-                        />
-                      </Field>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={cfg.tls}
-                          onChange={(e) => change("tls", e.target.checked)}
-                        />
-                        TLS
-                      </label>
-                      <Field label="Authentication reference (env:NAME)">
-                        <input
-                          value={cfg.credential_ref || ""}
-                          onChange={(e) =>
-                            change("credential_ref", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                    </>
-                  )}
-                  {method.method_type === "SYSLOG_RECEIVER" && (
-                    <>
-                      <Field label="Syslog binding">
-                        <input
-                          value={cfg.bind}
-                          onChange={(e) => change("bind", e.target.value)}
-                        />
-                      </Field>
-                      <Field label="Syslog port">
-                        <input
-                          type="number"
-                          min="1024"
-                          max="65535"
-                          value={cfg.port}
-                          onChange={(e) =>
-                            change("port", Number(e.target.value))
-                          }
-                        />
-                      </Field>
-                      <Field label="Syslog transport">
-                        <select
-                          value={cfg.protocol}
-                          onChange={(e) => change("protocol", e.target.value)}
-                        >
-                          <option>TCP</option>
-                          <option>UDP</option>
-                        </select>
-                      </Field>
-                      <Field label="Syslog format">
-                        <select
-                          value={cfg.format}
-                          onChange={(e) => change("format", e.target.value)}
-                        >
-                          <option>RFC5424</option>
-                          <option>RFC3164</option>
-                        </select>
-                      </Field>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={cfg.allow_remote}
-                          onChange={(e) =>
-                            change("allow_remote", e.target.checked)
-                          }
-                        />{" "}
-                        Explicitly allow remote syslog with mutual TLS
-                      </label>
-                      <Field label="Syslog TLS certificate path">
-                        <input
-                          value={cfg.tls_certificate || ""}
-                          onChange={(e) =>
-                            change("tls_certificate", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <Field label="Syslog TLS key file reference">
-                        <input
-                          value={cfg.tls_key_ref || ""}
-                          onChange={(e) =>
-                            change("tls_key_ref", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <Field label="Syslog client CA path">
-                        <input
-                          value={cfg.client_ca || ""}
-                          onChange={(e) =>
-                            change("client_ca", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <p className="muted">
-                        Loopback is the default. Unprotected public UDP/TCP
-                        listeners are rejected.
-                      </p>
-                    </>
+                    <p>
+                      Source identifiers and persistent file-storage checkpoints
+                      survive compatible configuration changes. The Agent
+                      reports permissions, tailing and rotation failures.
+                    </p>
                   )}
                   {method.method_type === "OTLP_RECEIVER" && (
-                    <>
-                      <div className="form-grid">
-                        <Field label="Endpoint/DNS binding">
-                          <input
-                            value={cfg.bind}
-                            onChange={(e) => change("bind", e.target.value)}
-                          />
-                        </Field>
-                        <Field label="Port">
-                          <input
-                            type="number"
-                            value={cfg.port}
-                            onChange={(e) =>
-                              change("port", Number(e.target.value))
-                            }
-                          />
-                        </Field>
-                      </div>
-                      <Field label="Protocol">
-                        <select
-                          value={cfg.protocol}
-                          onChange={(e) => change("protocol", e.target.value)}
-                        >
-                          <option>HTTP</option>
-                          <option>GRPC</option>
-                        </select>
-                      </Field>
-                      <Field label="Explicit signals">
-                        <div className="check-grid">
-                          {["Logs", "Metrics", "Traces"].map((signal) => (
-                            <label key={signal}>
-                              <input
-                                type="checkbox"
-                                checked={cfg.signals.includes(signal)}
-                                onChange={(e) =>
-                                  change(
-                                    "signals",
-                                    e.target.checked
-                                      ? [...cfg.signals, signal]
-                                      : cfg.signals.filter((s) => s !== signal),
-                                  )
-                                }
-                              />
-                              {signal}
-                            </label>
-                          ))}
-                        </div>
-                      </Field>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={cfg.allow_remote}
-                          onChange={(e) =>
-                            change("allow_remote", e.target.checked)
-                          }
-                        />
-                        Allow remote applications (requires TLS and
-                        authentication)
-                      </label>
-                      <Field label="TLS certificate path">
-                        <input
-                          value={cfg.tls_certificate || ""}
-                          onChange={(e) =>
-                            change("tls_certificate", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <Field label="TLS private key path">
-                        <input
-                          value={cfg.tls_key_ref || ""}
-                          onChange={(e) =>
-                            change("tls_key_ref", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <Field label="Authentication reference">
-                        <input
-                          value={cfg.credential_ref || ""}
-                          onChange={(e) =>
-                            change("credential_ref", e.target.value || null)
-                          }
-                        />
-                      </Field>
-                      <p>
-                        Application instrumentation: set
-                        OTEL_EXPORTER_OTLP_ENDPOINT to{" "}
-                        {cfg.tls_certificate ? "https" : "http"}://{cfg.bind}:
-                        {cfg.port}, select{" "}
-                        {cfg.protocol === "HTTP" ? "http/protobuf" : "grpc"},
-                        and enable only {cfg.signals.join(", ")}. Provision
-                        application TLS/authentication for remote listeners.
-                      </p>
-                    </>
+                    <p>
+                      Configure application instrumentation for this listener's
+                      explicit protocol and selected signals. Remote listeners
+                      require approved TLS/authentication; saving does not prove
+                      reception.
+                    </p>
                   )}
                   <div className="row-actions">
                     <button

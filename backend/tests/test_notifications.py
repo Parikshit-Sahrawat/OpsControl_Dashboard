@@ -61,7 +61,15 @@ class NotificationSecurityTests(unittest.TestCase):
 
     def test_idempotent_in_app_reference(self):
         d = SimpleNamespace(channel="IN_APP", id="stable-uuid")
-        self.assertEqual(n.deliver(d, None), "in-app:stable-uuid")
+        d.alert_state_id = "controlled-state"
+        state = SimpleNamespace(
+            id=d.alert_state_id, organization_id="controlled-organization"
+        )
+        with patch("app.telemetry.inbox.SessionLocal") as sessions, patch(
+            "app.telemetry.inbox.audience", return_value=[]
+        ):
+            self.assertEqual(n.deliver(d, state), "in-app:stable-uuid")
+            sessions.return_value.__enter__.return_value.commit.assert_called_once()
 
     def test_provider_error_never_contains_secrets(self):
         self.assertNotIn("private", n._safe_delivery_error(RuntimeError("private")))

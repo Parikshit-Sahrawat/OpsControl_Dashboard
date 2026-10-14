@@ -79,6 +79,14 @@ def commit(db):
 
 def checked_resource_parameters(db, r, configuration):
     config = checked_parameters(r.domain, configuration)
+    if (
+        r.domain == "ETL"
+        and r.configuration.get("platform") == "NIFI"
+        and config.get("schedule")
+    ):
+        raise HTTPException(
+            422, "NiFi flow monitoring does not imply a scheduled jobchain run"
+        )
     if r.domain == "VM":
         for spec in config["thresholds"]:
             if not spec.get("metric_definition_id"):
@@ -218,8 +226,19 @@ def binding(db, r):
 
 
 def output(db, r):
+    parameters = db.scalar(
+        select(ParameterVersion.version).where(
+            ParameterVersion.resource_id == r.id, ParameterVersion.status == "ACTIVE"
+        )
+    )
+    setup = (r.configuration or {}).get("alert_setup") or {}
     return {
         **document(r),
+        "event_parameters_configured": bool(parameters),
+        "alerting_configured": bool(setup.get("enabled")),
+        "notification_delivery_configured": bool(
+            setup.get("destinations") or setup.get("in_app")
+        ),
         "inherited": binding(db, r),
         "has_collector": bool(
             r.primary_collector_id
@@ -331,6 +350,7 @@ def create_vm(payload: VMCreate, db=Depends(get_db)):
             "opscontrol": {
                 "hostname": payload.hostname,
                 "os_type": payload.os_type,
+                "deployment_type": payload.deployment_type,
                 "environment": payload.environment,
                 "visible_name": payload.name,
                 "vm_id": str(vm.id),
@@ -432,13 +452,15 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
         configuration=config,
         active=payload.active,
     )
-    if payload.connector_url:
+    if payload.connector_url or payload.integration_configuration:
         require_permission("collectors.manage", org.id)
         source = DataSource(
             organization_id=org.id,
             name=payload.name + " metadata",
             source_type=payload.platform,
-            endpoint=payload.connector_url,
+            endpoint=payload.connector_url
+            or payload.integration_configuration.get("base_url")
+            or payload.integration_configuration.get("url"),
             enabled=True,
             connection_config={"opscontrol": {"environment": env}},
         )
@@ -447,7 +469,11 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
         collector = Collector(
             data_source_id=source.id,
             name=payload.name + " read-only metadata",
-            collector_type="IICS_NATIVE",
+            collector_type=(
+                "PIPELINE_NATIVE"
+                if payload.integration_configuration
+                else "IICS_NATIVE"
+            ),
             enabled=False,
             interval_seconds=payload.frequency_seconds,
             configuration={
@@ -457,6 +483,7 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
                 "credential_header": payload.credential_header,
                 "records_field": payload.connector_records_field,
                 "platform": payload.platform,
+                "integration_configuration": payload.integration_configuration,
                 "parser": payload.parser.model_dump(mode="json"),
                 "jobchain": payload.jobchain,
             },
@@ -607,6 +634,18 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
     if payload.expected_revision != r.revision:
         raise HTTPException(409, "Resource changed; reload before editing")
     config = dict(payload.configuration)
+    # Alert setup has a separate permission/revision contract. A generic edit
+    # may echo it unchanged but must never create, change or erase it.
+    internal = {
+        key: value
+        for key, value in (r.configuration or {}).items()
+        if key in {"alert_setup", "log_method_ids"}
+    }
+    for key in internal.keys() | {"alert_setup", "log_method_ids"}:
+        if key in config and config.pop(key) != internal.get(key):
+            raise HTTPException(
+                403, "Use the authorized configuration-specific endpoint"
+            )
     require_safe_config(config)
     base = {
         "name": payload.name,
@@ -711,6 +750,57 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
             raise HTTPException(
                 409, "Jobchain identity is immutable; create a new resource"
             )
+        if r.primary_collector_id:
+            require_permission("collectors.manage", r.organization_id)
+            collector = db.get(Collector, r.primary_collector_id)
+            expected_type = (
+                "PIPELINE_NATIVE" if typed.integration_configuration else "IICS_NATIVE"
+            )
+            if collector.collector_type != expected_type:
+                raise HTTPException(
+                    409, "Changing provider transport requires explicit re-onboarding"
+                )
+            collector.interval_seconds = typed.frequency_seconds
+            collector.configuration = {
+                **(collector.configuration or {}),
+                "platform": typed.platform,
+                "integration_configuration": typed.integration_configuration,
+                "url": typed.connector_url,
+                "credential_ref": typed.credential_ref,
+                "credential_header": typed.credential_header,
+                "records_field": typed.connector_records_field,
+                "parser": typed.parser.model_dump(mode="json"),
+                "jobchain": typed.jobchain,
+            }
+        elif typed.integration_configuration or typed.connector_url:
+            raise HTTPException(
+                409, "Adding a provider transport requires explicit re-onboarding"
+            )
+        if sorted(typed.log_paths) != sorted(
+            (r.configuration or {}).get("log_paths", [])
+        ):
+            if not parent or not parent.primary_collector_id:
+                raise HTTPException(
+                    409, "Log paths require an associated Compute Instance"
+                )
+            require_permission("collectors.manage", r.organization_id)
+            paths = {
+                path
+                for method in db.scalars(
+                    select(CollectorMethod).where(
+                        CollectorMethod.collector_id == parent.primary_collector_id,
+                        CollectorMethod.enabled.is_(True),
+                        CollectorMethod.method_type == "FILE_LOG",
+                    )
+                )
+                for path in method.configuration.get("paths", [])
+            }
+            if not set(typed.log_paths) <= paths:
+                raise HTTPException(
+                    409,
+                    "Configure the paths in VM Collection Methods before binding them",
+                )
+
     else:
         typed = APICreate.model_validate(base)
         config = typed.model_dump(
@@ -739,12 +829,20 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
             c.configuration = {**(c.configuration or {}), **config}
     r.name = payload.name
     r.environment = payload.environment
-    r.configuration = config
+    r.configuration = {**config, **internal}
     r.active = payload.active
     r.revision += 1
     r.updated_at = utc()
     if not r.active:
         r.activation_status = "PAUSED"
+        if r.data_source_id:
+            db.get(DataSource, r.data_source_id).enabled = False
+        if r.primary_collector_id:
+            db.get(Collector, r.primary_collector_id).enabled = False
+        if r.vm_id:
+            db.get(VM, r.vm_id).monitoring_enabled = False
+        if r.job_order_id:
+            db.get(JobOrder, r.job_order_id).monitoring_enabled = False
     audit(db, r, "ARCH_RESOURCE_UPDATE")
     commit(db)
     return output(db, r)
@@ -898,6 +996,27 @@ def activate_parameters(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     if not p:
         raise HTTPException(404, "Parameter version unavailable")
     config = checked_resource_parameters(db, r, p.configuration)
+    setup = (r.configuration or {}).get("alert_setup") or {}
+    if setup.get("enabled") and setup.get("parameter_version") != p.version:
+        r.configuration = {
+            **r.configuration,
+            "alert_setup": {
+                **setup,
+                "enabled": False,
+                "reason": "PARAMETER_VERSION_CHANGED",
+            },
+        }
+        from app.models import AlertRule
+
+        for rule in db.scalars(
+            select(AlertRule)
+            .join(MetricDefinition)
+            .where(
+                MetricDefinition.resource_id == r.id,
+                MetricDefinition.metric_type == "DERIVED_CONDITION",
+            )
+        ):
+            rule.enabled = False
     current = db.scalar(
         select(ParameterActivation).where(
             ParameterActivation.resource_id == id,
@@ -954,6 +1073,86 @@ def activate_parameters(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     return document(p)
 
 
+class NativeAlertSetup(Strict):
+    enabled: bool = False
+    parameter_version: int | None = Field(default=None, ge=1)
+    severities: list[Literal["WARNING", "CRITICAL"]] = Field(
+        default_factory=lambda: ["WARNING", "CRITICAL"], min_length=1, max_length=2
+    )
+    destinations: list[uuid.UUID] = Field(default_factory=list, max_length=30)
+    in_app: bool = False
+
+
+@router.get("/resources/{id}/alert-setup")
+def alert_setup(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id, "alerts.view")
+    setup = (r.configuration or {}).get("alert_setup")
+    return setup or {
+        "enabled": False,
+        "parameter_version": None,
+        "severities": ["WARNING", "CRITICAL"],
+        "destinations": [],
+        "in_app": False,
+        "revision": 0,
+    }
+
+
+@router.post("/resources/{id}/alert-setup")
+def save_alert_setup(id: uuid.UUID, payload: NativeAlertSetup, db=Depends(get_db)):
+    r = resource(db, id, "templates.manage", True)
+    parameter = (
+        db.scalar(
+            select(ParameterVersion).where(
+                ParameterVersion.resource_id == id,
+                ParameterVersion.version == payload.parameter_version,
+            )
+        )
+        if payload.parameter_version
+        else None
+    )
+    if payload.enabled and (not parameter or parameter.status != "ACTIVE"):
+        raise HTTPException(
+            422,
+            "Enabled native alert rules must reference an active Event Parameters version",
+        )
+    from app.telemetry.models import NotificationDestination
+
+    for target in payload.destinations:
+        destination = db.get(NotificationDestination, target)
+        if (
+            not destination
+            or destination.organization_id != r.organization_id
+            or not destination.enabled
+        ):
+            raise HTTPException(
+                422, "Select enabled notification destinations in this customer scope"
+            )
+    previous = (r.configuration or {}).get("alert_setup", {})
+    setup = {
+        **payload.model_dump(mode="json"),
+        "revision": previous.get("revision", 0) + 1,
+        "configured_at": utc().isoformat(),
+    }
+    r.configuration = {**r.configuration, "alert_setup": setup}
+    from app.models import AlertRule
+
+    for rule in db.scalars(
+        select(AlertRule)
+        .join(MetricDefinition)
+        .where(
+            MetricDefinition.resource_id == r.id,
+            MetricDefinition.metric_type == "DERIVED_CONDITION",
+        )
+    ):
+        rule.enabled = payload.enabled and rule.severity in payload.severities
+        rule.notification_channels = (["IN_APP"] if payload.in_app else []) + [
+            "DEST:" + str(v) for v in payload.destinations
+        ]
+    audit(db, r, "NATIVE_ALERT_SETUP_SAVE")
+    commit(db)
+    return setup
+
+
 @router.get("/resources/{id}/verification")
 def verification(id: uuid.UUID, db=Depends(get_db)):
     r = resource(db, id)
@@ -971,12 +1170,6 @@ def activate_resource(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     r = resource(db, id, "resources.update", True)
     if not payload.approve:
         raise HTTPException(422, "Explicit activation approval required")
-    if not db.scalar(
-        select(ParameterVersion.id).where(
-            ParameterVersion.resource_id == id, ParameterVersion.status == "ACTIVE"
-        )
-    ):
-        raise HTTPException(409, "Activate a validated parameter version first")
     from app.unified.engines import source_readiness
 
     evidence = source_readiness(db, r)
@@ -1223,3 +1416,56 @@ def available_metrics(id: uuid.UUID, db=Depends(get_db)):
             .limit(500)
         )
     ]
+
+
+@router.get("/pipeline-platforms/{platform}")
+def platform_definition(platform: str):
+    from app.pipeline_adapters import describe_platform, AdapterError
+
+    require_permission("etl.view")
+    try:
+        return describe_platform(platform)
+    except AdapterError:
+        raise HTTPException(422, "Unsupported pipeline platform") from None
+
+
+@router.post("/resources/{id}/test-connection")
+def test_connection(id: uuid.UUID, db=Depends(get_db)):
+    from app.pipeline_adapters import test_platform_connection, AdapterError
+
+    r = resource(db, id, "etl.configure")
+    require_permission("collectors.manage", r.organization_id)
+    if r.domain != "ETL" or not r.configuration.get("integration_configuration"):
+        raise HTTPException(422, "Configure a native pipeline integration first")
+    if not current_principal.get().platform_admin:
+        raise HTTPException(
+            403,
+            "A platform administrator must authorize provider network/credential reads",
+        )
+    # Adapter egress validation uses deployment-approved host/CIDR/port lists.
+    # The result is an actual read, never inferred from configuration saving.
+    try:
+        result = test_platform_connection(
+            r.configuration["platform"], r.configuration["integration_configuration"]
+        )
+    except AdapterError as error:
+        log_event(
+            db,
+            event_type="PIPELINE_CONNECTION_TEST",
+            outcome="FAILURE",
+            actor_id=current_principal.get().user_id,
+            organization_id=r.organization_id,
+            target_type="monitoring_resource",
+            target_id=r.id,
+        )
+        db.commit()
+        return {"connected": False, "error_kind": error.kind, "live_verified": False}
+    audit(db, r, "PIPELINE_CONNECTION_TEST")
+    commit(db)
+    return {
+        "connected": True,
+        "observation": result,
+        "observed_at": utc(),
+        "connection_verified": True,
+        "live_verified": False,  # Genuine provider acceptance is separately recorded.
+    }

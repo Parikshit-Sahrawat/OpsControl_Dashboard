@@ -44,7 +44,11 @@ export function useNativeFeed(path) {
   }, [path, tick]);
   return { data, error, refresh: () => setTick((v) => v + 1) };
 }
-const pages = { ETL: "ETL Monitoring", VM: "VM Health", API: "API Monitoring" };
+const pages = {
+  ETL: "Data Pipeline Monitoring",
+  VM: "Compute Health",
+  API: "API Endpoint Monitoring",
+};
 export default function UnifiedOverview({
   organizationIds,
   environment,
@@ -90,10 +94,10 @@ export default function UnifiedOverview({
               <tr key={domain}>
                 <td>
                   {domain === "ETL"
-                    ? "ETL Monitoring"
+                    ? "Data Pipeline Monitoring"
                     : domain === "VM"
-                      ? "VM Health"
-                      : "API Monitoring"}
+                      ? "Compute Health"
+                      : "API Endpoint Monitoring"}
                 </td>
                 <td>
                   <button onClick={() => onNavigate(pages[domain])}>
@@ -126,10 +130,10 @@ export default function UnifiedOverview({
           <section key={domain} className="card table-wrap">
             <h2>
               {domain === "ETL"
-                ? "ETL Operational Alerts"
+                ? "Data Pipeline Alerts"
                 : domain === "VM"
-                  ? "VM Health Alerts"
-                  : "API Operational Alerts"}
+                  ? "Compute Health Alerts"
+                  : "API Endpoint Alerts"}
             </h2>
             <table>
               <thead>

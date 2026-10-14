@@ -4,9 +4,18 @@ import hashlib, json, os, secrets, uuid
 from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import Field
-from sqlalchemy import select, func
+from typing import Literal
+from sqlalchemy import select, func, or_, and_
 from app.db.session import get_db, SessionLocal
-from app.models import Collector, DataSource, Organization
+from app.models import (
+    Collector,
+    DataSource,
+    Organization,
+    LogEvent,
+    LogSource,
+    MetricSample,
+    MetricDefinition,
+)
 from app.security.models import WorkerIdentity
 from app.security.http import token_digest
 from app.security.access_control import require_permission
@@ -36,7 +45,7 @@ def item(row):
     return {
         c.name: redact_config(getattr(row, c.name))
         for c in row.__table__.columns
-        if c.name not in {"token_hash"}
+        if c.name not in {"token_hash", "previous_token_hash"}
     }
 
 
@@ -74,6 +83,92 @@ def rows(db, id):
         .where(CollectorMethod.collector_id == id, CollectorMethod.deleted_at.is_(None))
         .order_by(CollectorMethod.created_at, CollectorMethod.id)
     ).all()
+
+
+def method_evidence(db, collector_id, method_id, applied_at):
+    """Receiver-specific evidence is scoped to the authenticated Collector."""
+    key = str(method_id)
+    log_count, log_last = db.execute(
+        select(func.count(LogEvent.id), func.max(LogEvent.created_at))
+        .join(LogSource, LogSource.id == LogEvent.log_source_id)
+        .where(
+            LogSource.collector_id == collector_id,
+            LogEvent.attributes["opscontrol.method.id"].as_string() == key,
+            LogEvent.created_at >= applied_at,
+        )
+    ).one()
+    metric_count, metric_last = db.execute(
+        select(func.count(MetricSample.id), func.max(MetricSample.created_at)).where(
+            MetricSample.collector_id == collector_id,
+            MetricSample.dimensions["opscontrol.method.id"].as_string() == key,
+            MetricSample.created_at >= applied_at,
+        )
+    ).one()
+    # Prometheus emits up=0 on actual target failure; receiving that sample is not healthy.
+    up = db.execute(
+        select(MetricSample.value_numeric, MetricSample.created_at)
+        .join(
+            MetricDefinition, MetricDefinition.id == MetricSample.metric_definition_id
+        )
+        .where(
+            MetricSample.collector_id == collector_id,
+            MetricSample.dimensions["opscontrol.method.id"].as_string() == key,
+            MetricDefinition.query_config["otel_metric_name"].as_string() == "up",
+            MetricSample.created_at >= applied_at,
+        )
+        .order_by(MetricSample.created_at.desc())
+        .limit(1)
+    ).first()
+    last = max(
+        (value for value in (log_last, metric_last) if value is not None), default=None
+    )
+    return {
+        "record_count": log_count + metric_count,
+        "last_received_at": last,
+        "scrape_up": up[0] if up else None,
+    }
+
+
+def method_collection_state(method, agent, applied, current, evidence):
+    if not method.enabled:
+        return "DISABLED"
+    if not current or not applied:
+        return "NOT_APPLIED"
+    if (
+        not agent
+        or not agent.enabled
+        or not agent.last_seen_at
+        or agent.last_seen_at < utc() - timedelta(seconds=90)
+    ):
+        return "DISCONNECTED"
+    observation = (agent.method_health or {}).get(str(method.id), {})
+    if observation.get("applied_revision") != applied.revision:
+        observation = {}
+    if observation:
+        try:
+            observed_at = datetime.fromisoformat(observation.get("observed_at", ""))
+            if observed_at.tzinfo is None or observed_at < utc() - timedelta(
+                seconds=90
+            ):
+                observation = {}
+        except (ValueError, TypeError):
+            observation = {}
+    if observation.get("state") == "STOPPED":
+        return "STOPPED"
+    if observation.get("state") == "ERROR":
+        return "ERROR"
+    if evidence.get("scrape_up") == 0:
+        return "ERROR"
+    last = evidence.get("last_received_at")
+    if last and last > utc() - timedelta(minutes=5):
+        return "RECEIVING"
+    if (
+        method.method_type == "FILE_LOG"
+        and observation.get("state") == "IDLE"
+        and observation.get("sources_readable", 0) > 0
+    ):
+        return "IDLE"
+    return "NO_DATA"
 
 
 @router.get("/collectors/{id}")
@@ -145,11 +240,23 @@ def details(id: uuid.UUID, db=Depends(get_db)):
             )
             for v in ([applied] if applied else []) + versions
         )
+        evidence = (
+            method_evidence(db, id, method.id, a.applied_at)
+            if a and applied and current and a.applied_at
+            else {"record_count": 0, "last_received_at": None}
+        )
         method_documents.append(
             {
                 **item(method),
                 "deployment_status": deployed,
                 "binary_validation": "VALIDATED" if valid else "NOT_VALIDATED",
+                "collection_status": method_collection_state(
+                    method, a, applied, current, evidence
+                ),
+                "method_observation": (
+                    (a.method_health or {}).get(str(method.id)) if a else None
+                ),
+                **evidence,
             }
         )
     return {
@@ -159,6 +266,28 @@ def details(id: uuid.UUID, db=Depends(get_db)):
         "agent": (
             {
                 **item(a),
+                "configuration_state": (
+                    "ERROR"
+                    if a.last_error
+                    else (
+                        "DRIFT"
+                        if a.desired_revision != a.applied_revision
+                        else (
+                            "VERIFIED"
+                            if a.verified_revision == a.applied_revision
+                            and a.applied_revision
+                            else (
+                                "APPLIED_AWAITING_EVIDENCE"
+                                if a.applied_revision
+                                else (
+                                    "DOWNLOADED"
+                                    if a.downloaded_revision
+                                    else "NOT_CONFIGURED"
+                                )
+                            )
+                        )
+                    )
+                ),
                 "connection": (
                     "REVOKED"
                     if not a.enabled
@@ -280,7 +409,11 @@ def save_version(id: uuid.UUID, db=Depends(get_db)):
             methods,
             os.getenv("OPSCONTROL_PUBLIC_INGESTION_URL", ""),
         )
-        services = (c.configuration or {}).get("services", [])
+        services = list((c.configuration or {}).get("services", []))
+        for method in methods:
+            if method.enabled and method.method_type == "SERVICES":
+                services.extend(method.configuration.get("services", []))
+        services = list(dict.fromkeys(services))
         import re
 
         if (
@@ -294,7 +427,11 @@ def save_version(id: uuid.UUID, db=Depends(get_db)):
             or len(set(services)) != len(services)
         ):
             raise ValueError("Invalid service identities")
-        processes = (c.configuration or {}).get("processes", [])
+        processes = list((c.configuration or {}).get("processes", []))
+        for method in methods:
+            if method.enabled and method.method_type == "SERVICES":
+                processes.extend(method.configuration.get("processes", []))
+        processes = list(dict.fromkeys(processes))
         if (
             not isinstance(processes, list)
             or len(processes) > 50
@@ -330,7 +467,16 @@ def save_version(id: uuid.UUID, db=Depends(get_db)):
         agent_configuration={
             "services": services,
             "processes": processes,
-            "native_os_metrics": bool((c.configuration or {}).get("os_metrics")),
+            "native_os_metrics": bool((c.configuration or {}).get("os_metrics"))
+            or any(m.enabled and m.method_type == "HOST_METRICS" for m in methods),
+            "service_interval_seconds": min(
+                [
+                    m.configuration.get("interval_seconds", 30)
+                    for m in methods
+                    if m.enabled and m.method_type == "SERVICES"
+                ]
+                or [30]
+            ),
         },
         method_snapshot=[json.loads(json.dumps(item(m), default=str)) for m in methods],
     )
@@ -449,6 +595,14 @@ def register(payload: Register):
             a.last_seen_at = None
             a.desired_revision = None
             a.applied_revision = None
+            a.downloaded_revision = None
+            a.verified_revision = None
+            a.last_working_revision = None
+            a.configuration_sha256 = None
+            a.applied_at = None
+            a.verified_at = None
+            a.previous_token_hash = None
+            a.previous_token_expires_at = None
             a.enabled = True
             a.health = "REGISTERED"
             a.last_error = None
@@ -486,6 +640,14 @@ def register(payload: Register):
         return {"agent_id": a.id, "access_token": token, "expires_at": w.expires_at}
 
 
+def credential_matches(agent, worker, digest):
+    return worker.token_hash == digest or bool(
+        agent.previous_token_hash == digest
+        and agent.previous_token_expires_at
+        and agent.previous_token_expires_at > utc()
+    )
+
+
 def authenticate(db, request):
     auth = request.headers.get("authorization", "").split()
     if len(auth) != 2 or auth[0] != "Bearer" or len(auth[1]) > 256:
@@ -494,7 +656,15 @@ def authenticate(db, request):
     identity = db.execute(
         select(ManagedAgent.id, ManagedAgent.collector_id, WorkerIdentity.id)
         .join(WorkerIdentity, ManagedAgent.worker_id == WorkerIdentity.id)
-        .where(WorkerIdentity.token_hash == digest)
+        .where(
+            or_(
+                WorkerIdentity.token_hash == digest,
+                and_(
+                    ManagedAgent.previous_token_hash == digest,
+                    ManagedAgent.previous_token_expires_at > utc(),
+                ),
+            )
+        )
     ).first()
     if not identity:
         raise HTTPException(401, "Agent credentials unavailable")
@@ -519,7 +689,7 @@ def authenticate(db, request):
         not c
         or not a
         or not w
-        or w.token_hash != digest
+        or not credential_matches(a, w, digest)
         or not w.enabled
         or w.expires_at <= utc()
         or not a.enabled
@@ -541,11 +711,23 @@ def authenticate(db, request):
     return a, c, s, w
 
 
+class MethodObservation(Strict):
+    method_id: uuid.UUID
+    state: Literal["RUNNING", "IDLE", "STOPPED", "ERROR"]
+    error_code: str | None = Field(default=None, pattern="^[A-Z0-9_]{1,80}$")
+    sources_found: int = Field(default=0, ge=0, le=1000)
+    sources_readable: int = Field(default=0, ge=0, le=1000)
+
+
 class Heartbeat(Strict):
     version: str = Field(max_length=80)
     runtime_version: str = Field(max_length=80)
     applied_revision: int | None = None
+    configuration_sha256: str | None = Field(default=None, pattern="^[a-f0-9]{64}$")
     health: str = Field(pattern="^(RUNNING|STOPPED|ERROR)$")
+    method_observations: list[MethodObservation] = Field(
+        default_factory=list, max_length=100
+    )
     error_code: str | None = Field(default=None, pattern="^[A-Z0-9_]{1,80}$")
 
 
@@ -585,7 +767,25 @@ def heartbeat(payload: Heartbeat, request: Request):
                     target_id=a.id,
                 )
         if payload.health == "RUNNING" and payload.applied_revision:
+            version = db.scalar(
+                select(CollectorConfigVersion).where(
+                    CollectorConfigVersion.collector_id == c.id,
+                    CollectorConfigVersion.revision == payload.applied_revision,
+                )
+            )
+            if not version or version.validation_status != "VALIDATED":
+                raise HTTPException(409, "Configuration not validated")
+            if (
+                payload.configuration_sha256
+                and payload.configuration_sha256 != version.sha256
+            ):
+                raise HTTPException(409, "Configuration checksum mismatch")
+            if a.applied_revision != payload.applied_revision or not a.applied_at:
+                a.applied_at = utc()
+                a.verified_revision = None
+                a.verified_at = None
             a.applied_revision = payload.applied_revision
+            a.configuration_sha256 = payload.configuration_sha256
             for d in db.scalars(
                 select(AgentDeployment).where(
                     AgentDeployment.agent_id == a.id,
@@ -603,8 +803,51 @@ def heartbeat(payload: Heartbeat, request: Request):
                     target_type="agent",
                     target_id=a.id,
                 )
+            db.flush()
+            verify_reception(db, a, version)
+        if payload.method_observations:
+            if payload.applied_revision != a.applied_revision:
+                raise HTTPException(
+                    409, "Method observations require the applied revision"
+                )
+            observed_version = db.scalar(
+                select(CollectorConfigVersion).where(
+                    CollectorConfigVersion.collector_id == c.id,
+                    CollectorConfigVersion.revision == a.applied_revision,
+                )
+            )
+            valid_ids = (
+                {
+                    str(m["id"])
+                    for m in observed_version.method_snapshot
+                    if m.get("enabled")
+                }
+                if observed_version
+                else set()
+            )
+            observations = {}
+            for observation in payload.method_observations:
+                key = str(observation.method_id)
+                if key not in valid_ids or key in observations:
+                    raise HTTPException(
+                        422,
+                        "Method is not in the applied configuration or is duplicated",
+                    )
+                if observation.sources_readable > observation.sources_found:
+                    raise HTTPException(422, "Invalid source observation counts")
+                observations[key] = {
+                    **observation.model_dump(mode="json"),
+                    "applied_revision": a.applied_revision,
+                    "observed_at": a.last_seen_at.isoformat(),
+                }
+            a.method_health = observations
         db.commit()
-        return {"accepted": True, "desired_revision": a.desired_revision}
+        return {
+            "accepted": True,
+            "desired_revision": a.desired_revision,
+            "verified_revision": a.verified_revision,
+            "last_working_revision": a.last_working_revision,
+        }
 
 
 @agent_router.get("/configuration")
@@ -621,7 +864,109 @@ def configuration(request: Request):
         )
         if not v or v.validation_status != "VALIDATED":
             raise HTTPException(409, "Configuration is not validated")
+        a.downloaded_revision = v.revision
+        db.commit()
         return item(v)
+
+
+def verify_reception(db, agent, version):
+    """Only the server can verify a revision, using post-application receipts."""
+    import yaml
+
+    if not agent.applied_at or agent.configuration_sha256 != version.sha256:
+        return False
+    signals = {
+        key.split("/")[0]
+        for key in yaml.safe_load(version.yaml_text)
+        .get("service", {})
+        .get("pipelines", {})
+    }
+    if version.agent_configuration.get("services") or version.agent_configuration.get(
+        "processes"
+    ):
+        signals.add("metrics")
+    if not signals:
+        return False
+    observed = set(
+        db.scalars(
+            select(TelemetryReceipt.signal).where(
+                TelemetryReceipt.agent_id == agent.id,
+                TelemetryReceipt.received_at >= agent.applied_at,
+                TelemetryReceipt.record_count > 0,
+            )
+        ).all()
+    )
+    if not signals <= observed:
+        return False
+    if agent.verified_revision == version.revision:
+        return True
+    agent.verified_revision = version.revision
+    agent.last_working_revision = version.revision
+    agent.verified_at = utc()
+    for deployment in db.scalars(
+        select(AgentDeployment).where(
+            AgentDeployment.agent_id == agent.id,
+            AgentDeployment.revision == version.revision,
+            AgentDeployment.status == "APPLIED",
+        )
+    ):
+        deployment.status = "VERIFIED"
+        deployment.completed_at = utc()
+    log_event(
+        db,
+        event_type="AGENT_CONFIG_VERIFIED",
+        outcome="SUCCESS",
+        organization_id=agent.organization_id,
+        target_type="agent",
+        target_id=agent.id,
+    )
+    return True
+
+
+@agent_router.post("/credentials/renew")
+def renew_credentials(request: Request):
+    # Extending the authenticated credential avoids token handover races with
+    # the running upstream Collector. Revocation immediately disables it.
+    with SessionLocal() as db:
+        agent, collector, source, worker = authenticate(db, request)
+        worker.expires_at = utc() + timedelta(days=90)
+        agent.credential_renewed_at = utc()
+        log_event(
+            db,
+            event_type="AGENT_CREDENTIAL_RENEW",
+            outcome="SUCCESS",
+            organization_id=agent.organization_id,
+            target_type="agent",
+            target_id=agent.id,
+        )
+        db.commit()
+        return {"expires_at": worker.expires_at, "agent_id": agent.id}
+
+
+@agent_router.post("/credentials/rotate")
+def rotate_credentials(request: Request):
+    with SessionLocal() as db:
+        agent, collector, source, worker = authenticate(db, request)
+        token = secrets.token_urlsafe(48)
+        agent.previous_token_hash = worker.token_hash
+        agent.previous_token_expires_at = utc() + timedelta(minutes=5)
+        worker.token_hash = token_digest(token)
+        worker.expires_at = utc() + timedelta(days=90)
+        agent.credential_renewed_at = utc()
+        log_event(
+            db,
+            event_type="AGENT_CREDENTIAL_ROTATE",
+            outcome="SUCCESS",
+            organization_id=agent.organization_id,
+            target_type="agent",
+            target_id=agent.id,
+        )
+        db.commit()
+        return {
+            "access_token": token,
+            "expires_at": worker.expires_at,
+            "previous_valid_until": agent.previous_token_expires_at,
+        }
 
 
 class Apply(Strict):
@@ -675,6 +1020,11 @@ def revoke(id: uuid.UUID, db=Depends(get_db)):
     if not a:
         raise HTTPException(404, "Agent unavailable")
     a.enabled = False
+    a.previous_token_hash = None
+    a.previous_token_expires_at = None
+    # The request write policy allows only revocation of this exact bound
+    # credential; WorkerIdentity remains closed to general human mutations.
+    db.info["agent_revocation_worker"] = a.worker_id
     db.get(WorkerIdentity, a.worker_id).enabled = False
     commit(db, s, "AGENT_REVOKE", a.id)
 

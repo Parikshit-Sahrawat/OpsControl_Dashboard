@@ -227,3 +227,17 @@ pre,.configuration-preview {max-width:100%;overflow:auto;white-space:pre;word-br
 .resource-onboarding-modal button:not(.primary-button):not(.close-button),.access-dialog button:not(.primary-button):not(.close-button),.resource-section-stack button:not(.primary-button):not(.resource-tab){background:var(--surface-raised);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
 .resource-onboarding-modal button:hover,.access-dialog button:hover{border-color:var(--border-strong)}
 button:disabled{cursor:not-allowed;opacity:.5}
+
+/* Native incident controls share the operational theme and wrap on narrow screens. */
+.native-incidents { min-width: 0; }
+.native-incidents .card { margin-top: 18px; }
+.native-incidents button { border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; background: var(--card, var(--surface)); color: var(--text); font: inherit; cursor: pointer; }
+.native-incidents button:hover:not(:disabled) { border-color: var(--accent); }
+.native-incidents button:disabled { opacity: .5; cursor: not-allowed; }
+.native-incidents input, .native-incidents select, .native-incidents textarea { min-width: 0; max-width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; }
+.native-incidents .incident-actions { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 20px 0; }
+.native-incidents .incident-actions label { display: grid; gap: 6px; flex: 1 1 220px; min-width: 0; }
+.native-incidents textarea { width: 100%; resize: vertical; min-height: 76px; }
+.native-incidents h2, .native-incidents td, .native-incidents li, .native-incidents small { overflow-wrap: anywhere; }
+.native-incidents td small { display: block; margin-top: 5px; color: var(--muted); }
+.native-incidents button:focus-visible, .native-incidents input:focus-visible, .native-incidents select:focus-visible, .native-incidents textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }

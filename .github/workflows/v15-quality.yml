@@ -1,0 +1,142 @@
+name: ARCH-001 V1.5 continuous quality
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v15-quality-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      OPSCONTROL_TEST_EVIDENCE_DIR: ${{ runner.temp }}/v15-quality
+      OPSCONTROL_COVERAGE_MIN: '80'
+      PRETTIER_BIN: ${{ runner.temp }}/v15-tools/node_modules/.bin/prettier
+      PLAYWRIGHT_MODULE: ${{ runner.temp }}/v15-tools/node_modules/playwright/index.mjs
+      OPSCONTROL_OTEL_BINARY: ${{ runner.temp }}/otelcol-contrib
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements*.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked runtime and development tools
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/v15-tools" --no-audit --no-fund prettier@3.5.3 playwright@1.56.1
+          "$RUNNER_TEMP/v15-tools/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Extract digest-pinned actual OTel runtime
+        run: |
+          image=otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+          docker pull "$image"
+          container=$(docker create --network none "$image")
+          trap 'docker rm "$container" >/dev/null' EXIT
+          docker cp "$container:/otelcol-contrib" "$OPSCONTROL_OTEL_BINARY"
+          chmod 755 "$OPSCONTROL_OTEL_BINARY"
+      - name: Build digest-pinned Linux Agent package
+        run: bash scripts/build-demo-agent.sh
+      - name: Formatting, lint, frontend build
+        run: make test-quality
+      - name: Unit and Agent lifecycle checks
+        run: |
+          make test-unit
+          make test-agent
+      - name: Actual disposable PostgreSQL, TLS Agent, OTel and browser UAT
+        run: make test-e2e
+      - name: Independent Access and controlled legacy workflow regressions
+        run: bash scripts/test-quality.sh compatibility
+      - name: Authorization and dependency vulnerability checks
+        run: make test-security
+      - uses: docker/setup-buildx-action@v3
+      - name: Cache backend Docker build layers
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: backend/Dockerfile.demo
+          load: true
+          tags: opscontrol-v15-backend-cache:latest
+          cache-from: type=gha,scope=v15-backend
+          cache-to: |
+            type=gha,mode=max,scope=v15-backend
+            type=inline
+      - name: Cache frontend Docker build layers
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          file: frontend/Dockerfile.demo
+          load: true
+          tags: opscontrol-v15-frontend-cache:latest
+          cache-from: type=gha,scope=v15-frontend
+          cache-to: |
+            type=gha,mode=max,scope=v15-frontend
+            type=inline
+      - name: Configure smoke build cache inputs
+        run: |
+          cat > "$RUNNER_TEMP/v15-build-cache.yml" <<'CACHE'
+          services:
+            api:
+              build:
+                cache_from: [opscontrol-v15-backend-cache:latest]
+            worker:
+              build:
+                cache_from: [opscontrol-v15-backend-cache:latest]
+            frontend:
+              build:
+                cache_from: [opscontrol-v15-frontend-cache:latest]
+          CACHE
+      - name: Mandatory owned Docker build, startup, migrations and authentication smoke
+        env:
+          OPSCONTROL_BUILD_OVERRIDE: ${{ runner.temp }}/v15-build-cache.yml
+        run: make test-docker
+      - name: Measure critical-module coverage and enforce target
+        if: always()
+        run: make test-coverage
+      - name: Preserve redacted results and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch001-v15-verification
+          path: |
+            ${{ runner.temp }}/v15-quality/coverage.json
+            ${{ runner.temp }}/v15-quality/coverage.xml
+            ${{ runner.temp }}/v15-quality/frontend-coverage.txt
+            ${{ runner.temp }}/v15-quality/access-regression
+            ${{ runner.temp }}/v15-quality/consolidated-uat
+            ${{ runner.temp }}/v15-quality/pip-audit.json
+            ${{ runner.temp }}/v15-quality/npm-audit.json
+            ${{ runner.temp }}/v15-quality/owned-lab-runtime
+            ${{ runner.temp }}/v15-quality/owned-lab-browser
+            ${{ runner.temp }}/v15-quality/docker-smoke
+          if-no-files-found: warn
+
+  windows-source-checks:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile Agent source and parse Windows installers
+        shell: pwsh
+        run: |
+          python -m compileall -q agent
+          if ($LASTEXITCODE) { throw 'Agent Python compilation failed' }
+          foreach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {
+            $tokens=$null; $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null
+            if ($errors.Count) { throw "PowerShell parse failed: $file" }
+          }

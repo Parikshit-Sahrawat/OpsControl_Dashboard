@@ -74,6 +74,8 @@ def passed(label):
 
 
 def main():
+    if settings.environment != "test":
+        raise RuntimeError("Controlled UAT fixture writes require ENVIRONMENT=test")
     admin = request(
         "/api/v1/auth/login",
         "POST",
@@ -184,6 +186,62 @@ def main():
         },
         admin,
         201,
+    )
+    # Lossless fixture binding: keep the real source, collector, methods and
+    # subsequent Agent evidence on their original IDs. No production adoption
+    # or arbitrary customer/environment inference is attempted here.
+    from app.db.session import SessionLocal
+    from app.models import VM, DataSource, Collector
+    from app.unified.models import MonitoringResource
+
+    with SessionLocal() as db:
+        db.info["unified_manual_binding"] = True
+        existing_source = db.get(DataSource, uuid.UUID(source["id"]))
+        existing_collector = db.get(Collector, uuid.UUID(collector["id"]))
+        assert existing_source.organization_id == uuid.UUID(org)
+        assert existing_collector.data_source_id == existing_source.id
+        metadata = dict(existing_source.connection_config or {})
+        metadata["opscontrol"] = {
+            **metadata.get("opscontrol", {}),
+            "environment": "SANDBOX",
+        }
+        existing_source.connection_config = metadata
+        vm = VM(
+            organization_id=uuid.UUID(org),
+            hostname="uat-host.example.test",
+            environment="SANDBOX",
+            os="Linux",
+            monitoring_enabled=False,
+        )
+        db.add(vm)
+        db.flush()
+        compute = MonitoringResource(
+            id=vm.id,
+            organization_id=uuid.UUID(org),
+            domain="VM",
+            name="UAT Compute Instance",
+            environment="SANDBOX",
+            vm_id=vm.id,
+            data_source_id=existing_source.id,
+            primary_collector_id=existing_collector.id,
+            configuration={
+                "hostname": vm.hostname,
+                "address": vm.hostname,
+                "os_type": "Linux",
+                "vm_type": "VM",
+                "deployment_type": "PRIVATE_CLOUD",
+                "native_os_metrics": True,
+                "services": [],
+                "processes": [],
+            },
+            active=True,
+            activation_status="DRAFT",
+        )
+        db.add(compute)
+        db.commit()
+        compute_id, compute_name = str(compute.id), compute.name
+    passed(
+        "Controlled SANDBOX Compute binding preserves source/collector UUIDs and genuine Agent telemetry ownership"
     )
     prefix = "/api/v1/agent-control/collectors/" + collector["id"]
     defaults = request(prefix + "/template-defaults", token=admin)
@@ -687,6 +745,8 @@ def main():
                 "organization": org,
                 "collector_id": collector["id"],
                 "source_id": source["id"],
+                "compute_resource_id": compute_id,
+                "compute_resource_name": compute_name,
                 "department_id": department["id"],
                 "employee_id": employee["id"],
             }

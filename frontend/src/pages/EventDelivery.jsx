@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { control } from "../controlPlane";
+import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import { hasPermission } from "../permissions";
 export default function EventDelivery({ kind, organizations, user }) {
   const [org, setOrg] = useState(organizations[0]?.id || ""),
@@ -104,7 +105,11 @@ export default function EventDelivery({ kind, organizations, user }) {
       </div>
       <label className="form-field">
         <span>Organization</span>
-        <select value={org} onChange={(e) => setOrg(e.target.value)}>
+        <select
+          aria-label="Organization"
+          value={org}
+          onChange={(e) => setOrg(e.target.value)}
+        >
           {organizations.map((o) => (
             <option key={o.id} value={o.id}>
               {o.name}
@@ -173,22 +178,26 @@ export default function EventDelivery({ kind, organizations, user }) {
             {draft.id ? "Edit" : "Create"}{" "}
             {events ? "Event Parameter" : "Destination"}
           </h3>
-          <label className="form-field">
-            <span>Name</span>
-            <input
-              required
-              value={draft.name}
-              onChange={(e) => change("name", e.target.value)}
-            />
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              checked={draft.enabled}
-              onChange={(e) => change("enabled", e.target.checked)}
-            />{" "}
-            Enabled
-          </label>
+          {events && (
+            <>
+              <label className="form-field">
+                <span>Name</span>
+                <input
+                  required
+                  value={draft.name}
+                  onChange={(e) => change("name", e.target.value)}
+                />
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={draft.enabled}
+                  onChange={(e) => change("enabled", e.target.checked)}
+                />{" "}
+                Enabled
+              </label>
+            </>
+          )}
           {events ? (
             <>
               <label className="form-field">
@@ -362,90 +371,26 @@ export default function EventDelivery({ kind, organizations, user }) {
             </>
           ) : (
             <>
-              <label className="form-field">
-                <span>Channel</span>
-                <select
-                  value={draft.channel}
-                  onChange={(e) =>
-                    setDraft((d) => ({
-                      ...d,
-                      channel: e.target.value,
-                      configuration: {},
-                    }))
-                  }
-                >
-                  {["IN_APP", "SMTP", "WEBHOOK"].map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
-                </select>
-              </label>
-              {draft.channel === "WEBHOOK" && (
-                <label className="form-field">
-                  <span>HTTPS webhook URL</span>
-                  <input
-                    required
-                    value={draft.configuration.url || ""}
-                    onChange={(e) => config("url", e.target.value)}
-                  />
-                </label>
-              )}
-              {draft.channel === "SMTP" && (
-                <>
-                  {[
-                    ["host", "SMTP host"],
-                    ["sender", "Sender address"],
-                  ].map(([key, label]) => (
-                    <label className="form-field" key={key}>
-                      <span>{label}</span>
-                      <input
-                        required
-                        value={draft.configuration[key] || ""}
-                        onChange={(e) => config(key, e.target.value)}
-                      />
-                    </label>
-                  ))}
-                  <label className="form-field">
-                    <span>Secure SMTP port</span>
-                    <select
-                      value={draft.configuration.port || 587}
-                      onChange={(e) => config("port", Number(e.target.value))}
-                    >
-                      <option>587</option>
-                      <option>465</option>
-                    </select>
-                  </label>
-                  <label className="form-field">
-                    <span>Recipients (comma separated)</span>
-                    <input
-                      required
-                      value={(draft.configuration.recipients || []).join(", ")}
-                      onChange={(e) =>
-                        config(
-                          "recipients",
-                          e.target.value
-                            .split(",")
-                            .map((s) => s.trim())
-                            .filter(Boolean),
-                        )
-                      }
-                    />
-                  </label>
-                </>
-              )}
-              {draft.channel !== "IN_APP" && (
-                <label className="form-field">
-                  <span>Credential reference (env:NAME)</span>
-                  <input
-                    value={draft.configuration.credential_ref || ""}
-                    onChange={(e) =>
-                      config("credential_ref", e.target.value || null)
-                    }
-                  />
-                </label>
-              )}
+              <DynamicConfigurationForm
+                definition="NOTIFICATION_DELIVERY"
+                value={draft}
+                disabled={!can || busy}
+                keys={["name", "enabled", "channel", "configuration"]}
+                onChange={(next) =>
+                  setDraft((previous) => ({
+                    ...next,
+                    configuration:
+                      next.channel === previous.channel
+                        ? next.configuration
+                        : {},
+                  }))
+                }
+              />
               <p>
-                Network destinations require a deployment-owned hostname/CIDR
-                allowlist. Saving a destination does not prove provider health.
+                In-app delivery uses the platform inbox and authorized
+                recipients. External destinations require deployment-owned
+                allowlists and secret references; saving never proves delivery
+                health.
               </p>
             </>
           )}

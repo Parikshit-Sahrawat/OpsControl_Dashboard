@@ -359,7 +359,7 @@ try {
   assert.equal(
     await access
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("button", { name: "VM Health", exact: true })
+      .getByRole("button", { name: "Compute Health", exact: true })
       .count(),
     0,
   );
@@ -367,7 +367,7 @@ try {
     "Access administrator sees independent identity screens with no operational customer access",
   );
   const worker = await login("access-browser");
-  await navigate(worker, "VM Health");
+  await navigate(worker, "Compute Health");
   assert.equal(
     (await call(worker, "/api/v1/auth/me")).data.customer_permissions[
       fixture.customer_a
@@ -399,7 +399,7 @@ try {
   assert.equal(
     await worker
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("button", { name: "VM Health", exact: true })
+      .getByRole("button", { name: "Compute Health", exact: true })
       .count(),
     0,
   );

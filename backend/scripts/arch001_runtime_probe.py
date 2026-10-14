@@ -157,6 +157,25 @@ try:
         "actual signal reception",
         300,
     )
+
+    # Applied is a runtime acknowledgment. Verified additionally requires an
+    # exact approved checksum and post-application receipts for every signal.
+    def configuration_verified():
+        details = call(prefix, token=token)
+        agent = details["agent"]
+        return (
+            agent["version"] == "1.5.0"
+            and agent["configuration_sha256"] == version["sha256"]
+            and agent["downloaded_revision"] == version["revision"]
+            and agent["verified_revision"] == version["revision"]
+            and agent["last_working_revision"] == version["revision"]
+            and agent["verified_at"] is not None
+            and all(item["count"] > 0 for item in details["signals"])
+        )
+
+    wait_for(
+        configuration_verified, "Agent 1.5 checksum and real-signal verification", 300
+    )
     for root, domain in [(vm, "VM"), (etl, "ETL")]:
         saved = call(
             "/api/v1/unified/parameters/" + root["id"],
@@ -172,6 +191,17 @@ try:
             "/api/v1/unified/parameters/" + root["id"] + "/activate",
             "POST",
             {"version": saved["version"], "approve": True},
+            token,
+        )
+        call(
+            "/api/v1/unified/resources/" + root["id"] + "/alert-setup",
+            "POST",
+            {
+                "enabled": True,
+                "parameter_version": saved["version"],
+                "severities": ["WARNING", "CRITICAL"],
+                "in_app": True,
+            },
             token,
         )
         call(
@@ -313,6 +343,17 @@ try:
             token,
         )
         call(
+            "/api/v1/unified/resources/" + root["id"] + "/alert-setup",
+            "POST",
+            {
+                "enabled": True,
+                "parameter_version": saved["version"],
+                "severities": ["WARNING", "CRITICAL"],
+                "in_app": True,
+            },
+            token,
+        )
+        call(
             "/api/v1/unified/resources/" + root["id"] + "/start-probe",
             "POST",
             {"approve": True},
@@ -401,13 +442,64 @@ try:
             worker.kill()
             worker.wait(timeout=10)
         worker_log.close()
+    # Measure actual authorized API and ingestion requests over verified TLS.
+    # Private credential input never appears in command arguments or evidence.
+    performance_input = private / "performance-input.json"
+    runtime_identity = json.loads((home / "identity.json").read_text())
+    performance_input.write_text(
+        json.dumps(
+            {
+                "base_url": base,
+                "api_token": token,
+                "agent_token": runtime_identity["access_token"],
+                "ca_file": os.environ["SSL_CERT_FILE"],
+                "requests": 100,
+                "concurrency": 4,
+                "timeout_seconds": 10,
+                "max_error_rate": 0,
+                "max_p95_ms": 2000,
+                "min_requests_per_second": 1,
+            }
+        )
+    )
+    performance_input.chmod(0o600)
+    performance = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve().parents[2] / "scripts/test-performance.py"),
+            "--inputs",
+            str(performance_input),
+            "--output",
+            str(out / "performance.json"),
+        ],
+        env={**os.environ, "ENV": "test", "OPSCONTROL_PERFORMANCE_ACCEPTANCE": "1"},
+        capture_output=True,
+        text=True,
+        timeout=240,
+    )
+    if performance.returncode:
+        raise AssertionError(
+            "Actual bounded API/ingestion performance thresholds failed; inspect redacted performance.json"
+        )
+    performance_report = json.loads((out / "performance.json").read_text())
+    assert performance_report["status"] == "PASS"
+    print(
+        "Actual verified-TLS API and ingestion load: 100 requests per mode, 4 concurrent workers PASS",
+        flush=True,
+    )
+
+    from scripts.agent_v15_acceptance_probe import run as agent_contracts
+
+    print(agent_contracts(f, call), flush=True)
     (out / "runtime.json").write_text(
         json.dumps(
             {
                 "status": "PASS",
-                "origin": "ACTUAL_AGENT_1.1_CONTRIB_0.123_VERIFIED_TLS",
+                "origin": "ACTUAL_AGENT_1.5_CONTRIB_0.123_VERIFIED_TLS",
                 "controlled_etl_logs": True,
                 "actual_metrics_logs_traces": True,
+                "actual_checksum_receipt_verified_revision": True,
+                "actual_api_ingestion_bounded_performance": True,
                 "actual_reconstructed_failure_alert": True,
                 "actual_native_https_failure_recovery": True,
                 "controlled_iics_style_metadata_over_tls": True,

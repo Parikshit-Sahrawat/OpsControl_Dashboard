@@ -6,7 +6,7 @@ from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHand
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 
-VERSION = "1.1.0"
+VERSION = "1.5.0"
 RUNTIME_VERSION = "0.123.0"
 
 
@@ -27,7 +27,12 @@ class Agent:
         self.stop = stop or threading.Event()
         self.process = None
         self.applied = None
+        self.checksum = None
+        self.renew_at = 0
+        self.next_service_observation = 0
         self.agent_configuration = {"services": []}
+        self.methods = []
+        self.service_failures = []
         parsed = urlsplit(self.backend)
         if (
             parsed.scheme != "https"
@@ -53,6 +58,8 @@ class Agent:
         if self.state.exists():
             state = json.loads(self.state.read_text())
             self.applied = state.get("applied_revision")
+            self.checksum = state.get("sha256")
+            self.methods = state.get("method_snapshot", [])
             from service_health import configuration
 
             self.agent_configuration = configuration(
@@ -93,8 +100,8 @@ class Agent:
             if os.path.exists(temp):
                 os.unlink(temp)
 
-    def enroll(self, enrollment_file):
-        if self.token:
+    def enroll(self, enrollment_file, force=False):
+        if self.token and not force:
             return
         file = Path(enrollment_file)
         if not file.exists():
@@ -109,6 +116,16 @@ class Agent:
                 "runtime_version": RUNTIME_VERSION,
             },
         )
+        if self.credentials.exists():
+            original = self.credentials.read_text()
+            old = json.loads(original)
+            if old.get("agent_id") != result.get("agent_id"):
+                raise RuntimeError("REENROLLMENT_RESOURCE_MISMATCH_USE_SEPARATE_HOME")
+            self.write_private(
+                self.home
+                / ("identity.before-reenrollment." + str(time.time_ns()) + ".json"),
+                original,
+            )
         self.write_private(self.credentials, json.dumps(result))
         self.token = result["access_token"]
         file.unlink()
@@ -145,7 +162,7 @@ class Agent:
                         "-NonInteractive",
                         "-Command",
                         "Get-WinEvent -LogName '"
-                        + c["channel"]
+                        + c["channel"].replace("'", "''")
                         + "' -MaxEvents 1 -ErrorAction Stop | Out-Null",
                     ],
                     capture_output=True,
@@ -189,7 +206,9 @@ class Agent:
                 self.start_runtime()
             raise RuntimeError("COLLECTOR_START_FAILED")
         self.applied = version["revision"]
+        self.checksum = version["sha256"]
         self.agent_configuration = runtime_configuration
+        self.methods = version["method_snapshot"]
         self.write_private(
             self.state,
             json.dumps(
@@ -197,6 +216,7 @@ class Agent:
                     "applied_revision": self.applied,
                     "sha256": version["sha256"],
                     "agent_configuration": self.agent_configuration,
+                    "method_snapshot": self.methods,
                 }
             ),
         )
@@ -233,16 +253,47 @@ class Agent:
     def run(self, enrollment_file):
         self.enroll(enrollment_file)
         if self.config.exists():
+            # An offline restart may reuse only the locally authenticated,
+            # previously applied checksum; corruption never becomes a rollout.
+            if (
+                not self.checksum
+                or hashlib.sha256(self.config.read_bytes()).hexdigest() != self.checksum
+            ):
+                raise RuntimeError("CONFIG_CHECKSUM_MISMATCH")
+            result = subprocess.run(
+                [self.runtime, "validate", "--config", str(self.config)],
+                env={
+                    **os.environ,
+                    "OPSCONTROL_AGENT_TOKEN": self.token,
+                    "OPSCONTROL_AGENT_STATE_DIR": str(self.home.resolve()),
+                },
+                capture_output=True,
+                timeout=30,
+            )
+            if result.returncode:
+                raise RuntimeError("COLLECTOR_CONFIG_INVALID")
             self.start_runtime()
         try:
             while not self.stop.is_set():
                 error = None
                 try:
+                    if time.monotonic() >= self.renew_at:
+                        renewed = self.request("/credentials/renew", {})
+                        identity = json.loads(self.credentials.read_text())
+                        identity["expires_at"] = renewed["expires_at"]
+                        self.write_private(self.credentials, json.dumps(identity))
+                        self.renew_at = time.monotonic() + 86400
+                except Exception:
+                    error = "CREDENTIAL_RENEWAL_FAILED"
+                try:
                     version = self.request("/configuration")
                     if version["revision"] != self.applied:
                         self.apply(version)
                 except HTTPError as e:
-                    if e.code != 404:
+                    if e.code in (401, 403):
+                        self.stop_runtime()
+                        error = "AUTHORIZATION_REVOKED_OR_TARGET_DISABLED"
+                    elif e.code != 404:
                         error = "MANAGEMENT_REQUEST_FAILED"
                 except PermissionError:
                     error = "FILE_PERMISSION_DENIED"
@@ -268,9 +319,13 @@ class Agent:
                         running = self.process.poll() is None
                     except Exception:
                         error = "COLLECTOR_RESTART_FAILED"
-                if running and any(
-                    self.agent_configuration.get(k)
-                    for k in ("services", "processes", "native_os_metrics")
+                if (
+                    running
+                    and time.monotonic() >= self.next_service_observation
+                    and any(
+                        self.agent_configuration.get(k)
+                        for k in ("services", "processes", "native_os_metrics")
+                    )
                 ):
                     try:
                         from service_health import envelope
@@ -281,31 +336,51 @@ class Agent:
                             platform.node(),
                             self.agent_configuration.get("processes", []),
                             self.agent_configuration.get("native_os_metrics", False),
+                            self.methods,
                         )
+                        self.service_failures = failures
                         self.request("/otlp/v1/metrics", telemetry)
+                        self.next_service_observation = (
+                            time.monotonic()
+                            + self.agent_configuration.get(
+                                "service_interval_seconds", 30
+                            )
+                        )
                         if failures and not error:
                             error = "SERVICE_QUERY_UNAVAILABLE"
                     except Exception:
                         if not error:
                             error = "SERVICE_TELEMETRY_UNAVAILABLE"
                 try:
+                    from service_health import method_observations
+
+                    observations = method_observations(
+                        self.methods, running, self.home, self.service_failures
+                    )
                     self.request(
                         "/heartbeat",
                         {
                             "version": VERSION,
                             "runtime_version": RUNTIME_VERSION,
                             "applied_revision": self.applied,
+                            "configuration_sha256": self.checksum,
                             "health": (
                                 "ERROR"
                                 if error
                                 else "RUNNING" if running else "STOPPED"
                             ),
                             "error_code": error,
+                            "method_observations": observations,
                         },
                     )
                 except Exception:
                     pass  # next heartbeat retries; server liveness expires
-                self.stop.wait(self.poll_seconds)
+                self.stop.wait(
+                    min(
+                        self.poll_seconds,
+                        self.agent_configuration.get("service_interval_seconds", 30),
+                    )
+                )
         finally:
             self.stop_runtime()
 
@@ -315,15 +390,32 @@ def main():
     parser.add_argument("--home", required=True)
     parser.add_argument("--backend", required=True)
     parser.add_argument("--runtime", required=True)
-    parser.add_argument("--enrollment-file", required=True)
+    parser.add_argument("--enrollment-file")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--reenroll-only", action="store_true")
+    mode.add_argument("--rotate-credentials-only", action="store_true")
     parser.add_argument("--poll-seconds", type=int, default=30)
     args = parser.parse_args()
     stop = threading.Event()
     for s in (signal.SIGTERM, signal.SIGINT):
         signal.signal(s, lambda *_: stop.set())
-    Agent(args.home, args.backend, args.runtime, stop, args.poll_seconds).run(
-        args.enrollment_file
-    )
+    agent = Agent(args.home, args.backend, args.runtime, stop, args.poll_seconds)
+    if args.rotate_credentials_only:
+        result = agent.request("/credentials/rotate", {})
+        identity = json.loads(agent.credentials.read_text())
+        agent.write_private(
+            agent.home / ("identity.before-rotation." + str(time.time_ns()) + ".json"),
+            json.dumps(identity),
+        )
+        identity.update({key: result[key] for key in ("access_token", "expires_at")})
+        agent.write_private(agent.credentials, json.dumps(identity))
+        return  # Restart the managed service to load the rotated process environment.
+    if not args.enrollment_file:
+        parser.error("--enrollment-file is required for enrollment/run")
+    if args.reenroll_only:
+        agent.enroll(args.enrollment_file, force=True)
+        return
+    agent.run(args.enrollment_file)
 
 
 if __name__ == "__main__":

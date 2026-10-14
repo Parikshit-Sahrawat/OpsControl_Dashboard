@@ -141,6 +141,7 @@ export default function Alerts({
                     </td>
                     <td>
                       {row.message}
+                      <small>{row.rule_name || "Unmapped rule"}</small>
                       <small>{row.id}</small>
                     </td>
                     <td>{row.severity}</td>

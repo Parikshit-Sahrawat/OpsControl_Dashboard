@@ -1,6 +1,6 @@
 """Strict source schemas and version-pinned OTel configuration generation."""
 
-import ipaddress, os, re, subprocess, tempfile
+import hashlib, ipaddress, os, re, subprocess, tempfile
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -25,12 +25,57 @@ class FileLog(Strict):
     start_at: Literal["beginning", "end"] = "end"
 
 
+class HostMetrics(Strict):
+    interval_seconds: int = Field(default=30, ge=5, le=3600)
+    scrapers: list[
+        Literal[
+            "cpu",
+            "memory",
+            "disk",
+            "filesystem",
+            "network",
+            "load",
+            "paging",
+            "process",
+            "processes",
+        ]
+    ] = Field(
+        default_factory=lambda: ["cpu", "memory", "disk", "filesystem", "network"],
+        min_length=1,
+        max_length=9,
+    )
+
+
+class Services(Strict):
+    services: list[str] = Field(default_factory=list, max_length=50)
+    processes: list[str] = Field(default_factory=list, max_length=50)
+    interval_seconds: int = Field(default=30, ge=5, le=3600)
+
+
 class MetricScrape(Strict):
     targets: list[str] = Field(min_length=1, max_length=50)
     interval_seconds: int = Field(default=30, ge=5, le=3600)
+    timeout_seconds: int = Field(default=10, ge=1, le=300)
     path: str = "/metrics"
     tls: bool = False
+    ca_file: str | None = None
+    server_name: str | None = None
+    metric_include: list[str] = Field(default_factory=list, max_length=100)
+    metric_exclude: list[str] = Field(default_factory=list, max_length=100)
+    labels: dict[str, str] = Field(default_factory=dict, max_length=30)
     credential_ref: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def compatible_timeout(cls, value):
+        # Older saved methods did not contain timeout; preserve short intervals.
+        if isinstance(value, dict) and "timeout_seconds" not in value:
+            try:
+                interval = int(value.get("interval_seconds", 30))
+            except (TypeError, ValueError):
+                return value
+            value = {**value, "timeout_seconds": min(10, interval)}
+        return value
 
 
 class OTLPReceiver(Strict):
@@ -57,10 +102,25 @@ class SyslogReceiver(Strict):
     client_ca: str | None = None
 
 
+METHOD_SCHEMAS = {
+    "HOST_METRICS": HostMetrics,
+    "SERVICES": Services,
+    "FILE_LOG": FileLog,
+    "METRIC_SCRAPE": MetricScrape,
+    "OTLP_RECEIVER": OTLPReceiver,
+    "SYSLOG_RECEIVER": SyslogReceiver,
+}
+
+
 class MethodInput(Strict):
     name: str = Field(min_length=1, max_length=160)
     method_type: Literal[
-        "FILE_LOG", "METRIC_SCRAPE", "OTLP_RECEIVER", "SYSLOG_RECEIVER"
+        "HOST_METRICS",
+        "SERVICES",
+        "FILE_LOG",
+        "METRIC_SCRAPE",
+        "OTLP_RECEIVER",
+        "SYSLOG_RECEIVER",
     ]
     configuration: dict
     enabled: bool = True
@@ -69,12 +129,7 @@ class MethodInput(Strict):
     @model_validator(mode="after")
     def safe(self):
         require_safe_config(self.configuration)
-        schema = {
-            "FILE_LOG": FileLog,
-            "METRIC_SCRAPE": MetricScrape,
-            "OTLP_RECEIVER": OTLPReceiver,
-            "SYSLOG_RECEIVER": SyslogReceiver,
-        }[self.method_type]
+        schema = METHOD_SCHEMAS[self.method_type]
         self.configuration = schema.model_validate(self.configuration).model_dump()
         return self
 
@@ -124,11 +179,36 @@ def safe_path(value, os_type):
 def validate_method(method, os_type):
     if os_type not in ("Linux", "Windows"):
         raise ValueError("Data Source OS is unsupported for host agents")
-    c = method.configuration
-    if method.method_type == "FILE_LOG":
+    require_safe_config(method.configuration)
+    c = (
+        METHOD_SCHEMAS[method.method_type]
+        .model_validate(method.configuration)
+        .model_dump()
+    )
+    method.configuration = c
+    if method.method_type == "HOST_METRICS":
+        if len(set(c["scrapers"])) != len(c["scrapers"]):
+            raise ValueError("Duplicate host metric scrapers")
+        if os_type == "Windows" and "load" in c["scrapers"]:
+            raise ValueError("Load averages are not supported on Windows")
+    elif method.method_type == "SERVICES":
+        if not c["services"] and not c["processes"]:
+            raise ValueError("Configure at least one service or process")
+        for value in c["services"] + c["processes"]:
+            if not re.fullmatch(r"[A-Za-z0-9_.@ -]{1,160}", value):
+                raise ValueError(
+                    "Service/process names must be literal identities, not commands"
+                )
+        if len(set(c["services"])) != len(c["services"]) or len(
+            set(c["processes"])
+        ) != len(c["processes"]):
+            raise ValueError("Duplicate service/process identities")
+    elif method.method_type == "FILE_LOG":
         if c["source"] == "FILE":
             if not c["paths"]:
                 raise ValueError("At least one log path is required")
+            if len(set(c["paths"])) != len(c["paths"]):
+                raise ValueError("Duplicate log paths")
             for path in c["paths"] + c["exclusions"]:
                 safe_path(path, os_type)
             if c["multiline_pattern"]:
@@ -140,7 +220,11 @@ def validate_method(method, os_type):
         if not re.fullmatch(r"[\w /.-]{1,160}", c["channel"]):
             raise ValueError("Invalid event log channel")
     elif method.method_type == "METRIC_SCRAPE":
-        if not c["path"].startswith("/") or "?" in c["path"]:
+        if c["timeout_seconds"] > c["interval_seconds"]:
+            raise ValueError("Scrape timeout cannot exceed interval")
+        if not c["path"].startswith("/") or any(
+            ch in c["path"] for ch in ("?", "#", "\n", "\r")
+        ):
             raise ValueError("Invalid scrape path")
         for target in c["targets"]:
             if not re.fullmatch(
@@ -149,6 +233,23 @@ def validate_method(method, os_type):
                 raise ValueError("Scrape targets require host:port")
             if not 1 <= int(target.rsplit(":", 1)[1]) <= 65535:
                 raise ValueError("Invalid scrape port")
+        if c["ca_file"]:
+            safe_path(c["ca_file"], os_type)
+        if c["server_name"] and not re.fullmatch(
+            r"[A-Za-z0-9.-]{1,253}", c["server_name"]
+        ):
+            raise ValueError("Invalid TLS server name")
+        for key, value in c["labels"].items():
+            if (
+                not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key)
+                or key.startswith("__")
+                or len(value) > 500
+            ):
+                raise ValueError("Invalid scrape label")
+        for pattern in c["metric_include"] + c["metric_exclude"]:
+            if len(pattern) > 300 or "(?" in pattern or re.search(r"\\[1-9]", pattern):
+                raise ValueError("Use bounded RE2-compatible metric patterns")
+            re.compile(pattern)
         if c["credential_ref"]:
             env_reference(c["credential_ref"])
         if c["credential_ref"] and not c["tls"]:
@@ -221,29 +322,84 @@ def generate(collector, source, methods, ingestion_url):
     os_type = host_os(source)
     receivers = {}
     pipeline_receivers = {"logs": [], "metrics": [], "traces": []}
-    extensions = {"health_check": {"endpoint": "127.0.0.1:13133"}}
+    extensions = {
+        "health_check": {"endpoint": "127.0.0.1:13133"},
+        "file_storage/opscontrol": {
+            "directory": "${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints",
+            "create_directory": True,
+        },
+    }
     ports = set()
+    method_metric_pipelines = {}
+    method_processors = {}
+    methods = list(methods)
     for method in methods:
         if not method.enabled or getattr(method, "deleted_at", None):
             continue
         validate_method(method, os_type)
         c = method.configuration
         suffix = str(method.id).replace("-", "")
-        if method.method_type == "FILE_LOG":
+        if method.method_type == "HOST_METRICS":
+            receiver = "hostmetrics/" + suffix
+            scrapers = {name: {} for name in c["scrapers"]}
+            if "cpu" in scrapers:
+                scrapers["cpu"] = {
+                    "metrics": {"system.cpu.utilization": {"enabled": True}}
+                }
+            cfg = {
+                "collection_interval": str(c["interval_seconds"]) + "s",
+                "scrapers": scrapers,
+            }
+            signals = ["metrics"]
+        elif method.method_type == "SERVICES":
+            # The Supervisor emits authenticated service/process OTLP metrics.
+            # This bounded loopback receiver also keeps Services-only runtimes valid.
+            receiver = "otlp/services_" + suffix
+            cfg = {"protocols": {"http": {"endpoint": "127.0.0.1:0"}}}
+            signals = ["metrics"]
+        elif method.method_type == "FILE_LOG":
             if c["source"] == "FILE":
                 receiver = "filelog/" + suffix
                 cfg = {
                     "include": c["paths"],
-                    "include_file_path":True,
-                    "include_file_name":True,
+                    "include_file_path": True,
+                    "include_file_name": True,
                     "exclude": c["exclusions"]
                     + ["${env:OPSCONTROL_AGENT_STATE_DIR}/**"],
                     "start_at": c["start_at"],
+                    "storage": "file_storage/opscontrol",
                 }
                 if c["format"] == "JSON":
                     cfg["operators"] = [{"type": "json_parser"}]
                 if c["multiline_pattern"]:
                     cfg["multiline"] = {"line_start_pattern": c["multiline_pattern"]}
+                extensions["file_storage/opscontrol"] = {
+                    "directory": "${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints",
+                    "create_directory": True,
+                }
+                # Stable path identities preserve offsets if paths are reordered/added.
+                for path in c["paths"]:
+                    path_id = hashlib.sha256(path.encode()).hexdigest()[:16]
+                    path_receiver = receiver + "_" + path_id
+                    receivers[path_receiver] = {
+                        **cfg,
+                        "include": [path],
+                        "operators": [
+                            *cfg.get("operators", []),
+                            {
+                                "type": "add",
+                                "field": 'attributes["opscontrol.method.id"]',
+                                "value": str(method.id),
+                            },
+                            {
+                                "type": "add",
+                                "field": 'attributes["opscontrol.log.source.id"]',
+                                "value": str(method.id) + ":" + path_id,
+                            },
+                        ],
+                    }
+                    pipeline_receivers["logs"].append(path_receiver)
+                continue
             elif c["source"] == "JOURNALD":
                 receiver = "journald/" + suffix
                 cfg = {}
@@ -254,12 +410,47 @@ def generate(collector, source, methods, ingestion_url):
         elif method.method_type == "METRIC_SCRAPE":
             receiver = "prometheus/" + suffix
             scrape = {
-                "job_name": method.name,
+                "job_name": "opscontrol_" + suffix,
+                "scrape_timeout": str(c["timeout_seconds"]) + "s",
                 "scrape_interval": str(c["interval_seconds"]) + "s",
                 "metrics_path": c["path"],
                 "scheme": "https" if c["tls"] else "http",
-                "static_configs": [{"targets": c["targets"]}],
+                "static_configs": [
+                    {
+                        "targets": c["targets"],
+                        "labels": {
+                            **c["labels"],
+                            "opscontrol_method_id": str(method.id),
+                        },
+                    }
+                ],
             }
+            if c["tls"]:
+                scrape["tls_config"] = {"insecure_skip_verify": False}
+                if c["ca_file"]:
+                    scrape["tls_config"]["ca_file"] = c["ca_file"]
+                if c["server_name"]:
+                    scrape["tls_config"]["server_name"] = c["server_name"]
+            filters = []
+            if c["metric_include"]:
+                filters.append(
+                    {
+                        "source_labels": ["__name__"],
+                        "regex": "(?:up|scrape_duration_seconds|scrape_samples_scraped)|"
+                        + "|".join("(?:" + p + ")" for p in c["metric_include"]),
+                        "action": "keep",
+                    }
+                )
+            if c["metric_exclude"]:
+                filters.append(
+                    {
+                        "source_labels": ["__name__"],
+                        "regex": "|".join("(?:" + p + ")" for p in c["metric_exclude"]),
+                        "action": "drop",
+                    }
+                )
+            if filters:
+                scrape["metric_relabel_configs"] = filters
             if c["credential_ref"]:
                 scrape["authorization"] = {
                     "type": "Bearer",
@@ -286,7 +477,17 @@ def generate(collector, source, methods, ingestion_url):
                 }
                 if c["client_ca"]:
                     listen["tls"]["client_ca_file"] = c["client_ca"]
-            cfg = {c["protocol"].lower(): listen, "protocol": c["format"].lower()}
+            cfg = {
+                c["protocol"].lower(): listen,
+                "protocol": c["format"].lower(),
+                "operators": [
+                    {
+                        "type": "add",
+                        "field": 'attributes["opscontrol.method.id"]',
+                        "value": str(method.id),
+                    }
+                ],
+            }
             signals = ["logs"]
         else:
             pair = (c["bind"], c["port"])
@@ -311,9 +512,31 @@ def generate(collector, source, methods, ingestion_url):
             cfg = {"protocols": {c["protocol"].lower(): protocol}}
             signals = [s.lower() for s in c["signals"]]
         receivers[receiver] = cfg
+        if method.method_type == "HOST_METRICS":
+            processor = "resource/method_" + suffix
+            method_processors[processor] = {
+                "attributes": [
+                    {
+                        "key": "opscontrol.method.id",
+                        "value": str(method.id),
+                        "action": "upsert",
+                    }
+                ]
+            }
+            method_metric_pipelines["metrics/" + suffix] = {
+                "receivers": [receiver],
+                "processors": ["memory_limiter", processor, "batch"],
+                "exporters": ["otlphttp/opscontrol"],
+            }
+            continue
         for signal in signals:
             pipeline_receivers[signal].append(receiver)
-    if (collector.configuration or {}).get("os_metrics"):
+    if (collector.configuration or {}).get("os_metrics") and not any(
+        m.enabled
+        and m.method_type == "HOST_METRICS"
+        and not getattr(m, "deleted_at", None)
+        for m in methods
+    ):
         if os_type == "Unsupported":
             raise ValueError("Native host metrics require a supported host OS")
         receivers["hostmetrics/native"] = {
@@ -323,6 +546,7 @@ def generate(collector, source, methods, ingestion_url):
                 "memory": {},
                 "disk": {},
                 "filesystem": {},
+                "network": {},
                 "process": {},
             },
         }
@@ -336,11 +560,13 @@ def generate(collector, source, methods, ingestion_url):
         for s, r in pipeline_receivers.items()
         if r
     }
+    pipelines.update(method_metric_pipelines)
     if not pipelines:
         raise ValueError("Enable at least one collection method or native OS Metrics")
     config = {
         "receivers": receivers,
         "processors": {
+            **method_processors,
             "memory_limiter": {
                 "check_interval": "1s",
                 "limit_mib": 256,
@@ -354,7 +580,11 @@ def generate(collector, source, methods, ingestion_url):
                 "headers": {"Authorization": "Bearer ${env:OPSCONTROL_AGENT_TOKEN}"},
                 "tls": {"insecure": False},
                 "retry_on_failure": {"enabled": True},
-                "sending_queue": {"enabled": True, "queue_size": 256},
+                "sending_queue": {
+                    "enabled": True,
+                    "queue_size": 256,
+                    "storage": "file_storage/opscontrol",
+                },
             }
         },
         "extensions": extensions,
@@ -413,7 +643,11 @@ def validate_binary(text, binary=None):
             path.chmod(0o600)
             env = {**os.environ}
             for name in re.findall(r"\$\{env:([A-Z][A-Z0-9_]*)\}", text):
-                env[name] = "validation-only-not-a-credential"
+                env[name] = (
+                    temp
+                    if name == "OPSCONTROL_AGENT_STATE_DIR"
+                    else "validation-only-not-a-credential"
+                )
             result = subprocess.run(
                 [binary, "validate", "--config", str(path)],
                 env=env,

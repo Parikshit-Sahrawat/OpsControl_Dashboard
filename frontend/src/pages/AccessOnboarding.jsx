@@ -24,11 +24,10 @@ export default function AccessOnboarding({
     [search, setSearch] = useState(""),
     [people, setPeople] = useState([]),
     [role, setRole] = useState(""),
-    [organization, setOrganization] = useState(""),
     [effective, setEffective] = useState(null),
-    [preview, setPreview] = useState(null),
     [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [peopleLoading, setPeopleLoading] = useState(false);
   const ref = useRef(null);
   useDialogFocus(ref, true, onClose);
   const [options, setOptions] = useState(departments);
@@ -54,13 +53,22 @@ export default function AccessOnboarding({
   };
   useEffect(() => {
     let live = true;
-    if (step === 3)
+    if (step === 3) {
+      setPeopleLoading(true);
+      setError("");
       control(
         "/api/v1/access/employees?limit=50&search=" +
           encodeURIComponent(search),
       )
         .then((data) => live && setPeople(data.items))
-        .catch((e) => live && setError(e.message));
+        .catch((e) => {
+          if (live) {
+            setPeople([]);
+            setError(e.message);
+          }
+        })
+        .finally(() => live && setPeopleLoading(false));
+    }
     return () => {
       live = false;
     };
@@ -68,7 +76,6 @@ export default function AccessOnboarding({
   useEffect(() => {
     let live = true;
     setEffective(null);
-    setPreview(null);
     if (employeeId)
       control(
         "/api/v1/access/employees/" + employeeId + "/effective-permissions",
@@ -79,12 +86,6 @@ export default function AccessOnboarding({
       live = false;
     };
   }, [employeeId]);
-  const payload = {
-    user_id: employeeId,
-    organization_id: organization,
-    role_id: role,
-    effect: "ALLOW",
-  };
   return (
     <div className="modal-backdrop">
       <section
@@ -262,25 +263,31 @@ export default function AccessOnboarding({
                 onChange={(e) => setEmployeeId(e.target.value)}
               >
                 <option value="">Select employee</option>
-                {people.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.full_name} · {p.username}
-                  </option>
-                ))}
+                {people
+                  .filter((p) => p.active)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.full_name} · {p.username}
+                    </option>
+                  ))}
               </select>
             </label>
+            {peopleLoading && <p role="status">Searching employees…</p>}
+            {!peopleLoading && !people.length && <p>No matching employees.</p>}
             <label className="form-field">
               <span>Role / configured permissions</span>
               <select
+                aria-label="Role / configured permissions"
                 value={role}
                 onChange={(e) => {
                   setRole(e.target.value);
-                  setPreview(null);
                 }}
               >
                 <option value="">Select existing role</option>
                 {roles
-                  .filter((r) => r.active)
+                  .filter(
+                    (r) => r.active && r.code !== "platform-administrator",
+                  )
                   .map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.name}
@@ -301,6 +308,12 @@ export default function AccessOnboarding({
               }
               onClick={() =>
                 action(async () => {
+                  if (
+                    !window.confirm(
+                      "Assign the displayed role to this employee? Customer access remains limited by existing grants.",
+                    )
+                  )
+                    return;
                   await control(
                     "/api/v1/access/employees/" + employeeId + "/roles",
                     "POST",
@@ -326,7 +339,42 @@ export default function AccessOnboarding({
             </p>
             <h3>Effective permissions</h3>
             {effective ? (
-              <pre>{JSON.stringify(effective, null, 2)}</pre>
+              <div className="access-effective">
+                <p>
+                  {effective.disabled
+                    ? "Disabled account — no usable access."
+                    : effective.break_glass
+                      ? "Protected platform administration."
+                      : "Default deny; only displayed permissions and existing customer grants apply."}
+                </p>
+                <div className="chip-row">
+                  {effective.permissions?.map((key) => (
+                    <code className="mini-chip" key={key}>
+                      {key}
+                    </code>
+                  ))}
+                </div>
+                <h4>Inherited and direct assignments</h4>
+                {(effective.inherited_and_direct || []).map((source, i) => (
+                  <p key={i}>
+                    {source.source} · {source.role} ·{" "}
+                    {source.scope === "provider"
+                      ? "Service provider"
+                      : organizations.find(
+                          (org) => org.id === source.customer_id,
+                        )?.name || source.customer_id}
+                  </p>
+                ))}
+                <h4>Existing organization scopes</h4>
+                {Object.entries(effective.customer_permissions || {}).map(
+                  ([id, keys]) => (
+                    <p key={id}>
+                      {organizations.find((org) => org.id === id)?.name || id}:{" "}
+                      {keys.join(", ")}
+                    </p>
+                  ),
+                )}
+              </div>
             ) : (
               <p>
                 Select an employee to review direct and inherited permissions.

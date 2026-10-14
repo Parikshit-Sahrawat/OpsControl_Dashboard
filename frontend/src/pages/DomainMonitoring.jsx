@@ -5,7 +5,11 @@ import { ConditionTable, Verification } from "./UnifiedResourceManagement";
 import LegacyVMHealth from "./VMHealth";
 import LegacyAPIs from "./APIs";
 import ETLJobs from "./ETLJobs";
-const names = { VM: "VM Health", API: "API Monitoring", ETL: "ETL Monitoring" };
+const names = {
+  VM: "Compute Health",
+  API: "API Endpoint Monitoring",
+  ETL: "Data Pipeline Monitoring",
+};
 export default function DomainMonitoring({
   domain,
   organizationIds,

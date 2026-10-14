@@ -15,6 +15,9 @@ PERMISSIONS = {
     "etl.view": "View ETL executions and evidence",
     "etl.configure": "Configure customer ETL definitions",
     "etl.investigate": "Manage ETL investigations (not execute/restart jobs)",
+    "incidents.view": "View customer native incidents and evidence",
+    "incidents.acknowledge": "Acknowledge customer native incidents",
+    "incidents.manage": "Manage customer native incident lifecycle and recovery",
     "alerts.view": "View monitoring alert evidence",
     "alerts.acknowledge": "Acknowledge monitoring alerts",
     "templates.view": "View policies",
@@ -34,7 +37,9 @@ PERMISSIONS = {
 READ = frozenset(
     k
     for k in PERMISSIONS
-    if k.endswith(".view") and not k.startswith("access.") and k != "audit.view"
+    if k.endswith(".view")
+    and not k.startswith(("access.", "incidents."))
+    and k != "audit.view"
 )
 LEGACY_ADMIN = READ | {
     "customers.update",

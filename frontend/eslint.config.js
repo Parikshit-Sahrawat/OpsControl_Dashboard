@@ -1,0 +1,48 @@
+export default [
+  {
+    ignores: ["dist/**", "node_modules/**"],
+  },
+  {
+    files: ["src/**/*.{js,jsx}"],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: "module",
+      parserOptions: { ecmaFeatures: { jsx: true } },
+      globals: Object.fromEntries(
+        [
+          "window",
+          "document",
+          "navigator",
+          "localStorage",
+          "sessionStorage",
+          "setTimeout",
+          "clearTimeout",
+          "setInterval",
+          "clearInterval",
+          "fetch",
+          "URL",
+          "URLSearchParams",
+          "AbortController",
+          "Blob",
+          "FormData",
+          "FileReader",
+          "File",
+          "confirm",
+          "alert",
+          "console",
+          "performance",
+          "structuredClone",
+          "Event",
+        ].map((name) => [name, "readonly"]),
+      ),
+    },
+    rules: {
+      "no-undef": "error",
+      "no-unreachable": "error",
+      "no-dupe-args": "error",
+      "no-dupe-keys": "error",
+      "no-unsafe-finally": "error",
+      "no-constant-binary-expression": "error",
+    },
+  },
+];

@@ -1,6 +1,6 @@
 # OpsControl Agent
 
-Collector is the logical Resource Management entity. OpsControl Agent is the installed host service; it supervises the pinned upstream OpenTelemetry Collector Contrib 0.123.0 runtime. It never accepts remote shell commands. One Collector binds one agent/host; each Collector can contain multiple independently identified File Log, Metric Scrape, OTLP Receiver and secured Syslog Receiver methods. Native OS Metrics uses hostmetrics. Journald and Windows Event Log are File Log source options.
+Collector is the logical Resource Management entity. OpsControl Agent is the installed host service; it supervises the pinned upstream OpenTelemetry Collector Contrib 0.123.0 runtime. It never accepts remote shell commands. One Collector binds one agent/host; each Collector can contain multiple independently identified Host Metrics, Services, Syslog, File Logs and OpsControl Scrape methods. Advanced OTLP Receiver configuration selects transport signals. Native OS Metrics uses hostmetrics. Journald and Windows Event Log are File Log source options.
 
 ## Build and download an approved package
 
@@ -58,3 +58,41 @@ File Log methods need actual target files/permissions. Prometheus targets must e
 
 
 Agent 1.1.0 also reports configured OS service/process observations and host uptime. Configuration snapshots are revision-bound; query or permission failures remain unavailable/error evidence. Linux uses read-only systemd queries and `/proc`; Windows uses fixed SCM/tasklist queries. Collection configuration does not grant OS filesystem/service permissions. See [ARCH-001 operations](../docs/ARCH_001_OPERATIONS.md) for VM-associated onboarding and actual acceptance boundaries.
+
+## Agent 1.5 lifecycle and native packaging
+
+The Supervisor renews its authenticated credential daily. The backend stores token hashes only. `POST /api/v1/agent/credentials/rotate` supports explicit rotation with a five-minute prior-token grace period; the operator must persist the returned credential privately and restart the Agent before that grace expires. Administrator revocation disables both credentials immediately. Re-enrollment requires a new one-use enrollment token and preserves the logical Collector/Agent identity.
+
+The backend records desired, downloaded, applied, verified and last-working revisions separately. A running process establishes application only. Verification additionally requires the approved checksum and real receipts for every selected telemetry signal after application. Quiet log sources therefore remain awaiting evidence; their silence is not proof of a failed tailer. Compatible rollouts retain the private `otel-checkpoints` directory. Invalid candidates do not stop the running runtime; failed startup restores the previous YAML. Offline restart validates the persisted checksum and actual runtime configuration before starting.
+
+Linux packages include both `install-linux.sh` and `uninstall-linux.sh`. Run installation using the approved HTTPS origin and a private enrollment file. Existing identity and file checkpoints survive reinstall/upgrade. Uninstallation removes the systemd service but retains identity, checkpoints and binaries for recovery; revoke the Agent before disposing of the host.
+
+Windows executable installer source is in `packaging/opscontrol-agent.iss`. On a native Windows build host with Inno Setup 6 installed:
+
+```powershell
+./agent/packaging/build-windows.ps1 -Runtime C:\approved\otelcol-contrib.exe -RuntimeSha256 <independently-verified-binary-sha256>
+```
+
+This builds a PyInstaller service executable bundling Python dependencies, then an Inno Setup installer EXE containing the verified upstream Collector. The installer configures the LocalService account and requests an approved HTTPS origin and private enrollment file. Upgrades stop the service before replacing binaries and retain state. The uninstaller removes the service and retains private state. Code signing is optional for local development and remains a separate distribution/release requirement.
+
+`.github/workflows/agent-packaging.yml` accepts independently verified OS-specific release archive URLs/checksums, builds Linux ZIP and Windows EXE artifacts, checks shell/PowerShell syntax and validates the compiled Windows service executable. Native Windows build/installation and Linux systemd installation must be verified on their respective OS hosts; Linux container unit tests alone do not prove those service lifecycle operations.
+
+## Explicit re-enrollment and credential rotation
+
+Stop the managed service before changing its local identity. After server-side
+revocation, generate a fresh one-use token for the **same Collector**. Run the
+supervisor once as the service account with its existing home, backend and runtime
+arguments plus `--enrollment-file /private/new-enrollment --reenroll-only`, then
+approve a configuration and restart the service. The client preserves the Agent
+UUID, checkpoints and a private credential backup; a different resource identity
+requires a separate home. It never silently rebinds an existing home to a new customer.
+
+For operator-initiated rotation, stop the service and run the same supervisor with
+`--rotate-credentials-only`. It stores the replacement credential privately; restart
+the service so Contrib inherits the new token. Renewal extends the existing
+credential automatically. An authenticated 401/403 management denial stops the
+telemetry runtime; connectivity errors retain the known working configuration.
+
+The compiled exporter uses a bounded persistent file-storage queue. Network
+retries remain at-least-once; the backend deduplicates identical batches. This
+is not a claim of losslessness through every host/disk failure.

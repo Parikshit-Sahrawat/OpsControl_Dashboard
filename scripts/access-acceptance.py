@@ -262,7 +262,7 @@ with create_engine(settings.database_url).begin() as c:
             {
                 "status": "PASS",
                 "from": "0024_notification_leases",
-                "to": "0026_managed_telemetry_uat",
+                "to": "0027_unified_monitoring",
                 "preserved": [
                     "User UUIDs/password hashes/admin flags",
                     "Existing human sessions",
@@ -286,7 +286,7 @@ finally:
             p.wait()
     if started:
         subprocess.run(
-            ["docker", "rm", "-f", name],
+            ["docker", "rm", "-f", "-v", name],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )

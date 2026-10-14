@@ -129,6 +129,10 @@ class RolePermission(Base):
         ForeignKey("permissions.key", ondelete="RESTRICT"), primary_key=True
     )
 
+    active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default=text("true")
+    )
+
 
 class DepartmentRoleAssignment(Base):
     __tablename__ = "department_role_assignments"

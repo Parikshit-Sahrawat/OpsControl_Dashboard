@@ -91,6 +91,7 @@ def protected_employee_ids(db, ids):
         .where(
             UserRoleAssignment.user_id.in_(ids),
             UserRoleAssignment.effect == "ALLOW",
+            RolePermission.active.is_(True),
             RolePermission.permission_key.in_(keys),
         )
     )
@@ -107,6 +108,7 @@ def protected_employee_ids(db, ids):
         .where(
             DepartmentMembership.user_id.in_(ids),
             DepartmentMembership.active.is_(True),
+            RolePermission.active.is_(True),
             RolePermission.permission_key.in_(keys),
         )
     )
@@ -139,6 +141,7 @@ def delegate(db, role):
         db.scalars(
             select(RolePermission.permission_key).where(
                 RolePermission.role_id == role.id,
+                RolePermission.active.is_(True),
                 RolePermission.permission_key.in_(PERMISSIONS),
             )
         )
@@ -757,7 +760,8 @@ def role_list(db=Depends(session)):
     perms = list(
         db.execute(
             select(RolePermission.role_id, RolePermission.permission_key).where(
-                RolePermission.permission_key.in_(PERMISSIONS)
+                RolePermission.active.is_(True),
+                RolePermission.permission_key.in_(PERMISSIONS),
             )
         ).all()
     )
@@ -819,9 +823,20 @@ def update_role(role_id: uuid.UUID, payload: RoleIn, db=Depends(session)):
     r.name = payload.name
     r.description = payload.description
     r.active = payload.active
-    db.execute(delete(RolePermission).where(RolePermission.role_id == r.id))
+    # Retain revoked/retired assignments as inactive historical links.
+    links = {
+        link.permission_key: link
+        for link in db.scalars(
+            select(RolePermission).where(RolePermission.role_id == r.id)
+        )
+    }
+    for link in links.values():
+        link.active = False
     for key in payload.permissions:
-        db.add(RolePermission(role_id=r.id, permission_key=key))
+        if key in links:
+            links[key].active = True
+        else:
+            db.add(RolePermission(role_id=r.id, permission_key=key, active=True))
     commit(db, "ROLE_UPDATE", "role", r.id)
     return {"id": str(r.id), "name": r.name}
 
@@ -1102,6 +1117,7 @@ def preview_grant(payload: GrantIn, db=Depends(session)):
                 db.scalars(
                     select(RolePermission.permission_key).where(
                         RolePermission.role_id == g.role_id,
+                        RolePermission.active.is_(True),
                         RolePermission.permission_key.in_(PERMISSIONS),
                     )
                 )

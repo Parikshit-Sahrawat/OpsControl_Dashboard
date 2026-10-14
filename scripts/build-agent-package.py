@@ -34,15 +34,27 @@ name = "otelcol-contrib.exe" if args.os == "windows" else "otelcol-contrib"
 args.output.parent.mkdir(parents=True, exist_ok=True)
 with zipfile.ZipFile(args.output, "x", compression=zipfile.ZIP_DEFLATED) as z:
     for filename in ("opscontrol_agent.py", "service_health.py", "README.md") + (
-        ("install-linux.sh",)
+        ("install-linux.sh", "uninstall-linux.sh")
         if args.os == "linux"
-        else ("install-windows.ps1", "windows_service.py", "requirements-windows.txt")
+        else (
+            "install-windows.ps1",
+            "windows_service.py",
+            "requirements-windows.txt",
+            "uninstall-windows.ps1",
+        )
     ):
         z.write(root / "agent" / filename, filename)
     z.write(args.runtime, name)
     z.writestr("runtime.sha256", digest + "  " + name + "\n")
     z.writestr(
         "manifest.json",
-        json.dumps({"runtime_version": "0.123.0", "os": args.os, "sha256": digest}),
+        json.dumps(
+            {
+                "runtime_version": "0.123.0",
+                "agent_version": "1.5.0",
+                "os": args.os,
+                "sha256": digest,
+            }
+        ),
     )
 print("Agent package built:", args.output)

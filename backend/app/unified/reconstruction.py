@@ -39,6 +39,62 @@ def enqueue(db, resource, payload, source_kind, key, observed_at, log_id=None):
     return event, True
 
 
+def logical_payload(payload, configuration, source_kind, source_id):
+    matching = configuration.get("duplicate_matching", {})
+    attributes = matching.get("attributes", ["execution_id", "jobchain"])
+    original = payload["execution_id"]
+    result = dict(payload)
+    result["source"] = {"kind": source_kind, "id": str(source_id)}
+    values = {
+        "execution_id": original,
+        "order_id": result.get("native_order_id"),
+        "jobchain": result.get("jobchain"),
+        "source_kind": source_kind,
+        "source_id": str(source_id),
+        "scheduled_at": result.get("scheduled_at"),
+    }
+    if any(values.get(key) is None for key in attributes):
+        raise NormalizationError("LOGICAL_MATCH_ATTRIBUTE_MISSING")
+    if attributes != ["execution_id", "jobchain"] or not matching.get(
+        "cross_source", True
+    ):
+        identity = [values[key] for key in attributes]
+        if not matching.get("cross_source", True):
+            identity += [source_kind, str(source_id)]
+        result["execution_id"] = (
+            "logical:"
+            + hashlib.sha256(
+                json.dumps(identity, sort_keys=True, default=str).encode()
+            ).hexdigest()[:48]
+        )
+    result["native_execution_id"] = original
+    result["logical_match"] = {key: values[key] for key in attributes}
+    return result
+
+
+def terminal_fact(db, resource, facts):
+    """Reconcile all terminal evidence, including provider snapshots without end times."""
+    last = facts[-1]
+    conflict = len({fact.payload["status"] for fact in facts}) > 1
+    if not conflict:
+        return ExecutionStatus(last.payload["status"]), last, False
+    active = db.scalar(
+        select(ParameterVersion).where(
+            ParameterVersion.resource_id == resource.id,
+            ParameterVersion.status == "ACTIVE",
+        )
+    )
+    matching = (active.configuration if active else {}).get("duplicate_matching", {})
+    if matching.get("conflict_resolution") == "PREFER_CONFIGURED_SOURCE":
+        for source in matching.get("source_precedence", []):
+            chosen = next(
+                (fact for fact in reversed(facts) if fact.source_kind == source), None
+            )
+            if chosen:
+                return ExecutionStatus(chosen.payload["status"]), chosen, True
+    return ExecutionStatus.UNKNOWN, last, True
+
+
 def reduce_execution(db, resource, identity):
     events = db.scalars(
         select(NormalizedEvent)
@@ -88,10 +144,9 @@ def reduce_execution(db, resource, identity):
     if ends:
         # Conflicting terminal facts are retained and made explicit. A late
         # START/heartbeat cannot downgrade an already terminal execution.
-        terminal = ends[-1]
-        history.status = ExecutionStatus(terminal.payload["status"])
+        history.status, terminal, conflicting = terminal_fact(db, resource, ends)
         history.ended_at = terminal.observed_at
-        if len({e.payload["status"] for e in ends}) > 1:
+        if conflicting:
             history.monitoring_conditions = {
                 **(history.monitoring_conditions or {}),
                 "CONFLICTING_TERMINAL_EVIDENCE": True,
@@ -101,8 +156,35 @@ def reduce_execution(db, resource, identity):
             if history.status == ExecutionStatus.FAILED
             else None
         )
-    elif history.status not in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
-        history.status = ExecutionStatus.RUNNING if starts else ExecutionStatus.UNKNOWN
+    else:
+        terminal_snapshots = [
+            event
+            for event in events
+            if event.payload.get("terminal_status_observed")
+            and not str(event.payload.get("event_type", "")).startswith("STEP")
+            and event.payload.get("status") in {"SUCCESS", "FAILED"}
+        ]
+        if terminal_snapshots:
+            # A terminal provider state is real even when no end timestamp was returned.
+            # Preserve unknown end/duration instead of inventing a completion time.
+            history.status, terminal, conflicting = terminal_fact(
+                db, resource, terminal_snapshots
+            )
+            if conflicting:
+                history.monitoring_conditions = {
+                    **(history.monitoring_conditions or {}),
+                    "CONFLICTING_TERMINAL_EVIDENCE": True,
+                }
+            history.source_error_message = (
+                terminal.payload.get("error")
+                if history.status == ExecutionStatus.FAILED
+                else None
+            )
+            history.ended_at = None
+        elif history.status not in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
+            history.status = (
+                ExecutionStatus.RUNNING if starts else ExecutionStatus.UNKNOWN
+            )
     if (
         history.started_at
         and history.ended_at
@@ -137,16 +219,36 @@ def reduce_execution(db, resource, identity):
             )
             db.add(step)
         begins = [
-            f.observed_at for f in facts if f.payload["event_type"] == "STEP_START"
+            (
+                datetime.fromisoformat(f.payload["started_at"])
+                if f.payload.get("started_at")
+                else f.observed_at
+            )
+            for f in facts
+            if f.payload["event_type"] == "STEP_START" or f.payload.get("started_at")
         ]
         terminal = [
-            f for f in facts if f.payload["event_type"] in {"STEP_END", "STEP_FAILED"}
+            f
+            for f in facts
+            if f.payload["event_type"] in {"STEP_END", "STEP_FAILED"}
+            or (
+                f.payload.get("terminal_status_observed")
+                and f.payload.get("status") in {"SUCCESS", "FAILED"}
+            )
         ]
         if begins:
             step.started_at = min(begins)
         if terminal:
             last = terminal[-1]
-            step.ended_at = last.observed_at
+            step.ended_at = (
+                datetime.fromisoformat(last.payload["ended_at"])
+                if last.payload.get("ended_at")
+                else (
+                    None
+                    if last.payload.get("terminal_status_observed")
+                    else last.observed_at
+                )
+            )
             step.status = (
                 "FAILED"
                 if last.payload["event_type"] == "STEP_FAILED"
@@ -237,24 +339,20 @@ def ingest_logs(db, resource, version, limit=200):
             event.processing_status = "IGNORED"
             event.processing_error = "OTHER_LOG_SOURCE"
             continue
-        key = (
-            "log:"
-            + hashlib.sha256(
-                (
-                    str(log.log_source_id)
-                    + "|"
-                    + log.observed_at.isoformat()
-                    + "|"
-                    + log.message
-                ).encode()
-            ).hexdigest()
-        )
+        # Transport identity is the preserved raw record UUID, never message/time alone.
+        key = "log:" + str(log.id)
         try:
             payload, instant = normalize(
                 log.message,
                 version.configuration["parser"],
                 log.observed_at,
                 resource.configuration["jobchain"],
+            )
+            source_id = (log.attributes or {}).get("opscontrol.log.source.id") or str(
+                log.log_source_id
+            ) + ":" + str((log.attributes or {}).get("log.file.path", ""))
+            payload = logical_payload(
+                payload, version.configuration, "FILE_LOG", source_id
             )
             event, new = enqueue(
                 db, resource, payload, "FILE_LOG", key, instant, log.id
@@ -315,16 +413,30 @@ def ingest_connector(db, resource, version, limit=100):
     count = 0
     for run in runs:
         for fact in (run.source_metadata or {}).get("execution_records", []):
+            payload = dict(fact["event"])
+            flow = (fact.get("evidence") or {}).get("semantics") == "FLOW_EVENT"
+            if not flow:
+                payload = logical_payload(
+                    payload,
+                    version.configuration,
+                    resource.configuration.get("platform", "IICS"),
+                    fact.get("source_id", str(run.collector_id)),
+                )
+            payload["provider_evidence"] = fact.get("evidence", {})
             event, new = enqueue(
                 db,
                 resource,
-                fact["event"],
+                payload,
                 resource.configuration.get("platform", "IICS"),
                 fact["key"],
                 datetime.fromisoformat(fact["observed_at"]),
             )
             event.parameter_version = version.version
-            identities.add(fact["event"]["execution_id"])
+            if flow:
+                event.processing_status = "PROCESSED"
+                event.processing_error = "FLOW_EVENT_NOT_SCHEDULED_EXECUTION"
+            else:
+                identities.add(payload["execution_id"])
             count += int(new)
     for identity in identities:
         reduce_execution(db, resource, identity)

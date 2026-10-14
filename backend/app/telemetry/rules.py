@@ -225,6 +225,17 @@ def destinations(organization_id: uuid.UUID, db=Depends(get_db)):
 @router.post("/api/v1/notification-delivery", status_code=201)
 def destination_create(payload: DestinationInput, db=Depends(get_db)):
     p = require_permission("templates.manage", payload.organization_id)
+    if payload.channel != "IN_APP" and not p.platform_admin:
+        raise HTTPException(
+            403,
+            "A platform administrator must configure external transports and credential references",
+        )
+    if payload.channel == "IN_APP":
+        from app.telemetry.inbox import validate_targets
+
+        validate_targets(
+            db, payload.configuration, payload.organization_id, p.service_provider_id
+        )
     r = NotificationDestination(**payload.model_dump())
     db.add(r)
     db.flush()
@@ -247,6 +258,20 @@ def destination_edit(id: uuid.UUID, payload: DestinationInput, db=Depends(get_db
     r = db.get(NotificationDestination, id)
     if r is None or r.organization_id != payload.organization_id:
         raise HTTPException(404, "Destination unavailable")
+    if payload.channel == "IN_APP":
+        from app.telemetry.inbox import validate_targets
+
+        validate_targets(
+            db, payload.configuration, payload.organization_id, p.service_provider_id
+        )
+    if (
+        not p.platform_admin
+        and (r.channel != "IN_APP" or payload.channel != "IN_APP")
+        and (r.channel != payload.channel or r.configuration != payload.configuration)
+    ):
+        raise HTTPException(
+            403, "A platform administrator must approve external transport changes"
+        )
     for k, v in payload.model_dump().items():
         setattr(r, k, v)
     log_event(

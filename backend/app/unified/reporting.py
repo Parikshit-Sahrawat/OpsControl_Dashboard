@@ -13,6 +13,7 @@ from app.models import (
     MetricSample,
     CollectorRun,
     AlertState,
+    AlertRule,
 )
 from app.unified.models import (
     MonitoringResource,
@@ -667,8 +668,9 @@ def unified_alerts(
     db=Depends(get_db),
 ):
     q = (
-        select(AlertState, MetricDefinition, MonitoringResource)
+        select(AlertState, MetricDefinition, MonitoringResource, AlertRule)
         .join(MetricDefinition, MetricDefinition.id == AlertState.metric_definition_id)
+        .join(AlertRule, AlertRule.id == AlertState.alert_rule_id)
         .outerjoin(
             MonitoringResource,
             and_(
@@ -701,8 +703,9 @@ def unified_alerts(
             "environment": r.environment if r else None,
             "metric_name": (m.query_config or {}).get("condition_type", m.name),
             "condition_type": (m.query_config or {}).get("condition_type"),
+            "rule_name": rule.name,
         }
-        for a, m, r in db.execute(
+        for a, m, r, rule in db.execute(
             q.order_by(AlertState.last_evaluated_at.desc(), AlertState.id)
             .offset(offset)
             .limit(limit)

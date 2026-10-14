@@ -412,11 +412,14 @@ class OperationalIncident(Base):
     organization: Mapped["Organization"] = relationship()
     __table_args__ = (
         CheckConstraint(
-            "status IN ('OPEN','ACKNOWLEDGED','INVESTIGATING','RESOLVED')",
+            "status IN ('OPEN','ACKNOWLEDGED','INVESTIGATING','RECOVERY_IN_PROGRESS','MONITORING','RESOLVED','CLOSED')",
             name="ck_incident_status",
         ),
         CheckConstraint(
             "condition_status IN ('ACTIVE','RECOVERED')", name="ck_incident_condition"
+        ),
+        UniqueConstraint(
+            "organization_id", "id", name="uq_operational_incident_org_id"
         ),
         Index("ix_incident_org_opened", "organization_id", "opened_at"),
     )
@@ -923,6 +926,7 @@ class AlertState(Base):
     alert_rule: Mapped["AlertRule"] = relationship(back_populates="alert_states")
 
     __table_args__ = (
+        UniqueConstraint("organization_id", "id", name="uq_alert_state_org_id"),
         Index(
             "uq_alert_states_open_rule",
             "alert_rule_id",

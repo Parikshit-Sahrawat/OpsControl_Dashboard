@@ -10,13 +10,24 @@ agent_package=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 python3 --version
 [[ -f "$agent_package/otelcol-contrib" ]] || { echo 'Verified bundled OTel binary missing' >&2; exit 1; }
 (cd "$agent_package" && sha256sum -c runtime.sha256)
+"$agent_package/otelcol-contrib" --version | grep -q '0.123.0' || { echo 'Unsupported runtime version' >&2; exit 1; }
+[[ -f /var/lib/opscontrol-agent/identity.json || -r "$agent_enrollment" ]] || { echo 'Enrollment file required for new installation' >&2; exit 1; }
+command -v systemctl >/dev/null || { echo 'systemd is required' >&2; exit 1; }
+if systemctl is-active --quiet opscontrol-agent; then systemctl stop opscontrol-agent; fi
+if [[ -d /opt/opscontrol-agent ]]; then
+  agent_backup=$(mktemp -d /opt/opscontrol-agent-backup.XXXXXXXX)
+  cp -a /opt/opscontrol-agent/. "$agent_backup/"
+  printf 'Previous binaries retained at %s\n' "$agent_backup"
+fi
 id opscontrol-agent >/dev/null 2>&1 || useradd --system --home-dir /var/lib/opscontrol-agent --shell /usr/sbin/nologin opscontrol-agent
 install -d -m 755 /opt/opscontrol-agent
 install -d -o opscontrol-agent -g opscontrol-agent -m 700 /var/lib/opscontrol-agent
 install -m 755 "$agent_package/otelcol-contrib" /opt/opscontrol-agent/otelcol-contrib
 install -m 644 "$agent_package/opscontrol_agent.py" /opt/opscontrol-agent/opscontrol_agent.py
 install -m 644 "$agent_package/service_health.py" /opt/opscontrol-agent/service_health.py
-install -o opscontrol-agent -g opscontrol-agent -m 600 "$agent_enrollment" /var/lib/opscontrol-agent/enrollment
+if [[ ! -f /var/lib/opscontrol-agent/identity.json ]]; then
+  install -o opscontrol-agent -g opscontrol-agent -m 600 "$agent_enrollment" /var/lib/opscontrol-agent/enrollment
+fi
 cat > /etc/systemd/system/opscontrol-agent.service <<EOF
 [Unit]
 Description=OpsControl Agent (managed OpenTelemetry)
@@ -37,6 +48,7 @@ UMask=0077
 [Install]
 WantedBy=multi-user.target
 EOF
+systemd-analyze verify /etc/systemd/system/opscontrol-agent.service
 systemctl daemon-reload
 systemctl enable --now opscontrol-agent
 systemctl status --no-pager opscontrol-agent

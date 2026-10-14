@@ -3,18 +3,27 @@ import { control, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
+import ImportedDiscoveryInventory from "../components/ImportedDiscoveryInventory";
+import MonitoringSetup from "./MonitoringSetup";
+import EventDelivery from "./EventDelivery";
+import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import CollectorControl from "./CollectorControl";
 import DomainParameters, { Field } from "./DomainParameters";
 const base = "/api/v1/unified";
 const domainNames = {
-  ETL: "ETL Resources",
-  VM: "VM Resources",
-  API: "API Resources",
+  ETL: "Data Pipelines",
+  VM: "Compute Instances",
+  API: "API Endpoints",
 };
 const parameterNames = {
-  ETL: "ETL Parameters",
-  VM: "VM Health Parameters",
-  API: "API Parameters",
+  ETL: "Data Pipeline Parameters",
+  VM: "Compute Health Parameters",
+  API: "API Endpoint Parameters",
+};
+const alertNames = {
+  VM: "Compute Instances Alert Setup",
+  ETL: "Data Pipelines Alert Setup",
+  API: "API Endpoints Alert Setup",
 };
 const blank = (domain) => ({
   name: "",
@@ -30,6 +39,7 @@ const blank = (domain) => ({
         address: "",
         os_type: "Linux",
         vm_type: "VM",
+        deployment_type: "PRIVATE_CLOUD",
         native_os_metrics: true,
         services: [],
         processes: [],
@@ -107,6 +117,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
       service_identity: "",
     }),
     [parents, setParents] = useState([]),
+    [legacyConfiguration, setLegacyConfiguration] = useState(false),
     [busy, setBusy] = useState(false);
   const seq = useRef(0);
   const allowed = (key, org) => hasPermission(user, key, org);
@@ -143,6 +154,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
   }, [domain, customer, environment, search, offset, reload]);
   useEffect(() => {
     setSelected(null);
+    setLegacyConfiguration(false);
     setOffset(0);
   }, [domain, customer, environment]);
   useEffect(() => {
@@ -230,6 +242,20 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
         >
           Event Parameters
         </button>
+        <button
+          role="tab"
+          aria-selected={area === "rules"}
+          onClick={() => setArea("rules")}
+        >
+          Alert Rules
+        </button>
+        <button
+          role="tab"
+          aria-selected={area === "delivery"}
+          onClick={() => setArea("delivery")}
+        >
+          Notification Delivery
+        </button>
       </div>
       <div
         role="tablist"
@@ -240,18 +266,32 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
         }
         className="heading-actions"
       >
-        {["ETL", "VM", "API"].map((v) => (
-          <button
-            key={v}
-            role="tab"
-            aria-selected={domain === v}
-            onClick={() => setDomain(v)}
-          >
-            {area === "resources" ? domainNames[v] : parameterNames[v]}
-          </button>
-        ))}
+        {area !== "delivery" &&
+          ["VM", "ETL", "API"].map((v) => (
+            <button
+              key={v}
+              role="tab"
+              aria-selected={domain === v}
+              onClick={() => setDomain(v)}
+            >
+              {area === "resources"
+                ? domainNames[v]
+                : area === "rules"
+                  ? alertNames[v]
+                  : parameterNames[v]}
+            </button>
+          ))}
       </div>
-      <div className="resource-toolbar">
+      {area === "delivery" && (
+        <EventDelivery kind="delivery" organizations={customers} user={user} />
+      )}
+      {area === "rules" && (
+        <p>
+          Select a resource to configure its native alert evaluation and
+          parameter version.
+        </p>
+      )}
+      <div className="resource-toolbar" hidden={area === "delivery"}>
         <Field label="Resource customer filter">
           <select
             value={customer}
@@ -296,8 +336,12 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             className="primary-button"
             onClick={() => setForm({ domain })}
           >
-            Create {domain === "ETL" ? "ETL" : domain === "VM" ? "VM" : "API"}{" "}
-            Resource
+            Create{" "}
+            {domain === "ETL"
+              ? "Data Pipeline"
+              : domain === "VM"
+                ? "Compute Instance"
+                : "API Endpoint"}
           </button>
         )}
       </div>
@@ -429,13 +473,35 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
               </tbody>
             </table>
           </div>
+          {selected.data_source_id &&
+            allowed("templates.view", selected.organization_id) &&
+            allowed("collectors.view", selected.organization_id) && (
+              <>
+                <button onClick={() => setLegacyConfiguration((v) => !v)}>
+                  {legacyConfiguration ? "Hide" : "Open"} legacy monitoring
+                  configuration
+                </button>
+                {legacyConfiguration && (
+                  <MonitoringSetup
+                    key={selected.id}
+                    embedded
+                    lockedSourceId={selected.data_source_id}
+                    organizationId={selected.organization_id}
+                    organizationName={selected.inherited.customer}
+                    user={user}
+                  />
+                )}
+              </>
+            )}
           {selected.configuration.legacy && (
             <p className="muted">
               Existing identity/history is preserved. Review legacy
               source/template mappings before activating the new engines.
             </p>
           )}
-          {area === "parameters" ? (
+          {area === "rules" ? (
+            <NativeAlertSetup resource={selected} user={user} />
+          ) : area === "parameters" ? (
             <DomainParameters
               key={selected.id + selected.revision}
               resource={selected}
@@ -453,6 +519,13 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
                   Agent Installation and Collector Configuration
                 </button>
               )}
+              {selected.domain === "ETL" &&
+                user.platform_admin &&
+                selected.configuration.integration_configuration &&
+                allowed("etl.configure", selected.organization_id) &&
+                allowed("collectors.manage", selected.organization_id) && (
+                  <PipelineConnection resource={selected} />
+                )}
               <button
                 onClick={() =>
                   action(async () => {
@@ -623,6 +696,18 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
           )}
         </section>
       )}
+      {area === "resources" && domain === "VM" && (
+        <details>
+          <summary>Imported discovery inventory</summary>
+          <ImportedDiscoveryInventory
+            organizationId={customer}
+            collectorOrganizations={customers
+              .filter((c) => allowed("collectors.view", c.id))
+              .map((c) => c.id)}
+            authorizationRevision={user.authorization_revision}
+          />
+        </details>
+      )}
       <details>
         <summary>Legacy mapping reconciliation</summary>
         <button
@@ -755,6 +840,9 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
     [customerName, setCustomerName] = useState(""),
     [customerCode, setCustomerCode] = useState(""),
     [step, setStep] = useState(1),
+    [draftId, setDraftId] = useState(null),
+    [draftRevision, setDraftRevision] = useState(null),
+    [drafts, setDrafts] = useState([]),
     [created, setCreated] = useState(item || null),
     [source, setSource] = useState(null),
     [collector, setCollector] = useState(null),
@@ -795,6 +883,46 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       live = false;
     };
   }, [created?.id, domain]);
+  useEffect(() => {
+    let live = true;
+    if (!item)
+      control("/api/v1/resource-drafts?domain=" + domain)
+        .then((v) => live && setDrafts(v.items || v))
+        .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [domain, item]);
+  const saveDraft = () =>
+    action(async () => {
+      const configuration = { ...form, resource_id: created?.id || null };
+      const payload = {
+        domain,
+        name: form.name || "Untitled " + domain,
+        organization_id: form.organization_id || null,
+        stage: step,
+        configuration,
+      };
+      if (draftRevision != null) payload.expected_revision = draftRevision;
+      const v = await control(
+        "/api/v1/resource-drafts" + (draftId ? "/" + draftId : ""),
+        draftId ? "PUT" : "POST",
+        payload,
+      );
+      setDraftId(v.id);
+      setDraftRevision(v.revision);
+    });
+  const resumeDraft = async (id) =>
+    action(async () => {
+      const v = await control("/api/v1/resource-drafts/" + id);
+      const { resource_id, ...configuration } = v.configuration;
+      setForm({ ...blank(domain), ...configuration });
+      setStep(v.stage);
+      setDraftId(v.id);
+      setDraftRevision(v.revision);
+      if (resource_id)
+        setCreated(await control(base + "/resources/" + resource_id));
+    });
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const inherited =
     domain === "ETL" ? vms.find((r) => r.id === form.vm_resource_id) : null;
@@ -827,7 +955,8 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       delete payload.legacy;
       delete payload.legacy_template_attachments;
       let r = created;
-      if (item) {
+      if (item || created) {
+        const existing = item || created;
         const config = { ...form };
         for (const key of [
           "name",
@@ -837,8 +966,8 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           "active",
         ])
           delete config[key];
-        r = await control(base + "/resources/" + item.id, "PUT", {
-          expected_revision: item.revision,
+        r = await control(base + "/resources/" + existing.id, "PUT", {
+          expected_revision: existing.revision,
           name: form.name,
           environment: form.environment,
           configuration: config,
@@ -874,13 +1003,16 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       setInline(false);
     }
   };
-  const visibleStep = domain === "VM" && !item && created ? step : 1;
+  const visibleStep = domain === "VM" && created ? step : 1;
   return (
     <Modal
       title={
         (item ? "Edit " : "Create ") +
-        (domain === "ETL" ? "ETL" : domain === "VM" ? "VM" : "API") +
-        " Resource"
+        (domain === "ETL"
+          ? "Data Pipeline"
+          : domain === "VM"
+            ? "Compute Instance"
+            : "API Endpoint")
       }
       onClose={onClose}
       focus={!openCollector}
@@ -890,23 +1022,65 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           {error}
         </p>
       )}
-      {domain === "VM" && !item && (
+      {!item && (
+        <div className="heading-actions">
+          <button disabled={busy} onClick={saveDraft}>
+            Save draft
+          </button>
+          {drafts.length > 0 && (
+            <label>
+              Resume draft
+              <select
+                defaultValue=""
+                onChange={(e) => e.target.value && resumeDraft(e.target.value)}
+              >
+                <option value="">Select saved draft</option>
+                {drafts.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} · stage {d.stage}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+      )}
+      {domain === "VM" && (
         <ol className="onboarding-steps" aria-label="VM onboarding steps">
           {[
-            "Resource Identity",
-            "Collector Configuration",
-            "Agent Installation",
-            "Verification",
-            "Activation",
+            "Create Compute Instance",
+            "Configure Telemetry",
+            "Install Agent",
+            "Verify Connection",
+            "Configure Collection",
+            "Configure Event Parameters",
+            "Configure Alert Rules",
+            "Configure Notification Delivery",
+            "Validate Configuration",
+            "Activate Monitoring",
           ].map((s, i) => (
             <li key={s} className={visibleStep === i + 1 ? "active" : ""}>
-              {i + 1}. {s}
+              <button
+                type="button"
+                aria-current={visibleStep === i + 1 ? "step" : undefined}
+                disabled={!created && i > 0}
+                onClick={() => setStep(i + 1)}
+              >
+                {i + 1}. {s}
+              </button>
             </li>
           ))}
         </ol>
       )}
       {visibleStep === 1 && (
         <>
+          <DynamicConfigurationForm
+            definition={domain}
+            value={form}
+            onChange={setForm}
+            keys={["environment"]}
+            disabled={!!inherited}
+          />
           <div className="form-grid">
             <Field label="Resource name">
               <input
@@ -923,6 +1097,17 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
                 >
                   <option>PENTAHO</option>
                   <option>IICS</option>
+                  {[
+                    "AIRFLOW",
+                    "NIFI",
+                    "ADF",
+                    "AWS_GLUE",
+                    "SSIS",
+                    "TALEND",
+                    "CUSTOM",
+                  ].map((p) => (
+                    <option key={p}>{p}</option>
+                  ))}
                 </select>
               </Field>
             )}
@@ -958,18 +1143,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
-                ))}
-              </select>
-              {inherited && <small>INHERITED from selected VM</small>}
-            </Field>
-            <Field label="Environment">
-              <select
-                value={form.environment}
-                disabled={!!inherited}
-                onChange={(e) => update("environment", e.target.value)}
-              >
-                {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((e) => (
-                  <option key={e}>{e}</option>
                 ))}
               </select>
               {inherited && <small>INHERITED from selected VM</small>}
@@ -1037,13 +1210,19 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
                     <option>Windows</option>
                   </select>
                 </Field>
-                <Field label="VM type">
+                <Field label="Deployment Type">
                   <select
-                    value={form.vm_type}
-                    onChange={(e) => update("vm_type", e.target.value)}
+                    value={form.deployment_type}
+                    onChange={(e) => {
+                      update("deployment_type", e.target.value);
+                      update(
+                        "vm_type",
+                        e.target.value === "PUBLIC_INSTANCES" ? "EC2" : "VM",
+                      );
+                    }}
                   >
-                    <option>VM</option>
-                    <option>EC2</option>
+                    <option value="PRIVATE_CLOUD">Private Cloud</option>
+                    <option value="PUBLIC_INSTANCES">Public Instances</option>
                   </select>
                 </Field>
               </div>
@@ -1127,6 +1306,11 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
                   />
                 </Field>
               )}
+              <DynamicConfigurationForm
+                definition={"PLATFORM_" + form.platform}
+                value={form.integration_configuration || {}}
+                onChange={(v) => update("integration_configuration", v)}
+              />
               {form.platform === "IICS" && (
                 <div className="form-grid">
                   <Field label="Read-only execution metadata URL">
@@ -1285,6 +1469,14 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               </p>
             </div>
           )}
+          <label>
+            <input
+              type="checkbox"
+              checked={form.active}
+              onChange={(e) => update("active", e.target.checked)}
+            />
+            Enable resource
+          </label>
           <Field label="Description">
             <textarea
               value={form.description || ""}
@@ -1365,19 +1557,71 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             Verify telemetry
           </button>
           {verification && <Verification data={verification} />}
-          <button
-            className="primary-button"
-            disabled={!verification?.ready}
-            onClick={() => setStep(5)}
-          >
-            Next: Activation
+          <button className="primary-button" onClick={() => setStep(5)}>
+            Next: Configure Collection
           </button>
         </>
       )}
       {visibleStep === 5 && (
         <>
-          <h3>Activation</h3>
+          <h3>Configure Collection</h3>
+          <button disabled={!collector} onClick={() => setOpenCollector(true)}>
+            Configure independent collection methods
+          </button>
+        </>
+      )}
+      {visibleStep === 6 && (
+        <>
+          <h3>Event Parameters (optional)</h3>
           <DomainParameters resource={created} user={user} />
+        </>
+      )}
+      {visibleStep === 7 && (
+        <>
+          <h3>Alert Rules (optional)</h3>
+          <NativeAlertSetup resource={created} user={user} />
+        </>
+      )}
+      {visibleStep === 8 && (
+        <>
+          <h3>Notification Delivery (optional)</h3>
+          <EventDelivery
+            kind="delivery"
+            organizations={customers.filter(
+              (c) => c.id === created.organization_id,
+            )}
+            user={user}
+          />
+        </>
+      )}
+      {visibleStep === 9 && (
+        <>
+          <h3>Validate Configuration</h3>
+          <button
+            disabled={busy}
+            onClick={() =>
+              action(async () =>
+                setVerification(
+                  await control(
+                    base + "/resources/" + created.id + "/verification",
+                  ),
+                ),
+              )
+            }
+          >
+            Validate actual readiness
+          </button>
+          {verification && <Verification data={verification} />}
+        </>
+      )}
+      {visibleStep === 10 && (
+        <>
+          <h3>Activation</h3>
+          <p>
+            Event Parameters, Alert Rules and Notification Delivery are
+            optional. Installation and required collection evidence remain
+            mandatory.
+          </p>
           <label>
             <input
               type="checkbox"
@@ -1405,8 +1649,16 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
+      {visibleStep > 1 && visibleStep < 10 && (
+        <button
+          className="primary-button"
+          onClick={() => setStep((s) => Math.min(10, s + 1))}
+        >
+          Next step
+        </button>
+      )}
       {visibleStep > 1 && (
-        <button onClick={() => setStep((s) => Math.max(2, s - 1))}>
+        <button onClick={() => setStep((s) => Math.max(1, s - 1))}>
           Previous step
         </button>
       )}
@@ -1424,5 +1676,127 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         />
       )}
     </Modal>
+  );
+}
+
+function NativeAlertSetup({ resource, user }) {
+  const [config, setConfig] = useState(null),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const editorRef = useRef(null);
+  useEffect(() => {
+    let live = true;
+    control(base + "/resources/" + resource.id + "/alert-setup")
+      .then((v) => live && setConfig(v))
+      .catch((e) => live && setError(e.message));
+    return () => {
+      live = false;
+    };
+  }, [resource.id]);
+  const save = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      if (editorRef.current?.querySelector('[aria-invalid="true"]'))
+        throw new Error("Correct invalid alert configuration before saving");
+      setConfig(
+        await control(
+          base + "/resources/" + resource.id + "/alert-setup",
+          "POST",
+          {
+            enabled: config.enabled,
+            parameter_version: config.parameter_version
+              ? Number(config.parameter_version)
+              : null,
+            severities: config.severities || ["WARNING", "CRITICAL"],
+          },
+        ),
+      );
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <section ref={editorRef} className="card">
+      <h3>Native alert setup · {resource.name}</h3>
+      {error && <p role="alert">{error}</p>}
+      {!config && !error && <p>Loading alert configuration…</p>}
+      {config && (
+        <>
+          <DynamicConfigurationForm
+            definition="ALERT_SETUP"
+            value={config}
+            keys={["enabled", "parameter_version", "severities"]}
+            disabled={
+              !hasPermission(user, "templates.manage", resource.organization_id)
+            }
+            onChange={setConfig}
+          />
+          <p>
+            Saving parameters alone does not enable alerts. Rules evaluate the
+            referenced validated parameter version.
+          </p>
+          {hasPermission(
+            user,
+            "templates.manage",
+            resource.organization_id,
+          ) && (
+            <button disabled={busy} onClick={save}>
+              Save alert setup
+            </button>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function PipelineConnection({ resource }) {
+  const [result, setResult] = useState(null),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState("");
+  const generation = useRef(0);
+  useEffect(() => {
+    generation.current += 1;
+    setResult(null);
+    setError("");
+    setBusy(false);
+    return () => {
+      generation.current += 1;
+    };
+  }, [resource.id, resource.revision]);
+  const test = async () => {
+    const current = ++generation.current;
+    setBusy(true);
+    setError("");
+    setResult(null);
+    try {
+      const observed = await control(
+        base + "/resources/" + resource.id + "/test-connection",
+        "POST",
+      );
+      if (current === generation.current) setResult(observed);
+    } catch (e) {
+      if (current === generation.current) setError(e.message);
+    } finally {
+      if (current === generation.current) setBusy(false);
+    }
+  };
+  return (
+    <section aria-label="Data Pipeline connection test">
+      <button disabled={busy} onClick={test}>
+        {busy ? "Testing Connection…" : "Test Connection"}
+      </button>
+      {error && <p role="alert">{error}</p>}
+      {result && (
+        <p role="status">
+          {result.connected
+            ? `Provider read succeeded at ${result.observed_at}. ${result.observation?.record_count ?? 0} execution records observed. This does not activate monitoring.`
+            : `Connection failed: ${result.error_kind}. Monitoring is not verified.`}
+        </p>
+      )}
+    </section>
   );
 }

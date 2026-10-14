@@ -27,6 +27,11 @@ export function downloadText(name, text) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 export const methodDefaults = {
+  HOST_METRICS: {
+    interval_seconds: 30,
+    scrapers: ["cpu", "memory", "disk", "filesystem", "network"],
+  },
+  SERVICES: { services: [], processes: [], interval_seconds: 30 },
   SYSLOG_RECEIVER: {
     bind: "127.0.0.1",
     port: 1514,
@@ -46,6 +51,10 @@ export const methodDefaults = {
   },
   METRIC_SCRAPE: {
     targets: [],
+    timeout_seconds: 10,
+    metric_include: [],
+    metric_exclude: [],
+    labels: {},
     interval_seconds: 30,
     path: "/metrics",
     tls: false,

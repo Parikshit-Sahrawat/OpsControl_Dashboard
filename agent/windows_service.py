@@ -1,6 +1,7 @@
 """Native Windows Service wrapper; pywin32 is a Windows-only runtime dependency."""
 
-import json, threading
+import json, threading, sys
+import servicemanager
 from pathlib import Path
 import win32event, win32service, win32serviceutil
 from opscontrol_agent import Agent
@@ -30,4 +31,9 @@ class OpsControlService(win32serviceutil.ServiceFramework):
 
 
 if __name__ == "__main__":
-    win32serviceutil.HandleCommandLine(OpsControlService)
+    if len(sys.argv) == 1:
+        servicemanager.Initialize()
+        servicemanager.PrepareToHostSingle(OpsControlService)
+        servicemanager.StartServiceCtrlDispatcher()
+    else:
+        win32serviceutil.HandleCommandLine(OpsControlService)

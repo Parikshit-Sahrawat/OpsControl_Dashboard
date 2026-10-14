@@ -52,6 +52,8 @@ _WORKER_PUBLIC_GATE = {
 _AGENT_GATE = {
     "/api/v1/agent/register",
     "/api/v1/agent/heartbeat",
+    "/api/v1/agent/credentials/renew",
+    "/api/v1/agent/credentials/rotate",
     "/api/v1/agent/configuration",
     "/api/v1/agent/otlp/v1/logs",
     "/api/v1/agent/otlp/v1/metrics",

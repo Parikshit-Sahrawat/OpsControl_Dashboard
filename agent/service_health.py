@@ -8,8 +8,16 @@ def configuration(value):
         "services",
         "processes",
         "native_os_metrics",
+        "service_interval_seconds",
     }:
         raise ValueError("Invalid agent configuration")
+    interval = value.get("service_interval_seconds", 30)
+    if (
+        not isinstance(interval, int)
+        or isinstance(interval, bool)
+        or not 5 <= interval <= 3600
+    ):
+        raise ValueError("Invalid service interval")
     services = value.get("services", [])
     if (
         not isinstance(services, list)
@@ -38,6 +46,7 @@ def configuration(value):
         "services": services,
         "processes": processes,
         "native_os_metrics": bool(value.get("native_os_metrics", False)),
+        "service_interval_seconds": interval,
     }
 
 
@@ -79,7 +88,9 @@ def observe(name, os_type):
     raise RuntimeError("SERVICE_OS_UNSUPPORTED")
 
 
-def envelope(services, os_type, hostname, processes=None, native_os_metrics=False):
+def envelope(
+    services, os_type, hostname, processes=None, native_os_metrics=False, methods=None
+):
     records = []
     errors = []
     timestamp = str(time.time_ns())
@@ -186,6 +197,46 @@ def envelope(services, os_type, hostname, processes=None, native_os_metrics=Fals
             )
         except (OSError, subprocess.TimeoutExpired, RuntimeError):
             errors.append("PROCESS_QUERY")
+    if methods:
+        for metric in metrics:
+            tagged = []
+            for point in metric.get("gauge", {}).get("dataPoints", []):
+                attrs = {
+                    a["key"]: a["value"].get("stringValue")
+                    for a in point.get("attributes", [])
+                }
+                matching = [
+                    m
+                    for m in methods
+                    if m.get("enabled")
+                    and (
+                        m["method_type"] == "SERVICES"
+                        and (
+                            attrs.get("service.name")
+                            in m["configuration"].get("services", [])
+                            or attrs.get("process.name")
+                            in m["configuration"].get("processes", [])
+                        )
+                        or m["method_type"] == "HOST_METRICS"
+                        and metric["name"] == "opscontrol.host.uptime"
+                    )
+                ]
+                for method in matching:
+                    tagged.append(
+                        {
+                            **point,
+                            "attributes": [
+                                *point.get("attributes", []),
+                                {
+                                    "key": "opscontrol.method.id",
+                                    "value": {"stringValue": str(method["id"])},
+                                },
+                            ],
+                        }
+                    )
+                if not matching:
+                    tagged.append(point)
+            metric["gauge"]["dataPoints"] = tagged
     return {
         "resourceMetrics": [
             {
@@ -200,3 +251,64 @@ def envelope(services, os_type, hostname, processes=None, native_os_metrics=Fals
             }
         ]
     }, errors
+
+
+def method_observations(methods, running, private_home, failures=None):
+    """Actual access checks describe idle capability; never infer receiving data."""
+    import glob
+    import itertools
+    from pathlib import Path
+
+    private = Path(private_home).resolve()
+    results = []
+    failures = set(failures or [])
+    for method in methods[:100]:
+        if not method.get("enabled"):
+            continue
+        state = "RUNNING" if running else "STOPPED"
+        code = None
+        total = readable = 0
+        config = method["configuration"]
+        if (
+            running
+            and method["method_type"] == "FILE_LOG"
+            and config.get("source", "FILE") == "FILE"
+        ):
+            try:
+                for pattern in config.get("paths", []):
+                    matches = list(itertools.islice(glob.iglob(pattern), 501))
+                    if not matches:
+                        raise RuntimeError("LOG_PATH_NOT_FOUND")
+                    if len(matches) > 500 or total + len(matches) > 1000:
+                        raise RuntimeError("LOG_SOURCE_LIMIT_EXCEEDED")
+                    total += len(matches)
+                    for path in matches:
+                        if Path(path).resolve().is_relative_to(private):
+                            raise RuntimeError("AGENT_PRIVATE_PATH_DENIED")
+                        with open(path, "rb") as stream:
+                            stream.read(1)
+                        readable += 1
+                state = "IDLE" if total else "ERROR"
+                code = None if total else "LOG_PATH_NOT_FOUND"
+            except PermissionError:
+                state, code = "ERROR", "LOG_PERMISSION_DENIED"
+            except OSError:
+                state, code = "ERROR", "LOG_SOURCE_UNAVAILABLE"
+            except RuntimeError as error:
+                state, code = "ERROR", str(error)
+        elif running and method["method_type"] == "SERVICES":
+            if failures & (
+                set(config.get("services", []))
+                | ({"PROCESS_QUERY"} if config.get("processes") else set())
+            ):
+                state, code = "ERROR", "SERVICE_QUERY_UNAVAILABLE"
+        results.append(
+            {
+                "method_id": str(method["id"]),
+                "state": state,
+                "error_code": code,
+                "sources_found": total,
+                "sources_readable": readable,
+            }
+        )
+    return results

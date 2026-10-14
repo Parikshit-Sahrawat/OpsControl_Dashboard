@@ -9,7 +9,7 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from uuid import UUID
 from fastapi import HTTPException
-from sqlalchemy import event
+from sqlalchemy import event, select
 from sqlalchemy.orm import Session, with_loader_criteria
 from sqlalchemy import inspect
 
@@ -133,6 +133,7 @@ _PATHS.update(
             "TelemetryReceipt",
             "TraceSpan",
             "NotificationDestination",
+            "InAppNotification",
             "MonitoringResource",
             "ResourceDependency",
             "ParameterVersion",
@@ -143,10 +144,17 @@ _PATHS.update(
             "EventCorrelationGroup",
             "EventCorrelationMember",
             "ResourceMappingIssue",
+            "CollectorRuntimeState",
+            "NativeIncidentDetails",
+            "NativeIncidentAlert",
         )
     }
 )
-_GLOBAL = {"MonitoringTemplate", "MonitoringTemplateVersion"}
+_GLOBAL = {
+    "MonitoringTemplate",
+    "MonitoringTemplateVersion",
+    "AttributeRegistryVersion",
+}
 
 
 def _predicate(model, allowed):
@@ -190,7 +198,24 @@ def scope_reads(execute_state):
     stmt = execute_state.statement
     for mapper in Base.registry.mappers:
         model = mapper.class_
-        if model.__name__ in _PATHS:
+        if model.__name__ == "ResourceDraft":
+            from sqlalchemy import and_, or_
+
+            stmt = stmt.options(
+                with_loader_criteria(
+                    model,
+                    and_(
+                        model.owner_id == principal.user_id,
+                        model.service_provider_id == principal.service_provider_id,
+                        or_(
+                            model.organization_id.is_(None),
+                            model.organization_id.in_(allowed),
+                        ),
+                    ),
+                    include_aliases=True,
+                )
+            )
+        elif model.__name__ in _PATHS:
             stmt = stmt.options(
                 with_loader_criteria(
                     model,
@@ -234,6 +259,53 @@ def enforce_writes(db, flush_context, instances):
         return  # local CLI/worker is outside the HTTP request identity contract
     for obj in db.new.union(db.dirty).union(db.deleted):
         model = type(obj)
+        if model.__name__ == "ResourceDraft":
+            if (
+                obj.owner_id != principal.user_id
+                or obj.service_provider_id != principal.service_provider_id
+            ):
+                raise HTTPException(403, "Draft owner/provider identity mismatch")
+            state = inspect(obj)
+            if state.persistent and any(
+                state.attrs[k].history.has_changes()
+                for k in ("owner_id", "service_provider_id", "domain")
+            ):
+                raise HTTPException(403, "Draft identity is immutable")
+            if obj.organization_id and not principal.allows(
+                "resources.create", obj.organization_id
+            ):
+                raise HTTPException(403, "Customer draft permission required")
+            continue
+        if model.__name__ == "WorkerIdentity":
+            state = inspect(obj)
+            changed = {
+                attribute.key
+                for attribute in state.attrs
+                if attribute.history.has_changes()
+            }
+            if (
+                obj in db.new
+                or obj in db.deleted
+                or not state.persistent
+                or db.info.get("agent_revocation_worker") != obj.id
+                or changed != {"enabled"}
+                or obj.enabled is not False
+                or not principal.allows("collectors.manage", obj.organization_id)
+            ):
+                raise HTTPException(
+                    403, "Only authorized bound Agent credential revocation is allowed"
+                )
+            from app.telemetry.models import ManagedAgent
+
+            bound = db.scalar(
+                select(ManagedAgent).where(
+                    ManagedAgent.worker_id == obj.id,
+                    ManagedAgent.organization_id == obj.organization_id,
+                )
+            )
+            if not bound or bound.enabled:
+                raise HTTPException(403, "Credential is not bound to a revoked Agent")
+            continue
         if model.__name__ == "SecurityAuditEvent":
             # Services append server-derived audit events in the mutation's
             # transaction. No client route accepts audit model payloads.
@@ -259,7 +331,13 @@ def enforce_writes(db, flush_context, instances):
 
             state = inspect(obj)
             previous_types = state.attrs.collector_type.history.deleted
-            protected_types = INFRA_TYPES | {"PENTAHO", "API", "NATIVE_API", "IICS_NATIVE"}
+            protected_types = INFRA_TYPES | {
+                "PENTAHO",
+                "API",
+                "NATIVE_API",
+                "IICS_NATIVE",
+                "PIPELINE_NATIVE",
+            }
             protected_type = obj.collector_type.upper() in protected_types or any(
                 str(t).upper() in protected_types for t in previous_types
             )
@@ -362,7 +440,8 @@ def enforce_writes(db, flush_context, instances):
             ("group_id", "EventCorrelationGroup"),
             ("condition_id", "ResourceCondition"),
         ):
-            if attr=='resource_id' and model.__name__=='MetricDefinition':continue  # Legacy untyped reference; organization/source ownership remains enforced.
+            if attr == "resource_id" and model.__name__ == "MetricDefinition":
+                continue  # Legacy untyped reference; organization/source ownership remains enforced.
             if not hasattr(obj, attr):
                 continue
             parent_id = getattr(obj, attr)

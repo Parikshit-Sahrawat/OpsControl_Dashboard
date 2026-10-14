@@ -28,6 +28,11 @@ const context = await browser.newContext({
   reducedMotion: "reduce",
 });
 const page = await context.newPage();
+let apiOrigin = "";
+page.on("response", (response) => {
+  if (new URL(response.url()).pathname === "/api/v1/auth/login")
+    apiOrigin = new URL(response.url()).origin;
+});
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("dialog", (dialog) => dialog.accept());
 const nav = async (name) => {
@@ -61,22 +66,22 @@ try {
       .getByRole("navigation", { name: "Primary navigation" })
       .getByRole("button", { name: "Incidents", exact: true })
       .count(),
-    0,
+    1,
   );
-  await nav("Data Pipelines");
+  await nav("Data Pipeline Monitoring");
   await page
-    .getByRole("heading", { name: "Data Pipelines", exact: true })
+    .getByRole("heading", { name: "Data Pipeline Monitoring", exact: true })
     .waitFor();
   await nav("Resource Management");
   await page
-    .getByRole("heading", { name: "Organizations", exact: true })
+    .getByRole("heading", { name: "Compute Instances", exact: true })
     .waitFor();
   assert.equal(await page.locator(".org-context-button").count(), 0);
   await page
     .locator("table")
     .first()
     .locator("th")
-    .filter({ hasText: "Organization" })
+    .filter({ hasText: "Customer" })
     .waitFor();
   await page.screenshot({
     path: join(out, "organizations-dark.png"),
@@ -93,12 +98,61 @@ try {
   });
   await page.getByRole("button", { name: "Dark theme", exact: true }).click();
   checks.push(
-    "Organization compact table, operational selector independence and Data Pipelines terminology; no Incidents navigation",
+    "Compute compact table, customer selector independence, official terminology and native Incidents navigation",
   );
-  await page.locator(".resource-tab").filter({ hasText: "Collectors" }).click();
-  const row = page.locator("tr").filter({ hasText: "UAT logical Collector" });
-  await row.getByRole("button", { name: "Collector Details" }).click();
-  const dialog = page.getByRole("dialog", { name: "Collector Details" });
+  assert(
+    ["localhost", "127.0.0.1"].includes(new URL(apiOrigin).hostname),
+    "UAT mutations must target the owned local API",
+  );
+  const inventory = await page.evaluate(
+    async (input) => {
+      const r = await fetch(
+        input.origin +
+          "/api/v1/unified/resources?domain=VM&organization_id=" +
+          input.organization +
+          "&limit=200",
+        {
+          headers: {
+            Authorization:
+              "Bearer " + sessionStorage.getItem("opscontrol.sessionToken"),
+          },
+        },
+      );
+      if (!r.ok) throw Error("UAT resource inventory failed");
+      return r.json();
+    },
+    { origin: apiOrigin, organization: fixture.organization },
+  );
+  const compute = inventory.items.find(
+    (r) =>
+      r.data_source_id === fixture.source_id &&
+      r.primary_collector_id === fixture.collector_id,
+  );
+  assert(
+    compute,
+    "The fixture must preserve its real Agent Source/Collector IDs under a scoped Compute resource binding",
+  );
+  await page.getByLabel("Search resources", { exact: true }).fill(compute.name);
+  const row = page.getByRole("row").filter({ hasText: compute.name });
+  const collectorResponse = page.waitForResponse(
+    (r) =>
+      new URL(r.url()).pathname ===
+        "/api/v1/agent-control/collectors/" + fixture.collector_id &&
+      r.request().method() === "GET",
+  );
+  await row
+    .getByRole("button", { name: "Collector Configuration", exact: true })
+    .click();
+  const initialCollector = await (await collectorResponse).json();
+  assert(
+    initialCollector.methods.filter((m) => m.method_type === "FILE_LOG")
+      .length >= 2,
+    "Fixture must preserve multiple independent real File Log methods",
+  );
+  const dialog = page.getByRole("dialog", {
+    name: "Collector Details",
+    exact: true,
+  });
   await dialog
     .getByRole("heading", { name: "Collection Methods", exact: true })
     .waitFor();
@@ -107,11 +161,22 @@ try {
     .getByLabel("Method name", { exact: true })
     .fill("Browser same-type log");
   await dialog
-    .getByLabel("Paths (one absolute path per line)", { exact: true })
-    .fill("/var/log/opscontrol/browser.log");
+    .getByLabel("Paths", { exact: true })
+    .fill(JSON.stringify(["/var/log/opscontrol/browser.log"]));
+  const methodResponse = page.waitForResponse(
+    (r) =>
+      new URL(r.url()).pathname ===
+        "/api/v1/agent-control/collectors/" +
+          fixture.collector_id +
+          "/methods" && r.request().method() === "POST",
+  );
   await dialog
     .getByRole("button", { name: "Save Method", exact: true })
     .click();
+  const savedMethodResponse = await methodResponse;
+  assert.equal(savedMethodResponse.status(), 201);
+  const savedMethod = await savedMethodResponse.json();
+  assert(!initialCollector.methods.some((m) => m.id === savedMethod.id));
   await dialog.getByText("Browser same-type log", { exact: true }).waitFor();
   const methodRow = dialog
     .locator("tr")
@@ -140,6 +205,12 @@ try {
       "Browser same-type log",
     ),
   );
+  assert(
+    !(await dialog.locator(".configuration-preview").textContent()).includes(
+      "filelog/" + savedMethod.id.replaceAll("-", ""),
+    ),
+    "Disabled method receiver must be absent from actual YAML pipelines",
+  );
   await dialog.evaluate((node) => {
     node.scrollTop = 0;
   });
@@ -152,8 +223,7 @@ try {
     "Real same-type method add/edit/disable; correct inherited OS, real signal counters and YAML excludes disabled method",
   );
   await page
-    .locator(".resource-tab")
-    .filter({ hasText: "Notification Delivery" })
+    .getByRole("tab", { name: "Notification Delivery", exact: true })
     .click();
   await page
     .getByRole("heading", { name: "Notification Delivery", exact: true })
@@ -164,16 +234,55 @@ try {
     fullPage: true,
   });
   await page
-    .locator(".resource-tab")
-    .filter({ hasText: "Event Parameters" })
+    .getByRole("tab", { name: "Event Parameters", exact: true })
     .click();
-  await page.getByText("CPU sustained 80 percent", { exact: true }).waitFor();
+  await page
+    .getByRole("tab", { name: "Compute Health Parameters", exact: true })
+    .click();
+  await page.getByRole("button", { name: compute.name, exact: true }).click();
+  const parameterEditor = page.locator(".unified-parameters");
+  await parameterEditor
+    .getByLabel("Observed metric", { exact: true })
+    .locator("option")
+    .nth(1)
+    .waitFor({ state: "attached" });
+  const metricOption = parameterEditor
+    .getByLabel("Observed metric", { exact: true })
+    .locator("option")
+    .filter({ hasText: /cpu/i })
+    .first();
+  await parameterEditor
+    .getByLabel("Observed metric", { exact: true })
+    .selectOption(await metricOption.getAttribute("value"));
+  await parameterEditor
+    .getByLabel("Critical threshold", { exact: true })
+    .fill("80");
+  await parameterEditor
+    .getByRole("button", { name: "Add metric threshold", exact: true })
+    .click();
+  const savedParameter = page.waitForResponse(
+    (r) =>
+      new URL(r.url()).pathname ===
+        "/api/v1/unified/parameters/" + compute.id &&
+      r.request().method() === "POST",
+  );
+  await parameterEditor
+    .getByRole("button", { name: "Save version", exact: true })
+    .click();
+  const parameterResponse = await savedParameter;
+  assert.equal(parameterResponse.status(), 201);
+  const parameterVersion = await parameterResponse.json();
+  assert.equal(parameterVersion.configuration.thresholds.at(-1).critical, 80);
+  assert.equal(
+    parameterVersion.configuration.thresholds.at(-1).metric_definition_id,
+    await metricOption.getAttribute("value"),
+  );
   await page.screenshot({
     path: join(out, "event-parameters-dark.png"),
     fullPage: true,
   });
   checks.push(
-    "Configured Event Parameters and independent Notification Delivery show real stored rule/delivery data",
+    "Resource-scoped Event Parameter version preserves its actual CPU series and threshold; independent Notification Delivery shows real stored destinations",
   );
   await nav("Access Management");
   await page
@@ -259,7 +368,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await nav("Resource Management");
   await page
-    .getByRole("heading", { name: "Organizations", exact: true })
+    .getByRole("heading", { name: "Compute Instances", exact: true })
     .waitFor();
   assert.ok(
     await page.evaluate(

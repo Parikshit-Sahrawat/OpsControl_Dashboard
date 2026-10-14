@@ -1,10 +1,24 @@
-import { useEffect, useState, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useRef,
+  Children,
+  isValidElement,
+  cloneElement,
+} from "react";
 import { control, downloadText } from "../controlPlane";
+import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import { hasPermission } from "../permissions";
 export const defaults = (domain, r) =>
   domain === "ETL"
     ? {
         domain,
+        duplicate_matching: {
+          cross_source: true,
+          attributes: ["execution_id", "jobchain"],
+          conflict_resolution: "RETAIN_UNKNOWN",
+          source_precedence: [],
+        },
         parser: r?.configuration?.parser || {
           format: "JSON",
           field_mapping: {
@@ -57,7 +71,14 @@ export function Field({ label, children }) {
   return (
     <label className="form-field">
       <span>{label}</span>
-      {children}
+      {Children.map(children, (child) =>
+        isValidElement(child) &&
+        ["input", "select", "textarea"].includes(child.type)
+          ? cloneElement(child, {
+              "aria-label": child.props["aria-label"] || label,
+            })
+          : child,
+      )}
     </label>
   );
 }
@@ -149,26 +170,15 @@ export default function DomainParameters({ resource, user, onSaved }) {
       setApproved(false);
       await onSaved?.(p);
     });
-  const number = (key, label) => (
-    <Field label={label}>
-      <input
-        type="number"
-        min="0"
-        value={config[key] ?? 0}
-        disabled={!can}
-        onChange={(e) => change(key, Number(e.target.value))}
-      />
-    </Field>
-  );
   const schedule = config.schedule;
   return (
     <section ref={editorRef} className="card unified-parameters">
       <h3>
         {resource.domain === "ETL"
-          ? "ETL"
+          ? "Data Pipeline"
           : resource.domain === "VM"
-            ? "VM Health"
-            : "API"}{" "}
+            ? "Compute Health"
+            : "API Endpoint"}{" "}
         Parameters · {resource.name}
       </h3>
       {error && (
@@ -201,14 +211,38 @@ export default function DomainParameters({ resource, user, onSaved }) {
           </tbody>
         </table>
       </div>
+      <DynamicConfigurationForm
+        definition={"PARAM_" + resource.domain}
+        value={config}
+        disabled={!can}
+        onChange={setConfig}
+        keys={
+          resource.domain === "ETL"
+            ? [
+                "no_run_grace_seconds",
+                "delayed_start_seconds",
+                "long_running_seconds",
+                "no_response_seconds",
+                "completion_sla_seconds",
+                "duplicate_matching",
+              ]
+            : resource.domain === "VM"
+              ? ["missing_telemetry_seconds", "service_failures"]
+              : [
+                  "expected_statuses",
+                  "warning_latency_ms",
+                  "critical_latency_ms",
+                  "consecutive_failures",
+                  "recovery_successes",
+                  "missing_results_seconds",
+                  "availability_percent",
+                  "sla_window_minutes",
+                ]
+        }
+      />
       {resource.domain === "ETL" && (
         <>
           <div className="form-grid">
-            {number("no_run_grace_seconds", "No Run grace (seconds)")}
-            {number("delayed_start_seconds", "Delayed start (seconds)")}
-            {number("long_running_seconds", "Long Running (seconds)")}
-            {number("no_response_seconds", "No Response (seconds)")}
-            {number("completion_sla_seconds", "Completion SLA (seconds)")}
             <Field label="Expected schedule">
               <select
                 disabled={!can}
@@ -431,8 +465,6 @@ export default function DomainParameters({ resource, user, onSaved }) {
       {resource.domain === "VM" && (
         <>
           <div className="form-grid">
-            {number("missing_telemetry_seconds", "Missing telemetry (seconds)")}
-            {number("service_failures", "Consecutive service/process failures")}
             <Field label="Monitored services (one per line)">
               <textarea
                 value={(config.services || []).join("\n")}
@@ -511,34 +543,6 @@ export default function DomainParameters({ resource, user, onSaved }) {
             disabled={!can}
             onChange={(v) => change("thresholds", v)}
           />
-        </>
-      )}
-      {resource.domain === "API" && (
-        <>
-          <div className="form-grid">
-            <Field label="Expected HTTP statuses">
-              <input
-                value={config.expected_statuses.join(",")}
-                disabled={!can}
-                onChange={(e) =>
-                  change(
-                    "expected_statuses",
-                    e.target.value.split(",").map(Number),
-                  )
-                }
-              />
-            </Field>
-            {number("warning_latency_ms", "Warning latency (ms)")}
-            {number("critical_latency_ms", "Critical latency (ms)")}
-            {number("consecutive_failures", "Consecutive failures")}
-            {number("recovery_successes", "Recovery successes")}
-            {number(
-              "missing_results_seconds",
-              "Missing probe results (seconds)",
-            )}
-            {number("availability_percent", "Availability SLA (%)")}
-            {number("sla_window_minutes", "SLA window (minutes)")}
-          </div>
         </>
       )}
       <JsonField

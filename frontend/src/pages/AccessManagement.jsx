@@ -135,7 +135,9 @@ function Effective({ value, customers }) {
         <p key={i}>
           <span className="mini-chip">{source.source}</span> {source.role} ·{" "}
           {source.scope === "provider"
-            ? "Service-provider administration"
+            ? source.customer_scope_required && !source.permissions?.length
+              ? "Organization grant required; no operational access granted"
+              : "Service-provider administration"
             : customers.find((c) => c.id === source.customer_id)?.name ||
               source.customer_id}
           <small className="access-uuid">{source.subject_id}</small>
@@ -188,7 +190,8 @@ export default function AccessManagement({ user }) {
     [effective, setEffective] = useState(null),
     [members, setMembers] = useState([]),
     [draft, setDraft] = useState({}),
-    [preview, setPreview] = useState(null);
+    [detailLoading, setDetailLoading] = useState(false),
+    [detailError, setDetailError] = useState("");
   const [onboarding, setOnboarding] = useState(false);
   const epoch = useRef(0),
     detailEpoch = useRef(0);
@@ -276,24 +279,32 @@ export default function AccessManagement({ user }) {
     const version = ++detailEpoch.current;
     setSelected({ ...row, kind: "employee" });
     setEffective(null);
+    setDetailLoading(true);
+    setDetailError("");
     setError("");
     try {
       const result = await api(`/employees/${row.id}/effective-permissions`);
       if (version === detailEpoch.current) setEffective(result);
     } catch (e) {
-      setError(e.message);
+      if (version === detailEpoch.current) setDetailError(e.message);
+    } finally {
+      if (version === detailEpoch.current) setDetailLoading(false);
     }
   }
   async function inspectDepartment(row) {
     const version = ++detailEpoch.current;
     setSelected({ ...row, kind: "department" });
     setMembers([]);
+    setDetailLoading(true);
+    setDetailError("");
     setError("");
     try {
       const result = await api(`/departments/${row.id}/members`);
       if (version === detailEpoch.current) setMembers(result);
     } catch (e) {
-      setError(e.message);
+      if (version === detailEpoch.current) setDetailError(e.message);
+    } finally {
+      if (version === detailEpoch.current) setDetailLoading(false);
     }
   }
   async function act(
@@ -313,7 +324,6 @@ export default function AccessManagement({ user }) {
       await latestReload.current();
       detailEpoch.current++;
       setSelected(null);
-      setPreview(null);
       setNotice(message);
       setDialog(null);
     } catch (e) {
@@ -323,7 +333,6 @@ export default function AccessManagement({ user }) {
     }
   }
   function open(kind, row = {}) {
-    setPreview(null);
     setError("");
     setDialog({ kind, row });
     if (kind === "employee")
@@ -358,7 +367,6 @@ export default function AccessManagement({ user }) {
   }
   function change(key, value) {
     setDraft((d) => ({ ...d, [key]: value }));
-    setPreview(null);
   }
   async function save(event) {
     event.preventDefault();
@@ -394,6 +402,13 @@ export default function AccessManagement({ user }) {
         row.id ? "PATCH" : "POST",
         draft,
       );
+    if (
+      kind === "password" &&
+      !window.confirm(
+        "Reset this employee’s password and revoke all existing sessions?",
+      )
+    )
+      return;
     if (kind === "password")
       return act(
         `/employees/${row.id}/password`,
@@ -401,6 +416,13 @@ export default function AccessManagement({ user }) {
         draft,
         "Password reset. All employee sessions revoked.",
       );
+    if (
+      ["employee-department", "member"].includes(kind) &&
+      !window.confirm(
+        "Transfer this employee to the selected department? Existing inherited permissions will be replaced.",
+      )
+    )
+      return;
     if (kind === "employee-department")
       return act(`/employees/${row.id}/department`, "PUT", {
         department_id: draft.department_id,
@@ -409,6 +431,13 @@ export default function AccessManagement({ user }) {
       return act(`/employees/${draft.user_id}/department`, "PUT", {
         department_id: row.id,
       });
+    if (
+      kind === "assignment" &&
+      !window.confirm(
+        "Apply the displayed role permissions to this identity? Customer access remains limited by existing grants.",
+      )
+    )
+      return;
     if (kind === "assignment")
       return act(
         `/${row.kind === "employee" ? "employees" : "departments"}/${row.id}/roles`,
@@ -561,7 +590,9 @@ export default function AccessManagement({ user }) {
               setStatus("");
               setDepartment("");
               setRoleFilter("");
-              setCustomerFilter("");
+              // Clicking the already active tab still requests a fresh list;
+              // unchanged React dependencies cannot trigger the fetch effect.
+              if (t === tab) latestReload.current();
             }}
           >
             {t}
@@ -682,7 +713,9 @@ export default function AccessManagement({ user }) {
                 <tr>
                   {(tab === "Employees"
                     ? [
-                        "Employee",
+                        "Name",
+                        "Username",
+                        "Email",
                         "Employee ID / UUID",
                         "Departments",
                         "Assigned roles",
@@ -713,7 +746,9 @@ export default function AccessManagement({ user }) {
                             "Outcome",
                           ]
                   ).map((h) => (
-                    <th key={h}>{h}</th>
+                    <th key={h} scope="col">
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -724,9 +759,6 @@ export default function AccessManagement({ user }) {
                       <>
                         <td>
                           <b>{row.full_name}</b>
-                          <small>
-                            {row.username} · {row.work_email || "No work email"}
-                          </small>
                           {row.protected_administration &&
                             !row.platform_admin && (
                               <span className="mini-chip">
@@ -739,6 +771,10 @@ export default function AccessManagement({ user }) {
                             </span>
                           )}
                         </td>
+                        <td>
+                          <code>{row.username}</code>
+                        </td>
+                        <td>{row.work_email || "—"}</td>
                         <td>
                           {row.employee_id || "—"}
                           <code className="access-uuid">{row.id}</code>
@@ -899,6 +935,20 @@ export default function AccessManagement({ user }) {
             </button>
           </div>
           <code className="access-uuid">Immutable UUID: {selected.id}</code>
+          {detailLoading && (
+            <p role="status">
+              Loading{" "}
+              {selected.kind === "department"
+                ? "department members"
+                : "effective permissions"}
+              …
+            </p>
+          )}
+          {detailError && (
+            <p className="error-box" role="alert">
+              {detailError}
+            </p>
+          )}
           {can("manage_roles") && (
             <button
               className="filter-button"
@@ -960,47 +1010,52 @@ export default function AccessManagement({ user }) {
                     )}
                   </p>
                 ))}
-              <Effective value={effective} customers={customers} />
+              {!detailLoading && !detailError && (
+                <Effective value={effective} customers={customers} />
+              )}
             </>
           ) : (
             <>
               {can("manage_users") && can("manage_departments") && (
                 <button
                   className="filter-button"
+                  disabled={busy || detailLoading || !!detailError}
                   onClick={() => open("member", selected)}
                 >
                   Add employee
                 </button>
               )}
               <h3>Members</h3>
-              {members.length ? (
-                members.map((m) => (
-                  <p key={m.id}>
-                    <button
-                      className="filter-button"
-                      onClick={() => inspectEmployee(m)}
-                    >
-                      {m.full_name} · Review effective permissions
-                    </button>{" "}
-                    {can("manage_users") && can("manage_departments") && (
+              {!detailLoading &&
+                !detailError &&
+                (members.length ? (
+                  members.map((m) => (
+                    <p key={m.id}>
                       <button
-                        className="danger-button"
-                        onClick={() =>
-                          confirmAction(
-                            "Remove this employee from the department?",
-                            `/departments/${selected.id}/members/${m.id}`,
-                            "DELETE",
-                          )
-                        }
+                        className="filter-button"
+                        onClick={() => inspectEmployee(m)}
                       >
-                        Remove employee
-                      </button>
-                    )}
-                  </p>
-                ))
-              ) : (
-                <p>No employees assigned.</p>
-              )}
+                        {m.full_name} · Review effective permissions
+                      </button>{" "}
+                      {can("manage_users") && can("manage_departments") && (
+                        <button
+                          className="danger-button"
+                          onClick={() =>
+                            confirmAction(
+                              "Remove this employee from the department?",
+                              `/departments/${selected.id}/members/${m.id}`,
+                              "DELETE",
+                            )
+                          }
+                        >
+                          Remove employee
+                        </button>
+                      )}
+                    </p>
+                  ))
+                ) : (
+                  <p>No employees assigned.</p>
+                ))}
               <h3>Permission summary</h3>
               {selected.roles.map((a) => (
                 <div key={a.id}>
@@ -1213,6 +1268,7 @@ export default function AccessManagement({ user }) {
                     {departments
                       .filter(
                         (d) =>
+                          d.active &&
                           !dialog.row.departments.some(
                             (m) => m.active && m.id === d.id,
                           ),

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { control, downloadText } from "../controlPlane";
 import { query, useNativeFeed } from "./UnifiedOverview";
 const label = {
-  ETL: "ETL Reports",
-  VM: "VM Health Reports",
-  API: "API Reports",
+  ETL: "Data Pipeline Reports",
+  VM: "Compute Health Reports",
+  API: "API Endpoint Reports",
 };
 const number = (v) =>
   v == null

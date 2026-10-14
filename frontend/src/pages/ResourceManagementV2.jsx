@@ -4,6 +4,7 @@ import "../resource-v2.css";
 import CollectorControl from "./CollectorControl";
 import EventDelivery from "./EventDelivery";
 import { hasPermission } from "../permissions";
+const TELEMETRY = ["Logs", "Metrics", "Traces"];
 import { fetchAuthorizedCustomers } from "../api";
 import {
   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
@@ -142,7 +143,7 @@ function TemplateEditor({ value, onClose, onSaved }) {
   const add = (section, value, reset) => { setDraft(d => ({ ...d, [section]: [...d[section], clone(value)] })); reset(); };
 
   const renderAttributes = <div className="template-editor-panel">
-    <div className="info-box">Attributes define the template contract. The Data Source supplies customer-specific values. Use PATH/DIRECTORY plus expressions such as \${PENTAHO_HOME} for reusable log paths.</div>
+    <div className="info-box">Attributes define the template contract. The Data Source supplies customer-specific values. Use PATH/DIRECTORY plus expressions such as {"${PENTAHO_HOME}"} for reusable log paths.</div>
     {draft.attributes.map((a, i) => <div className="template-rule-card" key={i}>
       <div className="form-grid"><Field label="Display Name"><input value={a.name || ""} onChange={e => row("attributes", i, { name: e.target.value })} /></Field><Field label="Key"><input value={a.key || ""} onChange={e => row("attributes", i, { key: e.target.value })} /></Field></div>
       <div className="form-grid"><Field label="Type"><select value={a.type || "TEXT"} onChange={e => row("attributes", i, { type: e.target.value })}>{ATTR_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="Value Source"><select value={a.value_source || "DATA_SOURCE"} onChange={e => row("attributes", i, { value_source: e.target.value })}>{VALUE_SOURCES.map(x => <option key={x}>{x}</option>)}</select></Field></div>

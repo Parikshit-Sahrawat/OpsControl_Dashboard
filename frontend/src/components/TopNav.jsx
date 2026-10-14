@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { canNavigate, administrationPage } from "../permissions";
 import ThemeToggle from "./ThemeToggle";
+import InAppNotifications from "./InAppNotifications";
 import NavIcon from "./NavIcon";
 
 const items = [
   "Overview",
-  "ETL Monitoring",
-  "VM Health",
-  "API Monitoring",
+  "Data Pipeline Monitoring",
+  "Compute Health",
+  "API Endpoint Monitoring",
   "Alerts",
+  "Incidents",
   "Reports",
   "Resource Management",
 ];
@@ -201,6 +203,7 @@ export default function TopNav({
           )}
         </div>
       )}
+      <InAppNotifications user={user} />
       <ThemeToggle />
     </header>
   );

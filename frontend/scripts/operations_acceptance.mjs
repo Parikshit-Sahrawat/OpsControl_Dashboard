@@ -46,7 +46,10 @@ try {
       .count(),
     0,
   );
-  await nav(page, "APIs");
+  await nav(page, "API Endpoint Monitoring");
+  await page
+    .getByRole("button", { name: "Show existing service probes", exact: true })
+    .click();
   const service = page
     .getByTestId("service-row")
     .filter({ hasText: "Fictional NOC HTTPS Portal" });
@@ -81,23 +84,31 @@ try {
     "Independent monitoring alerts render; reader cannot acknowledge",
   );
   await nav(page, "Reports");
+  const reportResponse = page.waitForResponse(
+    (r) =>
+      new URL(r.url()).pathname === "/api/v1/unified/reports/API" &&
+      r.request().method() === "GET",
+  );
   await page
-    .getByRole("heading", { name: "HTTP sampled success", exact: true })
-    .waitFor();
+    .getByRole("tab", { name: "API Endpoint Reports", exact: true })
+    .click();
+  const report = await (await reportResponse).json();
+  assert(
+    report.summary.completed_probes > 0,
+    "Reports must contain actual completed probe evidence",
+  );
   await page
-    .getByRole("row")
-    .filter({ hasText: "Fictional NOC HTTPS Portal" })
-    .first()
-    .waitFor();
+    .getByRole("option", { name: "Fictional NOC HTTPS Portal", exact: true })
+    .waitFor({ state: "attached" });
   await page
-    .getByRole("button", { name: "Export report JSON", exact: true })
+    .getByRole("button", { name: "Export JSON", exact: true })
     .waitFor();
   checks.push(
     "Real sampled reports and export remain usable without incident data",
   );
-  await nav(page, "Data Pipelines");
+  await nav(page, "Data Pipeline Monitoring");
   await page
-    .getByRole("heading", { name: "Data Pipelines", exact: true })
+    .getByRole("heading", { name: "Data Pipeline Monitoring", exact: true })
     .waitFor();
   checks.push("Data pipeline execution screen remains functional");
   await page.screenshot({ path: out + "/" + phase + ".png", fullPage: true });

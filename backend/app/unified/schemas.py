@@ -55,6 +55,7 @@ class VMCreate(ResourceIdentity):
     address: str = Field(min_length=1, max_length=253)
     os_type: Literal["Windows", "Linux"]
     vm_type: Literal["VM", "EC2"] = "VM"
+    deployment_type: Literal["PRIVATE_CLOUD", "PUBLIC_INSTANCES"] = "PRIVATE_CLOUD"
     native_os_metrics: bool = True
     services: list[str] = Field(default_factory=list, max_length=50)
     processes: list[str] = Field(default_factory=list, max_length=50)
@@ -206,7 +207,18 @@ class Schedule(Strict):
 
 
 class ETLCreate(ResourceIdentity):
-    platform: Literal["PENTAHO", "IICS"]
+    platform: Literal[
+        "PENTAHO",
+        "IICS",
+        "AIRFLOW",
+        "NIFI",
+        "ADF",
+        "AWS_GLUE",
+        "SSIS",
+        "TALEND",
+        "CUSTOM",
+    ]
+    integration_configuration: dict = Field(default_factory=dict)
     vm_resource_id: UUID | None = None
     jobchain: str = Field(min_length=1, max_length=200)
     scheduler: str | None = Field(default=None, max_length=200)
@@ -236,6 +248,16 @@ class ETLCreate(ResourceIdentity):
             raise ValueError(
                 "IICS cloud execution metadata is independent of local file paths"
             )
+        require_safe_config(self.integration_configuration)
+        if self.integration_configuration:
+            from app.pipeline_adapters import PLATFORM_ADAPTERS
+
+            try:
+                PLATFORM_ADAPTERS[self.platform](
+                    self.integration_configuration
+                ).validate()
+            except ValueError:
+                raise ValueError("Invalid platform integration configuration") from None
         if self.credential_ref:
             env_reference(self.credential_ref)
         if self.connector_url:
@@ -344,7 +366,45 @@ class Threshold(Strict):
         return self
 
 
+class DuplicateMatching(Strict):
+    cross_source: bool = True
+    attributes: list[
+        Literal[
+            "execution_id",
+            "order_id",
+            "jobchain",
+            "source_kind",
+            "source_id",
+            "scheduled_at",
+        ]
+    ] = Field(
+        default_factory=lambda: ["execution_id", "jobchain"], min_length=1, max_length=6
+    )
+    conflict_resolution: Literal["RETAIN_UNKNOWN", "PREFER_CONFIGURED_SOURCE"] = (
+        "RETAIN_UNKNOWN"
+    )
+    source_precedence: list[str] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode="after")
+    def valid(self):
+        if not set(self.attributes) & {
+            "execution_id",
+            "order_id",
+            "scheduled_at",
+        } or len(set(self.attributes)) != len(self.attributes):
+            raise ValueError(
+                "Logical matching requires a stable execution/order/schedule identity"
+            )
+        if (
+            self.conflict_resolution == "PREFER_CONFIGURED_SOURCE"
+            and not self.source_precedence
+        ):
+            raise ValueError("Explicit source precedence required")
+        return self
+
+
 class ETLParameters(Strict):
+    duplicate_matching: DuplicateMatching = Field(default_factory=DuplicateMatching)
     domain: Literal["ETL"] = "ETL"
     parser: LogParser = Field(default_factory=LogParser)
     schedule: Schedule | None = None
