@@ -599,6 +599,7 @@ def add_method(id: uuid.UUID, payload: MethodInput, db=Depends(get_db)):
     )
     db.add(method)
     db.flush()
+    s.reader_equivalence(db, source, persist=True)
     row.revision += 1
     if not row.enabled:
         s.hold(db, source.id, "INTEGRATION", str(id), actor().user_id)
@@ -745,7 +746,8 @@ def activate(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
         )
     )
     for sid in sorted(sources, key=str):
-        s.locked_source(db, sid)
+        source = s.locked_source(db, sid)
+        s.reader_equivalence(db, source, persist=True)
         for h in db.scalars(
             select(PipelineHold).where(
                 PipelineHold.source_id == sid,
@@ -1007,6 +1009,8 @@ def edit_method(id: uuid.UUID, payload: MethodEdit, db=Depends(get_db)):
         revision(method, payload)
         method.name = payload.name
         method.enabled = payload.enabled
+        db.flush()
+        s.reader_equivalence(db, source, persist=True)
         method.revision += 1
         source.fence += 1
         source.revision += 1
@@ -1352,6 +1356,8 @@ def apply_change(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
         method.validation = "UNVALIDATED"
     source.fence += 1
     source.generation = uuid.uuid4()
+    db.flush()
+    s.reader_equivalence(db, source, persist=True)
     source.health = "NO_DATA"
     source.last_received_at = None
     source.last_observed_at = None
@@ -1539,7 +1545,8 @@ def verify_profile(id: uuid.UUID, payload: ProfileVerification, db=Depends(get_d
 @router.post("/methods/{id}/validate")
 def validate_method(id: uuid.UUID, db=Depends(get_db)):
     method = checked(db, PipelineMethod, id, True)
-    s.locked_source(db, method.source_id)
+    source = s.locked_source(db, method.source_id)
+    s.reader_equivalence(db, source, persist=True)
     cfg = method.configuration
     if set(cfg) - {
         "method_type",

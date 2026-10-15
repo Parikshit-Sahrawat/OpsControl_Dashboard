@@ -234,10 +234,12 @@ def event(db, row, action, actor_id=None):
 def methods(db, source):
     return list(
         db.scalars(
-            select(PipelineMethod).where(
+            select(PipelineMethod)
+            .where(
                 PipelineMethod.source_id == source.id,
                 PipelineMethod.validation != "RETIRED",
             )
+            .execution_options(populate_existing=True)
         ).all()
     )
 
@@ -287,6 +289,89 @@ def reader_definition(db, method):
     )
 
 
+def reader_contract(db, source, method):
+    """Conservative equivalence: unknown reader options must never be ignored.
+
+    Connection versions may differ, but their effective settings, credential
+    references and checkpoint interpretation must agree. Poll cadence is the
+    only excluded setting; it does not change the returned evidence or cursor.
+    """
+    integration = db.get(
+        PipelineIntegration, method.integration_id, populate_existing=True
+    )
+    connection = db.get(
+        PipelineConnection, method.connection_id, populate_existing=True
+    )
+    if (
+        not integration
+        or not connection
+        or connection.integration_id != integration.id
+        or connection.organization_id != source.organization_id
+        or integration.organization_id != source.organization_id
+        or method.organization_id != source.organization_id
+    ):
+        raise PipelineError("SHARED_SOURCE_READER_CONFLICT")
+    return digest(
+        {
+            "contract_version": 1,
+            "customer": str(source.organization_id),
+            "canonical_key": source.canonical_key,
+            "physical_identity": source.identity,
+            "method_type": source.method_type,
+            "platform": integration.platform,
+            "transport": method.transport,
+            "connection": connection.configuration,
+            "effective_connection": {
+                **connection.configuration,
+                **method.configuration.get("adapter_overrides", {}),
+            },
+            "reader_options": {
+                k: v for k, v in method.configuration.items() if k != "interval_seconds"
+            },
+            "checkpoint_contract": [integration.platform, source.method_type, 1],
+        }
+    )
+
+
+def reader_equivalence(db, source, persist=False):
+    """Validate every active binding against a durable generation contract.
+
+    Writers call this under the canonical source lock. The existing operation
+    table stores the immutable hash, so no schema change or secret copy is needed.
+    A reader change requires a new generation through the reviewed handoff API.
+    """
+    refs = [m for m in methods(db, source) if m.enabled]
+    hashes = {reader_contract(db, source, m) for m in refs}
+    if len(hashes) > 1:
+        raise PipelineError("SHARED_SOURCE_READER_CONFLICT")
+    if not hashes:
+        return None
+    reader_hash = hashes.pop()
+    key = f"{source.id}:{source.generation}"
+    saved = db.scalar(
+        select(PipelineOperation).where(
+            PipelineOperation.organization_id == source.organization_id,
+            PipelineOperation.kind == "READER_CONTRACT",
+            PipelineOperation.idempotency_key == key,
+        )
+    )
+    if saved and saved.configuration.get("reader_hash") != reader_hash:
+        raise PipelineError("SHARED_SOURCE_READER_CONFLICT")
+    if persist and not saved:
+        principal = db.info.get("opscontrol_principal")
+        saved, _ = operation(
+            db,
+            source.organization_id,
+            "READER_CONTRACT",
+            key,
+            {"reader_hash": reader_hash, "contract_version": 1},
+            principal.user_id if principal else None,
+            source_id=source.id,
+        )
+        saved.state = "COMPLETE"
+    return reader_hash
+
+
 def eligible(db, method):
     profile = db.get(PipelineCapability, method.capability_id)
     connection = db.get(PipelineConnection, method.connection_id)
@@ -327,6 +412,7 @@ def acquire(db, source_id, owner_id, lease_seconds=60, verification=False):
     if not 5 <= lease_seconds <= 120:
         raise PipelineError("LEASE_BOUND")
     source = locked_source(db, source_id)
+    reader_equivalence(db, source, persist=True)
     current = clock(db)
     if suspended(db, source):
         raise PipelineError("SOURCE_SUSPENDED")
@@ -366,6 +452,7 @@ def check_ticket(db, source, ticket):
         or source.lease_until <= clock(db)
     ):
         raise PipelineError("STALE_OWNER_OR_GENERATION")
+    reader_equivalence(db, source)
     if suspended(db, source):
         raise PipelineError("SOURCE_SUSPENDED")
     if source.lease_mode != "VERIFY" and not all(
@@ -792,6 +879,10 @@ def blockers(db, integration):
         if not eligible(db, method):
             issues.append("METHOD_NOT_RUNTIME_VERIFIED:" + str(method.id))
         source = db.get(PipelineSource, method.source_id)
+        try:
+            reader_equivalence(db, source)
+        except PipelineError as error:
+            issues.append(error.code + ":" + str(source.id))
         if not source.continuity_validated:
             issues.append("CONTINUITY_NOT_VERIFIED:" + str(source.id))
         if db.scalar(

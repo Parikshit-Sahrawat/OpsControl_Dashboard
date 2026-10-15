@@ -22,28 +22,134 @@ from app.data_pipelines.bridge import collect_method, discover
 OWNER = uuid.uuid4()
 
 
-def run_source(source_id, recovery_id=None, verification=False):
+def _source_failure(ticket, error, operation_ticket=None):
+    """Cleanup is fenced too: an old worker cannot release a replacement lease."""
+    kind = getattr(error, "code", getattr(error, "kind", "RUNTIME_ERROR"))
     with SessionLocal() as db:
-        source = db.get(PipelineSource, source_id)
-        if not source:
-            return
-        refs = [
-            m for m in s.methods(db, source) if m.enabled and m.transport == "BACKEND"
-        ]
-        if not refs:
-            return
-        # A shared physical unit is read once, using a validated representative
-        # connection. Job associations across integrations are combined explicitly.
-        method = sorted(refs, key=lambda m: str(m.id))[0]
-        integration = db.get(PipelineIntegration, method.integration_id)
-        connection = db.get(PipelineConnection, method.connection_id)
-        if not verification and not all(s.eligible(db, m) for m in refs):
-            return
-        if verification and os.getenv("OPSCONTROL_PIPELINE_RUNTIME_ACCEPTANCE") != "1":
-            return
-        ticket = s.acquire(db, source_id, OWNER, 120, verification=verification)
-        rows = (
-            db.execute(
+        source = s.locked_source(db, uuid.UUID(ticket["source_id"]))
+        current = s.clock(db)
+        owns = (
+            source.fence == ticket["fence"]
+            and str(source.generation) == ticket["generation"]
+            and str(source.owner_id) == ticket["owner_id"]
+            and source.lease_mode == ticket["lease_mode"]
+            and source.lease_until is not None
+            and source.lease_until > current
+        )
+        if owns:
+            source.health = "ERROR"
+            source.owner_id = None
+            source.lease_until = None
+            source.next_run_at = current + timedelta(seconds=60)
+            for method in s.methods(db, source):
+                method.last_error = kind
+        if operation_ticket:
+            op = db.scalar(
+                select(PipelineOperation)
+                .where(PipelineOperation.id == operation_ticket["id"])
+                .with_for_update()
+            )
+            if (
+                op
+                and op.state == "RUNNING"
+                and op.owner_id == OWNER
+                and op.fence == operation_ticket["fence"]
+                and op.source_id == source.id
+                and op.configuration.get("generation") == ticket["generation"]
+            ):
+                op.state = "UNRECOVERABLE" if op.kind == "RECOVERY" else "FAILED"
+                op.result = {"error_code": kind, "new_evidence_required": True}
+                op.lease_until = current
+        failure, _ = s.operation(
+            db,
+            source.organization_id,
+            "COLLECTION_FAILURE",
+            s.digest(ticket),
+            {"ticket": ticket},
+            None,
+            source_id=source.id,
+        )
+        failure.state = "FAILED"
+        failure.result = {"error_code": kind, "ownership_released": owns}
+        db.commit()
+
+
+def run_source(source_id, recovery_id=None, verification=False):
+    ticket = operation_ticket = None
+    try:
+        with SessionLocal() as db:
+            source = db.get(PipelineSource, source_id)
+            if not source:
+                return
+            refs = [m for m in s.methods(db, source) if m.enabled]
+            if not refs or not any(m.transport == "BACKEND" for m in refs):
+                return
+            # All active readers, including other transports, must agree before
+            # selecting a representative. acquire() repeats this under its lock.
+            s.reader_equivalence(db, source)
+            if not verification and not all(s.eligible(db, m) for m in refs):
+                return
+            if (
+                verification
+                and os.getenv("OPSCONTROL_PIPELINE_RUNTIME_ACCEPTANCE") != "1"
+            ):
+                return
+            ticket = s.acquire(db, source_id, OWNER, 120, verification=verification)
+            # Commit the acquisition separately; all subsequent preparation is
+            # guarded, and a failed preparation rolls back before fenced cleanup.
+            db.commit()
+            db.expire_all()  # refresh bindings after waiting for a concurrent handoff
+            source = s.locked_source(db, source_id)
+            s.check_ticket(db, source, ticket)
+            recovery = db.get(PipelineOperation, recovery_id) if recovery_id else None
+            if recovery_id:
+                if (
+                    not recovery
+                    or recovery.kind != "RECOVERY"
+                    or recovery.source_id != source.id
+                    or recovery.organization_id != source.organization_id
+                    or not (
+                        recovery.state in {"PENDING", "APPROVED"}
+                        or recovery.state == "RUNNING"
+                        and recovery.lease_until
+                        and recovery.lease_until <= s.clock(db)
+                    )
+                    or s.suspended(db, source)
+                ):
+                    raise s.PipelineError("RECOVERY_NOT_ELIGIBLE")
+                if source.next_run_at and source.next_run_at <= s.clock(db):
+                    raise s.PipelineError("LIVE_COLLECTION_HAS_PRIORITY")
+                if recovery.configuration.get("generation") != str(source.generation):
+                    raise s.PipelineError("RECOVERY_GENERATION_CHANGED")
+                op = recovery
+            elif verification:
+                op = db.scalar(
+                    select(PipelineOperation)
+                    .where(
+                        PipelineOperation.source_id == source.id,
+                        PipelineOperation.kind == "VERIFY",
+                        PipelineOperation.state == "RUNNING",
+                        PipelineOperation.lease_until > s.clock(db),
+                    )
+                    .with_for_update()
+                )
+                if not op or op.configuration.get("generation") != str(
+                    source.generation
+                ):
+                    raise s.PipelineError("VERIFICATION_NOT_ELIGIBLE")
+            else:
+                op = None
+            if op:
+                op.state = "RUNNING"
+                op.fence += 1
+                op.owner_id = OWNER
+                op.attempts += 1
+                op.lease_until = source.lease_until
+                operation_ticket = {"id": op.id, "fence": op.fence}
+            db.commit()  # persist operation ownership before fallible reader preparation
+            source = s.locked_source(db, source_id)
+            s.check_ticket(db, source, ticket)
+            rows = db.scalars(
                 select(PipelineJob)
                 .join(PipelineAssociation, PipelineAssociation.job_id == PipelineJob.id)
                 .join(
@@ -56,36 +162,24 @@ def run_source(source_id, recovery_id=None, verification=False):
                     PipelineJob.selected.is_(True),
                     PipelineJob.quarantined.is_(False),
                 )
+            ).all()
+            jobs = list({j.native_id: j for j in rows}.values())
+            source_identity = dict(source.identity)
+            cursor = dict(
+                source.recovery_checkpoint if recovery_id else source.live_checkpoint
             )
-            .scalars()
-            .all()
-        )
-        jobs = list({j.native_id: j for j in rows}.values())
-        source_identity = dict(source.identity)
-        cursor = source.recovery_checkpoint if recovery_id else source.live_checkpoint
-        recovery = db.get(PipelineOperation, recovery_id) if recovery_id else None
-        if recovery:
-            if source.next_run_at and source.next_run_at <= s.clock(db):
-                raise s.PipelineError("LIVE_COLLECTION_HAS_PRIORITY")
-            if recovery.state not in {"PENDING", "APPROVED"} or s.suspended(db, source):
-                raise s.PipelineError("RECOVERY_NOT_ELIGIBLE")
-            if recovery.configuration["generation"] != str(source.generation):
-                raise s.PipelineError("RECOVERY_GENERATION_CHANGED")
-            recovery.state = "RUNNING"
-            recovery.fence += 1
-            recovery.owner_id = OWNER
-            recovery_fence = recovery.fence
-            recovery.attempts += 1
-            recovery.lease_until = s.clock(db) + timedelta(seconds=120)
-        # Detached snapshots: no session lock or transaction crosses provider I/O.
-        db.expunge(integration)
-        db.expunge(method)
-        db.expunge(connection)
-        for job in jobs:
-            db.expunge(job)
-        config = dict(recovery.configuration) if recovery else None
-        db.commit()
-    try:
+            refs = [m for m in s.methods(db, source) if m.enabled]
+            method = sorted(refs, key=lambda m: str(m.id))[0]
+            integration = db.get(PipelineIntegration, method.integration_id)
+            connection = db.get(PipelineConnection, method.connection_id)
+            config = dict(recovery.configuration) if recovery else None
+            definition_hash = s.reader_definition(db, method)
+            db.expunge(integration)
+            db.expunge(method)
+            db.expunge(connection)
+            for job in jobs:
+                db.expunge(job)
+            db.commit()
         if config:
             if integration.platform not in {"ADF", "NIFI"}:
                 raise s.PipelineError("BOUNDED_PROVIDER_REPLAY_NOT_SUPPORTED")
@@ -114,28 +208,39 @@ def run_source(source_id, recovery_id=None, verification=False):
                 for r in records
                 if start <= datetime.fromisoformat(r["observed_at"]) <= end
             ]
-        with SessionLocal() as definition_db:
-            definition_hash = s.reader_definition(
-                definition_db, definition_db.get(PipelineMethod, method.id)
-            )
         for record in records:
             record["runtime_origin"] = "AUTHENTICATED_RUNTIME"
             record["reader_definition_hash"] = definition_hash
         with SessionLocal() as db:
-            op = db.get(PipelineOperation, recovery_id) if recovery_id else None
-            result = s.accept(
-                db, ticket, records, checkpoint, complete, recovery_operation=op
-            )
             source = s.locked_source(db, source_id)
-            if not recovery_id:
-                source.next_run_at = s.clock(db) + timedelta(
-                    seconds=min(
-                        m.configuration.get("interval_seconds", 60)
-                        for m in s.methods(db, source)
-                        if m.enabled
-                    )
+            s.check_ticket(db, source, ticket)
+            op = (
+                db.scalar(
+                    select(PipelineOperation)
+                    .where(PipelineOperation.id == operation_ticket["id"])
+                    .with_for_update()
                 )
-            if op:
+                if operation_ticket
+                else None
+            )
+            if operation_ticket and (
+                not op
+                or op.state != "RUNNING"
+                or op.owner_id != OWNER
+                or op.fence != operation_ticket["fence"]
+                or not op.lease_until
+                or op.lease_until <= s.clock(db)
+            ):
+                raise s.PipelineError("OPERATION_CLAIM_EXPIRED")
+            result = s.accept(
+                db,
+                ticket,
+                records,
+                checkpoint,
+                complete,
+                recovery_operation=op if recovery_id else None,
+            )
+            if recovery_id:
                 op.state = "COMPLETE" if complete else "PENDING"
                 op.result = {**op.result, **result, "complete_inventory": complete}
                 if op.attempts >= 3 and not complete:
@@ -143,30 +248,78 @@ def run_source(source_id, recovery_id=None, verification=False):
                     op.result = {**op.result, "new_evidence_required": True}
             db.commit()
     except Exception as error:
-        kind = getattr(error, "code", getattr(error, "kind", "RUNTIME_ERROR"))
-        with SessionLocal() as db:
-            source = s.locked_source(db, source_id)
-            # An obsolete worker cannot overwrite health or release the new owner.
-            if (
-                source.fence == ticket["fence"]
-                and str(source.generation) == ticket["generation"]
-            ):
-                source.health = "ERROR"
-                source.lease_until = s.clock(db)
-                source.next_run_at = s.clock(db) + timedelta(seconds=60)
-                for m in s.methods(db, source):
-                    m.last_error = kind
-            if recovery_id:
-                op = db.get(PipelineOperation, recovery_id)
-                if (
-                    op
-                    and op.state == "RUNNING"
-                    and op.owner_id == OWNER
-                    and op.fence == recovery_fence
-                ):
-                    op.state = "UNRECOVERABLE"
-                    op.result = {"error_code": kind, "new_evidence_required": True}
-            db.commit()
+        # Session context exit has rolled back preparation/evidence before any
+        # cleanup transaction. Never let a failed transaction leak a checkpoint.
+        if ticket is None:
+            raise
+        _source_failure(ticket, error, operation_ticket)
+
+
+def read_only_connection(db, integration, op):
+    """Inventory authorization is independent of collection runtime acceptance."""
+    from app.models import Organization
+    from app.security.models import User
+    from app.security.access_control import resolve_access
+    from app.pipeline_adapters import ADAPTER_DEFINITIONS, PLATFORM_ADAPTERS
+    from app.pipeline_adapters.core import Adapter, secret
+
+    if (
+        not integration
+        or integration.deleted_at
+        or integration.platform not in ADAPTER_DEFINITIONS
+    ):
+        raise s.PipelineError("INTEGRATION_UNAVAILABLE")
+    customer = db.get(Organization, integration.organization_id)
+    user = db.get(User, op.actor_id or integration.owner_id)
+    principal = resolve_access(db, user) if user and user.active else None
+    if (
+        not customer
+        or not customer.active
+        or not principal
+        or not principal.allows("etl.configure", integration.organization_id)
+    ):
+        raise s.PipelineError("DISCOVERY_NOT_AUTHORIZED")
+    if op.kind not in {"DISCOVERY", "REDETECTION"}:
+        raise s.PipelineError("READ_ONLY_OPERATION_UNSUPPORTED")
+    if op.kind == "DISCOVERY" and integration.platform in {"PENTAHO", "CUSTOM"}:
+        raise s.PipelineError(
+            "AUTHORITATIVE_DISCOVERY_UNAVAILABLE_MANUAL_REGISTRATION_REQUIRED"
+        )
+    connection = db.scalar(
+        select(PipelineConnection)
+        .where(
+            PipelineConnection.integration_id == integration.id,
+            PipelineConnection.organization_id == integration.organization_id,
+            PipelineConnection.active.is_(True),
+        )
+        .order_by(PipelineConnection.version.desc())
+    )
+    if not connection:
+        raise s.PipelineError("AUTHORIZED_CONNECTION_REQUIRED")
+    cfg = s.bounded(
+        connection.configuration, organization_id=integration.organization_id
+    )
+    descriptor = ADAPTER_DEFINITIONS[integration.platform]
+    # Execution selectors are not prerequisites for a read-only inventory. All
+    # actual connection/authority fields still use the existing adapter validator.
+    excluded = {"dag_id", "task_id", "job_name", "jobchain", "component_ids", "path"}
+    validator = type(
+        "InventoryConnection",
+        (Adapter,),
+        {
+            "platform": integration.platform,
+            "capabilities": tuple(descriptor["capabilities"]),
+            "step_semantics": PLATFORM_ADAPTERS[integration.platform].step_semantics,
+            "fields": tuple(descriptor["fields"]),
+            "required": tuple(k for k in descriptor["required"] if k not in excluded),
+        },
+    )(cfg)
+    for key, value in cfg.items():
+        if key.endswith("_ref") and value:
+            secret(value)
+    if integration.platform == "AWS_GLUE" and not cfg.get("profile_name"):
+        raise s.PipelineError("CUSTOMER_BOUND_AWS_PROFILE_REQUIRED")
+    return connection, validator
 
 
 def run_operation(id):
@@ -181,42 +334,26 @@ def run_operation(id):
         if op.lease_until and op.lease_until > s.clock(db):
             return
         integration = db.get(PipelineIntegration, op.integration_id)
-        refs = (
-            list(
-                db.scalars(
-                    select(PipelineMethod).where(
-                        PipelineMethod.integration_id == integration.id,
-                        PipelineMethod.enabled.is_(True),
-                    )
-                )
-            )
-            if integration
-            else []
-        )
-        if (
-            not integration
-            or not integration.enabled
-            or not refs
-            or not all(s.eligible(db, m) for m in refs)
-        ):
+        try:
+            connection, validator = read_only_connection(db, integration, op)
+        except Exception as error:
             op.state = "BLOCKED"
-            op.result = {"code": "LIVE_ACCEPTANCE_DEFERRED_OR_UNVERIFIED"}
+            op.result = {
+                "code": getattr(
+                    error, "code", getattr(error, "kind", "CONNECTION_NOT_AUTHORIZED")
+                ),
+                "absence_reconciliation": False,
+            }
             db.commit()
             return
-        connection = db.get(PipelineConnection, refs[0].connection_id)
         op.state = "RUNNING"
         op.fence += 1
         op.owner_id = OWNER
         operation_fence = op.fence
         operation_kind = op.kind
         integration_revision = integration.revision
-        source_versions = {
-            m.source_id: (
-                db.get(PipelineSource, m.source_id).generation,
-                db.get(PipelineSource, m.source_id).revision,
-            )
-            for m in refs
-        }
+        connection_id = connection.id
+        connection_checksum = connection.checksum
         op.attempts += 1
         op.lease_until = s.clock(db) + timedelta(seconds=120)
         db.expunge(connection)
@@ -226,11 +363,8 @@ def run_operation(id):
         if operation_kind == "DISCOVERY":
             inventory, complete = discover(integration, connection)
         else:
-            from app.pipeline_adapters import PLATFORM_ADAPTERS
-
-            result = PLATFORM_ADAPTERS[integration.platform](
-                connection.configuration
-            ).discover_capabilities()
+            result = validator.discover_capabilities()
+            result["platform"] = integration.platform
             inventory = []
             complete = False
         with SessionLocal() as db:
@@ -247,18 +381,11 @@ def run_operation(id):
             ):
                 return
             row = db.get(PipelineIntegration, current.integration_id)
+            active_connection, _ = read_only_connection(db, row, current)
             if (
-                not row.enabled
-                or row.revision != integration_revision
-                or any(
-                    (
-                        s.locked_source(db, sid).generation,
-                        s.locked_source(db, sid).revision,
-                    )
-                    != version
-                    or s.suspended(db, s.locked_source(db, sid))
-                    for sid, version in source_versions.items()
-                )
+                row.revision != integration_revision
+                or active_connection.id != connection_id
+                or active_connection.checksum != connection_checksum
             ):
                 current.state = "BLOCKED"
                 db.commit()
@@ -286,9 +413,14 @@ def run_operation(id):
             db.commit()
     except Exception as error:
         with SessionLocal() as db:
-            current = db.get(PipelineOperation, id)
+            current = db.scalar(
+                select(PipelineOperation)
+                .where(PipelineOperation.id == id)
+                .with_for_update()
+            )
             if (
-                current.state == "RUNNING"
+                current
+                and current.state == "RUNNING"
                 and current.fence == operation_fence
                 and current.owner_id == OWNER
             ):
@@ -431,7 +563,11 @@ def tick(dispatch=True):
                 select(PipelineOperation.id)
                 .where(
                     PipelineOperation.kind == "RECOVERY",
-                    PipelineOperation.state.in_(("PENDING", "APPROVED")),
+                    or_(
+                        PipelineOperation.state.in_(("PENDING", "APPROVED")),
+                        (PipelineOperation.state == "RUNNING")
+                        & (PipelineOperation.lease_until <= current),
+                    ),
                 )
                 .limit(8)
             )

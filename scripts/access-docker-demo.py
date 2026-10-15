@@ -1,10 +1,29 @@
 #!/usr/bin/env python3
 """Build and verify an owned Docker demo project; leave existing demos untouched."""
-import json, os, secrets, socket, subprocess, tempfile, time, shutil
+import hashlib, json, os, secrets, socket, subprocess, tempfile, time, shutil
 from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
+source_commit = subprocess.check_output(
+    ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+).strip()
+expected_commit = os.getenv("OPSCONTROL_DOCKER_EXPECTED_COMMIT")
+
+
+def verify_source_head():
+    if expected_commit:
+        current = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+        dirty = subprocess.check_output(
+            ["git", "status", "--porcelain"], cwd=ROOT, text=True
+        ).strip()
+        if current != expected_commit or dirty:
+            raise RuntimeError("Exact-head Docker verification requires the expected clean commit")
+
+
+verify_source_head()
 private = Path(tempfile.mkdtemp(prefix="opscontrol-access-docker-"))
 private.chmod(0o700)
 project = "opscontrol-access-demo-" + secrets.token_hex(5)
@@ -114,6 +133,20 @@ def call(path, method="GET", body=None, token=None):
 try:
     run(compose + ["up", "--build", "--detach"])
     print("Owned five-service Docker demo built", flush=True)
+    image_paths = [
+        "app/data_pipelines/api.py", "app/data_pipelines/service.py",
+        "app/data_pipelines/runtime.py",
+    ]
+    source_hashes = {
+        path: hashlib.sha256((ROOT / "backend" / path).read_bytes()).hexdigest()
+        for path in image_paths
+    }
+    for service in ("api", "worker"):
+        actual = run(compose + ["exec", "-T", service, "python", "-c",
+            "import hashlib,json;from pathlib import Path;print(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in "
+            + repr(image_paths) + "}))"])
+        if json.loads(actual) != source_hashes:
+            raise RuntimeError("Docker image does not match the checked-out pipeline source")
     for _ in range(120):
         try:
             call("/health")
@@ -204,10 +237,14 @@ try:
     else:
         raise RuntimeError("Docker demo restart/session persistence failed")
     out.mkdir(parents=True, exist_ok=True)
+    verify_source_head()
     (out / "docker.json").write_text(
         json.dumps(
             {
                 "status": "PASS",
+                "source_commit": source_commit,
+                "exact_head_checked": bool(expected_commit),
+                "api_worker_source_hashes": source_hashes,
                 "checks": [
                     "API/frontend/PostgreSQL/native worker/TLS ingestion gateway built and ready",
                     "Frontend nginx response has security headers",

@@ -3,6 +3,7 @@
 import os, uuid, unittest
 from datetime import timedelta
 from concurrent.futures import ThreadPoolExecutor
+from unittest.mock import patch
 from sqlalchemy import select, func, delete
 from sqlalchemy.exc import IntegrityError
 import app.main  # register all parent FK targets and scope guards
@@ -563,3 +564,552 @@ class OwnershipTests(unittest.TestCase):
             results = list(pool.map(attempt, range(2)))
         self.assertEqual(sum(isinstance(x, int) for x in results), 1)
         self.assertIn("SOURCE_ALREADY_OWNED", results)
+
+    def read_only_operation(self, kind="DISCOVERY"):
+        self.user.platform_admin = True
+        self.profile.evidence_status = "DOCUMENTED"
+        self.connection.configuration = {
+            "base_url": "https://inventory.example.test",
+            "auth_type": "NONE",
+        }
+        self.connection.checksum = s.digest(self.connection.configuration)
+        self.integration.enabled = False  # a saved draft, not activated collection
+        op, _ = s.operation(
+            self.db,
+            self.org.id,
+            kind,
+            uuid.uuid4().hex,
+            {},
+            self.user.id,
+            integration_id=self.integration.id,
+        )
+        self.db.commit()
+        return op
+
+    def test_review_discovery_unverified_draft_succeeds_activation_stays_blocked(self):
+        from app.data_pipelines.runtime import run_operation
+
+        op = self.read_only_operation()
+        # Mock only the read-only provider boundary; actual worker and DB run.
+        with patch(
+            "app.data_pipelines.runtime.discover",
+            return_value=(
+                [{"native_id": "discovered-dag", "name": "Discovered DAG"}],
+                True,
+            ),
+        ) as provider:
+            run_operation(op.id)
+        self.db.expire_all()
+        self.assertEqual(self.db.get(PipelineOperation, op.id).state, "COMPLETE")
+        provider.assert_called_once()
+        job = self.db.scalar(
+            select(PipelineJob).where(
+                PipelineJob.integration_id == self.integration.id,
+                PipelineJob.native_id == "discovered-dag",
+            )
+        )
+        self.assertFalse(job.selected)
+        self.assertFalse(s.eligible(self.db, self.method))
+        self.assertTrue(
+            any(
+                "METHOD_NOT_RUNTIME_VERIFIED" in x
+                for x in s.blockers(self.db, self.integration)
+            )
+        )
+
+    def test_review_unauthorized_discovery_never_reads_or_stales(self):
+        from app.data_pipelines.runtime import run_operation
+
+        op = self.read_only_operation()
+        self.user.platform_admin = False  # no customer grants
+        self.db.commit()
+        with patch("app.data_pipelines.runtime.discover") as provider:
+            run_operation(op.id)
+        self.db.expire_all()
+        current = self.db.get(PipelineOperation, op.id)
+        self.assertEqual(current.state, "BLOCKED")
+        self.assertEqual(current.result["code"], "DISCOVERY_NOT_AUTHORIZED")
+        provider.assert_not_called()
+
+    def test_review_incomplete_discovery_does_not_stale_or_delete(self):
+        from app.data_pipelines.runtime import run_operation
+
+        op = self.read_only_operation()
+        job = PipelineJob(
+            organization_id=self.org.id,
+            integration_id=self.integration.id,
+            native_id="missing",
+            name="Keep missing inventory",
+            origin="DISCOVERED",
+            selected=False,
+            quarantined=False,
+        )
+        self.db.add(job)
+        self.db.commit()
+        job_id = job.id
+        with patch("app.data_pipelines.runtime.discover", return_value=([], False)):
+            run_operation(op.id)
+        self.db.expire_all()
+        self.assertEqual(self.db.get(PipelineOperation, op.id).state, "INCOMPLETE")
+        self.assertIsNone(self.db.get(PipelineJob, job_id).stale_since)
+
+    def test_review_redetection_does_not_require_runtime_eligibility(self):
+        from app.data_pipelines.runtime import run_operation
+
+        op = self.read_only_operation("REDETECTION")
+        run_operation(op.id)
+        self.db.expire_all()
+        result = self.db.get(PipelineOperation, op.id)
+        self.assertEqual(result.state, "COMPLETE")
+        self.assertFalse(result.result["runtime_verified"])
+        self.assertIn("executions", result.result["capabilities"]["supported"])
+        self.assertFalse(s.eligible(self.db, self.method))
+
+    def shared_reader(
+        self,
+        configuration=None,
+        connection_configuration=None,
+        transport="BACKEND",
+        enabled=True,
+    ):
+        integration = PipelineIntegration(
+            organization_id=self.org.id,
+            name="Shared review",
+            platform="AIRFLOW",
+            environment="TEST",
+            owner_id=self.user.id,
+            enabled=True,
+            configuration={},
+        )
+        self.db.add(integration)
+        self.db.flush()
+        connection = PipelineConnection(
+            organization_id=self.org.id,
+            integration_id=integration.id,
+            version=1,
+            active=True,
+            configuration=connection_configuration or {},
+            checksum="b" * 64,
+        )
+        profile = PipelineCapability(
+            organization_id=self.org.id,
+            integration_id=integration.id,
+            platform_version="2.10",
+            edition="Controlled",
+            deployment_type="TEST",
+            definition={"supported_methods": ["PLATFORM_API"]},
+            compatibility="SUPPORTED",
+            evidence_status="RUNTIME_VERIFIED",
+            verification_evidence_id=self.proof.id,
+        )
+        self.db.add_all([connection, profile])
+        self.db.flush()
+        method = PipelineMethod(
+            organization_id=self.org.id,
+            integration_id=integration.id,
+            source_id=self.source.id,
+            connection_id=connection.id,
+            capability_id=profile.id,
+            name="Shared review reader",
+            enabled=enabled,
+            transport=transport,
+            validation="VALID",
+            configuration=configuration or {"method_type": "PLATFORM_API"},
+        )
+        self.db.add(method)
+        self.db.commit()
+        return method
+
+    def test_review_equivalent_readers_share_one_unit_and_one_fenced_owner(self):
+        shared = self.shared_reader()
+        self.assertEqual(shared.source_id, self.method.source_id)
+        s.reader_equivalence(
+            self.db, s.locked_source(self.db, self.source.id), persist=True
+        )
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4())
+        self.db.commit()
+        self.assertEqual(ticket["fence"], 41)
+        with self.assertRaises(s.PipelineError) as denied:
+            s.acquire(self.db, self.source.id, uuid.uuid4())
+        self.assertEqual(denied.exception.code, "SOURCE_ALREADY_OWNED")
+        self.db.rollback()
+        self.assertEqual(
+            self.db.scalar(
+                select(func.count())
+                .select_from(PipelineOperation)
+                .where(
+                    PipelineOperation.source_id == self.source.id,
+                    PipelineOperation.kind == "READER_CONTRACT",
+                )
+            ),
+            1,
+        )
+
+    def test_review_different_credentials_cannot_share(self):
+        self.shared_reader(
+            connection_configuration={
+                "credential_ref": "env:OPSCONTROL_PIPELINE_SECRET_"
+                + self.org.id.hex.upper()
+                + "_OTHER"
+            }
+        )
+        with self.assertRaises(s.PipelineError) as denied:
+            s.acquire(self.db, self.source.id, uuid.uuid4())
+        self.assertEqual(
+            denied.exception.detail, {"code": "SHARED_SOURCE_READER_CONFLICT"}
+        )
+        self.db.rollback()
+        self.assertEqual(self.source.fence, 40)
+
+    def test_review_different_queries_and_checkpoint_interpretation_cannot_share(self):
+        shared = self.shared_reader(
+            configuration={
+                "method_type": "PLATFORM_API",
+                "adapter_overrides": {"dag_id": "different-dag"},
+            }
+        )
+        for cfg in (
+            shared.configuration,
+            {"method_type": "PLATFORM_API", "native_identity_field": "different_id"},
+            {"method_type": "PLATFORM_API", "checkpoint_schema": "different-v2"},
+        ):
+            shared.configuration = cfg
+            self.db.commit()
+            with self.assertRaises(s.PipelineError) as denied:
+                s.acquire(self.db, self.source.id, uuid.uuid4())
+            self.assertEqual(denied.exception.code, "SHARED_SOURCE_READER_CONFLICT")
+            self.db.rollback()
+
+    def test_review_durable_contract_rejects_single_reader_change_without_handoff(self):
+        s.reader_equivalence(
+            self.db, s.locked_source(self.db, self.source.id), persist=True
+        )
+        self.db.commit()
+        self.method.configuration = {
+            **self.method.configuration,
+            "native_identity_field": "unsafe_changed_cursor",
+        }
+        self.db.commit()
+        with self.assertRaises(s.PipelineError) as denied:
+            s.acquire(self.db, self.source.id, uuid.uuid4())
+        self.assertEqual(denied.exception.code, "SHARED_SOURCE_READER_CONFLICT")
+        self.db.rollback()
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+
+    def test_review_enabling_incompatible_binding_is_rejected_by_api(self):
+        from app.data_pipelines.api import edit_method, MethodEdit
+        from app.security.scope import Principal, current_principal
+
+        shared = self.shared_reader(
+            configuration={
+                "method_type": "PLATFORM_API",
+                "adapter_overrides": {"dag_id": "other"},
+            },
+            enabled=False,
+        )
+        token = current_principal.set(
+            Principal(self.user.id, self.user.username, True, {})
+        )
+        try:
+            with self.assertRaises(s.PipelineError) as denied:
+                edit_method(
+                    shared.id,
+                    MethodEdit(
+                        name=shared.name,
+                        enabled=True,
+                        expected_revision=shared.revision,
+                        idempotency_key=uuid.uuid4().hex,
+                    ),
+                    self.db,
+                )
+            self.assertEqual(denied.exception.code, "SHARED_SOURCE_READER_CONFLICT")
+            self.db.rollback()
+            self.assertFalse(self.db.get(PipelineMethod, shared.id).enabled)
+        finally:
+            current_principal.reset(token)
+
+    def latest_failure(self):
+        self.db.expire_all()
+        return self.db.scalar(
+            select(PipelineOperation)
+            .where(
+                PipelineOperation.source_id == self.source.id,
+                PipelineOperation.kind == "COLLECTION_FAILURE",
+            )
+            .order_by(PipelineOperation.created_at.desc())
+        )
+
+    def test_review_preparation_exception_rolls_back_and_releases_owned_lease(self):
+        from app.data_pipelines.runtime import run_source
+
+        with patch(
+            "sqlalchemy.orm.Session.expunge",
+            side_effect=ValueError("private diagnostic"),
+        ), patch("app.data_pipelines.runtime.collect_method") as provider:
+            run_source(self.source.id)
+        failure = self.latest_failure()
+        self.assertEqual(
+            failure.result, {"error_code": "RUNTIME_ERROR", "ownership_released": True}
+        )
+        source = self.db.get(PipelineSource, self.source.id)
+        self.assertIsNone(source.owner_id)
+        self.assertIsNone(source.lease_until)
+        self.assertEqual(source.live_checkpoint, {"cursor": 0})
+        provider.assert_not_called()
+
+    def test_review_invalid_recovery_operation_cannot_become_live_collection(self):
+        from app.data_pipelines.runtime import run_source
+
+        with patch("app.data_pipelines.runtime.collect_method") as provider:
+            run_source(self.source.id, uuid.uuid4())
+        failure = self.latest_failure()
+        self.assertEqual(failure.result["error_code"], "RECOVERY_NOT_ELIGIBLE")
+        provider.assert_not_called()
+        self.assertEqual(
+            self.db.get(PipelineSource, self.source.id).live_checkpoint, {"cursor": 0}
+        )
+
+    def test_review_expired_worker_never_commits_checkpoint_or_cleans_new_owner(self):
+        from app.data_pipelines.runtime import run_source
+
+        def expire(*args, **kwargs):
+            with SessionLocal() as db:
+                source = s.locked_source(db, self.source.id)
+                source.lease_until = s.clock(db) - timedelta(seconds=1)
+                db.commit()
+            return [self.fact("late-expired")], {"cursor": 100}, True
+
+        with patch("app.data_pipelines.runtime.collect_method", side_effect=expire):
+            run_source(self.source.id)
+        failure = self.latest_failure()
+        self.assertFalse(failure.result["ownership_released"])
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+        self.assertEqual(
+            self.db.scalar(
+                select(func.count())
+                .select_from(PipelineEvidence)
+                .where(PipelineEvidence.source_id == self.source.id)
+            ),
+            1,
+        )
+
+    def test_review_replacement_commit_survives_stale_worker_cleanup(self):
+        from app.data_pipelines.runtime import run_source
+
+        replacement = uuid.uuid4()
+
+        def replace(*args, **kwargs):
+            with SessionLocal() as db:
+                source = s.locked_source(db, self.source.id)
+                source.lease_until = s.clock(db) - timedelta(seconds=1)
+                db.commit()
+                ticket = s.acquire(db, source.id, replacement)
+                db.commit()
+                s.accept(db, ticket, [self.fact("replacement")], {"cursor": 42}, True)
+                db.commit()
+            return [self.fact("stale")], {"cursor": 41}, True
+
+        with patch("app.data_pipelines.runtime.collect_method", side_effect=replace):
+            run_source(self.source.id)
+        failure = self.latest_failure()
+        self.assertFalse(failure.result["ownership_released"])
+        self.assertEqual(self.source.owner_id, replacement)
+        self.assertEqual(self.source.fence, 42)
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 42})
+        self.assertNotEqual(self.source.health, "ERROR")
+        self.assertFalse(
+            self.db.scalar(
+                select(PipelineEvidence.id).where(
+                    PipelineEvidence.source_id == self.source.id,
+                    PipelineEvidence.external_key == "stale",
+                )
+            )
+        )
+
+    def test_review_recovery_failure_preserves_live_and_recovery_cursors(self):
+        from app.data_pipelines.runtime import run_source
+
+        self.source.next_run_at = s.clock(self.db) + timedelta(minutes=1)
+        self.source.recovery_checkpoint = {"cursor": 7}
+        op, _ = s.operation(
+            self.db,
+            self.org.id,
+            "RECOVERY",
+            uuid.uuid4().hex,
+            {
+                "generation": str(self.source.generation),
+                "start": s.clock(self.db).isoformat(),
+                "end": s.clock(self.db).isoformat(),
+            },
+            self.user.id,
+            source_id=self.source.id,
+        )
+        self.db.commit()
+        run_source(self.source.id, op.id)
+        self.db.expire_all()
+        self.assertEqual(self.db.get(PipelineOperation, op.id).state, "UNRECOVERABLE")
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+        self.assertEqual(self.source.recovery_checkpoint, {"cursor": 7})
+
+    def test_review_verification_failure_is_structured_and_does_not_advance(self):
+        from app.data_pipelines.runtime import run_source
+
+        op, _ = s.operation(
+            self.db,
+            self.org.id,
+            "VERIFY",
+            uuid.uuid4().hex,
+            {"generation": str(self.source.generation)},
+            self.user.id,
+            source_id=self.source.id,
+        )
+        op.state = "RUNNING"
+        op.lease_until = s.clock(self.db) + timedelta(minutes=5)
+        self.profile.evidence_status = "DOCUMENTED"
+        self.db.commit()
+        with patch.dict(
+            os.environ, {"OPSCONTROL_PIPELINE_RUNTIME_ACCEPTANCE": "1"}
+        ), patch(
+            "app.data_pipelines.runtime.collect_method",
+            side_effect=ValueError("sensitive provider detail"),
+        ):
+            run_source(self.source.id, verification=True)
+        self.db.expire_all()
+        self.assertEqual(self.db.get(PipelineOperation, op.id).state, "FAILED")
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+        self.assertEqual(self.latest_failure().result["error_code"], "RUNTIME_ERROR")
+
+    def test_review_replacement_active_lease_is_never_released_by_stale_cleanup(self):
+        from app.data_pipelines.runtime import run_source
+
+        replacement = uuid.uuid4()
+        lease = []
+
+        def replace(*args, **kwargs):
+            with SessionLocal() as db:
+                source = s.locked_source(db, self.source.id)
+                source.lease_until = s.clock(db) - timedelta(seconds=1)
+                db.commit()
+                ticket = s.acquire(db, source.id, replacement)
+                lease.append(ticket["lease_until"])
+                db.commit()
+            return [], {"cursor": 100}, True
+
+        with patch("app.data_pipelines.runtime.collect_method", side_effect=replace):
+            run_source(self.source.id)
+        self.assertFalse(self.latest_failure().result["ownership_released"])
+        self.assertEqual(self.source.owner_id, replacement)
+        self.assertEqual(self.source.lease_until.isoformat(), lease[0])
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+
+    def test_review_adding_incompatible_binding_is_rejected_by_api(self):
+        from app.data_pipelines.api import add_method, MethodInput
+        from app.security.scope import Principal, current_principal
+
+        identity, key = s.canonical(
+            "PLATFORM_API",
+            {
+                "platform": "AIRFLOW",
+                "endpoint": "https://inventory.example.test",
+                "account": "controlled",
+                "physical_scope": "all-dags",
+            },
+        )
+        self.source.identity, self.source.canonical_key = identity, key
+        self.connection.configuration = {
+            "base_url": identity["endpoint"],
+            "auth_type": "NONE",
+        }
+        self.db.commit()
+        shared = self.shared_reader(
+            connection_configuration={
+                "base_url": identity["endpoint"],
+                "auth_type": "NONE",
+                "dag_id": "different-scope",
+            }
+        )
+        other_id, conn_id, cap_id = (
+            shared.integration_id,
+            shared.connection_id,
+            shared.capability_id,
+        )
+        self.db.delete(shared)
+        self.db.commit()
+        token = current_principal.set(
+            Principal(self.user.id, self.user.username, True, {})
+        )
+        try:
+            with self.assertRaises(s.PipelineError) as denied:
+                add_method(
+                    other_id,
+                    MethodInput(
+                        name="Reject conflicting query",
+                        method_type="PLATFORM_API",
+                        transport="BACKEND",
+                        identity=identity,
+                        connection_id=conn_id,
+                        capability_id=cap_id,
+                        configuration={},
+                        enabled=True,
+                        idempotency_key=uuid.uuid4().hex,
+                    ),
+                    self.db,
+                )
+            self.assertEqual(denied.exception.code, "SHARED_SOURCE_READER_CONFLICT")
+            self.db.rollback()
+            self.assertIsNone(
+                self.db.scalar(
+                    select(PipelineMethod.id).where(
+                        PipelineMethod.integration_id == other_id
+                    )
+                )
+            )
+        finally:
+            current_principal.reset(token)
+
+    def test_review_failed_database_preparation_is_rolled_back_before_cleanup(self):
+        from app.data_pipelines.runtime import run_source
+        from sqlalchemy import text
+
+        def invalid_transaction(db, obj):
+            db.execute(text("SELECT 1/0"))
+
+        with patch("sqlalchemy.orm.Session.expunge", new=invalid_transaction):
+            run_source(self.source.id)
+        self.assertTrue(self.latest_failure().result["ownership_released"])
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+        self.assertIsNone(self.source.lease_until)
+
+    def test_review_expired_recovery_claim_is_requeued_and_refenced(self):
+        from app.data_pipelines.runtime import run_source, tick
+
+        current = s.clock(self.db)
+        self.source.next_run_at = current + timedelta(minutes=1)
+        op, _ = s.operation(
+            self.db,
+            self.org.id,
+            "RECOVERY",
+            uuid.uuid4().hex,
+            {
+                "generation": str(self.source.generation),
+                "start": current.isoformat(),
+                "end": current.isoformat(),
+            },
+            self.user.id,
+            source_id=self.source.id,
+        )
+        op.state, op.fence, op.owner_id = "RUNNING", 7, uuid.uuid4()
+        op.lease_until = current - timedelta(seconds=1)
+        self.db.commit()
+        self.assertIn(op.id, tick(False)["recoveries"])
+        run_source(self.source.id, op.id)
+        self.db.expire_all()
+        current_op = self.db.get(PipelineOperation, op.id)
+        self.assertEqual(current_op.fence, 8)
+        self.assertEqual(
+            current_op.state, "UNRECOVERABLE"
+        )  # unsupported provider replay, not fabricated recovery
+        self.assertEqual(
+            current_op.result["error_code"], "BOUNDED_PROVIDER_REPLAY_NOT_SUPPORTED"
+        )
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
