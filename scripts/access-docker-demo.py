@@ -41,7 +41,17 @@ def port():
         return sock.getsockname()[1]
 
 
-api_port, ui_port, gateway_port = port(), port(), port()
+fixed_ports = os.getenv("OPSCONTROL_DOCKER_TEST_PORTS")
+if fixed_ports:
+    ports = [int(value) for value in fixed_ports.split(",")]
+    if len(ports) != 3 or len(set(ports)) != 3 or any(not 1024 <= value <= 65535 for value in ports):
+        raise RuntimeError("Three distinct unprivileged test ports required")
+    api_port, ui_port, gateway_port = ports
+else:
+    api_port, ui_port, gateway_port = port(), port(), port()
+# A nested verification daemon exposes ports inside its private namespace;
+# its outer container must publish these only on the runner's loopback address.
+bind_address = "0.0.0.0" if os.getenv("OPSCONTROL_DOCKER_NESTED") == "1" else "127.0.0.1"
 subprocess.run(
     [
         str(ROOT / "backend/.venv/bin/python"),
@@ -69,7 +79,7 @@ db_password = secrets.token_urlsafe(36)
       CORS_ORIGINS: http://127.0.0.1:{ui_port}
       OPSCONTROL_PUBLIC_INGESTION_URL: https://localhost:{gateway_port}
     ports: !override
-      - "127.0.0.1:{api_port}:8000"
+      - "{bind_address}:{api_port}:8000"
     volumes: !override
       - "{private}/admin-password:/run/secrets/demo_admin_password:ro"
   worker:
@@ -77,7 +87,7 @@ db_password = secrets.token_urlsafe(36)
       DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
   ingestion-gateway:
     ports: !override
-      - "127.0.0.1:{gateway_port}:8443"
+      - "{bind_address}:{gateway_port}:8443"
     volumes: !override
       - "{ROOT}/deploy/gateway/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "{private}/gateway/tls.crt:/etc/opscontrol/tls/tls.crt:ro"
@@ -87,7 +97,7 @@ db_password = secrets.token_urlsafe(36)
       args:
         VITE_API_BASE_URL: http://127.0.0.1:{api_port}
     ports: !override
-      - "127.0.0.1:{ui_port}:80"
+      - "{bind_address}:{ui_port}:80"
 """
 )
 compose = [
@@ -290,6 +300,11 @@ try:
     print(
         "ISOLATED DOCKER BUILD / BOOTSTRAP / RESTART / AUTHENTICATION PASS", flush=True
     )
+except Exception:
+    logs = subprocess.run(compose + ["logs", "--no-color", "--tail", "160"],
+                          cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)
+    (private / "services.log").write_text(logs.stdout + logs.stderr)
+    raise
 finally:
     # Only this invocation's generated project and volumes are removable.
     subprocess.run(

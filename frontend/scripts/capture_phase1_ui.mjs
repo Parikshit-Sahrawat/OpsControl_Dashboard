@@ -92,17 +92,51 @@ try {
     await capture(label, filename);
   }
   await page.waitForTimeout(1500);
-  for (const [label, filename] of [
-    ["Organizations", "11-organizations"],
-    ["Data Sources", "12-data-sources"],
-    ["Collectors", "13-collectors"],
-    ["Templates", "14-templates"],
+  const resourceSections = page.getByRole("tablist", {
+    name: "Resource Management sections",
+    exact: true,
+  });
+  for (const [section, domains] of [
+    [
+      "Data Resources",
+      ["Compute Instances", "Data Pipelines", "API Endpoints"],
+    ],
+    [
+      "Event Parameters",
+      [
+        "Compute Health Parameters",
+        "Data Pipeline Parameters",
+        "API Endpoint Parameters",
+      ],
+    ],
+    [
+      "Alert Rules",
+      [
+        "Compute Instances Alert Setup",
+        "Data Pipelines Alert Setup",
+        "API Endpoints Alert Setup",
+      ],
+    ],
+    ["Notification Delivery", []],
   ]) {
-    await page
-      .locator("button.resource-tab")
-      .filter({ hasText: label })
+    await resourceSections
+      .getByRole("tab", { name: section, exact: true })
       .click();
-    await capture("Resource Management / " + label, filename);
+    if (!domains.length)
+      await capture(
+        "Resource Management / " + section,
+        "14-notification-delivery",
+      );
+    for (const domain of domains) {
+      await page.getByRole("tab", { name: domain, exact: true }).click();
+      await capture(
+        "Resource Management / " + section + " / " + domain,
+        "11-" +
+          section.toLowerCase().replaceAll(" ", "-") +
+          "-" +
+          domain.toLowerCase().replaceAll(" ", "-"),
+      );
+    }
   }
 } finally {
   await writeFile(
