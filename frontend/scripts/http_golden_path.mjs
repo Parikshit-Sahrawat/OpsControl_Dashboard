@@ -22,6 +22,8 @@ try {
   await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
   await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
+  // The locked binding is populated asynchronously by the embedded view.
+  await page.waitForFunction(expected => [...document.querySelectorAll('select')].some(select => select.disabled && select.value === expected), state.source_id);
   assert.equal(await page.getByLabel(/^Data Source/).inputValue(), state.source_id);
   assert.equal(await page.getByLabel(/^Data Source/).isDisabled(), true);
   const diag=page.getByTestId('monitoring-diagnostics');

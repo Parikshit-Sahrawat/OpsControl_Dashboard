@@ -26,8 +26,32 @@ npm run lint --prefix frontend
 npm test --prefix frontend
 ```
 
-Local results: **44 actual PostgreSQL tests, 107 selected backend regressions, nine HTTP acceptance groups, six frontend authorization tests and the expanded real Playwright flow passed**. The browser lab's mandatory Vite production build succeeded before preview startup. Alembic head remains `0032_pipeline_ownership`; populated preservation, zero drift, empty downgrade/re-upgrade and populated downgrade refusal passed. No new migration was required.
+Local results: **46 actual PostgreSQL tests, 107 selected backend regressions, nine HTTP acceptance groups, six frontend authorization tests and the expanded real Playwright flow passed**. The browser lab's mandatory Vite production build succeeded before preview startup. Alembic head remains `0032_pipeline_ownership`; populated preservation, zero drift, empty downgrade/re-upgrade and populated downgrade refusal passed. No new migration was required.
 
 Browser evidence covers connection/profile persistence, two independent methods, fixture-driven native discovery through the actual worker/database, explicit selection (the second discovered job remains unselected), confirmed source association, backend activation denial, scoped viewer inventory and direct 401/403/404 negatives. The vendor inventory is explicitly a controlled fixture, not live platform or runtime capability verification. Screenshots and machine-readable results are in [remediation](remediation).
 
 Exact-head Docker verification and the remote `phase1-staging.yml` job are published in PR #34 after the source commit. Any committed Docker evidence identifies the tested commit and source manifest; later evidence-only commits do not change the application manifest. No merge or production deployment is authorized by these results.
+
+## Follow-up CI regressions
+
+The legacy job-order creation API flushed a VM projection before attaching its
+validated host source. Its subsequent attempt to change that immutable binding
+failed. The initial projection now receives the server-authorized source; two
+PostgreSQL regressions prove initial creation succeeds while replacement and
+cross-customer binding remain prohibited. No ownership guard or migration changed.
+
+Existing browser gates were aligned with the actual V1.5 navigation and contracts:
+API resource tabs and independent customer filtering; the removed Organization
+Access UI remains absent while paired grants are exercised through authenticated
+APIs; sensitive-action confirmations are accepted by the controlled test; async
+locked-source loading is awaited; inventory expansion survives domain navigation;
+resource PUTs retain required identity/configuration; and superseded fetch aborts
+cannot erase newer inventory. The same-type File Log test now checks the two real
+sources after adding the second, accounting for the fixture's preceding deletion.
+No production UI or endpoint was added to satisfy these checks.
+
+The restore fingerprint's exact approved CHECK list now matches the V1.5/V1.6
+migrations, including incident statuses and pipeline source enums. It still rejects changed operators/values and compares every
+other constraint byte for byte. Four focused unit tests reject modified values/operators and unvalidated checks,
+while proving the documented cast rewrite is equivalent. This changes test
+verification, not database constraints or incident behavior.

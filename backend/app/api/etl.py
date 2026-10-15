@@ -60,7 +60,11 @@ def create_job_order(payload:JobOrderCreate,db:Session=Depends(get_db)):
         if not host or host.organization_id!=org.id:raise HTTPException(409,'Host source unavailable in this organization')
     vm=db.scalar(select(VM).where(VM.organization_id==org.id,VM.hostname==payload.hostname))
     if not vm:
-        vm=VM(organization_id=org.id,hostname=payload.hostname,environment=payload.environment);db.add(vm);db.flush()
+        vm=VM(organization_id=org.id,hostname=payload.hostname,environment=payload.environment)
+        # Include the authorized host in the first projection, rather than
+        # attempting a later change to its immutable ownership relationship.
+        vm._unified_initial_source_id=payload.host_data_source_id
+        db.add(vm);db.flush()
     values=payload.model_dump(exclude={'hostname','timezone','weekdays'})
     job=JobOrder(vm_id=vm.id,**values,schedule={'timezone':payload.timezone,'weekdays':payload.weekdays})
     db.add(job)

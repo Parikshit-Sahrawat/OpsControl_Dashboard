@@ -61,6 +61,16 @@ def bind_legacy(db, context):
                     "os_type": obj.os or "Other",
                 },
             }
+            initial_source_id = getattr(obj, "_unified_initial_source_id", None)
+            if initial_source_id is not None:
+                source = db.get(DataSource, initial_source_id)
+                if source is None or source.organization_id != org:
+                    from fastapi import HTTPException
+
+                    raise HTTPException(
+                        409, "Initial host source must belong to the VM customer"
+                    )
+                values["data_source_id"] = source.id
         elif isinstance(obj, JobOrder):
             domain = "ETL"
             name = obj.name

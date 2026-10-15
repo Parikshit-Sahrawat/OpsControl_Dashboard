@@ -33,7 +33,17 @@ def fingerprint(connection) -> dict:
         ('user_role_assignments', 'ck_employee_role_effect'): "CHECKeffect=ANYARRAY['ALLOW','DENY']",
         ('monitoring_rule_catalogs', 'ck_monitoring_catalog_kind'): "CHECKkind=ANYARRAY['METRIC','LOG','ALERT']",
         ('operational_incidents', 'ck_incident_condition'): "CHECKcondition_status=ANYARRAY['ACTIVE','RECOVERED']",
-        ('operational_incidents', 'ck_incident_status'): "CHECKstatus=ANYARRAY['OPEN','ACKNOWLEDGED','INVESTIGATING','RESOLVED']",
+        ('operational_incidents', 'ck_incident_status'): "CHECKstatus=ANYARRAY['OPEN','ACKNOWLEDGED','INVESTIGATING','RECOVERY_IN_PROGRESS','MONITORING','RESOLVED','CLOSED']",
+        ('monitoring_resources', 'ck_resource_domain'): "CHECKdomain=ANYARRAY['VM','ETL','API']",
+        ('monitoring_resources', 'ck_resource_environment'): "CHECKenvironment=ANYARRAY['PROD','QA','TEST','DEV','SANDBOX']",
+        ('resource_drafts', 'ck_resource_draft_domain'): "CHECKdomain=ANYARRAY['VM','ETL','API']",
+        ('resource_dependencies', 'ck_dependency_type'): "CHECKrelationship_type=ANYARRAY['HOSTED_ON','REQUIRES_SERVICE','DEPENDS_ON']",
+        ('resource_parameter_versions', 'ck_parameter_status'): "CHECKstatus=ANYARRAY['VALIDATED','ACTIVE','SUPERSEDED']",
+        ('pipeline_integrations', 'ck_pipeline_environment'): "CHECKenvironment=ANYARRAY['PROD','QA','TEST','DEV','SANDBOX']",
+        ('pipeline_methods', 'ck_pipeline_transport'): "CHECKtransport=ANYARRAY['BACKEND','AGENT']",
+        ('pipeline_capabilities', 'ck_pipeline_compatibility'): "CHECKcompatibility=ANYARRAY['SUPPORTED','CONDITIONAL','UNSUPPORTED','UNVERIFIED']",
+        ('pipeline_capabilities', 'ck_pipeline_capability_evidence'): "CHECKevidence_status=ANYARRAY['DOCUMENTED','RUNTIME_VERIFIED','UNKNOWN']",
+        ('pipeline_holds', 'ck_pipeline_hold_kind'): "CHECKkind=ANYARRAY['INTEGRATION','MANUAL','LEGAL','CONTINUITY']",
     }
     signatures = []
     for row in constraints:

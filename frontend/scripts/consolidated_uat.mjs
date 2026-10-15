@@ -146,8 +146,8 @@ try {
   const initialCollector = await (await collectorResponse).json();
   assert(
     initialCollector.methods.filter((m) => m.method_type === "FILE_LOG")
-      .length >= 2,
-    "Fixture must preserve multiple independent real File Log methods",
+      .length >= 1,
+    "Fixture must preserve the real File Log method after its CRUD deletion check",
   );
   const dialog = page.getByRole("dialog", {
     name: "Collector Details",
@@ -177,6 +177,28 @@ try {
   assert.equal(savedMethodResponse.status(), 201);
   const savedMethod = await savedMethodResponse.json();
   assert(!initialCollector.methods.some((m) => m.id === savedMethod.id));
+  const liveMethods = await page.request.get(
+    apiOrigin + "/api/v1/agent-control/collectors/" + fixture.collector_id,
+    {
+      headers: {
+        Authorization:
+          "Bearer " +
+          (await page.evaluate(() =>
+            sessionStorage.getItem("opscontrol.sessionToken"),
+          )),
+      },
+    },
+  );
+  assert.equal(liveMethods.status(), 200);
+  const sameType = (await liveMethods.json()).methods.filter(
+    (m) => m.method_type === "FILE_LOG",
+  );
+  assert(
+    sameType.length >= 2,
+    "Adding a method preserves simultaneous independent File Log sources",
+  );
+  assert.equal(new Set(sameType.map((m) => m.id)).size, sameType.length);
+
   await dialog.getByText("Browser same-type log", { exact: true }).waitFor();
   const methodRow = dialog
     .locator("tr")

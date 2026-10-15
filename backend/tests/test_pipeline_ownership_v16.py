@@ -1295,3 +1295,95 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(current.state, "RUNNING")
         self.assertEqual(current.fence, 8)
         self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+
+    def test_legacy_job_initial_host_binding_preserves_immutable_ownership(self):
+        from app.api.etl import create_job_order
+        from app.models import DataSource
+        from app.schemas.etl import JobOrderCreate
+        from app.unified.models import MonitoringResource
+        from app.security.scope import Principal, current_principal
+        from fastapi import HTTPException
+
+        host = DataSource(
+            organization_id=self.org.id,
+            name="Controlled legacy host",
+            source_type="LINUX_HOST",
+            connection_config={},
+        )
+        other = DataSource(
+            organization_id=self.org.id,
+            name="Forbidden replacement",
+            source_type="LINUX_HOST",
+            connection_config={},
+        )
+        self.db.add_all([host, other])
+        self.db.commit()
+        principal = Principal(self.user.id, self.user.username, True, {})
+        token = current_principal.set(principal)
+        self.db.info["opscontrol_principal"] = principal
+        try:
+            created = create_job_order(
+                JobOrderCreate(
+                    organization_id=self.org.id,
+                    hostname="controlled-new-" + uuid.uuid4().hex,
+                    name="Controlled legacy job",
+                    environment="TEST",
+                    host_data_source_id=host.id,
+                    expected_runtime_seconds=60,
+                    sla_seconds=120,
+                ),
+                self.db,
+            )
+            parent = self.db.scalar(
+                select(MonitoringResource).where(
+                    MonitoringResource.vm_id == uuid.UUID(created["vm_id"])
+                )
+            )
+            parent_id = parent.id
+            self.assertEqual(parent.data_source_id, host.id)
+            parent.data_source_id = other.id
+            with self.assertRaises(HTTPException) as denied:
+                self.db.flush()
+            self.assertEqual(denied.exception.status_code, 403)
+            self.db.rollback()
+            self.assertEqual(
+                self.db.get(MonitoringResource, parent_id).data_source_id, host.id
+            )
+        finally:
+            self.db.info.pop("opscontrol_principal", None)
+            current_principal.reset(token)
+
+    def test_legacy_job_initial_host_binding_rejects_other_customer(self):
+        from app.api.etl import create_job_order
+        from app.models import DataSource, VM
+        from app.schemas.etl import JobOrderCreate
+        from fastapi import HTTPException
+
+        foreign = Organization(
+            name="Controlled foreign customer", code="FOREIGN-" + uuid.uuid4().hex[:10]
+        )
+        self.db.add(foreign)
+        self.db.flush()
+        host = DataSource(
+            organization_id=foreign.id,
+            name="Foreign host",
+            source_type="LINUX_HOST",
+            connection_config={},
+        )
+        self.db.add(host)
+        self.db.commit()
+        hostname = "must-not-create-" + uuid.uuid4().hex
+        with self.assertRaises(HTTPException) as denied:
+            create_job_order(
+                JobOrderCreate(
+                    organization_id=self.org.id,
+                    hostname=hostname,
+                    name="Reject cross customer",
+                    host_data_source_id=host.id,
+                    expected_runtime_seconds=60,
+                    sla_seconds=120,
+                ),
+                self.db,
+            )
+        self.assertEqual(denied.exception.status_code, 409)
+        self.assertIsNone(self.db.scalar(select(VM.id).where(VM.hostname == hostname)))
