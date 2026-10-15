@@ -283,6 +283,8 @@ def reduce_execution(db, resource, identity):
 
 
 def ingest_logs(db, resource, version, limit=200):
+    if resource.configuration.get("pipeline_integration_id"):
+        return 0  # V1.6 accepts only fenced, native-identity-routed source evidence.
     if not resource.linked_vm_id:
         return 0
     vm = db.scalar(

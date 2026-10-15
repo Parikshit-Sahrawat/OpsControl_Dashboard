@@ -111,6 +111,9 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
+from app.data_pipelines import api as data_pipelines_api, agent_api as pipeline_agent_api
+app.include_router(pipeline_agent_api.router)
+app.include_router(data_pipelines_api.router, dependencies=[Depends(authorize_route)])
 app.include_router(unified.router, dependencies=[Depends(authorize_route)])
 app.include_router(registry_api.router, dependencies=[Depends(authorize_route)])
 app.include_router(native_incidents_api.router, dependencies=[Depends(authorize_route)])

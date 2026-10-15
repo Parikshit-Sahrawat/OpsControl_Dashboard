@@ -1,0 +1,45 @@
+name: ARCH-001 V1.6 pipeline ownership
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pipeline-v16-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  pipeline-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ENV: test
+      V16_API_ACCEPTANCE: '1'
+      V16_EVIDENCE_DIR: /tmp/opscontrol-v16-evidence
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: Install existing locked backend tools
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+      - name: Static and focused transport checks
+        run: |
+          backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py
+          backend/.venv/bin/ruff check backend/app/data_pipelines
+          make test-pipeline-v16
+      - name: Protected V1.5 monitoring regressions
+        working-directory: backend
+        run: |
+          .venv/bin/python -m unittest tests.test_unified_monitoring tests.test_unified_v15_contracts tests.test_pipeline_runtime_v15 tests.test_pipeline_adapters tests.test_native_incidents_v15 tests.test_access_control tests.test_remote_auth -v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: arch001-v16-pipeline-evidence
+          path: /tmp/opscontrol-v16-evidence
+          if-no-files-found: warn

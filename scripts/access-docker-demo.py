@@ -41,6 +41,7 @@ db_password = secrets.token_urlsafe(36)
     f"""services:
   postgres:
     image: postgres:17-alpine
+    volumes: !override []
     environment:
       POSTGRES_PASSWORD: {db_password}
   api:
@@ -177,7 +178,18 @@ try:
     )
     assert "0.123.0" in runtime
     current = run(compose + ["exec", "-T", "api", "python", "-m", "alembic", "current"])
-    assert "0031_in_app_notifications" in current
+    expected = run(
+        compose
+        + [
+            "exec",
+            "-T",
+            "api",
+            "python",
+            "-c",
+            'from alembic.config import Config;from alembic.script import ScriptDirectory;print(ScriptDirectory.from_config(Config("alembic.ini")).get_current_head())',
+        ]
+    )
+    assert expected.strip() in current
     comparison = run(
         compose + ["exec", "-T", "api", "python", "-m", "alembic", "check"]
     )
@@ -199,7 +211,7 @@ try:
                 "checks": [
                     "API/frontend/PostgreSQL/native worker/TLS ingestion gateway built and ready",
                     "Frontend nginx response has security headers",
-                    "Migration head 0031 installed",
+                    "Expected additive migration head installed",
                     "Full image/schema Alembic check has zero pending operations",
                     "Provider departments/customer UUIDs separated",
                     "Bootstrap repeat retains UUIDs and user count",
