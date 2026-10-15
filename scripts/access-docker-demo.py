@@ -131,7 +131,12 @@ def call(path, method="GET", body=None, token=None):
 
 
 try:
-    run(compose + ["up", "--build", "--detach"])
+    run(compose + ["build"])
+    if env.get("OPSCONTROL_DOCKER_RECOVER_BUILD_CACHE") == "1":
+        # VFS hosts retain full build snapshots. Release unused, rebuildable
+        # cache before allocating the five runtime filesystems; never prune data.
+        run(["docker", "builder", "prune", "--all", "--force"])
+    run(compose + ["up", "--no-build", "--detach"])
     print("Owned five-service Docker demo built", flush=True)
     image_paths = [
         "app/data_pipelines/api.py", "app/data_pipelines/service.py",
