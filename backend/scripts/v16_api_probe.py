@@ -531,8 +531,10 @@ Path(os.environ["V16_EVIDENCE_DIR"]).joinpath("api.json").write_text(
         {
             "base_url": base,
             "password": fixture["password"],
+            "viewer_password": fixture["viewer_password"],
             "integration_id": id,
             "organization_id": aid,
+            "other_organization_id": bid,
         }
     )
 )

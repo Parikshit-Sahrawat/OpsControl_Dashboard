@@ -1113,3 +1113,185 @@ class OwnershipTests(unittest.TestCase):
             current_op.result["error_code"], "BOUNDED_PROVIDER_REPLAY_NOT_SUPPORTED"
         )
         self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+
+    def upgrade_fixture(self, extra_source=False):
+        from app.models import DataSource
+        from app.unified.models import MonitoringResource
+
+        org_id = uuid.uuid4()
+        org = Organization(
+            id=org_id,
+            name="Disposable preservation fixture",
+            code="UPGRADE-LAB-" + org_id.hex[:12],
+            active=True,
+        )
+        self.db.add(org)
+        self.db.flush()
+        source = DataSource(
+            organization_id=org_id,
+            name="Preserved test source",
+            source_type="API",
+            enabled=True,
+            status="UNKNOWN",
+            connection_config={},
+        )
+        self.db.add(source)
+        self.db.flush()
+        if extra_source:
+            self.db.add(
+                DataSource(
+                    organization_id=org_id,
+                    name="Unmapped protected source",
+                    source_type="API",
+                    enabled=True,
+                    status="UNKNOWN",
+                    connection_config={},
+                )
+            )
+        self.db.commit()
+        resource = self.db.scalar(
+            select(MonitoringResource).where(
+                MonitoringResource.data_source_id == source.id
+            )
+        )
+        self.assertIsNotNone(
+            resource
+        )  # the actual V1.5 projection, not a duplicate fixture
+        return org.id, source.id, resource.id
+
+    def test_upgrade_fixture_cleanup_orders_resource_before_source_preserves_others(
+        self,
+    ):
+        from scripts.existing_database_upgrade_probe import cleanup_fixture
+        from app.models import DataSource
+        from app.unified.models import MonitoringResource
+
+        org_id, source_id, resource_id = self.upgrade_fixture()
+        cleanup_fixture(self.db.connection(), org_id, source_id)
+        self.db.commit()
+        self.assertIsNone(self.db.get(MonitoringResource, resource_id))
+        self.assertIsNone(self.db.get(DataSource, source_id))
+        self.assertIsNone(self.db.get(Organization, org_id))
+        self.assertIsNotNone(self.db.get(Organization, self.org.id))
+        self.assertIsNotNone(self.db.get(PipelineIntegration, self.integration.id))
+
+    def test_upgrade_fixture_unexpected_dependency_rolls_back_entire_cleanup(self):
+        from scripts.existing_database_upgrade_probe import cleanup_fixture
+        from app.models import DataSource
+        from app.unified.models import MonitoringResource
+
+        org_id, source_id, resource_id = self.upgrade_fixture(extra_source=True)
+        with self.assertRaises(IntegrityError):
+            cleanup_fixture(self.db.connection(), org_id, source_id)
+        self.db.rollback()
+        self.assertIsNotNone(self.db.get(MonitoringResource, resource_id))
+        self.assertIsNotNone(self.db.get(DataSource, source_id))
+        self.assertIsNotNone(self.db.get(Organization, org_id))
+
+    def test_review_discovery_revoked_during_provider_read_never_reconciles_absence(
+        self,
+    ):
+        from app.data_pipelines.runtime import run_operation
+
+        op = self.read_only_operation()
+        job = PipelineJob(
+            organization_id=self.org.id,
+            integration_id=self.integration.id,
+            native_id="keep-after-revocation",
+            name="Protected inventory",
+            origin="DISCOVERED",
+        )
+        self.db.add(job)
+        self.db.commit()
+
+        def revoke(*args):
+            with SessionLocal() as db:
+                user = db.get(User, self.user.id)
+                user.active = False
+                db.commit()
+            return [], True
+
+        with patch("app.data_pipelines.runtime.discover", side_effect=revoke):
+            run_operation(op.id)
+        self.db.expire_all()
+        current = self.db.get(PipelineOperation, op.id)
+        self.assertEqual(current.state, "FAILED")
+        self.assertEqual(current.result["code"], "DISCOVERY_NOT_AUTHORIZED")
+        self.assertIsNone(self.db.get(PipelineJob, job.id).stale_since)
+
+    def test_review_reader_contract_covers_transport_endpoint_overrides_and_evidence_options(
+        self,
+    ):
+        shared = self.shared_reader()
+        variants = [
+            ("transport", "AGENT"),
+            ("connection", {"base_url": "https://different.example.test"}),
+            (
+                "connection",
+                {
+                    "credential_ref": "env:OPSCONTROL_PIPELINE_SECRET_"
+                    + self.org.id.hex.upper()
+                    + "_OTHER"
+                },
+            ),
+            (
+                "configuration",
+                {
+                    "method_type": "PLATFORM_API",
+                    "adapter_overrides": {"include_steps": True},
+                },
+            ),
+            (
+                "configuration",
+                {
+                    "method_type": "PLATFORM_API",
+                    "adapter_overrides": {"after": "changed-query"},
+                },
+            ),
+            ("configuration", {"method_type": "PLATFORM_API", "checkpoint_version": 2}),
+        ]
+        connection = self.db.get(PipelineConnection, shared.connection_id)
+        for key, value in variants:
+            with self.subTest(field=key, value=value):
+                shared.transport = value if key == "transport" else "BACKEND"
+                shared.configuration = (
+                    value if key == "configuration" else {"method_type": "PLATFORM_API"}
+                )
+                connection.configuration = value if key == "connection" else {}
+                self.db.commit()
+                with self.assertRaises(s.PipelineError) as rejected:
+                    s.acquire(self.db, self.source.id, uuid.uuid4())
+                self.assertEqual(
+                    rejected.exception.code, "SHARED_SOURCE_READER_CONFLICT"
+                )
+                self.db.rollback()
+                self.assertEqual(self.source.live_checkpoint, {"cursor": 0})
+
+    def test_review_stale_cleanup_cannot_change_replacement_recovery_claim(self):
+        from app.data_pipelines.runtime import _source_failure, OWNER
+
+        ticket = s.acquire(self.db, self.source.id, OWNER)
+        op, _ = s.operation(
+            self.db,
+            self.org.id,
+            "RECOVERY",
+            uuid.uuid4().hex,
+            {"generation": str(self.source.generation)},
+            self.user.id,
+            source_id=self.source.id,
+        )
+        op.state, op.owner_id, op.fence = "RUNNING", OWNER, 8
+        op.lease_until = s.clock(self.db) + timedelta(minutes=1)
+        self.source.fence += 1
+        self.source.owner_id = uuid.uuid4()
+        self.db.commit()
+        _source_failure(
+            ticket,
+            ValueError("do not persist raw diagnostics"),
+            {"id": op.id, "fence": 7},
+        )
+        self.db.expire_all()
+        current = self.db.get(PipelineOperation, op.id)
+        self.assertEqual(current.state, "RUNNING")
+        self.assertEqual(current.fence, 8)
+        self.assertEqual(self.source.live_checkpoint, {"cursor": 0})

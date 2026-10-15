@@ -138,10 +138,14 @@ try:
         run(["docker", "builder", "prune", "--all", "--force"])
     run(compose + ["up", "--no-build", "--detach"])
     print("Owned five-service Docker demo built", flush=True)
-    image_paths = [
-        "app/data_pipelines/api.py", "app/data_pipelines/service.py",
-        "app/data_pipelines/runtime.py",
-    ]
+    image_paths = sorted(
+        path.removeprefix("backend/")
+        for path in subprocess.check_output(
+            ["git", "ls-files", "backend/app", "backend/migrations", "backend/scripts", "backend/alembic.ini", "backend/requirements*.txt"],
+            cwd=ROOT, text=True,
+        ).splitlines()
+        if path.endswith((".py", ".ini", ".txt"))
+    )
     source_hashes = {
         path: hashlib.sha256((ROOT / "backend" / path).read_bytes()).hexdigest()
         for path in image_paths
@@ -241,8 +245,20 @@ try:
             time.sleep(0.5)
     else:
         raise RuntimeError("Docker demo restart/session persistence failed")
+    worker_command = run(compose + ["exec", "-T", "worker", "python", "-c",
+        'from pathlib import Path;print(Path("/proc/1/cmdline").read_bytes().replace(b"\\x00",b" ").decode())'])
+    assert "scripts.run_collector_worker" in worker_command
+    storage_driver = run(["docker", "info", "--format", "{{.Driver}}"])
+    manifest_hash = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
     out.mkdir(parents=True, exist_ok=True)
     verify_source_head()
+    (out / "docker-smoke.txt").write_text(
+        f"Exact commit: {source_commit}\nStorage driver: {storage_driver}\n"
+        f"Migration output: {current}\nSchema comparison: {comparison}\n"
+        f"Worker process: {worker_command}\nCompared source files in API and worker: {len(source_hashes)}\n"
+        f"Source manifest SHA256: {manifest_hash}\n"
+        "Authentication, frontend headers, TLS gateway, bootstrap idempotency and API restart/session persistence: PASS\n"
+    )
     (out / "docker.json").write_text(
         json.dumps(
             {
@@ -250,6 +266,11 @@ try:
                 "source_commit": source_commit,
                 "exact_head_checked": bool(expected_commit),
                 "api_worker_source_hashes": source_hashes,
+                "source_manifest_sha256": manifest_hash,
+                "compared_source_files": len(source_hashes),
+                "storage_driver": storage_driver,
+                "migration_head": expected.strip(),
+                "worker_process": worker_command,
                 "checks": [
                     "API/frontend/PostgreSQL/native worker/TLS ingestion gateway built and ready",
                     "Frontend nginx response has security headers",

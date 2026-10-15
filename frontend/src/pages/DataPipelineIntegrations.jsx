@@ -333,11 +333,11 @@ export default function DataPipelineIntegrations({
           <table>
             <thead>
               <tr>
-                <th>Integration</th>
-                <th>Platform</th>
-                <th>Environment</th>
-                <th>Collection</th>
-                <th>Actions</th>
+                <th scope="col">Integration</th>
+                <th scope="col">Platform</th>
+                <th scope="col">Environment</th>
+                <th scope="col">Collection</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -553,10 +553,10 @@ export default function DataPipelineIntegrations({
                 <table>
                   <thead>
                     <tr>
-                      <th>Version</th>
-                      <th>Active</th>
-                      <th>Checksum</th>
-                      <th>Created</th>
+                      <th scope="col">Version</th>
+                      <th scope="col">Active</th>
+                      <th scope="col">Checksum</th>
+                      <th scope="col">Created</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -625,10 +625,10 @@ export default function DataPipelineIntegrations({
                 <table>
                   <thead>
                     <tr>
-                      <th>Installed version</th>
-                      <th>Edition</th>
-                      <th>Compatibility</th>
-                      <th>Evidence</th>
+                      <th scope="col">Installed version</th>
+                      <th scope="col">Edition</th>
+                      <th scope="col">Compatibility</th>
+                      <th scope="col">Evidence</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -734,12 +734,12 @@ export default function DataPipelineIntegrations({
                 <table>
                   <thead>
                     <tr>
-                      <th>Method</th>
-                      <th>Transport</th>
-                      <th>Validation</th>
-                      <th>Health / coverage</th>
-                      <th>Generation / fence</th>
-                      <th>Actions</th>
+                      <th scope="col">Method</th>
+                      <th scope="col">Transport</th>
+                      <th scope="col">Validation</th>
+                      <th scope="col">Health / coverage</th>
+                      <th scope="col">Generation / fence</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -882,8 +882,9 @@ export default function DataPipelineIntegrations({
               </div>
               <p>
                 Global discovery: every 24 hours. Platform redetection: every
-                seven days. Unverified connections remain blocked; no vendor
-                acceptance runs automatically.
+                seven days. Read-only discovery requires an authorized
+                connection. Collection remains blocked until runtime
+                verification.
               </p>
               <div className="form-grid">
                 <Field label="Stable native job ID">
@@ -919,11 +920,11 @@ export default function DataPipelineIntegrations({
                 <table>
                   <thead>
                     <tr>
-                      <th>Job</th>
-                      <th>Native identity</th>
-                      <th>Selection</th>
-                      <th>Discovery / staleness</th>
-                      <th>Actions</th>
+                      <th scope="col">Job</th>
+                      <th scope="col">Native identity</th>
+                      <th scope="col">Selection</th>
+                      <th scope="col">Discovery / staleness</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1064,10 +1065,10 @@ export default function DataPipelineIntegrations({
                 <table>
                   <thead>
                     <tr>
-                      <th>Job</th>
-                      <th>Method</th>
-                      <th>Confirmation</th>
-                      <th>Actions</th>
+                      <th scope="col">Job</th>
+                      <th scope="col">Method</th>
+                      <th scope="col">Confirmation</th>
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1159,9 +1160,9 @@ export default function DataPipelineIntegrations({
                   <table>
                     <thead>
                       <tr>
-                        <th>Operation</th>
-                        <th>Status</th>
-                        <th>Evidence / blockers</th>
+                        <th scope="col">Operation</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Evidence / blockers</th>
                       </tr>
                     </thead>
                     <tbody>

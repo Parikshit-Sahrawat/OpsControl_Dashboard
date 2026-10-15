@@ -102,6 +102,21 @@ try:
         + port
         + "/opscontrol"
     )
+    if os.getenv("V16_STAGING_PRESERVATION") == "1":
+        run(
+            [python, "-m", "alembic", "upgrade", "0024_notification_leases"],
+            root / "backend",
+        )
+        preservation = run(
+            [python, "-m", "scripts.existing_database_upgrade_probe"], root / "backend"
+        )
+        (out / "staging-preservation.txt").write_text(preservation + "\n")
+        run([python, "-m", "alembic", "check"], root / "backend")
+        # Only this freshly owned database exists here; V1.6 tables are empty.
+        run(
+            [python, "-m", "alembic", "downgrade", "0031_in_app_notifications"],
+            root / "backend",
+        )
     run(
         [python, "-m", "alembic", "upgrade", "0031_in_app_notifications"],
         root / "backend",

@@ -1,0 +1,33 @@
+# PR #34 remediation verification
+
+Review method: a second-pass source review of the existing F-01–F-03 fixes and new PostgreSQL/browser regressions. This records automated and code-review evidence; repository owners retain independent approval and merge authority.
+
+| Finding | Code locations | Additional verification | Result |
+|---|---|---|---|
+| F-01 | `backend/app/data_pipelines/runtime.py:258` (`read_only_connection`), `:325` (`run_operation`); `service.reconcile_discovery` | Draft/unverified discovery, inactive/unauthorized actor rejection, incomplete inventory protection, revocation during provider I/O | Passed; no collection activation proof is inferred from inventory |
+| F-02 | `backend/app/data_pipelines/service.py:292` (`reader_contract`), `:336` (`reader_equivalence`), `:444` (`check_ticket`); method add/edit/activate/apply in `api.py` | Equivalent bindings; differing credential references, endpoint, transport, query/step options and checkpoint schema; durable contract and API add/enable rejection; shared pause | Passed; mismatches fail closed and require the reviewed generation workflow |
+| F-03 | `backend/app/data_pipelines/runtime.py:25` (`_source_failure`), `:77` (`run_source`), recovery selection in `tick` | Failed SQL transaction rollback, invalid recovery, stale source owner/fence, active replacement lease, replacement recovery operation fence, restart recovery, verification errors | Passed; no failed-preparation checkpoint progress or stale cleanup of replacement claims |
+| Staging preservation | `backend/scripts/existing_database_upgrade_probe.py`, `cleanup_fixture` | Actual 0024→0016→HEAD populated migration; automatic dependent resource cleanup; unrelated organization retained; unexpected dependency rolls back the whole cleanup | Passed locally; current-head remote workflow outcome is recorded in the PR |
+
+The cleanup checks only the explicitly identified disposable organization/source UUIDs and fixture code. It identifies API projections first and deletes those exact rows before their Data Source, in one transaction. It refuses ambiguous identities or unexpected resource bindings. No constraint is disabled, no CASCADE is added, and unexpected remaining references roll back all fixture deletion.
+
+## Commands and results
+
+```sh
+V16_STAGING_PRESERVATION=1 V16_API_ACCEPTANCE=1 V16_BROWSER_ACCEPTANCE=1 \
+  V16_EVIDENCE_DIR=/tmp/opscontrol-v16-remediation-evidence \
+  backend/.venv/bin/python scripts/v16-acceptance.py
+(cd backend && ENV=test .venv/bin/python -m unittest \
+  tests.test_unified_monitoring tests.test_unified_v15_contracts \
+  tests.test_pipeline_runtime_v15 tests.test_pipeline_adapters \
+  tests.test_native_incidents_v15 tests.test_access_control tests.test_remote_auth \
+  tests.test_pipeline_transport_v16 -v)
+npm run lint --prefix frontend
+npm test --prefix frontend
+```
+
+Local results: **44 actual PostgreSQL tests, 107 selected backend regressions, nine HTTP acceptance groups, six frontend authorization tests and the expanded real Playwright flow passed**. The browser lab's mandatory Vite production build succeeded before preview startup. Alembic head remains `0032_pipeline_ownership`; populated preservation, zero drift, empty downgrade/re-upgrade and populated downgrade refusal passed. No new migration was required.
+
+Browser evidence covers connection/profile persistence, two independent methods, fixture-driven native discovery through the actual worker/database, explicit selection (the second discovered job remains unselected), confirmed source association, backend activation denial, scoped viewer inventory and direct 401/403/404 negatives. The vendor inventory is explicitly a controlled fixture, not live platform or runtime capability verification. Screenshots and machine-readable results are in [remediation](remediation).
+
+Exact-head Docker verification and the remote `phase1-staging.yml` job are published in PR #34 after the source commit. Any committed Docker evidence identifies the tested commit and source manifest; later evidence-only commits do not change the application manifest. No merge or production deployment is authorized by these results.

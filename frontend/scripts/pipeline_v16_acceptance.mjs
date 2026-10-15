@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -38,12 +39,14 @@ const steps = [
   "Source Associations",
   "Validate & Activate",
 ];
-async function navigate() {
-  await page
+async function navigate(target = page) {
+  await target
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Resource Management", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Data Pipelines", exact: true }).click();
+  await target
+    .getByRole("tab", { name: "Data Pipelines", exact: true })
+    .click();
 }
 try {
   await page.goto(process.env.V16_UI_URL);
@@ -89,7 +92,9 @@ try {
   await wizard
     .getByRole("button", { name: "Save / resume draft", exact: true })
     .click();
-  assert.equal((await saved).status(), 201);
+  const savedResponse = await saved;
+  assert.equal(savedResponse.status(), 201);
+  const integrationId = (await savedResponse.json()).id;
   await wizard
     .getByRole("button", { name: "Close configuration", exact: true })
     .click();
@@ -103,6 +108,264 @@ try {
     await wizard.getByLabel(/Base url/i).inputValue(),
     "https://airflow.example.test",
   );
+  // Continue the entire workflow through real APIs. Only vendor inventory is
+  // fixture-driven by the owned test CLI; no runtime proof is manufactured.
+  page.on("dialog", (dialog) => dialog.accept());
+  async function mutateResponse(button, suffix) {
+    const waiting = page.waitForResponse(
+      (r) =>
+        new URL(r.url()).pathname.endsWith(suffix) &&
+        r.request().method() === "POST",
+    );
+    await button.click();
+    const response = await waiting;
+    assert.ok(response.ok(), `${suffix}: ${response.status()}`);
+    const data = await response.json();
+    await wizard
+      .getByRole("button", { name: "Save / resume draft", exact: true })
+      .waitFor({ state: "visible" });
+    await wizard
+      .getByRole("button", { name: "Save / resume draft", exact: true })
+      .isEnabled();
+    // The action refresh follows the mutation response. Wait for the control to
+    // become enabled, rather than treating the HTTP response as a UI completion.
+    await page.waitForFunction(() => {
+      const root =
+        document.querySelector(
+          '[aria-label="Data Pipelines eight-step wizard"]',
+        ) ||
+        document.querySelector(
+          '[aria-label="Data Pipeline eight-step wizard"]',
+        );
+      const buttons = root ? [...root.querySelectorAll("button")] : [];
+      return buttons.some(
+        (b) => b.textContent === "Save / resume draft" && !b.disabled,
+      );
+    });
+    return data;
+  }
+  await wizard.getByLabel(/Auth type/i).fill("NONE");
+  await wizard.getByLabel(/Dag id/i).fill("browser-native-job-A");
+  await mutateResponse(
+    wizard.getByRole("button", {
+      name: "Save connection version",
+      exact: true,
+    }),
+    "/connections",
+  );
+  await nav
+    .getByRole("button", { name: "4. Integration", exact: true })
+    .click();
+  await wizard
+    .getByLabel("platform version", { exact: true })
+    .fill("2.10 fixture candidate");
+  await mutateResponse(
+    wizard.getByRole("button", {
+      name: "Save capability profile",
+      exact: true,
+    }),
+    "/capabilities",
+  );
+  await nav
+    .getByRole("button", { name: "5. Collection Sources", exact: true })
+    .click();
+  const methods = [];
+  for (const [label, scope] of [
+    ["Browser API source A", "controlled-A"],
+    ["Browser API source B", "controlled-B"],
+  ]) {
+    await wizard
+      .getByLabel("Collection method name", { exact: true })
+      .fill(label);
+    await wizard
+      .getByLabel("Source endpoint", { exact: true })
+      .fill("https://airflow.example.test");
+    await wizard
+      .getByLabel("Source account", { exact: true })
+      .fill("controlled-fixture");
+    await wizard
+      .getByLabel("Source physical scope", { exact: true })
+      .fill(scope);
+    methods.push(
+      await mutateResponse(
+        wizard.getByRole("button", {
+          name: "Add collection method",
+          exact: true,
+        }),
+        "/methods",
+      ),
+    );
+  }
+  assert.notEqual(methods[0].id, methods[1].id);
+  assert.notEqual(methods[0].source_id, methods[1].source_id);
+  await wizard
+    .getByRole("columnheader", { name: /^method$/i })
+    .waitFor();
+  await page.screenshot({
+    path: join(out, "pipeline-v16-methods.png"),
+    fullPage: true,
+  });
+  await nav
+    .getByRole("button", { name: "6. Job Discovery/Selection", exact: true })
+    .click();
+  const operation = await mutateResponse(
+    wizard.getByRole("button", {
+      name: "Discover jobs on demand",
+      exact: true,
+    }),
+    "/discovery",
+  );
+  execFileSync(
+    ".venv/bin/python",
+    ["-m", "scripts.v16_browser_discovery", operation.id],
+    {
+      cwd: "backend",
+      env: process.env,
+      encoding: "utf8",
+      timeout: 30000,
+    },
+  );
+  await nav
+    .getByRole("button", { name: "5. Collection Sources", exact: true })
+    .click();
+  await nav
+    .getByRole("button", { name: "6. Job Discovery/Selection", exact: true })
+    .click();
+  const selectedRow = wizard
+    .getByRole("row")
+    .filter({ hasText: "browser-native-job-A" });
+  await selectedRow.getByText("Not selected", { exact: true }).waitFor();
+  const untouchedRow = wizard
+    .getByRole("row")
+    .filter({ hasText: "browser-native-job-B" });
+  await untouchedRow.getByText("Not selected", { exact: true }).waitFor();
+  const selection = await mutateResponse(
+    selectedRow.getByRole("button", { name: "Select explicitly", exact: true }),
+    "/selection",
+  );
+  await selectedRow.getByText("Selected", { exact: true }).waitFor();
+  await untouchedRow.getByText("Not selected", { exact: true }).waitFor();
+  await nav
+    .getByRole("button", { name: "7. Source Associations", exact: true })
+    .click();
+  await wizard
+    .getByLabel("Job association", { exact: true })
+    .selectOption(selection.id);
+  await wizard
+    .getByLabel("Source association", { exact: true })
+    .selectOption(methods[0].id);
+  const association = await mutateResponse(
+    wizard.getByRole("button", {
+      name: "Confirm source association",
+      exact: true,
+    }),
+    "/associations",
+  );
+  assert.equal(association.job_id, selection.id);
+  assert.equal(association.method_id, methods[0].id);
+  await wizard
+    .getByRole("columnheader", { name: /^confirmation$/i })
+    .waitFor();
+  await nav
+    .getByRole("button", { name: "8. Validate & Activate", exact: true })
+    .click();
+  const adminToken = await page.evaluate(() =>
+    sessionStorage.getItem("opscontrol.sessionToken"),
+  );
+  const deniedActivation = await page.request.post(
+    fixture.base_url +
+      `/api/v1/data-pipelines/integrations/${integrationId}/activate`,
+    {
+      headers: { Authorization: `Bearer ${adminToken}` },
+      data: { idempotency_key: crypto.randomUUID(), confirmed: true },
+    },
+  );
+  assert.equal(deniedActivation.status(), 409);
+  assert.ok(
+    JSON.stringify(await deniedActivation.json()).includes(
+      "METHOD_NOT_RUNTIME_VERIFIED",
+    ),
+  );
+  // Create an explicitly separate customer fixture, then test the scoped viewer
+  // using a separate browser session and direct real HTTP authorization checks.
+  const other = await page.request.post(
+    fixture.base_url + "/api/v1/data-pipelines/integrations",
+    {
+      headers: { Authorization: `Bearer ${adminToken}` },
+      data: {
+        idempotency_key: crypto.randomUUID(),
+        organization_id: fixture.other_organization_id,
+        name: "Controlled browser other customer",
+        platform: "AIRFLOW",
+        environment: "TEST",
+        configuration: {},
+        stage: 1,
+      },
+    },
+  );
+  assert.equal(other.status(), 201);
+  const otherId = (await other.json()).id;
+  const viewer = await browser.newPage({
+    viewport: { width: 1280, height: 900 },
+  });
+  await viewer.goto(process.env.V16_UI_URL);
+  await viewer.getByLabel("Username", { exact: true }).fill("v16-api-viewer");
+  await viewer
+    .getByLabel("Password", { exact: true })
+    .fill(fixture.viewer_password);
+  await viewer.getByRole("button", { name: "Sign in", exact: true }).click();
+  await viewer
+    .getByRole("navigation", { name: "Primary navigation" })
+    .waitFor();
+  await navigate(viewer);
+  const viewerPanel = viewer.getByRole("region", {
+    name: "Data Pipelines integrations",
+    exact: true,
+  });
+  await viewerPanel.getByRole("button", { name, exact: true }).waitFor();
+  assert.equal(
+    await viewerPanel
+      .getByRole("button", { name: "Create Data Pipeline", exact: true })
+      .count(),
+    0,
+  );
+  const viewerToken = await viewer.evaluate(() =>
+    sessionStorage.getItem("opscontrol.sessionToken"),
+  );
+  const headers = { Authorization: `Bearer ${viewerToken}` };
+  const inventory = await viewer.request.get(
+    fixture.base_url + "/api/v1/data-pipelines/integrations",
+    { headers },
+  );
+  assert.equal(inventory.status(), 200);
+  assert.ok(
+    (await inventory.json()).items.every(
+      (i) => i.organization_id === fixture.organization_id,
+    ),
+  );
+  const crossCustomer = await viewer.request.get(
+    fixture.base_url + `/api/v1/data-pipelines/integrations/${otherId}`,
+    { headers },
+  );
+  assert.ok([403, 404].includes(crossCustomer.status()));
+  const unauthorizedMutation = await viewer.request.post(
+    fixture.base_url +
+      `/api/v1/data-pipelines/integrations/${integrationId}/connections`,
+    {
+      headers,
+      data: { idempotency_key: crypto.randomUUID(), configuration: {} },
+    },
+  );
+  assert.equal(unauthorizedMutation.status(), 403);
+  const unauthenticated = await viewer.request.get(
+    fixture.base_url + "/api/v1/data-pipelines/integrations",
+  );
+  assert.equal(unauthenticated.status(), 401);
+  await viewer.screenshot({
+    path: join(out, "pipeline-v16-viewer.png"),
+    fullPage: true,
+  });
+  await viewer.close();
   await nav
     .getByRole("button", { name: "8. Validate & Activate", exact: true })
     .click();
@@ -139,6 +402,17 @@ try {
         draft_connection_resume: true,
         unverified_activation_disabled: true,
         mobile_no_overflow: true,
+        platform_connection_saved: true,
+        independent_same_type_methods: 2,
+        discovery_worker: "CONTROLLED_VENDOR_INVENTORY_FIXTURE",
+        native_discovery_explicit_selection: true,
+        unselected_job_preserved: true,
+        confirmed_source_association: true,
+        activation_denied_by_api: true,
+        viewer_customer_isolation: true,
+        viewer_mutation_denied_status: unauthorizedMutation.status(),
+        cross_customer_denied_status: crossCustomer.status(),
+        unauthenticated_denied_status: unauthenticated.status(),
         vendor_environments_accessed: false,
       },
       null,
@@ -148,6 +422,16 @@ try {
   console.log(
     "V1.6 actual browser eight-step/draft/activation/mobile acceptance PASS",
   );
+} catch (error) {
+  await writeFile(
+    join(process.env.V16_PRIVATE_DIR, "browser-failure.html"),
+    await page.content(),
+  );
+  await page.screenshot({
+    path: join(process.env.V16_PRIVATE_DIR, "browser-failure.png"),
+    fullPage: true,
+  });
+  throw error;
 } finally {
   await browser.close();
 }
