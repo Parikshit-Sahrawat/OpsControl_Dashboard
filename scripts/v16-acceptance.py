@@ -161,7 +161,23 @@ try:
             [python, "-m", "scripts.pentaho_history_migration_probe", "seed"],
             root / "backend",
         )
+    if os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1":
+        env["V16_EVIDENCE_DIR"] = str(out)
+        run(
+            [python, "-m", "alembic", "upgrade", "0035_pentaho_history"],
+            root / "backend",
+        )
+        run(
+            [python, "-m", "scripts.pentaho_incident_migration_probe", "seed"],
+            root / "backend",
+        )
     run([python, "-m", "alembic", "upgrade", "head"], root / "backend")
+    if os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "scripts.pentaho_incident_migration_probe", "verify"],
+            root / "backend",
+        )
+
     if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1":
         run(
             [python, "-m", "scripts.pentaho_history_migration_probe", "verify"],
@@ -204,6 +220,10 @@ try:
             ),
         ]
     )
+    if os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1" and not os.getenv(
+        "V16_TEST_TARGETS"
+    ):
+        targets.append("tests.test_pentaho_incident_r1")
     assert all(
         t.startswith("tests.test_") and all(c.isalnum() or c in "_." for c in t)
         for t in targets
@@ -294,6 +314,13 @@ try:
                         root / "backend",
                     )
                 )
+            if os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1":
+                print(
+                    run(
+                        [python, "-m", "scripts.pentaho_sprint06_http_probe"],
+                        root / "backend",
+                    )
+                )
             if os.getenv("V16_BROWSER_ACCEPTANCE") == "1":
                 run(["npm", "run", "build"], root / "frontend")
                 env.setdefault(
@@ -346,6 +373,7 @@ try:
             "Pentaho attempts/identity/evidence/recovery exist",
             "Pentaho evidence review/decisions exist",
             "Pentaho schedule/replay/notification evidence exists",
+            "Native incident recovery evidence exists",
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")

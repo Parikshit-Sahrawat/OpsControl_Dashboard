@@ -1,0 +1,23 @@
+$ backend/.venv/bin/python -m black --check backend/app/native_incidents/api.py backend/app/native_incidents/models.py backend/app/native_incidents/pentaho.py backend/app/native_incidents/service.py backend/app/pipeline_adapters/pentaho_observations.py backend/app/security/scope.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_history.py backend/migrations/versions/0036_native_incident_recovery.py backend/scripts/pentaho_incident_migration_probe.py backend/scripts/pentaho_sprint06_http_probe.py backend/tests/test_pentaho_incident_contracts.py backend/tests/test_pentaho_incident_r1.py scripts/v16-acceptance.py
+All done! ✨ 🍰 ✨
+14 files would be left unchanged.
+
+exit=0
+
+$ backend/.venv/bin/python -m ruff check backend/app/native_incidents/api.py backend/app/native_incidents/models.py backend/app/native_incidents/pentaho.py backend/app/native_incidents/service.py backend/app/pipeline_adapters/pentaho_observations.py backend/app/security/scope.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_history.py backend/migrations/versions/0036_native_incident_recovery.py backend/scripts/pentaho_incident_migration_probe.py backend/scripts/pentaho_sprint06_http_probe.py backend/tests/test_pentaho_incident_contracts.py backend/tests/test_pentaho_incident_r1.py scripts/v16-acceptance.py --select E9,F63,F7,F82,F401
+All checks passed!
+
+exit=0
+
+$ backend/.venv/bin/python -m compileall -q backend/app/native_incidents/api.py backend/app/native_incidents/models.py backend/app/native_incidents/pentaho.py backend/app/native_incidents/service.py backend/app/pipeline_adapters/pentaho_observations.py backend/app/security/scope.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_history.py backend/migrations/versions/0036_native_incident_recovery.py backend/scripts/pentaho_incident_migration_probe.py backend/scripts/pentaho_sprint06_http_probe.py backend/tests/test_pentaho_incident_contracts.py backend/tests/test_pentaho_incident_r1.py scripts/v16-acceptance.py
+
+exit=0
+
+$ git diff --check
+
+exit=0
+
+$ ENV=test .venv/bin/python [imports, configure_mappers, app.openapi]
+Imports, mappers and OpenAPI: 217 paths
+
+exit=0

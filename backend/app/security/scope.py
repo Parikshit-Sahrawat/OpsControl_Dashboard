@@ -147,6 +147,8 @@ _PATHS.update(
             "CollectorRuntimeState",
             "NativeIncidentDetails",
             "NativeIncidentAlert",
+            "NativeIncidentFailure",
+            "NativeRecoveryAssessment",
             "PipelineIntegration",
             "PipelineConnection",
             "PipelineCapability",

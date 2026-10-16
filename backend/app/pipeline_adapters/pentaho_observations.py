@@ -142,6 +142,7 @@ def normalize_observation(record, cfg, customer_id):
         "provider_status",
         "nr_errors",
         "logs",
+        "failure_cause",
     }
     if set(record) - permitted:
         raise AdapterError(
@@ -339,6 +340,17 @@ def normalize_observation(record, cfg, customer_id):
             "completion_evidence": status in {"SUCCESS", "FAILED", "CANCELLED"},
         },
     )
+    if record.get("failure_cause") is not None:
+        from app.native_incidents.pentaho import cause_reference
+
+        try:
+            fact["event"]["pentaho_identity"]["failure_cause"] = cause_reference(
+                record["failure_cause"]
+            )
+        except (ValueError, TypeError, KeyError):
+            raise AdapterError(
+                "SCHEMA", "Invalid native failure cause reference"
+            ) from None
     if record.get("schedule_evidence") is not None:
         from app.unified.pentaho_schedule import native_schedule
 

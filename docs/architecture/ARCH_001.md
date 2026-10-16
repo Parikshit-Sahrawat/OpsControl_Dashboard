@@ -175,3 +175,25 @@ historical records refuse deletion/populated downgrade. See `../ARCH_001_V16.md`
 and the Sprint 05 verification report for exact API contracts, test evidence,
 unsupported native capabilities and the Sprint 06 boundary. The approved
 ARCH_ETL_001_V16 baseline is unchanged.
+
+### Pentaho R1 Sprint 06 — incident evidence and verified recovery
+
+The existing native incident engine now accepts verified Pentaho terminal failure
+associations, with immutable per-execution evidence and optional independently
+attested native common-root references. Generic similarity/confidence grouping is
+not promoted to verified causality. Historical eligibility from Sprint 05 produces
+separately audited reassessment while preserving existing associations and closed
+states; its notification outbox is unchanged.
+
+Independent recovery assessments combine confirmed recovery relationships, native
+outcome/completeness, source health, required dependencies, schedules and explicit
+observation periods. Authorized existing lifecycle transitions recheck this gate;
+a manual recovery never rewrites the failed execution. Additive migration 0036
+pins the evidence and rejects populated downgrade. Customer-scoped native incident
+APIs expose paged failure/assessment evidence and audited, revision/idempotency-
+protected assessment mutations using existing explicit permissions.
+
+See `../ARCH_001_V16.md` and the Sprint 06 verification report for contracts,
+acceptance evidence and limits. ARCH_ETL_001_V16 remains unchanged. No ETL workload
+controls, production changes, real-source activation or runtime certification are
+included. Sprint 07 can consume these backend contracts.

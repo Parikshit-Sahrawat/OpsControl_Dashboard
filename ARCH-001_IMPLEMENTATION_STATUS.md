@@ -160,3 +160,17 @@ Delivery evidence: `docs/verification/arch-etl-001-v16-r1/sprint04/REPORT.md`.
 | Verification | 160 unit tests, 127 PostgreSQL tests and 22 HTTP groups passed; migration/import/static checks passed | Controlled fixtures are not runtime certification; RT-001–RT-020 remain NOT RUN |
 
 Evidence: `docs/verification/arch-etl-001-v16-r1/sprint05/REPORT.md`.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 06
+
+| Feature | Implementation / verification | Limitation |
+| --- | --- | --- |
+| Incident correlation | Existing native incidents retain identities and seven-state lifecycle; immutable per-execution failure evidence; exact, capability-attested common-root references; separate unrelated failures | Native cause producers require independent installed-build acceptance; names, timestamps and generic correlation confidence are not proof |
+| Recovery assessment | Independent candidate/pending/validated/failed/insufficient results; confirmed recovery links, complete native success, current monitoring, dependency and schedule evidence, configurable observation period | Explicit periodic assessments are required; a gap over 120 seconds restarts observation; successful execution alone cannot restore service |
+| Historical reassessment | Sprint 05 eligibility consumed; occurrence/discovery times, associations and separate audit retained; resolved/closed incidents stay closed | Historical notice outbox and delivery policy remain unchanged |
+| API and isolation | Existing native incident detail/preview/transition extended; paged failure and assessment evidence; authorized revision/idempotency-protected assessment mutation | No new implicit grants, workload controls or frontend workflow |
+| Migration | Additive 0036_native_recovery; immutable failure/assessment records and scoped foreign keys | Populated downgrade refused; conservative retention also protects legal holds |
+
+Verification and exact results: `docs/verification/arch-etl-001-v16-r1/sprint06/REPORT.md`.
+RT-001–RT-020 remain NOT RUN. Sprint 07 may consume these backend contracts;
+this does not certify native providers or authorize activation/deployment.

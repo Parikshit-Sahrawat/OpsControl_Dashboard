@@ -12,7 +12,13 @@ from sqlalchemy import select
 from app.models import JobOrderHistory, ExecutionStatus, ExecutionType
 from app.unified.pentaho_models import PentahoAlias, PentahoAttempt, PentahoRevision
 
-CLAIMS = {"INVOCATION", "EXECUTION_OUTCOME", "SCHEDULER_RETRY", "SCHEDULE"}
+CLAIMS = {
+    "INVOCATION",
+    "EXECUTION_OUTCOME",
+    "SCHEDULER_RETRY",
+    "SCHEDULE",
+    "FAILURE_CAUSE",
+}
 TERMINAL = {"SUCCESS", "FAILED", "CANCELLED"}
 
 
@@ -718,6 +724,13 @@ def proof_covers_claims(definition, payload):
         and meta.get("native_outcome") in TERMINAL
     ):
         return False
+    if "FAILURE_CAUSE" in declared:
+        from app.native_incidents.pentaho import cause_reference
+
+        try:
+            cause_reference(meta.get("failure_cause"))
+        except (ValueError, TypeError, KeyError):
+            return False
     if "SCHEDULE" in declared:
         from app.unified.pentaho_schedule import native_schedule
 

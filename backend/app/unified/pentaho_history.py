@@ -129,9 +129,14 @@ def reconcile(db, resource, observed=None):
             ),
             None,
         )
-        if not event or (
-            event.received_at - history.ended_at
-        ).total_seconds() < config.get("historical_after_seconds", 3600):
+        if not event:
+            continue
+        from app.native_incidents.pentaho import correlate_history
+
+        if (event.received_at - history.ended_at).total_seconds() < config.get(
+            "historical_after_seconds", 3600
+        ):
+            correlate_history(db, resource, history, observed)
             continue
         history.source_evidence = {
             **(history.source_evidence or {}),
@@ -157,6 +162,7 @@ def reconcile(db, resource, observed=None):
                     ),
                 },
             }
+        correlate_history(db, resource, history, observed)
         if not config.get("enabled"):
             continue
         for target in config.get("destination_ids", []):
