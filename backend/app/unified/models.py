@@ -69,6 +69,9 @@ class MonitoringResource(Base):
     )
     __table_args__ = (
         UniqueConstraint("organization_id", "id", name="uq_monitoring_resource_org_id"),
+        UniqueConstraint(
+            "organization_id", "id", "job_order_id", name="uq_resource_job_scope"
+        ),
         CheckConstraint("domain IN ('VM','ETL','API')", name="ck_resource_domain"),
         CheckConstraint(
             "environment IN ('PROD','QA','TEST','DEV','SANDBOX')",
@@ -217,6 +220,9 @@ class NormalizedEvent(Base):
             name="fk_normalized_resource_scope",
         ),
         UniqueConstraint("resource_id", "external_key", name="uq_normalized_event_key"),
+        UniqueConstraint(
+            "organization_id", "resource_id", "id", name="uq_normalized_event_scope"
+        ),
         Index(
             "ix_normalized_pending",
             "resource_id",

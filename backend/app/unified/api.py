@@ -1497,3 +1497,160 @@ def test_connection(id: uuid.UUID, db=Depends(get_db)):
         "connection_verified": True,
         "live_verified": False,  # Genuine provider acceptance is separately recorded.
     }
+
+
+class PentahoRecoveryProposal(Strict):
+    recovery_history_id: uuid.UUID
+    evidence_ids: list[uuid.UUID] = Field(min_length=2, max_length=25)
+    reason: str = Field(min_length=10, max_length=2000)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+class PentahoRecoveryReview(Strict):
+    action: Literal["CONFIRM", "REVERSE"]
+    expected_revision: int = Field(ge=1)
+    reason: str = Field(min_length=10, max_length=2000)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+@router.get("/resources/{id}/executions/{history_id}/attempts")
+def pentaho_attempts(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_recovery import history
+    from app.unified.pentaho_models import PentahoAttempt, PentahoAlias, PentahoRevision
+
+    r = resource(db, id, "etl.view")
+    h = history(db, r, history_id)
+    query = select(PentahoAttempt).where(PentahoAttempt.history_id == h.id)
+    attempts = db.scalars(
+        query.order_by(PentahoAttempt.attempt_order).offset(offset).limit(limit)
+    ).all()
+    return {
+        "execution": document(h),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            {
+                **document(a),
+                "aliases": [
+                    document(v)
+                    for v in db.scalars(
+                        select(PentahoAlias)
+                        .where(PentahoAlias.attempt_id == a.id)
+                        .limit(200)
+                    )
+                ],
+                "revisions": [
+                    document(v)
+                    for v in db.scalars(
+                        select(PentahoRevision)
+                        .where(PentahoRevision.attempt_id == a.id)
+                        .order_by(PentahoRevision.revision.desc())
+                        .limit(100)
+                    )
+                ],
+            }
+            for a in attempts
+        ],
+    }
+
+
+@router.get("/resources/{id}/executions/{history_id}/recovery-links")
+def pentaho_recovery_links(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_recovery import history
+    from app.unified.pentaho_models import PentahoRecoveryLink, PentahoRecoveryDecision
+
+    r = resource(db, id, "etl.view")
+    h = history(db, r, history_id)
+    query = select(PentahoRecoveryLink).where(
+        PentahoRecoveryLink.organization_id == r.organization_id,
+        or_(
+            PentahoRecoveryLink.failed_history_id == h.id,
+            PentahoRecoveryLink.recovery_history_id == h.id,
+        ),
+    )
+    rows = db.scalars(
+        query.order_by(PentahoRecoveryLink.created_at, PentahoRecoveryLink.id)
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    return {
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            {
+                **document(row),
+                "decisions": [
+                    document(d)
+                    for d in db.scalars(
+                        select(PentahoRecoveryDecision)
+                        .where(PentahoRecoveryDecision.link_id == row.id)
+                        .order_by(PentahoRecoveryDecision.revision)
+                        .limit(100)
+                    )
+                ],
+            }
+            for row in rows
+        ],
+    }
+
+
+@router.post("/resources/{id}/executions/{history_id}/recovery-links", status_code=201)
+def propose_pentaho_recovery(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    payload: PentahoRecoveryProposal,
+    db=Depends(get_db),
+):
+    from app.unified import pentaho_recovery as recovery
+
+    r = resource(db, id, "etl.investigate")
+    h = recovery.history(db, r, history_id, "etl.investigate")
+    row = recovery.propose(
+        db,
+        h,
+        payload.recovery_history_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+        payload.evidence_ids,
+    )
+    commit(db)
+    return document(row)
+
+
+@router.post(
+    "/resources/{id}/executions/{history_id}/recovery-links/{link_id}/decision"
+)
+def review_pentaho_recovery(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    link_id: uuid.UUID,
+    payload: PentahoRecoveryReview,
+    db=Depends(get_db),
+):
+    from app.unified import pentaho_recovery as recovery
+
+    r = resource(db, id, "etl.investigate")
+    h = recovery.history(db, r, history_id, "etl.investigate")
+    row = recovery.review(
+        db,
+        h,
+        link_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+        payload.action,
+        payload.expected_revision,
+    )
+    commit(db)
+    return document(row)

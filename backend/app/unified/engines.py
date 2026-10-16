@@ -727,7 +727,11 @@ def evaluate_executions(db, r, p, observed):
                 )
                 h.sla_status = "UNKNOWN"
             continue
-        terminal = h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
+        terminal = (
+            h.pentaho_lifecycle == "TERMINAL"
+            if h.pentaho_lifecycle is not None
+            else h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
+        )
         duration = ((h.ended_at or observed) - h.started_at).total_seconds()
         long = (
             not terminal
@@ -737,7 +741,13 @@ def evaluate_executions(db, r, p, observed):
         sla = (not terminal or h.ended_at is not None) and duration >= cfg[
             "completion_sla_seconds"
         ]
-        h.sla_status = "BREACHED" if sla else "MET" if terminal else "ON_TRACK"
+        if h.pentaho_outcome in {"CANCELLED", "UNKNOWN"}:
+            sla = False  # No success/SLA assertion from a cancelled/unknown native run.
+        h.sla_status = (
+            "UNKNOWN"
+            if h.pentaho_outcome in {"CANCELLED", "UNKNOWN"}
+            else "BREACHED" if sla else "MET" if terminal else "ON_TRACK"
+        )
         last = __import__("datetime").datetime.fromisoformat(
             (h.source_evidence or {}).get("observed_at", h.started_at.isoformat())
         )

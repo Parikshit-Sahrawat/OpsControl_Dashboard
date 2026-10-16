@@ -157,6 +157,11 @@ _PATHS.update(
             "PipelineHold",
             "PipelineEvidence",
             "PipelineOperation",
+            "PentahoAttempt",
+            "PentahoAlias",
+            "PentahoRevision",
+            "PentahoRecoveryLink",
+            "PentahoRecoveryDecision",
         )
     }
 )

@@ -113,3 +113,24 @@ metadata-only status for the capabilities below; it does not mark full R1 comple
 
 Stop after Sprint 02. Next sprint: logical executions/attempts and observed
 retry/recovery reconstruction, with genuine source evidence required separately.
+
+## ARCH-ETL-001 V1.6-R1 Sprint 03
+
+[Implementation and verification report](docs/verification/arch-etl-001-v16-r1/sprint03/REPORT.md).
+Baseline `7cd81efc65aba53a768b23ab1c0037f34a2a4559`; same R1 development branch.
+Approved Pentaho architecture unchanged. No PR, merge, deployment or real-source activation.
+
+| Work | Status / evidence |
+| --- | --- |
+| Canonical identity and attempts | Implemented and locally verified on existing JobOrderHistory/reducer; immutable scoped native aliases, whole-run attempts and append-only observation revisions |
+| Retry lifecycle | Verified pending retry remains WAITING_FOR_RETRY; verified later success is SUCCESS_AFTER_RETRY; final failure requires exhaustion authority; missing authority never implies exhaustion |
+| Manual recovery | Distinct logical execution; many-to-many observed links, independent scoped confirmation, idempotency, audited reversal and original FAILED preservation |
+| Security / compatibility | Customer/resource/history composite FKs, explicit verified native claims, new-model ORM scoping and existing etl.view/etl.investigate enforcement; eight other adapters unchanged |
+| Migration | Additive 0033_pentaho_attempts; populated old customer/user/hash/history/evidence/hold preservation, empty roundtrip, populated downgrade refusal and no drift verified |
+| Executed tests | 150 unit tests and 76 actual PostgreSQL tests passed, zero failed/skipped; nine existing and four new actual HTTP groups passed; imports/mappers/routes/static checks passed |
+| Cleanup | Only related query reuse, post-lock observation refresh, R1 synthetic-start removal and touched import formatting; no active legacy model/adapter removed |
+| Runtime acceptance | RT-001–RT-020 all NOT RUN. Provider-specific producers, genuine exact builds/native artifacts and independent certification remain required |
+| Later milestones | Sprint 04 full conflict/identity adjudication; later replay/schedule and incident changes. Existing 100-run intake and embedded-history bounds remain; no load or production-readiness claim |
+
+Stop after Sprint 03. No frontend workflow was added. New tables are persistence
+extensions, not a second canonical execution, incident or scheduler engine.

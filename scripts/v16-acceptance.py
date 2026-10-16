@@ -136,10 +136,44 @@ try:
         [python, "-m", "alembic", "downgrade", "0031_in_app_notifications"],
         root / "backend",
     )
+    if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "alembic", "upgrade", "0032_pipeline_ownership"],
+            root / "backend",
+        )
+        env["V16_EVIDENCE_DIR"] = str(out)
+        run([python, "-m", "scripts.pentaho_migration_probe", "seed"], root / "backend")
     run([python, "-m", "alembic", "upgrade", "head"], root / "backend")
+    if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "scripts.pentaho_migration_probe", "verify"],
+            root / "backend",
+        )
     run([python, "-m", "alembic", "check"], root / "backend")
+    targets = (
+        os.getenv("V16_TEST_TARGETS", "").split(",")
+        if os.getenv("V16_TEST_TARGETS")
+        else [
+            "tests.test_pipeline_ownership_v16",
+            *(
+                ["tests.test_pentaho_execution_r1"]
+                if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1"
+                else []
+            ),
+        ]
+    )
+    assert all(
+        t.startswith("tests.test_") and all(c.isalnum() or c in "_." for c in t)
+        for t in targets
+    )
     output = run(
-        [python, "-m", "unittest", "tests.test_pipeline_ownership_v16", "-v"],
+        [
+            python,
+            "-m",
+            "unittest",
+            *targets,
+            "-v",
+        ],
         root / "backend",
     )
     (out / "ownership.txt").write_text(output + "\n")
@@ -197,6 +231,13 @@ try:
             else:
                 raise RuntimeError("Owned V1.6 API readiness failed")
             print(run([python, "-m", "scripts.v16_api_probe"], root / "backend"))
+            if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
+                print(
+                    run(
+                        [python, "-m", "scripts.pentaho_sprint03_http_probe"],
+                        root / "backend",
+                    )
+                )
             if os.getenv("V16_BROWSER_ACCEPTANCE") == "1":
                 run(["npm", "run", "build"], root / "frontend")
                 env.setdefault(
@@ -242,9 +283,12 @@ try:
         capture_output=True,
         text=True,
     )
-    assert (
-        result.returncode != 0
-        and "V1.6 identities/evidence/checkpoints exist" in result.stderr
+    assert result.returncode != 0 and any(
+        message in result.stderr
+        for message in (
+            "V1.6 identities/evidence/checkpoints exist",
+            "Pentaho attempts/identity/evidence/recovery exist",
+        )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
     (out / "report.json").write_text(
@@ -252,7 +296,9 @@ try:
             {
                 "status": "PASS",
                 "owned_postgresql": True,
-                "head": "0032_pipeline_ownership",
+                "head": run(
+                    [python, "-m", "alembic", "heads"], root / "backend"
+                ).split()[0],
                 "populated_v15_upgrade": True,
                 "schema_drift": False,
                 "populated_downgrade_refused": True,

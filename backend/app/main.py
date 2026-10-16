@@ -19,6 +19,7 @@ import app.unified.compatibility
 from app.telemetry import api as agent_control, ingestion, rules, inbox
 import app.telemetry.models
 import app.unified.models
+import app.unified.pentaho_models
 from app.api import (
     infrastructure,
     etl,
@@ -111,7 +112,11 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type"],
 )
-from app.data_pipelines import api as data_pipelines_api, agent_api as pipeline_agent_api
+from app.data_pipelines import (
+    api as data_pipelines_api,
+    agent_api as pipeline_agent_api,
+)
+
 app.include_router(pipeline_agent_api.router)
 app.include_router(data_pipelines_api.router, dependencies=[Depends(authorize_route)])
 app.include_router(unified.router, dependencies=[Depends(authorize_route)])

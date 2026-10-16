@@ -125,6 +125,7 @@ def normalize_observation(record, cfg, customer_id):
         "os",
         "executable_kind",
         "executable_sha256",
+        "execution_origin",
         "scheduler_identity",
         "invocation_id",
         "process_start",
@@ -147,6 +148,48 @@ def normalize_observation(record, cfg, customer_id):
             "SCHEMA",
             "Unsupported observation fields; raw commands/credentials are not accepted",
         )
+    scheduler = record.get("scheduler_identity")
+    if scheduler is not None:
+        allowed = {
+            "authority_id",
+            "native_run_id",
+            "native_attempt_id",
+            "native_occurrence_id",
+            "attempt_order",
+            "previous_attempt_id",
+            "retry_state",
+            "authority_revision",
+            "authority_evidence_sha256",
+        }
+        if (
+            not isinstance(scheduler, dict)
+            or set(scheduler) - allowed
+            or not scheduler.get("authority_id")
+        ):
+            raise AdapterError(
+                "SCHEMA", "Scoped scheduler identity observation required"
+            )
+        for key, value in scheduler.items():
+            if key in {"attempt_order", "authority_revision"}:
+                if type(value) is not int or not 1 <= value <= 10000:
+                    raise AdapterError(
+                        "SCHEMA", "Bounded native scheduler ordinal/revision required"
+                    )
+            else:
+                token(value, key)
+        if scheduler.get("retry_state") not in {
+            None,
+            "PENDING",
+            "EXHAUSTED",
+            "UNKNOWN",
+        }:
+            raise AdapterError("SCHEMA", "Unsupported native retry state")
+        if scheduler.get("authority_evidence_sha256") is not None and not re.fullmatch(
+            r"[a-f0-9]{64}", scheduler["authority_evidence_sha256"]
+        ):
+            raise AdapterError("SCHEMA", "Native scheduler evidence hash required")
+    if record.get("execution_origin", "SCHEDULED") not in {"SCHEDULED", "MANUAL"}:
+        raise AdapterError("SCHEMA", "Unsupported execution origin")
     observed = instant(record.get("observed_at"))
     if not observed:
         raise AdapterError("SCHEMA", "Pentaho observation timestamp required")
@@ -167,24 +210,6 @@ def normalize_observation(record, cfg, customer_id):
             )
         if not re.fullmatch(r"[a-f0-9]{64}", str(record.get("executable_sha256", ""))):
             raise AdapterError("SCHEMA", "Native executable hash observation required")
-        scheduler = record.get("scheduler_identity")
-        if scheduler is not None:
-            allowed = {
-                "authority_id",
-                "native_run_id",
-                "native_attempt_id",
-                "native_occurrence_id",
-            }
-            if (
-                not isinstance(scheduler, dict)
-                or set(scheduler) - allowed
-                or not scheduler.get("authority_id")
-            ):
-                raise AdapterError(
-                    "SCHEMA", "Scoped scheduler identity observation required"
-                )
-            for key, value in scheduler.items():
-                token(value, key)
         executable = "KITCHEN" if cfg["workload_kind"] == "JOB" else "PAN"
         if (
             record.get("executable_kind") != executable
@@ -236,9 +261,11 @@ def normalize_observation(record, cfg, customer_id):
                 raise AdapterError(
                     "IDENTITY_SCOPE", "Invocation-bound native result evidence required"
                 )
-            status = {"SUCCESS": "SUCCESS", "FAILED": "FAILED"}.get(
-                result.get("status"), "UNKNOWN"
-            )
+            status = {
+                "SUCCESS": "SUCCESS",
+                "FAILED": "FAILED",
+                "CANCELLED": "CANCELLED",
+            }.get(result.get("status"), "UNKNOWN")
             end = instant(result.get("ended_at"))
             if status == "UNKNOWN" or not end:
                 raise AdapterError("SCHEMA", "Native result status/end time required")
@@ -256,6 +283,7 @@ def normalize_observation(record, cfg, customer_id):
                 "RUNNING": "RUNNING",
                 "SUCCESS": "SUCCESS",
                 "FAILED": "FAILED",
+                "CANCELLED": "CANCELLED",
             }.get(record.get("status"), "UNKNOWN")
             start, end = instant(record.get("started_at")), instant(
                 record.get("ended_at")
@@ -270,7 +298,7 @@ def normalize_observation(record, cfg, customer_id):
         "PENTAHO",
         cfg["native_job_id"],
         identity,
-        status,
+        "UNKNOWN" if status == "CANCELLED" else status,
         start,
         end,
         observed,
@@ -288,7 +316,28 @@ def normalize_observation(record, cfg, customer_id):
     fact["observed_at"] = observed
     fact["native_job_id"] = cfg["native_job_id"]
     fact["event"].update(
-        workload_kind=cfg["workload_kind"], evidence_authority=authority
+        workload_kind=cfg["workload_kind"],
+        evidence_authority=authority,
+        execution_type=record.get("execution_origin", "SCHEDULED"),
+        pentaho_identity={
+            "version": 1,
+            "invocation_alias": identity,
+            "observation_id": observation_id,
+            "native_execution_id": native,
+            "surface": surface,
+            "authority_id": cfg["authority_id"],
+            "environment": cfg["environment"],
+            "native_job_id": cfg["native_job_id"],
+            "workload_kind": cfg["workload_kind"],
+            "restart_epoch": cfg.get("restart_epoch"),
+            "host_resource_id": cfg.get("host_resource_id"),
+            "process_start": record.get("process_start"),
+            "scheduler": deepcopy(scheduler),
+            "native_outcome": status,
+            "native_started_at": start,
+            "native_ended_at": end,
+            "completion_evidence": status in {"SUCCESS", "FAILED", "CANCELLED"},
+        },
     )
     if surface == "PENTAHO_SERVER" and authority != "EXECUTION_HISTORY":
         # Retain non-execution claims but never let them change a projection.

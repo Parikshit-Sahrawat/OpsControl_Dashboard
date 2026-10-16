@@ -40,6 +40,11 @@ def enqueue(db, resource, payload, source_kind, key, observed_at, log_id=None):
 
 
 def logical_payload(payload, configuration, source_kind, source_id):
+    if payload.get("pentaho_identity"):
+        result = dict(payload)
+        result["source"] = {"kind": source_kind, "id": str(source_id)}
+        result["native_execution_id"] = payload["execution_id"]
+        return result  # R1 identity never uses configurable name/time matching.
     matching = configuration.get("duplicate_matching", {})
     attributes = matching.get("attributes", ["execution_id", "jobchain"])
     original = payload["execution_id"]
@@ -96,7 +101,7 @@ def terminal_fact(db, resource, facts):
 
 
 def reduce_execution(db, resource, identity):
-    events = db.scalars(
+    event_query = (
         select(NormalizedEvent)
         .where(
             NormalizedEvent.resource_id == resource.id,
@@ -104,12 +109,22 @@ def reduce_execution(db, resource, identity):
             NormalizedEvent.processing_status.in_(["PENDING", "PROCESSED"]),
         )
         .order_by(NormalizedEvent.observed_at, NormalizedEvent.external_key)
-    ).all()
+    )
+    events = db.scalars(event_query).all()
     if not events:
         return None
     job = db.scalar(
         select(JobOrder).where(JobOrder.id == resource.job_order_id).with_for_update()
     )
+    if resource.configuration.get("platform") == "PENTAHO" and any(
+        e.payload.get("pentaho_identity") for e in events
+    ):
+        from app.unified.pentaho_execution import reduce_events
+
+        # A competing worker may have committed while this transaction waited
+        # for the canonical JobOrder lock. Refresh its now-durable observations.
+        events = db.scalars(event_query.execution_options(populate_existing=True)).all()
+        return reduce_events(db, resource, events, job=job)
     history = db.scalar(
         select(JobOrderHistory)
         .where(

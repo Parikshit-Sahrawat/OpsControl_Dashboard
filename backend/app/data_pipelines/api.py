@@ -1546,16 +1546,22 @@ def verify_profile(id: uuid.UUID, payload: ProfileVerification, db=Depends(get_d
     # even the profile label changes; eligible() repeats this during collection.
     from app.pipeline_adapters.pentaho_observations import proof_matches
 
+    r1_profile = False
     for method in methods:
         connection = db.get(PipelineConnection, method.connection_id)
         cfg = {
             **connection.configuration,
             **method.configuration.get("adapter_overrides", {}),
         }
+        r1_profile = r1_profile or "monitoring_context" in cfg
         if "monitoring_context" in cfg and not proof_matches(
             cfg["monitoring_context"], profile, proof
         ):
             raise HTTPException(409, {"code": "PENTAHO_BUILD_SURFACE_PROOF_REQUIRED"})
+    from app.unified.pentaho_execution import proof_covers_claims
+
+    if r1_profile and not proof_covers_claims(profile.definition, proof.payload):
+        raise HTTPException(409, {"code": "PENTAHO_NATIVE_CLAIM_PROOF_REQUIRED"})
     profile.compatibility = payload.compatibility
     profile.evidence_status = "RUNTIME_VERIFIED"
     profile.verification_evidence_id = proof.id

@@ -9,6 +9,7 @@ from sqlalchemy import (
     Enum,
     Float,
     ForeignKey,
+    ForeignKeyConstraint,
     Index,
     Integer,
     String,
@@ -208,6 +209,15 @@ class JobOrderHistory(Base):
     )
     monitoring_conditions: Mapped[dict | None] = mapped_column(JSONB)
     provider_execution_id: Mapped[str | None] = mapped_column(String(200))
+    # Nullable extension: existing non-R1 histories retain their exact semantics.
+    pentaho_customer_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    pentaho_resource_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    pentaho_lifecycle: Mapped[str | None] = mapped_column(String(25))
+    pentaho_outcome: Mapped[str | None] = mapped_column(String(25))
+    pentaho_completeness: Mapped[str | None] = mapped_column(String(20))
+    pentaho_identity_state: Mapped[str | None] = mapped_column(String(25))
+    pentaho_schedule_occurrence: Mapped[dict | None] = mapped_column(JSONB)
+
     execution_type: Mapped[ExecutionType] = mapped_column(
         Enum(ExecutionType), nullable=False
     )
@@ -246,6 +256,42 @@ class JobOrderHistory(Base):
     )
 
     __table_args__ = (
+        UniqueConstraint(
+            "pentaho_customer_id", "id", name="uq_pentaho_history_customer"
+        ),
+        UniqueConstraint(
+            "pentaho_customer_id",
+            "pentaho_resource_id",
+            "id",
+            name="uq_pentaho_history_scope",
+        ),
+        ForeignKeyConstraint(
+            ["pentaho_customer_id", "pentaho_resource_id", "job_order_id"],
+            [
+                "monitoring_resources.organization_id",
+                "monitoring_resources.id",
+                "monitoring_resources.job_order_id",
+            ],
+            name="fk_pentaho_history_resource_scope",
+            ondelete="RESTRICT",
+            use_alter=True,
+        ),
+        CheckConstraint(
+            "pentaho_lifecycle IS NULL OR pentaho_lifecycle IN ('IDENTIFIED','RUNNING','WAITING_FOR_RETRY','TERMINAL')",
+            name="ck_pentaho_lifecycle",
+        ),
+        CheckConstraint(
+            "pentaho_outcome IS NULL OR pentaho_outcome IN ('SUCCESS','SUCCESS_AFTER_RETRY','FAILED','CANCELLED','UNKNOWN')",
+            name="ck_pentaho_outcome",
+        ),
+        CheckConstraint(
+            "(pentaho_resource_id IS NULL AND pentaho_customer_id IS NULL AND pentaho_lifecycle IS NULL) OR (pentaho_resource_id IS NOT NULL AND pentaho_customer_id IS NOT NULL AND pentaho_lifecycle IS NOT NULL)",
+            name="ck_pentaho_history_binding",
+        ),
+        CheckConstraint(
+            "pentaho_outcome IS NULL OR pentaho_lifecycle='TERMINAL'",
+            name="ck_pentaho_terminal_outcome",
+        ),
         Index(
             "uq_etl_job_provider_execution",
             "job_order_id",

@@ -499,10 +499,15 @@ def projected_records(fact, resource, source_id):
     original["jobchain"] = resource.configuration["jobchain"]
     record = {**fact, "event": original, "source_id": str(source_id)}
     records = [record]
-    if original.get("started_at") and original.get("event_type") not in {
-        "START",
-        "STEP_START",
-    }:
+    if (
+        not original.get("pentaho_identity")
+        and original.get("started_at")
+        and original.get("event_type")
+        not in {
+            "START",
+            "STEP_START",
+        }
+    ):
         step = str(original.get("event_type", "")).startswith("STEP")
         records.append(
             {
@@ -685,9 +690,17 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
                 raise PipelineError("RESOURCE_SCOPE_CHANGED")
             # Raw provider records belong only to the 30-day evidence store.
             # Historical V1.5 projections keep normalized events and references.
+            event_payload = dict(clean["event"])
+            # Trust comes from the current independently approved method profile,
+            # never a producer-provided verified boolean or a VERIFY lease.
+            from app.unified.pentaho_execution import verified_projection
+
+            event_payload = verified_projection(
+                db, source, event_payload, links, evidence.id
+            )
             fact = {
                 "native_job_id": native,
-                "event": clean["event"],
+                "event": event_payload,
                 "evidence": {
                     "semantics": clean.get("evidence", {}).get("semantics"),
                     "v16_evidence_id": str(evidence.id),
@@ -1115,6 +1128,8 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
 def cleanup(db):
     """Daily bounded lifecycle work. Source configuration deletion never cascades evidence."""
 
+    from app.unified.pentaho_models import PentahoRevision
+
     current = clock(db)
     removed = {"evidence": 0, "jobs": 0, "checkpoints": 0, "gaps": 0}
     protected = set(
@@ -1129,6 +1144,9 @@ def cleanup(db):
         .where(
             PipelineEvidence.created_at < current - timedelta(days=30),
             PipelineEvidence.source_id.not_in(protected),
+            ~select(PentahoRevision.id)
+            .where(PentahoRevision.source_evidence_id == PipelineEvidence.id)
+            .exists(),
             PipelineEvidence.payload["raw_retired"].as_boolean().is_not(True),
         )
         .limit(500)

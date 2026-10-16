@@ -94,3 +94,33 @@ New employees require one department; existing legacy multiple memberships and
 direct-role access remain intact. Correlation remains evidence-supported
 confidence, never an assertion of proven cause. All genuine runtime certification
 remains independent of architecture approval, unit tests and connectivity.
+
+## R1 Sprint 03 — canonical executions and observed recovery
+
+Pentaho-specific behavior is controlled by the immutable
+[ARCH-ETL-001 V1.6 baseline](ARCH_ETL_001_V16.md). The
+[Sprint 03 report](../verification/arch-etl-001-v16-r1/sprint03/REPORT.md)
+records executable contracts, migration safety, acceptance and limitations.
+
+`JobOrderHistory` remains the logical execution, reached through existing fenced
+source acceptance → durable CollectorRun evidence → NormalizedEvent →
+`reduce_execution()`. Nullable `pentaho_*` fields distinguish lifecycle, outcome,
+completeness, scoped identity and native schedule occurrence. Attempts, immutable
+native aliases and append-only revisions extend this owner; no competing engine,
+resource identity or workload runner is introduced. Other platform reducers retain
+their path. Legacy status mapping remains compatible, including SUCCESS_AFTER_RETRY
+as SUCCESS and WAITING_FOR_RETRY as RUNNING.
+
+Retry grouping requires explicit native/scheduler authority attested per method,
+not names, PID, time proximity or a connection test. An unverified proposal remains
+separate/quarantined. Manual recovery is a many-to-many observed relationship
+between distinct histories, confirmed by a different scoped investigator and
+reversed only through an append-only decision. It never rewrites a failed original
+or establishes incident restoration. Reads use `etl.view`; decisions use
+`etl.investigate`, with customer enforcement and composite database constraints.
+
+Migration `0033_pentaho_attempts` preserves legacy rows without guessed identity
+backfills. Immutable journals and referenced evidence are protected; populated
+downgrade fails closed. Full conflict adjudication, large-backlog replay, schedule
+monitoring and incident redesign remain later milestones. All genuine Pentaho
+runtime acceptance remains unexecuted.
