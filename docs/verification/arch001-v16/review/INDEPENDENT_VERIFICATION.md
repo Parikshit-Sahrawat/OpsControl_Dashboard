@@ -80,3 +80,16 @@ commit. Previously failed owned Docker smoke images were removed only from the
 task's isolated VFS daemon, leaving 15.9 GiB free; original volumes and deployment
 were preserved. This report does not treat an older source manifest as proof of
 subsequent application changes.
+
+The NOC report-denominator probe now retains its controlled executions and
+collector projections until the owning disposable PostgreSQL container is
+removed. It no longer deletes parent jobs/collectors referenced by retained
+monitoring resources. This test-only change neither deletes customer records nor
+changes runtime retention or FK constraints.
+
+The complete local controlled Carte/Linux/NOC acceptance then passed all eight
+ETL browser phases, configured/failure/recovery NOC browser checks, role/customer
+negatives, alert relapse, stale evidence, audit attribution and report-denominator
+checks. The theme browser reports 13 checks across desktop/mobile, both themes,
+all primary tabs, contrast and session behavior, with zero page/server errors.
+These are controlled local runtime results, not genuine vendor acceptance.

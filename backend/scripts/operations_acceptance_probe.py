@@ -591,11 +591,10 @@ def report_semantics():
         )
         report_update(report_denominator_negatives="PASS")
     finally:
-        with SessionLocal() as db:
-            if cid:
-                db.delete(db.get(Collector, cid))
-            db.delete(db.get(JobOrder, UUID(job["id"])))
-            db.commit()
+        # The owning lab removes its disposable database after all checks.
+        # Keep these real executions and their resource/collector projections
+        # intact until then; deleting their parents would violate retained FKs.
+        print("Controlled report fixtures retained for owned database teardown")
     print(
         "Unknown HTTP result / missing ETL source timing / in-progress SLA / breached terminal / report window negatives PASS"
     )
