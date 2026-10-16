@@ -68,3 +68,28 @@ Populated downgrades refuse data loss or privilege resurrection. Retain additive
 ## Git delivery
 
 Verified implementation commit on `main`: `ac01704` (`feat: deliver ARCH-001 V1.5 agents monitoring incidents and verified local UAT`). Earlier architecture checkpoints are `51a989c`, `e54891a` and `72b3550`. The subsequent documentation commit records delivery metadata only; application source remains the validated implementation. Remote CI is a separate gate and is not replaced by local success.
+
+## ARCH-ETL-001 V1.6-R1 Sprint 01
+
+Branch: `feat/arch-etl-001-v16-r1`. Immutable baseline published in `ce603a4`;
+source R1 README `cab0e63`. [Controlling specification](docs/architecture/ARCH_ETL_001_V16.md),
+[REC-01–REC-12 reconciliation](docs/architecture/ARCH_ETL_001_V16_R1_RECONCILIATION.md),
+[focused verification](docs/verification/arch-etl-001-v16-r1/sprint01/REPORT.md).
+Historical V1.5 results above are not R1 implementation/certification results.
+
+| Work | Status | Evidence / limitation |
+| --- | --- | --- |
+| Approved authority publication | Complete | Exact 23,653-byte copy; SHA-256 `ed8af0f9c3fce3375d0375e2431bdf43567133943551b2c0bc9f0b9882ab5446`; published separately from application changes |
+| REC-01–REC-12 architecture reconciliation | Complete for Sprint 01 | All mapped to source clauses, canonical owners, known gaps and later implementation; formal sign-off/runtime completion not implied |
+| Versioned read-only Pentaho surface contract | Implemented and contract-tested | Existing metadata APIs expose Kitchen/Pan/Server as proposed and Carte as partial; no new runnable adapter, all unverified |
+| Candidate version families | Implemented as metadata only | Existing candidates retained, 10.2.x/11.0.x added; none certifies an installed build |
+| Employee cardinality / P0 wording | Architecture ambiguity resolved | Exactly one department for new employees, preserve legacy multi/direct roles; reconstructed RT index accepted by baseline §§14–15 |
+| Attempts, verified projections, historical notifications | Pending Sprint 02 | Existing mutable history/step attempts do not supply the complete logical-attempt/revision/idempotency contract |
+| CLI/Server and full Carte adapters / operational UI | Pending later implementation | Metadata is not execution, installation, endpoint support or runtime parity |
+| Incident/granular scope/replay/retention extensions | Pending later implementation | Reuse current owners, explicit denies, fences and legal holds; no runtime policy change this sprint |
+| Migrations | None introduced | Existing `0032_pipeline_ownership` retained; concrete schema gaps documented before design |
+| Focused tests / static/reference checks | See verification report | Baseline regressions and six new executable contract tests; no false native-runtime acceptance claim |
+| RT-001–RT-020 genuine Pentaho acceptance | NOT RUN | Requires actual exact-build installations, native evidence and independent reviewers; no architecture-text blocker remains |
+
+Stop after the focused Sprint 01 commit. No PR, merge, deployment, production-data
+change, ETL control command or full Pentaho/RBAC/UI redesign in this sprint.

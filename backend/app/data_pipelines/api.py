@@ -25,6 +25,7 @@ from app.data_pipelines.models import (
 )
 from app.data_pipelines import service as s
 from app.pipeline_adapters import ADAPTER_DEFINITIONS, CONFIG_SCHEMAS
+from app.pipeline_adapters.pentaho_contracts import PENTAHO_VERSION_CANDIDATES
 
 router = APIRouter(prefix="/api/v1/data-pipelines", tags=["Data Pipelines V1.6"])
 
@@ -182,7 +183,7 @@ def catalogue():
                         "evidence_status": "DOCUMENTED",
                     }
                     for v in (
-                        ["8.3", "9.3", "9.4"]
+                        PENTAHO_VERSION_CANDIDATES
                         if p == "PENTAHO"
                         else ["Operator-supplied installed version"]
                     )

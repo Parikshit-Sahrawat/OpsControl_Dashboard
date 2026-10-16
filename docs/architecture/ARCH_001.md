@@ -75,3 +75,22 @@ incidents reuse retained history; database ownership remains customer-scoped.
 The local stack adds a TLS ingestion gateway; its generated CA is development-only.
 Current verification and unresolved gates are recorded in
 [ARCH-001_IMPLEMENTATION_STATUS.md](../../ARCH-001_IMPLEMENTATION_STATUS.md).
+
+## ARCH-ETL-001 V1.6-R1 shared architecture reconciliation
+
+The [owner-approved Pentaho specification](ARCH_ETL_001_V16.md) is immutable and
+controls Pentaho-specific behavior. [Revision-1 reconciliation](ARCH_ETL_001_V16_R1_RECONCILIATION.md)
+maps all twelve REC items to its clauses and existing implementation owners.
+Reuse MonitoringResource/JobOrder and the current reducer, durable evidence and
+fenced cursors, native incidents/outbox and customer-scoped RBAC. Concrete
+attempt/revision/outbox gaps are documented before any additive migration;
+no second canonical engine or destructive schema change is approved here.
+
+Sprint 01 adds only static, versioned Pentaho monitoring-surface declarations to
+existing metadata APIs, preserving current collection/configuration/activation
+behavior and the eight other platforms. Runtime reconstruction, recovery,
+retention, incident and permission changes belong to later tested slices.
+New employees require one department; existing legacy multiple memberships and
+direct-role access remain intact. Correlation remains evidence-supported
+confidence, never an assertion of proven cause. All genuine runtime certification
+remains independent of architecture approval, unit tests and connectivity.
