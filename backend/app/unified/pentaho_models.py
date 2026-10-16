@@ -248,3 +248,114 @@ class PentahoRecoveryDecision(Scoped, Base):
             name="ck_pentaho_recovery_action",
         ),
     )
+
+
+class PentahoEvidenceReview(Scoped, Base):
+    """Actionable projection only; evidence and decisions remain immutable."""
+
+    __tablename__ = "pentaho_evidence_reviews"
+    resource_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    job_order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    history_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    event_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    source_evidence_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    category: Mapped[str] = mapped_column(String(40), nullable=False)
+    claim: Mapped[str] = mapped_column(String(40), nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="OPEN")
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    context: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["organization_id", "resource_id", "job_order_id"],
+            [
+                "monitoring_resources.organization_id",
+                "monitoring_resources.id",
+                "monitoring_resources.job_order_id",
+            ],
+            name="fk_pentaho_review_resource",
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
+            ["job_order_id", "history_id"],
+            ["job_order_histories.job_order_id", "job_order_histories.id"],
+            name="fk_pentaho_review_history",
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "resource_id", "event_id"],
+            [
+                "normalized_telemetry_events.organization_id",
+                "normalized_telemetry_events.resource_id",
+                "normalized_telemetry_events.id",
+            ],
+            name="fk_pentaho_review_event",
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "source_evidence_id"],
+            ["pipeline_evidence.organization_id", "pipeline_evidence.id"],
+            name="fk_pentaho_review_raw",
+            ondelete="RESTRICT",
+        ),
+        UniqueConstraint(
+            "event_id", "category", name="uq_pentaho_review_event_category"
+        ),
+        UniqueConstraint(
+            "organization_id", "resource_id", "id", name="uq_pentaho_review_scope"
+        ),
+        CheckConstraint(
+            "category IN ('AMBIGUOUS_IDENTITY','NATIVE_ALIAS_CONFLICT','RETRY_RELATIONSHIP','EXECUTION_OUTCOME','LEGACY_ADOPTION','RECOVERY_IDENTITY')",
+            name="ck_pentaho_review_category",
+        ),
+        CheckConstraint(
+            "status IN ('OPEN','ACCEPTED','REJECTED') AND revision >= 1",
+            name="ck_pentaho_review_status",
+        ),
+        Index(
+            "ix_pentaho_review_queue",
+            "organization_id",
+            "resource_id",
+            "status",
+            "created_at",
+        ),
+        Index("ix_pentaho_review_raw", "source_evidence_id"),
+    )
+
+
+class PentahoEvidenceDecision(Scoped, Base):
+    __tablename__ = "pentaho_evidence_decisions"
+    resource_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    review_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    actor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    action: Mapped[str] = mapped_column(String(30), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    request_key: Mapped[str] = mapped_column(String(100), nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    evidence: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    projection_before: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    projection_after: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["organization_id", "resource_id", "review_id"],
+            [
+                "pentaho_evidence_reviews.organization_id",
+                "pentaho_evidence_reviews.resource_id",
+                "pentaho_evidence_reviews.id",
+            ],
+            name="fk_pentaho_decision_review",
+            ondelete="RESTRICT",
+        ),
+        UniqueConstraint(
+            "review_id", "revision", name="uq_pentaho_evidence_decision_revision"
+        ),
+        UniqueConstraint(
+            "organization_id",
+            "request_key",
+            name="uq_pentaho_evidence_decision_request",
+        ),
+        CheckConstraint(
+            "action IN ('DEFER','REJECT_CLAIM','ACCEPT_VERIFIED_CLAIM','ADOPT_LEGACY')",
+            name="ck_pentaho_evidence_decision_action",
+        ),
+    )

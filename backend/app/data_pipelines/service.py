@@ -1128,7 +1128,7 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
 def cleanup(db):
     """Daily bounded lifecycle work. Source configuration deletion never cascades evidence."""
 
-    from app.unified.pentaho_models import PentahoRevision
+    from app.unified.pentaho_models import PentahoRevision, PentahoEvidenceReview
 
     current = clock(db)
     removed = {"evidence": 0, "jobs": 0, "checkpoints": 0, "gaps": 0}
@@ -1144,6 +1144,9 @@ def cleanup(db):
         .where(
             PipelineEvidence.created_at < current - timedelta(days=30),
             PipelineEvidence.source_id.not_in(protected),
+            ~select(PentahoEvidenceReview.id)
+            .where(PentahoEvidenceReview.source_evidence_id == PipelineEvidence.id)
+            .exists(),
             ~select(PentahoRevision.id)
             .where(PentahoRevision.source_evidence_id == PipelineEvidence.id)
             .exists(),

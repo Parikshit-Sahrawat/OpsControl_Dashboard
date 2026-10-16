@@ -143,7 +143,21 @@ try:
         )
         env["V16_EVIDENCE_DIR"] = str(out)
         run([python, "-m", "scripts.pentaho_migration_probe", "seed"], root / "backend")
+    if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "alembic", "upgrade", "0033_pentaho_attempts"],
+            root / "backend",
+        )
+        run(
+            [python, "-m", "scripts.pentaho_review_migration_probe", "seed"],
+            root / "backend",
+        )
     run([python, "-m", "alembic", "upgrade", "head"], root / "backend")
+    if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "scripts.pentaho_review_migration_probe", "verify"],
+            root / "backend",
+        )
     if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
         run(
             [python, "-m", "scripts.pentaho_migration_probe", "verify"],
@@ -156,7 +170,14 @@ try:
         else [
             "tests.test_pipeline_ownership_v16",
             *(
-                ["tests.test_pentaho_execution_r1"]
+                [
+                    "tests.test_pentaho_execution_r1",
+                    *(
+                        ["tests.test_pentaho_review_r1"]
+                        if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1"
+                        else []
+                    ),
+                ]
                 if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1"
                 else []
             ),
@@ -238,6 +259,13 @@ try:
                         root / "backend",
                     )
                 )
+            if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1":
+                print(
+                    run(
+                        [python, "-m", "scripts.pentaho_sprint04_http_probe"],
+                        root / "backend",
+                    )
+                )
             if os.getenv("V16_BROWSER_ACCEPTANCE") == "1":
                 run(["npm", "run", "build"], root / "frontend")
                 env.setdefault(
@@ -288,6 +316,7 @@ try:
         for message in (
             "V1.6 identities/evidence/checkpoints exist",
             "Pentaho attempts/identity/evidence/recovery exist",
+            "Pentaho evidence review/decisions exist",
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")

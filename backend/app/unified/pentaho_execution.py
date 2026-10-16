@@ -29,6 +29,7 @@ def verified_projection(db, source, payload, links, evidence_id):
         PipelineConnection,
         PipelineCapability,
         PipelineIntegration,
+        PipelineEvidence,
     )
 
     result = dict(payload)
@@ -37,6 +38,7 @@ def verified_projection(db, source, payload, links, evidence_id):
     methods = {method.id: method for _, method in links}.values()
     permitted = set(CLAIMS)
     has_context = False
+    attestations = []
     for method in methods:
         integration = db.get(PipelineIntegration, method.integration_id)
         connection = db.get(PipelineConnection, method.connection_id)
@@ -53,8 +55,21 @@ def verified_projection(db, source, payload, links, evidence_id):
             profile.definition.get("verified_pentaho_claims", []) if profile else []
         )
         permitted &= set(declared) & CLAIMS if isinstance(declared, list) else set()
-        if source.lease_mode != "LIVE" or not s.eligible(db, method):
+        eligible = source.lease_mode == "LIVE" and s.eligible(db, method)
+        if not eligible:
             permitted.clear()
+        if eligible and profile:
+            attestations.append(
+                {
+                    "method_id": str(method.id),
+                    "connection_id": str(connection.id),
+                    "capability_id": str(profile.id),
+                    "platform_version": profile.platform_version,
+                    "verification_evidence_id": str(profile.verification_evidence_id),
+                    "reader_definition_hash": s.reader_definition(db, method),
+                    "claims": sorted(set(declared) & CLAIMS),
+                }
+            )
     if has_context and isinstance(identity, dict):
         result["pentaho_identity"] = identity
         result["pentaho_verification"] = {
@@ -62,6 +77,10 @@ def verified_projection(db, source, payload, links, evidence_id):
             "evidence_id": str(evidence_id),
             "source_id": str(source.id),
             "generation": str(source.generation),
+            "fence": source.fence,
+            "evidence_sha256": digest(db.get(PipelineEvidence, evidence_id).payload),
+            "accepted_at": db.get(PipelineEvidence, evidence_id).created_at.isoformat(),
+            "attestations": attestations,
         }
     return result
 
@@ -205,16 +224,17 @@ def execution_state(attempts):
     )
 
 
-def unresolved(event, error, history=None):
-    event.processing_status = "UNRESOLVED"
-    event.processing_error = error
-    if history:
-        event.history_id = history.id
-        history.pentaho_identity_state = "REVIEW_REQUIRED"
-
-
 def reduce_events(db, resource, events, job=None):
     """Shared JobOrder row lock is held by reduce_execution() before entering."""
+    from app.unified.pentaho_review import open_review
+
+    def unresolved(event, error, history=None):
+        event.processing_status = "UNRESOLVED"
+        event.processing_error = error
+        if history:
+            event.history_id = history.id
+        open_review(db, resource, event, error, history)
+
     histories = {}
     for event in events:
         if db.scalar(
@@ -279,8 +299,20 @@ def reduce_events(db, resource, events, job=None):
                 and not existing.pentaho_resource_id
                 and existing.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
             ):
-                unresolved(event, "PENTAHO_LEGACY_IDENTITY_REVIEW_REQUIRED")
-                continue
+                from app.unified.pentaho_models import PentahoEvidenceReview
+
+                approval = db.scalar(
+                    select(PentahoEvidenceReview.id).where(
+                        PentahoEvidenceReview.event_id == event.id,
+                        PentahoEvidenceReview.category == "LEGACY_ADOPTION",
+                        PentahoEvidenceReview.status == "ACCEPTED",
+                    )
+                )
+                if not approval:
+                    unresolved(
+                        event, "PENTAHO_LEGACY_IDENTITY_REVIEW_REQUIRED", existing
+                    )
+                    continue
             history = existing or JobOrderHistory(
                 job_order_id=resource.job_order_id,
                 provider_execution_id=claim["logical"],
@@ -297,6 +329,7 @@ def reduce_events(db, resource, events, job=None):
             history.pentaho_lifecycle = "IDENTIFIED"
             history.pentaho_identity_state = "CONFIRMED"
             history.pentaho_completeness = "UNKNOWN"
+            history.pentaho_review_state = "CLEAR"
             if claim["scheduler"].get("native_occurrence_id"):
                 history.pentaho_schedule_occurrence = {
                     "authority_id": claim["scheduler"]["authority_id"],
@@ -450,6 +483,7 @@ def reduce_events(db, resource, events, job=None):
             and native.get("completion_evidence") is True
         )
         disposition = "RETRY_UNVERIFIED" if claim["unverified_retry"] else "ACCEPTED"
+        conflict_claim = "EXECUTION_OUTCOME"
         if outcome in TERMINAL and outcome_verified:
             if attempt.outcome in TERMINAL and attempt.outcome != outcome:
                 disposition = "CONFLICT_PENDING"
@@ -462,7 +496,9 @@ def reduce_events(db, resource, events, job=None):
                 )
         elif attempt.outcome not in TERMINAL and outcome == "RUNNING":
             attempt.outcome = "RUNNING"
-        if disposition != "CONFLICT_PENDING":
+        if disposition != "CONFLICT_PENDING" and (
+            attempt.outcome not in TERMINAL or outcome_verified
+        ):
             from app.pipeline_adapters.core import instant
             from datetime import datetime
 
@@ -487,8 +523,24 @@ def reduce_events(db, resource, events, job=None):
                 )
                 if number == previous and retry != prior:
                     disposition = "CONFLICT_PENDING"
+                    conflict_claim = "SCHEDULER_RETRY"
                 elif number > previous:
                     attempt.retry_authority = retry
+        if (
+            disposition != "CONFLICT_PENDING"
+            and history.pentaho_lifecycle == "TERMINAL"
+        ):
+            candidates = list(
+                db.scalars(
+                    select(PentahoAttempt).where(
+                        PentahoAttempt.history_id == history.id
+                    )
+                )
+            )
+            lifecycle, terminal_outcome, _ = execution_state(candidates)
+            if lifecycle != "TERMINAL" or terminal_outcome != history.pentaho_outcome:
+                disposition = "CONFLICT_PENDING"
+                conflict_claim = "SCHEDULER_RETRY"
         if disposition == "CONFLICT_PENDING":
             (
                 attempt.outcome,
@@ -522,58 +574,105 @@ def reduce_events(db, resource, events, job=None):
                     "observed_at": event.observed_at.isoformat(),
                     "received_at": event.received_at.isoformat(),
                     "attempt_outcome": attempt.outcome,
+                    "claim_kind": conflict_claim,
+                    "projection_before": {
+                        "outcome": previous_projection[0],
+                        "completeness": previous_projection[1],
+                        "retry_authority": previous_projection[4],
+                    },
+                    "prior_revision_ids": [
+                        str(v)
+                        for v in db.scalars(
+                            select(PentahoRevision.id)
+                            .where(PentahoRevision.attempt_id == attempt.id)
+                            .order_by(PentahoRevision.revision.desc())
+                            .limit(100)
+                        )
+                    ],
                 },
             )
         )
         event.history_id = history.id
         event.processing_status = "PROCESSED"
         if disposition != "ACCEPTED":
-            unresolved(event, "PENTAHO_" + disposition, history)
+            error = (
+                "PENTAHO_RETRY_AUTHORITY_CONFLICT"
+                if disposition == "CONFLICT_PENDING"
+                and conflict_claim == "SCHEDULER_RETRY"
+                else "PENTAHO_" + disposition
+            )
+            unresolved(event, error, history)
+        # Materialize each accepted projection before a later claim in this
+        # batch can conflict; freezing must preserve that defensible state.
+        project_history(db, history, observed_at=event.observed_at)
         histories[history.id] = history
         db.flush()
     for history in histories.values():
-        attempts = list(
-            db.scalars(
-                select(PentahoAttempt)
-                .where(PentahoAttempt.history_id == history.id)
-                .order_by(PentahoAttempt.attempt_order)
-            )
-        )
-        lifecycle, outcome, completeness = execution_state(attempts)
-        # Sprint 04 owns contradictory-evidence reconciliation. Preserve the
-        # last defensible terminal projection and expose review instead.
-        if history.pentaho_lifecycle == "TERMINAL" and (
-            lifecycle != "TERMINAL" or outcome != history.pentaho_outcome
-        ):
-            history.pentaho_identity_state = "REVIEW_REQUIRED"
-            continue
-        history.pentaho_lifecycle, history.pentaho_outcome = lifecycle, outcome
-        history.pentaho_completeness = completeness
-        history.status = (
-            ExecutionStatus.SUCCESS
-            if outcome in {"SUCCESS", "SUCCESS_AFTER_RETRY"}
-            else (
-                ExecutionStatus.FAILED
-                if outcome == "FAILED"
-                else (
-                    ExecutionStatus.RUNNING
-                    if lifecycle in {"RUNNING", "WAITING_FOR_RETRY"}
-                    else ExecutionStatus.UNKNOWN
-                )
-            )
-        )
-        starts = [a.started_at for a in attempts if a.started_at]
-        history.started_at = min(starts) if starts else None
-        history.ended_at = attempts[-1].ended_at if lifecycle == "TERMINAL" else None
-        history.source_result = "PENTAHO_NATIVE_ATTEMPT_RECONSTRUCTION"
-        history.source_evidence = {
-            **(history.source_evidence or {}),
-            "resource_id": str(resource.id),
-            "attempt_ids": [str(a.id) for a in attempts],
-            "observed_at": max(e.observed_at for e in events).isoformat(),
-        }
+        project_history(db, history, observed_at=max(e.observed_at for e in events))
     db.flush()
     return next(iter(histories.values()), None)
+
+
+def apply_native_outcome(attempt, native):
+    """Caller has already checked native completion authority and identity."""
+    from app.pipeline_adapters.core import instant
+    from datetime import datetime
+
+    attempt.outcome = native["native_outcome"]
+    start, end = instant(native.get("native_started_at")), instant(
+        native.get("native_ended_at")
+    )
+    if start:
+        attempt.started_at = datetime.fromisoformat(start)
+    if end:
+        attempt.ended_at = datetime.fromisoformat(end)
+    attempt.completeness = "COMPLETE" if start and end else "PARTIAL"
+
+
+def project_history(db, history, allow_correction=False, observed_at=None):
+    if not allow_correction and history.pentaho_review_state == "CONFLICTED_EVIDENCE":
+        return
+    attempts = list(
+        db.scalars(
+            select(PentahoAttempt)
+            .where(PentahoAttempt.history_id == history.id)
+            .order_by(PentahoAttempt.attempt_order)
+        )
+    )
+    lifecycle, outcome, completeness = execution_state(attempts)
+    # Only an explicit audited outcome decision can revise a terminal projection.
+    if (
+        not allow_correction
+        and history.pentaho_lifecycle == "TERMINAL"
+        and (lifecycle != "TERMINAL" or outcome != history.pentaho_outcome)
+    ):
+        history.pentaho_identity_state = "REVIEW_REQUIRED"
+        return
+    history.pentaho_lifecycle, history.pentaho_outcome = lifecycle, outcome
+    history.pentaho_completeness = completeness
+    history.status = (
+        ExecutionStatus.SUCCESS
+        if outcome in {"SUCCESS", "SUCCESS_AFTER_RETRY"}
+        else (
+            ExecutionStatus.FAILED
+            if outcome == "FAILED"
+            else (
+                ExecutionStatus.RUNNING
+                if lifecycle in {"RUNNING", "WAITING_FOR_RETRY"}
+                else ExecutionStatus.UNKNOWN
+            )
+        )
+    )
+    starts = [a.started_at for a in attempts if a.started_at]
+    history.started_at = min(starts) if starts else None
+    history.ended_at = attempts[-1].ended_at if lifecycle == "TERMINAL" else None
+    history.source_result = "PENTAHO_NATIVE_ATTEMPT_RECONSTRUCTION"
+    history.source_evidence = {
+        **(history.source_evidence or {}),
+        "resource_id": str(history.pentaho_resource_id),
+        "attempt_ids": [str(a.id) for a in attempts],
+        **({"observed_at": observed_at.isoformat()} if observed_at else {}),
+    }
 
 
 def proof_covers_claims(definition, payload):

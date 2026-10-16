@@ -14,6 +14,7 @@ PERMISSIONS = {
     "resources.delete": "Deactivate customer resources",
     "etl.view": "View ETL executions and evidence",
     "etl.configure": "Configure customer ETL definitions",
+    "etl.resolve_identity": "Adjudicate verified Pentaho evidence and native identity (explicit grant)",
     "etl.investigate": "Manage ETL investigations (not execute/restart jobs)",
     "incidents.view": "View customer native incidents and evidence",
     "incidents.acknowledge": "Acknowledge customer native incidents",

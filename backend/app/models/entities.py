@@ -215,6 +215,7 @@ class JobOrderHistory(Base):
     pentaho_lifecycle: Mapped[str | None] = mapped_column(String(25))
     pentaho_outcome: Mapped[str | None] = mapped_column(String(25))
     pentaho_completeness: Mapped[str | None] = mapped_column(String(20))
+    pentaho_review_state: Mapped[str | None] = mapped_column(String(25))
     pentaho_identity_state: Mapped[str | None] = mapped_column(String(25))
     pentaho_schedule_occurrence: Mapped[dict | None] = mapped_column(JSONB)
 
@@ -256,6 +257,7 @@ class JobOrderHistory(Base):
     )
 
     __table_args__ = (
+        UniqueConstraint("job_order_id", "id", name="uq_pentaho_history_job"),
         UniqueConstraint(
             "pentaho_customer_id", "id", name="uq_pentaho_history_customer"
         ),

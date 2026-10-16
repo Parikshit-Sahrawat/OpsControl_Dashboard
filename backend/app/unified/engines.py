@@ -708,6 +708,17 @@ def evaluate_executions(db, r, p, observed):
         observed,
     )
     for h in histories:
+        if getattr(h, "pentaho_resource_id", None) and (
+            getattr(h, "pentaho_review_state", None)
+            in {"CONFLICTED_EVIDENCE", "REVIEW_REQUIRED"}
+            or (h.source_evidence or {})
+            .get("pentaho_adjudication", {})
+            .get("operational_reassessment_required")
+        ):
+            # Keep the last defensible operational conditions. Review is neither
+            # failure nor recovery; historical incident/notification policy is a
+            # separate, explicit eligibility gate (Sprint 05).
+            continue
         if not h.started_at:
             if h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
                 condition(

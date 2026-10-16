@@ -124,3 +124,24 @@ backfills. Immutable journals and referenced evidence are protected; populated
 downgrade fails closed. Full conflict adjudication, large-backlog replay, schedule
 monitoring and incident redesign remain later milestones. All genuine Pentaho
 runtime acceptance remains unexecuted.
+
+### Pentaho R1 Sprint 04 — claim reconciliation
+
+Pentaho evidence review extends the existing canonical execution reducer and
+customer-scoped source pipeline. `pentaho_evidence_reviews` is a review queue,
+not a second execution registry; `pentaho_evidence_decisions` appends evidence,
+actor/reason and before/after projection decisions. `JobOrderHistory` gains an
+independent nullable review state. Immutable native aliases and raw history are
+preserved. Migration 0034 follows 0033 and refuses populated review downgrade.
+
+Native invocation, execution outcome and scheduler retry authority are independent.
+Equal applicable contradictory native claims preserve the last defensible projection
+and require explicit customer-granted `etl.resolve_identity`. No existing employee
+receives that permission implicitly. Identity quarantine cannot be bypassed by an
+outcome or recovery decision. New evidence must prove identity; operator assertions
+cannot retarget aliases. Raw source acceptance retains the existing fencing and
+checkpoint transaction. Reviewed historical corrections cannot automatically drive
+incident reopening; historical reassessment/notifications remain a separate gate.
+See `../ARCH_001_V16.md` and the Sprint 04 verification report for contracts,
+migration limitations and the deferred UI workflow. The controlling
+`ARCH_ETL_001_V16.md` is unchanged; no live platform acceptance is implied.

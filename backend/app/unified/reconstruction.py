@@ -2,7 +2,7 @@
 
 import hashlib, json, uuid, fnmatch
 from datetime import datetime, timezone
-from sqlalchemy import select, exists, func
+from sqlalchemy import select, exists, func, cast, DateTime
 from app.models import (
     JobOrder,
     JobOrderHistory,
@@ -121,8 +121,22 @@ def reduce_execution(db, resource, identity):
     ):
         from app.unified.pentaho_execution import reduce_events
 
-        # A competing worker may have committed while this transaction waited
-        # for the canonical JobOrder lock. Refresh its now-durable observations.
+        # Native occurrence time is not an authority ranking. Materialize the
+        # first durable accepted observation before quarantining equal-authority
+        # contradictions, including observations collected in one batch.
+        event_query = event_query.order_by(None).order_by(
+            func.coalesce(
+                cast(
+                    NormalizedEvent.payload["pentaho_verification"][
+                        "accepted_at"
+                    ].astext,
+                    DateTime(timezone=True),
+                ),
+                NormalizedEvent.received_at,
+            ),
+            NormalizedEvent.id,
+        )
+        # Refresh after waiting for the same canonical lock used by reviewers.
         events = db.scalars(event_query.execution_options(populate_existing=True)).all()
         return reduce_events(db, resource, events, job=job)
     history = db.scalar(
@@ -457,4 +471,8 @@ def ingest_connector(db, resource, version, limit=100):
             count += int(new)
     for identity in identities:
         reduce_execution(db, resource, identity)
+    if resource.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_review import synchronize_reviews
+
+        synchronize_reviews(db, resource)
     return count

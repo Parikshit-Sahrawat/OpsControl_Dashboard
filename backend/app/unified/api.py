@@ -1654,3 +1654,146 @@ def review_pentaho_recovery(
     )
     commit(db)
     return document(row)
+
+
+class PentahoEvidenceReviewDecision(Strict):
+    action: Literal["DEFER", "REJECT_CLAIM", "ACCEPT_VERIFIED_CLAIM", "ADOPT_LEGACY"]
+    expected_revision: int = Field(ge=1)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+    reason: str = Field(min_length=10, max_length=2000)
+
+
+@router.get("/resources/{id}/evidence-reviews")
+def pentaho_evidence_reviews(
+    id: uuid.UUID,
+    status: Literal["OPEN", "ACCEPTED", "REJECTED"] | None = None,
+    category: (
+        Literal[
+            "AMBIGUOUS_IDENTITY",
+            "NATIVE_ALIAS_CONFLICT",
+            "RETRY_RELATIONSHIP",
+            "EXECUTION_OUTCOME",
+            "LEGACY_ADOPTION",
+            "RECOVERY_IDENTITY",
+        ]
+        | None
+    ) = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import PentahoEvidenceReview
+
+    r = resource(db, id, "etl.view")
+    query = select(PentahoEvidenceReview).where(
+        PentahoEvidenceReview.resource_id == r.id,
+        PentahoEvidenceReview.organization_id == r.organization_id,
+    )
+    if status:
+        query = query.where(PentahoEvidenceReview.status == status)
+    if category:
+        query = query.where(PentahoEvidenceReview.category == category)
+    return {
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            document(row)
+            for row in db.scalars(
+                query.order_by(
+                    PentahoEvidenceReview.created_at, PentahoEvidenceReview.id
+                )
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
+    }
+
+
+@router.get("/resources/{id}/evidence-reviews/{review_id}")
+def pentaho_evidence_review_details(
+    id: uuid.UUID,
+    review_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import (
+        PentahoEvidenceReview,
+        PentahoEvidenceDecision,
+    )
+
+    r = resource(db, id, "etl.view")
+    row = db.scalar(
+        select(PentahoEvidenceReview).where(
+            PentahoEvidenceReview.id == review_id,
+            PentahoEvidenceReview.resource_id == r.id,
+            PentahoEvidenceReview.organization_id == r.organization_id,
+        )
+    )
+    if not row:
+        raise HTTPException(404, "Evidence review unavailable")
+    query = select(PentahoEvidenceDecision).where(
+        PentahoEvidenceDecision.review_id == row.id
+    )
+    return {
+        "review": document(row),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "decisions": [
+            document(v)
+            for v in db.scalars(
+                query.order_by(PentahoEvidenceDecision.revision)
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
+    }
+
+
+@router.post("/resources/{id}/evidence-reviews/{review_id}/decision")
+def decide_pentaho_evidence_review(
+    id: uuid.UUID,
+    review_id: uuid.UUID,
+    payload: PentahoEvidenceReviewDecision,
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_review import decide
+
+    r = resource(db, id, "etl.resolve_identity")
+    row = decide(
+        db,
+        r,
+        review_id,
+        current_principal.get().user_id,
+        payload.action,
+        payload.expected_revision,
+        payload.idempotency_key,
+        payload.reason,
+    )
+    commit(db)
+    return document(row)
+
+
+class PentahoRecoveryIdentityIssue(Strict):
+    category: Literal["RECOVERY_IDENTITY"]
+    event_id: uuid.UUID
+    expected_revision: Literal[0]
+    idempotency_key: str = Field(min_length=1, max_length=100)
+    reason: str = Field(min_length=10, max_length=2000)
+
+
+@router.post("/resources/{id}/evidence-reviews", status_code=201)
+def flag_pentaho_recovery_identity(
+    id: uuid.UUID, payload: PentahoRecoveryIdentityIssue, db=Depends(get_db)
+):
+    from app.unified.pentaho_review import flag_recovery_identity
+
+    r = resource(db, id, "etl.resolve_identity")
+    row = flag_recovery_identity(
+        db,
+        r,
+        payload.event_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+    )
+    commit(db)
+    return document(row)

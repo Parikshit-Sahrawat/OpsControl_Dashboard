@@ -134,3 +134,17 @@ Approved Pentaho architecture unchanged. No PR, merge, deployment or real-source
 
 Stop after Sprint 03. No frontend workflow was added. New tables are persistence
 extensions, not a second canonical execution, incident or scheduler engine.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 04
+
+| Feature | Implementation / verification | Evidence / limitation |
+| --- | --- | --- |
+| Claim-specific reconciliation | Native invocation/outcome/scheduler authority separated; contradictions freeze the last defensible projection | `backend/app/unified/pentaho_execution.py`; deterministic + owned PostgreSQL tests |
+| Evidence Review | Six categories, append-only actor/reason/evidence/projection decisions; granular customer-scoped permission; stale/idempotent/concurrent decisions tested | `pentaho_review.py`, unified APIs, migration `0034_pentaho_review`; no implicit role grants |
+| Identity correction | Exact matching legacy adoption and verified outcome correction; immutable aliases preserved | Ambiguous merge/split/alias remapping unsupported and quarantined; missing pre-S04 proof snapshots require new verified evidence |
+| Operational safety | Prior conditions held during unresolved review/historical adjudication; no automatic incident reopening | Historical notification/reassessment remains Sprint 05; no Sprint 06 redesign |
+| Regression/security/migrations | 155 unit tests, 101 PostgreSQL tests, 18 authenticated HTTP groups passed; migration/schema checks passed | Owned PostgreSQL + real authenticated HTTP with controlled authority fixtures; no live certification |
+| Native provider acceptance | NOT RUN | RT-001–RT-020 require separately authorized genuine installations/evidence |
+| Frontend | NOT RUN / not modified | Backend contract documented for Sprint 07 |
+
+Delivery evidence: `docs/verification/arch-etl-001-v16-r1/sprint04/REPORT.md`.
