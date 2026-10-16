@@ -93,3 +93,23 @@ Historical V1.5 results above are not R1 implementation/certification results.
 
 Stop after the focused Sprint 01 commit. No PR, merge, deployment, production-data
 change, ETL control command or full Pentaho/RBAC/UI redesign in this sprint.
+
+## ARCH-ETL-001 V1.6-R1 Sprint 02
+
+[Adapter implementation and verification report](docs/verification/arch-etl-001-v16-r1/sprint02/REPORT.md).
+The immutable Pentaho specification remains unchanged. This supersedes Sprint 01
+metadata-only status for the capabilities below; it does not mark full R1 complete.
+
+| Work | Status and limits |
+| --- | --- |
+| CLI observations | Implemented/local deterministic verification: host/start/invocation identity, executable hash, job/transformation distinction, native-result normalization, argument hashing. Native OS process/log producers and installation/runtime verification remain pending |
+| Server observations | Implemented/local deterministic verification: authorized Agent export schema, repository/scheduler/history authority separation. Server network APIs remain unsupported without exact-build endpoint/auth/native-shape evidence |
+| Carte R1 reader | Implemented/local deterministic verification: three fixed TLS GET paths, safe XML, server/restart scoping, advisory inventory, unchanged-status and epoch-bound checkpoints. Exact-build mapping, automatic epoch detection and genuine runtime acceptance remain unverified |
+| Shared integration | Existing versioned connections, method identity, source fence/generation, customer/host binding, atomic evidence/checkpoint acceptance, selected-job projection and capability gates retained/extended; no duplicate models |
+| Runtime capability gate | Exact-build/surface proof added before profile labeling and to collection eligibility; static context/candidate metadata never certifies |
+| Verification | 110 unit tests, 56 actual PostgreSQL tests and nine existing HTTP groups passed; migration integrity and static/import checks passed. See report for commands and test boundaries |
+| Migrations / protected semantics | No new migration or frontend change; no retry/recovery reconstruction, conflict engine, incident/RBAC redesign, ETL control, retention deletion, merge or deployment |
+| Genuine RT-001–RT-020 | All 20 NOT RUN. Three surfaces remain PARTIAL and runtime-unverified; no live provider access or real source activation |
+
+Stop after Sprint 02. Next sprint: logical executions/attempts and observed
+retry/recovery reconstruction, with genuine source evidence required separately.

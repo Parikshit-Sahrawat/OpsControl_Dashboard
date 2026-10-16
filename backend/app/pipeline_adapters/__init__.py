@@ -95,6 +95,11 @@ for definition in CONFIG_SCHEMAS.values():
             )
         if key == "collect_logs":
             attribute["default"] = False
+        if key == "monitoring_context":
+            attribute.update(
+                type="object",
+                description="Optional version-1 Pentaho observation scope; exact build is not certification",
+            )
 
 for definition in CONFIG_SCHEMAS.values():
     for attribute in definition["attributes"]:

@@ -384,6 +384,14 @@ def add_connection(id: uuid.UUID, payload: ConfigurationInput, db=Depends(get_db
     allowed = set(ADAPTER_DEFINITIONS[row.platform]["fields"])
     if set(cfg) - allowed:
         raise HTTPException(422, "Unsupported adapter connection fields")
+    if row.platform == "PENTAHO" and "monitoring_context" in cfg:
+        from app.pipeline_adapters.pentaho_observations import context
+        from app.pipeline_adapters.core import AdapterError
+
+        try:
+            context(cfg["monitoring_context"])
+        except AdapterError as error:
+            raise HTTPException(422, {"code": "PENTAHO_" + error.kind}) from None
     for key, value in cfg.items():
         if key in {"base_url", "url"}:
             from urllib.parse import urlsplit
@@ -1534,6 +1542,20 @@ def verify_profile(id: uuid.UUID, payload: ProfileVerification, db=Depends(get_d
             409,
             "Independent genuine-runtime evidence attestation required; fixture certification forbidden",
         )
+    # R1 build/surface assertions must match the independent native proof before
+    # even the profile label changes; eligible() repeats this during collection.
+    from app.pipeline_adapters.pentaho_observations import proof_matches
+
+    for method in methods:
+        connection = db.get(PipelineConnection, method.connection_id)
+        cfg = {
+            **connection.configuration,
+            **method.configuration.get("adapter_overrides", {}),
+        }
+        if "monitoring_context" in cfg and not proof_matches(
+            cfg["monitoring_context"], profile, proof
+        ):
+            raise HTTPException(409, {"code": "PENTAHO_BUILD_SURFACE_PROOF_REQUIRED"})
     profile.compatibility = payload.compatibility
     profile.evidence_status = "RUNTIME_VERIFIED"
     profile.verification_evidence_id = proof.id

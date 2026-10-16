@@ -1444,3 +1444,206 @@ class OwnershipTests(unittest.TestCase):
         root = self.db.get(MonitoringResource, source.id)
         self.assertEqual(root.primary_collector_id, first.id)
         self.assertNotEqual(root.primary_collector_id, second.id)
+
+    def _pentaho_r1_fixture(self, surface="KITCHEN_PAN"):
+        from tests.test_pentaho_r1 import scope, observation, server_record
+
+        cfg = scope(surface)
+        self.integration.platform = "PENTAHO"
+        self.connection.configuration = {"monitoring_context": cfg}
+        self.source.method_type = "FILE_LOG"
+        self.source.identity = {
+            "host_resource_id": cfg["host_resource_id"],
+            "path": "/controlled/pentaho.jsonl",
+            "os": "Linux",
+        }
+        self.source.live_checkpoint = {"sources": {}}
+        self.method.transport = "AGENT"
+        self.method.configuration = {"method_type": "FILE_LOG"}
+        self.profile.platform_version = cfg["exact_build"]
+        self.profile.definition = {"supported_methods": ["FILE_LOG"]}
+        self.profile.evidence_status = "DOCUMENTED"
+        self.db.commit()
+        raw = (
+            server_record()
+            if surface == "PENTAHO_SERVER"
+            else observation(argv=["kitchen.sh", "-pass", "controlled-secret-in-argv"])
+        )
+        record = {
+            "key": "controlled-observation-offset",
+            "pentaho_observation": raw,
+            "evidence_origin": "CONTROLLED_FIXTURE",
+            "event": {"status": "SUCCESS"},
+        }
+        checkpoint = {
+            "sources": {
+                "/controlled/pentaho.jsonl": {"device": 1, "inode": 2, "offset": 100}
+            }
+        }
+        return cfg, record, checkpoint
+
+    def test_pentaho_r1_fenced_acceptance_normalizes_and_redacts_atomically(self):
+        import json
+
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        result = s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.commit()
+        self.assertEqual(result["quarantined"], 1)  # no selected native job invented
+        stored = self.db.scalar(
+            select(PipelineEvidence).where(
+                PipelineEvidence.source_id == self.source.id,
+                PipelineEvidence.external_key == record["key"],
+            )
+        )
+        self.assertEqual(stored.payload["event"]["status"], "RUNNING")
+        self.assertNotIn("controlled-secret-in-argv", json.dumps(stored.payload))
+        self.assertNotIn("pentaho_observation", stored.payload)
+        self.assertEqual(self.source.live_checkpoint, checkpoint)
+        self.assertFalse(s.eligible(self.db, self.method))
+
+    def test_pentaho_r1_scope_failure_rolls_back_evidence_and_cursor(self):
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        record["pentaho_observation"]["environment"] = "PROD"
+        with self.assertRaises(s.PipelineError) as caught:
+            s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.rollback()
+        self.assertEqual(caught.exception.code, "PENTAHO_IDENTITY_SCOPE")
+        self.assertEqual(self.source.live_checkpoint, {"sources": {}})
+        self.assertIsNone(
+            self.db.scalar(
+                select(PipelineEvidence.id).where(
+                    PipelineEvidence.external_key == record["key"],
+                    PipelineEvidence.source_id == self.source.id,
+                )
+            )
+        )
+
+    def test_pentaho_r1_stale_generation_rejected_before_normalization(self):
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        self.source.generation = uuid.uuid4()
+        self.db.commit()
+        with patch(
+            "app.pipeline_adapters.pentaho_observations.normalize_observation"
+        ) as normalize:
+            with self.assertRaises(s.PipelineError) as caught:
+                s.accept(self.db, ticket, [record], checkpoint, False)
+            normalize.assert_not_called()
+        self.db.rollback()
+        self.assertEqual(caught.exception.code, "STALE_OWNER_OR_GENERATION")
+        self.assertEqual(self.source.live_checkpoint, {"sources": {}})
+
+    def test_pentaho_r1_normalized_event_cannot_bypass_native_observation(self):
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        record.pop("pentaho_observation")
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        with self.assertRaises(s.PipelineError) as caught:
+            s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.rollback()
+        self.assertEqual(caught.exception.code, "PENTAHO_SCHEMA")
+        self.assertEqual(self.source.live_checkpoint, {"sources": {}})
+
+    def test_pentaho_r1_server_export_scheduler_never_changes_execution_projection(
+        self,
+    ):
+        cfg, record, checkpoint = self._pentaho_r1_fixture("PENTAHO_SERVER")
+        record["pentaho_observation"]["authority"] = "SCHEDULER"
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        result = s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.commit()
+        self.assertEqual(result["quarantined"], 1)
+        stored = self.db.scalar(
+            select(PipelineEvidence).where(
+                PipelineEvidence.source_id == self.source.id,
+                PipelineEvidence.external_key == record["key"],
+            )
+        )
+        self.assertIsNone(stored.native_job_id)
+        self.assertEqual(stored.payload["event"]["status"], "UNKNOWN")
+
+    def test_pentaho_r1_requires_exact_build_surface_even_with_prior_profile_proof(
+        self,
+    ):
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        self.profile.evidence_status = (
+            "RUNTIME_VERIFIED"  # controlled existing-profile fixture
+        )
+        self.proof.payload = {
+            **self.proof.payload,
+            "reader_definition_hash": s.reader_definition(self.db, self.method),
+        }
+        self.db.commit()
+        self.assertFalse(s.eligible(self.db, self.method))
+        self.proof.payload = {
+            **self.proof.payload,
+            "evidence": {"surface": "KITCHEN_PAN", "exact_build": cfg["exact_build"]},
+        }
+        self.db.commit()
+        self.assertTrue(s.eligible(self.db, self.method))
+        self.profile.platform_version = "11.0.0.0-1"
+        self.db.commit()
+        self.assertFalse(s.eligible(self.db, self.method))
+
+    def test_pentaho_r1_selected_native_identity_projects_to_existing_resource(self):
+        from app.data_pipelines.bridge import create_job_resource
+        from app.models import CollectorRun
+
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        job = PipelineJob(
+            organization_id=self.org.id,
+            integration_id=self.integration.id,
+            native_id=cfg["native_job_id"],
+            name="Controlled native job",
+            origin="MANUAL",
+            selected=True,
+        )
+        self.db.add(job)
+        self.db.flush()
+        self.db.info["pipeline_initial_job_binding"] = job.id
+        resource = create_job_resource(self.db, self.integration, job)
+        job.resource_id = resource.id
+        self.db.add(
+            PipelineAssociation(
+                organization_id=self.org.id,
+                method_id=self.method.id,
+                job_id=job.id,
+                generation=self.source.generation,
+                confirmed_by=self.user.id,
+            )
+        )
+        self.db.commit()
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        result = s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.commit()
+        self.assertEqual(result["accepted"], 1)
+        self.assertEqual(result["quarantined"], 0)
+        run = self.db.scalar(
+            select(CollectorRun).where(
+                CollectorRun.collector_id == resource.primary_collector_id
+            )
+        )
+        self.assertIsNotNone(run)
+        fact = run.source_metadata["execution_records"][0]
+        self.assertEqual(fact["event"]["jobchain"], resource.configuration["jobchain"])
+        self.assertEqual(fact["event"]["provider_jobchain"], cfg["native_job_id"])
+        self.assertEqual(fact["event"]["status"], "RUNNING")
+        self.assertTrue(fact["event"]["execution_id"].startswith("pentaho-r1:"))
+
+    def test_pentaho_r1_host_os_mismatch_rejected_before_checkpoint(self):
+        cfg, record, checkpoint = self._pentaho_r1_fixture()
+        record["pentaho_observation"]["os"] = "Windows"
+        ticket = s.acquire(self.db, self.source.id, uuid.uuid4(), verification=True)
+        self.db.commit()
+        with self.assertRaises(s.PipelineError) as caught:
+            s.accept(self.db, ticket, [record], checkpoint, False)
+        self.db.rollback()
+        self.assertEqual(caught.exception.code, "PENTAHO_IDENTITY_SCOPE")
+        self.assertEqual(self.source.live_checkpoint, {"sources": {}})

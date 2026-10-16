@@ -20,7 +20,7 @@ from app.pipeline_adapters.pentaho_contracts import describe_pentaho_monitoring_
 class PentahoMonitoringContractTests(unittest.TestCase):
     def test_three_surfaces_are_read_only_and_never_runtime_verified(self):
         contract = describe_pentaho_monitoring_contract()
-        self.assertEqual(contract["version"], 1)
+        self.assertEqual(contract["version"], 2)
         self.assertTrue(contract["monitoring_only"])
         self.assertFalse(contract["runtime_verified"])
         self.assertEqual(
@@ -35,20 +35,20 @@ class PentahoMonitoringContractTests(unittest.TestCase):
         self.assertIn("GENUINE_NATIVE_EVIDENCE", contract["certification_requires"])
         json.dumps(contract)
 
-    def test_existing_carte_support_does_not_claim_server_cli_or_transformation_support(
+    def test_partial_surfaces_do_not_claim_native_producers_or_live_support(
         self,
     ):
         surfaces = {
             s["surface"]: s for s in describe_pentaho_monitoring_contract()["surfaces"]
         }
         for key in ("KITCHEN_PAN", "PENTAHO_SERVER"):
-            self.assertEqual(surfaces[key]["implementation_status"], "PROPOSED")
-            self.assertEqual(surfaces[key]["implemented_observations"], [])
+            self.assertEqual(surfaces[key]["implementation_status"], "PARTIAL")
+            self.assertTrue(surfaces[key]["implemented_observations"])
         carte = surfaces["CARTE"]
         self.assertEqual(carte["implementation_status"], "PARTIAL")
         self.assertTrue(carte["implemented_observations"])
         self.assertTrue(
-            any("transformation" in s for s in carte["proposed_observations"])
+            any("genuine runtime" in s for s in carte["proposed_observations"])
         )
         self.assertTrue(any("restart" in s for s in carte["identity_requirements"]))
 

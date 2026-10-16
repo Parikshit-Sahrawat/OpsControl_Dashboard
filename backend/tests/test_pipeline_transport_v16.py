@@ -300,3 +300,30 @@ class TransportTests(unittest.TestCase):
                     source,
                     {"sources": {path: {"device": 1, "inode": 1, "offset": position}}},
                 )
+
+    def test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization(
+        self,
+    ):
+        from tests.test_pentaho_r1 import observation
+
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "pentaho.jsonl"
+            record = observation()
+            path.write_text(
+                json.dumps(
+                    {
+                        "pentaho_observation": record,
+                        "evidence_origin": "CONTROLLED_FIXTURE",
+                    }
+                )
+                + "\n"
+            )
+            client, ticket = self.client(path)
+            client.collect(ticket["source_id"])
+            payload = client.request.call_args_list[1].args[1]
+            self.assertEqual(payload["records"][0]["pentaho_observation"], record)
+            self.assertNotIn("event", payload["records"][0])
+            self.assertEqual(
+                payload["checkpoint"]["sources"][str(path)]["offset"],
+                path.stat().st_size,
+            )

@@ -183,6 +183,13 @@ def canonical(method_type, identity):
 
 
 def validate_reader_target(platform, method_type, identity, configuration):
+    from app.pipeline_adapters.pentaho_observations import method_context
+    from app.pipeline_adapters.core import AdapterError
+
+    try:
+        method_context(platform, method_type, identity, configuration)
+    except AdapterError as error:
+        raise PipelineError("PENTAHO_" + error.kind) from None
     if method_type != "PLATFORM_API" or platform in {"SSIS", "CUSTOM"}:
         return
     endpoint = configuration.get("base_url") or configuration.get("url")
@@ -382,6 +389,31 @@ def eligible(db, method):
         else None
     )
     source = db.get(PipelineSource, method.source_id)
+    if integration and integration.platform == "PENTAHO" and connection:
+        cfg = {
+            **connection.configuration,
+            **method.configuration.get("adapter_overrides", {}),
+        }
+        if "monitoring_context" in cfg:
+            from app.pipeline_adapters.pentaho_observations import (
+                proof_matches,
+                method_context,
+            )
+            from app.pipeline_adapters.core import AdapterError
+
+            try:
+                ctx = method_context(
+                    integration.platform,
+                    method.configuration.get("method_type"),
+                    source.identity if source else {},
+                    cfg,
+                )
+            except AdapterError:
+                return False
+            if ctx["environment"] != integration.environment or not proof_matches(
+                ctx, profile, proof
+            ):
+                return False
     return bool(
         proof
         and proof.payload.get("reader_definition_hash") == reader_definition(db, method)
@@ -538,6 +570,19 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         or len(json.dumps(records, default=str)) > 8 * 1024 * 1024
     ):
         raise PipelineError("EVIDENCE_BATCH_LIMIT")
+    from app.pipeline_adapters.pentaho_observations import prepare_records
+    from app.pipeline_adapters.core import AdapterError
+
+    if any(
+        not isinstance(r, dict) or not isinstance(r.get("key"), str) for r in records
+    ):
+        raise PipelineError("STABLE_EVIDENCE_ID_REQUIRED")
+    try:
+        records = prepare_records(
+            db, source, records, recovery=recovery_operation is not None
+        )
+    except (AdapterError, ValueError, TypeError) as error:
+        raise PipelineError("PENTAHO_" + getattr(error, "kind", "SCHEMA")) from None
     if recovery_operation:
         if (
             recovery_operation.state != "RUNNING"

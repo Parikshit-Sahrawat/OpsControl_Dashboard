@@ -74,6 +74,14 @@ def collect_method(
         **method.configuration.get("adapter_overrides", {}),
     }
     platform = integration.platform
+    if platform == "PENTAHO" and base.get("monitoring_context"):
+        from app.pipeline_adapters.pentaho_observations import context
+
+        if (
+            context(base["monitoring_context"])["environment"]
+            != integration.environment
+        ):
+            raise PipelineError("PENTAHO_ENVIRONMENT_SCOPE_MISMATCH")
     cursor = deepcopy(checkpoint)
     cursor.setdefault("jobs", {})
     events = []
@@ -139,7 +147,11 @@ def collect_method(
             else:
                 cfg[selector] = native
         key = job.native_id if job else "__inventory__"
-        adapter = PLATFORM_ADAPTERS[platform](cfg)
+        adapter = (
+            PLATFORM_ADAPTERS[platform](cfg, customer_id=integration.organization_id)
+            if platform == "PENTAHO" and cfg.get("monitoring_context")
+            else PLATFORM_ADAPTERS[platform](cfg)
+        )
         batch = adapter.collect_with_retry(cursor["jobs"].get(key, {}))
         if len(batch.events) > 10000:
             raise PipelineError("PROVIDER_BATCH_LIMIT")

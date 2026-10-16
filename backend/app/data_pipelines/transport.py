@@ -95,8 +95,9 @@ class PipelineTransport:
                         stream.seek(start)
                         break
                     payload = json.loads(line)
-                    if not isinstance(payload, dict) or not isinstance(
-                        payload.get("event"), dict
+                    if not isinstance(payload, dict) or not (
+                        isinstance(payload.get("event"), dict)
+                        or isinstance(payload.get("pentaho_observation"), dict)
                     ):
                         raise ValueError(
                             "Normalized structured pipeline event required"
@@ -113,13 +114,18 @@ class PipelineTransport:
                             ]
                         ).encode()
                     ).hexdigest()
+                    observed_at = (
+                        payload["pentaho_observation"].get("observed_at")
+                        if "pentaho_observation" in payload
+                        else payload["event"].get("timestamp")
+                    )
                     recovery_range = result.get("recovery_range")
                     include = True
                     if recovery_range:
                         from datetime import datetime
 
                         observed = datetime.fromisoformat(
-                            payload["event"]["timestamp"].replace("Z", "+00:00")
+                            observed_at.replace("Z", "+00:00")
                         )
                         include = (
                             datetime.fromisoformat(recovery_range["start"])
@@ -136,8 +142,12 @@ class PipelineTransport:
                             "evidence_origin": payload.get(
                                 "evidence_origin", "UNKNOWN"
                             ),
-                            "event": payload["event"],
-                            "observed_at": payload["event"].get("timestamp"),
+                            **(
+                                {"pentaho_observation": payload["pentaho_observation"]}
+                                if "pentaho_observation" in payload
+                                else {"event": payload["event"]}
+                            ),
+                            "observed_at": observed_at,
                             "evidence": {
                                 "source_path": path,
                                 "byte_offset": start,
