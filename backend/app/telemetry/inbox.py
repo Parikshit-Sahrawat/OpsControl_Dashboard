@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.dialects.postgresql import insert
 from app.db.session import SessionLocal, get_db
 from app.security.scope import current_principal
@@ -105,16 +105,28 @@ def inbox(
     p = require_permission("alerts.view")
     from app.models import AlertNotificationDelivery, AlertState
 
+    from app.unified.pentaho_models import PentahoHistoricalNotice
+
     query = (
-        select(InAppNotification, AlertState)
-        .join(
+        select(InAppNotification, AlertState, PentahoHistoricalNotice)
+        .outerjoin(
             AlertNotificationDelivery,
             AlertNotificationDelivery.id == InAppNotification.delivery_id,
         )
-        .join(AlertState, AlertState.id == AlertNotificationDelivery.alert_state_id)
+        .outerjoin(
+            AlertState, AlertState.id == AlertNotificationDelivery.alert_state_id
+        )
+        .outerjoin(
+            PentahoHistoricalNotice,
+            PentahoHistoricalNotice.id == InAppNotification.historical_notice_id,
+        )
         .where(
             InAppNotification.user_id == p.user_id,
-            AlertState.organization_id == InAppNotification.organization_id,
+            or_(
+                AlertState.organization_id == InAppNotification.organization_id,
+                PentahoHistoricalNotice.organization_id
+                == InAppNotification.organization_id,
+            ),
         )
     )
     if not p.platform_admin:
@@ -129,12 +141,24 @@ def inbox(
         "items": [
             {
                 **item(note),
-                "message": state.message,
-                "severity": state.severity,
-                "alert_state_id": str(state.id),
-                "status": state.status,
+                "message": (
+                    state.message
+                    if state
+                    else "Historical failure: " + historical.payload["pipeline_name"]
+                ),
+                "severity": state.severity if state else "CRITICAL",
+                "alert_state_id": str(state.id) if state else None,
+                "status": state.status if state else historical.status,
+                **(
+                    {
+                        "classification": "HISTORICAL_FAILURE",
+                        "historical_evidence": historical.payload,
+                    }
+                    if historical
+                    else {}
+                ),
             }
-            for note, state in rows
+            for note, state, historical in rows
         ],
         "total": total,
     }

@@ -785,7 +785,12 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         source_id=source.id,
     )
     receipt.state = "COMPLETE"
-    receipt.result = {"accepted": accepted, "quarantined": quarantined}
+    receipt.result = {
+        "accepted": accepted,
+        "quarantined": quarantined,
+        "complete": bool(complete),
+        "accepted_at": clock(db).isoformat(),
+    }
     db.flush()  # constraints/evidence durability precede cursor advancement in this transaction
     check_ticket(db, source, ticket)
     if recovery_operation:
@@ -1091,7 +1096,7 @@ def operation(
     return row, True
 
 
-def plan_recovery(db, source, start, end, actor_id, key, manual=False):
+def plan_recovery(db, source, start, end, actor_id, key, manual=False, mode=None):
     if start.tzinfo is None or end.tzinfo is None or end <= start:
         raise PipelineError("RECOVERY_RANGE_INVALID")
     bound = RECOVERY_BOUNDS[source.method_type]
@@ -1105,6 +1110,8 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
         "checkpoint_hash": digest(source.recovery_checkpoint),
         "manual": manual,
     }
+    if mode:
+        config["mode"] = mode
     row, new = operation(
         db,
         source.organization_id,
@@ -1122,6 +1129,15 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
             else "PENDING"
         )
         row.result = {"automatic_bound_seconds": bound, "live_priority": True}
+        from app.unified.pentaho_replay import is_pentaho, MODE
+
+        if is_pentaho(db, source) and mode != MODE:
+            row.state = "UNSUPPORTED"
+            row.result = {
+                **row.result,
+                "code": "PENTAHO_PROVIDER_CONTINUITY_UNVERIFIED",
+                "provider_replay_supported": False,
+            }
     return row
 
 

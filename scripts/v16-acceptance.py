@@ -152,7 +152,21 @@ try:
             [python, "-m", "scripts.pentaho_review_migration_probe", "seed"],
             root / "backend",
         )
+    if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "alembic", "upgrade", "0034_pentaho_review"],
+            root / "backend",
+        )
+        run(
+            [python, "-m", "scripts.pentaho_history_migration_probe", "seed"],
+            root / "backend",
+        )
     run([python, "-m", "alembic", "upgrade", "head"], root / "backend")
+    if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1":
+        run(
+            [python, "-m", "scripts.pentaho_history_migration_probe", "verify"],
+            root / "backend",
+        )
     if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1":
         run(
             [python, "-m", "scripts.pentaho_review_migration_probe", "verify"],
@@ -173,7 +187,14 @@ try:
                 [
                     "tests.test_pentaho_execution_r1",
                     *(
-                        ["tests.test_pentaho_review_r1"]
+                        [
+                            "tests.test_pentaho_review_r1",
+                            *(
+                                ["tests.test_pentaho_history_r1"]
+                                if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1"
+                                else []
+                            ),
+                        ]
                         if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1"
                         else []
                     ),
@@ -266,6 +287,13 @@ try:
                         root / "backend",
                     )
                 )
+            if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1":
+                print(
+                    run(
+                        [python, "-m", "scripts.pentaho_sprint05_http_probe"],
+                        root / "backend",
+                    )
+                )
             if os.getenv("V16_BROWSER_ACCEPTANCE") == "1":
                 run(["npm", "run", "build"], root / "frontend")
                 env.setdefault(
@@ -317,6 +345,7 @@ try:
             "V1.6 identities/evidence/checkpoints exist",
             "Pentaho attempts/identity/evidence/recovery exist",
             "Pentaho evidence review/decisions exist",
+            "Pentaho schedule/replay/notification evidence exists",
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
@@ -332,7 +361,11 @@ try:
                 "schema_drift": False,
                 "populated_downgrade_refused": True,
                 "empty_downgrade_upgrade": True,
-                "critical_race_41_42": "PASS",
+                "critical_race_41_42": (
+                    "PASS"
+                    if "tests.test_pipeline_ownership_v16" in targets
+                    else "NOT_RUN_IN_FOCUSED_SELECTION"
+                ),
                 "vendor_environments_accessed": False,
                 "production_modified": False,
             },

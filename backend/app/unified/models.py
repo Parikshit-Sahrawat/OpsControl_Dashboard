@@ -234,6 +234,7 @@ class NormalizedEvent(Base):
 
 
 class ExpectedExecutionWindow(Base):
+    pentaho_authority: Mapped[dict | None] = mapped_column(JSONB)
     __tablename__ = "expected_execution_windows"
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4

@@ -87,7 +87,7 @@ def target(url):
     return p, resolve_target(p.hostname, networks)
 
 
-def send_destination(delivery, state):
+def send_destination(delivery, state, historical=False):
     id = uuid.UUID(delivery.channel.removeprefix("DEST:"))
     with SessionLocal() as db:
         row = db.scalar(
@@ -104,6 +104,10 @@ def send_destination(delivery, state):
     if channel == "IN_APP":
         from app.telemetry.inbox import persist
 
+        if historical:
+            from app.unified.pentaho_history import persist_in_app
+
+            return persist_in_app(delivery, state, c)
         return persist(delivery, state, c)
     if channel == "WEBHOOK":
         p, ip = target(c["url"])

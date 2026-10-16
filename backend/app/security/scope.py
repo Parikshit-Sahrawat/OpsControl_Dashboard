@@ -162,6 +162,7 @@ _PATHS.update(
             "PentahoRevision",
             "PentahoRecoveryLink",
             "PentahoRecoveryDecision",
+            "PentahoHistoricalNotice",
             "PentahoEvidenceReview",
             "PentahoEvidenceDecision",
         )

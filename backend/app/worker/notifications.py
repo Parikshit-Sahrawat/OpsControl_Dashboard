@@ -4,7 +4,6 @@ Customer destination configuration uses approved external secret references. Del
 never owns the claim transaction.
 """
 
-import json
 import os
 import re
 import uuid
@@ -14,7 +13,6 @@ from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlsplit
-from urllib.request import Request, HTTPRedirectHandler, HTTPSHandler, build_opener
 
 from sqlalchemy import select, func, text
 
@@ -27,19 +25,6 @@ def _env(name: str, required: bool = True) -> str | None:
     if required and not value:
         raise RuntimeError(f"Missing required notification setting: {name}")
     return value
-
-
-def _post_json(url: str, payload: dict, headers: dict | None = None, timeout: int = 15):
-    body = json.dumps(payload).encode("utf-8")
-    request = Request(
-        url,
-        data=body,
-        headers={"Content-Type": "application/json", **(headers or {})},
-        method="POST",
-    )
-    with _notification_open(request, timeout=timeout) as response:
-        raw = response.read(4096)
-        return response.status, raw.decode("utf-8", errors="replace")
 
 
 def _email_message_id(delivery: AlertNotificationDelivery) -> str:
@@ -98,6 +83,7 @@ def deliver(delivery, state):
         return send_email(delivery, state)
     if delivery.channel == "IN_APP":
         from app.telemetry.inbox import persist
+
         return persist(delivery, state)
     raise RuntimeError("Unsupported or retired notification channel")
 
@@ -118,7 +104,10 @@ def _claim_notification():
             select(AlertNotificationDelivery)
             .where(
                 AlertNotificationDelivery.status == "PROCESSING",
-                (AlertNotificationDelivery.channel.in_(["EMAIL","IN_APP"]) | AlertNotificationDelivery.channel.startswith("DEST:")),
+                (
+                    AlertNotificationDelivery.channel.in_(["EMAIL", "IN_APP"])
+                    | AlertNotificationDelivery.channel.startswith("DEST:")
+                ),
                 AlertNotificationDelivery.lease_expires_at <= now,
                 AlertNotificationDelivery.attempts >= MAX_ATTEMPTS,
             )
@@ -351,6 +340,8 @@ def _safe_delivery_error(error):
 def dispatch_pending_notifications():
     from app.telemetry.delivery import queue_escalations
 
+    from app.unified.pentaho_history import dispatch_notices
+
     queue_escalations()
     counts = {"claimed": 0, "sent": 0, "failed": 0, "fenced": 0}
     for _ in range(20):
@@ -370,4 +361,13 @@ def dispatch_pending_notifications():
                 delivery.id, token, error=_safe_delivery_error(error)
             )
             counts["failed" if completed else "fenced"] += 1
+    try:
+        counts["historical"] = dispatch_notices(limit=5)
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).warning(
+            "Historical notification worker failed; live alert delivery completed independently"
+        )
+        counts["historical"] = {"worker_failed": 1}
     return counts

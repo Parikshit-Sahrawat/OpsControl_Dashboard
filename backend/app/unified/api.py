@@ -79,6 +79,10 @@ def commit(db):
 
 def checked_resource_parameters(db, r, configuration):
     config = checked_parameters(r.domain, configuration)
+    if r.domain == "ETL" and r.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_schedule import authority
+
+        authority(db, r, config, utc(), strict=True)
     if (
         r.domain == "ETL"
         and r.configuration.get("platform") == "NIFI"
@@ -1797,3 +1801,106 @@ def flag_pentaho_recovery_identity(
     )
     commit(db)
     return document(row)
+
+
+class PentahoHistoricalPolicy(Strict):
+    enabled: bool
+    destination_ids: list[uuid.UUID] = Field(default_factory=list, max_length=20)
+    historical_after_seconds: int = Field(default=3600, ge=60, le=2592000)
+    expected_revision: int = Field(ge=1)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+@router.put("/resources/{id}/historical-notifications")
+def pentaho_historical_policy(
+    id: uuid.UUID, payload: PentahoHistoricalPolicy, db=Depends(get_db)
+):
+    from app.telemetry.models import NotificationDestination
+    from app.telemetry.inbox import validate_targets
+    from app.data_pipelines.service import operation, digest
+
+    r = resource(db, id, "templates.manage", True)
+    require_permission("etl.configure", r.organization_id)
+    if r.configuration.get("platform") != "PENTAHO":
+        raise HTTPException(409, "Pentaho resource required")
+    policy = payload.model_dump(
+        mode="json", exclude={"expected_revision", "idempotency_key"}
+    )
+    if len(set(payload.destination_ids)) != len(payload.destination_ids) or (
+        payload.enabled and not payload.destination_ids
+    ):
+        raise HTTPException(422, "Explicit unique destinations required")
+    p = current_principal.get()
+    for destination_id in payload.destination_ids:
+        target = db.get(NotificationDestination, destination_id)
+        if (
+            not target
+            or target.organization_id != r.organization_id
+            or not target.enabled
+        ):
+            raise HTTPException(422, "Scoped enabled destination required")
+        if target.channel == "IN_APP":
+            if not target.configuration.get(
+                "user_ids"
+            ) and not target.configuration.get("department_ids"):
+                raise HTTPException(
+                    422, "Explicit users or teams required for historical notifications"
+                )
+            validate_targets(
+                db, target.configuration, r.organization_id, p.service_provider_id
+            )
+    op, new = operation(
+        db,
+        r.organization_id,
+        "PENTAHO_NOTICE_POLICY",
+        payload.idempotency_key,
+        {
+            "resource_id": str(r.id),
+            "policy": policy,
+            "expected_revision": payload.expected_revision,
+        },
+        p.user_id,
+    )
+    if new:
+        if r.revision != payload.expected_revision:
+            raise HTTPException(409, "Resource changed; refresh before saving")
+        r.configuration = {**r.configuration, "historical_notifications": policy}
+        r.revision += 1
+        op.state = "COMPLETE"
+        op.result = {"resource_revision": r.revision}
+        audit(db, r, "PENTAHO_HISTORICAL_POLICY_UPDATE")
+    commit(db)
+    return {
+        "policy": r.configuration.get("historical_notifications"),
+        "revision": r.revision,
+    }
+
+
+@router.get("/resources/{id}/historical-notifications")
+def pentaho_historical_notices(
+    id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import PentahoHistoricalNotice
+
+    r = resource(db, id, "alerts.view")
+    query = select(PentahoHistoricalNotice).where(
+        PentahoHistoricalNotice.resource_id == r.id
+    )
+    return {
+        "policy": r.configuration.get("historical_notifications", {"enabled": False}),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            document(v)
+            for v in db.scalars(
+                query.order_by(
+                    PentahoHistoricalNotice.created_at.desc(),
+                    PentahoHistoricalNotice.id,
+                )
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
+    }

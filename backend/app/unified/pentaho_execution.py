@@ -12,7 +12,7 @@ from sqlalchemy import select
 from app.models import JobOrderHistory, ExecutionStatus, ExecutionType
 from app.unified.pentaho_models import PentahoAlias, PentahoAttempt, PentahoRevision
 
-CLAIMS = {"INVOCATION", "EXECUTION_OUTCOME", "SCHEDULER_RETRY"}
+CLAIMS = {"INVOCATION", "EXECUTION_OUTCOME", "SCHEDULER_RETRY", "SCHEDULE"}
 TERMINAL = {"SUCCESS", "FAILED", "CANCELLED"}
 
 
@@ -605,6 +605,26 @@ def reduce_events(db, resource, events, job=None):
         # Materialize each accepted projection before a later claim in this
         # batch can conflict; freezing must preserve that defensible state.
         project_history(db, history, observed_at=event.observed_at)
+        if (
+            history.pentaho_outcome == "FAILED"
+            and history.ended_at
+            and outcome_verified
+            and native.get("native_outcome") == "FAILED"
+        ):
+            threshold = (
+                resource.configuration.get("historical_notifications") or {}
+            ).get("historical_after_seconds", 3600)
+            if (event.received_at - history.ended_at).total_seconds() >= threshold:
+                history.source_evidence = {
+                    **(history.source_evidence or {}),
+                    "pentaho_historical": {
+                        "occurred_at": history.ended_at.isoformat(),
+                        "discovered_at": event.received_at.isoformat(),
+                        "event_id": str(event.id),
+                        "operational_reassessment_required": True,
+                        "notification_eligibility": "PENDING_POLICY_AND_EVIDENCE_REVIEW",
+                    },
+                }
         histories[history.id] = history
         db.flush()
     for history in histories.values():
@@ -698,6 +718,13 @@ def proof_covers_claims(definition, payload):
         and meta.get("native_outcome") in TERMINAL
     ):
         return False
+    if "SCHEDULE" in declared:
+        from app.unified.pentaho_schedule import native_schedule
+
+        try:
+            native_schedule(meta.get("schedule"))
+        except (ValueError, TypeError, KeyError):
+            return False
     if "SCHEDULER_RETRY" in declared:
         from types import SimpleNamespace
 

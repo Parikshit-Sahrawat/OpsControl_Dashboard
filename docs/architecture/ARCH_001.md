@@ -145,3 +145,33 @@ incident reopening; historical reassessment/notifications remain a separate gate
 See `../ARCH_001_V16.md` and the Sprint 04 verification report for contracts,
 migration limitations and the deferred UI workflow. The controlling
 `ARCH_ETL_001_V16.md` is unchanged; no live platform acceptance is implied.
+
+### Pentaho R1 Sprint 05 — authority and historical processing
+
+Pentaho reuses versioned ETL parameters and expected windows. Explicit modes
+VERIFIED_SCHEDULER / MONITORING_EXPECTATION / MANUAL separate native schedule
+claims from configured monitoring expectations. Exact-build, source-generation-
+bound schedule export proof and native occurrence IDs are required for native
+mode; unverified or expired exports fail closed. Coverage requires fresh complete
+acceptance receipts and uninterrupted persisted monitoring observations, not a
+healthy endpoint or a reachable collector alone.
+
+Bounded accepted-evidence reconciliation reuses PipelineOperation and the existing
+canonical reducer, with event-time range, independent approval outside method
+bounds, live-first scheduling, fencing, holds and a separate operation cursor.
+It never resets physical checkpoints or claims unproven provider-gap recovery.
+Pentaho provider/file replay remains unsupported without verified continuity.
+
+The historical notice outbox fills the proven gap in the live alert outbox (which
+requires an AlertState). It reuses existing destinations, TLS/secret handling,
+notification worker and recipient inbox instead of manufacturing live alerts.
+Failure eligibility is independent of incident lifecycle; old closed incidents
+remain closed. Delivery is opt-in, customer-scoped and idempotent in-app, with
+leases/retries/audit and current authorization checks. Existing live notifications
+run first and remain isolated from historical-worker failures.
+
+Additive migration 0035 preserves legacy schedule and notification rows; protected
+historical records refuse deletion/populated downgrade. See `../ARCH_001_V16.md`
+and the Sprint 05 verification report for exact API contracts, test evidence,
+unsupported native capabilities and the Sprint 06 boundary. The approved
+ARCH_ETL_001_V16 baseline is unchanged.

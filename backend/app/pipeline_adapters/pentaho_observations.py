@@ -339,6 +339,17 @@ def normalize_observation(record, cfg, customer_id):
             "completion_evidence": status in {"SUCCESS", "FAILED", "CANCELLED"},
         },
     )
+    if record.get("schedule_evidence") is not None:
+        from app.unified.pentaho_schedule import native_schedule
+
+        try:
+            fact["event"]["pentaho_identity"]["schedule"] = native_schedule(
+                record["schedule_evidence"]
+            )
+        except (ValueError, TypeError, KeyError):
+            raise AdapterError(
+                "SCHEMA", "Invalid read-only native schedule export"
+            ) from None
     if surface == "PENTAHO_SERVER" and authority != "EXECUTION_HISTORY":
         # Retain non-execution claims but never let them change a projection.
         fact["native_job_id"] = None

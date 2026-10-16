@@ -359,3 +359,57 @@ class PentahoEvidenceDecision(Scoped, Base):
             name="ck_pentaho_evidence_decision_action",
         ),
     )
+
+
+class PentahoHistoricalNotice(Scoped, Base):
+    """An obligation about historical evidence, never a fabricated live alert."""
+
+    __tablename__ = "pentaho_historical_notices"
+    resource_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    history_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    event_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    destination_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False
+    )
+    payload: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="PENDING")
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    lease_token: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    lease_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    next_attempt_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=now
+    )
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_error: Mapped[str | None] = mapped_column(String(160))
+    external_reference: Mapped[str | None] = mapped_column(String(500))
+    __table_args__ = (
+        history_fk("fk_pentaho_notice_history"),
+        ForeignKeyConstraint(
+            ["organization_id", "resource_id", "event_id"],
+            [
+                "normalized_telemetry_events.organization_id",
+                "normalized_telemetry_events.resource_id",
+                "normalized_telemetry_events.id",
+            ],
+            name="fk_pentaho_notice_event",
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
+            ["organization_id", "destination_id"],
+            [
+                "notification_destinations.organization_id",
+                "notification_destinations.id",
+            ],
+            name="fk_pentaho_notice_destination",
+            ondelete="RESTRICT",
+        ),
+        UniqueConstraint(
+            "history_id", "destination_id", name="uq_pentaho_historical_obligation"
+        ),
+        UniqueConstraint("organization_id", "id", name="uq_pentaho_notice_scope"),
+        CheckConstraint(
+            "status IN ('PENDING','PROCESSING','SENT','FAILED','BLOCKED') AND attempts>=0",
+            name="ck_pentaho_notice_status",
+        ),
+        Index("ix_pentaho_notice_due", "status", "next_attempt_at"),
+    )

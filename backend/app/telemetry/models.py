@@ -4,6 +4,8 @@ import uuid
 from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean,
+    CheckConstraint,
+    ForeignKeyConstraint,
     DateTime,
     ForeignKey,
     Integer,
@@ -224,6 +226,9 @@ class NotificationDestination(Base):
     )
     __table_args__ = (
         UniqueConstraint(
+            "organization_id", "id", name="uq_notification_destination_scope"
+        ),
+        UniqueConstraint(
             "organization_id", "name", name="uq_notification_destination_name"
         ),
     )
@@ -240,13 +245,30 @@ class InAppNotification(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True
     )
-    delivery_id: Mapped[uuid.UUID] = mapped_column(
+    historical_notice_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    delivery_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("alert_notification_deliveries.id", ondelete="RESTRICT"),
-        nullable=False,
+        nullable=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=now
     )
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["organization_id", "historical_notice_id"],
+            [
+                "pentaho_historical_notices.organization_id",
+                "pentaho_historical_notices.id",
+            ],
+            name="fk_in_app_historical_scope",
+            ondelete="RESTRICT",
+        ),
+        UniqueConstraint(
+            "historical_notice_id", "user_id", name="uq_in_app_historical_user"
+        ),
+        CheckConstraint(
+            "(delivery_id IS NULL) <> (historical_notice_id IS NULL)",
+            name="ck_in_app_notice_origin",
+        ),
         UniqueConstraint("delivery_id", "user_id", name="uq_in_app_delivery_user"),
     )

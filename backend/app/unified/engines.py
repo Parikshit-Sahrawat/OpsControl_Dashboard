@@ -496,6 +496,10 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
 
 
 def evaluate_schedule(db, r, p, observed):
+    if r.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_schedule import evaluate
+
+        return evaluate(db, r, p, observed)
     config = p.configuration
     schedule = config.get("schedule")
     if not schedule:
@@ -688,6 +692,10 @@ def json_safe(value):
 
 
 def evaluate_executions(db, r, p, observed):
+    if getattr(r, "configuration", {}).get("platform") == "PENTAHO":
+        from app.unified.pentaho_history import reconcile
+
+        reconcile(db, r, observed)
     cfg = p.configuration
     histories = db.scalars(
         select(JobOrderHistory)
@@ -711,6 +719,9 @@ def evaluate_executions(db, r, p, observed):
         if getattr(h, "pentaho_resource_id", None) and (
             getattr(h, "pentaho_review_state", None)
             in {"CONFLICTED_EVIDENCE", "REVIEW_REQUIRED"}
+            or (h.source_evidence or {})
+            .get("pentaho_historical", {})
+            .get("operational_reassessment_required")
             or (h.source_evidence or {})
             .get("pentaho_adjudication", {})
             .get("operational_reassessment_required")
@@ -1496,6 +1507,14 @@ def cycle(limit=20, observed=None):
                     else:
                         evaluate_api(db, r, p, observed)
                     correlate(db, r.organization_id, r.environment, observed)
+                if (
+                    not p
+                    and r.domain == "ETL"
+                    and r.configuration.get("platform") == "PENTAHO"
+                ):
+                    from app.unified.pentaho_history import reconcile
+
+                    reconcile(db, r, observed)
                 r.last_engine_attempt_at = observed
                 r.last_engine_success_at = observed
                 r.last_engine_error = None

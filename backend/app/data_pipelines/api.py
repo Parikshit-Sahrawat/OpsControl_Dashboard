@@ -1,5 +1,7 @@
 """Scoped V1.6 APIs. Live provider reads are never triggered by saving drafts."""
 
+from typing import Literal
+
 import uuid
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -96,6 +98,7 @@ class HoldInput(Mutation):
 
 
 class RecoveryInput(Mutation):
+    mode: Literal["ACCEPTED_PENTAHO_EVIDENCE"] | None = None
     start: datetime
     end: datetime
     manual: bool = False
@@ -913,6 +916,10 @@ def release(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
 @router.post("/sources/{id}/recovery")
 def recovery(id: uuid.UUID, payload: RecoveryInput, db=Depends(get_db)):
     source = checked(db, PipelineSource, id, True)
+    from app.unified.pentaho_replay import is_pentaho
+
+    if is_pentaho(db, source):
+        require_permission("etl.replay", source.organization_id)
     op = s.plan_recovery(
         db,
         source,
@@ -921,6 +928,7 @@ def recovery(id: uuid.UUID, payload: RecoveryInput, db=Depends(get_db)):
         actor().user_id,
         payload.idempotency_key,
         payload.manual,
+        payload.mode,
     )
     finish(db)
     return doc(op)
@@ -948,7 +956,13 @@ def change_preview(id: uuid.UUID, payload: ConfigurationInput, db=Depends(get_db
 @router.post("/operations/{id}/approve")
 def approve(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
     row = checked(db, PipelineOperation, id, True)
-    require_admin()
+    if (
+        row.kind == "RECOVERY"
+        and row.configuration.get("mode") == "ACCEPTED_PENTAHO_EVIDENCE"
+    ):
+        require_permission("etl.approve_replay", row.organization_id)
+    else:
+        require_admin()
     if not payload.confirmed or row.actor_id == actor().user_id:
         raise HTTPException(403, "Independent reviewer confirmation required")
     if row.state == "APPROVED":

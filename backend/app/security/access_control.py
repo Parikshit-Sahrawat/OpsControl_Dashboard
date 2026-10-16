@@ -62,6 +62,8 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
             return ("collectors.manage",)
         if path.endswith("/activate") or "/dependencies" in path:
             return ("resources.view",) if read else ("resources.update",)
+        if path.endswith("/historical-notifications"):
+            return ("alerts.view",) if read else ("templates.manage",)
         if "/evidence-reviews" in path:
             return ("etl.view",) if read else ("etl.resolve_identity",)
         if "/executions/" in path:

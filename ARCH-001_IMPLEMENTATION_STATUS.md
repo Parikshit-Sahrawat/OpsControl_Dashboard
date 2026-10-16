@@ -148,3 +148,15 @@ extensions, not a second canonical execution, incident or scheduler engine.
 | Frontend | NOT RUN / not modified | Backend contract documented for Sprint 07 |
 
 Delivery evidence: `docs/verification/arch-etl-001-v16-r1/sprint04/REPORT.md`.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 05
+
+| Feature | Implementation / verification | Limitation |
+| --- | --- | --- |
+| Schedule authority | Explicit native/expectation/manual modes; versioned immutable occurrence provenance; calendar/DST/freshness/grace/NO_RUN tests | Native exports require exact-build independent acceptance; unknown/partial telemetry never establishes absence |
+| Historical reconciliation | Bounded accepted-evidence range cursor, live-first fencing/holds, independent beyond-bound review, restart/idempotency safeguards | No provider/file rewind, fabricated native endpoints, gap closure or live continuity certification |
+| Historical notices | Customer opt-in policy; durable execution/destination obligations; existing transports/worker/inbox; retries, current RBAC, audit and evidence pinning | External SMTP/webhook delivery not exercised; full incident/recovery redesign remains Sprint 06 |
+| Migration | 0035_pentaho_history; preserved legacy inbox/alert/schedule and R1 attempt/history snapshots | Populated rollback is intentionally blocked; verified restore or schema-compatible code rollback required |
+| Verification | 160 unit tests, 127 PostgreSQL tests and 22 HTTP groups passed; migration/import/static checks passed | Controlled fixtures are not runtime certification; RT-001–RT-020 remain NOT RUN |
+
+Evidence: `docs/verification/arch-etl-001-v16-r1/sprint05/REPORT.md`.
