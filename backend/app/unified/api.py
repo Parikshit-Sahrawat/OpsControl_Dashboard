@@ -639,9 +639,15 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
     internal = {
         key: value
         for key, value in (r.configuration or {}).items()
-        if key in {"alert_setup", "log_method_ids"}
+        if key
+        in {"alert_setup", "log_method_ids", "pipeline_integration_id", "native_job_id"}
     }
-    for key in internal.keys() | {"alert_setup", "log_method_ids"}:
+    for key in internal.keys() | {
+        "alert_setup",
+        "log_method_ids",
+        "pipeline_integration_id",
+        "native_job_id",
+    }:
         if key in config and config.pop(key) != internal.get(key):
             raise HTTPException(
                 403, "Use the authorized configuration-specific endpoint"
@@ -1168,6 +1174,23 @@ def verification(id: uuid.UUID, db=Depends(get_db)):
 @router.post("/resources/{id}/activate")
 def activate_resource(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     r = resource(db, id, "resources.update", True)
+    if r.configuration.get("pipeline_integration_id"):
+        from app.data_pipelines.models import PipelineIntegration
+        from app.data_pipelines.service import blockers as pipeline_blockers
+
+        integration = db.get(
+            PipelineIntegration, uuid.UUID(r.configuration["pipeline_integration_id"])
+        )
+        if (
+            not integration
+            or not integration.enabled
+            or integration.configuration.get("lifecycle") != "ACTIVE"
+            or pipeline_blockers(db, integration)
+        ):
+            raise HTTPException(
+                409,
+                "Activate through the V1.6 integration after source eligibility validation",
+            )
     if not payload.approve:
         raise HTTPException(422, "Explicit activation approval required")
     from app.unified.engines import source_readiness
@@ -1195,6 +1218,11 @@ def activate_resource(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
 @router.post("/resources/{id}/start-probe")
 def start_probe(id: uuid.UUID, payload: Approval, db=Depends(get_db)):
     r = resource(db, id, "collectors.manage", True)
+    if r.configuration.get("pipeline_integration_id"):
+        raise HTTPException(
+            409,
+            "Use V1.6 source verification; this resource has no independent legacy probe",
+        )
     if r.domain not in {"API", "ETL"} or not r.primary_collector_id:
         raise HTTPException(422, "No native probe/connector configured")
     if not current_principal.get().platform_admin or not payload.approve:

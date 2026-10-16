@@ -147,6 +147,16 @@ _PATHS.update(
             "CollectorRuntimeState",
             "NativeIncidentDetails",
             "NativeIncidentAlert",
+            "PipelineIntegration",
+            "PipelineConnection",
+            "PipelineCapability",
+            "PipelineSource",
+            "PipelineMethod",
+            "PipelineJob",
+            "PipelineAssociation",
+            "PipelineHold",
+            "PipelineEvidence",
+            "PipelineOperation",
         )
     }
 )
@@ -414,6 +424,26 @@ def enforce_writes(db, flush_context, instances):
                 "condition_id",
             ):
                 if attr in state.attrs and state.attrs[attr].history.has_changes():
+                    if (
+                        model.__name__ == "PipelineJob"
+                        and attr == "resource_id"
+                        and db.info.get("pipeline_initial_job_binding") == obj.id
+                    ):
+                        history = state.attrs[attr].history
+                        from app.unified.models import MonitoringResource
+
+                        bound = db.get(MonitoringResource, obj.resource_id)
+                        if (
+                            list(history.deleted) == [None]
+                            and bound
+                            and bound.domain == "ETL"
+                            and bound.organization_id == obj.organization_id
+                            and bound.configuration.get("pipeline_integration_id")
+                            == str(obj.integration_id)
+                            and bound.configuration.get("native_job_id")
+                            == obj.native_id
+                        ):
+                            continue  # first server-created V1.6 binding; never an ownership reassignment
                     raise HTTPException(
                         403, "Changing resource ownership is not supported"
                     )

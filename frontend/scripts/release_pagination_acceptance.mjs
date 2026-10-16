@@ -16,7 +16,12 @@ try {
     await page.getByRole('button',{name:theme+' theme',exact:true}).click();
     for (const tab of ['Compute Health','API Endpoint Monitoring']) {
       await page.getByRole('button',{name:tab,exact:true}).click();
-      await page.getByRole('button',{name:tab === 'Compute Health' ? 'Show existing infrastructure adapters' : 'Show existing service probes',exact:true}).click();
+      const label = tab === 'Compute Health' ? 'existing infrastructure adapters' : 'existing service probes';
+      // Domain navigation preserves the expanded compatibility inventory.
+      const show = page.getByRole('button',{name:'Show '+label,exact:true});
+      await page.getByRole('button',{name:new RegExp('^(Show|Hide) '+label+'$')}).waitFor();
+      if (await show.isVisible()) await show.click();
+      await page.getByRole('button',{name:'Hide '+label,exact:true}).waitFor();
       const pager = page.getByRole('navigation',{name:'Inventory pagination'});
       await pager.getByRole('button',{name:'Next page',exact:true}).waitFor();
       assert.equal(await pager.getByRole('button',{name:'Previous page'}).isDisabled(),true);

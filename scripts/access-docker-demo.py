@@ -1,10 +1,29 @@
 #!/usr/bin/env python3
 """Build and verify an owned Docker demo project; leave existing demos untouched."""
-import json, os, secrets, socket, subprocess, tempfile, time, shutil
+import hashlib, json, os, secrets, socket, subprocess, tempfile, time, shutil
 from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
+source_commit = subprocess.check_output(
+    ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+).strip()
+expected_commit = os.getenv("OPSCONTROL_DOCKER_EXPECTED_COMMIT")
+
+
+def verify_source_head():
+    if expected_commit:
+        current = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+        dirty = subprocess.check_output(
+            ["git", "status", "--porcelain"], cwd=ROOT, text=True
+        ).strip()
+        if current != expected_commit or dirty:
+            raise RuntimeError("Exact-head Docker verification requires the expected clean commit")
+
+
+verify_source_head()
 private = Path(tempfile.mkdtemp(prefix="opscontrol-access-docker-"))
 private.chmod(0o700)
 project = "opscontrol-access-demo-" + secrets.token_hex(5)
@@ -22,7 +41,17 @@ def port():
         return sock.getsockname()[1]
 
 
-api_port, ui_port, gateway_port = port(), port(), port()
+fixed_ports = os.getenv("OPSCONTROL_DOCKER_TEST_PORTS")
+if fixed_ports:
+    ports = [int(value) for value in fixed_ports.split(",")]
+    if len(ports) != 3 or len(set(ports)) != 3 or any(not 1024 <= value <= 65535 for value in ports):
+        raise RuntimeError("Three distinct unprivileged test ports required")
+    api_port, ui_port, gateway_port = ports
+else:
+    api_port, ui_port, gateway_port = port(), port(), port()
+# A nested verification daemon exposes ports inside its private namespace;
+# its outer container must publish these only on the runner's loopback address.
+bind_address = "0.0.0.0" if os.getenv("OPSCONTROL_DOCKER_NESTED") == "1" else "127.0.0.1"
 subprocess.run(
     [
         str(ROOT / "backend/.venv/bin/python"),
@@ -41,6 +70,7 @@ db_password = secrets.token_urlsafe(36)
     f"""services:
   postgres:
     image: postgres:17-alpine
+    volumes: !override []
     environment:
       POSTGRES_PASSWORD: {db_password}
   api:
@@ -49,7 +79,7 @@ db_password = secrets.token_urlsafe(36)
       CORS_ORIGINS: http://127.0.0.1:{ui_port}
       OPSCONTROL_PUBLIC_INGESTION_URL: https://localhost:{gateway_port}
     ports: !override
-      - "127.0.0.1:{api_port}:8000"
+      - "{bind_address}:{api_port}:8000"
     volumes: !override
       - "{private}/admin-password:/run/secrets/demo_admin_password:ro"
   worker:
@@ -57,7 +87,7 @@ db_password = secrets.token_urlsafe(36)
       DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
   ingestion-gateway:
     ports: !override
-      - "127.0.0.1:{gateway_port}:8443"
+      - "{bind_address}:{gateway_port}:8443"
     volumes: !override
       - "{ROOT}/deploy/gateway/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "{private}/gateway/tls.crt:/etc/opscontrol/tls/tls.crt:ro"
@@ -67,7 +97,7 @@ db_password = secrets.token_urlsafe(36)
       args:
         VITE_API_BASE_URL: http://127.0.0.1:{api_port}
     ports: !override
-      - "127.0.0.1:{ui_port}:80"
+      - "{bind_address}:{ui_port}:80"
 """
 )
 compose = [
@@ -111,8 +141,31 @@ def call(path, method="GET", body=None, token=None):
 
 
 try:
-    run(compose + ["up", "--build", "--detach"])
+    run(compose + ["build"])
+    if env.get("OPSCONTROL_DOCKER_RECOVER_BUILD_CACHE") == "1":
+        # VFS hosts retain full build snapshots. Release unused, rebuildable
+        # cache before allocating the five runtime filesystems; never prune data.
+        run(["docker", "builder", "prune", "--all", "--force"])
+    run(compose + ["up", "--no-build", "--detach"])
     print("Owned five-service Docker demo built", flush=True)
+    image_paths = sorted(
+        path.removeprefix("backend/")
+        for path in subprocess.check_output(
+            ["git", "ls-files", "backend/app", "backend/migrations", "backend/scripts", "backend/alembic.ini", "backend/requirements*.txt"],
+            cwd=ROOT, text=True,
+        ).splitlines()
+        if path.endswith((".py", ".ini", ".txt"))
+    )
+    source_hashes = {
+        path: hashlib.sha256((ROOT / "backend" / path).read_bytes()).hexdigest()
+        for path in image_paths
+    }
+    for service in ("api", "worker"):
+        actual = run(compose + ["exec", "-T", service, "python", "-c",
+            "import hashlib,json;from pathlib import Path;print(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in "
+            + repr(image_paths) + "}))"])
+        if json.loads(actual) != source_hashes:
+            raise RuntimeError("Docker image does not match the checked-out pipeline source")
     for _ in range(120):
         try:
             call("/health")
@@ -177,7 +230,18 @@ try:
     )
     assert "0.123.0" in runtime
     current = run(compose + ["exec", "-T", "api", "python", "-m", "alembic", "current"])
-    assert "0031_in_app_notifications" in current
+    expected = run(
+        compose
+        + [
+            "exec",
+            "-T",
+            "api",
+            "python",
+            "-c",
+            'from alembic.config import Config;from alembic.script import ScriptDirectory;print(ScriptDirectory.from_config(Config("alembic.ini")).get_current_head())',
+        ]
+    )
+    assert expected.strip() in current
     comparison = run(
         compose + ["exec", "-T", "api", "python", "-m", "alembic", "check"]
     )
@@ -191,15 +255,36 @@ try:
             time.sleep(0.5)
     else:
         raise RuntimeError("Docker demo restart/session persistence failed")
+    worker_command = run(compose + ["exec", "-T", "worker", "python", "-c",
+        'from pathlib import Path;print(Path("/proc/1/cmdline").read_bytes().replace(b"\\x00",b" ").decode())'])
+    assert "scripts.run_collector_worker" in worker_command
+    storage_driver = run(["docker", "info", "--format", "{{.Driver}}"])
+    manifest_hash = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
     out.mkdir(parents=True, exist_ok=True)
+    verify_source_head()
+    (out / "docker-smoke.txt").write_text(
+        f"Exact commit: {source_commit}\nStorage driver: {storage_driver}\n"
+        f"Migration output: {current}\nSchema comparison: {comparison}\n"
+        f"Worker process: {worker_command}\nCompared source files in API and worker: {len(source_hashes)}\n"
+        f"Source manifest SHA256: {manifest_hash}\n"
+        "Authentication, frontend headers, TLS gateway, bootstrap idempotency and API restart/session persistence: PASS\n"
+    )
     (out / "docker.json").write_text(
         json.dumps(
             {
                 "status": "PASS",
+                "source_commit": source_commit,
+                "exact_head_checked": bool(expected_commit),
+                "api_worker_source_hashes": source_hashes,
+                "source_manifest_sha256": manifest_hash,
+                "compared_source_files": len(source_hashes),
+                "storage_driver": storage_driver,
+                "migration_head": expected.strip(),
+                "worker_process": worker_command,
                 "checks": [
                     "API/frontend/PostgreSQL/native worker/TLS ingestion gateway built and ready",
                     "Frontend nginx response has security headers",
-                    "Migration head 0031 installed",
+                    "Expected additive migration head installed",
                     "Full image/schema Alembic check has zero pending operations",
                     "Provider departments/customer UUIDs separated",
                     "Bootstrap repeat retains UUIDs and user count",
@@ -215,6 +300,11 @@ try:
     print(
         "ISOLATED DOCKER BUILD / BOOTSTRAP / RESTART / AUTHENTICATION PASS", flush=True
     )
+except Exception:
+    logs = subprocess.run(compose + ["logs", "--no-color", "--tail", "160"],
+                          cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)
+    (private / "services.log").write_text(logs.stdout + logs.stderr)
+    raise
 finally:
     # Only this invocation's generated project and volumes are removable.
     subprocess.run(

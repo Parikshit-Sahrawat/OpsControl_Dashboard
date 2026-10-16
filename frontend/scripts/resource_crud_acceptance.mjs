@@ -167,6 +167,11 @@ try {
   const held = new Promise((resolve) => {
     releaseOlder = resolve;
   });
+  let finishOlder;
+  const finishedOlder = new Promise((resolve) => {
+    finishOlder = resolve;
+  });
+  let olderError;
   let first = true;
   const inventoryRoute = "**/api/v1/unified/resources?*";
   await page.route(inventoryRoute, async (route) => {
@@ -175,7 +180,16 @@ try {
     const response = await route.fetch();
     signalCaptured();
     await held;
-    await route.fulfill({ response });
+    try {
+      await route.fulfill({ response });
+    } catch (error) {
+      // Changing the search aborts the superseded fetch. Both abort and a late
+      // response must leave the newer persisted inventory visible.
+      if (route.request().failure()?.errorText !== "net::ERR_ABORTED")
+        olderError = error;
+    } finally {
+      finishOlder();
+    }
   });
   try {
     await page.getByRole("button", { name: "Refresh", exact: true }).click();
@@ -196,7 +210,13 @@ try {
       base + "/api/v1/unified/resources/" + resource.id,
       {
         headers,
-        data: { expected_revision: resource.revision, name: renamed },
+        data: {
+          expected_revision: resource.revision,
+          name: renamed,
+          environment: resource.environment,
+          configuration: resource.configuration,
+          active: resource.active,
+        },
       },
     );
     assert.equal(updated.status(), 200);
@@ -213,7 +233,9 @@ try {
     );
   } finally {
     releaseOlder();
+    await finishedOlder;
     await page.unroute(inventoryRoute);
+    if (olderError) throw olderError;
   }
   await mkdir(process.env.RELEASE_EVIDENCE_DIR, { recursive: true });
   await page.screenshot({

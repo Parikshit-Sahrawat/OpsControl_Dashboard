@@ -855,7 +855,9 @@ def _due_collector_ids(limit, excluded=()):
                     DataSource.enabled.is_(True),
                     Organization.active.is_(True),
                     Collector.enabled.is_(True),
-                    func.upper(Collector.collector_type) != "OTEL",
+                    func.upper(Collector.collector_type).not_in(
+                        ("OTEL", "PIPELINE_V16_PROXY")
+                    ),
                     Collector.remote_worker_id.is_(None),
                     Collector.id.not_in(excluded),
                     (
@@ -917,6 +919,67 @@ async def scheduler_loop(poll_seconds=5):
     pending = {}
     notifications = asyncio.create_task(_notification_loop(poll_seconds))
     native_engines = asyncio.create_task(_native_engine_loop(poll_seconds))
+
+    async def pipeline_control_loop():
+        from app.data_pipelines.runtime import tick, run_source, run_operation
+        from app.data_pipelines.models import PipelineOperation
+        from app.data_pipelines.service import PipelineError
+
+        tasks = {}
+        last_reconcile = None
+        backlog = []
+
+        async def execute(kind, id):
+            try:
+                if kind == "sources":
+                    await asyncio.to_thread(run_source, id)
+                elif kind == "operations":
+                    await asyncio.to_thread(run_operation, id)
+                else:
+
+                    def recovery_source():
+                        with SessionLocal() as db:
+                            return db.get(PipelineOperation, id).source_id
+
+                    sid = await asyncio.to_thread(recovery_source)
+                    await asyncio.to_thread(run_source, sid, id)
+            except PipelineError:
+                pass  # held/unverified/claimed sources are intentionally fail closed
+            except Exception:
+                logger.error("Pipeline operation unavailable; durable state retained")
+
+        try:
+            while True:
+                tasks = {k: v for k, v in tasks.items() if not v.done()}
+                now = datetime.now(timezone.utc)
+                if (
+                    last_reconcile is None
+                    or (now - last_reconcile).total_seconds() >= 60
+                ):
+                    try:
+                        work = await asyncio.to_thread(tick, False) or {}
+                        backlog = [
+                            (kind, id)
+                            for kind in ("sources", "operations", "recoveries")
+                            for id in work.get(kind, [])
+                        ]
+                        last_reconcile = now
+                    except Exception:
+                        logger.error("Pipeline reconciliation unavailable; fail closed")
+                while backlog and len(tasks) < max(
+                    1, min(4, settings.database_pool_size // 2)
+                ):
+                    key = backlog.pop(0)
+                    if key not in tasks:
+                        tasks[key] = asyncio.create_task(execute(*key))
+                await asyncio.sleep(5)
+        finally:
+            for task in tasks.values():
+                task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks.values(), return_exceptions=True)
+
+    pipeline_control = asyncio.create_task(pipeline_control_loop())
     try:
         while True:
             for cid, task in list(pending.items()):
@@ -946,8 +1009,13 @@ async def scheduler_loop(poll_seconds=5):
     finally:
         notifications.cancel()
         native_engines.cancel()
+        pipeline_control.cancel()
         for task in pending.values():
             task.cancel()
         await asyncio.gather(
-            notifications, native_engines, *pending.values(), return_exceptions=True
+            notifications,
+            native_engines,
+            pipeline_control,
+            *pending.values(),
+            return_exceptions=True,
         )

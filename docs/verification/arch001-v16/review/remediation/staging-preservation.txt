@@ -1,0 +1,66 @@
+NONEMPTY DATABASE MIGRATION PRESERVATION PASSED
+
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running downgrade 0020_etl_monitoring_evidence -> 0019_infrastructure_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running downgrade 0020_etl_monitoring_evidence -> 0019_infrastructure_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running downgrade 0019_infrastructure_evidence -> 0018_pentaho_execution_identity, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running downgrade 0019_infrastructure_evidence -> 0018_pentaho_execution_identity, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running downgrade 0018_pentaho_execution_identity -> 0017_rule_catalogs_activation, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running downgrade 0018_pentaho_execution_identity -> 0017_rule_catalogs_activation, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running downgrade 0017_rule_catalogs_activation -> 0016_remote_collector_assignment, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running downgrade 0017_rule_catalogs_activation -> 0016_remote_collector_assignment, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.

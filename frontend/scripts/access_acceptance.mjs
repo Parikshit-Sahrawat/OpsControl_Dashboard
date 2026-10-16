@@ -30,6 +30,7 @@ async function login(username) {
     viewport: { width: 1600, height: 1100 },
   });
   page.on("pageerror", (e) => errors.push(e.message));
+  page.on("dialog", (dialog) => dialog.accept());
   page.on("response", (r) => {
     if (r.url().includes("/api/") && r.status() >= 500)
       serverErrors.push({
@@ -110,16 +111,17 @@ try {
   await admin.locator(".org-context-button").click();
   await navigate(admin, "Resource Management");
   assert.equal(await admin.locator(".org-context-button").count(), 0);
+  await admin.getByRole("tab", { name: "API Endpoints", exact: true }).click();
   await admin
     .locator("tbody tr")
     .filter({ hasText: "Customer B (synthetic)" })
     .waitFor();
   assert.equal(
-    await admin.getByLabel("Resource organization filter").inputValue(),
+    await admin.getByLabel("Resource customer filter").inputValue(),
     "",
   );
   await admin
-    .getByLabel("Resource organization filter")
+    .getByLabel("Resource customer filter")
     .selectOption(fixture.customer_b);
   await admin.locator("tbody tr").filter({ hasText: "Customer B" }).waitFor();
   assert.equal(await admin.locator("tbody tr").count(), 1);
@@ -211,7 +213,16 @@ try {
     await dialog
       .getByRole("button", { name: "Save changes", exact: true })
       .click();
-    await captured;
+    await Promise.race([
+      captured,
+      new Promise((_, reject) =>
+        setTimeout(
+          () =>
+            reject(new Error("Role save did not request a directory refresh")),
+          10000,
+        ),
+      ),
+    ]);
     assert.equal(await dialog.isVisible(), true);
     assert.equal(
       await dialog
@@ -251,23 +262,30 @@ try {
   await row
     .getByRole("button", { name: "Members & access", exact: true })
     .click();
-  await admin
-    .getByRole("button", { name: "Grant customer access", exact: true })
-    .click();
-  dialog = admin.getByRole("dialog");
-  await dialog
-    .getByLabel("Customer", { exact: true })
-    .selectOption(fixture.customer_b);
-  await dialog
-    .getByLabel("Assigned role", { exact: true })
-    .selectOption(fixture.viewer_role);
-  await dialog
-    .getByRole("button", { name: "Preview effective access", exact: true })
-    .click();
-  await dialog.getByText(/Server-verified preview/).waitFor();
+  // Organization Access was deliberately retired from navigation. Grants remain
+  // backend-enforced: exercise the supported API with this real browser session.
+  assert.equal(
+    await admin
+      .getByRole("button", { name: "Grant customer access", exact: true })
+      .count(),
+    0,
+  );
   const department = (
     await call(admin, "/api/v1/access/departments?search=Browser Support")
   ).data.items[0];
+  const grant = {
+    department_id: department.id,
+    organization_id: fixture.customer_b,
+    role_id: fixture.viewer_role,
+  };
+  const preview = await call(
+    admin,
+    "/api/v1/access/customer-grants/preview",
+    "POST",
+    grant,
+  );
+  assert.equal(preview.status, 200);
+  assert.equal(preview.data.saved, false);
   assert.equal(
     (
       await call(
@@ -277,10 +295,13 @@ try {
     ).data.total,
     0,
   );
-  await dialog
-    .getByRole("button", { name: "Confirm customer grant", exact: true })
-    .click();
-  await dialog.waitFor({ state: "hidden" });
+  const savedGrant = await call(
+    admin,
+    "/api/v1/access/customer-grants",
+    "POST",
+    grant,
+  );
+  assert.equal(savedGrant.status, 201);
   assert.equal(
     (
       await call(
@@ -291,7 +312,7 @@ try {
     1,
   );
   checks.push(
-    "Browser creates unique employee/department, assigns role/membership and previews then confirms a paired customer grant",
+    "Browser creates unique employee/department and assigns role/membership; authenticated API previews then saves the paired customer grant",
   );
   await section(admin, "Employees");
   await admin.getByLabel("Search Employees").fill("EMP-BROWSER");
@@ -301,18 +322,23 @@ try {
   await admin
     .getByRole("heading", { name: "Effective permissions", exact: true })
     .waitFor();
-  await admin.getByText("department", { exact: true }).waitFor();
+  await admin.getByText("department", { exact: true }).first().waitFor();
   await shot(admin, "employees-dark");
   for (const [tab, file] of [
     ["Departments", "departments-dark"],
     ["Roles & Permissions", "roles-dark"],
-    ["Organization Access", "customer-access-dark"],
     ["Access Audit", "access-audit-dark"],
   ]) {
     await section(admin, tab);
     await admin.locator(".access-table tbody tr").first().waitFor();
     await shot(admin, file);
   }
+  assert.equal(
+    await admin
+      .getByRole("button", { name: "Organization Access", exact: true })
+      .count(),
+    0,
+  );
   const toggle = admin.getByRole("button", {
     name: "Light theme",
     exact: true,
@@ -322,7 +348,7 @@ try {
   await admin.locator(".access-table tbody tr").first().waitFor();
   await shot(admin, "departments-light");
   checks.push(
-    "All five administration sections render backend data in the existing dark/light design system",
+    "All four supported administration sections render backend data in both themes; Organization Access remains absent",
   );
   const noc = await login(fixture.noc_username);
   await navigate(noc, "Overview");

@@ -29,6 +29,8 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         "/api/v1/auth/customer-scope",
     }:
         return ()
+    if path.startswith("/api/v1/data-pipelines"):
+        return ("etl.view",) if read else ("etl.configure",)
     if path.startswith("/api/v1/notifications"):
         return ("alerts.view",)
     if path.startswith("/api/v1/attribute-registry"):

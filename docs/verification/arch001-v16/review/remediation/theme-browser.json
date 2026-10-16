@@ -1,0 +1,81 @@
+{
+  "status": "PASS",
+  "browser": "154.0.8037.57",
+  "evidence": "Actual password authentication and fixture-backed APIs; no API mocks",
+  "primary_tabs": [
+    "Overview",
+    "Data Pipeline Monitoring",
+    "Compute Health",
+    "API Endpoint Monitoring",
+    "Alerts",
+    "Incidents",
+    "Reports",
+    "Resource Management"
+  ],
+  "administrator_tab": "Access Management",
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "checks": [
+    "Unset preference follows actual browser dark color scheme before authentication",
+    "dark: execution drawer and resource modal trap keyboard focus and support Escape without saving changes",
+    "dark: all eight primary tabs and administrator access screen show real backend evidence; status badges meet 4.5:1 contrast; investigation opens and Escape closes",
+    "light: execution drawer and resource modal trap keyboard focus and support Escape without saving changes",
+    "light: all eight primary tabs and administrator access screen show real backend evidence; status badges meet 4.5:1 contrast; investigation opens and Escape closes",
+    "Appearance changes synchronize between documents through browser storage events",
+    "Explicit light preference survives document reload while authenticated",
+    "Theme buttons retain keyboard focus and support Space and Enter activation",
+    "At 390px all nine screens remain accessible in both themes without body/document horizontal overflow",
+    "Reduced-motion browser preference suppresses decorative card motion",
+    "Unset preference tracks operating-system theme changes; explicit selection stays selected",
+    "Invalid saved preference safely falls back to the browser light color scheme",
+    "Blocked localStorage preserves login rendering and in-memory appearance switching"
+  ],
+  "screenshots": [
+    "dark-overview.png",
+    "dark-api endpoint monitoring.png",
+    "dark-reports.png",
+    "dark-investigation.png",
+    "light-overview.png",
+    "light-api endpoint monitoring.png",
+    "light-reports.png",
+    "light-investigation.png",
+    "dark-mobile-apis.png",
+    "light-mobile-apis.png"
+  ],
+  "badge_text_contrast": [
+    {
+      "theme": "dark",
+      "status": "HEALTHY",
+      "ratio": 8.87
+    },
+    {
+      "theme": "dark",
+      "status": "UNKNOWN",
+      "ratio": 6.83
+    },
+    {
+      "theme": "dark",
+      "status": "DISABLED",
+      "ratio": 6.83
+    },
+    {
+      "theme": "light",
+      "status": "HEALTHY",
+      "ratio": 4.92
+    },
+    {
+      "theme": "light",
+      "status": "UNKNOWN",
+      "ratio": 5.71
+    },
+    {
+      "theme": "light",
+      "status": "DISABLED",
+      "ratio": 5.71
+    }
+  ],
+  "page_errors": [],
+  "server_errors": []
+}

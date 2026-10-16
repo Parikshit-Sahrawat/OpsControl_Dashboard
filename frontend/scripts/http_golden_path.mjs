@@ -22,6 +22,8 @@ try {
   await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
   await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
+  // The locked binding is populated asynchronously by the embedded view.
+  await page.waitForFunction(expected => [...document.querySelectorAll('select')].some(select => select.disabled && select.value === expected), state.source_id);
   assert.equal(await page.getByLabel(/^Data Source/).inputValue(), state.source_id);
   assert.equal(await page.getByLabel(/^Data Source/).isDisabled(), true);
   const diag=page.getByTestId('monitoring-diagnostics');
@@ -33,7 +35,7 @@ try {
     }
     await page.getByRole('button',{name:'Validate & Preview',exact:true}).click();
     await page.getByText('Activation preview validated; no collector changed.',{exact:true}).waitFor();
-    await page.getByRole('button',{name:'Activate monitoring',exact:true}).click();
+    await page.locator('.monitoring-setup').getByRole('button',{name:'Activate monitoring',exact:true}).click();
     await page.getByText('Configuration already active — no duplicate collector created.',{exact:true}).waitFor();
     await diag.getByText('0 metric samples · 0 open alerts · 0 resolved alerts',{exact:false}).waitFor();
     await diag.getByText('NO_EVIDENCE',{exact:false}).first().waitFor();

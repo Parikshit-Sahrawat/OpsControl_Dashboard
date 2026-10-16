@@ -3,6 +3,7 @@ import { control, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
+import DataPipelineIntegrations from "./DataPipelineIntegrations";
 import ImportedDiscoveryInventory from "../components/ImportedDiscoveryInventory";
 import MonitoringSetup from "./MonitoringSetup";
 import EventDelivery from "./EventDelivery";
@@ -282,6 +283,18 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             </button>
           ))}
       </div>
+      {area === "resources" && domain === "ETL" && (
+        <DataPipelineIntegrations
+          user={user}
+          customers={customers}
+          organizationId={customer}
+          onResourceSelected={(id) =>
+            action(async () =>
+              setSelected(await control(base + "/resources/" + id)),
+            )
+          }
+        />
+      )}
       {area === "delivery" && (
         <EventDelivery kind="delivery" organizations={customers} user={user} />
       )}
@@ -338,7 +351,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
           >
             Create{" "}
             {domain === "ETL"
-              ? "Data Pipeline"
+              ? "Legacy Data Pipeline"
               : domain === "VM"
                 ? "Compute Instance"
                 : "API Endpoint"}

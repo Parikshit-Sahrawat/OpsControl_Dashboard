@@ -37,6 +37,12 @@ The Compute Instance wizard supports ten clickable stages, draft save/resume, Li
 
 A versioned backend Attribute and Capability Registry drives forms and server-side validation. Effective parameter previews show inherited and overridden values. Existing execution history, identities and customer relationships survive additive migrations.
 
+## Multi-job Data Pipelines (ARCH-001 V1.6)
+
+Data Pipelines now supports an eight-step, resumable integration wizard with versioned connections, explicit native job selection, independent collection sources and confirmed associations. Shared sources use durable fenced ownership, atomic evidence/checkpoint acceptance and composed suspension holds. Existing V1.5 monitoring remains available.
+
+All nine platform families reuse read-only adapters. Runtime acceptance is deferred: unverified methods cannot activate. See [V1.6 architecture, migration, API and verification guide](docs/ARCH_001_V16.md) for supported paths, recovery limitations and the nine-platform acceptance forecast.
+
 ## Supported collection methods
 
 | Method | Configuration and evidence |

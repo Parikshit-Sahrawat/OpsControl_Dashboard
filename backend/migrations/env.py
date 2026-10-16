@@ -9,6 +9,7 @@ import app.worker.remote_models
 import app.telemetry.models
 import app.unified.models
 import app.registry.models
+import app.data_pipelines.models
 import app.native_incidents.models
 import app.services.rule_models
 

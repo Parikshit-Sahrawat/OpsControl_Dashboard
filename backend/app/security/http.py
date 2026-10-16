@@ -50,6 +50,9 @@ _WORKER_PUBLIC_GATE = {
     "/api/v1/worker/heartbeat",
 }
 _AGENT_GATE = {
+    "/api/v1/agent/pipeline-claim",
+    "/api/v1/agent/pipeline-evidence",
+    "/api/v1/agent/pipeline-continuity",
     "/api/v1/agent/register",
     "/api/v1/agent/heartbeat",
     "/api/v1/agent/credentials/renew",
