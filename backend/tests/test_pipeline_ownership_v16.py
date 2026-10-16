@@ -1387,3 +1387,60 @@ class OwnershipTests(unittest.TestCase):
             )
         self.assertEqual(denied.exception.status_code, 409)
         self.assertIsNone(self.db.scalar(select(VM.id).where(VM.hostname == hostname)))
+
+    def test_legacy_http_primary_binding_preserves_real_probe_reports(self):
+        from app.models import DataSource, Collector
+        from app.unified.models import MonitoringResource
+
+        source = DataSource(
+            organization_id=self.org.id,
+            name="Controlled HTTP source",
+            source_type="API",
+            endpoint="https://example.test/ready",
+        )
+        self.db.add(source)
+        self.db.commit()
+        root = self.db.get(MonitoringResource, source.id)
+        self.assertIsNone(root.primary_collector_id)
+        collector = Collector(
+            data_source_id=source.id,
+            name="Controlled legacy HTTP",
+            collector_type="HTTP",
+            enabled=False,
+        )
+        self.db.add(collector)
+        self.db.commit()
+        self.assertEqual(root.primary_collector_id, collector.id)
+        self.assertEqual(root.organization_id, self.org.id)
+        self.assertEqual(root.data_source_id, source.id)
+        self.assertNotEqual(root.activation_status, "ACTIVE")
+        self.assertFalse(collector.enabled)
+
+    def test_legacy_http_binding_never_replaces_existing_primary(self):
+        from app.models import DataSource, Collector
+        from app.unified.models import MonitoringResource
+
+        source = DataSource(
+            organization_id=self.org.id,
+            name="Controlled multi-probe source",
+            source_type="API",
+            endpoint="https://example.test/ready",
+        )
+        self.db.add(source)
+        self.db.commit()
+        first = Collector(
+            data_source_id=source.id, name="First", collector_type="HTTP", enabled=False
+        )
+        self.db.add(first)
+        self.db.commit()
+        second = Collector(
+            data_source_id=source.id,
+            name="Second",
+            collector_type="HTTP",
+            enabled=False,
+        )
+        self.db.add(second)
+        self.db.commit()
+        root = self.db.get(MonitoringResource, source.id)
+        self.assertEqual(root.primary_collector_id, first.id)
+        self.assertNotEqual(root.primary_collector_id, second.id)

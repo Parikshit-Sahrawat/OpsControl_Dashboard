@@ -35,7 +35,7 @@ try {
     }
     await page.getByRole('button',{name:'Validate & Preview',exact:true}).click();
     await page.getByText('Activation preview validated; no collector changed.',{exact:true}).waitFor();
-    await page.getByRole('button',{name:'Activate monitoring',exact:true}).click();
+    await page.locator('.monitoring-setup').getByRole('button',{name:'Activate monitoring',exact:true}).click();
     await page.getByText('Configuration already active — no duplicate collector created.',{exact:true}).waitFor();
     await diag.getByText('0 metric samples · 0 open alerts · 0 resolved alerts',{exact:false}).waitFor();
     await diag.getByText('NO_EVIDENCE',{exact:false}).first().waitFor();

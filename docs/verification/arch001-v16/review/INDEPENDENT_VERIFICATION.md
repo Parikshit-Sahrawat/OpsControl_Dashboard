@@ -26,7 +26,7 @@ npm run lint --prefix frontend
 npm test --prefix frontend
 ```
 
-Local results: **46 actual PostgreSQL tests, 107 selected backend regressions, nine HTTP acceptance groups, six frontend authorization tests and the expanded real Playwright flow passed**. The browser lab's mandatory Vite production build succeeded before preview startup. Alembic head remains `0032_pipeline_ownership`; populated preservation, zero drift, empty downgrade/re-upgrade and populated downgrade refusal passed. No new migration was required.
+Local results: **48 actual PostgreSQL tests, 111 selected backend regressions, nine HTTP acceptance groups, six frontend authorization tests and the expanded real Playwright flow passed**. The browser lab's mandatory Vite production build succeeded before preview startup. Alembic head remains `0032_pipeline_ownership`; populated preservation, zero drift, empty downgrade/re-upgrade and populated downgrade refusal passed. No new migration was required.
 
 Browser evidence covers connection/profile persistence, two independent methods, fixture-driven native discovery through the actual worker/database, explicit selection (the second discovered job remains unselected), confirmed source association, backend activation denial, scoped viewer inventory and direct 401/403/404 negatives. The vendor inventory is explicitly a controlled fixture, not live platform or runtime capability verification. Screenshots and machine-readable results are in [remediation](remediation).
 
@@ -55,3 +55,28 @@ migrations, including incident statuses and pipeline source enums. It still reje
 other constraint byte for byte. Four focused unit tests reject modified values/operators and unvalidated checks,
 while proving the documented cast rewrite is equivalent. This changes test
 verification, not database constraints or incident behavior.
+
+The API compatibility projection also recognizes the existing `HTTP` collector
+type, allowing persisted remote probes to appear in unified reports. Two actual
+PostgreSQL regressions prove first binding preserves customer/source identity,
+does not activate monitoring, and never replaces an existing primary collector.
+No reporting, event/alert, incident, SLA or correlation evaluation logic changed.
+ETL browser selectors distinguish the execution table from the inventory table;
+monitoring activation targets the embedded configuration panel. Theme tests
+preserve expanded inventory state across repeated domain navigation.
+
+The full local release gate passed populated backup/restore with every row
+fingerprint, FK/CHECK integrity and audit trigger; retention, restricted runtime
+roles, TLS, browser CRUD and inventory pagination. See `remediation/release-report.json`.
+The first subsequent remote staging run could not pull the public ECR mirror
+(`toomanyrequests: Data limit exceeded`); its PostgreSQL service now uses the same
+official `postgres:17` image directly. No TLS verification or constraints were disabled.
+
+`remediation/docker.json` records the completed exact-head five-service smoke for
+`0a91418d462cf5ec846e3969857be1f8128cbeab`. Its 190-file image manifest covers both
+API and worker. The final PR head is verified again after the remaining source
+correction; its result is recorded in the PR to avoid a self-referential evidence
+commit. Previously failed owned Docker smoke images were removed only from the
+task's isolated VFS daemon, leaving 15.9 GiB free; original volumes and deployment
+were preserved. This report does not treat an older source manifest as proof of
+subsequent application changes.

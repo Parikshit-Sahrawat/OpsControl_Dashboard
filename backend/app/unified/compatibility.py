@@ -41,7 +41,7 @@ def bind_legacy(db, context):
                     (root.domain == "VM" and obj.collector_type == "OTEL")
                     or (
                         root.domain == "API"
-                        and obj.collector_type in {"API", "NATIVE_API"}
+                        and obj.collector_type in {"API", "HTTP", "NATIVE_API"}
                     )
                 )
             ):

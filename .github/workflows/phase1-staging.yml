@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: public.ecr.aws/docker/library/postgres:17
+        # Use the official image directly; the public ECR mirror throttled startup.
+        image: postgres:17
         env:
           POSTGRES_USER: opscontrol
           POSTGRES_PASSWORD: opscontrol

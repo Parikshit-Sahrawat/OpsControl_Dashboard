@@ -115,6 +115,13 @@ async function chooseOrganization(page, name) {
   await page.locator(".org-context-button").click();
 }
 
+async function expandExisting(page, label) {
+  const show = page.getByRole("button", {name: "Show " + label, exact: true});
+  await page.getByRole("button", {name: new RegExp("^(Show|Hide) " + label + "$")}).waitFor();
+  if (await show.isVisible()) await show.click();
+  await page.getByRole("button", {name: "Hide " + label, exact: true}).waitFor();
+}
+
 async function tab(page, name) {
   await page.getByRole("button", { name, exact: true }).first().click();
   await page.getByRole("heading", { name, exact: true }).waitFor();
@@ -133,23 +140,13 @@ async function tab(page, name) {
       .first()
       .waitFor();
   } else if (name === "Compute Health") {
-    await page
-      .getByRole("button", {
-        name: "Show existing infrastructure adapters",
-        exact: true,
-      })
-      .click();
+    await expandExisting(page, "existing infrastructure adapters");
     await page
       .getByTestId("infrastructure-row")
       .filter({ hasText: "ETL live Linux worker" })
       .waitFor();
   } else if (name === "API Endpoint Monitoring") {
-    await page
-      .getByRole("button", {
-        name: "Show existing service probes",
-        exact: true,
-      })
-      .click();
+    await expandExisting(page, "existing service probes");
     await page
       .getByTestId("service-row")
       .filter({ hasText: "Fictional NOC HTTPS Portal" })

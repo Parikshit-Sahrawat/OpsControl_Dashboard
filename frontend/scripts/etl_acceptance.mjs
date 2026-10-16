@@ -24,7 +24,7 @@ try{
     await page.getByRole('heading',{name:'No executions found'}).waitFor();
   }else{
     const expected={'no-run':'NO RUN',running:'RUNNING','long-running':'LONG RUNNING','sla-breach':'LONG RUNNING',failed:'FAILED','poll-failed':'FAILED',recovered:'SUCCESS'}[phase];
-    const row=page.getByRole('row').filter({hasText:'Fictional Daily Warehouse'});
+    const row=page.locator('section.card').filter({has:page.getByRole('heading',{name:'Current Executions',exact:true})}).getByRole('row').filter({hasText:'Fictional Daily Warehouse'});
     await row.getByText(expected,{exact:true}).waitFor();
     await row.getByText(phase==='poll-failed'?'ERROR':'CURRENT',{exact:true}).waitFor();
     if(phase==='sla-breach')await row.getByText('SLA breach',{exact:true}).waitFor();
@@ -41,7 +41,7 @@ try{
       await drawer.getByText('Warehouse connection refused',{exact:false}).first().waitFor();
       assert.equal(await drawer.getByPlaceholder('Add chronological operator note...').count(),0);
       const operator=await login('operator');
-      await operator.getByRole('row').filter({hasText:'Fictional Daily Warehouse'}).click();
+      await operator.locator('section.card').filter({has:operator.getByRole('heading',{name:'Current Executions',exact:true})}).getByRole('row').filter({hasText:'Fictional Daily Warehouse'}).click();
       await operator.getByRole('button',{name:'Move to INVESTIGATING',exact:true}).click();
       await operator.getByPlaceholder('Add chronological operator note...').fill('Browser investigation verified the source failure and live host correlation.');
       await operator.getByRole('button',{name:'Add Note',exact:true}).click();
