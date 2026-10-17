@@ -219,3 +219,40 @@ Exact contracts, security acceptance, screenshots, migration safeguards and limi
 `docs/verification/arch-etl-001-v16-r1/sprint08/REPORT.md`.
 Sprint 09 requires separate authorization. No PR, merge, deployment, real-source
 activation or Pentaho workload execution occurred in Sprint 08.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 09
+
+Integration hardening preserves the approved architecture and all existing
+identities, grants, employee memberships, evidence, histories, holds and source
+checkpoints. No schema migration or permission grant was added; head remains
+`0037_access_boundaries`.
+
+Inventory and execution projections now batch page-level lookups; resource-scoped
+archive pages expose older schedule occurrences, observed steps, attempt revisions
+and aliases, integration collections and incident activities with bounded limits
+and stable ordering. Server execution/compliance filters and exact incident
+failure-association filters are available. Large integration previews explicitly
+report incomplete readiness, while authoritative activation is unchanged.
+Pipeline agent transport uses its existing separate authentication rather than a
+human-only session dependency. Owned raw HTTP/browser clients send explicit
+authorized customer scopes; third-party migration requirements are documented.
+
+Verification: 159 backend unit/contract cases, 177 actual PostgreSQL cases,
+47 authenticated HTTP groups, 22 frontend cases, existing configuration Chromium,
+16 Sprint07, five Sprint08 and three Sprint09 Chromium groups; nine timed
+PostgreSQL resilience scenarios. Migration preservation/rollback safeguards/drift,
+source fencing, direct/inherited RBAC, revocation and all scoped quality gates are
+recorded with exact commands/results. Minimally edited legacy probes retain their
+existing Ruff findings with zero introduced diagnostics.
+
+Bounded local performance uses 1,201 resources/five authorized customers and
+concurrent read/revocation fixtures; before/after measurements document the removed
+inventory N+1 bottleneck. This is not production-scale or native runtime acceptance.
+Remaining: third-party/complete legacy-stack migration certification, large/deep
+archive contention, process/host failover, the Vite bundle warning, and genuine
+Pentaho RT-001–RT-020, which remain NOT RUN.
+
+Evidence and limitations:
+`docs/verification/arch-etl-001-v16-r1/sprint09/REPORT.md`.
+Sprint10 requires separate authorization. No PR, merge, deployment, real-source
+activation or ETL workload execution occurred.

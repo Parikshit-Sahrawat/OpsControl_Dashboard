@@ -1,3 +1,4 @@
+import { scopeHeaders } from "./explicit_scope.mjs";
 // Real browser and PostgreSQL-backed API. No mocked responses or health records.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -57,12 +58,20 @@ async function login(username) {
   return page;
 }
 async function call(page, path, method = "GET", body) {
+  const scope = await scopeHeaders(
+    page.request,
+    apiBase,
+    await page.evaluate(() =>
+      sessionStorage.getItem("opscontrol.sessionToken"),
+    ),
+  );
   return page.evaluate(
-    async ({ url, method, body }) => {
+    async ({ url, method, body, scope }) => {
       const r = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
+          ...scope,
           Authorization:
             "Bearer " + sessionStorage.getItem("opscontrol.sessionToken"),
         },
@@ -73,7 +82,7 @@ async function call(page, path, method = "GET", body) {
         data: r.status === 204 ? null : await r.json(),
       };
     },
-    { url: apiBase + path, method, body },
+    { url: apiBase + path, method, body, scope },
   );
 }
 const navigate = async (page, tab) => {

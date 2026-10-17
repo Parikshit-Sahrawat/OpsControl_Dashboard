@@ -1,3 +1,4 @@
+import { scopeHeaders } from "./explicit_scope.mjs";
 // PostgreSQL-backed browser checks. This script only runs in the owned ARCH lab.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -27,16 +28,28 @@ const errors = [],
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 page.on("pageerror", (error) => errors.push(error.message));
 page.on("dialog", (dialog) => dialog.accept());
-const call = (path) =>
-  page.evaluate(async (url) => {
-    const response = await fetch(url, {
-      headers: {
-        Authorization:
-          "Bearer " + sessionStorage.getItem("opscontrol.sessionToken"),
-      },
-    });
-    return { status: response.status, body: await response.json() };
-  }, apiBase + path);
+const call = async (path) => {
+  const scope = await scopeHeaders(
+    page.request,
+    apiBase,
+    await page.evaluate(() =>
+      sessionStorage.getItem("opscontrol.sessionToken"),
+    ),
+  );
+  return page.evaluate(
+    async ({ url, scope }) => {
+      const response = await fetch(url, {
+        headers: {
+          ...scope,
+          Authorization:
+            "Bearer " + sessionStorage.getItem("opscontrol.sessionToken"),
+        },
+      });
+      return { status: response.status, body: await response.json() };
+    },
+    { url: apiBase + path, scope },
+  );
+};
 async function login(name) {
   await page.goto(base);
   await page.getByLabel("Username", { exact: true }).fill(name);

@@ -434,6 +434,20 @@ export default function DataPipelineIntegrations({
               Close configuration
             </button>
           </div>
+          {Object.entries(editing.pagination || {}).some(
+            ([, page]) => page.has_more,
+          ) && (
+            <p role="status">
+              Partial integration preview:{" "}
+              {Object.entries(editing.pagination || {})
+                .filter(([, page]) => page.has_more)
+                .map(([name, page]) => `${name} ${page.limit} of ${page.total}`)
+                .join("; ")}
+              .
+              {editing.readiness_complete === false &&
+                " Activation readiness is incomplete in this preview."}
+            </p>
+          )}
           <nav className="pipeline-steps" aria-label="Data Pipeline steps">
             {PIPELINE_STEPS.map((label, i) => (
               <button

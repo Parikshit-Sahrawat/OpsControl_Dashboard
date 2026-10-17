@@ -156,6 +156,7 @@ export default function PipelineWorkspace({
               <label>
                 Selected pipeline
                 <select
+                  aria-label="Selected pipeline"
                   value={resourceId}
                   onChange={(e) => {
                     setResourceId(e.target.value);

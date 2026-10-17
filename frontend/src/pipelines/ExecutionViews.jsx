@@ -25,24 +25,33 @@ export function ExecutionHistory({ resource, user, onRecovery }) {
     [filter, setFilter] = useState(""),
     [selected, setSelected] = useState(null);
   const feed = usePipelineFeed(
-      resourcePath(resource.id) + "/executions?limit=20&offset=" + offset,
+      resourcePath(resource.id) +
+        "/executions?limit=20&offset=" +
+        offset +
+        (filter ? "&outcome=" + filter : ""),
     ),
-    rows = (feed.data?.items || []).filter(
-      (h) => !filter || outcome(h) === filter,
-    );
+    rows = feed.data?.items || [];
   return (
     <>
       <div className="pipeline-filters">
         <label>
-          Outcome on this page
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          Execution outcome
+          <select
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setOffset(0);
+            }}
+          >
             <option value="">All outcomes</option>
             {OUTCOMES.map((v) => (
               <option key={v}>{v}</option>
             ))}
           </select>
         </label>
-        <span>Server pagination · outcome filter applies to this page.</span>
+        <span>
+          Server pagination and outcome filtering across this pipeline.
+        </span>
       </div>
       <State feed={feed} empty={!rows.length} />
       <Table
@@ -89,9 +98,7 @@ export function ExecutionHistory({ resource, user, onRecovery }) {
                     : "See retry authority in attempts"}
               </small>
             </td>
-            <td>
-              <AttemptCount resource={resource} history={h} />
-            </td>
+            <td>{h.pentaho_resource_id ? h.attempt_count : "Not exposed"}</td>
             <td>
               <Status value={h.pentaho_completeness || "UNKNOWN"} />
               <small>
@@ -115,30 +122,6 @@ export function ExecutionHistory({ resource, user, onRecovery }) {
     </>
   );
 }
-function AttemptCount({ resource, history }) {
-  const feed = usePipelineFeed(
-    history.pentaho_resource_id
-      ? executionPath(resource.id, history.id) + "/attempts?limit=1&offset=0"
-      : null,
-  );
-  return (
-    <span
-      title={
-        feed.error
-          ? "Attempt count unavailable"
-          : feed.stale
-            ? "Stale count"
-            : undefined
-      }
-    >
-      {history.pentaho_resource_id
-        ? feed.error
-          ? "Unavailable"
-          : (feed.data?.total ?? "Loading")
-        : "Not exposed"}
-    </span>
-  );
-}
 export function ExecutionDrawer({
   resource,
   history,
@@ -148,6 +131,7 @@ export function ExecutionDrawer({
 }) {
   const [tab, setTab] = useState("Overview"),
     [offset, setOffset] = useState(0),
+    [stepOffset, setStepOffset] = useState(0),
     native = Boolean(history.pentaho_resource_id);
   const attempts = usePipelineFeed(
       native
@@ -159,9 +143,18 @@ export function ExecutionDrawer({
     legacy = usePipelineFeed(
       !native ? "/api/v1/etl/executions/" + history.id : null,
     );
+  const stepFeed = usePipelineFeed(
+    tab === "Steps"
+      ? executionPath(resource.id, history.id) +
+          "/steps?limit=20&offset=" +
+          stepOffset
+      : null,
+  );
   const h = attempts.data?.execution || history,
     revisions = (attempts.data?.items || []).flatMap((a) => a.revisions || []),
-    steps = history.steps?.length ? history.steps : legacy.data?.steps || [];
+    steps =
+      stepFeed.data?.items ||
+      (history.steps?.length ? history.steps : legacy.data?.steps || []);
   return (
     <Drawer title="Execution details" onClose={onClose}>
       <div className="pipeline-detail-title">
@@ -334,32 +327,41 @@ export function ExecutionDrawer({
         </>
       )}
       {tab === "Steps" && (
-        <Table
-          label="Observed steps"
-          headers={["Step", "Status", "Type", "Duration"]}
-        >
-          {steps.map((s, i) => (
-            <tr key={s.id || i}>
-              <td>{s.name}</td>
-              <td>
-                <Status value={s.status} />
-              </td>
-              <td>{s.step_type || "Not reported"}</td>
-              <td>
-                {s.duration_seconds == null
-                  ? "Unknown"
-                  : s.duration_seconds + "s"}
-              </td>
-            </tr>
-          ))}
-        </Table>
+        <>
+          <State feed={stepFeed} />
+          <Table
+            label="Observed steps"
+            headers={["Step", "Status", "Type", "Duration"]}
+          >
+            {steps.map((s, i) => (
+              <tr key={s.id || i}>
+                <td>{s.name}</td>
+                <td>
+                  <Status value={s.status} />
+                </td>
+                <td>{s.step_type || "Not reported"}</td>
+                <td>
+                  {s.duration_seconds == null
+                    ? "Unknown"
+                    : s.duration_seconds + "s"}
+                </td>
+              </tr>
+            ))}
+          </Table>
+          <Pager
+            total={stepFeed.data?.total}
+            offset={stepOffset}
+            onChange={setStepOffset}
+            label="Steps"
+          />
+        </>
       )}
       {tab === "Audit" && (
         <>
           <p>
             Append-only execution revisions, including preserved claims and
-            dispositions. Each attempt exposes up to 100 revisions and 200
-            aliases.
+            dispositions. Preview counts are bounded; select an attempt below to
+            page through its complete retained evidence.
           </p>
           <Table
             label="Execution revision audit"
@@ -390,6 +392,16 @@ export function ExecutionDrawer({
           )}
         </>
       )}
+      {native &&
+        ["Audit", "Evidence"].includes(tab) &&
+        attempts.data?.items.length > 0 && (
+          <AttemptEvidence
+            key={offset}
+            resource={resource}
+            history={history}
+            attempts={attempts.data.items}
+          />
+        )}
       {tab === "Incidents" && (
         <ExecutionIncidents resource={resource} history={h} user={user} />
       )}
@@ -465,5 +477,71 @@ function IncidentMatch({ incident, history }) {
         label="Failure associations"
       />
     </details>
+  );
+}
+
+function AttemptEvidence({ resource, history, attempts }) {
+  const [attempt, setAttempt] = useState(attempts[0].id),
+    [collection, setCollection] = useState("revisions"),
+    [offset, setOffset] = useState(0);
+  const feed = usePipelineFeed(
+    executionPath(resource.id, history.id) +
+      "/attempts/" +
+      attempt +
+      "/" +
+      collection +
+      "?limit=20&offset=" +
+      offset,
+  );
+  return (
+    <section aria-label="Retained attempt evidence">
+      <label>
+        Evidence attempt
+        <select
+          value={attempt}
+          onChange={(e) => {
+            setAttempt(e.target.value);
+            setOffset(0);
+          }}
+        >
+          {attempts.map((a) => (
+            <option key={a.id} value={a.id}>
+              Attempt {a.attempt_order}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Evidence collection
+        <select
+          value={collection}
+          onChange={(e) => {
+            setCollection(e.target.value);
+            setOffset(0);
+          }}
+        >
+          <option value="revisions">Revisions</option>
+          <option value="aliases">Native aliases</option>
+        </select>
+      </label>
+      <State feed={feed} empty={!feed.data?.items.length} />
+      {feed.data?.items.map((r) => (
+        <details key={r.id}>
+          <summary>
+            {collection === "revisions"
+              ? "Revision " + r.revision + " · " + r.disposition
+              : r.kind + " · " + r.alias_key}
+          </summary>
+          <Evidence value={r.payload || r.native_identity} />
+          <Stamp value={r.created_at} />
+        </details>
+      ))}
+      <Pager
+        total={feed.data?.total}
+        offset={offset}
+        onChange={setOffset}
+        label="Retained evidence"
+      />
+    </section>
   );
 }

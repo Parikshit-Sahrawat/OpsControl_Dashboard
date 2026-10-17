@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select, func, or_, cast, String
 from app.db.session import get_db
+from app.api.pagination import page
 from app.models import OperationalIncident, IncidentActivity
 from app.native_incidents.models import (
     NativeIncidentDetails,
@@ -69,9 +70,13 @@ def serialized(row):
     return {c.name: getattr(row, c.name) for c in row.__table__.columns}
 
 
-def item(db, row):
+def item(db, row, details=None):
     result = serialized(row)
-    d = db.get(NativeIncidentDetails, row.id)
+    d = (
+        details.get(row.id)
+        if details is not None
+        else db.get(NativeIncidentDetails, row.id)
+    )
     result["details"] = (
         serialized(d)
         if d
@@ -127,6 +132,8 @@ def check_revision(db, row, revision):
 def inventory(
     organization_id: list[UUID] | None = Query(None),
     status: State | None = None,
+    resource_id: UUID | None = None,
+    history_id: UUID | None = None,
     environment: Environment | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -184,6 +191,13 @@ def inventory(
                 & OperationalIncident.source_reference.in_(groups),
             )
         )
+    if resource_id or history_id:
+        failures = select(NativeIncidentFailure.incident_id)
+        if resource_id:
+            failures = failures.where(NativeIncidentFailure.resource_id == resource_id)
+        if history_id:
+            failures = failures.where(NativeIncidentFailure.history_id == history_id)
+        query = query.where(OperationalIncident.id.in_(failures))
     if status:
         query = query.where(OperationalIncident.status == status)
     total = db.scalar(select(func.count()).select_from(query.subquery()))
@@ -192,8 +206,16 @@ def inventory(
         .limit(limit)
         .offset(offset)
     ).all()
+    details = {
+        d.incident_id: d
+        for d in db.scalars(
+            select(NativeIncidentDetails).where(
+                NativeIncidentDetails.incident_id.in_([r.id for r in rows])
+            )
+        )
+    }
     return {
-        "items": [item(db, r) for r in rows],
+        "items": [item(db, r, details) for r in rows],
         "total": total,
         "limit": limit,
         "offset": offset,
@@ -248,7 +270,9 @@ def detail(incident_id: UUID, db=Depends(get_db)):
         for x in db.scalars(
             select(NativeIncidentFailure)
             .where(NativeIncidentFailure.incident_id == row.id)
-            .order_by(NativeIncidentFailure.discovered_at.desc())
+            .order_by(
+                NativeIncidentFailure.discovered_at.desc(), NativeIncidentFailure.id
+            )
             .limit(200)
         )
     ]
@@ -257,11 +281,34 @@ def detail(incident_id: UUID, db=Depends(get_db)):
         for x in db.scalars(
             select(NativeRecoveryAssessment)
             .where(NativeRecoveryAssessment.incident_id == row.id)
-            .order_by(NativeRecoveryAssessment.assessed_at.desc())
+            .order_by(
+                NativeRecoveryAssessment.assessed_at.desc(), NativeRecoveryAssessment.id
+            )
             .limit(200)
         )
     ]
     return result
+
+
+@router.get("/{incident_id}/activities")
+def activities(
+    incident_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    row = checked(db, incident_id, "incidents.view")
+    return page(
+        db,
+        select(IncidentActivity).where(
+            IncidentActivity.incident_id == row.id,
+            IncidentActivity.organization_id == row.organization_id,
+        ),
+        (IncidentActivity.occurred_at.desc(), IncidentActivity.id),
+        limit,
+        offset,
+        serialized,
+    )
 
 
 def evidence_page(db, row, model, ordering, limit, offset):

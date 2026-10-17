@@ -135,6 +135,9 @@ function IncidentDrawer({ id, user, onClose, onSaved }) {
         ? base + "/recovery-assessments?limit=20&offset=" + offset
         : null,
     ),
+    activities = usePipelineFeed(
+      tab === "Audit" ? base + "/activities?limit=20&offset=" + offset : null,
+    ),
     can = i && hasPermission(user, "incidents.manage", i.organization_id),
     revision = i?.details?.revision,
     blocked = feed.stale || feed.loading;
@@ -345,9 +348,9 @@ function IncidentDrawer({ id, user, onClose, onSaved }) {
           {tab === "Audit" && (
             <>
               <p>
-                Latest 200 native lifecycle, correlation and recovery
-                activities.
+                Retained native lifecycle, correlation and recovery activities.
               </p>
+              <State feed={activities} />
               <Table
                 label="Incident audit history"
                 headers={[
@@ -357,7 +360,7 @@ function IncidentDrawer({ id, user, onClose, onSaved }) {
                   "Recorded (UTC)",
                 ]}
               >
-                {i.activities.map((a) => (
+                {activities.data?.items.map((a) => (
                   <tr key={a.id}>
                     <td>{a.event_type}</td>
                     <td>{a.actor}</td>
@@ -374,6 +377,14 @@ function IncidentDrawer({ id, user, onClose, onSaved }) {
                 ))}
               </Table>
             </>
+          )}
+          {tab === "Audit" && (
+            <Pager
+              total={activities.data?.total}
+              offset={offset}
+              onChange={setOffset}
+              label="Activities"
+            />
           )}
           {tab === "Investigation" && (
             <>

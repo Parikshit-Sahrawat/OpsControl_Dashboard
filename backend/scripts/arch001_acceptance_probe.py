@@ -1,5 +1,6 @@
 """Explicit controlled ARCH-001 fixture; never a production bootstrap."""
 
+from scripts.acceptance_scope import probe_headers
 import hashlib, json, os, secrets, sys, uuid
 from pathlib import Path
 from sqlalchemy import create_engine, text, select, func
@@ -216,7 +217,7 @@ def call(path, method="GET", body=None, token=None, expected=200):
         method=method,
         headers={
             "Content-Type": "application/json",
-            **({"Authorization": "Bearer " + token} if token else {}),
+            **({"Authorization": "Bearer " + token} if token else {}), **probe_headers(os.environ["ARCH001_API_URL"], token, path)
         },
         data=json.dumps(body).encode() if body is not None else None,
     )

@@ -1,5 +1,6 @@
 """Real HTTP + PostgreSQL assertions in the owned access fixture only."""
 
+from scripts.acceptance_scope import probe_headers
 import json, os, uuid
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -84,7 +85,7 @@ def request(path, method="GET", body=None, token=None, expected=200):
         method=method,
         headers={
             "Content-Type": "application/json",
-            **({"Authorization": "Bearer " + token} if token else {}),
+            **({"Authorization": "Bearer " + token} if token else {}), **probe_headers(BASE, token, path)
         },
     )
     try:
@@ -608,10 +609,11 @@ def main():
     paired = login("access-paired")
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]
     assert f["customer_a"] not in perms and perms[f["customer_b"]] == ["resources.view"]
+    role_snapshot = next(r for r in request("/api/v1/access/roles", token=admin) if r["id"] == custom["id"])
     request(
         "/api/v1/access/roles/" + custom["id"],
         "PATCH",
-        {"name": "Paired Resource Read", "permissions": ["alerts.view"]},
+        {"name": "Paired Resource Read", "permissions": ["alerts.view"], "expected_revision": role_snapshot["authorization_revision"]},
         admin,
     )
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]

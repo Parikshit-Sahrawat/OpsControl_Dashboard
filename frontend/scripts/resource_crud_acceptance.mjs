@@ -1,3 +1,4 @@
+import { scopeHeaders } from "./explicit_scope.mjs";
 // Actual browser forms and authenticated backend; no mocked API responses.
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -74,7 +75,7 @@ try {
   const token = await page.evaluate(() =>
     sessionStorage.getItem("opscontrol.sessionToken"),
   );
-  const headers = { Authorization: "Bearer " + token };
+  const headers = await scopeHeaders(page.request, base, token);
   const sourcesResponse = await page.request.get(
     base + "/api/v1/resource-management/data-sources",
     { headers },
@@ -142,9 +143,11 @@ try {
     data: { username: "test-south", password },
   });
   assert.equal(otherLogin.status(), 200);
-  const otherHeaders = {
-    Authorization: "Bearer " + (await otherLogin.json()).access_token,
-  };
+  const otherHeaders = await scopeHeaders(
+    page.request,
+    base,
+    (await otherLogin.json()).access_token,
+  );
   const cross = await page.request.patch(
     base + "/api/v1/resource-management/data-sources/" + source.id,
     {

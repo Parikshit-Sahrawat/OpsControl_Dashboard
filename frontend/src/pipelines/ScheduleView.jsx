@@ -8,21 +8,32 @@ import {
   Table,
   Identifier,
   Evidence,
+  Pager,
   Drawer,
 } from "./ui";
 export default function ScheduleView({ resource }) {
   const [filter, setFilter] = useState(""),
     [selected, setSelected] = useState(null),
+    [offset, setOffset] = useState(0),
     feed = usePipelineFeed(
-      resourcePath(resource.id) + "/schedule-windows?limit=500",
+      resourcePath(resource.id) +
+        "/schedule-occurrences?limit=20&offset=" +
+        offset +
+        (filter ? "&status=" + filter : ""),
     ),
-    rows = (feed.data || []).filter((w) => !filter || w.status === filter);
+    rows = feed.data?.items || [];
   return (
     <>
       <div className="pipeline-filters">
         <label>
-          Compliance in received occurrences
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+          Schedule compliance
+          <select
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setOffset(0);
+            }}
+          >
             <option value="">All states</option>
             {[
               "PENDING_GRACE",
@@ -36,7 +47,7 @@ export default function ScheduleView({ resource }) {
             ))}
           </select>
         </label>
-        <span>Latest 500 occurrences; this API does not expose an offset.</span>
+        <span>Server pagination across retained schedule occurrences.</span>
       </div>
       <State feed={feed} empty={!rows.length} />
       <Table
@@ -93,6 +104,12 @@ export default function ScheduleView({ resource }) {
           );
         })}
       </Table>
+      <Pager
+        total={feed.data?.total}
+        offset={offset}
+        onChange={setOffset}
+        label="Occurrences"
+      />
       <p>
         NO_RUN appears only when returned by the schedule evaluator. Empty
         execution history or successful HTTP responses cannot establish a missed

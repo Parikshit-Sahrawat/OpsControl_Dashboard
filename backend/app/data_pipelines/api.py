@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from app.db.session import get_db
+from app.api.pagination import page
 from app.security.access_control import require_permission
 from app.security.scope import current_principal
 from app.security.http import require_admin
@@ -286,57 +287,97 @@ def create_integration(payload: IntegrationInput, db=Depends(get_db)):
     return doc(row)
 
 
+def integration_records_query(id, collection):
+    model = {
+        "connections": PipelineConnection,
+        "capabilities": PipelineCapability,
+        "methods": PipelineMethod,
+        "jobs": PipelineJob,
+        "operations": PipelineOperation,
+        "associations": PipelineAssociation,
+        "sources": PipelineSource,
+    }[collection]
+    methods = select(PipelineMethod.id).where(PipelineMethod.integration_id == id)
+    if collection == "associations":
+        query = select(model).where(model.method_id.in_(methods))
+    elif collection == "sources":
+        query = select(model).where(
+            model.id.in_(
+                select(PipelineMethod.source_id).where(
+                    PipelineMethod.integration_id == id
+                )
+            )
+        )
+    else:
+        query = select(model).where(model.integration_id == id)
+    return model, query
+
+
+@router.get("/integrations/{id}/records/{collection}")
+def integration_records(
+    id: uuid.UUID,
+    collection: Literal[
+        "connections",
+        "capabilities",
+        "methods",
+        "jobs",
+        "operations",
+        "associations",
+        "sources",
+    ],
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    checked(db, PipelineIntegration, id)
+    model, query = integration_records_query(id, collection)
+    return page(db, query, (model.created_at, model.id), limit, offset, doc)
+
+
 @router.get("/integrations/{id}")
 def detail(id: uuid.UUID, db=Depends(get_db)):
     row = checked(db, PipelineIntegration, id)
     output = doc(row)
-    for key, model in (
-        ("connections", PipelineConnection),
-        ("capabilities", PipelineCapability),
-        ("methods", PipelineMethod),
-        ("jobs", PipelineJob),
-        ("operations", PipelineOperation),
+    output["pagination"] = {}
+    for key in (
+        "connections",
+        "capabilities",
+        "methods",
+        "jobs",
+        "operations",
+        "associations",
+        "sources",
     ):
-        output[key] = [
-            doc(x)
-            for x in db.scalars(
-                select(model)
-                .where(model.integration_id == id)
-                .order_by(model.created_at)
-                .limit(500)
-            )
-        ]
-    mids = [x["id"] for x in output["methods"]]
-    output["associations"] = [
-        doc(x)
-        for x in db.scalars(
-            select(PipelineAssociation).where(
-                PipelineAssociation.method_id.in_([uuid.UUID(x) for x in mids])
-            )
-        )
-    ]
-    output["sources"] = [
-        doc(x)
-        for x in db.scalars(
-            select(PipelineSource).where(
-                PipelineSource.id.in_(
-                    [uuid.UUID(x["source_id"]) for x in output["methods"]]
-                )
-            )
-        )
-    ]
-    output["activation_blockers"] = s.blockers(db, row)
+        model, query = integration_records_query(id, key)
+        result = page(db, query, (model.created_at, model.id), 500, 0, doc)
+        output[key] = result.pop("items")
+        output["pagination"][key] = result
+    # Bound only the read preview. Authoritative activation still runs the
+    # established complete blocker validation and cannot use this projection.
+    complete = all(
+        output["pagination"][key]["total"] <= 500 for key in ("methods", "jobs")
+    )
+    output["readiness_complete"] = complete
+    output["activation_blockers"] = (
+        s.blockers(db, row) if complete else ["READINESS_PREVIEW_INCOMPLETE"]
+    )
     output["coverage"] = {
         "selected_jobs": db.scalar(
             select(func.count())
             .select_from(PipelineJob)
             .where(PipelineJob.integration_id == id, PipelineJob.selected.is_(True))
         ),
-        "unverified_methods": sum(
-            not s.eligible(db, x)
-            for x in db.scalars(
-                select(PipelineMethod).where(PipelineMethod.integration_id == id)
+        "unverified_methods": (
+            sum(
+                not s.eligible(db, x)
+                for x in db.scalars(
+                    select(PipelineMethod)
+                    .where(PipelineMethod.integration_id == id)
+                    .limit(500)
+                )
             )
+            if complete
+            else None
         ),
     }
     return output

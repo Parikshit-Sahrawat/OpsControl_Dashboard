@@ -1,4 +1,5 @@
 """Disposable PostgreSQL API integration tests for remote worker trust boundaries."""
+from scripts.acceptance_scope import probe_headers
 import json
 import uuid
 import urllib.error
@@ -17,6 +18,7 @@ def req(method,path,token=None,body=None):
     data=json.dumps(body).encode() if body is not None else None
     headers={"Content-Type":"application/json"}
     if token: headers["Authorization"]="Bearer "+token
+    headers.update(probe_headers(BASE, token, path))
     request=urllib.request.Request(BASE+path,method=method,data=data,headers=headers)
     try:
         with urllib.request.urlopen(request,timeout=20) as response:

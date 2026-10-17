@@ -3,6 +3,7 @@
 Run *after* auth_tenant_probe.py against a disposable PostgreSQL and API.
 Fixtures never use real infrastructure, people or credentials.
 """
+from scripts.acceptance_scope import probe_headers
 import json
 import urllib.request
 import urllib.error
@@ -18,6 +19,7 @@ def request(method, path, token=None, payload=None):
     headers = {"Content-Type": "application/json"}
     if token: headers["Authorization"] = "Bearer " + token
     data = json.dumps(payload).encode() if payload is not None else None
+    headers.update(probe_headers(URL, token, path))
     req = urllib.request.Request(URL + path, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=20) as r:

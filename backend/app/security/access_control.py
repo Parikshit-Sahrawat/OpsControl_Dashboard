@@ -68,7 +68,9 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
             return ("etl.view",) if read else ("etl.resolve_identity",)
         if "/executions/" in path:
             return ("etl.view",) if read else ("etl.investigate",)
-        if path.endswith("/executions") or path.endswith("/schedule-windows"):
+        if path.endswith("/executions") or path.endswith(
+            ("/schedule-windows", "/schedule-occurrences")
+        ):
             return ("etl.view",)
         if "/reports" in path:
             return ("reports.view",)

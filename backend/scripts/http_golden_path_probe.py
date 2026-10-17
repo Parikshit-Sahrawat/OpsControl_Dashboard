@@ -3,6 +3,7 @@
 Orchestrated by scripts/http-golden-path.sh. Credentials stay in a protected
 runtime file, never in evidence reports or stdout. No fabricated probe results.
 """
+from scripts.acceptance_scope import probe_headers
 import json
 import os
 import secrets
@@ -32,7 +33,7 @@ def api(status, method, path, token=None, body=None):
         body=with_department(body,lambda value:api(201,'POST','/api/v1/access/departments',token,value))
     req = urllib.request.Request(BASE + path, method=method,
         data=json.dumps(body).encode() if body is not None else None,
-        headers={'Content-Type': 'application/json', **({'Authorization': 'Bearer '+token} if token else {})})
+        headers={'Content-Type': 'application/json', **({'Authorization': 'Bearer '+token} if token else {}), **probe_headers(BASE, token, path)})
     try:
         with urllib.request.urlopen(req, timeout=15) as response:
             actual, data = response.status, json.loads(response.read() or b'null')

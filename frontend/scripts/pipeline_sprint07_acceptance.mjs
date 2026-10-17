@@ -176,11 +176,14 @@ try {
   assert.match(await table.textContent(), /CONFLICTED EVIDENCE/);
   assert.match(await table.textContent(), /UNKNOWN/);
   await screenshot(page, "executions");
-  await page
-    .getByLabel("Outcome on this page")
-    .selectOption("WAITING_FOR_RETRY");
+  const filteredExecutions = page.waitForResponse(
+    (r) => r.url().includes("outcome=WAITING_FOR_RETRY") && r.status() === 200,
+  );
+  await page.getByLabel("Execution outcome").selectOption("WAITING_FOR_RETRY");
+  await filteredExecutions;
+  await table.getByRole("button").first().waitFor();
   assert.equal(await table.getByRole("button").count(), 1);
-  await page.getByLabel("Outcome on this page").selectOption("");
+  await page.getByLabel("Execution outcome").selectOption("");
   await table.getByRole("button", { name: f.retried, exact: true }).click();
   await page
     .getByRole("navigation", { name: "Execution detail sections" })

@@ -364,6 +364,16 @@ try:
                 print(
                     run([python, "-m", "scripts.sprint08_http_probe"], root / "backend")
                 )
+            if os.getenv("V16_SPRINT09_ACCEPTANCE") == "1":
+                print(
+                    run([python, "-m", "scripts.sprint09_http_probe"], root / "backend")
+                )
+                print(
+                    run(
+                        [python, "-m", "scripts.sprint09_resilience_probe"],
+                        root / "backend",
+                    )
+                )
             if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
                 print(
                     run(
@@ -414,6 +424,8 @@ try:
                     )
                 if os.getenv("V16_SPRINT08_ACCEPTANCE") == "1":
                     print(run(["node", "frontend/scripts/sprint08_acceptance.mjs"]))
+                if os.getenv("V16_SPRINT09_ACCEPTANCE") == "1":
+                    print(run(["node", "frontend/scripts/sprint09_acceptance.mjs"]))
         finally:
             if ui:
                 ui.terminate()
