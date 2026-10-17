@@ -338,11 +338,20 @@ try {
     { headers },
   );
   assert.equal(inventory.status(), 200);
-  assert.ok(
-    (await inventory.json()).items.every(
-      (i) => i.organization_id === fixture.organization_id,
-    ),
+  // Other HTTP probes may explicitly grant this viewer additional customers.
+  // Verify the effective scope, then independently exercise the exact filter.
+  const scopeResponse = await viewer.request.get(
+    fixture.base_url + "/api/v1/auth/customer-scope", { headers },
   );
+  assert.equal(scopeResponse.status(), 200);
+  const authorized = new Set((await scopeResponse.json()).map(o => o.id));
+  assert.ok((await inventory.json()).items.every(i => authorized.has(i.organization_id)));
+  const scopedInventory = await viewer.request.get(
+    fixture.base_url + "/api/v1/data-pipelines/integrations?organization_id=" + fixture.organization_id,
+    { headers },
+  );
+  assert.equal(scopedInventory.status(), 200);
+  assert.ok((await scopedInventory.json()).items.every(i => i.organization_id === fixture.organization_id));
   const crossCustomer = await viewer.request.get(
     fixture.base_url + `/api/v1/data-pipelines/integrations/${otherId}`,
     { headers },

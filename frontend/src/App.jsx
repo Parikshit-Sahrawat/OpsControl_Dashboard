@@ -24,6 +24,7 @@ import ResourceManagement from "./pages/UnifiedResourceManagement";
 import NativeIncidents from "./pages/NativeIncidents";
 import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
+import PipelineWorkspace from "./pipelines/PipelineWorkspace";
 import DomainReports from "./pages/DomainReports";
 
 function mapDetail(execution, investigation, evidence) {
@@ -121,10 +122,13 @@ function mapDetail(execution, investigation, evidence) {
 }
 
 export default function App({ user }) {
-  const [active, setActive] = useState(
-      () =>
-        Object.keys(NAV_PERMISSIONS).find((page) => canNavigate(user, page)) ||
-        "Unauthorized",
+  const [active, setActive] = useState(() =>
+      window.location.hash.startsWith("#/pipelines/") &&
+      canNavigate(user, "Data Pipeline Monitoring")
+        ? "Data Pipeline Monitoring"
+        : Object.keys(NAV_PERMISSIONS).find((page) =>
+            canNavigate(user, page),
+          ) || "Unauthorized",
     ),
     [jobs, setJobs] = useState([]),
     [details, setDetails] = useState({}),
@@ -154,7 +158,8 @@ export default function App({ user }) {
     if (
       !scopeReady ||
       !hasPermission(user, "etl.view") ||
-      administrationPage(active)
+      administrationPage(active) ||
+      active === "Data Pipeline Monitoring"
     )
       return;
     const version = generation.current;
@@ -284,8 +289,27 @@ export default function App({ user }) {
       setError(e.message || "Unable to add note");
     }
   };
+  useEffect(() => {
+    const route = () => {
+      if (
+        window.location.hash.startsWith("#/pipelines/") &&
+        canNavigate(user, "Data Pipeline Monitoring")
+      )
+        setActive("Data Pipeline Monitoring");
+    };
+    window.addEventListener("hashchange", route);
+    return () => window.removeEventListener("hashchange", route);
+  }, [user]);
   const navigate = (page, selection = {}) => {
     if (!canNavigate(user, page)) return;
+    if (page === "Data Pipeline Monitoring")
+      window.location.hash = "/pipelines/inventory";
+    else if (window.location.hash.startsWith("#/pipelines/"))
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
     setTarget(selection);
     setActive(page);
     setSelectedId(null);
@@ -364,16 +388,11 @@ export default function App({ user }) {
           />
         )}
         {scopeReady && active === "Data Pipeline Monitoring" && (
-          <DomainMonitoring
+          <PipelineWorkspace
             key={scopeKey + target.resourceId}
-            domain="ETL"
+            user={user}
             organizationIds={organizationIds}
             environment={environment}
-            jobs={jobs}
-            loading={loading}
-            error={error}
-            onSelectExecution={selectJob}
-            onNavigate={navigate}
             initialResourceId={target.resourceId}
           />
         )}

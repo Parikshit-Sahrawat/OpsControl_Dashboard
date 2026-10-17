@@ -174,3 +174,19 @@ Evidence: `docs/verification/arch-etl-001-v16-r1/sprint05/REPORT.md`.
 Verification and exact results: `docs/verification/arch-etl-001-v16-r1/sprint06/REPORT.md`.
 RT-001–RT-020 remain NOT RUN. Sprint 07 may consume these backend contracts;
 this does not certify native providers or authorize activation/deployment.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 07
+
+Six scoped operational frontend pages now consume the completed resource, execution,
+attempt, schedule, evidence-review, recovery-link and native incident APIs. Existing
+session/effective-access resolution, customer/environment isolation and separate
+customer Organizations versus employee Departments remain in use. Consequential
+forms use explicit confirmation and the backend revision/idempotency contracts.
+
+Validation passed: 13 pipeline cases plus existing permission tests, 10 backend
+contract tests, 27 authenticated HTTP groups, the existing configuration browser
+workflow and 16 Sprint 07 actual Chromium groups; lint and production build passed.
+
+Exact contracts, final validation, screenshots, limits and Sprint 08 dependencies:
+`docs/verification/arch-etl-001-v16-r1/sprint07/REPORT.md`.
+Genuine Pentaho RT-001–RT-020 remain NOT RUN; no deployment or source activation.
