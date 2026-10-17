@@ -190,3 +190,32 @@ workflow and 16 Sprint 07 actual Chromium groups; lint and production build pass
 Exact contracts, final validation, screenshots, limits and Sprint 08 dependencies:
 `docs/verification/arch-etl-001-v16-r1/sprint07/REPORT.md`.
 Genuine Pentaho RT-001–RT-020 remain NOT RUN; no deployment or source activation.
+
+### ARCH-ETL-001 V1.6-R1 — Sprint 08
+
+Canonical effective access now enforces explicit one/several/ALL customer selection
+and additive environment/resource restrictions. Direct roles, department inheritance,
+legacy multiple memberships, explicit denies and existing provider break-glass
+protections are retained. Delegated Access Management requires an explicit complete
+department/customer/permission budget; no existing roles receive implicit grants.
+Boundary decisions are audited, immutable, revision/idempotency protected, and
+serialized with authorization revocation and protected human decisions. Agent
+transport keeps its existing separate service authentication.
+
+Migration `0037_access_boundaries` adds policy and decision tables only; populated
+preservation, empty rollback/upgrade, populated downgrade refusal and schema drift
+checks passed. The frontend exposes authorized selection and explainable direct,
+inherited and restricted access, and clears sensitive state on authorization changes.
+
+Final validation: 155 backend unit/contract tests, 169 actual PostgreSQL tests,
+41 authenticated HTTP groups, 20 frontend tests, existing configuration Chromium
+workflow, 16 Sprint 07 Chromium groups and 5 Sprint 08 Chromium groups passed.
+ESLint, production build, scoped Black/Ruff, compilation/imports and migration
+gates passed. Vite's entry-bundle size warning remains; scale/contention testing,
+external-client explicit-scope adoption and genuine runtime certification remain
+outstanding. RT-001–RT-020 are NOT RUN.
+
+Exact contracts, security acceptance, screenshots, migration safeguards and limits:
+`docs/verification/arch-etl-001-v16-r1/sprint08/REPORT.md`.
+Sprint 09 requires separate authorization. No PR, merge, deployment, real-source
+activation or Pentaho workload execution occurred in Sprint 08.

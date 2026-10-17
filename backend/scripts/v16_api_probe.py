@@ -4,13 +4,12 @@ import json, os, uuid
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from pathlib import Path
-import app.main  # register existing parent models for direct fixture transactions
+import app.main  # noqa: F401 - register existing parent models for fixture transactions
 from app.db.session import SessionLocal
 from app.models import Organization
 from app.security.models import User, OrganizationMembership
 from app.security.passwords import hash_password
 from app.security.permission_catalog import PROVIDER_ID
-from app.security.scope import current_principal
 from app.data_pipelines.models import PipelineIntegration
 
 assert (
@@ -26,6 +25,8 @@ def request(path, method="GET", payload=None, token=None, expected=200):
     headers = {}
     if token:
         headers["Authorization"] = "Bearer " + token
+        from scripts.acceptance_scope import selection_headers
+        headers.update(selection_headers(base,token))
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"

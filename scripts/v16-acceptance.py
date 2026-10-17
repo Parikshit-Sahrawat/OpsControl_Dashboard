@@ -171,24 +171,63 @@ try:
             [python, "-m", "scripts.pentaho_incident_migration_probe", "seed"],
             root / "backend",
         )
+    if os.getenv("V16_SPRINT08_ACCEPTANCE") == "1":
+        env["V16_PRIVATE_DIR"] = str(private)
+        env["V16_EVIDENCE_DIR"] = str(out)
+        run(
+            [python, "-m", "alembic", "upgrade", "0036_native_recovery"],
+            root / "backend",
+        )
+        # Verify older migration snapshots before adding the separate legacy
+        # employee preservation fixture; fixture insertion is not migration drift.
+        for flag, probe in (
+            ("V16_PENTAHO_R1_ACCEPTANCE", "pentaho_migration_probe"),
+            ("V16_PENTAHO_REVIEW_ACCEPTANCE", "pentaho_review_migration_probe"),
+            ("V16_PENTAHO_HISTORY_ACCEPTANCE", "pentaho_history_migration_probe"),
+            ("V16_PENTAHO_INCIDENT_ACCEPTANCE", "pentaho_incident_migration_probe"),
+        ):
+            if os.getenv(flag) == "1":
+                run([python, "-m", "scripts." + probe, "verify"], root / "backend")
+        run(
+            [python, "-m", "scripts.sprint08_migration_probe", "seed"], root / "backend"
+        )
     run([python, "-m", "alembic", "upgrade", "head"], root / "backend")
-    if os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1":
+    if os.getenv("V16_SPRINT08_ACCEPTANCE") == "1":
+        print(
+            run(
+                [python, "-m", "scripts.sprint08_migration_probe", "verify"],
+                root / "backend",
+            )
+        )
+    if (
+        os.getenv("V16_PENTAHO_INCIDENT_ACCEPTANCE") == "1"
+        and os.getenv("V16_SPRINT08_ACCEPTANCE") != "1"
+    ):
         run(
             [python, "-m", "scripts.pentaho_incident_migration_probe", "verify"],
             root / "backend",
         )
 
-    if os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1":
+    if (
+        os.getenv("V16_PENTAHO_HISTORY_ACCEPTANCE") == "1"
+        and os.getenv("V16_SPRINT08_ACCEPTANCE") != "1"
+    ):
         run(
             [python, "-m", "scripts.pentaho_history_migration_probe", "verify"],
             root / "backend",
         )
-    if os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1":
+    if (
+        os.getenv("V16_PENTAHO_REVIEW_ACCEPTANCE") == "1"
+        and os.getenv("V16_SPRINT08_ACCEPTANCE") != "1"
+    ):
         run(
             [python, "-m", "scripts.pentaho_review_migration_probe", "verify"],
             root / "backend",
         )
-    if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
+    if (
+        os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1"
+        and os.getenv("V16_SPRINT08_ACCEPTANCE") != "1"
+    ):
         run(
             [python, "-m", "scripts.pentaho_migration_probe", "verify"],
             root / "backend",
@@ -321,6 +360,10 @@ try:
                         root / "backend",
                     )
                 )
+            if os.getenv("V16_SPRINT08_ACCEPTANCE") == "1":
+                print(
+                    run([python, "-m", "scripts.sprint08_http_probe"], root / "backend")
+                )
             if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
                 print(
                     run(
@@ -369,6 +412,8 @@ try:
                             ]
                         )
                     )
+                if os.getenv("V16_SPRINT08_ACCEPTANCE") == "1":
+                    print(run(["node", "frontend/scripts/sprint08_acceptance.mjs"]))
         finally:
             if ui:
                 ui.terminate()
@@ -391,6 +436,7 @@ try:
             "Pentaho evidence review/decisions exist",
             "Pentaho schedule/replay/notification evidence exists",
             "Native incident recovery evidence exists",
+            "Access boundaries or decisions exist",
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")

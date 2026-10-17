@@ -103,7 +103,12 @@ function RecoveryDetail({ resource, original, user, onSaved }) {
         "/recovery-links?limit=20&offset=" +
         offset,
     ),
-    allowed = hasPermission(user, "etl.investigate", resource.organization_id);
+    allowed = hasPermission(
+      user,
+      "etl.investigate",
+      resource.organization_id,
+      resource,
+    );
   return (
     <section className="pipeline-section" aria-label="Recovery relationships">
       <h2>Original failed execution</h2>

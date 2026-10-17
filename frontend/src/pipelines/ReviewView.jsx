@@ -128,7 +128,12 @@ function ReviewDrawer({ resource, id, user, onClose, onSaved }) {
     r = feed.data?.review,
     allowed =
       r &&
-      hasPermission(user, "etl.resolve_identity", resource.organization_id),
+      hasPermission(
+        user,
+        "etl.resolve_identity",
+        resource.organization_id,
+        resource,
+      ),
     actions = reviewActions(r);
   return (
     <Drawer title="Evidence review details" onClose={onClose}>

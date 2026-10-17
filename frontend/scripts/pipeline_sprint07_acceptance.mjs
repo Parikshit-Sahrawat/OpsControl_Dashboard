@@ -96,7 +96,10 @@ async function request(p, path, body, expected) {
     sessionStorage.getItem("opscontrol.sessionToken"),
   );
   const r = await p.request.post(process.env.V16_API_URL + path, {
-    headers: { Authorization: "Bearer " + token },
+    headers: {
+      Authorization: "Bearer " + token,
+      "X-OpsControl-Customers": f.organization,
+    },
     data: body,
   });
   if (expected) assert.equal(r.status(), expected, await r.text());
@@ -559,11 +562,18 @@ try {
   checks.push(
     "Unauthorized adjudication/recovery controls hidden and API returns 403",
   );
-  const restricted=await session(f.restricted);
-  await restricted.getByText("Resource discovery requires resources.view",{exact:false}).waitFor();
-  assert.equal(await restricted.getByLabel("Find pipeline",{exact:true}).count(),0);
+  const restricted = await session(f.restricted);
+  await restricted
+    .getByText("Resource discovery requires resources.view", { exact: false })
+    .waitFor();
+  assert.equal(
+    await restricted.getByLabel("Find pipeline", { exact: true }).count(),
+    0,
+  );
   await restricted.close();
-  checks.push("Catalog discovery honors resources.view without implicit permission grants");
+  checks.push(
+    "Catalog discovery honors resources.view without implicit permission grants",
+  );
   assert.deepEqual(errors, []);
   await writeFile(
     join(out, "sprint07-browser.json"),

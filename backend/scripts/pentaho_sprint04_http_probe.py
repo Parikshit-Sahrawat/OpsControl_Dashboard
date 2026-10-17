@@ -32,6 +32,8 @@ def request(path, method="GET", body=None, token=None, expected=200):
     headers = {"Content-Type": "application/json"}
     if token:
         headers["Authorization"] = "Bearer " + token
+        from scripts.acceptance_scope import selection_headers
+        headers.update(selection_headers(base,token))
     try:
         with urlopen(
             Request(

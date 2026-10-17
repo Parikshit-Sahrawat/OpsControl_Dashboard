@@ -919,7 +919,13 @@ def recovery(id: uuid.UUID, payload: RecoveryInput, db=Depends(get_db)):
     from app.unified.pentaho_replay import is_pentaho
 
     if is_pentaho(db, source):
-        require_permission("etl.replay", source.organization_id)
+        principal = require_permission("etl.replay", source.organization_id)
+        from app.security.resource_scope import source_authorized
+
+        if not source_authorized(db, principal, source, "etl.replay"):
+            raise HTTPException(
+                403, "Replay request exceeds current resource authority"
+            )
     op = s.plan_recovery(
         db,
         source,
@@ -960,7 +966,16 @@ def approve(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
         row.kind == "RECOVERY"
         and row.configuration.get("mode") == "ACCEPTED_PENTAHO_EVIDENCE"
     ):
-        require_permission("etl.approve_replay", row.organization_id)
+        principal = require_permission("etl.approve_replay", row.organization_id)
+        source = s.locked_source(db, row.source_id)
+        if row.configuration.get("generation") != str(source.generation):
+            raise HTTPException(409, "Replay source generation changed")
+        from app.security.resource_scope import source_authorized
+
+        if not source_authorized(db, principal, source, "etl.approve_replay"):
+            raise HTTPException(
+                403, "Replay approval exceeds current resource authority"
+            )
     else:
         require_admin()
     if not payload.confirmed or row.actor_id == actor().user_id:

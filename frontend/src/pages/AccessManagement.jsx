@@ -11,6 +11,7 @@ import { hasPermission } from "../permissions";
 import useDialogFocus from "../components/useDialogFocus";
 import "../access-management.css";
 import AccessOnboarding from "./AccessOnboarding";
+import AccessBoundaries from "./AccessBoundaries";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const TABS = [
@@ -117,7 +118,33 @@ function Effective({ value, customers }) {
         {!value.permissions?.length &&
           "Default deny — no permissions assigned."}
       </div>
-      <h3>Organization scopes</h3>
+      <p>
+        {value.all_customers_authorized
+          ? "Explicit ALL authority available; future coverage follows the boundary shown below."
+          : "No ALL-customer authority. Multiple customer grants are explicit IDs only."}
+      </p>
+      {value.access_boundaries?.map((b) => (
+        <div className="access-scope" key={b.id}>
+          <b>
+            {b.kind} · revision {b.revision}
+          </b>
+          <p>{b.specification.permissions.join(", ")}</p>
+          <p>
+            Environments:{" "}
+            {b.specification.environments.join(", ") ||
+              "No environment qualifier"}{" "}
+            · Resources:{" "}
+            {b.specification.resources.join(", ") || "No resource qualifier"}
+          </p>
+          <p>
+            Customer IDs: {b.specification.customers.join(", ")}{" "}
+            {b.specification.include_future
+              ? "· Includes future customers"
+              : ""}
+          </p>
+        </div>
+      ))}
+      <h3>Organization scopes (before applicable restrictions)</h3>
       {Object.entries(value.customer_permissions || {}).map(([id, keys]) => (
         <div className="access-scope" key={id}>
           <b>{customers.find((c) => c.id === id)?.name || id}</b>
@@ -167,7 +194,17 @@ function Effective({ value, customers }) {
 }
 
 export default function AccessManagement({ user }) {
-  const can = (key) => hasPermission(user, `access.${key}`);
+  const delegated =
+    user.platform_admin ||
+    user.access_boundaries?.some((b) => b.kind === "DELEGATE");
+  const can = (key) =>
+    hasPermission(user, `access.${key}`) && (key === "view" || delegated);
+  const canCreateDepartment =
+    can("manage_departments") &&
+    (user.platform_admin ||
+      user.access_boundaries?.some(
+        (b) => b.kind === "DELEGATE" && b.specification.create_departments,
+      ));
   const [tab, setTab] = useState("Departments"),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
@@ -359,6 +396,7 @@ export default function AccessManagement({ user }) {
         description: row.description || "",
         permissions: row.permissions || [],
         active: row.active ?? true,
+        expected_revision: row.authorization_revision || null,
       });
     if (kind === "assignment") setDraft({ role_id: "", effect: "ALLOW" });
     if (kind === "member") setDraft({ user_id: "" });
@@ -609,6 +647,14 @@ export default function AccessManagement({ user }) {
           {notice}
         </div>
       )}
+      <AccessBoundaries
+        user={user}
+        people={people}
+        departments={departments}
+        customers={customers}
+        roles={roles}
+        catalog={catalog}
+      />
       <section className="card access-table">
         <div className="resource-toolbar">
           <h2>{tab}</h2>
@@ -682,7 +728,7 @@ export default function AccessManagement({ user }) {
                 Create employee
               </button>
             )}
-            {tab === "Departments" && can("manage_departments") && (
+            {tab === "Departments" && canCreateDepartment && (
               <button
                 className="primary-button"
                 onClick={() => open("department")}
@@ -1429,7 +1475,10 @@ export default function AccessManagement({ user }) {
                           >
                             <input
                               type="checkbox"
-                              disabled={!user.platform_admin && !p.delegable}
+                              disabled={
+                                !user.platform_admin &&
+                                (!p.delegable || p.within_delegation === false)
+                              }
                               checked={draft.permissions.includes(p.key)}
                               onChange={(e) =>
                                 change(

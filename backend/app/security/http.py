@@ -5,6 +5,7 @@ frontend organization filter is supplied. Worker credentials are a distinct
 principal type and NEVER authenticate against these user endpoints.
 """
 
+from contextvars import ContextVar
 import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -28,9 +29,10 @@ from app.security.models import (
     WorkerIdentity,
 )
 from app.security.passwords import hash_password, verify_password
-from app.security.scope import Principal, current_principal
+from app.security.scope import current_principal
 from app.security.throttle import failed_login, login_allowed, successful_login
 
+request_session_digest = ContextVar("request_session_digest", default=None)
 router = APIRouter(prefix="/api/v1/auth", tags=["Identity"])
 worker_router = APIRouter(prefix="/api/v1/worker", tags=["Worker Identity"])
 _ALLOWED_PUBLIC = {
@@ -241,6 +243,18 @@ class IdentityMiddleware(BaseHTTPMiddleware):
         required = route_permissions(request.method, path)
         if required and not any(principal.allows(key) for key in required):
             return await run_in_threadpool(_audit_denial, principal, 403, path)
+        from app.security.boundaries import choose, selected_customers
+
+        try:
+            chosen = (
+                None
+                if path.startswith(("/api/v1/access", "/api/v1/auth"))
+                else choose(principal, request)
+            )
+        except HTTPException as error:
+            return JSONResponse({"detail": error.detail}, status_code=error.status_code)
+        selection_ctx = selected_customers.set(chosen)
+        digest_ctx = request_session_digest.set(token_digest(parts[1]))
         permission_ctx = request_permissions.set(required)
         ctx = current_principal.set(principal)
         try:
@@ -257,6 +271,8 @@ class IdentityMiddleware(BaseHTTPMiddleware):
         finally:
             current_principal.reset(ctx)
             request_permissions.reset(permission_ctx)
+            selected_customers.reset(selection_ctx)
+            request_session_digest.reset(digest_ctx)
 
 
 @router.post("/login")
@@ -357,6 +373,9 @@ def logout(request: Request):
     principal = actor()
     digest = token_digest(request.headers.get("authorization", "").split()[1])
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         row = db.scalar(select(AccessSession).where(AccessSession.token_hash == digest))
         if row:
             db.delete(row)
@@ -382,6 +401,9 @@ def create_user(payload: UserCreate):
     if not username:
         raise HTTPException(422, "Username required")
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         department = None
         if payload.department_id is not None:
             from app.security.access_models import Department, DepartmentMembership
@@ -449,6 +471,9 @@ def list_users():
 def change_user_status(user_id: UUID, payload: UserStatus):
     principal = require_admin()
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         # Serialize administrator status changes before counting. Row locks on
         # different users do not protect the shared last-admin invariant.
         from sqlalchemy import text
@@ -489,6 +514,9 @@ def change_user_status(user_id: UUID, payload: UserStatus):
 def reset_password(user_id: UUID, payload: PasswordReset):
     principal = require_admin()
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         user = db.get(User, user_id)
         if user is None or user.service_provider_id != principal.service_provider_id:
             raise HTTPException(404, "User not found")
@@ -533,6 +561,9 @@ def assign_membership(payload: MemberCreate):
     if payload.role not in _ROLE_VALUES:
         raise HTTPException(422, "Unsupported membership role")
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         target = db.get(User, payload.user_id)
         if (
             target is None
@@ -571,6 +602,9 @@ def change_membership(membership_id: UUID, payload: MemberPatch):
     if payload.role not in _ROLE_VALUES:
         raise HTTPException(422, "Unsupported membership role")
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         row = db.get(OrganizationMembership, membership_id)
         if (
             row is None
@@ -597,6 +631,9 @@ def change_membership(membership_id: UUID, payload: MemberPatch):
 def delete_membership(membership_id: UUID):
     principal = require_admin()
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         row = db.get(OrganizationMembership, membership_id)
         if (
             row is None
@@ -654,6 +691,9 @@ def create_worker(payload: WorkerCreate):
     from app.models import Organization
 
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         if db.get(Organization, payload.organization_id) is None:
             raise HTTPException(404, "Organization not found")
         secret = secrets.token_urlsafe(48)
@@ -692,6 +732,9 @@ def create_worker(payload: WorkerCreate):
 def revoke_worker(worker_id: UUID):
     principal = require_admin()
     with SessionLocal() as db:
+        from app.security.boundaries import transaction_authority
+
+        transaction_authority(db)
         row = db.get(WorkerIdentity, worker_id)
         if row is None:
             raise HTTPException(404, "Worker not found")

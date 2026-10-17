@@ -177,6 +177,7 @@ export function MutationForm({
   onSaved,
   disabled = false,
   reasonRequired = true,
+  method = "POST",
 }) {
   const [reason, setReason] = useState(""),
     [confirmed, setConfirmed] = useState(false),
@@ -199,7 +200,7 @@ export function MutationForm({
     try {
       await control(
         path,
-        "POST",
+        method,
         typeof body === "function" ? body(reason, key.current) : body,
       );
       if (alive.current) {

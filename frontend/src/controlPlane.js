@@ -4,7 +4,13 @@ export async function control(path, method = "GET", payload, options = {}) {
   const response = await fetch(base + path, {
     method,
     signal: options.signal,
-    headers: { "Content-Type": "application/json", ...authHeaders() },
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+      ...(options.customerIds
+        ? { "X-OpsControl-Customers": options.customerIds.join(",") }
+        : {}),
+    },
     ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
   });
   if (!response.ok) {

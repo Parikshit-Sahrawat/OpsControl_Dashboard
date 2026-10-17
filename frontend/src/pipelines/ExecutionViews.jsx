@@ -398,7 +398,12 @@ export function ExecutionDrawer({
 }
 function ExecutionIncidents({ resource, history, user }) {
   const [offset, setOffset] = useState(0),
-    allowed = hasPermission(user, "incidents.view", resource.organization_id);
+    allowed = hasPermission(
+      user,
+      "incidents.view",
+      resource.organization_id,
+      resource,
+    );
   const feed = usePipelineFeed(
     allowed
       ? "/api/v1/native-incidents?" +

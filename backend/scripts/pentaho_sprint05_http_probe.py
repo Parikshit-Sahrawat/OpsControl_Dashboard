@@ -6,7 +6,6 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from app.unified.schemas import ETLParameters, Schedule
 from app.unified import pentaho_history as h
-from app.security.models import OrganizationMembership
 from app.security.passwords import hash_password
 from app.data_pipelines.service import clock
 from datetime import timedelta
@@ -25,6 +24,8 @@ def request(path, method="GET", body=None, token=None, expected=200):
     headers = {"Content-Type": "application/json"}
     if token:
         headers["Authorization"] = "Bearer " + token
+        from scripts.acceptance_scope import selection_headers
+        headers.update(selection_headers(base,token))
     try:
         with urlopen(
             Request(

@@ -5,7 +5,7 @@ remains unsupported without an independently verified continuity capability.
 """
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from sqlalchemy import select, tuple_, cast, DateTime, func
 from app.data_pipelines import service as s
 from app.data_pipelines.models import (
@@ -60,11 +60,13 @@ def run_batch(db, source, operation, ticket, limit=50):
     from app.security.access_control import resolve_access
     from app.security.models import User
 
+    from app.security.resource_scope import source_authorized
+
     user = db.get(User, operation.actor_id)
     if (
         not user
         or not user.active
-        or not resolve_access(db, user).allows("etl.replay", source.organization_id)
+        or not source_authorized(db, resolve_access(db, user), source, "etl.replay")
     ):
         raise s.PipelineError("REPLAY_AUTHORIZATION_REVOKED")
     if risky:
@@ -72,8 +74,8 @@ def run_batch(db, source, operation, ticket, limit=50):
         if (
             not reviewer
             or not reviewer.active
-            or not resolve_access(db, reviewer).allows(
-                "etl.approve_replay", source.organization_id
+            or not source_authorized(
+                db, resolve_access(db, reviewer), source, "etl.approve_replay"
             )
         ):
             raise s.PipelineError("REPLAY_APPROVAL_REVOKED")

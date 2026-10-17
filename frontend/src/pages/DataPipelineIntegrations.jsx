@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { control } from "../controlPlane";
+import { control, control as scopedControl } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import { Field } from "./DomainParameters";
@@ -68,6 +68,17 @@ export default function DataPipelineIntegrations({
   const sequence = useRef(0),
     detailSequence = useRef(0),
     wizardRef = useRef(null);
+  const control = (path, method, payload, options = {}) =>
+    scopedControl(path, method, payload, {
+      ...options,
+      customerIds: organizationId
+        ? [organizationId]
+        : editing?.organization_id
+          ? [editing.organization_id]
+          : draft.organization_id
+            ? [draft.organization_id]
+            : customers.map((c) => c.id),
+    });
   const allowed = hasPermission(
     user,
     "etl.configure",
@@ -89,7 +100,7 @@ export default function DataPipelineIntegrations({
     return () => {
       live = false;
     };
-  }, [user.authorization_revision]);
+  }, [user.authorization_revision, customers]);
   useEffect(() => {
     const current = ++sequence.current;
     const q = new URLSearchParams({
@@ -105,7 +116,14 @@ export default function DataPipelineIntegrations({
     return () => {
       sequence.current++;
     };
-  }, [organizationId, search, offset, reload, user.authorization_revision]);
+  }, [
+    organizationId,
+    search,
+    offset,
+    reload,
+    user.authorization_revision,
+    customers,
+  ]);
   useEffect(() => {
     detailSequence.current++;
     setEditing(null);

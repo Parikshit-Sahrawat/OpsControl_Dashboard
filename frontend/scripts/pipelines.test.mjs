@@ -143,3 +143,51 @@ test("revision and authorization errors are explicit", () => {
   assert.match(errorMessage({ status: 409, message: "revision" }), /Refresh/);
   assert.match(errorMessage({ status: 403 }), /Permission denied/);
 });
+
+test("resource restriction affordances do not become grants", async () => {
+  const { hasPermission } = await import("../src/permissions.js");
+  const user = {
+    customer_permissions: { a: ["etl.investigate"] },
+    access_boundaries: [
+      {
+        kind: "LIMIT",
+        specification: {
+          customers: ["a"],
+          permissions: ["etl.investigate"],
+          environments: ["TEST"],
+          resources: ["r"],
+        },
+      },
+    ],
+  };
+  assert.equal(
+    hasPermission(user, "etl.investigate", "a", {
+      id: "r",
+      environment: "TEST",
+    }),
+    true,
+  );
+  assert.equal(
+    hasPermission(user, "etl.investigate", "a", {
+      id: "r",
+      environment: "PROD",
+    }),
+    false,
+  );
+  user.access_boundaries.push({
+    kind: "DENY",
+    specification: {
+      customers: ["a"],
+      permissions: ["etl.investigate"],
+      environments: [],
+      resources: ["r"],
+    },
+  });
+  assert.equal(
+    hasPermission(user, "etl.investigate", "a", {
+      id: "r",
+      environment: "TEST",
+    }),
+    false,
+  );
+});

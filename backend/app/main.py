@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.api import operations, access
+import app.api.access_boundaries  # register explicit boundary controls
 from app.registry import api as registry_api
 from app.native_incidents import api as native_incidents_api
 import app.registry.models
@@ -16,7 +17,12 @@ import app.native_incidents.models
 from app.unified import api as unified
 import app.unified.reporting
 import app.unified.compatibility
-from app.telemetry import api as agent_control, ingestion, rules, inbox
+from app.telemetry import (
+    api as agent_control,
+    ingestion,  # noqa: F401 - registers model hooks
+    rules,
+    inbox,
+)
 import app.telemetry.models
 import app.unified.models
 import app.unified.pentaho_models
@@ -110,7 +116,7 @@ app.add_middleware(
     allow_origins=settings.cors_origin_list,
     allow_credentials=False,  # bearer headers; no cookie-origin sharing
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type"],
+    allow_headers=["Authorization", "Content-Type", "X-OpsControl-Customers"],
 )
 from app.data_pipelines import (
     api as data_pipelines_api,

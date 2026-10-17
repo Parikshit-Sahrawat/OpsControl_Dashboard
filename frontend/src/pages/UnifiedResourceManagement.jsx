@@ -1,5 +1,6 @@
+import { setAdministrativeCustomers } from "../auth";
 import { useEffect, useRef, useState } from "react";
-import { control, downloadPackage } from "../controlPlane";
+import { control, control as scopedControl, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
@@ -120,7 +121,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
     [parents, setParents] = useState([]),
     [legacyConfiguration, setLegacyConfiguration] = useState(false),
     [busy, setBusy] = useState(false);
+  useEffect(()=>{setAdministrativeCustomers(customer?[customer]:customers.map(c=>c.id));return()=>setAdministrativeCustomers(null);},[customer,customers]);
   const seq = useRef(0);
+  const control = (path, method, payload, options={}) => scopedControl(path, method, payload, {...options,customerIds:customer?[customer]:customers.map(c=>c.id)});
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
   useEffect(() => {
@@ -152,7 +155,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
     return () => {
       seq.current++;
     };
-  }, [domain, customer, environment, search, offset, reload]);
+  }, [domain, customer, environment, search, offset, reload, customers]);
   useEffect(() => {
     setSelected(null);
     setLegacyConfiguration(false);

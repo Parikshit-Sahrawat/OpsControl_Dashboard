@@ -215,6 +215,8 @@ def resolve_access(db, user):
     )
     from app.security.scope import Principal
 
+    if not user or not user.active:
+        return None
     provider = db.get(ServiceProvider, user.service_provider_id)
     if (
         provider is None
@@ -337,10 +339,53 @@ def resolve_access(db, user):
     candidates = {g.organization_id for g in grants} | {
         m.organization_id for m in legacy_memberships
     }
+    from app.security.access_models import AccessBoundary
+    from app.security.boundaries import specification
+
+    boundary_rows = list(
+        db.scalars(
+            select(AccessBoundary).where(
+                AccessBoundary.service_provider_id == user.service_provider_id,
+                AccessBoundary.active.is_(True),
+                (AccessBoundary.user_id == user.id)
+                | AccessBoundary.department_id.in_(departments),
+            )
+        )
+    )
+    boundaries = []
+    try:
+        for row in boundary_rows:
+            boundaries.append(
+                {
+                    "id": str(row.id),
+                    "kind": row.kind,
+                    "revision": row.revision,
+                    "user_id": str(row.user_id) if row.user_id else None,
+                    "department_id": (
+                        str(row.department_id) if row.department_id else None
+                    ),
+                    "specification": specification(row.kind, row.specification),
+                }
+            )
+    except (ValueError, TypeError):
+        return None  # Invalid persisted authorization never broadens authority.
+    all_grants = []
+    for b in boundaries:
+        if b["kind"] != "ALL_CUSTOMERS":
+            continue
+        rid = UUID(b["specification"]["role_id"])
+        assigned = (
+            direct if b["user_id"] else dept_roles.get(UUID(b["department_id"]), set())
+        )
+        if rid in assigned and rid in roles:
+            all_grants.append((b, rid))
+            candidates.update(UUID(cid) for cid in b["specification"]["customers"])
     customer_stmt = select(Organization.id, Organization.name, Organization.code).where(
         Organization.active.is_(True)
     )
-    if not user.platform_admin:
+    if not user.platform_admin and not any(
+        b["specification"]["include_future"] for b, _ in all_grants
+    ):
         customer_stmt = customer_stmt.where(Organization.id.in_(candidates))
     directory = {row.id: (row.name, row.code) for row in db.execute(customer_stmt)}
     active_customers = set(directory)
@@ -389,6 +434,33 @@ def resolve_access(db, user):
                     "permissions": sorted(permissions[rid]),
                 }
             )
+    for b, rid in all_grants:
+        spec = b["specification"]
+        targets = (
+            active_customers
+            if spec["include_future"]
+            else active_customers & {UUID(v) for v in spec["customers"]}
+        )
+        keys = (permissions[rid] & set(spec["permissions"])) - deny
+        keys = {
+            k
+            for k in keys
+            if not k.startswith("access.")
+            and k not in {"audit.view", "customers.create"}
+        }
+        for org in targets:
+            customer_keys[org].update(keys)
+        provenance.append(
+            {
+                "source": "explicit_all_customer_boundary",
+                "boundary_id": b["id"],
+                "role_id": str(rid),
+                "role": roles[rid].name,
+                "permissions": sorted(keys),
+                "include_future": spec["include_future"],
+                "customers": sorted(str(v) for v in targets),
+            }
+        )
     for org in list(customer_keys):
         customer_keys[org].difference_update(deny)
         if org in denied_customers:
@@ -416,6 +488,8 @@ def resolve_access(db, user):
                 "global": sorted(effective_global),
                 "customers": {str(k): sorted(v) for k, v in customer_keys.items()},
                 "admin": user.platform_admin,
+                "departments": sorted(str(v) for v in departments),
+                "boundaries": sorted(boundaries, key=lambda b: b["id"]),
                 "authorization_roles": sorted(str(rid) for rid in protected_roles),
                 "customer_directory": {
                     str(cid): directory[cid]
@@ -439,6 +513,9 @@ def resolve_access(db, user):
         frozenset(denied_customers),
         frozenset(deny),
         revision,
+        tuple(boundaries),
+        frozenset(active_customers if user.platform_admin else compatibility),
+        bool(user.platform_admin or all_grants),
     )
 
 
@@ -457,4 +534,6 @@ def effective_document(p):
         "denied_permissions": sorted(p.denied_permissions),
         "authorization_revision": p.authorization_revision,
         "break_glass": p.platform_admin,
+        "all_customers_authorized": p.all_customers,
+        "access_boundaries": list(p.boundaries),
     }

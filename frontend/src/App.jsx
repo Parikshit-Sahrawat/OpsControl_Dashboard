@@ -136,6 +136,10 @@ export default function App({ user }) {
     [loading, setLoading] = useState(true),
     [error, setError] = useState(null);
   const [organizations, setOrganizations] = useState([]);
+  const [scopeMode, setScopeMode] = useState(
+    () =>
+      localStorage.getItem("opscontrol.customerSelectionMode") || "SELECTED",
+  );
   const [environment, setEnvironment] = useState(""),
     [customerRefresh, setCustomerRefresh] = useState(0);
   const [scopeReady, setScopeReady] = useState(false),
@@ -213,7 +217,19 @@ export default function App({ user }) {
           }
         })();
         const valid = saved.filter((id) => orgs.some((o) => o.id === id));
-        setOrganizationIds(valid.length ? valid : orgs.map((o) => o.id));
+        const mode =
+          localStorage.getItem("opscontrol.customerSelectionMode") === "ALL" &&
+          user.all_customers_authorized
+            ? "ALL"
+            : "SELECTED";
+        const selected = mode === "ALL" ? orgs.map((o) => o.id) : valid;
+        localStorage.setItem("opscontrol.customerSelectionMode", mode);
+        localStorage.setItem(
+          "opscontrol.organizationIds",
+          JSON.stringify(selected),
+        );
+        setScopeMode(mode);
+        setOrganizationIds(selected);
         setScopeReady(true);
         setError(null);
       })
@@ -333,10 +349,29 @@ export default function App({ user }) {
   const scopeKey =
     (user?.authorization_revision || "") +
     organizationIds.join(",") +
+    scopeMode +
     environment;
   return (
     <div className="app-shell">
       <TopNav
+        allCustomersAuthorized={Boolean(user.all_customers_authorized)}
+        allCustomersSelected={scopeMode === "ALL"}
+        onAllCustomersChange={(enabled) => {
+          const mode = enabled ? "ALL" : "SELECTED";
+          const selected = enabled ? organizations.map((o) => o.id) : [];
+          localStorage.setItem("opscontrol.customerSelectionMode", mode);
+          localStorage.setItem(
+            "opscontrol.organizationIds",
+            JSON.stringify(selected),
+          );
+          generation.current++;
+          setJobs([]);
+          setDetails({});
+          setSelectedId(null);
+          setTarget({});
+          setScopeMode(mode);
+          setOrganizationIds(selected);
+        }}
         active={active}
         onChange={navigate}
         environment={environment}
@@ -352,6 +387,12 @@ export default function App({ user }) {
         organizations={organizations}
         organizationIds={organizationIds}
         onOrganizationChange={(ids) => {
+          localStorage.setItem("opscontrol.customerSelectionMode", "SELECTED");
+          localStorage.setItem(
+            "opscontrol.organizationIds",
+            JSON.stringify(ids),
+          );
+          setScopeMode("SELECTED");
           generation.current++;
           setSelectedId(null);
           setDetails({});

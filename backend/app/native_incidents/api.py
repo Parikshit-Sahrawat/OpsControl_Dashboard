@@ -90,6 +90,11 @@ def item(db, row):
 
 
 def checked(db, incident_id, permission, lock=False):
+    # Middleware permits either incident mutation family; resource restrictions
+    # must use the exact action selected by this authoritative handler.
+    from app.security.access_control import request_permissions
+
+    request_permissions.set((permission,))
     require_permission(permission)
     query = select(OperationalIncident).where(OperationalIncident.id == incident_id)
     if lock:

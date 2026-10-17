@@ -1,6 +1,9 @@
 """Default-deny policy and complete HTTP authorization inventory regressions."""
 
 import unittest
+from unittest.mock import Mock, patch
+from fastapi import HTTPException
+from starlette.requests import Request
 from uuid import uuid4
 from pydantic import ValidationError
 from app.security.scope import Principal
@@ -11,6 +14,53 @@ from scripts.export_api_inventory import inventory
 
 
 class AccessPolicyTests(unittest.TestCase):
+    def test_transaction_denial_releases_session_and_authorization_lock(self):
+        from app.db.session import get_db
+        from app.security.scope import current_principal
+
+        db = Mock(info={})
+        request = Request(
+            {"type": "http", "method": "POST", "path": "/api/v1/unified/resources"}
+        )
+        ctx = current_principal.set(Principal(uuid4(), "employee", False, {}))
+        try:
+            with patch("app.db.session.SessionLocal", return_value=db), patch(
+                "app.security.boundaries.transaction_authority",
+                side_effect=HTTPException(403, "Authorization changed"),
+            ):
+                with self.assertRaises(HTTPException):
+                    next(get_db(request))
+        finally:
+            current_principal.reset(ctx)
+        db.close.assert_called_once_with()
+
+    def test_agent_transport_keeps_its_separate_handler_authentication(self):
+        from app.db.session import get_db
+        from app.security.scope import current_principal
+
+        db = Mock(info={})
+        ctx = current_principal.set(None)
+        try:
+            with patch("app.db.session.SessionLocal", return_value=db), patch(
+                "app.security.boundaries.transaction_authority"
+            ) as human_authority, patch("app.security.scope.configure_request_session"):
+                dependency = get_db(
+                    Request(
+                        {
+                            "type": "http",
+                            "headers": [],
+                            "method": "POST",
+                            "path": "/api/v1/agent/pipeline-claim",
+                        }
+                    )
+                )
+                self.assertIs(next(dependency), db)
+                dependency.close()
+                human_authority.assert_not_called()
+        finally:
+            current_principal.reset(ctx)
+        db.close.assert_called_once_with()
+
     def test_default_deny_and_customer_action_scope(self):
         a, b = uuid4(), uuid4()
         p = Principal(

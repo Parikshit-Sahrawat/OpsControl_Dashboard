@@ -198,9 +198,7 @@ try {
   }
   assert.notEqual(methods[0].id, methods[1].id);
   assert.notEqual(methods[0].source_id, methods[1].source_id);
-  await wizard
-    .getByRole("columnheader", { name: /^method$/i })
-    .waitFor();
+  await wizard.getByRole("columnheader", { name: /^method$/i }).waitFor();
   await page.screenshot({
     path: join(out, "pipeline-v16-methods.png"),
     fullPage: true,
@@ -263,9 +261,7 @@ try {
   );
   assert.equal(association.job_id, selection.id);
   assert.equal(association.method_id, methods[0].id);
-  await wizard
-    .getByRole("columnheader", { name: /^confirmation$/i })
-    .waitFor();
+  await wizard.getByRole("columnheader", { name: /^confirmation$/i }).waitFor();
   await nav
     .getByRole("button", { name: "8. Validate & Activate", exact: true })
     .click();
@@ -276,7 +272,10 @@ try {
     fixture.base_url +
       `/api/v1/data-pipelines/integrations/${integrationId}/activate`,
     {
-      headers: { Authorization: `Bearer ${adminToken}` },
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        "X-OpsControl-Customers": "ALL",
+      },
       data: { idempotency_key: crypto.randomUUID(), confirmed: true },
     },
   );
@@ -291,7 +290,10 @@ try {
   const other = await page.request.post(
     fixture.base_url + "/api/v1/data-pipelines/integrations",
     {
-      headers: { Authorization: `Bearer ${adminToken}` },
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        "X-OpsControl-Customers": "ALL",
+      },
       data: {
         idempotency_key: crypto.randomUUID(),
         organization_id: fixture.other_organization_id,
@@ -332,7 +334,10 @@ try {
   const viewerToken = await viewer.evaluate(() =>
     sessionStorage.getItem("opscontrol.sessionToken"),
   );
-  const headers = { Authorization: `Bearer ${viewerToken}` };
+  const headers = {
+    Authorization: `Bearer ${viewerToken}`,
+    "X-OpsControl-Customers": fixture.organization_id,
+  };
   const inventory = await viewer.request.get(
     fixture.base_url + "/api/v1/data-pipelines/integrations",
     { headers },
@@ -341,17 +346,28 @@ try {
   // Other HTTP probes may explicitly grant this viewer additional customers.
   // Verify the effective scope, then independently exercise the exact filter.
   const scopeResponse = await viewer.request.get(
-    fixture.base_url + "/api/v1/auth/customer-scope", { headers },
+    fixture.base_url + "/api/v1/auth/customer-scope",
+    { headers },
   );
   assert.equal(scopeResponse.status(), 200);
-  const authorized = new Set((await scopeResponse.json()).map(o => o.id));
-  assert.ok((await inventory.json()).items.every(i => authorized.has(i.organization_id)));
+  const authorized = new Set((await scopeResponse.json()).map((o) => o.id));
+  assert.ok(
+    (await inventory.json()).items.every((i) =>
+      authorized.has(i.organization_id),
+    ),
+  );
   const scopedInventory = await viewer.request.get(
-    fixture.base_url + "/api/v1/data-pipelines/integrations?organization_id=" + fixture.organization_id,
+    fixture.base_url +
+      "/api/v1/data-pipelines/integrations?organization_id=" +
+      fixture.organization_id,
     { headers },
   );
   assert.equal(scopedInventory.status(), 200);
-  assert.ok((await scopedInventory.json()).items.every(i => i.organization_id === fixture.organization_id));
+  assert.ok(
+    (await scopedInventory.json()).items.every(
+      (i) => i.organization_id === fixture.organization_id,
+    ),
+  );
   const crossCustomer = await viewer.request.get(
     fixture.base_url + `/api/v1/data-pipelines/integrations/${otherId}`,
     { headers },
