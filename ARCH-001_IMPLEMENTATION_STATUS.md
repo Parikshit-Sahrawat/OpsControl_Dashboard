@@ -256,3 +256,26 @@ Evidence and limitations:
 `docs/verification/arch-etl-001-v16-r1/sprint09/REPORT.md`.
 Sprint10 requires separate authorization. No PR, merge, deployment, real-source
 activation or ETL workload execution occurred.
+
+
+## Sprint 10 — architecture reconciliation and adoption planning
+
+Documentation-only reconciliation against development baseline
+`4726fb49b0b7db4d635869648412c9eec40d5572`; no application, architecture baseline,
+migration or previous sprint evidence changed. The owner's Sprint 10 instruction
+provided continuation authorization; prior acceptance is controlled evidence,
+not production sign-off.
+
+[Verification package](docs/verification/arch-etl-001-v16-r1/sprint10/REPORT.md)
+contains architecture-to-code/test traceability, exactly 62 improvement rows,
+16 candidate rows, six P0/eight P1/two P2 gaps, bounded code findings and a
+conditional Sprint 11–42 proposal. Original approved definitions for all 62 IMPs
+were not recovered; 54 titles are missing and eight titles come only from the
+current owner instruction. All NEW dispositions remain UNRESOLVED pending exact
+source comparison. No new candidate or future implementation is approved here.
+
+Production remains NOT READY: real installed-build RT-001–RT-020 are NOT RUN,
+and independent runtime/security, trust, PKI, disaster recovery and fleet
+validation remain open. Sprint 11 is ready only for explicitly authorized source
+recovery/governance; it has not started. No PR, merge, deployment, real-source
+activation or ETL workload execution occurred.
