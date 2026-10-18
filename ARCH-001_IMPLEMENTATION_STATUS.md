@@ -279,3 +279,23 @@ and independent runtime/security, trust, PKI, disaster recovery and fleet
 validation remain open. Sprint 11 is ready only for explicitly authorized source
 recovery/governance; it has not started. No PR, merge, deployment, real-source
 activation or ETL workload execution occurred.
+
+
+## Sprint 11 — source recovery and governance checkpoint
+
+Documentation-only [Sprint 11 report](docs/verification/arch-etl-001-v16-r1/sprint11/REPORT.md)
+continues from commit `7b3b3f03bab6f935644d6003973bc6bff60a50ad`.
+Status: DELIVERED_WITH_SOURCE_BLOCKERS. A bounded repository/history, GitHub
+issue/PR/code and accessible-record search recovered zero original approved IMP
+definitions or approval revisions; 62 remain SOURCE_NOT_RECOVERED (54 titles
+missing, eight owner-prompt titles unverified against originals). The detailed
+original Sprint 11–42 proposal also remains unavailable. All sixteen NEW
+candidates are UNRESOLVED_SOURCE_MISSING pending source comparison.
+
+The conditional Sprint 12–42 plan now maps all sixteen P0–P2 readiness gaps,
+all eight audit findings, known title-only IMPs and NEW candidates to decision
+and evidence gates. No future implementation is approved by this status entry.
+Pentaho RT-001–RT-020 remain NOT RUN, real target acceptance and production
+readiness remain blocked, and Sprint 12 has not started. No application code,
+architecture baseline, migration, prior verification evidence, PR, merge,
+deployment, real-source activation or ETL workload was changed/executed.
