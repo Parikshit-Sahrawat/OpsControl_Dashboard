@@ -1,0 +1,14 @@
+# Credential and network prerequisites for a future witness
+
+**No live connection is authorized by this document.** The owner must identify the target host/route, installed build, approved collection interface, read-only account or managed credential reference, evidence handling location and the precise RT group authorized for each connection. [GOV-06](../sprint12/APPROVED_OWNER_DECISIONS.md) assigns CA, agent identity, renewal, revocation and private-network trust to the provider deployment team; production CA/private-route evidence remains unavailable.
+
+| Boundary | Required owner-supplied input | Least authority / negative check | Evidence without secrets |
+|---|---|---|---|
+| Customer resource → agent/process observation | Host ID, OS/build, permitted metadata/log paths, service account and installation owner | OS rights to observe only; no launch, control, script invocation or arbitrary log export | Host identity/hash, permission snapshot, redacted path and native timestamp sample |
+| Agent/collector → OpsControl | Authenticated agent/collector/customer/source/method IDs and approved generation | Credential cannot select new customer; stale fence/revoked token denied | Redacted identity, approval revision and receipt/fence IDs |
+| Carte/Server → provider network | Exact FQDN, private route, IP/CIDR, port 443, TLS chain, allowed endpoints and DNS owner | Independent local and configuration egress allowlists; reject mixed/out-of-scope DNS and non-GET/control paths | Certificate chain fingerprint, pinned destination, denied-path record and bounded response hash |
+| Pentaho account → read-only native surface | Approved read-only principal and exact method/endpoint/export | Deny start/stop/remove, schedule mutation, repository write and privileged admin APIs | Role/ACL record, endpoint-by-endpoint permission check without password |
+| Credential provider → collector | Managed secret reference, rotation/revocation owner and test window | No pasted secret, URL credential, command-line password or unredacted header | Reference identifier and rotation revision only; redact provider errors |
+| Witness → evidence store | Approved location, retention/classification, legal-hold and reviewer | Customer-scoped access, integrity hashes and deletion policy; no raw sensitive output in Git | SHA-256, immutable reference, capture time/offset, witness/sign-off identity |
+
+The existing [egress code](../../../../backend/app/worker/egress.py) enforces HTTPS, port 443, exact hostname, CIDR and DNS/IP validation; [credential resolution](../../../../backend/app/worker/credentials.py) uses a secret reference and rejects environment-backed credentials in production. Code and fixtures do not prove target firewall, production CA, private connectivity or actual Pentaho account permissions. Do not request passwords, tokens or private keys in this package.
