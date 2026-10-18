@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """Owned disposable V1.6 PostgreSQL checks. Never touches configured demo volumes."""
-import json, os, secrets, socket, subprocess, tempfile, time
+import json
+import os
+import secrets
+import socket
+import subprocess
+import tempfile
+import time
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
@@ -278,6 +284,10 @@ try:
         root / "backend",
     )
     (out / "ownership.txt").write_text(output + "\n")
+    if os.getenv("V16_SPRINT13_RECOVERY") == "1":
+        env["V16_OWNED_CONTAINER"] = name
+        env["V16_EVIDENCE_DIR"] = str(out)
+        print(run([python, "-m", "scripts.sprint13_recovery_probe"], root / "backend"))
     if os.getenv("V16_API_ACCEPTANCE") == "1":
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
