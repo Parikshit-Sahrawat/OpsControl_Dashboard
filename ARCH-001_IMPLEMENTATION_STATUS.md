@@ -291,6 +291,8 @@ definitions or approval revisions; 62 remain SOURCE_NOT_RECOVERED (54 titles
 missing, eight owner-prompt titles unverified against originals). The detailed
 original Sprint 11–42 proposal also remains unavailable. All sixteen NEW
 candidates are UNRESOLVED_SOURCE_MISSING pending source comparison.
+The owner subsequently confirmed both original documents are currently
+unavailable; the Sprint 10 roadmap remains a conditional planning proposal.
 
 The conditional Sprint 12–42 plan now maps all sixteen P0–P2 readiness gaps,
 all eight audit findings, known title-only IMPs and NEW candidates to decision

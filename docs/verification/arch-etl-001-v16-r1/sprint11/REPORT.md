@@ -7,6 +7,7 @@
 ## Package
 
 - [Source recovery](SOURCE_RECOVERY.md): repository, GitHub and mounted-record searches, results and exact owner materials needed.
+- [Owner-input register](OWNER_INPUT_REGISTER.md): owner-confirmed unavailable sources and decisions reserved for later approval.
 - [Improvement register](IMPROVEMENT_REGISTER.md): 62 unique IDs with verified source status and title-only mappings where supplied.
 - [NEW reconciliation](NEW_IMPROVEMENT_RECONCILIATION.md): 16 source-blocked dispositions with specific existing overlap and conditional exits.
 - [Architecture governance](ARCHITECTURE_GOVERNANCE.md): authority precedence, protected invariants and pending owner decisions.

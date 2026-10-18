@@ -26,6 +26,10 @@ Baseline local HEAD and fetched remote both matched the required Sprint 10 SHA. 
 
 The [retained validator](validate_docs.py.txt) checks: 62 distinct IMP rows/tokens, 16 distinct NEW rows/tokens and exactly one source-grounded disposition each, all 16 gap IDs and AUD-01–AUD-08, all Sprint 12–42 headings and required scoped fields, local Markdown links/paths/anchors, expected nine documents, exact unchanged approved architecture and Sprint 09/10 evidence hashes, and diff scope limited to this package and permitted root status. Its [result](validation-results.json) records actual counts. `git diff --check`, staged diff checks, remote SHA verification and clean-tree check accompany delivery.
 
+After the owner's source-availability clarification, validation also requires the explicit [owner-input register](OWNER_INPUT_REGISTER.md) alongside the nine mandatory documents. This follow-up repeats only documentation checks, not the completed source search or application gates.
+
+Follow-up documentation validation: **30 passed, zero failed, zero skipped**. The two original source records remain unavailable by owner confirmation; their missing text and approval history are not supplied by this check.
+
 Documentation-only sprint: **no backend/frontend unit, PostgreSQL, authenticated HTTP, browser, lint/build, migration or runtime acceptance suite was executed**. [Sprint 09 report](../sprint09/REPORT.md) and [Sprint 10 report](../sprint10/REPORT.md) retain prior controlled results; inherited results are not counted as Sprint 11 passes. Historical controlled performance, screenshots, provider mocks and fixture acceptance do not become production evidence.
 
 | Genuine Pentaho case | Status |

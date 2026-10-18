@@ -4,6 +4,8 @@
 
 **Zero of 62 original improvement definitions recovered; 62 SOURCE_NOT_RECOVERED.** Eight known titles have prompt-level provenance only, not an original approved record. The original detailed Sprint 11–42 roadmap and its approval revision were not recovered. Searches ended once independent avenues were exhausted; absence in accessible records is not proof of nonexistence.
 
+The owner subsequently confirmed that both original documents are currently unavailable and explicitly directed that the Sprint 10 roadmap remain a conditional proposal. This is an availability confirmation, not recovery of the requirement text, source revision or approval record. The [owner-input register](OWNER_INPUT_REGISTER.md) records the missing authority and later decisions; no searches were repeated in this follow-up.
+
 | Surface | Exact bounded method | Result and authority limit |
 |---|---|---|
 | Baseline and remote | `git fetch origin feat/arch-etl-001-v16-r1`; compare `FETCH_HEAD`, local HEAD, requested baseline; clean tree | Both HEADs `7b3b3f03bab6f935644d6003973bc6bff60a50ad`; expected commit is HEAD, so no unexplained newer commits. |

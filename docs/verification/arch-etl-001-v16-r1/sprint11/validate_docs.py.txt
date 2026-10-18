@@ -3,7 +3,9 @@ import re,json,hashlib,subprocess,sys
 root=Path('/workspace/OpsControl_Dashboard');p=root/'docs/verification/arch-etl-001-v16-r1/sprint11';baseline='7b3b3f03bab6f935644d6003973bc6bff60a50ad';checks=[]
 def ck(label,ok,details=None):checks.append({'check':label,'pass':bool(ok),'details':details})
 required=['REPORT','SOURCE_RECOVERY','IMPROVEMENT_REGISTER','NEW_IMPROVEMENT_RECONCILIATION','ARCHITECTURE_GOVERNANCE','ROADMAP','PRODUCTION_READINESS','AUDIT_FINDINGS','VERIFICATION']
-md=sorted(x.stem for x in p.glob('*.md'));ck('nine required documents',md==sorted(required),md)
+md=sorted(x.stem for x in p.glob('*.md'));ck('nine required documents plus explicit owner-input register',md==sorted(required+['OWNER_INPUT_REGISTER']),md)
+owner_rows=[x for x in (p/'OWNER_INPUT_REGISTER.md').read_text().splitlines() if re.match(r'^\| OI-\d{2} \|',x)]
+ck('ten explicit owner inputs with unavailable sources and pending approvals',[x.split('|')[1].strip() for x in owner_rows]==[f'OI-{i:02}' for i in range(1,11)] and all('Confirmed unavailable' in x for x in owner_rows[:3]))
 def table_rows(name,pat):return [x for x in (p/name).read_text().splitlines() if re.match(pat,x)]
 imp=table_rows('IMPROVEMENT_REGISTER.md',r'^\| IMP-\d{3} \|'); ids=[x.split('|')[1].strip() for x in imp]
 ck('62 unique IMP first-column rows',ids==[f'IMP-{i:03}' for i in range(1,63)],len(ids));ck('62 exact IMP tokens only once in register',re.findall(r'\bIMP-\d{3}\b',(p/'IMPROVEMENT_REGISTER.md').read_text())==ids)
