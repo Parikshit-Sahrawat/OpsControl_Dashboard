@@ -1,0 +1,35 @@
+{
+  "test_id": "RT-LAB-011C",
+  "timestamp_utc": "2026-10-18T12:54:02.170208+00:00",
+  "native_xml_observations": [
+    {
+      "filename": "RT-LAB-010O-final-job-status.xml",
+      "expected": "SUCCESS",
+      "root": "jobstatus",
+      "status": "Finished",
+      "native_result": "Y",
+      "native_errors": "0",
+      "native_exit_status": "0"
+    },
+    {
+      "filename": "RT-LAB-010D-job-status.xml",
+      "expected": "FAILED",
+      "root": "jobstatus",
+      "status": "Finished (with errors)",
+      "native_result": "N",
+      "native_errors": "1",
+      "native_exit_status": "0"
+    }
+  ],
+  "static_parser_checks": {
+    "missing_errors_default_zero": true,
+    "inventory_requires_server_status": true,
+    "inventory_searches_job_status": true,
+    "native_result_success_parsed": false,
+    "strict_base64_decode": true
+  },
+  "opscontrol_source_modified": false,
+  "carte_api_called": false,
+  "etl_execution_performed": false,
+  "test_result": "PASS"
+}
