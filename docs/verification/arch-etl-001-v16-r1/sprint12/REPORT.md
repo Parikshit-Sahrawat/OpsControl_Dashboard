@@ -1,0 +1,28 @@
+# Sprint 12 — trust, shared-resource governance and bounded verification
+
+**Status: DELIVERED_WITH_IMPLEMENTATION_GAP; production NOT READY.** Baseline was the clean, synchronized `feat/arch-etl-001-v16-r1` at `ee650df4427be1b37b02b8a53c0b22171f65a38a`. Approved [ARCH-001 V1.6](../../../ARCH_001_V16.md) and [ARCH-ETL-001 V1.6](../../../architecture/ARCH_ETL_001_V16.md) remain unchanged. Historical IMP-001–IMP-062 definitions and approval records remain **SOURCE_NOT_RECOVERED**, as the owner confirmed in Sprint 11; the original detailed Sprint 11–42 plan also remains unavailable. [Sprint 11 governance](../sprint11/REPORT.md) and conditional roadmap are evidence, not newly approved architecture.
+
+## Outcome
+
+- [Owner decisions](APPROVED_OWNER_DECISIONS.md) record GOV-03 one-provider ownership, GOV-04 canonical shared-resource policy, GOV-06 provider CA/network ownership, GOV-05 mandatory future real Pentaho acceptance, and GOV-07 configurable recovery targets. Operational principles and seven release gates are recorded separately from implementation proof. Initial P1–P4 alert timing is **proposed configurable internal defaults**, not a customer SLA. The inventory p95 <500 ms threshold is an initial engineering target, not a measured achievement.
+- [Trust model](DEPLOYMENT_TRUST_MODEL.md) identifies eight source-to-user and notification boundaries, actual located controls and unverified CA/network/deployment assumptions. [Threat model](THREAT_MODEL.md) and [authorization map](SHARED_RESOURCE_AUTHORIZATION.md) use the owner's one shared VM scenario.
+- **Major finding:** current `MonitoringResource` and VM ownership bind one Organization; the resource's VM ID is unique and dependency FKs require one customer. The approved GOV-04 requirement that A and B view one canonical shared VM is therefore **not implemented**. A second VM/resource identity or relaxed FK would be an unsafe workaround. An owner-reviewed additive design and migration-preservation plan are prerequisites for implementation in a later authorized sprint.
+- [Focused test matrix](TEST_MATRIX.md): eight owned disposable PostgreSQL tests passed. They prove existing single-customer denials, explicit-scope behavior, method identity refusal, cross-customer FK and fencing, **not** the blocked shared-VM positive case or full authenticated HTTP acceptance. Test fixture is the only executable file added; runtime, migration and deployment code were not changed.
+- [OC-IMP V2.0 baseline](OC_IMP_V20_BASELINE.md): **18 stable proposed IDs, zero individually approved**. All NEW-01–NEW-16 remain traceable; two additional proposed entries cover canonical shared association and governed relationship/incident/SLO evidence. Original IMP overlap cannot be finally resolved without its source register. [Readiness](PRODUCTION_READINESS.md) carries all 6 P0, 8 P1 and 2 P2 gaps plus AUD-01–AUD-08.
+
+## Owner input and approval queue
+
+| ID | Exact deferred decision/input | Why it matters | Current authority |
+|---|---|---|---|
+| OI-01 | Original approved IMP-001–IMP-062 register, revision and approval record if later recovered; original detailed Sprint 11–42 roadmap if recovered | Resolve historical overlap without inventing titles/definitions or silently changing priority | Missing; all historical definitions SOURCE_NOT_RECOVERED. Eight known titles remain titles only. |
+| OI-02 | Approve or decline each proposed OC-IMP requirement after review; decide revision/priority/owner | Baseline creation approval is not individual requirement approval | All 18 PROPOSED_OWNER_REVIEW. |
+| OI-03 | Approve a specific shared-resource association, owner, field-visibility, evidence-attribution and migration design | Required to represent one VM in two customer views while preserving identity, holds and source fence | GOV-04 policy approved; implementation design undecided. |
+| OI-04 | Decide legacy telemetry lacking method ID: transition policy and treatment of shared-source ambiguity | Current compatibility path accepts absent method ID; no basis to silently attribute shared evidence | AUD-06 open. |
+| OI-05 | Provide actual provider network topology, CA/issuer, target agent/collector build, trust routes and security reviewer | Code/fixtures do not establish production PKI or private-network behavior | GOV-03/06 assign owner, not evidence. |
+| OI-06 | Approve recovery data policy and target failure domains/site; independently witness populated restoration and DR | GOV-07 targets cannot be stated as achieved RPO/RTO | Policy targets approved; measured recovery absent. |
+| OI-07 | Authorize later real Pentaho installations, credentials, witness and all RT-001–RT-020 cases | Fixture adapter tests cannot certify installed builds | GOV-05 intent only; **NOT RUN**. |
+| OI-08 | Approve alert support-window definition and per-customer contractual overrides, if any; representative inventory benchmark workload | Proposed escalation defaults and p95 target need operational interpretation | Internal defaults proposed; target conditional. |
+
+## Release and continuation boundary
+
+The seven mandatory gates—functional UAT; security/customer isolation; real integration; telemetry reliability; performance/capacity; recovery/operations; independent evidence-based sign-off—are **not passed** by this sprint. P0-03 shared canonical association is the earliest architecture/implementation blocker. P0-01/02/04/05/06 need separately approved real environments or target evidence. All RT-001–RT-020 remain **NOT RUN — REAL INSTALLED-BUILD ACCEPTANCE OUTSTANDING**. No Sprint 13 work, real source activation, workload execution, PR, merge or deployment occurred. Exact commands, test limitations and document checks are in [VERIFICATION.md](VERIFICATION.md).

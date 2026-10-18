@@ -1,0 +1,19 @@
+# Sprint 12 actual verification and limits
+
+Preflight: `/workspace/OpsControl_Dashboard`, branch `feat/arch-etl-001-v16-r1`; local HEAD and fetched/remote branch were `ee650df4427be1b37b02b8a53c0b22171f65a38a`; initial worktree clean. The [Sprint 10](../sprint10/REPORT.md) and [Sprint 11](../sprint11/REPORT.md) reports, improvement/source, readiness and audit registers were consulted without changing their evidence. Test environment was this isolated workspace, Python 3.12, owned ephemeral `postgres:17-alpine` container with random name/localhost port and no shared volume; harness `finally` removes its container and volume. No vendor/production environment accessed.
+
+## Executed controlled tests
+
+```sh
+V16_TEST_TARGETS=tests.test_sprint12_shared_trust,tests.test_sprint08_rbac.Sprint08RBAC.test_one_customer_sql_scope,tests.test_sprint08_rbac.Sprint08RBAC.test_no_selection_is_empty,tests.test_sprint08_rbac.Sprint08RBAC.test_deny_overrides_limit_and_inherited_allow,tests.test_pipeline_ownership_v16.OwnershipTests.test_postgres_rejects_cross_customer_method_fk,tests.test_pipeline_ownership_v16.OwnershipTests.test_fence_itself_rejects_same_owner_with_live_lease V16_EVIDENCE_DIR=/tmp/opscontrol-sprint12-owned-final5 python -u scripts/v16-acceptance.py
+```
+
+Result: **8 passed, 0 failed, 0 skipped within selection**, in 1.311 s (test execution). Harness status `PASS`; owned PostgreSQL, migration head `0037_access_boundaries`, populated V1.5 upgrade, empty downgrade/upgrade, populated downgrade refusal, schema drift false. The harness reports `critical_race_41_42: NOT_RUN_IN_FOCUSED_SELECTION`, `vendor_environments_accessed: false`, `production_modified: false`. Captured local evidence: `/tmp/opscontrol-sprint12-owned-final5/ownership.txt` and `report.json` (not version-controlled). SQLAlchemy emitted a dependency deprecation warning for `datetime.utcnow`, unrelated to this fixture. Earlier development fixture attempts failed on flush ordering/exception expectations and were corrected before this final run; no failures were suppressed.
+
+The new test calls scoped ORM and resource inventory/detail **route handlers directly** inside a controlled session. It does not send authenticated HTTP requests; the selected existing RBAC and ownership tests are PostgreSQL-level. Thus it does not claim HTTP transport, shared-resource positive, collector credential, target CA/network, browser or installed-platform acceptance. No broad app suite or genuine Pentaho RT case was run.
+
+## Documentation and change checks
+
+Executed a Python inline check over the Sprint 12 Markdown files: exact nine required filenames; every local Markdown link target exists; Sprint 11's 62 sequential historical IMP rows each retain `SOURCE_NOT_RECOVERED`; 18 sequential, unique proposed OC-IMP IDs; references to all 16 NEW, all 6/8/2 P0/P1/P2 gaps, all eight AUD findings, and GOV-03/04/05/06/07; explicit proposed-approval and RT boundary. **PASS** (`PASS: 9 required docs; local links; 62 historical IDs/source states; 18 proposed IDs; NEW 16; P0/P1/P2 6/8/2; AUD 8; GOV 5; RT boundary`). This checks path existence, not external URLs or semantic correctness of every citation.
+
+Executed `backend/.venv/bin/black --check backend/tests/test_sprint12_shared_trust.py`, `backend/.venv/bin/ruff check backend/tests/test_sprint12_shared_trust.py`, `backend/.venv/bin/python -m py_compile backend/tests/test_sprint12_shared_trust.py`, and `git diff --check`: **all PASS**. Scope review before commit shows only nine new Sprint 12 documents and one new test fixture; approved architecture, prior sprint evidence, runtime, migration and deployment files were not changed. Remote baseline check: `git ls-remote origin refs/heads/feat/arch-etl-001-v16-r1` returned `ee650df4427be1b37b02b8a53c0b22171f65a38a`. The final staged diff/remote SHA will be checked separately before/after push.
