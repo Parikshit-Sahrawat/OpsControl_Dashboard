@@ -13,13 +13,13 @@ async function login(username) {
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });
   await login("test-reader");
-  if (await page.getByRole("button", { name: "Access Management" }).count()) {
+  if (await page.getByRole("button", { name: "Employees" }).count()) {
     throw new Error("Viewer was offered platform administration navigation");
   }
   await page.getByRole("button", { name: "Sign out" }).click();
   await page.getByRole("button", { name: "Sign in" }).waitFor();
   await login("test-admin");
-  const nav = page.getByRole("button", { name: "Access Management" });
+  const nav = page.getByRole("button", { name: "Employees" });
   await nav.waitFor();
   await nav.click();
   await page.getByRole("heading", { name: "Access Management" }).waitFor();

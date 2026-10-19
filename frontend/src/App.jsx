@@ -26,6 +26,7 @@ import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
 import PipelineWorkspace from "./pipelines/PipelineWorkspace";
 import DomainReports from "./pages/DomainReports";
+import { canOpenSection, readSectionRoute, sectionHash } from "./navigation";
 
 function mapDetail(execution, investigation, evidence) {
   const fmt = (value) =>
@@ -123,12 +124,16 @@ function mapDetail(execution, investigation, evidence) {
 
 export default function App({ user }) {
   const [active, setActive] = useState(() =>
-      window.location.hash.startsWith("#/pipelines/") &&
+      readSectionRoute(window.location.hash, user)?.[0] ||
+      (window.location.hash.startsWith("#/pipelines/") &&
       canNavigate(user, "Data Pipeline Monitoring")
         ? "Data Pipeline Monitoring"
         : Object.keys(NAV_PERMISSIONS).find((page) =>
             canNavigate(user, page),
-          ) || "Unauthorized",
+          ) || "Unauthorized"),
+    ),
+    [navSection, setNavSection] = useState(() =>
+      readSectionRoute(window.location.hash, user)?.[1] || "",
     ),
     [jobs, setJobs] = useState([]),
     [details, setDetails] = useState({}),
@@ -307,25 +312,43 @@ export default function App({ user }) {
   };
   useEffect(() => {
     const route = () => {
-      if (
+      const section = readSectionRoute(window.location.hash, user);
+      if (section) {
+        setActive(section[0]);
+        setNavSection(section[1]);
+      } else if (
         window.location.hash.startsWith("#/pipelines/") &&
         canNavigate(user, "Data Pipeline Monitoring")
-      )
+      ) {
         setActive("Data Pipeline Monitoring");
+        setNavSection("");
+      } else if (!window.location.hash) {
+        setActive(Object.keys(NAV_PERMISSIONS).find((page) => canNavigate(user, page)) || "Unauthorized");
+        setNavSection("");
+      }
     };
     window.addEventListener("hashchange", route);
-    return () => window.removeEventListener("hashchange", route);
+    window.addEventListener("popstate", route);
+    return () => {
+      window.removeEventListener("hashchange", route);
+      window.removeEventListener("popstate", route);
+    };
   }, [user]);
   const navigate = (page, selection = {}) => {
     if (!canNavigate(user, page)) return;
-    if (page === "Data Pipeline Monitoring")
+    if (selection.section && !canOpenSection(user, page, selection.section)) return;
+    const childHash = selection.section && sectionHash(page, selection.section);
+    if (childHash)
+      window.location.hash = childHash.slice(1);
+    else if (page === "Data Pipeline Monitoring")
       window.location.hash = "/pipelines/inventory";
-    else if (window.location.hash.startsWith("#/pipelines/"))
-      window.history.replaceState(
+    else if (window.location.hash)
+      window.history.pushState(
         null,
         "",
         window.location.pathname + window.location.search,
       );
+    setNavSection(selection.section || "");
     setTarget(selection);
     setActive(page);
     setSelectedId(null);
@@ -373,6 +396,7 @@ export default function App({ user }) {
           setOrganizationIds(selected);
         }}
         active={active}
+        activeSection={navSection}
         onChange={navigate}
         environment={environment}
         onEnvironmentChange={(value) => {
@@ -439,12 +463,14 @@ export default function App({ user }) {
         )}
         {active === "Access Management" &&
           hasPermission(user, "access.view") && (
-            <AccessManagement key={user.authorization_revision} user={user} />
+            <AccessManagement key={scopeKey} user={user} section={navSection} onSectionChange={(section) => navigate("Access Management", { section })} />
           )}
         {active === "Resource Management" && (
           <ResourceManagement
-            key={user?.authorization_revision}
+            key={scopeKey}
             user={user}
+            section={navSection}
+            onSectionChange={(section) => navigate("Resource Management", { section })}
             onCustomerCreated={() => setCustomerRefresh((v) => v + 1)}
           />
         )}

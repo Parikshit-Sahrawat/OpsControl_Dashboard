@@ -10,7 +10,7 @@ try{
   await page.getByRole("textbox",{name:"Username"}).fill("test-admin");
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button",{name:"Sign in"}).click();
-  await page.getByRole("button",{name:"Resource Management",exact:true}).click();
+  await page.getByRole("button",{name:"Data Sources / Resources",exact:true}).click();
   await page.getByRole("tab",{name:"API Endpoints",exact:true}).click();
   await page.locator(".resource-name-link").first().click();
   await page.getByRole("button",{name:"Open legacy monitoring configuration",exact:true}).click();

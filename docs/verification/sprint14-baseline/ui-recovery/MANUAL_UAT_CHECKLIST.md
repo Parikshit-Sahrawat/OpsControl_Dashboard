@@ -15,3 +15,11 @@ Use an isolated synthetic UAT database and the feature-branch UI. Record browser
 - [ ] Repeat a representative create/investigate action as a read-only user; confirm the control is unavailable and a direct forbidden backend request still fails.
 
 Record defects separately with exact reproduction. Pentaho RT-001–RT-020 remain NOT RUN without separately authorized real installed-build acceptance. Do not sign off production readiness from this UI UAT.
+
+## PR #39 owner-approved child destinations — pending independent UAT
+
+- [ ] Open Resource Management → Organizations directly from desktop and mobile sidebar; confirm customer **Organizations** are shown, not provider **Departments**, and only authorized users see the header Create Organization action. Search, filter, pagination and edit a permitted record.
+- [ ] Open Resource Management → Collectors directly; select an existing collector, inspect its configured method list, add two independent methods, edit/disable/remove where authorized and confirm revision-conflict feedback. An enabled configuration must not read as verified health.
+- [ ] Open Access Management → Organisational Access; inspect customer grants, direct/inherited origin where provided, effective access, LIMIT/DENY/DELEGATE boundaries and audit. Confirm a read-only user cannot mutate grants. Selecting all listed customers must not create ALL authority.
+- [ ] For each child, test refresh, deep link, Back/Forward, active highlight, keyboard focus, 390/768/1366 px overflow and scope switching while requests or details are open. Check direct forbidden API requests still fail.
+- [ ] Compare the new synthetic screenshots in [implementation evidence](IMPLEMENTATION_EVIDENCE.md) with independent UAT observations. Record discrepancies and sign-off separately.

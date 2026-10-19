@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { canNavigate, administrationPage } from "../permissions";
+import { canOpenSection } from "../navigation";
 import ThemeToggle from "./ThemeToggle";
 import InAppNotifications from "./InAppNotifications";
 import NavIcon from "./NavIcon";
@@ -13,12 +14,23 @@ const sections = [
     ["API Endpoint Monitoring", "API Endpoints"],
     ["Alerts", "Alerts"], ["Incidents", "Incidents"], ["Reports", "Reports"],
   ] },
-  { name: "Resource Management", items: [["Resource Management", "Resource Management"]] },
-  { name: "Access Management", items: [["Access Management", "Access Management"]] },
+  { name: "Resource Management", items: [
+    ["Resource Management", "Organizations", "organizations"],
+    ["Resource Management", "Data Sources / Resources", "resources"],
+    ["Resource Management", "Collectors", "collectors"],
+  ] },
+  { name: "Access Management", items: [
+    ["Access Management", "Employees", "Employees"],
+    ["Access Management", "Departments", "Departments"],
+    ["Access Management", "Roles & Permissions", "Roles & Permissions"],
+    ["Access Management", "Organisational Access", "Organisational Access"],
+    ["Access Management", "Access Audit", "Access Audit"],
+  ] },
 ];
 
 export default function TopNav({
   active,
+  activeSection,
   onChange,
   organizations = [],
   organizationIds = [],
@@ -138,18 +150,23 @@ export default function TopNav({
           {collapsed ? "→" : "←"}
         </button>
         {sections.map((section) => {
-          const visible = section.items.filter(([key]) => canNavigate(user, key));
+          const visible = section.items.filter(([key, , child]) =>
+            child ? canOpenSection(user, key, child) : canNavigate(user, key));
           return visible.length ? (
             <div className="nav-group" key={section.name}>
               <span className="nav-section-label">{section.name}</span>
-              {visible.map(([key, label]) => (
+              {visible.map(([key, label, child]) => (
                 <button
-                  key={key}
-                  aria-label={key}
+                  key={child || key}
+                  aria-label={child ? label : key}
                   title={collapsed ? label : undefined}
-                  aria-current={active === key ? "page" : undefined}
-                  className={active === key ? "nav-button active" : "nav-button"}
-                  onClick={() => { onChange(key); setMobileOpen(false); }}
+                  aria-current={active === key && (!child || activeSection === child) ? "page" : undefined}
+                  className={active === key && (!child || activeSection === child) ? "nav-button active" : "nav-button"}
+                  onClick={() => {
+                    onChange(key, child ? { section: child } : {});
+                    if (mobileOpen) mobileToggle.current?.focus();
+                    setMobileOpen(false);
+                  }}
                 >
                   <NavIcon name={key} />
                   <span>{label}</span>

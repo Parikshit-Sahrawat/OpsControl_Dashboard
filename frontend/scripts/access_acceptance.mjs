@@ -357,14 +357,14 @@ try {
   await admin.locator(".access-table tbody tr").first().waitFor();
   await shot(admin, "departments-light");
   checks.push(
-    "All four supported administration sections render backend data in both themes; Organization Access remains absent",
+    "Employees, Departments, Roles & Permissions and Access Audit render backend data in both themes; Organisational Access is covered by the UI recovery browser check",
   );
   const noc = await login(fixture.noc_username);
   await navigate(noc, "Overview");
   assert.equal(
     await noc
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("button", { name: "Access Management", exact: true })
+      .getByRole("button", { name: "Employees", exact: true })
       .count(),
     0,
   );
@@ -379,7 +379,7 @@ try {
   assert.equal(
     await noc
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("button", { name: "Access Management", exact: true })
+      .getByRole("button", { name: "Employees", exact: true })
       .count(),
     0,
   );

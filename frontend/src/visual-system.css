@@ -246,12 +246,17 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .nav-group {display:grid;gap:4px;min-width:0}
 .nav-group + .nav-group {margin-top:12px}
 .nav-group .nav-section-label {padding:0 12px 5px;text-transform:uppercase}
+.nav-group:has(.nav-button.active) .nav-section-label {color:var(--accent)}
 .nav-group .nav-button {width:100%}
 .page-header-actions {display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px;min-width:0}
 .resource-management-v2 .table-wrap table,.access-table table {font-size:12px}
 .resource-management-v2 .table-wrap th,.resource-management-v2 .table-wrap td,.access-table th,.access-table td {padding:9px 8px;line-height:1.4}
 .resource-management-v2 .table-wrap th,.access-table th {position:sticky;top:0;background:var(--surface);z-index:1}
 .resource-management-v2 .table-wrap td small {font-size:10px;line-height:1.4}
+.resource-layout-embedded {grid-template-columns:minmax(0,1fr)}
+.resource-page-embedded .resource-customer-filter {margin-bottom:10px}
+.resource-page-embedded > .form-field {max-width:360px;margin-bottom:12px}
+.resource-page-embedded .resource-main {min-width:0}
 .mobile-nav-toggle {display:none}
 .resource-management-v2 > .heading-actions {flex-wrap:wrap;margin:0 0 14px;gap:6px}
 .resource-management-v2 > .heading-actions [role="tab"] {padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--muted);font:inherit;font-size:12px;cursor:pointer}

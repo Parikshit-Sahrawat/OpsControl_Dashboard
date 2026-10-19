@@ -23,3 +23,9 @@ Keep loading, zero-scope, empty, partial/stale, error and forbidden states disti
 ## Migration rule
 
 Update the shared shell and one module at a time, retaining current components, endpoints and permissions until regression evidence exists. Keep legacy compatibility surfaces reachable while checking their actual usage. Do not remove functions or change backend data ownership for visual cleanup. Backend changes are **not established as necessary** by this audit; a contract gap needs a reproduction, route/schema review and separate owner authorization before work.
+
+## PR #39 approved child destinations
+
+The owner approved three independently selectable children on the existing grouped sidebar: **Resource Management → Organizations**, **Resource Management → Collectors**, and **Access Management → Organisational Access**. `TopNav.jsx` uses `navigation.js` for permission-aware child visibility and stable child hashes. `UnifiedResourceManagement.jsx` mounts the existing canonical Organization and Collector Control lists from `ResourceManagementV2.jsx`; it does not create parallel customer or collector contracts. `AccessManagement.jsx` uses the existing `/api/v1/access/customer-grants` read contract, effective-access detail and scope-boundary component. Customer Organizations remain separate from provider Departments.
+
+The child hashes survive refresh and browser Back/Forward. Other non-pipeline top-level pages still use the existing in-memory page keys. Their stable direct URLs require a separate architecture/navigation decision. The six operational pipeline hashes are unchanged. This approval did not add Collection Methods as a separate route or imply runtime-verified monitoring from an enabled collector configuration.

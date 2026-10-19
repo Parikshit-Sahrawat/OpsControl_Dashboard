@@ -29,7 +29,7 @@ try {
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
   await page
-    .getByRole("button", { name: "Resource Management", exact: true })
+    .getByRole("button", { name: "Data Sources / Resources", exact: true })
     .click();
   await page
     .getByText("Imported discovery inventory", { exact: true })

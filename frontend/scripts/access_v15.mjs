@@ -72,7 +72,7 @@ try {
   await login("arch001-admin");
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Access Management", exact: true })
+    .getByRole("button", { name: "Employees", exact: true })
     .click();
   assert.equal(
     await page.getByLabel("Global environment", { exact: true }).count(),
@@ -255,7 +255,7 @@ try {
   assert.equal(
     await page
       .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("button", { name: "Access Management", exact: true })
+      .getByRole("button", { name: "Employees", exact: true })
       .count(),
     0,
   );

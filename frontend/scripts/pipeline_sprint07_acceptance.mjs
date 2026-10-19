@@ -471,7 +471,7 @@ try {
     .click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Resource Management", exact: true })
+    .getByRole("button", { name: "Data Sources / Resources", exact: true })
     .click();
   await page.getByRole("tab", { name: "Organizations", exact: true }).click();
   await page
@@ -480,7 +480,7 @@ try {
     .waitFor();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Access Management", exact: true })
+    .getByRole("button", { name: "Employees", exact: true })
     .click();
   await page
     .getByRole("navigation", { name: "Access Management sections" })

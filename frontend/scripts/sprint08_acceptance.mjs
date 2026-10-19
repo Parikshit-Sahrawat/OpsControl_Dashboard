@@ -133,7 +133,7 @@ try {
   );
   await delegate
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Access Management", exact: true })
+    .getByRole("button", { name: "Employees", exact: true })
     .click();
   await delegate
     .getByRole("navigation", { name: "Access Management sections" })

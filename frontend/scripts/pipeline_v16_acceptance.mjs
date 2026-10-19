@@ -42,7 +42,7 @@ const steps = [
 async function navigate(target = page) {
   await target
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Resource Management", exact: true })
+    .getByRole("button", { name: "Data Sources / Resources", exact: true })
     .click();
   await target
     .getByRole("tab", { name: "Data Pipelines", exact: true })
