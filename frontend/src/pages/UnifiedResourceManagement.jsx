@@ -10,6 +10,7 @@ import MonitoringSetup from "./MonitoringSetup";
 import EventDelivery from "./EventDelivery";
 import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import CollectorControl from "./CollectorControl";
+import ResourceManagementV2 from "./ResourceManagementV2";
 import DomainParameters, { Field } from "./DomainParameters";
 const base = "/api/v1/unified";
 const domainNames = {
@@ -97,8 +98,8 @@ function Modal({ title, onClose, children, focus = true }) {
     </div>
   );
 }
-export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
-  const [area, setArea] = useState("resources"),
+export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange }) {
+  const [area, setArea] = useState(section || "resources"),
     [domain, setDomain] = useState("VM"),
     [customers, setCustomers] = useState([]),
     [customer, setCustomer] = useState(""),
@@ -121,11 +122,30 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
     [parents, setParents] = useState([]),
     [legacyConfiguration, setLegacyConfiguration] = useState(false),
     [busy, setBusy] = useState(false);
-  useEffect(()=>{setAdministrativeCustomers(customer?[customer]:customers.map(c=>c.id));return()=>setAdministrativeCustomers(null);},[customer,customers]);
+  useEffect(()=>{
+    // The canonical Organization and Collector lists use the explicit global
+    // customer selection. The legacy resource tabs retain their own filter.
+    setAdministrativeCustomers(["organizations", "collectors"].includes(area)
+      ? null : customer ? [customer] : customers.map(c => c.id));
+    return () => setAdministrativeCustomers(null);
+  },[area,customer,customers]);
   const seq = useRef(0);
   const control = (path, method, payload, options={}) => scopedControl(path, method, payload, {...options,customerIds:customer?[customer]:customers.map(c=>c.id)});
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
+  useEffect(() => {
+    if (["organizations", "resources", "collectors"].includes(section)) {
+      setArea(section);
+      setSelected(null);
+      setCollector(null);
+      setSource(null);
+    }
+  }, [section]);
+  const chooseArea = (next) => {
+    setArea(next);
+    setSelected(null);
+    onSectionChange?.(["organizations", "resources", "collectors"].includes(next) ? next : "");
+  };
   useEffect(() => {
     let live = true;
     fetchAuthorizedCustomers()
@@ -215,7 +235,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
   };
   return (
     <div className="resource-management-v2 unified-resources">
-      <div className="page-heading">
+      {!["organizations", "collectors"].includes(area) && <div className="page-heading">
         <div>
           <h1>Resource Management</h1>
           <p>
@@ -223,10 +243,15 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             endpoint probes.
           </p>
         </div>
-        <button className="filter-button" onClick={refresh}>
-          Refresh
-        </button>
-      </div>
+        <div className="page-header-actions">
+          <button className="filter-button" onClick={refresh}>Refresh</button>
+          {area === "resources" && allowed("resources.create") && (
+            <button className="primary-button" onClick={() => setForm({ domain })}>
+              Create {domain === "ETL" ? "Legacy Data Pipeline" : domain === "VM" ? "Compute Instance" : "API Endpoint"}
+            </button>
+          )}
+        </div>
+      </div>}
       <div
         role="tablist"
         aria-label="Resource Management sections"
@@ -235,51 +260,44 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
         <button
           role="tab"
           aria-selected={area === "organizations"}
-          onClick={() => { setArea("organizations"); setSelected(null); }}
+          onClick={() => chooseArea("organizations")}
         >
           Organizations
         </button>
         <button
           role="tab"
           aria-selected={area === "resources"}
-          onClick={() => setArea("resources")}
+          onClick={() => chooseArea("resources")}
         >
           Data Resources
         </button>
+        {hasPermission(user, "collectors.view") && hasPermission(user, "resources.view") && <button role="tab" aria-selected={area === "collectors"} onClick={() => chooseArea("collectors")}>Collectors</button>}
         <button
           role="tab"
           aria-selected={area === "parameters"}
-          onClick={() => setArea("parameters")}
+          onClick={() => chooseArea("parameters")}
         >
           Event Parameters
         </button>
         <button
           role="tab"
           aria-selected={area === "rules"}
-          onClick={() => setArea("rules")}
+          onClick={() => chooseArea("rules")}
         >
           Alert Rules
         </button>
         <button
           role="tab"
           aria-selected={area === "delivery"}
-          onClick={() => setArea("delivery")}
+          onClick={() => chooseArea("delivery")}
         >
           Notification Delivery
         </button>
       </div>
-      {area === "organizations" && (
-        <section className="card table-wrap" aria-label="Monitored customer organizations">
-          <h2>Organizations</h2>
-          <p>Monitored customer boundaries. Employee Departments and Teams are managed in Access Management.</p>
-          <table>
-            <thead><tr><th>Organization</th><th>Code</th><th>Customer identity</th></tr></thead>
-            <tbody>{customers.map(c => <tr key={c.id}><td>{c.name}</td><td>{c.code}</td><td>{c.id}</td></tr>)}</tbody>
-          </table>
-          {!customers.length && <p>No authorized customer organizations.</p>}
-        </section>
+      {["organizations", "collectors"].includes(area) && (
+        <ResourceManagementV2 user={user} section={area} embedded onOrganizationSaved={onCustomerCreated} />
       )}
-      {area !== "organizations" && <>
+      {!["organizations", "collectors"].includes(area) && <>
       <div
         role="tablist"
         aria-label={
@@ -366,19 +384,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             }}
           />
         </Field>
-        {area === "resources" && allowed("resources.create") && (
-          <button
-            className="primary-button"
-            onClick={() => setForm({ domain })}
-          >
-            Create{" "}
-            {domain === "ETL"
-              ? "Legacy Data Pipeline"
-              : domain === "VM"
-                ? "Compute Instance"
-                : "API Endpoint"}
-          </button>
-        )}
       </div>
       {error && (
         <p role="alert" className="error-banner">
@@ -397,7 +402,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
               <th>Customer</th>
               <th>Environment</th>
               <th>{domain === "ETL" ? "Platform / VM" : "Identity"}</th>
-              <th>Monitoring</th>
+              <th>Configuration state</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -426,9 +431,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
                 </td>
                 <td>
                   {r.activation_status}
-                  <small>
-                    {r.active ? "Enabled configuration" : "Inactive"}
-                  </small>
+                  <small>{r.active ? "Configuration enabled · health in Operations" : "Configuration inactive"}</small>
                 </td>
                 <td>
                   <div className="row-actions">

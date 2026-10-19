@@ -1,0 +1,23 @@
+# Controlled UI recovery plan — proposed, not authorized implementation
+
+Baseline and findings: [current audit](CURRENT_UI_AUDIT.md), [findings register](IUAT_S14_UI_003_FINDINGS.md), [target architecture](TARGET_UI_ARCHITECTURE.md). Keep the frozen Sprint 14 baseline unchanged. Each phase below needs owner approval and a separate reviewed implementation scope. Do not combine UI reorganization with a backend or migration redesign.
+
+| Phase | Dependency and bounded scope | Candidate files / risk | Acceptance evidence |
+| --- | --- | --- | --- |
+| 1. UI foundations | Owner accepts nav labels, grouping, mobile pattern and URL strategy. Reuse existing collapse state, permission checks and shell. Place primary actions in headers and establish shared compact list/form patterns. | `TopNav.jsx`, `App.jsx`, `permissions.js`, `visual-system.css`, shared page components. Risk: lost route, focus or scope behavior. | All existing destinations including six pipeline tabs reachable; active item/group correct; 390/768/1366 px no document overflow, discoverable internal scrolling; keyboard focus and screen-reader labels; no permission expansion or stale-scope leakage. |
+| 2. Resource Management | Phase 1 patterns. Reframe Organizations/resource list/collector detail and existing multi-method form. Retain eight-stage integration wizard, source ownership and configuration routes. | `UnifiedResourceManagement.jsx`, `CollectorControl.jsx`, `DataPipelineIntegrations.jsx`, resource styles. Risk: duplicate config paths and misleading health labels. | Create/edit flows still call existing contracts; several independently added methods survive; method revision/permission behavior, resource/customer filters and shared-source guards pass; actions appear in header. |
+| 3. Access Management | Phase 1 patterns plus owner choice on Organisational Access entry. Remove duplicate actions; expose existing grants/boundaries. | `AccessManagement.jsx`, `AccessBoundaries.jsx`, access styles. Risk: privilege presentation drift. | Direct/inherited grants, LIMIT/DENY/DELEGATE/ALL and audit visibility unchanged; no unauthorized control; exactly-one-department new employee workflow and legacy memberships intact; backend denial tested. |
+| 4. Operational monitoring | Phase 1 patterns; retain Resource Management ownership. Improve six pipeline tabs and VM/API list density, freshness and status wording. Preserve native incidents and legacy compatibility views. | `pipelines/*`, `DomainMonitoring.jsx`, `UnifiedOverview.jsx`, `NativeIncidents.jsx`, styles. Risk: evidence/state conflation. | SUCCESS_AFTER_RETRY, WAITING_FOR_RETRY, UNKNOWN/INCOMPLETE and original failed execution remain accurate; stale health and forbidden states explicit; no Run/Rerun controls; resource configuration links point to canonical owner. |
+| 5. Regression and independent UAT | Previous phases individually pass; collect task-specific baseline screenshots and role fixtures. | Existing frontend tests and browser scripts, new focused visual/accessibility cases only. Risk: screenshots with synthetic fixtures mistaken for production proof. | Frontend unit, focused authenticated HTTP, RBAC/tenant isolation, browser at 390/768/1366, keyboard/accessibility, screenshot comparison and independent UAT issue retest. Record pass/fail and deferred items; RT-001–RT-020 remain NOT RUN without separate real-runtime acceptance. |
+
+Backend changes are not established by the current evidence. Before requesting one, reproduce a missing contract against `backend/app/unified/api.py`, `backend/app/api/access.py`, `backend/app/telemetry/api.py`, `backend/app/data_pipelines/api.py` or `backend/app/native_incidents/api.py`, then assess authorization and migration effects separately. Do not weaken the existing 80% coverage threshold, backend enforcement or customer isolation.
+
+## Decisions requested from the owner before implementation
+
+1. Approve or amend the [proposed hierarchy](SIDEBAR_NAVIGATION_PROPOSAL.md), including Alerts/Incidents/Reports and existing Resource Management policy pages.
+2. Choose mobile navigation behavior and whether non-pipeline pages receive stable deep links.
+3. Decide whether existing Organizational Access and collector controls become first-class entries or remain contextual subviews.
+4. Approve the page-header action/list density standard and terminology distinguishing configuration from observed monitoring health.
+5. Supply or identify the original IUAT-S14-UI-003 screenshots, viewport and reproduction notes for findings currently unverified.
+
+No phase has been implemented, approved or signed off by this documentation package. No Sprint 15 work is included.

@@ -39,6 +39,7 @@ export default function AccessBoundaries({
   customers,
   roles,
   catalog,
+  expanded = false,
 }) {
   const feed = usePipelineFeed("/api/v1/access/boundaries"),
     [selected, setSelected] = useState(null),
@@ -57,7 +58,7 @@ export default function AccessBoundaries({
     setEpoch((e) => e + 1);
   };
   return (
-    <details className="card" aria-label="Scope and delegated administration">
+    <details className="card" aria-label="Scope and delegated administration" open={expanded || undefined}>
       <summary>
         Scope restrictions, delegated administration and ALL-customer authority
       </summary>
@@ -87,7 +88,7 @@ export default function AccessBoundaries({
               </small>
             </td>
             <td>
-              {b.specification.customers
+              {(b.specification?.customers || [])
                 .map((id) => customers.find((c) => c.id === id)?.name || id)
                 .join(", ") || "No current customer IDs"}
               <small>
@@ -96,16 +97,16 @@ export default function AccessBoundaries({
                   : "Explicit current scope only"}
               </small>
               <small>
-                {b.specification.departments
+                {(b.specification?.departments || [])
                   .map((id) => departments.find((d) => d.id === id)?.name || id)
                   .join(", ")}
               </small>
             </td>
             <td>
-              {b.specification.permissions.join(", ")}
+              {(b.specification?.permissions || []).join(", ")}
               <small>
-                {b.specification.environments.join(", ")}{" "}
-                {b.specification.resources.join(", ")}
+                {(b.specification?.environments || []).join(", ")}{" "}
+                {(b.specification?.resources || []).join(", ")}
               </small>
             </td>
             <td>{b.revision}</td>

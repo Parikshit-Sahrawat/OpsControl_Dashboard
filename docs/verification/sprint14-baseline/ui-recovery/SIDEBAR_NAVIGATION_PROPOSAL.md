@@ -1,0 +1,19 @@
+# Sidebar and navigation proposal
+
+The grouping began as an owner-review proposal against the [current audit](CURRENT_UI_AUDIT.md). The owner has now approved **Organizations, Collectors and Organisational Access** as independent child destinations in PR #39. This is approval of navigation and existing view activation, not a new backend grant or architecture decision. Keep the existing permission resolver, customer selector and operational subpages. Grouping must never broaden authorization.
+
+| Current flat navigation | Proposed grouped navigation using existing views |
+| --- | --- |
+| Overview | Overview → Dashboard (`Overview`, label change only) |
+| Data Pipeline Monitoring; Compute Health; API Endpoint Monitoring; Alerts; Incidents; Reports | Operations → Data Pipelines (all six existing tabs), Compute Instances, API Endpoints, Alerts, Incidents, Reports |
+| Resource Management (internal tabs) | Resource Management → Organizations, Data Sources / Resources, Collectors; Event Parameters, Alert Rules and Notification Delivery remain reachable as configuration/policy entries. Collection Methods stays inside the selected collector unless an independently useful route is approved. Monitoring Templates appears only if the existing implementation and permissions support a stable entry. |
+| Access Management (internal tabs) | Access Management → Employees, Departments, Roles & Permissions, Organisational Access (existing customer grants and boundaries), Access Audit |
+| No separate administration page verified | Administration → existing settings only if located and authorized; no placeholder link. |
+
+Current paths are primarily in-memory page keys. The approved Resource Management and Access Management children now use explicit `#/resources/*` and `#/access/*` hashes in `navigation.js`, while the six Data Pipeline hashes remain in `PipelineWorkspace.jsx`. Browser Back/Forward and refresh are verified for the three approved destinations. Other top-level pages retain their existing in-memory navigation; full direct URLs for those pages remain outside this approval.
+
+The existing top sidebar toggle, 240/72 px states, `aria-current`, icon components and collapsed labels can be reused. Proposed improvements: clear group headings, a visible active group + child state, persistent icon-only collapse on desktop, tooltips and accessible names, keyboard-operable group expansion, and a compact mobile drawer or clearly signaled overflow with focus return. The current narrow top strip is scrollable but its hidden entries have weak discoverability in [mobile evidence](evidence/390-access.png). A mobile solution must preserve customer selection and the separate meaning of “All listed customers” versus explicitly authorized `ALL customers`.
+
+Use `canNavigate` and effective-access projection to hide unauthorized destinations, and keep the page guard plus backend authorization. Hide unauthorized actions inside pages according to existing permissions. A navigation redesign may expose an existing Access Management customer-grant view, but it must not convert internal departments into customer Organizations or grant access by selecting a customer. The incident page and pipeline Incident Correlation tab should remain separate entry points to the same native incident records until the owner chooses a single primary navigation pattern.
+
+**OWNER APPROVED for PR #39:** Organizations opens the canonical customer list; Collectors opens the existing collector list/detail and method configuration; Organisational Access opens existing grants, effective access and scope boundaries. No separate Collection Methods destination was approved. Still open: exact future placement of Alerts, Incidents, Reports and Resource Management policy pages, and stable URLs for all remaining pages. These are presentation decisions, not changes to approved architecture.

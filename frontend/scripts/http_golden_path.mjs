@@ -18,7 +18,7 @@ try {
   await page.getByRole('textbox',{name:'Username'}).fill(state.operator_username);
   await page.getByLabel('Password').fill(state.operator_password);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'Resource Management',exact:true}).click();
+  await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
   await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
   await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
@@ -56,7 +56,7 @@ try {
     await other.getByRole('textbox',{name:'Username'}).fill(state.other_username);
     await other.getByLabel('Password').fill(state.other_password);
     await other.getByRole('button',{name:'Sign in'}).click();
-    await other.getByRole('button',{name:'Resource Management',exact:true}).click();
+    await other.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
     await other.getByRole('tab',{name:'API Endpoints',exact:true}).click();
     await other.getByText('No resources match these authorized filters.',{exact:true}).waitFor();
     assert.equal(await other.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).count(),0);

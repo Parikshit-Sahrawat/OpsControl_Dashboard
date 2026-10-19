@@ -18,6 +18,7 @@ const TABS = [
   "Employees",
   "Departments",
   "Roles & Permissions",
+  "Organisational Access",
   "Access Audit",
 ];
 const PAGE = 25;
@@ -193,7 +194,7 @@ function Effective({ value, customers }) {
   );
 }
 
-export default function AccessManagement({ user }) {
+export default function AccessManagement({ user, section, onSectionChange }) {
   const delegated =
     user.platform_admin ||
     user.access_boundaries?.some((b) => b.kind === "DELEGATE");
@@ -205,11 +206,14 @@ export default function AccessManagement({ user }) {
       user.access_boundaries?.some(
         (b) => b.kind === "DELEGATE" && b.specification.create_departments,
       ));
-  const [tab, setTab] = useState("Departments"),
+  const [tab, setTab] = useState(
+      TABS.includes(section) ? section : "Departments",
+    ),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
     [department, setDepartment] = useState(""),
-    [roleFilter, setRoleFilter] = useState("");
+    [roleFilter, setRoleFilter] = useState(""),
+    [accessCustomer, setAccessCustomer] = useState("");
   const [offset, setOffset] = useState(0),
     [data, setData] = useState({ items: [], total: 0 }),
     [roles, setRoles] = useState([]),
@@ -232,6 +236,16 @@ export default function AccessManagement({ user }) {
   const [onboarding, setOnboarding] = useState(false);
   const epoch = useRef(0),
     detailEpoch = useRef(0);
+  useEffect(() => {
+    if (TABS.includes(section) && section !== tab) {
+      detailEpoch.current++;
+      setSelected(null);
+      setData({ items: [], total: 0 });
+      setLoading(true);
+      setOffset(0);
+      setTab(section);
+    }
+  }, [section, tab]);
   const reload = useCallback(async () => {
     const current = ++epoch.current;
     setLoading(true);
@@ -242,9 +256,11 @@ export default function AccessManagement({ user }) {
           ? `/employees?${params({ search, active: status, department_id: department, role_id: roleFilter, limit: PAGE, offset })}`
           : tab === "Departments"
             ? `/departments?${params({ search, active: status, limit: PAGE, offset })}`
-            : tab === "Access Audit"
-              ? `/audit?limit=${PAGE}&offset=${offset}`
-              : "/roles";
+            : tab === "Organisational Access"
+              ? `/customer-grants?${params({ organization_id: accessCustomer, limit: PAGE, offset })}`
+              : tab === "Access Audit"
+                ? `/audit?limit=${PAGE}&offset=${offset}`
+                : "/roles";
       const result = await api(path);
       if (current === epoch.current)
         setData(
@@ -267,7 +283,7 @@ export default function AccessManagement({ user }) {
     } finally {
       if (current === epoch.current) setLoading(false);
     }
-  }, [tab, search, status, department, roleFilter, offset]);
+  }, [tab, search, status, department, roleFilter, accessCustomer, offset]);
   const latestReload = useRef(reload);
   latestReload.current = reload;
   const directories = useCallback(async () => {
@@ -571,9 +587,40 @@ export default function AccessManagement({ user }) {
             ownership.
           </p>
         </div>
-        <button className="filter-button" disabled={busy} onClick={reload}>
-          Refresh
-        </button>
+        <div className="page-header-actions">
+          <button className="filter-button" disabled={busy} onClick={reload}>
+            Refresh
+          </button>
+          {tab === "Employees" && can("manage_users") && (
+            <button
+              className="primary-button"
+              disabled={busy}
+              onClick={() => open("employee")}
+            >
+              Create employee
+            </button>
+          )}
+          {tab === "Departments" && canCreateDepartment && (
+            <button
+              className="primary-button"
+              disabled={busy}
+              onClick={() => open("department")}
+            >
+              Create department
+            </button>
+          )}
+          {tab === "Roles & Permissions" &&
+            can("manage_roles") &&
+            can("manage_permissions") && (
+              <button
+                className="primary-button"
+                disabled={busy}
+                onClick={() => open("role")}
+              >
+                Create role
+              </button>
+            )}
+        </div>
       </div>
       {onboarding && (
         <AccessOnboarding
@@ -596,18 +643,6 @@ export default function AccessManagement({ user }) {
         >
           Guided Department → Employee → Permissions
         </button>
-        <button
-          disabled={busy || !can("manage_departments")}
-          onClick={() => open("department")}
-        >
-          Create Department
-        </button>
-        <button
-          disabled={busy || !can("manage_users")}
-          onClick={() => open("employee")}
-        >
-          Create Employee
-        </button>
       </div>
       <nav className="access-tabs" aria-label="Access Management sections">
         {TABS.filter(
@@ -622,6 +657,7 @@ export default function AccessManagement({ user }) {
               setData({ items: [], total: 0 });
               detailEpoch.current++;
               setTab(t);
+              onSectionChange?.(t);
               setOffset(0);
               setSearch("");
               setSelected(null);
@@ -648,6 +684,12 @@ export default function AccessManagement({ user }) {
         </div>
       )}
       <AccessBoundaries
+        key={
+          tab === "Organisational Access"
+            ? "organisational-access"
+            : "other-access"
+        }
+        expanded={tab === "Organisational Access"}
         user={user}
         people={people}
         departments={departments}
@@ -659,6 +701,23 @@ export default function AccessManagement({ user }) {
         <div className="resource-toolbar">
           <h2>{tab}</h2>
           <div className="access-filters">
+            {tab === "Organisational Access" && (
+              <select
+                aria-label="Customer access filter"
+                value={accessCustomer}
+                onChange={(e) => {
+                  setAccessCustomer(e.target.value);
+                  setOffset(0);
+                }}
+              >
+                <option value="">All authorized grant targets</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
             {["Employees", "Departments", "Roles & Permissions"].includes(
               tab,
             ) && (
@@ -720,29 +779,6 @@ export default function AccessManagement({ user }) {
                 ))}
               </select>
             )}
-            {tab === "Employees" && can("manage_users") && (
-              <button
-                className="primary-button"
-                onClick={() => open("employee")}
-              >
-                Create employee
-              </button>
-            )}
-            {tab === "Departments" && canCreateDepartment && (
-              <button
-                className="primary-button"
-                onClick={() => open("department")}
-              >
-                Create department
-              </button>
-            )}
-            {tab === "Roles & Permissions" &&
-              can("manage_roles") &&
-              can("manage_permissions") && (
-                <button className="primary-button" onClick={() => open("role")}>
-                  Create role
-                </button>
-              )}
           </div>
         </div>
         {loading ? (
@@ -784,13 +820,21 @@ export default function AccessManagement({ user }) {
                             "Status",
                             "Actions",
                           ]
-                        : [
-                            "Timestamp",
-                            "Actor UUID",
-                            "Action",
-                            "Target",
-                            "Outcome",
-                          ]
+                        : tab === "Organisational Access"
+                          ? [
+                              "Customer organization",
+                              "Employee / provider department",
+                              "Role / source",
+                              "Effect",
+                              "Review",
+                            ]
+                          : [
+                              "Timestamp",
+                              "Actor UUID",
+                              "Action",
+                              "Target",
+                              "Outcome",
+                            ]
                   ).map((h) => (
                     <th key={h} scope="col">
                       {h}
@@ -911,6 +955,66 @@ export default function AccessManagement({ user }) {
                                 Edit role
                               </button>
                             )}
+                        </td>
+                      </>
+                    )}
+                    {tab === "Organisational Access" && (
+                      <>
+                        <td>
+                          {customerName(row.organization_id)}
+                          <small className="access-uuid">
+                            {row.organization_id}
+                          </small>
+                        </td>
+                        <td>
+                          {row.user_id
+                            ? employeeName(row.user_id)
+                            : departmentName(row.department_id)}
+                          <small>
+                            {row.user_id
+                              ? "Employee"
+                              : "Internal provider department"}
+                          </small>
+                        </td>
+                        <td>
+                          {row.role_id
+                            ? roleName(row.role_id)
+                            : "Explicit restriction"}
+                          <small>{row.source}</small>
+                        </td>
+                        <td>{row.effect}</td>
+                        <td>
+                          {row.user_id &&
+                          people.find((p) => p.id === row.user_id) ? (
+                            <button
+                              className="filter-button"
+                              onClick={() =>
+                                inspectEmployee(
+                                  people.find((p) => p.id === row.user_id),
+                                )
+                              }
+                            >
+                              Review effective access
+                            </button>
+                          ) : row.department_id &&
+                            departments.find(
+                              (d) => d.id === row.department_id,
+                            ) ? (
+                            <button
+                              className="filter-button"
+                              onClick={() =>
+                                inspectDepartment(
+                                  departments.find(
+                                    (d) => d.id === row.department_id,
+                                  ),
+                                )
+                              }
+                            >
+                              Review department access
+                            </button>
+                          ) : (
+                            "—"
+                          )}
                         </td>
                       </>
                     )}
