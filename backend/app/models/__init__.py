@@ -16,3 +16,7 @@ __all__ = [
 # Alert acknowledgment now references users. Register identity/access metadata
 # for standalone collector/notification workers as well as the FastAPI process.
 import app.security.models  # noqa: E402,F401
+
+# Register canonical resource metadata for standalone ORM consumers.
+# JobOrderHistory has a tenant-scoped FK to monitoring_resources.
+import app.unified.models  # noqa: E402,F401
