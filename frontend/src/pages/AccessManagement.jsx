@@ -206,7 +206,9 @@ export default function AccessManagement({ user, section, onSectionChange }) {
       user.access_boundaries?.some(
         (b) => b.kind === "DELEGATE" && b.specification.create_departments,
       ));
-  const [tab, setTab] = useState(TABS.includes(section) ? section : "Departments"),
+  const [tab, setTab] = useState(
+      TABS.includes(section) ? section : "Departments",
+    ),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState(""),
     [department, setDepartment] = useState(""),
@@ -256,9 +258,9 @@ export default function AccessManagement({ user, section, onSectionChange }) {
             ? `/departments?${params({ search, active: status, limit: PAGE, offset })}`
             : tab === "Organisational Access"
               ? `/customer-grants?${params({ organization_id: accessCustomer, limit: PAGE, offset })}`
-            : tab === "Access Audit"
-              ? `/audit?limit=${PAGE}&offset=${offset}`
-              : "/roles";
+              : tab === "Access Audit"
+                ? `/audit?limit=${PAGE}&offset=${offset}`
+                : "/roles";
       const result = await api(path);
       if (current === epoch.current)
         setData(
@@ -586,16 +588,38 @@ export default function AccessManagement({ user, section, onSectionChange }) {
           </p>
         </div>
         <div className="page-header-actions">
-          <button className="filter-button" disabled={busy} onClick={reload}>Refresh</button>
+          <button className="filter-button" disabled={busy} onClick={reload}>
+            Refresh
+          </button>
           {tab === "Employees" && can("manage_users") && (
-            <button className="primary-button" disabled={busy} onClick={() => open("employee")}>Create employee</button>
+            <button
+              className="primary-button"
+              disabled={busy}
+              onClick={() => open("employee")}
+            >
+              Create employee
+            </button>
           )}
           {tab === "Departments" && canCreateDepartment && (
-            <button className="primary-button" disabled={busy} onClick={() => open("department")}>Create department</button>
+            <button
+              className="primary-button"
+              disabled={busy}
+              onClick={() => open("department")}
+            >
+              Create department
+            </button>
           )}
-          {tab === "Roles & Permissions" && can("manage_roles") && can("manage_permissions") && (
-            <button className="primary-button" disabled={busy} onClick={() => open("role")}>Create role</button>
-          )}
+          {tab === "Roles & Permissions" &&
+            can("manage_roles") &&
+            can("manage_permissions") && (
+              <button
+                className="primary-button"
+                disabled={busy}
+                onClick={() => open("role")}
+              >
+                Create role
+              </button>
+            )}
         </div>
       </div>
       {onboarding && (
@@ -660,7 +684,11 @@ export default function AccessManagement({ user, section, onSectionChange }) {
         </div>
       )}
       <AccessBoundaries
-        key={tab === "Organisational Access" ? "organisational-access" : "other-access"}
+        key={
+          tab === "Organisational Access"
+            ? "organisational-access"
+            : "other-access"
+        }
         expanded={tab === "Organisational Access"}
         user={user}
         people={people}
@@ -673,7 +701,23 @@ export default function AccessManagement({ user, section, onSectionChange }) {
         <div className="resource-toolbar">
           <h2>{tab}</h2>
           <div className="access-filters">
-            {tab === "Organisational Access" && <select aria-label="Customer access filter" value={accessCustomer} onChange={(e) => { setAccessCustomer(e.target.value); setOffset(0); }}><option value="">All authorized grant targets</option>{customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>}
+            {tab === "Organisational Access" && (
+              <select
+                aria-label="Customer access filter"
+                value={accessCustomer}
+                onChange={(e) => {
+                  setAccessCustomer(e.target.value);
+                  setOffset(0);
+                }}
+              >
+                <option value="">All authorized grant targets</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            )}
             {["Employees", "Departments", "Roles & Permissions"].includes(
               tab,
             ) && (
@@ -777,14 +821,20 @@ export default function AccessManagement({ user, section, onSectionChange }) {
                             "Actions",
                           ]
                         : tab === "Organisational Access"
-                          ? ["Customer organization", "Employee / provider department", "Role / source", "Effect", "Review"]
-                        : [
-                            "Timestamp",
-                            "Actor UUID",
-                            "Action",
-                            "Target",
-                            "Outcome",
-                          ]
+                          ? [
+                              "Customer organization",
+                              "Employee / provider department",
+                              "Role / source",
+                              "Effect",
+                              "Review",
+                            ]
+                          : [
+                              "Timestamp",
+                              "Actor UUID",
+                              "Action",
+                              "Target",
+                              "Outcome",
+                            ]
                   ).map((h) => (
                     <th key={h} scope="col">
                       {h}
@@ -910,11 +960,62 @@ export default function AccessManagement({ user, section, onSectionChange }) {
                     )}
                     {tab === "Organisational Access" && (
                       <>
-                        <td>{customerName(row.organization_id)}<small className="access-uuid">{row.organization_id}</small></td>
-                        <td>{row.user_id ? employeeName(row.user_id) : departmentName(row.department_id)}<small>{row.user_id ? "Employee" : "Internal provider department"}</small></td>
-                        <td>{row.role_id ? roleName(row.role_id) : "Explicit restriction"}<small>{row.source}</small></td>
+                        <td>
+                          {customerName(row.organization_id)}
+                          <small className="access-uuid">
+                            {row.organization_id}
+                          </small>
+                        </td>
+                        <td>
+                          {row.user_id
+                            ? employeeName(row.user_id)
+                            : departmentName(row.department_id)}
+                          <small>
+                            {row.user_id
+                              ? "Employee"
+                              : "Internal provider department"}
+                          </small>
+                        </td>
+                        <td>
+                          {row.role_id
+                            ? roleName(row.role_id)
+                            : "Explicit restriction"}
+                          <small>{row.source}</small>
+                        </td>
                         <td>{row.effect}</td>
-                        <td>{row.user_id && people.find((p) => p.id === row.user_id) ? <button className="filter-button" onClick={() => inspectEmployee(people.find((p) => p.id === row.user_id))}>Review effective access</button> : row.department_id && departments.find((d) => d.id === row.department_id) ? <button className="filter-button" onClick={() => inspectDepartment(departments.find((d) => d.id === row.department_id))}>Review department access</button> : "—"}</td>
+                        <td>
+                          {row.user_id &&
+                          people.find((p) => p.id === row.user_id) ? (
+                            <button
+                              className="filter-button"
+                              onClick={() =>
+                                inspectEmployee(
+                                  people.find((p) => p.id === row.user_id),
+                                )
+                              }
+                            >
+                              Review effective access
+                            </button>
+                          ) : row.department_id &&
+                            departments.find(
+                              (d) => d.id === row.department_id,
+                            ) ? (
+                            <button
+                              className="filter-button"
+                              onClick={() =>
+                                inspectDepartment(
+                                  departments.find(
+                                    (d) => d.id === row.department_id,
+                                  ),
+                                )
+                              }
+                            >
+                              Review department access
+                            </button>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
                       </>
                     )}
                     {tab === "Access Audit" && (
