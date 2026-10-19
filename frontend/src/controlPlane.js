@@ -4,7 +4,13 @@ export async function control(path, method = "GET", payload, options = {}) {
   const response = await fetch(base + path, {
     method,
     signal: options.signal,
-    headers: { "Content-Type": "application/json", ...authHeaders() },
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+      ...(options.customerIds
+        ? { "X-OpsControl-Customers": options.customerIds.join(",") }
+        : {}),
+    },
     ...(payload === undefined ? {} : { body: JSON.stringify(payload) }),
   });
   if (!response.ok) {
@@ -12,9 +18,17 @@ export async function control(path, method = "GET", payload, options = {}) {
     try {
       message = (await response.json()).detail || message;
     } catch {}
-    throw new Error(
-      typeof message === "string" ? message : JSON.stringify(message),
+    const error = new Error(
+      typeof message === "string"
+        ? message
+        : message?.message ||
+          (Array.isArray(message)
+            ? message.map((item) => item.msg || "Invalid request").join("; ")
+            : "Evidence requirements are not satisfied"),
     );
+    error.status = response.status;
+    error.detail = message;
+    throw error;
   }
   return response.status === 204 ? null : response.json();
 }

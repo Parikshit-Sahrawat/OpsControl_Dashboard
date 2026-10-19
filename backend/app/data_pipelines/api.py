@@ -1,5 +1,7 @@
 """Scoped V1.6 APIs. Live provider reads are never triggered by saving drafts."""
 
+from typing import Literal
+
 import uuid
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from app.db.session import get_db
+from app.api.pagination import page
 from app.security.access_control import require_permission
 from app.security.scope import current_principal
 from app.security.http import require_admin
@@ -25,6 +28,7 @@ from app.data_pipelines.models import (
 )
 from app.data_pipelines import service as s
 from app.pipeline_adapters import ADAPTER_DEFINITIONS, CONFIG_SCHEMAS
+from app.pipeline_adapters.pentaho_contracts import PENTAHO_VERSION_CANDIDATES
 
 router = APIRouter(prefix="/api/v1/data-pipelines", tags=["Data Pipelines V1.6"])
 
@@ -95,6 +99,7 @@ class HoldInput(Mutation):
 
 
 class RecoveryInput(Mutation):
+    mode: Literal["ACCEPTED_PENTAHO_EVIDENCE"] | None = None
     start: datetime
     end: datetime
     manual: bool = False
@@ -182,7 +187,7 @@ def catalogue():
                         "evidence_status": "DOCUMENTED",
                     }
                     for v in (
-                        ["8.3", "9.3", "9.4"]
+                        PENTAHO_VERSION_CANDIDATES
                         if p == "PENTAHO"
                         else ["Operator-supplied installed version"]
                     )
@@ -282,57 +287,97 @@ def create_integration(payload: IntegrationInput, db=Depends(get_db)):
     return doc(row)
 
 
+def integration_records_query(id, collection):
+    model = {
+        "connections": PipelineConnection,
+        "capabilities": PipelineCapability,
+        "methods": PipelineMethod,
+        "jobs": PipelineJob,
+        "operations": PipelineOperation,
+        "associations": PipelineAssociation,
+        "sources": PipelineSource,
+    }[collection]
+    methods = select(PipelineMethod.id).where(PipelineMethod.integration_id == id)
+    if collection == "associations":
+        query = select(model).where(model.method_id.in_(methods))
+    elif collection == "sources":
+        query = select(model).where(
+            model.id.in_(
+                select(PipelineMethod.source_id).where(
+                    PipelineMethod.integration_id == id
+                )
+            )
+        )
+    else:
+        query = select(model).where(model.integration_id == id)
+    return model, query
+
+
+@router.get("/integrations/{id}/records/{collection}")
+def integration_records(
+    id: uuid.UUID,
+    collection: Literal[
+        "connections",
+        "capabilities",
+        "methods",
+        "jobs",
+        "operations",
+        "associations",
+        "sources",
+    ],
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    checked(db, PipelineIntegration, id)
+    model, query = integration_records_query(id, collection)
+    return page(db, query, (model.created_at, model.id), limit, offset, doc)
+
+
 @router.get("/integrations/{id}")
 def detail(id: uuid.UUID, db=Depends(get_db)):
     row = checked(db, PipelineIntegration, id)
     output = doc(row)
-    for key, model in (
-        ("connections", PipelineConnection),
-        ("capabilities", PipelineCapability),
-        ("methods", PipelineMethod),
-        ("jobs", PipelineJob),
-        ("operations", PipelineOperation),
+    output["pagination"] = {}
+    for key in (
+        "connections",
+        "capabilities",
+        "methods",
+        "jobs",
+        "operations",
+        "associations",
+        "sources",
     ):
-        output[key] = [
-            doc(x)
-            for x in db.scalars(
-                select(model)
-                .where(model.integration_id == id)
-                .order_by(model.created_at)
-                .limit(500)
-            )
-        ]
-    mids = [x["id"] for x in output["methods"]]
-    output["associations"] = [
-        doc(x)
-        for x in db.scalars(
-            select(PipelineAssociation).where(
-                PipelineAssociation.method_id.in_([uuid.UUID(x) for x in mids])
-            )
-        )
-    ]
-    output["sources"] = [
-        doc(x)
-        for x in db.scalars(
-            select(PipelineSource).where(
-                PipelineSource.id.in_(
-                    [uuid.UUID(x["source_id"]) for x in output["methods"]]
-                )
-            )
-        )
-    ]
-    output["activation_blockers"] = s.blockers(db, row)
+        model, query = integration_records_query(id, key)
+        result = page(db, query, (model.created_at, model.id), 500, 0, doc)
+        output[key] = result.pop("items")
+        output["pagination"][key] = result
+    # Bound only the read preview. Authoritative activation still runs the
+    # established complete blocker validation and cannot use this projection.
+    complete = all(
+        output["pagination"][key]["total"] <= 500 for key in ("methods", "jobs")
+    )
+    output["readiness_complete"] = complete
+    output["activation_blockers"] = (
+        s.blockers(db, row) if complete else ["READINESS_PREVIEW_INCOMPLETE"]
+    )
     output["coverage"] = {
         "selected_jobs": db.scalar(
             select(func.count())
             .select_from(PipelineJob)
             .where(PipelineJob.integration_id == id, PipelineJob.selected.is_(True))
         ),
-        "unverified_methods": sum(
-            not s.eligible(db, x)
-            for x in db.scalars(
-                select(PipelineMethod).where(PipelineMethod.integration_id == id)
+        "unverified_methods": (
+            sum(
+                not s.eligible(db, x)
+                for x in db.scalars(
+                    select(PipelineMethod)
+                    .where(PipelineMethod.integration_id == id)
+                    .limit(500)
+                )
             )
+            if complete
+            else None
         ),
     }
     return output
@@ -383,6 +428,14 @@ def add_connection(id: uuid.UUID, payload: ConfigurationInput, db=Depends(get_db
     allowed = set(ADAPTER_DEFINITIONS[row.platform]["fields"])
     if set(cfg) - allowed:
         raise HTTPException(422, "Unsupported adapter connection fields")
+    if row.platform == "PENTAHO" and "monitoring_context" in cfg:
+        from app.pipeline_adapters.pentaho_observations import context
+        from app.pipeline_adapters.core import AdapterError
+
+        try:
+            context(cfg["monitoring_context"])
+        except AdapterError as error:
+            raise HTTPException(422, {"code": "PENTAHO_" + error.kind}) from None
     for key, value in cfg.items():
         if key in {"base_url", "url"}:
             from urllib.parse import urlsplit
@@ -904,6 +957,16 @@ def release(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
 @router.post("/sources/{id}/recovery")
 def recovery(id: uuid.UUID, payload: RecoveryInput, db=Depends(get_db)):
     source = checked(db, PipelineSource, id, True)
+    from app.unified.pentaho_replay import is_pentaho
+
+    if is_pentaho(db, source):
+        principal = require_permission("etl.replay", source.organization_id)
+        from app.security.resource_scope import source_authorized
+
+        if not source_authorized(db, principal, source, "etl.replay"):
+            raise HTTPException(
+                403, "Replay request exceeds current resource authority"
+            )
     op = s.plan_recovery(
         db,
         source,
@@ -912,6 +975,7 @@ def recovery(id: uuid.UUID, payload: RecoveryInput, db=Depends(get_db)):
         actor().user_id,
         payload.idempotency_key,
         payload.manual,
+        payload.mode,
     )
     finish(db)
     return doc(op)
@@ -939,7 +1003,22 @@ def change_preview(id: uuid.UUID, payload: ConfigurationInput, db=Depends(get_db
 @router.post("/operations/{id}/approve")
 def approve(id: uuid.UUID, payload: ActionInput, db=Depends(get_db)):
     row = checked(db, PipelineOperation, id, True)
-    require_admin()
+    if (
+        row.kind == "RECOVERY"
+        and row.configuration.get("mode") == "ACCEPTED_PENTAHO_EVIDENCE"
+    ):
+        principal = require_permission("etl.approve_replay", row.organization_id)
+        source = s.locked_source(db, row.source_id)
+        if row.configuration.get("generation") != str(source.generation):
+            raise HTTPException(409, "Replay source generation changed")
+        from app.security.resource_scope import source_authorized
+
+        if not source_authorized(db, principal, source, "etl.approve_replay"):
+            raise HTTPException(
+                403, "Replay approval exceeds current resource authority"
+            )
+    else:
+        require_admin()
     if not payload.confirmed or row.actor_id == actor().user_id:
         raise HTTPException(403, "Independent reviewer confirmation required")
     if row.state == "APPROVED":
@@ -1533,6 +1612,26 @@ def verify_profile(id: uuid.UUID, payload: ProfileVerification, db=Depends(get_d
             409,
             "Independent genuine-runtime evidence attestation required; fixture certification forbidden",
         )
+    # R1 build/surface assertions must match the independent native proof before
+    # even the profile label changes; eligible() repeats this during collection.
+    from app.pipeline_adapters.pentaho_observations import proof_matches
+
+    r1_profile = False
+    for method in methods:
+        connection = db.get(PipelineConnection, method.connection_id)
+        cfg = {
+            **connection.configuration,
+            **method.configuration.get("adapter_overrides", {}),
+        }
+        r1_profile = r1_profile or "monitoring_context" in cfg
+        if "monitoring_context" in cfg and not proof_matches(
+            cfg["monitoring_context"], profile, proof
+        ):
+            raise HTTPException(409, {"code": "PENTAHO_BUILD_SURFACE_PROOF_REQUIRED"})
+    from app.unified.pentaho_execution import proof_covers_claims
+
+    if r1_profile and not proof_covers_claims(profile.definition, proof.payload):
+        raise HTTPException(409, {"code": "PENTAHO_NATIVE_CLAIM_PROOF_REQUIRED"})
     profile.compatibility = payload.compatibility
     profile.evidence_status = "RUNTIME_VERIFIED"
     profile.verification_evidence_id = proof.id

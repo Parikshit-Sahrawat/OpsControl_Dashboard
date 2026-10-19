@@ -3,6 +3,7 @@
 Requires migrated database + running API at localhost:8000.
 Fixture data is wholly fictional; exits nonzero on any security breach.
 """
+from scripts.acceptance_scope import probe_headers
 import json
 import os
 import urllib.error
@@ -52,6 +53,7 @@ def call(method,path,token=None,body=None):
     headers={"Content-Type":"application/json"}
     if token: headers["Authorization"]="Bearer "+token
     data=json.dumps(body).encode() if body is not None else None
+    headers.update(probe_headers(BASE, token, path))
     req=urllib.request.Request(BASE+path,headers=headers,data=data,method=method)
     try:
         with urllib.request.urlopen(req,timeout=15) as r:

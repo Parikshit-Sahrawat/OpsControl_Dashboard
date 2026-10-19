@@ -496,6 +496,10 @@ def condition(db, r, key, type, active, severity, message, evidence, observed):
 
 
 def evaluate_schedule(db, r, p, observed):
+    if r.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_schedule import evaluate
+
+        return evaluate(db, r, p, observed)
     config = p.configuration
     schedule = config.get("schedule")
     if not schedule:
@@ -688,6 +692,10 @@ def json_safe(value):
 
 
 def evaluate_executions(db, r, p, observed):
+    if getattr(r, "configuration", {}).get("platform") == "PENTAHO":
+        from app.unified.pentaho_history import reconcile
+
+        reconcile(db, r, observed)
     cfg = p.configuration
     histories = db.scalars(
         select(JobOrderHistory)
@@ -708,6 +716,20 @@ def evaluate_executions(db, r, p, observed):
         observed,
     )
     for h in histories:
+        if getattr(h, "pentaho_resource_id", None) and (
+            getattr(h, "pentaho_review_state", None)
+            in {"CONFLICTED_EVIDENCE", "REVIEW_REQUIRED"}
+            or (h.source_evidence or {})
+            .get("pentaho_historical", {})
+            .get("operational_reassessment_required")
+            or (h.source_evidence or {})
+            .get("pentaho_adjudication", {})
+            .get("operational_reassessment_required")
+        ):
+            # Keep the last defensible operational conditions. Review is neither
+            # failure nor recovery; historical incident/notification policy is a
+            # separate, explicit eligibility gate (Sprint 05).
+            continue
         if not h.started_at:
             if h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}:
                 condition(
@@ -727,7 +749,11 @@ def evaluate_executions(db, r, p, observed):
                 )
                 h.sla_status = "UNKNOWN"
             continue
-        terminal = h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
+        terminal = (
+            h.pentaho_lifecycle == "TERMINAL"
+            if h.pentaho_lifecycle is not None
+            else h.status in {ExecutionStatus.SUCCESS, ExecutionStatus.FAILED}
+        )
         duration = ((h.ended_at or observed) - h.started_at).total_seconds()
         long = (
             not terminal
@@ -737,7 +763,13 @@ def evaluate_executions(db, r, p, observed):
         sla = (not terminal or h.ended_at is not None) and duration >= cfg[
             "completion_sla_seconds"
         ]
-        h.sla_status = "BREACHED" if sla else "MET" if terminal else "ON_TRACK"
+        if h.pentaho_outcome in {"CANCELLED", "UNKNOWN"}:
+            sla = False  # No success/SLA assertion from a cancelled/unknown native run.
+        h.sla_status = (
+            "UNKNOWN"
+            if h.pentaho_outcome in {"CANCELLED", "UNKNOWN"}
+            else "BREACHED" if sla else "MET" if terminal else "ON_TRACK"
+        )
         last = __import__("datetime").datetime.fromisoformat(
             (h.source_evidence or {}).get("observed_at", h.started_at.isoformat())
         )
@@ -1475,6 +1507,14 @@ def cycle(limit=20, observed=None):
                     else:
                         evaluate_api(db, r, p, observed)
                     correlate(db, r.organization_id, r.environment, observed)
+                if (
+                    not p
+                    and r.domain == "ETL"
+                    and r.configuration.get("platform") == "PENTAHO"
+                ):
+                    from app.unified.pentaho_history import reconcile
+
+                    reconcile(db, r, observed)
                 r.last_engine_attempt_at = observed
                 r.last_engine_success_at = observed
                 r.last_engine_error = None

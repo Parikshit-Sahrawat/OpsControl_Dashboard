@@ -24,6 +24,7 @@ import ResourceManagement from "./pages/UnifiedResourceManagement";
 import NativeIncidents from "./pages/NativeIncidents";
 import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
+import PipelineWorkspace from "./pipelines/PipelineWorkspace";
 import DomainReports from "./pages/DomainReports";
 
 function mapDetail(execution, investigation, evidence) {
@@ -121,10 +122,13 @@ function mapDetail(execution, investigation, evidence) {
 }
 
 export default function App({ user }) {
-  const [active, setActive] = useState(
-      () =>
-        Object.keys(NAV_PERMISSIONS).find((page) => canNavigate(user, page)) ||
-        "Unauthorized",
+  const [active, setActive] = useState(() =>
+      window.location.hash.startsWith("#/pipelines/") &&
+      canNavigate(user, "Data Pipeline Monitoring")
+        ? "Data Pipeline Monitoring"
+        : Object.keys(NAV_PERMISSIONS).find((page) =>
+            canNavigate(user, page),
+          ) || "Unauthorized",
     ),
     [jobs, setJobs] = useState([]),
     [details, setDetails] = useState({}),
@@ -132,6 +136,10 @@ export default function App({ user }) {
     [loading, setLoading] = useState(true),
     [error, setError] = useState(null);
   const [organizations, setOrganizations] = useState([]);
+  const [scopeMode, setScopeMode] = useState(
+    () =>
+      localStorage.getItem("opscontrol.customerSelectionMode") || "SELECTED",
+  );
   const [environment, setEnvironment] = useState(""),
     [customerRefresh, setCustomerRefresh] = useState(0);
   const [scopeReady, setScopeReady] = useState(false),
@@ -154,7 +162,8 @@ export default function App({ user }) {
     if (
       !scopeReady ||
       !hasPermission(user, "etl.view") ||
-      administrationPage(active)
+      administrationPage(active) ||
+      active === "Data Pipeline Monitoring"
     )
       return;
     const version = generation.current;
@@ -208,7 +217,19 @@ export default function App({ user }) {
           }
         })();
         const valid = saved.filter((id) => orgs.some((o) => o.id === id));
-        setOrganizationIds(valid.length ? valid : orgs.map((o) => o.id));
+        const mode =
+          localStorage.getItem("opscontrol.customerSelectionMode") === "ALL" &&
+          user.all_customers_authorized
+            ? "ALL"
+            : "SELECTED";
+        const selected = mode === "ALL" ? orgs.map((o) => o.id) : valid;
+        localStorage.setItem("opscontrol.customerSelectionMode", mode);
+        localStorage.setItem(
+          "opscontrol.organizationIds",
+          JSON.stringify(selected),
+        );
+        setScopeMode(mode);
+        setOrganizationIds(selected);
         setScopeReady(true);
         setError(null);
       })
@@ -284,8 +305,27 @@ export default function App({ user }) {
       setError(e.message || "Unable to add note");
     }
   };
+  useEffect(() => {
+    const route = () => {
+      if (
+        window.location.hash.startsWith("#/pipelines/") &&
+        canNavigate(user, "Data Pipeline Monitoring")
+      )
+        setActive("Data Pipeline Monitoring");
+    };
+    window.addEventListener("hashchange", route);
+    return () => window.removeEventListener("hashchange", route);
+  }, [user]);
   const navigate = (page, selection = {}) => {
     if (!canNavigate(user, page)) return;
+    if (page === "Data Pipeline Monitoring")
+      window.location.hash = "/pipelines/inventory";
+    else if (window.location.hash.startsWith("#/pipelines/"))
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
     setTarget(selection);
     setActive(page);
     setSelectedId(null);
@@ -309,10 +349,29 @@ export default function App({ user }) {
   const scopeKey =
     (user?.authorization_revision || "") +
     organizationIds.join(",") +
+    scopeMode +
     environment;
   return (
     <div className="app-shell">
       <TopNav
+        allCustomersAuthorized={Boolean(user.all_customers_authorized)}
+        allCustomersSelected={scopeMode === "ALL"}
+        onAllCustomersChange={(enabled) => {
+          const mode = enabled ? "ALL" : "SELECTED";
+          const selected = enabled ? organizations.map((o) => o.id) : [];
+          localStorage.setItem("opscontrol.customerSelectionMode", mode);
+          localStorage.setItem(
+            "opscontrol.organizationIds",
+            JSON.stringify(selected),
+          );
+          generation.current++;
+          setJobs([]);
+          setDetails({});
+          setSelectedId(null);
+          setTarget({});
+          setScopeMode(mode);
+          setOrganizationIds(selected);
+        }}
         active={active}
         onChange={navigate}
         environment={environment}
@@ -328,6 +387,12 @@ export default function App({ user }) {
         organizations={organizations}
         organizationIds={organizationIds}
         onOrganizationChange={(ids) => {
+          localStorage.setItem("opscontrol.customerSelectionMode", "SELECTED");
+          localStorage.setItem(
+            "opscontrol.organizationIds",
+            JSON.stringify(ids),
+          );
+          setScopeMode("SELECTED");
           generation.current++;
           setSelectedId(null);
           setDetails({});
@@ -364,16 +429,11 @@ export default function App({ user }) {
           />
         )}
         {scopeReady && active === "Data Pipeline Monitoring" && (
-          <DomainMonitoring
+          <PipelineWorkspace
             key={scopeKey + target.resourceId}
-            domain="ETL"
+            user={user}
             organizationIds={organizationIds}
             environment={environment}
-            jobs={jobs}
-            loading={loading}
-            error={error}
-            onSelectExecution={selectJob}
-            onNavigate={navigate}
             initialResourceId={target.resourceId}
           />
         )}

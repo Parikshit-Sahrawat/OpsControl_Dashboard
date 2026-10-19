@@ -1,9 +1,9 @@
 """Provider-scoped internal administration. Every service checks its exact permission."""
 
-import re, uuid
-from fastapi import APIRouter, Depends, HTTPException, Query
+import re, uuid, hashlib, json
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
-from sqlalchemy import select, func, delete, text, case, literal, union_all, Uuid
+from sqlalchemy import select, func, text, case, literal, union_all, Uuid
 from sqlalchemy.exc import IntegrityError
 from app.db.session import SessionLocal
 from app.security.models import User, OrganizationMembership, SecurityAuditEvent
@@ -12,7 +12,6 @@ from app.security.access_models import (
     Department,
     DepartmentMembership,
     Role,
-    Permission,
     RolePermission,
     UserRoleAssignment,
     DepartmentRoleAssignment,
@@ -25,7 +24,6 @@ from app.security.access_control import (
 )
 from app.security.permission_catalog import (
     PERMISSIONS,
-    PROVIDER_ID,
     LEGACY_ROLES,
     role_id,
     delegable,
@@ -33,16 +31,23 @@ from app.security.permission_catalog import (
 from app.security.passwords import hash_password
 from app.security.http import actor, revoke_sessions
 from app.security.audit import log_event
+from app.security.boundaries import delegation
+import app.security.delegation  # noqa: F401 - register scoped administration reads
 from app.models import Organization
 
 router = APIRouter(prefix="/api/v1/access", tags=["Internal Access Management"])
 
 
-def session():
+def session(request: Request):
     # Internal objects are not customer-owned ORM objects. Provider constraints
     # and explicit service checks are mandatory here; global selector is ignored.
     with SessionLocal() as db:
         try:
+            if request.method not in {"GET", "HEAD", "OPTIONS"}:
+                from app.security.boundaries import transaction_authority
+
+                transaction_authority(db)
+            db.info["access_administration"] = True
             yield db
         except IntegrityError:
             db.rollback()
@@ -74,6 +79,9 @@ def own(db, model, id, *, lock=False):
         or getattr(row, "service_provider_id", None) != actor().service_provider_id
     ):
         raise HTTPException(404, "Provider record not found")
+    from app.security.delegation import check_record
+
+    check_record(db, model, row, actor())
     return row
 
 
@@ -117,6 +125,45 @@ def protected_employee_ids(db, ids):
 
 def protect_employee(db, u, authorization=False):
     p = actor()
+    if authorization and not p.platform_admin:
+        from app.security.access_models import AccessBoundary
+
+        departments = select(DepartmentMembership.department_id).where(
+            DepartmentMembership.user_id == u.id, DepartmentMembership.active.is_(True)
+        )
+        if db.scalar(
+            select(AccessBoundary.id)
+            .where(
+                AccessBoundary.active.is_(True),
+                AccessBoundary.kind.in_(["LIMIT", "DENY", "ALL_CUSTOMERS", "DELEGATE"]),
+                (AccessBoundary.user_id == u.id)
+                | AccessBoundary.department_id.in_(departments),
+            )
+            .limit(1)
+        ):
+            raise HTTPException(
+                403, "Protected authorization boundary requires platform authority"
+            )
+    if not p.platform_admin and u.id != p.user_id:
+        from app.security.access_models import AccessBoundary
+
+        memberships = DepartmentMembership.__table__
+        protected_departments = select(memberships.c.department_id).where(
+            memberships.c.user_id == u.id, memberships.c.active.is_(True)
+        )
+        if db.scalar(
+            select(AccessBoundary.id)
+            .where(
+                AccessBoundary.active.is_(True),
+                AccessBoundary.kind.in_(["ALL_CUSTOMERS", "DELEGATE"]),
+                (AccessBoundary.user_id == u.id)
+                | AccessBoundary.department_id.in_(protected_departments),
+            )
+            .limit(1)
+        ):
+            raise HTTPException(
+                403, "Privileged scope/delegation identity requires platform authority"
+            )
     if u.platform_admin and not p.platform_admin:
         raise HTTPException(403, "Break-glass account is protected")
     if authorization and u.id == p.user_id and not p.platform_admin:
@@ -131,7 +178,10 @@ def protect_employee(db, u, authorization=False):
         )
 
 
-def delegate(db, role):
+def delegate(db, role, edit=False):
+    from app.security.delegation import check_role
+
+    check_role(db, role, actor(), edit=edit)
     if role.code == "platform-administrator":
         raise HTTPException(
             422,
@@ -153,6 +203,9 @@ def delegate(db, role):
 
 
 def affected_self(db, department_id):
+    from app.security.delegation import check_inherited
+
+    check_inherited(db, department_id, actor())
     if not actor().platform_admin and db.scalar(
         select(DepartmentMembership.id).where(
             DepartmentMembership.department_id == department_id,
@@ -266,6 +319,7 @@ class MemberIn(Strict):
 
 
 class RoleIn(Strict):
+    expected_revision: str | None = Field(default=None, max_length=64)
     name: str = Field(min_length=1, max_length=160)
     description: str | None = Field(default=None, max_length=1000)
     permissions: list[str] = Field(default_factory=list, max_length=100)
@@ -419,6 +473,9 @@ def create_employee(payload: EmployeeCreate, db=Depends(session)):
             403, "Only break-glass administration may create a platform administrator"
         )
     department = own(db, Department, payload.department_id, lock=True)
+    from app.security.delegation import check_inherited
+
+    check_inherited(db, department.id, actor())
     if not department.active:
         raise HTTPException(422, "Select an active department")
     for assignment in db.scalars(
@@ -609,6 +666,20 @@ def departments(
 @router.post("/departments", status_code=201)
 def create_department(payload: DepartmentCreate, db=Depends(session)):
     allowed("access.manage_departments")
+    creation_boundary = None
+    if not actor().platform_admin:
+        from app.security.access_models import AccessBoundary
+
+        eligible = [
+            b
+            for b in actor().boundaries
+            if b["kind"] == "DELEGATE" and b["specification"].get("create_departments")
+        ]
+        if not eligible:
+            raise HTTPException(403, "Explicit department creation delegation required")
+        creation_boundary = own(
+            db, AccessBoundary, uuid.UUID(eligible[0]["id"]), lock=True
+        )
     if payload.manager_id:
         own(db, User, payload.manager_id, lock=True)
     d = Department(
@@ -616,6 +687,27 @@ def create_department(payload: DepartmentCreate, db=Depends(session)):
     )
     db.add(d)
     db.flush()
+    if creation_boundary is not None:
+        from app.security.access_models import AccessBoundaryDecision
+        import hashlib
+
+        before = dict(creation_boundary.specification)
+        creation_boundary.specification = {
+            **before,
+            "departments": before["departments"] + [str(d.id)],
+        }
+        creation_boundary.revision += 1
+        db.add(
+            AccessBoundaryDecision(
+                boundary_id=creation_boundary.id,
+                actor_id=actor().user_id,
+                request_key="department-create:" + str(d.id),
+                request_hash=hashlib.sha256(str(d.id).encode()).hexdigest(),
+                reason="Created empty department within explicitly granted department-creation delegation",
+                revision=creation_boundary.revision,
+                evidence={"before": before, "after": creation_boundary.specification},
+            )
+        )
     commit(db, "DEPARTMENT_CREATE", "department", d.id)
     return {"id": str(d.id), "name": d.name, "code": d.code, "active": d.active}
 
@@ -744,9 +836,20 @@ def permission_catalog(db=Depends(session)):
             "module": k.split(".")[0],
             "action": k.split(".")[1],
             "delegable": delegable(k),
+            "within_delegation": actor().platform_admin
+            or k in delegation(actor())["permissions"],
         }
         for k, v in PERMISSIONS.items()
     ]
+
+
+def role_revision(role, keys):
+    return hashlib.sha256(
+        json.dumps(
+            [str(role.id), role.name, role.description, role.active, sorted(keys)],
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()
 
 
 @router.get("/roles")
@@ -773,6 +876,9 @@ def role_list(db=Depends(session)):
             "description": r.description,
             "active": r.active,
             "system": r.system,
+            "authorization_revision": role_revision(
+                r, [k for rid, k in perms if rid == r.id]
+            ),
             "permissions": [k for rid, k in perms if rid == r.id and k in PERMISSIONS],
         }
         for r in rows
@@ -782,8 +888,11 @@ def role_list(db=Depends(session)):
 def checked_permissions(keys):
     if len(keys) != len(set(keys)) or not set(keys) <= PERMISSIONS.keys():
         raise HTTPException(422, "Unknown or duplicate implemented permission")
-    if not actor().platform_admin and any(not delegable(k) for k in keys):
-        raise HTTPException(403, "Permission is outside your delegation authority")
+    if not actor().platform_admin:
+        from app.security.delegation import covers
+
+        if any(not delegable(k) for k in keys) or not covers(actor(), permissions=keys):
+            raise HTTPException(403, "Permission is outside your delegation authority")
 
 
 @router.post("/roles", status_code=201)
@@ -818,8 +927,25 @@ def update_role(role_id: uuid.UUID, payload: RoleIn, db=Depends(session)):
         )
     if r.id in actor().role_ids and not actor().platform_admin:
         raise HTTPException(403, "Cannot edit a role in your own authorization path")
-    delegate(db, r)
+    delegate(db, r, edit=True)
+    if not actor().platform_admin and db.scalar(
+        select(UserRoleAssignment.id)
+        .where(UserRoleAssignment.role_id == r.id, UserRoleAssignment.effect == "DENY")
+        .limit(1)
+    ):
+        raise HTTPException(403, "Cannot change a role contributing an explicit deny")
     checked_permissions(payload.permissions)
+    keys = list(
+        db.scalars(
+            select(RolePermission.permission_key).where(
+                RolePermission.role_id == r.id, RolePermission.active.is_(True)
+            )
+        )
+    )
+    if payload.expected_revision != role_revision(r, keys):
+        raise HTTPException(
+            409, "Role revision changed; refresh before saving permissions"
+        )
     r.name = payload.name
     r.description = payload.description
     r.active = payload.active
@@ -872,6 +998,8 @@ def remove_employee_role(
     a = own(db, UserRoleAssignment, assignment_id)
     if a.user_id != u.id:
         raise HTTPException(404, "Assignment not found")
+    if a.effect == "DENY" and not actor().platform_admin:
+        raise HTTPException(403, "Cannot disable an explicit permission deny")
     r = own(db, Role, a.role_id)
     delegate(db, r)
     # Remove matching legacy sources too; otherwise compatibility would restore
@@ -1000,6 +1128,15 @@ def grants(
     stmt = select(sources).where(
         sources.c.service_provider_id == actor().service_provider_id
     )
+    if not actor().platform_admin:
+        from app.security.delegation import budget, visible_users
+
+        permitted = budget(actor())
+        stmt = stmt.where(
+            sources.c.organization_id.in_(permitted["customers"]),
+            sources.c.user_id.in_(visible_users(actor()))
+            | sources.c.department_id.in_(permitted["departments"]),
+        )
     if user_id:
         own(db, User, user_id)
         stmt = stmt.where(sources.c.user_id == user_id)
@@ -1039,6 +1176,15 @@ def prepare_grant(payload, db):
         raise HTTPException(422, "Customer deny is employee-only and has no role")
     if payload.effect == "ALLOW" and payload.role_id is None:
         raise HTTPException(422, "Allow grant requires an assigned role")
+    if not actor().platform_admin:
+        from app.security.delegation import budget
+
+        if str(payload.organization_id) not in budget(actor())["customers"]:
+            raise HTTPException(
+                403, "Customer exceeds explicit administrative delegation"
+            )
+        if payload.effect == "DENY":
+            raise HTTPException(403, "Explicit restrictions require platform authority")
     if db.get(Organization, payload.organization_id) is None:
         raise HTTPException(404, "Customer not found")
     if payload.user_id:
@@ -1089,6 +1235,7 @@ def prepare_grant(payload, db):
             )
         ):
             raise HTTPException(422, "Assign this role to the department first")
+    db.info["delegation_customers"] = {payload.organization_id}
     if payload.role_id:
         delegate(db, own(db, Role, payload.role_id))
     g = CustomerAccessGrant(
@@ -1157,6 +1304,11 @@ def remove_grant(grant_id: uuid.UUID, db=Depends(session)):
         legacy = db.get(OrganizationMembership, grant_id)
         if legacy is None:
             raise HTTPException(404, "Customer grant not found")
+        if not actor().platform_admin:
+            from app.security.delegation import budget
+
+            if str(legacy.organization_id) not in budget(actor())["customers"]:
+                raise HTTPException(403, "Customer exceeds delegation")
         protect_employee(db, own(db, User, legacy.user_id, lock=True), True)
         delegate(db, own(db, Role, role_id_for_legacy(legacy.role)))
         db.delete(legacy)
@@ -1170,6 +1322,11 @@ def remove_grant(grant_id: uuid.UUID, db=Depends(session)):
         return
     if g.service_provider_id != actor().service_provider_id:
         raise HTTPException(404, "Customer grant not found")
+    if not actor().platform_admin and g.effect == "DENY":
+        raise HTTPException(403, "Cannot disable an explicit restriction")
+    from app.security.delegation import check_record
+
+    check_record(db, CustomerAccessGrant, g, actor())
     if g.user_id:
         protect_employee(db, own(db, User, g.user_id, lock=True), True)
     else:
@@ -1243,6 +1400,9 @@ def transfer_department(
     u = own(db, User, user_id, lock=True)
     protect_employee(db, u, True)
     d = own(db, Department, payload.department_id, lock=True)
+    from app.security.delegation import check_inherited
+
+    check_inherited(db, d.id, actor())
     if not d.active:
         raise HTTPException(422, "Select an active department")
     for assignment in db.scalars(

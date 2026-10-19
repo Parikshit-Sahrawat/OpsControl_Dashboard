@@ -6,8 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select, func, or_, cast, String
 from app.db.session import get_db
+from app.api.pagination import page
 from app.models import OperationalIncident, IncidentActivity
-from app.native_incidents.models import NativeIncidentDetails, NativeIncidentAlert
+from app.native_incidents.models import (
+    NativeIncidentDetails,
+    NativeIncidentAlert,
+    NativeIncidentFailure,
+)
 from app.native_incidents import service
 from app.security.access_control import require_permission, resolve_access
 from app.security.models import User
@@ -43,6 +48,11 @@ class Transition(Revision):
     note: str | None = Field(default=None, max_length=4000)
 
 
+class AssessmentRequest(Revision):
+    idempotency_key: str = Field(min_length=1, max_length=120)
+    observation_seconds: int | None = Field(default=None, ge=60, le=86400)
+
+
 class Note(Input):
     text: str = Field(min_length=1, max_length=4000)
     evidence_reference: str | None = Field(default=None, max_length=1000)
@@ -60,9 +70,13 @@ def serialized(row):
     return {c.name: getattr(row, c.name) for c in row.__table__.columns}
 
 
-def item(db, row):
+def item(db, row, details=None):
     result = serialized(row)
-    d = db.get(NativeIncidentDetails, row.id)
+    d = (
+        details.get(row.id)
+        if details is not None
+        else db.get(NativeIncidentDetails, row.id)
+    )
     result["details"] = (
         serialized(d)
         if d
@@ -81,9 +95,26 @@ def item(db, row):
 
 
 def checked(db, incident_id, permission, lock=False):
+    # Middleware permits either incident mutation family; resource restrictions
+    # must use the exact action selected by this authoritative handler.
+    from app.security.access_control import request_permissions
+
+    request_permissions.set((permission,))
     require_permission(permission)
     query = select(OperationalIncident).where(OperationalIncident.id == incident_id)
-    row = db.scalar(query.with_for_update() if lock else query)
+    if lock:
+        from app.native_incidents.pentaho import lock_resources
+
+        visible = db.scalar(query)
+        if not visible:
+            raise HTTPException(404, "Incident not found")
+        require_permission(permission, visible.organization_id)
+        lock_resources(db, incident_id)
+    row = db.scalar(
+        (query.with_for_update() if lock else query).execution_options(
+            populate_existing=True
+        )
+    )
     if not row:
         raise HTTPException(404, "Incident not found")
     require_permission(permission, row.organization_id)
@@ -101,6 +132,8 @@ def check_revision(db, row, revision):
 def inventory(
     organization_id: list[UUID] | None = Query(None),
     status: State | None = None,
+    resource_id: UUID | None = None,
+    history_id: UUID | None = None,
     environment: Environment | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -131,6 +164,18 @@ def inventory(
                 == NativeIncidentAlert.organization_id,
             )
         )
+        executions = (
+            select(NativeIncidentFailure.incident_id)
+            .join(
+                MonitoringResource,
+                MonitoringResource.id == NativeIncidentFailure.resource_id,
+            )
+            .where(
+                MonitoringResource.environment == environment,
+                MonitoringResource.organization_id
+                == NativeIncidentFailure.organization_id,
+            )
+        )
         sources = select(MonitoringResource.data_source_id).where(
             MonitoringResource.environment == environment
         )
@@ -140,11 +185,19 @@ def inventory(
         query = query.where(
             or_(
                 OperationalIncident.id.in_(bound),
+                OperationalIncident.id.in_(executions),
                 OperationalIncident.data_source_id.in_(sources),
                 (OperationalIncident.source_kind == "CORRELATION")
                 & OperationalIncident.source_reference.in_(groups),
             )
         )
+    if resource_id or history_id:
+        failures = select(NativeIncidentFailure.incident_id)
+        if resource_id:
+            failures = failures.where(NativeIncidentFailure.resource_id == resource_id)
+        if history_id:
+            failures = failures.where(NativeIncidentFailure.history_id == history_id)
+        query = query.where(OperationalIncident.id.in_(failures))
     if status:
         query = query.where(OperationalIncident.status == status)
     total = db.scalar(select(func.count()).select_from(query.subquery()))
@@ -153,8 +206,16 @@ def inventory(
         .limit(limit)
         .offset(offset)
     ).all()
+    details = {
+        d.incident_id: d
+        for d in db.scalars(
+            select(NativeIncidentDetails).where(
+                NativeIncidentDetails.incident_id.in_([r.id for r in rows])
+            )
+        )
+    }
     return {
-        "items": [item(db, r) for r in rows],
+        "items": [item(db, r, details) for r in rows],
         "total": total,
         "limit": limit,
         "offset": offset,
@@ -199,7 +260,110 @@ def detail(incident_id: UUID, db=Depends(get_db)):
             "evidence": {},
         }
     )
+    from app.native_incidents.models import (
+        NativeIncidentFailure,
+        NativeRecoveryAssessment,
+    )
+
+    result["execution_failures"] = [
+        serialized(x)
+        for x in db.scalars(
+            select(NativeIncidentFailure)
+            .where(NativeIncidentFailure.incident_id == row.id)
+            .order_by(
+                NativeIncidentFailure.discovered_at.desc(), NativeIncidentFailure.id
+            )
+            .limit(200)
+        )
+    ]
+    result["recovery_assessments"] = [
+        serialized(x)
+        for x in db.scalars(
+            select(NativeRecoveryAssessment)
+            .where(NativeRecoveryAssessment.incident_id == row.id)
+            .order_by(
+                NativeRecoveryAssessment.assessed_at.desc(), NativeRecoveryAssessment.id
+            )
+            .limit(200)
+        )
+    ]
     return result
+
+
+@router.get("/{incident_id}/activities")
+def activities(
+    incident_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    row = checked(db, incident_id, "incidents.view")
+    return page(
+        db,
+        select(IncidentActivity).where(
+            IncidentActivity.incident_id == row.id,
+            IncidentActivity.organization_id == row.organization_id,
+        ),
+        (IncidentActivity.occurred_at.desc(), IncidentActivity.id),
+        limit,
+        offset,
+        serialized,
+    )
+
+
+def evidence_page(db, row, model, ordering, limit, offset):
+    query = select(model).where(
+        model.incident_id == row.id, model.organization_id == row.organization_id
+    )
+    return {
+        "items": [
+            serialized(x)
+            for x in db.scalars(
+                query.order_by(ordering.desc(), model.id).limit(limit).offset(offset)
+            )
+        ],
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "limit": limit,
+        "offset": offset,
+    }
+
+
+@router.get("/{incident_id}/execution-failures")
+def failure_evidence(
+    incident_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.native_incidents.models import NativeIncidentFailure as Failure
+
+    row = checked(db, incident_id, "incidents.view")
+    return evidence_page(db, row, Failure, Failure.discovered_at, limit, offset)
+
+
+@router.get("/{incident_id}/recovery-assessments")
+def assessments(
+    incident_id: UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.native_incidents.models import NativeRecoveryAssessment as Assessment
+
+    row = checked(db, incident_id, "incidents.view")
+    return evidence_page(db, row, Assessment, Assessment.assessed_at, limit, offset)
+
+
+@router.post("/{incident_id}/recovery-assessments")
+def assess(incident_id: UUID, body: AssessmentRequest, db=Depends(get_db)):
+    from app.native_incidents.pentaho import assess as evaluate
+
+    row = checked(db, incident_id, "incidents.manage", True)
+    assessment = evaluate(
+        db, row, body.revision, body.idempotency_key, body.observation_seconds
+    )
+    db.commit()
+    return serialized(assessment)
 
 
 @router.get("/{incident_id}/recovery-preview")

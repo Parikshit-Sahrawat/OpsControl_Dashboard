@@ -1,12 +1,14 @@
 """Scoped ARCH-001 control plane. Existing contracts remain available for compatibility."""
 
 import hashlib, json, uuid
-from datetime import datetime, timezone, timedelta
+from typing import Literal
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import Field
-from sqlalchemy import select, func, or_
+from sqlalchemy import select, func, or_, case, cast, String
 from sqlalchemy.exc import IntegrityError
 from app.db.session import get_db
+from app.api.pagination import page, children
 from app.models import (
     Organization,
     VM,
@@ -14,25 +16,37 @@ from app.models import (
     DataSource,
     Collector,
     MetricDefinition,
-    MetricSample,
-    LogSource,
-    LogEvent,
     JobOrderHistory,
     JobStepExecution,
-    CollectorRun,
 )
 from app.telemetry.models import (
     ManagedAgent,
     CollectorMethod,
-    CollectorConfigVersion,
     TelemetryReceipt,
 )
 from app.telemetry.configuration import MethodInput, validate_method, host_os
 from app.security.access_control import require_permission
 from app.security.audit import log_event
 from app.security.scope import current_principal
-from app.unified.models import *
-from app.unified.schemas import *
+from app.unified.models import (
+    ExpectedExecutionWindow,
+    MonitoringResource,
+    ParameterActivation,
+    ParameterVersion,
+    ResourceCondition,
+    ResourceDependency,
+    ResourceMappingIssue,
+)
+from app.unified.schemas import (
+    APICreate,
+    ETLCreate,
+    Environment,
+    Strict,
+    VMCreate,
+    import_document,
+    require_safe_config,
+    validate_parameters,
+)
 
 router = APIRouter(prefix="/api/v1/unified", tags=["Unified Monitoring"])
 
@@ -79,6 +93,10 @@ def commit(db):
 
 def checked_resource_parameters(db, r, configuration):
     config = checked_parameters(r.domain, configuration)
+    if r.domain == "ETL" and r.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_schedule import authority
+
+        authority(db, r, config, utc(), strict=True)
     if (
         r.domain == "ETL"
         and r.configuration.get("platform") == "NIFI"
@@ -145,12 +163,18 @@ def linked_vm(db, id, permission="resources.view"):
     return parent
 
 
-def binding(db, r):
+def binding(db, r, projection=None):
     config = dict(r.configuration or {})
     if r.domain == "API" and config.get("legacy"):
         from urllib.parse import urlsplit
 
-        source = db.get(DataSource, r.data_source_id)
+        source = (
+            projection["sources"].get(r.data_source_id)
+            if projection is not None
+            else db.get(DataSource, r.data_source_id)
+        )
+        if source is None:
+            raise HTTPException(404, "Resource source unavailable")
         parsed = urlsplit(source.endpoint or "")
         config.update(
             {
@@ -162,13 +186,26 @@ def binding(db, r):
         )
     parent = None
     if r.linked_vm_id:
-        parent = db.scalar(
-            select(MonitoringResource).where(MonitoringResource.vm_id == r.linked_vm_id)
+        parent = (
+            projection["parents"].get(r.linked_vm_id)
+            if projection is not None
+            else db.scalar(
+                select(MonitoringResource).where(
+                    MonitoringResource.vm_id == r.linked_vm_id
+                )
+            )
         )
+    organization = (
+        projection["organizations"].get(r.organization_id)
+        if projection is not None
+        else db.get(Organization, r.organization_id)
+    )
+    if organization is None:
+        raise HTTPException(404, "Resource customer unavailable")
     inherited = {
         "resource_id": str(r.id),
         "customer_id": str(r.organization_id),
-        "customer": db.get(Organization, r.organization_id).name,
+        "customer": organization.name,
         "environment": r.environment,
         "domain": r.domain,
     }
@@ -225,13 +262,19 @@ def binding(db, r):
     return inherited
 
 
-def output(db, r):
-    parameters = db.scalar(
-        select(ParameterVersion.version).where(
-            ParameterVersion.resource_id == r.id, ParameterVersion.status == "ACTIVE"
+def output(db, r, projection=None):
+    parameters = (
+        r.id in projection["parameters"]
+        if projection is not None
+        else db.scalar(
+            select(ParameterVersion.version).where(
+                ParameterVersion.resource_id == r.id,
+                ParameterVersion.status == "ACTIVE",
+            )
         )
     )
     setup = (r.configuration or {}).get("alert_setup") or {}
+    inherited = binding(db, r, projection)
     return {
         **document(r),
         "event_parameters_configured": bool(parameters),
@@ -239,10 +282,65 @@ def output(db, r):
         "notification_delivery_configured": bool(
             setup.get("destinations") or setup.get("in_app")
         ),
-        "inherited": binding(db, r),
+        "inherited": inherited,
         "has_collector": bool(
-            r.primary_collector_id
-            or (r.linked_vm_id and binding(db, r).get("collector_id"))
+            r.primary_collector_id or (r.linked_vm_id and inherited.get("collector_id"))
+        ),
+    }
+
+
+def inventory_projection(db, rows):
+    """Authorized, page-bounded preload; never reused between requests/scopes."""
+    ids = [r.id for r in rows]
+    organizations = {r.organization_id for r in rows}
+    vms = {r.linked_vm_id for r in rows if r.linked_vm_id}
+    sources = {
+        r.data_source_id
+        for r in rows
+        if r.domain == "API" and (r.configuration or {}).get("legacy")
+    }
+    return {
+        "parameters": (
+            set(
+                db.scalars(
+                    select(ParameterVersion.resource_id).where(
+                        ParameterVersion.resource_id.in_(ids),
+                        ParameterVersion.status == "ACTIVE",
+                    )
+                )
+            )
+            if ids
+            else set()
+        ),
+        "organizations": (
+            {
+                o.id: o
+                for o in db.scalars(
+                    select(Organization).where(Organization.id.in_(organizations))
+                )
+            }
+            if organizations
+            else {}
+        ),
+        "parents": (
+            {
+                r.vm_id: r
+                for r in db.scalars(
+                    select(MonitoringResource).where(MonitoringResource.vm_id.in_(vms))
+                )
+            }
+            if vms
+            else {}
+        ),
+        "sources": (
+            {
+                d.id: d
+                for d in db.scalars(
+                    select(DataSource).where(DataSource.id.in_(sources))
+                )
+            }
+            if sources
+            else {}
         ),
     }
 
@@ -275,8 +373,9 @@ def inventory(
         .offset(offset)
         .limit(limit)
     ).all()
+    projection = inventory_projection(db, rows)
     return {
-        "items": [output(db, r) for r in rows],
+        "items": [output(db, r, projection) for r in rows],
         "total": total,
         "limit": limit,
         "offset": offset,
@@ -1349,6 +1448,17 @@ def executions(
     id: uuid.UUID,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
+    outcome: (
+        Literal[
+            "SUCCESS",
+            "SUCCESS_AFTER_RETRY",
+            "FAILED",
+            "CANCELLED",
+            "UNKNOWN",
+            "WAITING_FOR_RETRY",
+        ]
+        | None
+    ) = None,
     db=Depends(get_db),
 ):
     r = resource(db, id, "etl.view")
@@ -1357,42 +1467,145 @@ def executions(
     query = select(JobOrderHistory).where(
         JobOrderHistory.job_order_id == r.job_order_id
     )
-    rows = db.scalars(
-        query.order_by(JobOrderHistory.created_at.desc(), JobOrderHistory.id)
-        .offset(offset)
-        .limit(limit)
-    ).all()
-    return {
-        "total": db.scalar(select(func.count()).select_from(query.subquery())),
-        "items": [
-            {
-                **document(h),
-                "steps": [
-                    document(s)
-                    for s in db.scalars(
-                        select(JobStepExecution).where(
-                            JobStepExecution.history_id == h.id
-                        )
-                    ).all()
-                ],
-            }
-            for h in rows
-        ],
-    }
+    if outcome:
+        # Match the existing display projection without upgrading incomplete
+        # native evidence from a legacy process/scheduler status.
+        native = JobOrderHistory.pentaho_resource_id.is_not(None)
+        projected = func.coalesce(
+            JobOrderHistory.pentaho_outcome,
+            case(
+                (JobOrderHistory.pentaho_lifecycle == "RUNNING", "RUNNING"),
+                else_="UNKNOWN",
+            ),
+        )
+        waiting = JobOrderHistory.pentaho_lifecycle == "WAITING_FOR_RETRY"
+        if outcome == "WAITING_FOR_RETRY":
+            query = query.where(waiting)
+        else:
+            query = query.where(
+                or_(
+                    native & (projected == outcome) & ~func.coalesce(waiting, False),
+                    ~native & (cast(JobOrderHistory.status, String) == outcome),
+                )
+            )
+    result = page(
+        db,
+        query,
+        (JobOrderHistory.created_at.desc(), JobOrderHistory.id),
+        limit,
+        offset,
+        document,
+    )
+    ids = [uuid.UUID(str(h["id"])) for h in result["items"]]
+    steps, totals = children(
+        db,
+        JobStepExecution,
+        JobStepExecution.history_id,
+        ids,
+        (JobStepExecution.started_at.asc().nulls_last(), JobStepExecution.id),
+        200,
+        document,
+    )
+    from app.unified.pentaho_models import PentahoAttempt
+
+    counts = (
+        dict(
+            db.execute(
+                select(PentahoAttempt.history_id, func.count())
+                .where(PentahoAttempt.history_id.in_(ids))
+                .group_by(PentahoAttempt.history_id)
+            ).all()
+        )
+        if ids
+        else {}
+    )
+    for h in result["items"]:
+        key = uuid.UUID(str(h["id"]))
+        h.update(
+            steps=steps[key],
+            steps_total=totals.get(key, 0),
+            steps_has_more=totals.get(key, 0) > len(steps[key]),
+            attempt_count=counts.get(key, 0),
+        )
+    return result
+
+
+def execution_history(db, id, history_id):
+    r = resource(db, id, "etl.view")
+    h = db.scalar(
+        select(JobOrderHistory).where(
+            JobOrderHistory.id == history_id,
+            JobOrderHistory.job_order_id == r.job_order_id,
+        )
+    )
+    if r.domain != "ETL" or not h:
+        raise HTTPException(404, "Execution unavailable")
+    return h
+
+
+@router.get("/resources/{id}/executions/{history_id}/steps")
+def execution_steps(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    h = execution_history(db, id, history_id)
+    return page(
+        db,
+        select(JobStepExecution).where(JobStepExecution.history_id == h.id),
+        (JobStepExecution.started_at.asc().nulls_last(), JobStepExecution.id),
+        limit,
+        offset,
+        document,
+    )
+
+
+def window_query(id, status=None):
+    query = select(ExpectedExecutionWindow).where(
+        ExpectedExecutionWindow.resource_id == id
+    )
+    return query.where(ExpectedExecutionWindow.status == status) if status else query
 
 
 @router.get("/resources/{id}/schedule-windows")
 def windows(id: uuid.UUID, limit: int = Query(100, ge=1, le=500), db=Depends(get_db)):
-    r = resource(db, id, "etl.view")
+    resource(db, id, "etl.view")
     return [
         document(w)
         for w in db.scalars(
-            select(ExpectedExecutionWindow)
-            .where(ExpectedExecutionWindow.resource_id == id)
-            .order_by(ExpectedExecutionWindow.scheduled_at.desc())
+            window_query(id)
+            .order_by(
+                ExpectedExecutionWindow.scheduled_at.desc(), ExpectedExecutionWindow.id
+            )
             .limit(limit)
         )
     ]
+
+
+@router.get("/resources/{id}/schedule-occurrences")
+def occurrence_page(
+    id: uuid.UUID,
+    status: (
+        Literal[
+            "PENDING_GRACE", "OBSERVED", "DELAYED", "NO_RUN", "UNKNOWN", "INCOMPLETE"
+        ]
+        | None
+    ) = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    resource(db, id, "etl.view")
+    return page(
+        db,
+        window_query(id, status),
+        (ExpectedExecutionWindow.scheduled_at.desc(), ExpectedExecutionWindow.id),
+        limit,
+        offset,
+        document,
+    )
 
 
 class StandaloneImport(Strict):
@@ -1496,4 +1709,451 @@ def test_connection(id: uuid.UUID, db=Depends(get_db)):
         "observed_at": utc(),
         "connection_verified": True,
         "live_verified": False,  # Genuine provider acceptance is separately recorded.
+    }
+
+
+class PentahoRecoveryProposal(Strict):
+    recovery_history_id: uuid.UUID
+    evidence_ids: list[uuid.UUID] = Field(min_length=2, max_length=25)
+    reason: str = Field(min_length=10, max_length=2000)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+class PentahoRecoveryReview(Strict):
+    action: Literal["CONFIRM", "REVERSE"]
+    expected_revision: int = Field(ge=1)
+    reason: str = Field(min_length=10, max_length=2000)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+@router.get("/resources/{id}/executions/{history_id}/attempts")
+def pentaho_attempts(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_recovery import history
+    from app.unified.pentaho_models import PentahoAttempt, PentahoAlias, PentahoRevision
+
+    r = resource(db, id, "etl.view")
+    h = history(db, r, history_id)
+    query = select(PentahoAttempt).where(PentahoAttempt.history_id == h.id)
+    attempts = db.scalars(
+        query.order_by(PentahoAttempt.attempt_order).offset(offset).limit(limit)
+    ).all()
+    ids = [a.id for a in attempts]
+    aliases, alias_totals = children(
+        db,
+        PentahoAlias,
+        PentahoAlias.attempt_id,
+        ids,
+        (PentahoAlias.created_at, PentahoAlias.id),
+        200,
+        document,
+    )
+    revisions, revision_totals = children(
+        db,
+        PentahoRevision,
+        PentahoRevision.attempt_id,
+        ids,
+        (PentahoRevision.revision.desc(), PentahoRevision.id),
+        100,
+        document,
+    )
+    return {
+        "execution": document(h),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            {
+                **document(a),
+                "aliases": aliases[a.id],
+                "aliases_total": alias_totals.get(a.id, 0),
+                "revisions": revisions[a.id],
+                "revisions_total": revision_totals.get(a.id, 0),
+            }
+            for a in attempts
+        ],
+    }
+
+
+@router.get(
+    "/resources/{id}/executions/{history_id}/attempts/{attempt_id}/{collection}"
+)
+def attempt_evidence(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    attempt_id: uuid.UUID,
+    collection: Literal["aliases", "revisions"],
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import PentahoAttempt, PentahoAlias, PentahoRevision
+
+    h = execution_history(db, id, history_id)
+    a = db.scalar(
+        select(PentahoAttempt).where(
+            PentahoAttempt.id == attempt_id, PentahoAttempt.history_id == h.id
+        )
+    )
+    if not a:
+        raise HTTPException(404, "Attempt unavailable")
+    model = PentahoAlias if collection == "aliases" else PentahoRevision
+    ordering = (
+        (model.created_at, model.id)
+        if collection == "aliases"
+        else (model.revision.desc(), model.id)
+    )
+    return page(
+        db,
+        select(model).where(model.attempt_id == a.id),
+        ordering,
+        limit,
+        offset,
+        document,
+    )
+
+
+@router.get("/resources/{id}/executions/{history_id}/recovery-links")
+def pentaho_recovery_links(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_recovery import history
+    from app.unified.pentaho_models import PentahoRecoveryLink, PentahoRecoveryDecision
+
+    r = resource(db, id, "etl.view")
+    h = history(db, r, history_id)
+    query = select(PentahoRecoveryLink).where(
+        PentahoRecoveryLink.organization_id == r.organization_id,
+        or_(
+            PentahoRecoveryLink.failed_history_id == h.id,
+            PentahoRecoveryLink.recovery_history_id == h.id,
+        ),
+    )
+    rows = db.scalars(
+        query.order_by(PentahoRecoveryLink.created_at, PentahoRecoveryLink.id)
+        .offset(offset)
+        .limit(limit)
+    ).all()
+    return {
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            {
+                **document(row),
+                "decisions": [
+                    document(d)
+                    for d in db.scalars(
+                        select(PentahoRecoveryDecision)
+                        .where(PentahoRecoveryDecision.link_id == row.id)
+                        .order_by(PentahoRecoveryDecision.revision)
+                        .limit(100)
+                    )
+                ],
+            }
+            for row in rows
+        ],
+    }
+
+
+@router.post("/resources/{id}/executions/{history_id}/recovery-links", status_code=201)
+def propose_pentaho_recovery(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    payload: PentahoRecoveryProposal,
+    db=Depends(get_db),
+):
+    from app.unified import pentaho_recovery as recovery
+
+    r = resource(db, id, "etl.investigate")
+    h = recovery.history(db, r, history_id, "etl.investigate")
+    row = recovery.propose(
+        db,
+        h,
+        payload.recovery_history_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+        payload.evidence_ids,
+    )
+    commit(db)
+    return document(row)
+
+
+@router.post(
+    "/resources/{id}/executions/{history_id}/recovery-links/{link_id}/decision"
+)
+def review_pentaho_recovery(
+    id: uuid.UUID,
+    history_id: uuid.UUID,
+    link_id: uuid.UUID,
+    payload: PentahoRecoveryReview,
+    db=Depends(get_db),
+):
+    from app.unified import pentaho_recovery as recovery
+
+    r = resource(db, id, "etl.investigate")
+    h = recovery.history(db, r, history_id, "etl.investigate")
+    row = recovery.review(
+        db,
+        h,
+        link_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+        payload.action,
+        payload.expected_revision,
+    )
+    commit(db)
+    return document(row)
+
+
+class PentahoEvidenceReviewDecision(Strict):
+    action: Literal["DEFER", "REJECT_CLAIM", "ACCEPT_VERIFIED_CLAIM", "ADOPT_LEGACY"]
+    expected_revision: int = Field(ge=1)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+    reason: str = Field(min_length=10, max_length=2000)
+
+
+@router.get("/resources/{id}/evidence-reviews")
+def pentaho_evidence_reviews(
+    id: uuid.UUID,
+    status: Literal["OPEN", "ACCEPTED", "REJECTED"] | None = None,
+    category: (
+        Literal[
+            "AMBIGUOUS_IDENTITY",
+            "NATIVE_ALIAS_CONFLICT",
+            "RETRY_RELATIONSHIP",
+            "EXECUTION_OUTCOME",
+            "LEGACY_ADOPTION",
+            "RECOVERY_IDENTITY",
+        ]
+        | None
+    ) = None,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import PentahoEvidenceReview
+
+    r = resource(db, id, "etl.view")
+    query = select(PentahoEvidenceReview).where(
+        PentahoEvidenceReview.resource_id == r.id,
+        PentahoEvidenceReview.organization_id == r.organization_id,
+    )
+    if status:
+        query = query.where(PentahoEvidenceReview.status == status)
+    if category:
+        query = query.where(PentahoEvidenceReview.category == category)
+    return {
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            document(row)
+            for row in db.scalars(
+                query.order_by(
+                    PentahoEvidenceReview.created_at, PentahoEvidenceReview.id
+                )
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
+    }
+
+
+@router.get("/resources/{id}/evidence-reviews/{review_id}")
+def pentaho_evidence_review_details(
+    id: uuid.UUID,
+    review_id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import (
+        PentahoEvidenceReview,
+        PentahoEvidenceDecision,
+    )
+
+    r = resource(db, id, "etl.view")
+    row = db.scalar(
+        select(PentahoEvidenceReview).where(
+            PentahoEvidenceReview.id == review_id,
+            PentahoEvidenceReview.resource_id == r.id,
+            PentahoEvidenceReview.organization_id == r.organization_id,
+        )
+    )
+    if not row:
+        raise HTTPException(404, "Evidence review unavailable")
+    query = select(PentahoEvidenceDecision).where(
+        PentahoEvidenceDecision.review_id == row.id
+    )
+    return {
+        "review": document(row),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "decisions": [
+            document(v)
+            for v in db.scalars(
+                query.order_by(PentahoEvidenceDecision.revision)
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
+    }
+
+
+@router.post("/resources/{id}/evidence-reviews/{review_id}/decision")
+def decide_pentaho_evidence_review(
+    id: uuid.UUID,
+    review_id: uuid.UUID,
+    payload: PentahoEvidenceReviewDecision,
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_review import decide
+
+    r = resource(db, id, "etl.resolve_identity")
+    row = decide(
+        db,
+        r,
+        review_id,
+        current_principal.get().user_id,
+        payload.action,
+        payload.expected_revision,
+        payload.idempotency_key,
+        payload.reason,
+    )
+    commit(db)
+    return document(row)
+
+
+class PentahoRecoveryIdentityIssue(Strict):
+    category: Literal["RECOVERY_IDENTITY"]
+    event_id: uuid.UUID
+    expected_revision: Literal[0]
+    idempotency_key: str = Field(min_length=1, max_length=100)
+    reason: str = Field(min_length=10, max_length=2000)
+
+
+@router.post("/resources/{id}/evidence-reviews", status_code=201)
+def flag_pentaho_recovery_identity(
+    id: uuid.UUID, payload: PentahoRecoveryIdentityIssue, db=Depends(get_db)
+):
+    from app.unified.pentaho_review import flag_recovery_identity
+
+    r = resource(db, id, "etl.resolve_identity")
+    row = flag_recovery_identity(
+        db,
+        r,
+        payload.event_id,
+        current_principal.get().user_id,
+        payload.idempotency_key,
+        payload.reason,
+    )
+    commit(db)
+    return document(row)
+
+
+class PentahoHistoricalPolicy(Strict):
+    enabled: bool
+    destination_ids: list[uuid.UUID] = Field(default_factory=list, max_length=20)
+    historical_after_seconds: int = Field(default=3600, ge=60, le=2592000)
+    expected_revision: int = Field(ge=1)
+    idempotency_key: str = Field(min_length=1, max_length=100)
+
+
+@router.put("/resources/{id}/historical-notifications")
+def pentaho_historical_policy(
+    id: uuid.UUID, payload: PentahoHistoricalPolicy, db=Depends(get_db)
+):
+    from app.telemetry.models import NotificationDestination
+    from app.telemetry.inbox import validate_targets
+    from app.data_pipelines.service import operation
+
+    r = resource(db, id, "templates.manage", True)
+    require_permission("etl.configure", r.organization_id)
+    if r.configuration.get("platform") != "PENTAHO":
+        raise HTTPException(409, "Pentaho resource required")
+    policy = payload.model_dump(
+        mode="json", exclude={"expected_revision", "idempotency_key"}
+    )
+    if len(set(payload.destination_ids)) != len(payload.destination_ids) or (
+        payload.enabled and not payload.destination_ids
+    ):
+        raise HTTPException(422, "Explicit unique destinations required")
+    p = current_principal.get()
+    for destination_id in payload.destination_ids:
+        target = db.get(NotificationDestination, destination_id)
+        if (
+            not target
+            or target.organization_id != r.organization_id
+            or not target.enabled
+        ):
+            raise HTTPException(422, "Scoped enabled destination required")
+        if target.channel == "IN_APP":
+            if not target.configuration.get(
+                "user_ids"
+            ) and not target.configuration.get("department_ids"):
+                raise HTTPException(
+                    422, "Explicit users or teams required for historical notifications"
+                )
+            validate_targets(
+                db, target.configuration, r.organization_id, p.service_provider_id
+            )
+    op, new = operation(
+        db,
+        r.organization_id,
+        "PENTAHO_NOTICE_POLICY",
+        payload.idempotency_key,
+        {
+            "resource_id": str(r.id),
+            "policy": policy,
+            "expected_revision": payload.expected_revision,
+        },
+        p.user_id,
+    )
+    if new:
+        if r.revision != payload.expected_revision:
+            raise HTTPException(409, "Resource changed; refresh before saving")
+        r.configuration = {**r.configuration, "historical_notifications": policy}
+        r.revision += 1
+        op.state = "COMPLETE"
+        op.result = {"resource_revision": r.revision}
+        audit(db, r, "PENTAHO_HISTORICAL_POLICY_UPDATE")
+    commit(db)
+    return {
+        "policy": r.configuration.get("historical_notifications"),
+        "revision": r.revision,
+    }
+
+
+@router.get("/resources/{id}/historical-notifications")
+def pentaho_historical_notices(
+    id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    from app.unified.pentaho_models import PentahoHistoricalNotice
+
+    r = resource(db, id, "alerts.view")
+    query = select(PentahoHistoricalNotice).where(
+        PentahoHistoricalNotice.resource_id == r.id
+    )
+    return {
+        "policy": r.configuration.get("historical_notifications", {"enabled": False}),
+        "total": db.scalar(select(func.count()).select_from(query.subquery())),
+        "items": [
+            document(v)
+            for v in db.scalars(
+                query.order_by(
+                    PentahoHistoricalNotice.created_at.desc(),
+                    PentahoHistoricalNotice.id,
+                )
+                .offset(offset)
+                .limit(limit)
+            )
+        ],
     }

@@ -1,9 +1,9 @@
 """Internal provider identity and explicit customer grants, independent of customers."""
 
 import uuid
-from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean,
+    Integer,
     String,
     ForeignKey,
     ForeignKeyConstraint,
@@ -12,7 +12,7 @@ from sqlalchemy import (
     Index,
     text,
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 from app.security.permission_catalog import PROVIDER_ID
@@ -266,4 +266,70 @@ class CustomerAccessGrant(Base):
             unique=True,
             postgresql_where=text("department_id IS NOT NULL"),
         ),
+    )
+
+
+class AccessBoundary(Base):
+    """Explicit constraints/delegation over existing assignments, never implicit roles."""
+
+    __tablename__ = "access_boundaries"
+    id: Mapped[uuid.UUID] = uid()
+    service_provider_id: Mapped[uuid.UUID] = provider()
+    user_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    department_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), index=True
+    )
+    kind: Mapped[str] = mapped_column(String(24), nullable=False)
+    specification: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    __table_args__ = (
+        CheckConstraint(
+            "(user_id IS NULL) <> (department_id IS NULL)", name="ck_boundary_subject"
+        ),
+        CheckConstraint(
+            "kind IN ('LIMIT','DENY','DELEGATE','ALL_CUSTOMERS') AND revision > 0",
+            name="ck_boundary_kind",
+        ),
+        CheckConstraint(
+            "kind != 'DELEGATE' OR user_id IS NOT NULL",
+            name="ck_boundary_delegate_employee",
+        ),
+        CheckConstraint(
+            "jsonb_typeof(specification) = 'object'", name="ck_boundary_specification"
+        ),
+        ForeignKeyConstraint(
+            ["user_id", "service_provider_id"],
+            ["users.id", "users.service_provider_id"],
+            name="fk_boundary_user",
+            ondelete="RESTRICT",
+        ),
+        ForeignKeyConstraint(
+            ["department_id", "service_provider_id"],
+            ["departments.id", "departments.service_provider_id"],
+            name="fk_boundary_department",
+            ondelete="RESTRICT",
+        ),
+    )
+
+
+class AccessBoundaryDecision(Base):
+    __tablename__ = "access_boundary_decisions"
+    id: Mapped[uuid.UUID] = uid()
+    boundary_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("access_boundaries.id", ondelete="RESTRICT"), nullable=False
+    )
+    actor_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), nullable=False
+    )
+    request_key: Mapped[str] = mapped_column(String(120), nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    reason: Mapped[str] = mapped_column(String(2000), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    evidence: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    __table_args__ = (
+        UniqueConstraint(
+            "actor_id", "request_key", name="uq_boundary_decision_request"
+        ),
+        CheckConstraint("revision > 0", name="ck_boundary_decision_revision"),
     )

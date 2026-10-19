@@ -152,13 +152,14 @@ def collect_once():
     asyncio.run(execute_collector(UUID(sys.argv[2])))
 
 def scale():
+    from scripts.acceptance_scope import probe_headers
     import urllib.request
     base = os.environ['TEST_API_BASE']
     request = urllib.request.Request(base+'/api/v1/auth/login', data=json.dumps({'username':'test-north','password':'testing-only-StrongPassword-123!'}).encode(), headers={'Content-Type':'application/json'})
     with urllib.request.urlopen(request, timeout=10) as response:
         token = json.load(response)['access_token']
     def get(path):
-        with urllib.request.urlopen(urllib.request.Request(base+path, headers={'Authorization':'Bearer '+token}), timeout=10) as response:
+        with urllib.request.urlopen(urllib.request.Request(base+path, headers={'Authorization':'Bearer '+token, **probe_headers(base, token, path)}), timeout=10) as response:
             return json.load(response)
     first = get('/api/v1/infrastructure/resources?limit=2&offset=0')
     second = get('/api/v1/infrastructure/resources?limit=2&offset=2')

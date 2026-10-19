@@ -4,6 +4,7 @@ Only execute in ENVIRONMENT=demo with the synthetic demo DB. Never contacts
 real cloud or customer infrastructure. Setup returns a one-time synthetic
 worker token to a trusted CI shell variable; never logs it.
 """
+from scripts.acceptance_scope import probe_headers
 import json
 import os
 import sys
@@ -24,7 +25,7 @@ def check_env():
 def api(method,path,token=None,body=None):
     data=json.dumps(body).encode() if body is not None else None
     req=urllib.request.Request(BASE+path,data=data,method=method,headers={
-        "Content-Type":"application/json",**({"Authorization":"Bearer "+token} if token else {})})
+        "Content-Type":"application/json",**({"Authorization":"Bearer "+token} if token else {}), **probe_headers(BASE, token, path)})
     with urllib.request.urlopen(req,timeout=10) as response:
         return json.loads(response.read() or b"null")
 

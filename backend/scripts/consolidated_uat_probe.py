@@ -1,5 +1,6 @@
 """Real HTTP/PostgreSQL and upstream Collector acceptance; all inputs are controlled."""
 
+from scripts.acceptance_scope import probe_headers
 import gzip, hashlib, json, os, secrets, ssl, subprocess, time, uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -47,6 +48,7 @@ def request(
         headers["Content-Encoding"] = "gzip"
     if token:
         headers["Authorization"] = "Bearer " + token
+    headers.update(probe_headers(BASE, token, path))
     req = Request(BASE + path, data=data, headers=headers, method=method)
     try:
         with urlopen(req, context=context, timeout=15) as r:

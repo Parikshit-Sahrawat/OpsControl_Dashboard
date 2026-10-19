@@ -2,7 +2,7 @@
 
 import hashlib, json, uuid, fnmatch
 from datetime import datetime, timezone
-from sqlalchemy import select, exists, func
+from sqlalchemy import select, exists, func, cast, DateTime
 from app.models import (
     JobOrder,
     JobOrderHistory,
@@ -40,6 +40,11 @@ def enqueue(db, resource, payload, source_kind, key, observed_at, log_id=None):
 
 
 def logical_payload(payload, configuration, source_kind, source_id):
+    if payload.get("pentaho_identity"):
+        result = dict(payload)
+        result["source"] = {"kind": source_kind, "id": str(source_id)}
+        result["native_execution_id"] = payload["execution_id"]
+        return result  # R1 identity never uses configurable name/time matching.
     matching = configuration.get("duplicate_matching", {})
     attributes = matching.get("attributes", ["execution_id", "jobchain"])
     original = payload["execution_id"]
@@ -96,7 +101,7 @@ def terminal_fact(db, resource, facts):
 
 
 def reduce_execution(db, resource, identity):
-    events = db.scalars(
+    event_query = (
         select(NormalizedEvent)
         .where(
             NormalizedEvent.resource_id == resource.id,
@@ -104,12 +109,36 @@ def reduce_execution(db, resource, identity):
             NormalizedEvent.processing_status.in_(["PENDING", "PROCESSED"]),
         )
         .order_by(NormalizedEvent.observed_at, NormalizedEvent.external_key)
-    ).all()
+    )
+    events = db.scalars(event_query).all()
     if not events:
         return None
     job = db.scalar(
         select(JobOrder).where(JobOrder.id == resource.job_order_id).with_for_update()
     )
+    if resource.configuration.get("platform") == "PENTAHO" and any(
+        e.payload.get("pentaho_identity") for e in events
+    ):
+        from app.unified.pentaho_execution import reduce_events
+
+        # Native occurrence time is not an authority ranking. Materialize the
+        # first durable accepted observation before quarantining equal-authority
+        # contradictions, including observations collected in one batch.
+        event_query = event_query.order_by(None).order_by(
+            func.coalesce(
+                cast(
+                    NormalizedEvent.payload["pentaho_verification"][
+                        "accepted_at"
+                    ].astext,
+                    DateTime(timezone=True),
+                ),
+                NormalizedEvent.received_at,
+            ),
+            NormalizedEvent.id,
+        )
+        # Refresh after waiting for the same canonical lock used by reviewers.
+        events = db.scalars(event_query.execution_options(populate_existing=True)).all()
+        return reduce_events(db, resource, events, job=job)
     history = db.scalar(
         select(JobOrderHistory)
         .where(
@@ -442,4 +471,8 @@ def ingest_connector(db, resource, version, limit=100):
             count += int(new)
     for identity in identities:
         reduce_execution(db, resource, identity)
+    if resource.configuration.get("platform") == "PENTAHO":
+        from app.unified.pentaho_review import synchronize_reviews
+
+        synchronize_reviews(db, resource)
     return count

@@ -1,0 +1,22 @@
+# Authoritative source recovery
+
+## Outcome and search boundary
+
+**Zero of 62 original improvement definitions recovered; 62 SOURCE_NOT_RECOVERED.** Eight known titles have prompt-level provenance only, not an original approved record. The original detailed Sprint 11–42 roadmap and its approval revision were not recovered. Searches ended once independent avenues were exhausted; absence in accessible records is not proof of nonexistence.
+
+The owner subsequently confirmed that both original documents are currently unavailable and explicitly directed that the Sprint 10 roadmap remain a conditional proposal. This is an availability confirmation, not recovery of the requirement text, source revision or approval record. The [owner-input register](OWNER_INPUT_REGISTER.md) records the missing authority and later decisions; no searches were repeated in this follow-up.
+
+| Surface | Exact bounded method | Result and authority limit |
+|---|---|---|
+| Baseline and remote | `git fetch origin feat/arch-etl-001-v16-r1`; compare `FETCH_HEAD`, local HEAD, requested baseline; clean tree | Both HEADs `7b3b3f03bab6f935644d6003973bc6bff60a50ad`; expected commit is HEAD, so no unexplained newer commits. |
+| All local branches/tags/history | `git branch -a`; `git tag -l` (zero tags); `git rev-list --all --count` (628 reachable commits); `git log --all -G 'IMP[-–_ ]?0[0-6][0-9]|Graph Relationship Authorization|Historical Topology Snapshots' -- . ':(exclude)docs/verification/arch-etl-001-v16-r1/sprint10'` | No original matching commit; prior Sprint 10 search had already examined historical `docs`/README and historical blob paths. Current Sprint 10 rows excluded as derivative evidence. |
+| Tracked documentation/status and archive paths | `rg --files docs` filtered improvement/register/roadmap/backlog/decision; `git rev-list --all --objects` filename search | Historical `docs/IMPLEMENTATION_ROADMAP.md`, `docs/sdlc/05-ROADMAP.md`, enterprise customization register and new Sprint 10 package; none is the original 62-entry improvement register or detailed future sprint plan. |
+| GitHub issues and PR text, project-scoped connector | Exact searches for `IMP-001`, `IMP-055`, `improvement register`; broader `IMP-`, `ARCH-001`, `roadmap` | Zero IMP or original-register hits. Broad queries returned [PR #34](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/34) and older release/SDLC PRs; they corroborate historical architecture and controlled acceptance, not the missing register. No PR was modified. |
+| GitHub default-branch code search | `IMP-055` scoped to project | Zero results. This search does not cover every branch or nonindexed discussion, so it is a narrow negative. |
+| Mounted project records | Prior [Sprint 10 report](../sprint10/REPORT.md) search of six pasted attachments, enterprise zip/docs, library, reports, shared and branch archives; Sprint 11 exact-ID/title `rg -l` on accessible mounted records | No original entries. Pasted records were earlier sprint prompts. No inaccessible records were inferred to be absent. |
+| Connected Drive | Sprint 10 bounded read-only project searches (OpsControl, known graph ID, architecture phrase) | Zero returned results; not repeated without new evidence. |
+| GitHub CLI alternative | `gh auth status` showed invalid CLI token; GitHub connector provided read-only issue/PR/code search above | CLI access limitation did not prevent the targeted connector search; inaccessible review discussion/approval history cannot be certified searched. |
+
+The eight names in the owner Sprint 10 request are title-only input; title similarity to graph/SLO/incident code does not supply original requirement wording. The project owner needs to provide the original approved register or its record URL, exact version/revision, approval actor/date or signed decision, and any approved priority/acceptance language. For the roadmap, provide the original detailed Sprint 11–42 plan and approval record if its wording is intended to govern; otherwise review the conditional proposal explicitly. [Decision register](ARCHITECTURE_GOVERNANCE.md) separates that owner action from Codex recommendations.
+
+No approved IMP entry can be marked complete, duplicated or reprioritized against its original requirement before the source arrives. The [new register](IMPROVEMENT_REGISTER.md) therefore preserves UNKNOWN functional status and does not substitute generic industry requirements.

@@ -75,3 +75,125 @@ incidents reuse retained history; database ownership remains customer-scoped.
 The local stack adds a TLS ingestion gateway; its generated CA is development-only.
 Current verification and unresolved gates are recorded in
 [ARCH-001_IMPLEMENTATION_STATUS.md](../../ARCH-001_IMPLEMENTATION_STATUS.md).
+
+## ARCH-ETL-001 V1.6-R1 shared architecture reconciliation
+
+The [owner-approved Pentaho specification](ARCH_ETL_001_V16.md) is immutable and
+controls Pentaho-specific behavior. [Revision-1 reconciliation](ARCH_ETL_001_V16_R1_RECONCILIATION.md)
+maps all twelve REC items to its clauses and existing implementation owners.
+Reuse MonitoringResource/JobOrder and the current reducer, durable evidence and
+fenced cursors, native incidents/outbox and customer-scoped RBAC. Concrete
+attempt/revision/outbox gaps are documented before any additive migration;
+no second canonical engine or destructive schema change is approved here.
+
+Sprint 01 adds only static, versioned Pentaho monitoring-surface declarations to
+existing metadata APIs, preserving current collection/configuration/activation
+behavior and the eight other platforms. Runtime reconstruction, recovery,
+retention, incident and permission changes belong to later tested slices.
+New employees require one department; existing legacy multiple memberships and
+direct-role access remain intact. Correlation remains evidence-supported
+confidence, never an assertion of proven cause. All genuine runtime certification
+remains independent of architecture approval, unit tests and connectivity.
+
+## R1 Sprint 03 — canonical executions and observed recovery
+
+Pentaho-specific behavior is controlled by the immutable
+[ARCH-ETL-001 V1.6 baseline](ARCH_ETL_001_V16.md). The
+[Sprint 03 report](../verification/arch-etl-001-v16-r1/sprint03/REPORT.md)
+records executable contracts, migration safety, acceptance and limitations.
+
+`JobOrderHistory` remains the logical execution, reached through existing fenced
+source acceptance → durable CollectorRun evidence → NormalizedEvent →
+`reduce_execution()`. Nullable `pentaho_*` fields distinguish lifecycle, outcome,
+completeness, scoped identity and native schedule occurrence. Attempts, immutable
+native aliases and append-only revisions extend this owner; no competing engine,
+resource identity or workload runner is introduced. Other platform reducers retain
+their path. Legacy status mapping remains compatible, including SUCCESS_AFTER_RETRY
+as SUCCESS and WAITING_FOR_RETRY as RUNNING.
+
+Retry grouping requires explicit native/scheduler authority attested per method,
+not names, PID, time proximity or a connection test. An unverified proposal remains
+separate/quarantined. Manual recovery is a many-to-many observed relationship
+between distinct histories, confirmed by a different scoped investigator and
+reversed only through an append-only decision. It never rewrites a failed original
+or establishes incident restoration. Reads use `etl.view`; decisions use
+`etl.investigate`, with customer enforcement and composite database constraints.
+
+Migration `0033_pentaho_attempts` preserves legacy rows without guessed identity
+backfills. Immutable journals and referenced evidence are protected; populated
+downgrade fails closed. Full conflict adjudication, large-backlog replay, schedule
+monitoring and incident redesign remain later milestones. All genuine Pentaho
+runtime acceptance remains unexecuted.
+
+### Pentaho R1 Sprint 04 — claim reconciliation
+
+Pentaho evidence review extends the existing canonical execution reducer and
+customer-scoped source pipeline. `pentaho_evidence_reviews` is a review queue,
+not a second execution registry; `pentaho_evidence_decisions` appends evidence,
+actor/reason and before/after projection decisions. `JobOrderHistory` gains an
+independent nullable review state. Immutable native aliases and raw history are
+preserved. Migration 0034 follows 0033 and refuses populated review downgrade.
+
+Native invocation, execution outcome and scheduler retry authority are independent.
+Equal applicable contradictory native claims preserve the last defensible projection
+and require explicit customer-granted `etl.resolve_identity`. No existing employee
+receives that permission implicitly. Identity quarantine cannot be bypassed by an
+outcome or recovery decision. New evidence must prove identity; operator assertions
+cannot retarget aliases. Raw source acceptance retains the existing fencing and
+checkpoint transaction. Reviewed historical corrections cannot automatically drive
+incident reopening; historical reassessment/notifications remain a separate gate.
+See `../ARCH_001_V16.md` and the Sprint 04 verification report for contracts,
+migration limitations and the deferred UI workflow. The controlling
+`ARCH_ETL_001_V16.md` is unchanged; no live platform acceptance is implied.
+
+### Pentaho R1 Sprint 05 — authority and historical processing
+
+Pentaho reuses versioned ETL parameters and expected windows. Explicit modes
+VERIFIED_SCHEDULER / MONITORING_EXPECTATION / MANUAL separate native schedule
+claims from configured monitoring expectations. Exact-build, source-generation-
+bound schedule export proof and native occurrence IDs are required for native
+mode; unverified or expired exports fail closed. Coverage requires fresh complete
+acceptance receipts and uninterrupted persisted monitoring observations, not a
+healthy endpoint or a reachable collector alone.
+
+Bounded accepted-evidence reconciliation reuses PipelineOperation and the existing
+canonical reducer, with event-time range, independent approval outside method
+bounds, live-first scheduling, fencing, holds and a separate operation cursor.
+It never resets physical checkpoints or claims unproven provider-gap recovery.
+Pentaho provider/file replay remains unsupported without verified continuity.
+
+The historical notice outbox fills the proven gap in the live alert outbox (which
+requires an AlertState). It reuses existing destinations, TLS/secret handling,
+notification worker and recipient inbox instead of manufacturing live alerts.
+Failure eligibility is independent of incident lifecycle; old closed incidents
+remain closed. Delivery is opt-in, customer-scoped and idempotent in-app, with
+leases/retries/audit and current authorization checks. Existing live notifications
+run first and remain isolated from historical-worker failures.
+
+Additive migration 0035 preserves legacy schedule and notification rows; protected
+historical records refuse deletion/populated downgrade. See `../ARCH_001_V16.md`
+and the Sprint 05 verification report for exact API contracts, test evidence,
+unsupported native capabilities and the Sprint 06 boundary. The approved
+ARCH_ETL_001_V16 baseline is unchanged.
+
+### Pentaho R1 Sprint 06 — incident evidence and verified recovery
+
+The existing native incident engine now accepts verified Pentaho terminal failure
+associations, with immutable per-execution evidence and optional independently
+attested native common-root references. Generic similarity/confidence grouping is
+not promoted to verified causality. Historical eligibility from Sprint 05 produces
+separately audited reassessment while preserving existing associations and closed
+states; its notification outbox is unchanged.
+
+Independent recovery assessments combine confirmed recovery relationships, native
+outcome/completeness, source health, required dependencies, schedules and explicit
+observation periods. Authorized existing lifecycle transitions recheck this gate;
+a manual recovery never rewrites the failed execution. Additive migration 0036
+pins the evidence and rejects populated downgrade. Customer-scoped native incident
+APIs expose paged failure/assessment evidence and audited, revision/idempotency-
+protected assessment mutations using existing explicit permissions.
+
+See `../ARCH_001_V16.md` and the Sprint 06 verification report for contracts,
+acceptance evidence and limits. ARCH_ETL_001_V16 remains unchanged. No ETL workload
+controls, production changes, real-source activation or runtime certification are
+included. Sprint 07 can consume these backend contracts.

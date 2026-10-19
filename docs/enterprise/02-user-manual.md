@@ -32,7 +32,7 @@ curl -fsS http://127.0.0.1:5173/ >/dev/null
 docker compose -f docker-compose.demo.yml exec -T api alembic current
 ```
 
-The migration head should be `0024_notification_leases`. HTTP responses alone do not prove a successful authenticated setup; confirm the organization in Resource Management after login. The initial demo may have no observations. Unknown health is expected until collection actually occurs.
+The migration head on this branch should be `0037_access_boundaries`. HTTP responses alone do not prove a successful authenticated setup; confirm the organization in Resource Management after login. The initial demo may have no observations. Unknown health is expected until collection actually occurs.
 
 Stop using `bash scripts/demo-down.sh`; resume using `bash scripts/demo-up.sh`. Stopping preserves the database and generated password. Do not remove volumes unless deletion is intentional and authorized. This profile is loopback-only development software. A hosted enterprise deployment must follow the production deployment runbook instead of exposing these containers publicly.
 
@@ -74,6 +74,7 @@ A platform administrator installs the control-plane policy for the enrolled work
 PUT /api/v1/remote-probes/workers/[WORKER_UUID]/network-policy
 Content-Type: application/json
 Authorization: Bearer [ADMIN_SESSION_TOKEN]
+X-OpsControl-Customers: [AUTHORIZED_CUSTOMER_UUID]
 
 {"allowed_hosts":["portal.example.test"],"allowed_cidrs":["10.20.0.0/16"]}
 ```
@@ -86,6 +87,7 @@ Bind the supported collector to the worker:
 PUT /api/v1/remote-probes/collectors/[COLLECTOR_UUID]/assignment
 Content-Type: application/json
 Authorization: Bearer [ADMIN_SESSION_TOKEN]
+X-OpsControl-Customers: [AUTHORIZED_CUSTOMER_UUID]
 
 {"worker_id":"[WORKER_UUID]"}
 ```

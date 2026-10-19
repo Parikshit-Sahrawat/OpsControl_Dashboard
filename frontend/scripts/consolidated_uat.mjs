@@ -113,6 +113,7 @@ try {
           "&limit=200",
         {
           headers: {
+            "X-OpsControl-Customers": input.organization,
             Authorization:
               "Bearer " + sessionStorage.getItem("opscontrol.sessionToken"),
           },
@@ -181,6 +182,7 @@ try {
     apiOrigin + "/api/v1/agent-control/collectors/" + fixture.collector_id,
     {
       headers: {
+        "X-OpsControl-Customers": fixture.organization,
         Authorization:
           "Bearer " +
           (await page.evaluate(() =>

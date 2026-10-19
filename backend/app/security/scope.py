@@ -12,6 +12,7 @@ from fastapi import HTTPException
 from sqlalchemy import event, select
 from sqlalchemy.orm import Session, with_loader_criteria
 from sqlalchemy import inspect
+from app.security.resource_scope import resource_predicate
 
 
 @dataclass(frozen=True)
@@ -30,7 +31,20 @@ class Principal:
     denied_permissions: frozenset[str] = frozenset()
     authorization_revision: str = "legacy"
 
+    boundaries: tuple = ()
+    customer_directory_ids: frozenset[UUID] = frozenset()
+    all_customers: bool = False
+
     def allows(self, permission: str, organization_id: UUID | None = None) -> bool:
+        from app.security.boundaries import selected_customers
+
+        selected = selected_customers.get()
+        if (
+            organization_id is not None
+            and selected is not None
+            and organization_id not in selected
+        ):
+            return False
         if self.platform_admin:
             return True
         if self.customer_permissions is None:
@@ -59,10 +73,15 @@ class Principal:
         from app.security.access_control import request_permissions
 
         required = request_permissions.get()
+        from app.security.boundaries import selected_customers
+
+        selected = selected_customers.get()
+        candidates = self.customer_directory_ids if self.platform_admin else self.roles
         return tuple(
             org
-            for org in self.roles
-            if not required or any(self.allows(key, org) for key in required)
+            for org in candidates
+            if (selected is None or org in selected)
+            and (not required or any(self.allows(key, org) for key in required))
         )
 
     def can_edit(self, organization_id: UUID) -> bool:
@@ -147,6 +166,8 @@ _PATHS.update(
             "CollectorRuntimeState",
             "NativeIncidentDetails",
             "NativeIncidentAlert",
+            "NativeIncidentFailure",
+            "NativeRecoveryAssessment",
             "PipelineIntegration",
             "PipelineConnection",
             "PipelineCapability",
@@ -157,6 +178,14 @@ _PATHS.update(
             "PipelineHold",
             "PipelineEvidence",
             "PipelineOperation",
+            "PentahoAttempt",
+            "PentahoAlias",
+            "PentahoRevision",
+            "PentahoRecoveryLink",
+            "PentahoRecoveryDecision",
+            "PentahoHistoricalNotice",
+            "PentahoEvidenceReview",
+            "PentahoEvidenceDecision",
         )
     }
 )
@@ -200,12 +229,25 @@ def configure_request_session(db: Session):
 @event.listens_for(Session, "do_orm_execute")
 def scope_reads(execute_state):
     principal = execute_state.session.info.get("opscontrol_principal")
-    if principal is None or principal.platform_admin or not execute_state.is_select:
+    from app.security.boundaries import selected_customers
+
+    if (
+        principal is None
+        or not execute_state.is_select
+        or (principal.platform_admin and selected_customers.get() is None)
+    ):
         return
     from app.db.session import Base
 
     allowed = principal.organizations
     stmt = execute_state.statement
+    from app.security.resource_scope import predicates
+
+    plan = (
+        predicates(principal)
+        if any(b["kind"] in {"LIMIT", "DENY"} for b in principal.boundaries)
+        else None
+    )
     for mapper in Base.registry.mappers:
         model = mapper.class_
         if model.__name__ == "ResourceDraft":
@@ -229,7 +271,8 @@ def scope_reads(execute_state):
             stmt = stmt.options(
                 with_loader_criteria(
                     model,
-                    _predicate(model, allowed),
+                    _predicate(model, allowed)
+                    & resource_predicate(model, principal, plan),
                     include_aliases=True,
                 )
             )
@@ -366,6 +409,9 @@ def enforce_writes(db, flush_context, instances):
                     403,
                     "Platform administrator must authorize local provider collection",
                 )
+        from app.security.resource_scope import check_write
+
+        check_write(db, obj, principal)
         org_id = _resolve_org(db, obj)
         from app.security.access_control import request_permissions
 

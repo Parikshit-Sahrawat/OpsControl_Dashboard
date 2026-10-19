@@ -569,6 +569,11 @@ def tick(dispatch=True):
                         & (PipelineOperation.lease_until <= current),
                     ),
                 )
+                .order_by(
+                    PipelineOperation.lease_until.asc().nullsfirst(),
+                    PipelineOperation.created_at,
+                    PipelineOperation.id,
+                )
                 .limit(8)
             )
         )
@@ -588,6 +593,11 @@ def tick(dispatch=True):
             row = db.get(PipelineOperation, oid)
             sid = row.source_id
         try:
-            run_source(sid, oid)
+            if row.configuration.get("mode") == "ACCEPTED_PENTAHO_EVIDENCE":
+                from app.unified.pentaho_replay import run
+
+                run(oid)
+            else:
+                run_source(sid, oid)
         except s.PipelineError:
             pass

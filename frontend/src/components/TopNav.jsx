@@ -21,6 +21,9 @@ export default function TopNav({
   organizations = [],
   organizationIds = [],
   onOrganizationChange,
+  allCustomersAuthorized = false,
+  allCustomersSelected = false,
+  onAllCustomersChange,
   platformAdmin = false,
   user,
   environment = "",
@@ -50,7 +53,9 @@ export default function TopNav({
   const allSelected =
     organizations.length > 0 && organizationIds.length === organizations.length;
   const label = allSelected
-    ? "All organizations"
+    ? allCustomersSelected
+      ? "ALL customers"
+      : "All listed customers"
     : organizationIds.length === 1
       ? organizations.find((o) => o.id === organizationIds[0])?.name ||
         "1 organization"
@@ -60,15 +65,11 @@ export default function TopNav({
     const next = organizationIds.includes(id)
       ? organizationIds.filter((value) => value !== id)
       : [...organizationIds, id];
-    if (next.length) onOrganizationChange(next);
+    onOrganizationChange(next);
   };
 
   const toggleAll = () => {
-    onOrganizationChange(
-      allSelected
-        ? [organizations[0]?.id].filter(Boolean)
-        : organizations.map((org) => org.id),
-    );
+    onOrganizationChange(allSelected ? [] : organizations.map((org) => org.id));
   };
 
   return (
@@ -171,6 +172,22 @@ export default function TopNav({
           </button>
           {open && (
             <div className="org-menu">
+              {allCustomersAuthorized && (
+                <label className="org-option">
+                  <input
+                    type="checkbox"
+                    checked={allCustomersSelected}
+                    onChange={(e) => onAllCustomersChange(e.target.checked)}
+                  />
+                  <span>
+                    <b>ALL customers</b>
+                    <small>
+                      Explicit elevated scope; future customers follow your
+                      grant
+                    </small>
+                  </span>
+                </label>
+              )}
               <label className="org-option org-option-all">
                 <input
                   type="checkbox"
@@ -178,8 +195,10 @@ export default function TopNav({
                   onChange={toggleAll}
                 />
                 <span>
-                  <b>All organizations</b>
-                  <small>Select every authorized organization</small>
+                  <b>Select every listed customer</b>
+                  <small>
+                    Explicit current customer IDs; this does not grant ALL
+                  </small>
                 </span>
               </label>
               <div className="org-menu-divider" />

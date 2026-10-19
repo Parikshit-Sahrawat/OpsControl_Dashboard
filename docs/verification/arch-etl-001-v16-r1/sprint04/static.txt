@@ -1,0 +1,15 @@
+COMMAND: backend/.venv/bin/black --check backend/app/data_pipelines/service.py backend/app/models/entities.py backend/app/security/access_control.py backend/app/security/permission_catalog.py backend/app/security/scope.py backend/app/unified/api.py backend/app/unified/engines.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_models.py backend/app/unified/reconstruction.py scripts/v16-acceptance.py backend/app/unified/pentaho_review.py backend/migrations/versions/0034_pentaho_evidence_review.py backend/scripts/pentaho_review_migration_probe.py backend/scripts/pentaho_sprint04_http_probe.py backend/tests/test_pentaho_review_contracts.py backend/tests/test_pentaho_review_r1.py
+All done! ✨ 🍰 ✨
+17 files would be left unchanged.
+RESULT: 0
+
+COMMAND: backend/.venv/bin/ruff check --select E9,F63,F7,F82 backend/app/data_pipelines/service.py backend/app/models/entities.py backend/app/security/access_control.py backend/app/security/permission_catalog.py backend/app/security/scope.py backend/app/unified/api.py backend/app/unified/engines.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_models.py backend/app/unified/reconstruction.py scripts/v16-acceptance.py backend/app/unified/pentaho_review.py backend/migrations/versions/0034_pentaho_evidence_review.py backend/scripts/pentaho_review_migration_probe.py backend/scripts/pentaho_sprint04_http_probe.py backend/tests/test_pentaho_review_contracts.py backend/tests/test_pentaho_review_r1.py
+All checks passed!
+RESULT: 0
+
+COMMAND: backend/.venv/bin/python -m compileall -q backend/app/data_pipelines/service.py backend/app/models/entities.py backend/app/security/access_control.py backend/app/security/permission_catalog.py backend/app/security/scope.py backend/app/unified/api.py backend/app/unified/engines.py backend/app/unified/pentaho_execution.py backend/app/unified/pentaho_models.py backend/app/unified/reconstruction.py scripts/v16-acceptance.py backend/app/unified/pentaho_review.py backend/migrations/versions/0034_pentaho_evidence_review.py backend/scripts/pentaho_review_migration_probe.py backend/scripts/pentaho_sprint04_http_probe.py backend/tests/test_pentaho_review_contracts.py backend/tests/test_pentaho_review_r1.py
+RESULT: 0
+
+COMMAND: git diff --check
+RESULT: 0
+Application/collector worker/native engine imports, ORM mappers, OpenAPI route registration, no workload controls and migration single head 0034_pentaho_review: PASS

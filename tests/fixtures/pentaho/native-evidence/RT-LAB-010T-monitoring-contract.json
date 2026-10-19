@@ -1,0 +1,90 @@
+{
+  "contract_id": "ARCH-ETL-001-PENTAHO-NATIVE-V1",
+  "generated_at_utc": "2026-10-18T12:45:10.235408+00:00",
+  "validation_environment": {
+    "platform": "PENTAHO",
+    "pdi_version": "9.4.0.0-343",
+    "execution_interface": "CARTE",
+    "environment": "ISOLATED_DOCKER_LAB"
+  },
+  "monitoring_policy": {
+    "opscontrol_execution_control_allowed": false,
+    "native_execution_operations": "LAB_HARNESS_ONLY",
+    "read_only_monitoring": true,
+    "missing_numeric_values_preserved_as_null": true,
+    "native_resource_classification_preserved": true
+  },
+  "executions": [
+    {
+      "test_id": "RT-LAB-010D",
+      "resource_type": "DATA_PIPELINE",
+      "platform": "PENTAHO",
+      "platform_native_type": "JOB",
+      "job_name": "OC_TEST_JOB",
+      "native_execution_id": "2054e48b-f4f9-4e0c-9935-ac569c7c12c9",
+      "native_status": "Finished (with errors)",
+      "native_result_success": false,
+      "native_result_error_count": 1,
+      "native_exit_status": 0,
+      "native_log_channel_id": "",
+      "normalized_outcome": "FAILED",
+      "normalization_warning": null
+    },
+    {
+      "test_id": "RT-LAB-010H",
+      "resource_type": "DATA_PIPELINE",
+      "platform": "PENTAHO",
+      "platform_native_type": "JOB",
+      "job_name": "OC_TEST_JOB",
+      "native_execution_id": "03f2d2e9-60e2-4526-83db-d8d2cef5046b",
+      "native_status": "Finished (with errors)",
+      "native_result_success": false,
+      "native_result_error_count": 1,
+      "native_exit_status": 0,
+      "native_log_channel_id": "",
+      "normalized_outcome": "FAILED",
+      "normalization_warning": null
+    },
+    {
+      "test_id": "RT-LAB-010O",
+      "resource_type": "DATA_PIPELINE",
+      "platform": "PENTAHO",
+      "platform_native_type": "JOB",
+      "job_name": "OC_TEST_JOB",
+      "native_execution_id": "cf20aa45-7332-4f3a-a41e-282367d146e5",
+      "native_status": "Finished",
+      "native_result_success": true,
+      "native_result_error_count": 0,
+      "native_exit_status": 0,
+      "native_log_channel_id": "80953886-addb-40a1-b3d6-a8162c697868",
+      "normalized_outcome": "SUCCESS",
+      "normalization_warning": null
+    }
+  ],
+  "verified_child_correlation": {
+    "parent_native_execution_id": "cf20aa45-7332-4f3a-a41e-282367d146e5",
+    "child_transformation": "OC_TEST_SUCCESS",
+    "child_native_execution_id": null,
+    "observation_method": "PARENT_JOB_LOG",
+    "execution_confirmed": true,
+    "parent_job_entry_success": true,
+    "step_counters": {
+      "rows_written": 1,
+      "errors": 0
+    },
+    "independently_registered_in_carte": false
+  },
+  "validation": {
+    "native_execution_records": 3,
+    "normalization_edge_cases": 9,
+    "failed_assertions": 0,
+    "result": "PASS"
+  },
+  "limitations": [
+    "Validated only against Pentaho PDI 9.4 Carte lab evidence",
+    "Child transformation native UUID was not observed",
+    "Carte execution registry is not restart-persistent",
+    "OpsControl application adapter has not been tested",
+    "Production VM/EC2 behavior has not been validated"
+  ]
+}

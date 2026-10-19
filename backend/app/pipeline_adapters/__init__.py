@@ -3,6 +3,7 @@
 from .core import Adapter, AdapterError, Batch
 from .http import Airflow, IICS, NiFi, AzureDataFactory, Talend
 from .native import Pentaho, AWSGlue, SSIS, CustomShell
+from .pentaho_contracts import describe_pentaho_monitoring_contract
 
 PLATFORM_ADAPTERS = {
     cls.platform: cls
@@ -27,6 +28,12 @@ ADAPTER_DEFINITIONS = {
     }
     for name, cls in PLATFORM_ADAPTERS.items()
 }
+
+# Declarations are additive metadata; they never register a runnable adapter or
+# expand accepted connection fields for unimplemented monitoring surfaces.
+ADAPTER_DEFINITIONS["PENTAHO"][
+    "monitoring_surface_contract"
+] = describe_pentaho_monitoring_contract()
 
 # Versioned form descriptors are shared by API validation and the UI registry.
 CONFIG_SCHEMAS = {
@@ -88,6 +95,11 @@ for definition in CONFIG_SCHEMAS.values():
             )
         if key == "collect_logs":
             attribute["default"] = False
+        if key == "monitoring_context":
+            attribute.update(
+                type="object",
+                description="Optional version-1 Pentaho observation scope; exact build is not certification",
+            )
 
 for definition in CONFIG_SCHEMAS.values():
     for attribute in definition["attributes"]:
@@ -121,13 +133,18 @@ def describe_platform(platform):
         raise AdapterError("CONFIGURATION", "Unsupported pipeline platform")
     import copy
 
-    return {
+    description = {
         "platform": platform,
         "configuration_schema": copy.deepcopy(CONFIG_SCHEMAS[platform]),
         "capabilities": list(PLATFORM_ADAPTERS[platform].capabilities),
         "step_collection": PLATFORM_ADAPTERS[platform].step_semantics,
         "live_verified": False,
     }
+    if platform == "PENTAHO":
+        description["monitoring_surface_contract"] = (
+            describe_pentaho_monitoring_contract()
+        )
+    return description
 
 
 def validate_platform_configuration(platform, configuration):

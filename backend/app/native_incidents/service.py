@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 import uuid
 import math
 from fastapi import HTTPException
-from sqlalchemy import select, text, exists, or_, cast, String, and_
+from sqlalchemy import select, text, exists, cast, String, and_
 from app.models import (
     OperationalIncident,
     IncidentActivity,
@@ -17,8 +17,13 @@ from app.unified.models import (
     ResourceCondition,
     EventCorrelationGroup,
     EventCorrelationMember,
+    MonitoringResource,
 )
-from app.native_incidents.models import NativeIncidentDetails, NativeIncidentAlert
+from app.native_incidents.models import (
+    NativeIncidentDetails,
+    NativeIncidentAlert,
+    NativeIncidentFailure,
+)
 from app.security.audit import log_event
 
 STATES = frozenset(
@@ -194,6 +199,21 @@ def evaluate_recovery(
 
 
 def recovery(db, incident, now=None):
+    from app.native_incidents.pentaho import recovery as pentaho_recovery
+
+    if getattr(incident, "source_kind", None) == "PENTAHO" or (
+        isinstance(incident, OperationalIncident)
+        and db.scalar(
+            select(NativeIncidentFailure.id)
+            .where(NativeIncidentFailure.incident_id == incident.id)
+            .limit(1)
+        )
+    ):
+        return pentaho_recovery(db, incident, now or utc()) or {
+            "ready": False,
+            "reasons": ["Verified failure evidence unavailable"],
+            "evidence": {},
+        }
     d = details(db, incident)
     alerts = linked_alerts(db, incident)
     conditions = (
@@ -437,6 +457,19 @@ def process_incidents(db, now=None, limit=100):
     if not db.scalar(text("SELECT pg_try_advisory_xact_lock(8415030)")):
         return {"processed": 0, "locked": True}
     count = 0
+    # Verified Pentaho failures are correlated per execution, never through the
+    # generic shared-job alert or potential-common-cause heuristic.
+    pentaho_failure_alerts = (
+        select(ResourceCondition.alert_state_id)
+        .join(
+            MonitoringResource, MonitoringResource.id == ResourceCondition.resource_id
+        )
+        .where(
+            MonitoringResource.configuration["platform"].astext == "PENTAHO",
+            ResourceCondition.condition_type == "ETL_FAILURE",
+            ResourceCondition.alert_state_id.is_not(None),
+        )
+    )
     alerts = list(
         db.scalars(
             select(AlertState)
@@ -444,6 +477,7 @@ def process_incidents(db, now=None, limit=100):
             .where(
                 Organization.active.is_(True),
                 AlertState.status == "OPEN",
+                AlertState.id.notin_(pentaho_failure_alerts),
                 ~exists(
                     select(NativeIncidentAlert.id).where(
                         NativeIncidentAlert.alert_state_id == AlertState.id
@@ -503,7 +537,19 @@ def process_incidents(db, now=None, limit=100):
                 NativeIncidentDetails.incident_id == OperationalIncident.id,
             )
             .where(
-                Organization.active.is_(True), EventCorrelationGroup.status == "OPEN"
+                Organization.active.is_(True),
+                EventCorrelationGroup.status == "OPEN",
+                ~exists(
+                    select(EventCorrelationMember.id)
+                    .join(
+                        ResourceCondition,
+                        ResourceCondition.id == EventCorrelationMember.condition_id,
+                    )
+                    .where(
+                        EventCorrelationMember.group_id == EventCorrelationGroup.id,
+                        ResourceCondition.alert_state_id.in_(pentaho_failure_alerts),
+                    )
+                ),
             )
             .order_by(
                 NativeIncidentDetails.last_checked_at.asc().nullsfirst(),
@@ -521,6 +567,7 @@ def process_incidents(db, now=None, limit=100):
                 )
                 .join(
                     EventCorrelationMember,
+                    MonitoringResource,
                     EventCorrelationMember.condition_id == ResourceCondition.id,
                 )
                 .where(
@@ -570,8 +617,14 @@ def process_incidents(db, now=None, limit=100):
             record(db, incident, "CREATED", now=now)
         d = details(db, incident)
         d.last_checked_at = now
-        if incident.status in {"RESOLVED", "CLOSED"} and any(
-            a.status == "OPEN" for a in grouped_alerts
+        if (
+            not db.scalar(
+                select(NativeIncidentFailure.id)
+                .where(NativeIncidentFailure.incident_id == incident.id)
+                .limit(1)
+            )
+            and incident.status in {"RESOLVED", "CLOSED"}
+            and any(a.status == "OPEN" for a in grouped_alerts)
         ):
             previous = incident.status
             incident.status = "OPEN"
@@ -604,6 +657,13 @@ def process_incidents(db, now=None, limit=100):
         .with_for_update(of=OperationalIncident, skip_locked=True)
     ):
         details(db, incident).last_checked_at = now
+        if incident.source_kind == "PENTAHO" or db.scalar(
+            select(NativeIncidentFailure.id)
+            .where(NativeIncidentFailure.incident_id == incident.id)
+            .limit(1)
+        ):
+            # Explicit assessments govern restoration; no alert-only reset.
+            continue
         linked = linked_alerts(db, incident)
         recovered = bool(linked) and all(
             a.status == "RESOLVED" and a.resolved_at for a in linked

@@ -183,6 +183,13 @@ def canonical(method_type, identity):
 
 
 def validate_reader_target(platform, method_type, identity, configuration):
+    from app.pipeline_adapters.pentaho_observations import method_context
+    from app.pipeline_adapters.core import AdapterError
+
+    try:
+        method_context(platform, method_type, identity, configuration)
+    except AdapterError as error:
+        raise PipelineError("PENTAHO_" + error.kind) from None
     if method_type != "PLATFORM_API" or platform in {"SSIS", "CUSTOM"}:
         return
     endpoint = configuration.get("base_url") or configuration.get("url")
@@ -382,6 +389,31 @@ def eligible(db, method):
         else None
     )
     source = db.get(PipelineSource, method.source_id)
+    if integration and integration.platform == "PENTAHO" and connection:
+        cfg = {
+            **connection.configuration,
+            **method.configuration.get("adapter_overrides", {}),
+        }
+        if "monitoring_context" in cfg:
+            from app.pipeline_adapters.pentaho_observations import (
+                proof_matches,
+                method_context,
+            )
+            from app.pipeline_adapters.core import AdapterError
+
+            try:
+                ctx = method_context(
+                    integration.platform,
+                    method.configuration.get("method_type"),
+                    source.identity if source else {},
+                    cfg,
+                )
+            except AdapterError:
+                return False
+            if ctx["environment"] != integration.environment or not proof_matches(
+                ctx, profile, proof
+            ):
+                return False
     return bool(
         proof
         and proof.payload.get("reader_definition_hash") == reader_definition(db, method)
@@ -467,10 +499,15 @@ def projected_records(fact, resource, source_id):
     original["jobchain"] = resource.configuration["jobchain"]
     record = {**fact, "event": original, "source_id": str(source_id)}
     records = [record]
-    if original.get("started_at") and original.get("event_type") not in {
-        "START",
-        "STEP_START",
-    }:
+    if (
+        not original.get("pentaho_identity")
+        and original.get("started_at")
+        and original.get("event_type")
+        not in {
+            "START",
+            "STEP_START",
+        }
+    ):
         step = str(original.get("event_type", "")).startswith("STEP")
         records.append(
             {
@@ -538,6 +575,19 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         or len(json.dumps(records, default=str)) > 8 * 1024 * 1024
     ):
         raise PipelineError("EVIDENCE_BATCH_LIMIT")
+    from app.pipeline_adapters.pentaho_observations import prepare_records
+    from app.pipeline_adapters.core import AdapterError
+
+    if any(
+        not isinstance(r, dict) or not isinstance(r.get("key"), str) for r in records
+    ):
+        raise PipelineError("STABLE_EVIDENCE_ID_REQUIRED")
+    try:
+        records = prepare_records(
+            db, source, records, recovery=recovery_operation is not None
+        )
+    except (AdapterError, ValueError, TypeError) as error:
+        raise PipelineError("PENTAHO_" + getattr(error, "kind", "SCHEMA")) from None
     if recovery_operation:
         if (
             recovery_operation.state != "RUNNING"
@@ -640,9 +690,17 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
                 raise PipelineError("RESOURCE_SCOPE_CHANGED")
             # Raw provider records belong only to the 30-day evidence store.
             # Historical V1.5 projections keep normalized events and references.
+            event_payload = dict(clean["event"])
+            # Trust comes from the current independently approved method profile,
+            # never a producer-provided verified boolean or a VERIFY lease.
+            from app.unified.pentaho_execution import verified_projection
+
+            event_payload = verified_projection(
+                db, source, event_payload, links, evidence.id
+            )
             fact = {
                 "native_job_id": native,
-                "event": clean["event"],
+                "event": event_payload,
                 "evidence": {
                     "semantics": clean.get("evidence", {}).get("semantics"),
                     "v16_evidence_id": str(evidence.id),
@@ -727,7 +785,12 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         source_id=source.id,
     )
     receipt.state = "COMPLETE"
-    receipt.result = {"accepted": accepted, "quarantined": quarantined}
+    receipt.result = {
+        "accepted": accepted,
+        "quarantined": quarantined,
+        "complete": bool(complete),
+        "accepted_at": clock(db).isoformat(),
+    }
     db.flush()  # constraints/evidence durability precede cursor advancement in this transaction
     check_ticket(db, source, ticket)
     if recovery_operation:
@@ -1033,7 +1096,7 @@ def operation(
     return row, True
 
 
-def plan_recovery(db, source, start, end, actor_id, key, manual=False):
+def plan_recovery(db, source, start, end, actor_id, key, manual=False, mode=None):
     if start.tzinfo is None or end.tzinfo is None or end <= start:
         raise PipelineError("RECOVERY_RANGE_INVALID")
     bound = RECOVERY_BOUNDS[source.method_type]
@@ -1047,6 +1110,8 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
         "checkpoint_hash": digest(source.recovery_checkpoint),
         "manual": manual,
     }
+    if mode:
+        config["mode"] = mode
     row, new = operation(
         db,
         source.organization_id,
@@ -1064,11 +1129,22 @@ def plan_recovery(db, source, start, end, actor_id, key, manual=False):
             else "PENDING"
         )
         row.result = {"automatic_bound_seconds": bound, "live_priority": True}
+        from app.unified.pentaho_replay import is_pentaho, MODE
+
+        if is_pentaho(db, source) and mode != MODE:
+            row.state = "UNSUPPORTED"
+            row.result = {
+                **row.result,
+                "code": "PENTAHO_PROVIDER_CONTINUITY_UNVERIFIED",
+                "provider_replay_supported": False,
+            }
     return row
 
 
 def cleanup(db):
     """Daily bounded lifecycle work. Source configuration deletion never cascades evidence."""
+
+    from app.unified.pentaho_models import PentahoRevision, PentahoEvidenceReview
 
     current = clock(db)
     removed = {"evidence": 0, "jobs": 0, "checkpoints": 0, "gaps": 0}
@@ -1084,6 +1160,12 @@ def cleanup(db):
         .where(
             PipelineEvidence.created_at < current - timedelta(days=30),
             PipelineEvidence.source_id.not_in(protected),
+            ~select(PentahoEvidenceReview.id)
+            .where(PentahoEvidenceReview.source_evidence_id == PipelineEvidence.id)
+            .exists(),
+            ~select(PentahoRevision.id)
+            .where(PentahoRevision.source_evidence_id == PipelineEvidence.id)
+            .exists(),
             PipelineEvidence.payload["raw_retired"].as_boolean().is_not(True),
         )
         .limit(500)

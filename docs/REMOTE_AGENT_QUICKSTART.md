@@ -76,6 +76,7 @@ Approve the host and its actual **network-local subnet**:
 ```http
 PUT /api/v1/remote-probes/workers/<worker-uuid>/network-policy
 Authorization: Bearer <admin bearer token>
+X-OpsControl-Customers: [AUTHORIZED_CUSTOMER_UUID]
 Content-Type: application/json
 
 {"allowed_hosts":["portal.example.test"],"allowed_cidrs":["10.20.0.0/16"]}
@@ -86,6 +87,7 @@ Assign:
 ```http
 PUT /api/v1/remote-probes/collectors/<collector-uuid>/assignment
 Authorization: Bearer <admin bearer token>
+X-OpsControl-Customers: [AUTHORIZED_CUSTOMER_UUID]
 Content-Type: application/json
 
 {"worker_id":"<worker-uuid>"}

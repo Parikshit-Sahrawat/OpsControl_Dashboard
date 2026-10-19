@@ -1,0 +1,32 @@
+import subprocess,json,pathlib,collections
+root=pathlib.Path('/workspace/OpsControl_Dashboard');out=pathlib.Path('/tmp/sprint09-final')
+changed=subprocess.check_output(['git','diff','--name-only'],cwd=root,text=True).splitlines()+subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=root,text=True).splitlines()
+files=sorted(p for p in changed if p.endswith('.py'))
+legacy={f'backend/scripts/{n}.py' for n in ['access_acceptance_probe','arch001_acceptance_probe','auth_tenant_probe','consolidated_uat_probe','etl_acceptance_probe','http_golden_path_probe','infrastructure_acceptance_probe','live_https_acceptance','release_runtime_probe','remote_protocol_probe','security_release_probe']}
+core=[p for p in files if p not in legacy]
+for name,cmd,paths in [('black',['backend/.venv/bin/black','--check'],core),('ruff',['backend/.venv/bin/ruff','check','--select','F,E9'],core),('compile',['backend/.venv/bin/python','-m','py_compile'],files)]:
+ r=subprocess.run(cmd+paths,cwd=root,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+ (out/(name+'.txt')).write_text(r.stdout)
+ (out/(name+'-command.json')).write_text(json.dumps(cmd+paths,indent=2)+'\n')
+ print(name,r.returncode,len(paths))
+ assert r.returncode==0,(name,r.stdout)
+# Run full F/E9 against minimally edited legacy clients, then compare with the
+# exact starting file under the same per-file configuration. Never hide a new diagnostic.
+findings=[]
+for p in sorted(legacy):
+ def diagnostics(text):
+  r=subprocess.run(['backend/.venv/bin/ruff','check','--select','F,E9','--output-format','json','--stdin-filename',p,'-'],input=text,cwd=root,text=True,capture_output=True)
+  data=json.loads(r.stdout)
+  lines=text.splitlines()
+  return collections.Counter((d['code'],d['message'],lines[d['location']['row']-1].strip()) for d in data)
+ current=diagnostics((root/p).read_text())
+ baseline=diagnostics(subprocess.check_output(['git','show','99b38e5:'+p],cwd=root,text=True))
+ introduced=current-baseline
+ assert not introduced,(p,list(introduced))
+ findings.append({'path':p,'baseline_diagnostics':sum(baseline.values()),'current_diagnostics':sum(current.values()),'introduced':[]})
+(out/'legacy-ruff-baseline.json').write_text(json.dumps({'status':'PASS_NO_NEW_DIAGNOSTICS','files':findings,'full_legacy_ruff_clean':False},indent=2)+'\n')
+print('Legacy F/E9 baseline: no introduced diagnostics')
+for p in changed:
+ if p.endswith('.mjs'):
+  subprocess.run(['node','--check',p],cwd=root,check=True)
+(out/'script-syntax.txt').write_text('All changed .mjs files passed node --check\n')

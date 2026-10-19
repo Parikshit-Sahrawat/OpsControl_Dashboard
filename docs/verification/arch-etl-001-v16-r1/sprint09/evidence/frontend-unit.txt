@@ -1,0 +1,29 @@
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs
+
+✔ scripts/explicit_scope.test.mjs (95.930003ms)
+✔ scripts/permissions.test.mjs (94.288398ms)
+✔ scripts/pipelines.test.mjs (117.23158ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.820806
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------
+ℹ file                 | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------
+ℹ scripts              |        |          |         |
+ℹ  explicit_scope.mjs  | 100.00 |   100.00 |  100.00 |
+ℹ src                  |        |          |         |
+ℹ  permissions.js      |  96.67 |    89.29 |   90.00 | 40-41
+ℹ  pipelines           |        |          |         |
+ℹ   contracts.js       |  95.65 |    81.43 |   80.77 | 87 121-126 151
+ℹ ---------------------------------------------------------------------
+ℹ all files            |  96.15 |    84.47 |   84.21 |
+ℹ ---------------------------------------------------------------------
+ℹ end of coverage report

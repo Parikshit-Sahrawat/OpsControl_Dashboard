@@ -4,23 +4,44 @@ import json
 import hashlib
 import os
 from pathlib import Path
-from datetime import timezone
 from .core import Adapter, AdapterError, Batch, execution, provider_error, step_event
 
 
 class Pentaho(Adapter):
     platform = "PENTAHO"
     required = ("url", "job_name", "allowed_hosts", "allowed_cidrs")
-    fields = Adapter.fields + ("execution_id", "collect_logs", "job_order_id")
+    fields = Adapter.fields + (
+        "execution_id",
+        "collect_logs",
+        "job_order_id",
+        "monitoring_context",
+    )
     capabilities = ("carte_job_status", "step_results", "logs", "explicit_execution_id")
 
     step_semantics = "EMBEDDED_CARTE_JOB_ENTRY_RESULTS"
 
+    def __init__(self, configuration, transport=None, customer_id=None):
+        self.customer_id = customer_id
+        super().__init__(configuration, transport)
+
     def validate(self):
+        observation_only = False
+        if "monitoring_context" in self.config:
+            from .pentaho_observations import context
+
+            observation_only = (
+                context(self.config["monitoring_context"])["surface"] != "CARTE"
+            )
+        if observation_only:
+            # Agent observations have no fictitious Server/CLI network endpoint.
+            self.fields = type(self).fields + type(self).required
+            self.required = ()
         super().validate()
         if type(self.config.get("collect_logs", False)) is not bool:
             raise AdapterError("CONFIGURATION", "collect_logs must be boolean")
         for key in ("allowed_hosts", "allowed_cidrs"):
+            if observation_only and key not in self.config:
+                continue
             if (
                 not isinstance(self.config[key], list)
                 or not self.config[key]
@@ -31,6 +52,19 @@ class Pentaho(Adapter):
         return self.config
 
     def collect(self, checkpoint=None):
+        if "monitoring_context" in self.config:
+            from .pentaho_carte import collect
+
+            return collect(
+                self.config,
+                checkpoint,
+                self.customer_id,
+                (
+                    None
+                    if getattr(self.transport, "__name__", "") == "http_request"
+                    else self.transport
+                ),
+            )
         from app.worker.pentaho_status import get_job_status
 
         cfg = {

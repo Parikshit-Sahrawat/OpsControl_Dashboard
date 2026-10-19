@@ -1,4 +1,5 @@
 """Authenticated controlled Carte polling -> ETL evidence, alerts and investigation."""
+from scripts.acceptance_scope import probe_headers
 import asyncio, json, os, secrets, sys, urllib.request, urllib.error
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -14,7 +15,7 @@ def api(status,method,path,token=None,body=None):
         from scripts.fixture_employee import with_department
         body=with_department(body,lambda value:api(201,'POST','/api/v1/access/departments',token,value))
     request=urllib.request.Request(BASE+path,method=method,data=json.dumps(body).encode() if body is not None else None,
-        headers={'Content-Type':'application/json',**({'Authorization':'Bearer '+token} if token else {})})
+        headers={'Content-Type':'application/json',**({'Authorization':'Bearer '+token} if token else {}), **probe_headers(BASE, token, path)})
     try:
         with urllib.request.urlopen(request,timeout=20) as response:actual,data=response.status,json.loads(response.read() or b'null')
     except urllib.error.HTTPError as error:actual,data=error.code,json.loads(error.read() or b'null')

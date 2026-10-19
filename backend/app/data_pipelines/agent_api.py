@@ -4,12 +4,20 @@ import uuid
 from fastapi import APIRouter, Depends, Request, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
-from app.db.session import get_db
+from app.db.session import SessionLocal
 from app.telemetry.api import authenticate
 from app.data_pipelines.models import PipelineOperation, PipelineSource
 from app.data_pipelines import service as s
 
 router = APIRouter(prefix="/api/v1/agent", tags=["Pipeline Agent Transport"])
+
+
+def agent_session():
+    # These three allowlisted transport handlers authenticate and lock the
+    # existing agent/worker/customer binding in bound()/authenticate(). They
+    # cannot use the human-session dependency, which rejects agent identities.
+    with SessionLocal() as db:
+        yield db
 
 
 class Claim(BaseModel):
@@ -83,7 +91,7 @@ def bound(db, request, source_id):
 
 
 @router.post("/pipeline-claim")
-def claim(payload: Claim, request: Request, db=Depends(get_db)):
+def claim(payload: Claim, request: Request, db=Depends(agent_session)):
     agent, source = bound(db, request, payload.source_id)
     if payload.verification:
         operation = db.scalar(
@@ -134,7 +142,7 @@ def claim(payload: Claim, request: Request, db=Depends(get_db)):
 
 
 @router.post("/pipeline-evidence")
-def evidence(payload: Batch, request: Request, db=Depends(get_db)):
+def evidence(payload: Batch, request: Request, db=Depends(agent_session)):
     agent, source = bound(db, request, payload.source_id)
     if payload.ticket.get("source_id") != str(source.id) or payload.ticket.get(
         "owner_id"
@@ -186,7 +194,7 @@ def evidence(payload: Batch, request: Request, db=Depends(get_db)):
 
 
 @router.post("/pipeline-continuity")
-def continuity(payload: Continuity, request: Request, db=Depends(get_db)):
+def continuity(payload: Continuity, request: Request, db=Depends(agent_session)):
     operation = db.get(PipelineOperation, payload.operation_id)
     if not operation or operation.kind != "CONTINUITY":
         raise HTTPException(404, "Continuity challenge unavailable")

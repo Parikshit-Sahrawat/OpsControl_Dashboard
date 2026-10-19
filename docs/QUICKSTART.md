@@ -27,7 +27,7 @@ curl -fsS http://127.0.0.1:5173/ >/dev/null
 docker compose -f docker-compose.demo.yml exec -T api alembic current
 ```
 
-Expected migration head: `0025_provider_department_rbac`. Sign in and confirm the fictional **DEMO-LAB** organization in Resource Management; socket checks alone do not validate authentication. Missing observations remain unknown. The default demo does not start a monitoring worker; use the linked disposable acceptance labs for synthetic collection and alert recovery.
+Expected migration head on this branch: `0037_access_boundaries`. Sign in and confirm the fictional **DEMO-LAB** organization in Resource Management; socket checks alone do not validate authentication. Missing observations remain unknown. The default demo does not start a monitoring worker; use the linked disposable acceptance labs for synthetic collection and alert recovery.
 
 ```bash
 # Stop while preserving local database contents and the generated password.
@@ -215,3 +215,5 @@ Contributions should use synthetic data and generic infrastructure names. A futu
 ## Customer and internal department administration
 
 Customers own monitored resources. Internal service-provider departments contain existing employee identities and paired role/customer grants; these are separate entities. Access Management requires `access.view` and its mutation-specific permissions. The global selector is hidden on both administration screens. Follow [authentication and access management](AUTHENTICATION.md) and [isolated Docker/security verification](architecture/ACCESS_IMPLEMENTATION_REPORT.md). Migration 0025 is additive; schema downgrade and older membership-only backend rollback are unsafe after new grants/denies exist.
+
+Human operational API clients must supply explicit authorized customer selection; see [API customer scope](API_CUSTOMER_SCOPE.md).

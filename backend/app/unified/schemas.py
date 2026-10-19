@@ -403,7 +403,16 @@ class DuplicateMatching(Strict):
         return self
 
 
+class PentahoScheduleAuthority(Strict):
+    mode: Literal["VERIFIED_SCHEDULER", "MONITORING_EXPECTATION", "MANUAL"]
+    revision: str = Field(min_length=1, max_length=100)
+    authority_id: str | None = Field(default=None, max_length=200)
+    evidence_id: UUID | None = None
+    capability_id: UUID | None = None
+
+
 class ETLParameters(Strict):
+    pentaho_schedule_authority: PentahoScheduleAuthority | None = None
     duplicate_matching: DuplicateMatching = Field(default_factory=DuplicateMatching)
     domain: Literal["ETL"] = "ETL"
     parser: LogParser = Field(default_factory=LogParser)

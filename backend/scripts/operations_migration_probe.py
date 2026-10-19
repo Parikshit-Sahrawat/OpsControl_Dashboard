@@ -13,7 +13,15 @@ def seed():
         org=Organization(name='Controlled migration archive',code='NOC-MIGRATION');db.add(org);db.flush()
         vm=VM(organization_id=org.id,hostname='archive.example.test',environment='TEST');db.add(vm);db.flush()
         job=JobOrder(organization_id=org.id,vm_id=vm.id,name='Historical ETL failure');db.add(job);db.flush()
-        history=JobOrderHistory(job_order_id=job.id,execution_type=ExecutionType.SCHEDULED,status=ExecutionStatus.FAILED,detected_at=now-timedelta(days=2));db.add(history);db.flush()
+        # Seed the historical 0020 schema with its own column contract, not the
+        # current JobOrderHistory ORM mapping (which includes 0033+ Pentaho fields).
+        import uuid
+        history_id = uuid.uuid4()
+        db.execute(text("""INSERT INTO job_order_histories
+            (id,job_order_id,execution_type,status,detected_at,created_at)
+            VALUES (:id,:job,:execution_type,:status,:detected_at,:created_at)"""),
+            {'id':history_id,'job':job.id,'execution_type':ExecutionType.SCHEDULED.value,
+             'status':ExecutionStatus.FAILED.value,'detected_at':now-timedelta(days=2),'created_at':now})
         source=DataSource(organization_id=org.id,name='Historical HTTP source',source_type='API');db.add(source);db.flush()
         metric=MetricDefinition(organization_id=org.id,data_source_id=source.id,name='archive-up',resource_type='APPLICATION',metric_type='GAUGE');db.add(metric);db.flush()
         # Target is intentionally the old 0020 schema: do not INSERT current
@@ -24,7 +32,7 @@ def seed():
         for status in ('OPEN','RESOLVED'):
             db.execute(text("INSERT INTO alert_states(id,organization_id,alert_rule_id,metric_definition_id,status,severity,first_triggered_at,last_evaluated_at,resolved_at,last_value,breach_count,message,created_at,updated_at) VALUES (:id,:org,:rule,:metric,:status,'CRITICAL',:first,:last,:resolved,0,0,'Controlled archived alert',:now,:now)"),{'id':uuid.uuid4(),'org':org.id,'rule':rule_id,'metric':metric.id,'status':status,'first':now-timedelta(days=2),'last':now-timedelta(days=1),'resolved':now-timedelta(days=1) if status=='RESOLVED' else None,'now':now})
         for index,event_type in enumerate(('JOB_FAILED_OPEN','JOB_FAILED_RESOLVED','JOB_FAILED_OPEN')):
-            db.add(AlertIncidentEvent(history_id=history.id,event_type=event_type,source='ETL_MONITOR',reference='archive-condition',severity='CRITICAL',timestamp=now-timedelta(days=2)+timedelta(seconds=index)))
+            db.add(AlertIncidentEvent(history_id=history_id,event_type=event_type,source='ETL_MONITOR',reference='archive-condition',severity='CRITICAL',timestamp=now-timedelta(days=2)+timedelta(seconds=index)))
         db.commit()
     print('Populated pre-Sprint-4 metric and ETL alert migration fixtures seeded')
 def verify():

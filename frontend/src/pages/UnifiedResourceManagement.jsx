@@ -1,5 +1,6 @@
+import { setAdministrativeCustomers } from "../auth";
 import { useEffect, useRef, useState } from "react";
-import { control, downloadPackage } from "../controlPlane";
+import { control, control as scopedControl, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
@@ -120,7 +121,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
     [parents, setParents] = useState([]),
     [legacyConfiguration, setLegacyConfiguration] = useState(false),
     [busy, setBusy] = useState(false);
+  useEffect(()=>{setAdministrativeCustomers(customer?[customer]:customers.map(c=>c.id));return()=>setAdministrativeCustomers(null);},[customer,customers]);
   const seq = useRef(0);
+  const control = (path, method, payload, options={}) => scopedControl(path, method, payload, {...options,customerIds:customer?[customer]:customers.map(c=>c.id)});
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
   useEffect(() => {
@@ -152,7 +155,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
     return () => {
       seq.current++;
     };
-  }, [domain, customer, environment, search, offset, reload]);
+  }, [domain, customer, environment, search, offset, reload, customers]);
   useEffect(() => {
     setSelected(null);
     setLegacyConfiguration(false);
@@ -231,6 +234,13 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
       >
         <button
           role="tab"
+          aria-selected={area === "organizations"}
+          onClick={() => { setArea("organizations"); setSelected(null); }}
+        >
+          Organizations
+        </button>
+        <button
+          role="tab"
           aria-selected={area === "resources"}
           onClick={() => setArea("resources")}
         >
@@ -258,6 +268,18 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
           Notification Delivery
         </button>
       </div>
+      {area === "organizations" && (
+        <section className="card table-wrap" aria-label="Monitored customer organizations">
+          <h2>Organizations</h2>
+          <p>Monitored customer boundaries. Employee Departments and Teams are managed in Access Management.</p>
+          <table>
+            <thead><tr><th>Organization</th><th>Code</th><th>Customer identity</th></tr></thead>
+            <tbody>{customers.map(c => <tr key={c.id}><td>{c.name}</td><td>{c.code}</td><td>{c.id}</td></tr>)}</tbody>
+          </table>
+          {!customers.length && <p>No authorized customer organizations.</p>}
+        </section>
+      )}
+      {area !== "organizations" && <>
       <div
         role="tablist"
         aria-label={
@@ -768,6 +790,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
           onSaved={refresh}
         />
       )}
+      </>}
     </div>
   );
 }

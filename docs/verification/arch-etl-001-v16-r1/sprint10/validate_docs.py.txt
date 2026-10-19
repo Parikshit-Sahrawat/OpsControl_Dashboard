@@ -1,0 +1,48 @@
+from pathlib import Path
+import re,json,subprocess,hashlib,sys
+root=Path('/workspace/OpsControl_Dashboard'); package=root/'docs/verification/arch-etl-001-v16-r1/sprint10'; failures=[];checks=[]
+def check(label,condition,details=None):
+ checks.append({'check':label,'pass':bool(condition),'details':details})
+ if not condition:failures.append(label)
+def rows(name,prefix):
+ return [x for x in (package/name).read_text().splitlines() if re.match(r'^\| '+prefix+r'-\d+ \|',x)]
+reg=(package/'IMPROVEMENT_REGISTER.md').read_text(); ids=re.findall(r'\bIMP-\d{3}\b',reg)
+# Search log legitimately quotes one queried ID; exact-ID integrity is defined by one first-column row per approved entry.
+r=rows('IMPROVEMENT_REGISTER.md','IMP'); got=[x.split('|')[1].strip() for x in r]
+check('62 unique exact-ID register rows',got==[f'IMP-{i:03}' for i in range(1,63)],{'rows':len(got),'unique':len(set(got))})
+check('register has all 13 required fields',all(len(x.split('|'))==15 for x in r))
+check('all 62 original definitions explicitly unrecovered',all('SOURCE_NOT_RECOVERED' in x for x in r))
+known=['Graph Relationship Authorization Policies','Historical Topology Snapshots','Graph Cycle and Integrity Validation','Relationship Freshness & Expiry','SLO Measurement Provenance','SLO Policy Versioning','Customer-Safe Incident Correlation','Permission-Safe Derived Analytics']
+check('eight known titles individually mapped',all(title in r[i+54] and 'UNKNOWN' in r[i+54] for i,title in enumerate(known)))
+n=rows('NEW_IMPROVEMENTS.md','NEW'); check('16 unique NEW candidate rows',[x.split('|')[1].strip() for x in n]==[f'NEW-{i:02}' for i in range(1,17)])
+check('candidate dispositions remain explicit',all(' | UNRESOLVED | ' in x for x in n))
+p=(package/'PRODUCTION_READINESS.md').read_text();gapids=re.findall(r'^\| (P[012]-\d{2}) ',p,re.M)
+check('all 16 P0-P2 gaps',gapids==[f'P{level}-{i:02}' for level,count in [(0,6),(1,8),(2,2)] for i in range(1,count+1)])
+road=(package/'ROADMAP.md').read_text();splits=re.split(r'^## Sprint (\d+)\n',road,flags=re.M)
+check('all 32 roadmap sprints',splits[1::2]==[str(i) for i in range(11,43)])
+fields=['Phase:','Objective:','In-scope modules:','Out-of-scope work:','Prerequisites:','Estimated Codex effort:','Model recommendation:','Deliverables:','Test requirements:','Exit criteria:','Open decisions:','Risk level:']
+check('all roadmap sprints have bounded required fields',all(all('- '+f in block for f in fields) and '2–3.5 hours' in block for block in splits[2::2]))
+rt=rows('VERIFICATION.md','RT');check('20 genuine acceptance cases remain NOT RUN',len(rt)==20 and all('NOT RUN — REAL INSTALLED-BUILD ACCEPTANCE OUTSTANDING' in x for x in rt))
+files=list(package.glob('*.md')); broken=[];linkcount=0
+for f in files+[root/'ARCH-001_IMPLEMENTATION_STATUS.md']:
+ for match in re.finditer(r'(?<!!)\[[^\]]+\]\(([^)]+)\)',f.read_text()):
+  target=match.group(1).strip('<>');linkcount+=1
+  if re.match(r'\w+://',target):continue
+  path,_,anchor=target.partition('#');dest=(f.parent/path).resolve() if path else f
+  if not dest.exists():broken.append((str(f.relative_to(root)),target))
+  elif anchor and dest.suffix=='.md':
+   anchors=[re.sub(r'[^\w\- ]','',h.lower()).replace(' ','-') for h in re.findall(r'^#+\s+(.+)$',dest.read_text(),re.M)]
+   if anchor not in anchors:broken.append((str(f.relative_to(root)),target))
+check('all package/status Markdown local links and anchors resolve',not broken,{'links_checked':linkcount,'broken':broken})
+required=['REPORT','ARCHITECTURE_TRACEABILITY','IMPROVEMENT_REGISTER','PRODUCTION_READINESS','NEW_IMPROVEMENTS','ROADMAP','DEPENDENCIES_AND_DECISIONS','CODE_AUDIT_FINDINGS','VERIFICATION']
+check('nine required Markdown deliverables',sorted(f.stem for f in files)==sorted(required))
+protected=['docs/architecture/ARCH_ETL_001_V16.md','docs/ARCH_001_V16.md','docs/architecture/ARCH_001.md','docs/architecture/ARCH_ETL_001_V16_R1_RECONCILIATION.md']
+hashes={}
+for path in protected:
+ old=subprocess.check_output(['git','show','4726fb49b0b7db4d635869648412c9eec40d5572:'+path],cwd=root);new=(root/path).read_bytes();hashes[path]=hashlib.sha256(new).hexdigest();check('protected authority unchanged: '+path,old==new)
+changes=subprocess.check_output(['git','diff','--name-only','4726fb49b0b7db4d635869648412c9eec40d5572'],cwd=root,text=True).splitlines()
+untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=root,text=True).splitlines()
+check('documentation-only intended paths',all(x=='ARCH-001_IMPLEMENTATION_STATUS.md' or x.startswith('docs/verification/arch-etl-001-v16-r1/sprint10/') for x in changes+untracked),changes+untracked)
+check('no executable or migration changes',all(not x.startswith(('backend/','frontend/','agent/','scripts/')) for x in changes+untracked))
+result={'baseline':'4726fb49b0b7db4d635869648412c9eec40d5572','passed':len(checks)-len(failures),'failed':len(failures),'skipped':0,'checks':checks,'protected_sha256':hashes}
+(package/'validation-results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));sys.exit(bool(failures))
