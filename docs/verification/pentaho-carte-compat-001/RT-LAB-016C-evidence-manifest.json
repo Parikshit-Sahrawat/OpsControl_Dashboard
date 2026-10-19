@@ -1,0 +1,66 @@
+{
+  "checkpoint": "RT-LAB-016C",
+  "generated_at_utc": "2026-10-18T16:44:28.293419+00:00",
+  "environment": "isolated-pentaho-native-lab",
+  "evidence_scope": "selected-artifacts",
+  "artifact_count": 5,
+  "artifacts": [
+    {
+      "filename": "RT-LAB-009B-before-restart.xml",
+      "sha256": "a033d4e029cf1683969450193a0ef5a240b57aebfb758b63efa39175de05cf23",
+      "size_bytes": 1816,
+      "verification": "PASS"
+    },
+    {
+      "filename": "RT-LAB-009B-after-restart.xml",
+      "sha256": "cd0def1331c75996fe214239bd9cb1052f008b74b805f9d51c1306f400423ac7",
+      "size_bytes": 514,
+      "verification": "PASS"
+    },
+    {
+      "filename": "RT-LAB-009B-restart-persistence.json",
+      "sha256": "5965d3d8932f3e1c4443fb7bc603f60fb6935450c9c123633f03db7dbf7d86fa",
+      "size_bytes": 1133,
+      "verification": "PASS"
+    },
+    {
+      "filename": "RT-LAB-013C-39-final-job-status.xml",
+      "sha256": "6ff6206f0b0371dd4985e896552af74d44d8ae271dcfb401f15e20958620d842",
+      "size_bytes": 1555,
+      "verification": "PASS"
+    },
+    {
+      "filename": "RT-LAB-013C-41-decoded-native-job.log",
+      "sha256": "494a8c5b6bf82aac1c111ccc0931dd71f8a5f78269c811c66d36672a9ae9399d",
+      "size_bytes": 1140,
+      "verification": "PASS"
+    }
+  ],
+  "verified_findings": {
+    "restart_inventory_before": 3,
+    "restart_inventory_after": 0,
+    "historical_execution_ids_valid": 3,
+    "historical_execution_ids_unique": 3,
+    "corrected_parent_execution_id": "63ea1829-b26f-4843-b189-96511d84c1f7",
+    "corrected_parent_result": "Y",
+    "corrected_parent_errors": 0,
+    "child_processing_completions": 2,
+    "host_evidence_retention": "PASS",
+    "offline_reconciliation": "PASS",
+    "cross_evidence_consistency": "PASS"
+  },
+  "verification_boundaries": {
+    "distinct_native_child_execution_uuids": "UNVERIFIED",
+    "native_database_durability": "NOT_VERIFIED",
+    "opscontrol_database_durability": "NOT_RUN",
+    "opscontrol_runtime_reconciliation": "NOT_RUN",
+    "cross_source_identity_isolation": "NOT_RUN",
+    "rt_001_through_rt_020": "NOT_RUN"
+  },
+  "safety": {
+    "opscontrol_read_only": true,
+    "production_authorized": false,
+    "runtime_modified": false,
+    "existing_evidence_modified": false
+  }
+}
