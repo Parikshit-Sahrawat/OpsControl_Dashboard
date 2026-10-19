@@ -18,10 +18,10 @@ def seed():
         import uuid
         history_id = uuid.uuid4()
         db.execute(text("""INSERT INTO job_order_histories
-            (id,job_order_id,execution_type,status,detected_at)
-            VALUES (:id,:job,:execution_type,:status,:detected_at)"""),
+            (id,job_order_id,execution_type,status,detected_at,created_at)
+            VALUES (:id,:job,:execution_type,:status,:detected_at,:created_at)"""),
             {'id':history_id,'job':job.id,'execution_type':ExecutionType.SCHEDULED.value,
-             'status':ExecutionStatus.FAILED.value,'detected_at':now-timedelta(days=2)})
+             'status':ExecutionStatus.FAILED.value,'detected_at':now-timedelta(days=2),'created_at':now})
         source=DataSource(organization_id=org.id,name='Historical HTTP source',source_type='API');db.add(source);db.flush()
         metric=MetricDefinition(organization_id=org.id,data_source_id=source.id,name='archive-up',resource_type='APPLICATION',metric_type='GAUGE');db.add(metric);db.flush()
         # Target is intentionally the old 0020 schema: do not INSERT current
