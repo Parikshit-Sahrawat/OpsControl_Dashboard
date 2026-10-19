@@ -223,9 +223,14 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             endpoint probes.
           </p>
         </div>
-        <button className="filter-button" onClick={refresh}>
-          Refresh
-        </button>
+        <div className="page-header-actions">
+          <button className="filter-button" onClick={refresh}>Refresh</button>
+          {area === "resources" && allowed("resources.create") && (
+            <button className="primary-button" onClick={() => setForm({ domain })}>
+              Create {domain === "ETL" ? "Legacy Data Pipeline" : domain === "VM" ? "Compute Instance" : "API Endpoint"}
+            </button>
+          )}
+        </div>
       </div>
       <div
         role="tablist"
@@ -366,19 +371,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
             }}
           />
         </Field>
-        {area === "resources" && allowed("resources.create") && (
-          <button
-            className="primary-button"
-            onClick={() => setForm({ domain })}
-          >
-            Create{" "}
-            {domain === "ETL"
-              ? "Legacy Data Pipeline"
-              : domain === "VM"
-                ? "Compute Instance"
-                : "API Endpoint"}
-          </button>
-        )}
       </div>
       {error && (
         <p role="alert" className="error-banner">
@@ -397,7 +389,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
               <th>Customer</th>
               <th>Environment</th>
               <th>{domain === "ETL" ? "Platform / VM" : "Identity"}</th>
-              <th>Monitoring</th>
+              <th>Configuration state</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -426,9 +418,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated }) {
                 </td>
                 <td>
                   {r.activation_status}
-                  <small>
-                    {r.active ? "Enabled configuration" : "Inactive"}
-                  </small>
+                  <small>{r.active ? "Configuration enabled · health in Operations" : "Configuration inactive"}</small>
                 </td>
                 <td>
                   <div className="row-actions">

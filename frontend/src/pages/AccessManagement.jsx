@@ -571,9 +571,18 @@ export default function AccessManagement({ user }) {
             ownership.
           </p>
         </div>
-        <button className="filter-button" disabled={busy} onClick={reload}>
-          Refresh
-        </button>
+        <div className="page-header-actions">
+          <button className="filter-button" disabled={busy} onClick={reload}>Refresh</button>
+          {tab === "Employees" && can("manage_users") && (
+            <button className="primary-button" disabled={busy} onClick={() => open("employee")}>Create employee</button>
+          )}
+          {tab === "Departments" && canCreateDepartment && (
+            <button className="primary-button" disabled={busy} onClick={() => open("department")}>Create department</button>
+          )}
+          {tab === "Roles & Permissions" && can("manage_roles") && can("manage_permissions") && (
+            <button className="primary-button" disabled={busy} onClick={() => open("role")}>Create role</button>
+          )}
+        </div>
       </div>
       {onboarding && (
         <AccessOnboarding
@@ -595,18 +604,6 @@ export default function AccessManagement({ user }) {
           onClick={() => setOnboarding(true)}
         >
           Guided Department → Employee → Permissions
-        </button>
-        <button
-          disabled={busy || !can("manage_departments")}
-          onClick={() => open("department")}
-        >
-          Create Department
-        </button>
-        <button
-          disabled={busy || !can("manage_users")}
-          onClick={() => open("employee")}
-        >
-          Create Employee
         </button>
       </div>
       <nav className="access-tabs" aria-label="Access Management sections">
@@ -720,29 +717,6 @@ export default function AccessManagement({ user }) {
                 ))}
               </select>
             )}
-            {tab === "Employees" && can("manage_users") && (
-              <button
-                className="primary-button"
-                onClick={() => open("employee")}
-              >
-                Create employee
-              </button>
-            )}
-            {tab === "Departments" && canCreateDepartment && (
-              <button
-                className="primary-button"
-                onClick={() => open("department")}
-              >
-                Create department
-              </button>
-            )}
-            {tab === "Roles & Permissions" &&
-              can("manage_roles") &&
-              can("manage_permissions") && (
-                <button className="primary-button" onClick={() => open("role")}>
-                  Create role
-                </button>
-              )}
           </div>
         </div>
         {loading ? (

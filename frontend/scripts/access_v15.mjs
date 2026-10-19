@@ -83,8 +83,9 @@ try {
     departmentName = "UAT Internal " + suffix,
     employeeName = "UAT Operator " + suffix,
     username = "uat-operator-" + suffix;
+  await section("Departments");
   await page
-    .getByRole("button", { name: "Create Department", exact: true })
+    .getByRole("button", { name: "Create department", exact: true })
     .click();
   let dialog = page.getByRole("dialog");
   await dialog
@@ -97,8 +98,9 @@ try {
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
   await dialog.waitFor({ state: "hidden" });
+  await section("Employees");
   await page
-    .getByRole("button", { name: "Create Employee", exact: true })
+    .getByRole("button", { name: "Create employee", exact: true })
     .click();
   dialog = page.getByRole("dialog");
   await dialog.getByLabel("Full name", { exact: true }).fill(employeeName);

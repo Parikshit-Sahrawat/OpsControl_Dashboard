@@ -164,7 +164,7 @@ try {
     "Delegation is explainable and platform-controlled policy mutations are unavailable to an ordinary administrator",
   );
   await delegate
-    .getByRole("button", { name: "Create Employee", exact: true })
+    .getByRole("button", { name: "Create employee", exact: true })
     .click();
   const dept = delegate.getByLabel("Department (exactly one)", { exact: true });
   await dept.waitFor();
