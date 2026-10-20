@@ -2,7 +2,7 @@
 
 Status: **LOCAL MANDATORY GATES PASS; EXACT-COMMIT REMOTE CI / MAIN INTEGRATION PENDING** at this candidate snapshot. This is not production readiness or owner UAT acceptance. See the final integration ledger when available; do not infer a push from this report.
 
-Repository: `Parikshit-Sahrawat/OpsControl_Dashboard`. Temporary branch: `fix/audit-p0-p1-remediation`. Audited/unchanged remote main: `c694af45055557b062bedeb974d73140ac75c6c9`. The implementation commit is the commit introducing this report; exact runtime content is independently frozen in [source hashes](evidence/runtime-source-sha256.json). Tests before commit ran this working source, not pristine baseline.
+Repository: `Parikshit-Sahrawat/OpsControl_Dashboard`. Temporary branch: `fix/audit-p0-p1-remediation`. Audited/unchanged remote main: `c694af45055557b062bedeb974d73140ac75c6c9`. Implementation commit: `efabfb0f1d712d5b34ca2c018f29bf03bd8383f2`; exact runtime content is independently frozen in [source hashes](evidence/runtime-source-sha256.json). Tests before commit ran this working source, not pristine baseline.
 
 Both confirmed P0 defects are locally corrected and regression-proven. The audit's partial batch0/3 now persists3/3 native observations in actual PostgreSQL; repeated/empty partial polling is idempotent and preserves history. Missing/contradictory native proof cannot fabricate success or erase the last defensible outcome; canonical conflicts enter existing review/quarantine. Native Y/N/status/errors, copied step metrics and transport health/completeness remain distinct through fenced ingestion, persistence, authenticated API and UI. Repeated observed step rows remain distinct without inventing a native child UUID.
 
