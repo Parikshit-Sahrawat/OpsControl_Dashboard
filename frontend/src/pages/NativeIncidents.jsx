@@ -27,9 +27,11 @@ export default function NativeIncidents({
     [target, setTarget] = useState("ACKNOWLEDGED"),
     [assignee, setAssignee] = useState("");
   const detailGeneration = useRef(0);
+  useEffect(() => setOffset(0), [organizationIds.join(","), environment]);
   useEffect(() => {
     let live = true;
     setData(null);
+    setError("");
     const q = new URLSearchParams({ limit: 50, offset });
     organizationIds.forEach((id) => q.append("organization_id", id));
     if (status) q.set("status", status);
@@ -41,6 +43,10 @@ export default function NativeIncidents({
       live = false;
     };
   }, [organizationIds.join(","), environment, status, offset, revision]);
+  useEffect(() => {
+    if (data && offset && offset >= data.total)
+      setOffset(data.total ? Math.floor((data.total - 1) / data.limit) * data.limit : 0);
+  }, [data, offset]);
   useEffect(() => {
     detailGeneration.current += 1;
     setSelected(null);
@@ -130,19 +136,13 @@ export default function NativeIncidents({
             </tbody>
           </table>
           {!data.items.length && <p>No incidents in this authorized scope.</p>}
-          <button
-            disabled={!offset}
-            onClick={() => setOffset((v) => Math.max(0, v - 50))}
-          >
-            Previous
-          </button>
-          <span>{data.total} incidents</span>
-          <button
-            disabled={offset + 50 >= data.total}
-            onClick={() => setOffset((v) => v + 50)}
-          >
-            Next
-          </button>
+          <div className="form-footer" aria-label="Incident pages">
+            <span>{data.total ? offset + 1 : 0}–{Math.min(offset + data.items.length, data.total)} of {data.total} incidents</span>
+            <div>
+              <button disabled={!offset} onClick={() => setOffset((v) => Math.max(0, v - data.limit))}>Previous</button>
+              <button disabled={offset + data.items.length >= data.total} onClick={() => setOffset((v) => v + data.limit)}>Next</button>
+            </div>
+          </div>
         </section>
       )}
       {selected && (

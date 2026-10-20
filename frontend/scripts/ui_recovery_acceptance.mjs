@@ -40,11 +40,37 @@ try {
   await selectCustomers(desktop);
   const nav=desktop.getByRole('navigation',{name:'Primary navigation'});
   await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).waitFor();
+  await desktop.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
+  check(await desktop.getByRole('heading',{name:'Running Data Pipeline Executions'}).count()===1,'dashboard includes scoped running execution evidence');
   for (const section of ['Overview','Operations','Resource Management','Access Management']) check(await nav.getByText(section,{exact:true}).count()>0,`desktop ${section} group`);
+  const resourceGroup=nav.getByRole('button',{name:'Resource Management navigation'});
+  await resourceGroup.click();
+  check(await resourceGroup.getAttribute('aria-expanded')==='false','resource navigation group collapses');
+  check(await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).count()===0,'collapsed group removes child controls from keyboard navigation');
+  await resourceGroup.click();
+  check(await resourceGroup.getAttribute('aria-expanded')==='true','resource navigation group expands');
   await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+  await desktop.getByRole('tab',{name:'Data Pipelines'}).click();
+  check(await desktop.getByRole('button',{name:'Create Legacy Data Pipeline'}).count()===1,'legacy pipeline creation remains in Resource Management header');
+  check(await desktop.getByRole('button',{name:'Create Data Pipeline',exact:true}).count()===0,'native integration editor has no duplicate create action');
+  await desktop.getByRole('heading',{name:'Existing native integration configuration'}).waitFor();
+  await desktop.getByRole('tab',{name:'Compute Instances'}).click();
   await desktop.getByRole('button',{name:'Create Compute Instance'}).waitFor();
   check(await desktop.locator('.page-heading .primary-button').count()===1,'resource create in header');
   check(await desktop.locator('.resource-toolbar .primary-button').count()===0,'resource filter has no create button');
+  check(await desktop.getByLabel('Resource Management component').inputValue()==='resources','resource component selector follows sidebar destination');
+  await desktop.getByRole('button',{name:'Create Compute Instance'}).click();
+  const onboarding=desktop.getByRole('region',{name:'Create Compute Instance'});
+  await onboarding.waitFor();
+  check(await desktop.getByRole('dialog',{name:'Create Compute Instance'}).count()===0,'compute onboarding uses a full-page workspace');
+  const computeStepCount=await onboarding.locator('.onboarding-step').count();
+  check(computeStepCount===10,`compute workspace retains ten sequential steps (found ${computeStepCount})`);
+  check(await onboarding.getByRole('button',{name:/2\. Configure Telemetry/}).isDisabled(),'future onboarding steps remain locked before resource identity');
+  check(await onboarding.getByRole('button',{name:'Save draft'}).count()===1,'workspace has one draft action');
+  await onboarding.getByText('Loading attribute definitions…').waitFor({state:'hidden'});
+  check(await onboarding.getByRole('alert').count()===0,'compute configuration definitions load without an API error');
+  if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,'compute-workspace-desktop.png'),fullPage:true});
+  await onboarding.getByRole('button',{name:'Close resource form'}).click();
   await desktop.locator('th').filter({hasText:/configuration state/i}).first().waitFor({state:'attached'});
   check(true,'configuration label distinct from health');
   await nav.getByRole('button',{name:'Organizations',exact:true}).click();
@@ -56,12 +82,20 @@ try {
   await desktop.getByText('UAT-A',{exact:true}).first().waitFor();
   check(await desktop.locator('.resource-main .table-wrap th').filter({hasText:'Organization'}).count()>0,'customer organization inventory visible');
   check(await desktop.locator('.resource-main tbody tr').count()===2,'both selected customer organizations are listed');
-  await desktop.getByLabel('Resource organization filter').selectOption({label:'Synthetic UAT Customer A'});
+  check(await desktop.getByLabel('Resource organization filter').count()===0,'Organizations has no redundant customer filter');
+  await desktop.getByLabel('Search organizations').fill('UAT-A');
   await desktop.locator('.resource-main tbody tr').filter({hasText:'UAT-A'}).waitFor();
-  check(await desktop.locator('.resource-main tbody tr').count()===1,'customer filter clears the other customer row');
-  await desktop.getByLabel('Resource organization filter').selectOption('');
+  check(await desktop.locator('.resource-main tbody tr').count()===1,'organization search narrows the list');
+  await desktop.getByLabel('Search organizations').fill('');
   await desktop.getByText('UAT-B',{exact:true}).first().waitFor();
   check(await desktop.getByRole('heading',{name:'Departments',exact:true}).count()===0,'customer Organizations stay distinct from provider Departments');
+  for (const [label, section] of [['Event Parameters','parameters'],['Alert Rules','rules'],['Notification Delivery','delivery']]) {
+    await nav.getByRole('button',{name:label,exact:true}).click();
+    await desktop.waitForFunction((value) => document.querySelector('.resource-section-select select')?.value === value, section);
+    check(await desktop.getByLabel('Resource Management component').inputValue()===section,`${label} opens its canonical configuration section`);
+    check(await nav.getByRole('button',{name:label,exact:true}).getAttribute('aria-current')==='page',`${label} child is active`);
+  }
+  await nav.getByRole('button',{name:'Organizations',exact:true}).click();
   if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,'organizations-desktop.png'),fullPage:true});
   await nav.getByRole('button',{name:'Collectors',exact:true}).click();
   await desktop.getByRole('heading',{name:'Collectors',exact:true}).waitFor();
@@ -118,6 +152,14 @@ try {
     await desktop.getByRole('heading',{name,exact:true}).waitFor();
     check(true,`pipeline ${name}`);
   }
+  await nav.getByRole('button',{name:'Reports',exact:true}).click();
+  for (const name of ['Data Pipeline Reports','Compute Health Reports','API Endpoint Reports']) {
+    await desktop.getByRole('tab',{name}).click();
+    check(await desktop.getByLabel('Report resource').getAttribute('type')==='search',`${name} has searchable resource selection`);
+  }
+  await nav.getByRole('button',{name:'Incidents',exact:true}).click();
+  await desktop.getByLabel('Incident pages').waitFor();
+  check(await desktop.getByLabel('Incident pages').getByText(/of \d+ incidents/).count()===1,'incident pager displays scoped range and total');
   await nav.getByRole('button',{name:'Collapse sidebar'}).click();
   check(await desktop.getByRole('button',{name:'Expand sidebar'}).count()===1,'desktop sidebar collapse preserved');
   if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,'navigation-r2-pipelines-desktop.png'),fullPage:true});
@@ -131,6 +173,13 @@ try {
   await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
   check(await mobile.getByRole('navigation',{name:'Primary navigation'}).isHidden(),'mobile navigation closes after selection');
   check(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile document has no horizontal overflow');
+  await mobile.getByRole('button',{name:'Create Compute Instance'}).click();
+  await mobile.getByRole('region',{name:'Create Compute Instance'}).waitFor();
+  await mobile.getByText('Loading attribute definitions…').waitFor({state:'hidden'});
+  check(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile Compute workspace has no page overflow');
+  check(await mobile.locator('.resource-onboarding-workspace .onboarding-step').count()===10,'mobile stepper retains all ten steps');
+  if (evidenceDir) await mobile.screenshot({path:path.join(evidenceDir,'compute-workspace-mobile.png'),fullPage:true});
+  await mobile.getByRole('button',{name:'Close resource form'}).click();
   await mobile.getByRole('button',{name:'Open navigation'}).click();
   await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Organizations',exact:true}).click();
   await mobile.getByRole('heading',{name:'Organizations',exact:true}).waitFor();

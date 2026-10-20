@@ -17,7 +17,7 @@ const secondsToText = (seconds) => {
 };
 const timeText = (value) => value ? new Date(value).toLocaleTimeString("en-IN", { hour12: false, timeZone: "Asia/Kolkata" }) : null;
 export function mapExecution(item) {
-  return { id:item.id, jobOrderId:item.job_order_id, organizationId:item.organization_id, name:item.job_name, server:item.server, environment:item.environment, executionType:item.execution_type, start:timeText(item.started_at), end:timeText(item.ended_at), duration:secondsToText(item.duration_seconds), expectedRuntime:secondsToText(item.expected_runtime_seconds), sla:secondsToText(item.sla_seconds), status:item.status, failedStep:item.failed_step, slaStatus:item.sla_status, monitoringStatus:item.monitoring_status, providerExecutionId:item.provider_execution_id };
+  return { id:item.id, jobOrderId:item.job_order_id, organizationId:item.organization_id, organization:item.organization, name:item.job_name, server:item.server, environment:item.environment, executionType:item.execution_type, startedAt:item.started_at, start:timeText(item.started_at), end:timeText(item.ended_at), duration:secondsToText(item.duration_seconds), expectedRuntime:secondsToText(item.expected_runtime_seconds), sla:secondsToText(item.sla_seconds), status:item.status, failedStep:item.failed_step, slaStatus:item.sla_status, monitoringStatus:item.monitoring_status, providerExecutionId:item.provider_execution_id };
 }
 export async function fetchExecutions(params = {}) {
   const query = new URLSearchParams();

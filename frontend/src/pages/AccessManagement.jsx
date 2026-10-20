@@ -15,8 +15,8 @@ import AccessBoundaries from "./AccessBoundaries";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const TABS = [
-  "Employees",
   "Departments",
+  "Employees",
   "Roles & Permissions",
   "Organisational Access",
   "Access Audit",

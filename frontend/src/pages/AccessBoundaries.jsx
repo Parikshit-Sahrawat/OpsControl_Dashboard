@@ -163,6 +163,8 @@ export default function AccessBoundaries({
               setSpec(empty);
             }}
           >
+            <fieldset className="access-boundary-group">
+              <legend>Boundary subject and kind</legend>
             <label>
               Employee
               <select
@@ -194,6 +196,9 @@ export default function AccessBoundaries({
                 ))}
               </select>
             </label>
+            </fieldset>
+            <fieldset className="access-boundary-group">
+              <legend>Permission and monitored customer scope</legend>
             <Choices
               label="Implemented permission budget"
               values={spec.permissions}
@@ -206,6 +211,9 @@ export default function AccessBoundaries({
               options={customers}
               onChange={(v) => change("customers", v)}
             />
+            </fieldset>
+            <fieldset className="access-boundary-group">
+              <legend>Additional boundary conditions</legend>
             {kind === "DELEGATE" && (
               <>
                 <Choices
@@ -287,6 +295,7 @@ export default function AccessBoundaries({
                 </label>
               </>
             )}
+            </fieldset>
             <label>
               <input
                 type="checkbox"

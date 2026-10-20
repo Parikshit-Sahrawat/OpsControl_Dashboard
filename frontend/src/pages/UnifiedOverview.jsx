@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import WorldClock from "../components/WorldClock";
 import { control } from "../controlPlane";
+import { hasPermission } from "../permissions";
 export const query = (ids, environment, extra = {}) => {
   const q = new URLSearchParams(extra);
   ids.forEach((id) => q.append("organization_id", id));
@@ -47,6 +48,8 @@ export default function UnifiedOverview({
   organizationIds,
   environment,
   user,
+  jobs = [],
+  jobsLoading = false,
   onNavigate,
   onSelectExecution,
   onSelectResource,
@@ -72,6 +75,30 @@ export default function UnifiedOverview({
         </p>
       )}
       {!data && !error && <p>Loading scoped operational evidence…</p>}
+      {hasPermission(user, "etl.view") && (
+        <section className="card table-wrap">
+          <h2>Running Data Pipeline Executions</h2>
+          <p className="muted">Latest observed executions in the selected customer scope. A running state is execution evidence, not proof of source health.</p>
+          <table>
+            <thead><tr><th>Job / workflow</th><th>Customer</th><th>Host</th><th>Started (UTC)</th><th>Duration</th><th>State</th><th>Monitoring evidence</th></tr></thead>
+            <tbody>
+              {jobs.filter((job) => ["RUNNING", "LONG_RUNNING"].includes(job.status)).map((job) => (
+                <tr key={job.id}>
+                  <td><button onClick={() => onSelectExecution?.(job.id)}>{job.name}</button></td>
+                  <td>{job.organization || "Unknown"}</td>
+                  <td>{job.server || "Unknown"}</td>
+                  <td>{job.startedAt ? new Date(job.startedAt).toLocaleString("en-GB", { timeZone: "UTC" }) : "Unknown"}</td>
+                  <td>{job.duration || "Unknown"}</td>
+                  <td>{job.status}</td>
+                  <td>{job.monitoringStatus || "UNKNOWN"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {!jobsLoading && !jobs.some((job) => ["RUNNING", "LONG_RUNNING"].includes(job.status)) && <p>No running execution in the latest bounded observation. This does not establish schedule compliance.</p>}
+          {jobsLoading && <p>Loading execution evidence…</p>}
+        </section>
+      )}
       <div className="overview-companions">
         {["ETL", "VM", "API"].map((domain) => (
           <section key={domain} className="card table-wrap">

@@ -439,7 +439,10 @@ export default function App({ user }) {
             organizationIds={organizationIds}
             environment={environment}
             user={user}
+            jobs={jobs}
+            jobsLoading={loading}
             onNavigate={navigate}
+            onSelectExecution={selectJob}
             onSelectResource={(id, domain) =>
               navigate(
                 domain === "ETL"

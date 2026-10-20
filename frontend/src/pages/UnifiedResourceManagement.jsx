@@ -327,18 +327,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
             </button>
           ))}
       </div>
-      {area === "resources" && domain === "ETL" && (
-        <DataPipelineIntegrations
-          user={user}
-          customers={customers}
-          organizationId={customer}
-          onResourceSelected={(id) =>
-            action(async () =>
-              setSelected(await control(base + "/resources/" + id)),
-            )
-          }
-        />
-      )}
       {area === "delivery" && (
         <EventDelivery kind="delivery" organizations={customers} user={user} />
       )}
@@ -491,6 +479,19 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
             Next
           </button>
         </div>
+      )}
+      {area === "resources" && domain === "ETL" && (
+        <DataPipelineIntegrations
+          existingOnly
+          user={user}
+          customers={customers}
+          organizationId={customer}
+          onResourceSelected={(id) =>
+            action(async () =>
+              setSelected(await control(base + "/resources/" + id)),
+            )
+          }
+        />
       )}
       {selected && (
         <section
@@ -1022,6 +1023,16 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
   const save = () =>
     action(async () => {
       if (!form.name.trim()) throw Error("Resource name required");
+      if (!item && !inline && !form.organization_id)
+        throw Error("Select a monitored customer organization before saving the resource");
+      if (inline && (!customerName.trim() || !customerCode.trim()))
+        throw Error("Enter the new customer name and code before saving");
+      if (domain === "VM" && (!form.hostname.trim() || !form.address.trim()))
+        throw Error("Hostname and DNS/IP address are required before saving a Compute Instance");
+      if (domain === "ETL" && !form.jobchain.trim())
+        throw Error("Jobchain name is required before saving a Data Pipeline");
+      if (domain === "API" && !form.dns.trim())
+        throw Error("Endpoint DNS name is required before saving an API Endpoint");
       let payload = {
         ...form,
         new_customer: inline
@@ -1103,34 +1114,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       focus={!openCollector}
       workspace={domain === "VM"}
     >
-      {error && (
-        <p className="error-banner" role="alert">
-          {error}
-        </p>
-      )}
-      {!item && (
-        <div className="heading-actions">
-          <button disabled={busy} onClick={saveDraft}>
-            Save draft
-          </button>
-          {drafts.length > 0 && (
-            <label>
-              Resume draft
-              <select
-                defaultValue=""
-                onChange={(e) => e.target.value && resumeDraft(e.target.value)}
-              >
-                <option value="">Select saved draft</option>
-                {drafts.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} · stage {d.stage}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-        </div>
-      )}
       {domain === "VM" && (
         <ol className="onboarding-steps" aria-label="VM onboarding steps">
           {[
@@ -1145,7 +1128,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             "Validate Configuration",
             "Activate Monitoring",
           ].map((s, i) => (
-            <li key={s} className={visibleStep === i + 1 ? "active" : ""}>
+            <li key={s} className={visibleStep === i + 1 ? "onboarding-step active" : "onboarding-step"}>
               <button
                 type="button"
                 aria-current={visibleStep === i + 1 ? "step" : undefined}
@@ -1158,12 +1141,23 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           ))}
         </ol>
       )}
+      <div className="resource-onboarding-content">
+      {error && <p className="error-banner" role="alert">{error}</p>}
+      {!item && <div className="heading-actions">
+        <button disabled={busy} onClick={saveDraft}>Save draft</button>
+        {drafts.length > 0 && <label>Resume draft
+          <select defaultValue="" onChange={(e) => e.target.value && resumeDraft(e.target.value)}>
+            <option value="">Select saved draft</option>
+            {drafts.map((d) => <option key={d.id} value={d.id}>{d.name} · stage {d.stage}</option>)}
+          </select>
+        </label>}
+      </div>}
       {visibleStep === 1 && (
         <>
           <DynamicConfigurationForm
             definition={domain}
             value={form}
-            onChange={setForm}
+            onChange={(next) => { setForm(next); setVerification(null); setApproved(false); }}
             keys={["environment"]}
             disabled={!!inherited}
           />
@@ -1748,6 +1742,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           }}
         />
       )}
+      </div>
     </Modal>
   );
 }

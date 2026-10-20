@@ -23,8 +23,8 @@ const sections = [
     ["Resource Management", "Notification Delivery", "delivery"],
   ] },
   { name: "Access Management", items: [
-    ["Access Management", "Employees", "Employees"],
     ["Access Management", "Departments", "Departments"],
+    ["Access Management", "Employees", "Employees"],
     ["Access Management", "Roles & Permissions", "Roles & Permissions"],
     ["Access Management", "Organisational Access", "Organisational Access"],
     ["Access Management", "Access Audit", "Access Audit"],
@@ -48,7 +48,15 @@ export default function TopNav({
 }) {
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState({});
+  const [expandedGroups, setExpandedGroups] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("opscontrol.navGroups") || "{}");
+      return Object.fromEntries(sections.map(({ name }) => [name, saved?.[name] !== false]));
+    } catch { return {}; }
+  });
+  useEffect(() => {
+    localStorage.setItem("opscontrol.navGroups", JSON.stringify(expandedGroups));
+  }, [expandedGroups]);
   const mobileToggle = useRef(null);
   const navigation = useRef(null);
   const [collapsed, setCollapsed] = useState(
@@ -67,7 +75,7 @@ export default function TopNav({
   }, [active, user?.authorization_revision]);
   useEffect(() => {
     if (!mobileOpen) return;
-    navigation.current?.querySelector(".nav-button")?.focus();
+    navigation.current?.querySelector(".nav-group-toggle, .nav-button")?.focus();
     const close = (event) => {
       if (event.key === "Escape") {
         setMobileOpen(false);
@@ -120,7 +128,7 @@ export default function TopNav({
         <button
           className="brand-link"
           onClick={() => onChange("Overview")}
-          aria-label="Go to Overview"
+          aria-label="Go to Dashboard"
         >
           <span className="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -160,7 +168,7 @@ export default function TopNav({
           aria-expanded={!collapsed}
           onClick={() => setCollapsed((v) => !v)}
         >
-          {collapsed ? "→" : "←"}
+          {collapsed ? "+" : "×"}
         </button>
         {sections.map((section) => {
           const visible = section.items.filter(([key, , child]) =>

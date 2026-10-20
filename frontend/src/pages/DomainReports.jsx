@@ -20,6 +20,7 @@ export default function DomainReports({
 }) {
   const [domain, setDomain] = useState("ETL"),
     [resource, setResource] = useState(""),
+    [resourceSearch, setResourceSearch] = useState(""),
     [resources, setResources] = useState([]),
     [resourceError, setResourceError] = useState(""),
     [offset, setOffset] = useState(0),
@@ -33,6 +34,7 @@ export default function DomainReports({
     setResources([]);
     setResourceError("");
     setResource("");
+    setResourceSearch("");
     setOffset(0);
     setStatus("");
     readAllPages(
@@ -94,6 +96,7 @@ export default function DomainReports({
           ]
         : ["samples", "metric_series", "last_observed"];
   const histogram = data?.histogram || [],
+    resourceChoices = resources.map((r) => ({ id: r.id, label: `${r.name} · ${r.environment} · ${r.id}` })),
     countKey =
       domain === "ETL" ? "completed" : domain === "API" ? "probes" : "maximum",
     max = Math.max(1, ...histogram.map((b) => Number(b[countKey]) || 0));
@@ -160,20 +163,22 @@ export default function DomainReports({
         </label>
         <label>
           Report resource
-          <select
-            value={resource}
+          <input
+            type="search"
+            aria-label="Report resource"
+            list="report-resource-choices"
+            placeholder="Search name or resource ID"
+            value={resourceSearch}
             onChange={(e) => {
-              setResource(e.target.value);
+              const value = e.target.value;
+              setResourceSearch(value);
+              setResource(resourceChoices.find((choice) => choice.label === value)?.id || "");
               setOffset(0);
             }}
-          >
-            <option value="">All authorized resources</option>
-            {resources.map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name}
-              </option>
-            ))}
-          </select>
+          />
+          <datalist id="report-resource-choices">
+            {resourceChoices.map((choice) => <option key={choice.id} value={choice.label} />)}
+          </datalist>
         </label>
         {domain !== "VM" && (
           <label>
@@ -196,6 +201,7 @@ export default function DomainReports({
           </label>
         )}
       </div>
+      {resourceSearch && !resource && <p role="status">Select an exact resource suggestion to apply the report filter. The current report includes all authorized resources.</p>}
       {(error || resourceError) && (
         <p role="alert" className="error-banner">
           {error || resourceError}
