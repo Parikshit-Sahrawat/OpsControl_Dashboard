@@ -29,7 +29,14 @@ page.on("response", (r) => {
 const nav = async (name) =>
   page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name, exact: true })
+    .getByRole("button", {
+      name:
+        {
+          "Resource Management": "Data Sources / Resources",
+          "Access Management": "Employees",
+        }[name] || name,
+      exact: true,
+    })
     .click();
 const shot = async (name) => {
   await page.screenshot({ path: join(out, name), fullPage: true });
@@ -43,6 +50,15 @@ const response = (path, method = "GET") =>
 const close = () =>
   page.getByRole("button", { name: "Close resource form" }).click();
 try {
+  // Scope is an explicit fixture selection, never an implicit ALL grant.
+  // Fresh sessions intentionally have no customer selection.
+  await page.addInitScript((customerId) => {
+    localStorage.setItem(
+      "opscontrol.organizationIds",
+      JSON.stringify([customerId]),
+    );
+    localStorage.setItem("opscontrol.customerSelectionMode", "SELECTED");
+  }, fixture.vm_resource.organization_id);
   await page.goto(process.env.ARCH001_UI_URL);
   await page.getByLabel("Username", { exact: true }).fill("arch001-admin");
   await page.getByLabel("Password", { exact: true }).fill(fixture.password);
@@ -214,7 +230,12 @@ try {
     "Reports",
   ]) {
     await nav(name);
-    await page.getByRole("heading", { name, exact: true }).waitFor();
+    await page
+      .getByRole("heading", {
+        name: name === "Data Pipeline Monitoring" ? "Pipeline Inventory" : name,
+        exact: true,
+      })
+      .waitFor();
   }
   await nav("Incidents");
   await page.getByLabel("Global environment", { exact: true }).selectOption("");

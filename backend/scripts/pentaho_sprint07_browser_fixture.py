@@ -4,6 +4,7 @@ import json, os, uuid
 from datetime import timedelta
 from pathlib import Path
 from sqlalchemy import select
+from app.models import JobStepExecution
 from app.security.passwords import hash_password
 from app.security.models import User
 from app.security.permission_catalog import PROVIDER_ID
@@ -71,7 +72,13 @@ try:
         active=True,
         service_provider_id=PROVIDER_ID,
     )
-    restricted = User(username="sprint07-etl-only-"+uuid.uuid4().hex, full_name="Controlled catalog-restricted reader", password_hash=hash_password(password), active=True, service_provider_id=PROVIDER_ID)
+    restricted = User(
+        username="sprint07-etl-only-" + uuid.uuid4().hex,
+        full_name="Controlled catalog-restricted reader",
+        password_hash=hash_password(password),
+        active=True,
+        service_provider_id=PROVIDER_ID,
+    )
     lab.db.add_all([viewer, restricted])
     for u in [lab.user, lab.reviewer]:
         u.password_hash = hash_password(password)
@@ -118,6 +125,37 @@ try:
         lab.db.info["pipeline_initial_job_binding"] = job.id
         resource = create_job_resource(lab.db, integration, job)
         job.resource_id = resource.id
+    # Deliberately synthetic UI-only counter states; not observed native child
+    # invocations. Native parser/persistence evidence is tested separately.
+    for copy, status, errors, read, written in [
+        ("0", "SUCCESS", 0, 0, 4),
+        ("1", "UNKNOWN", None, None, None),
+    ]:
+        lab.db.add(
+            JobStepExecution(
+                history_id=retried.id,
+                name="Synthetic repeated step",
+                external_step_id="controlled-ui-step-" + copy,
+                attempt=2,
+                status=status,
+                step_type="CONTROLLED_UI_FIXTURE",
+                records_read=read,
+                records_written=written,
+                source_evidence={
+                    "fixture_state": "CONTROLLED_UI_COUNTER_VALUES",
+                    "native_copy": copy,
+                    "nr_errors": errors,
+                    "native_status_description": "Finished" if copy == "0" else None,
+                    "native_metrics": {
+                        "errors": errors,
+                        "linesRead": read,
+                        "linesWritten": written,
+                        "linesInput": read,
+                        "linesOutput": written,
+                    },
+                },
+            )
+        )
     lab.db.commit()
     data = {
         "password": password,

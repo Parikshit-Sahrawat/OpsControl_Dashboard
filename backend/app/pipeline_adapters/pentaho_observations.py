@@ -86,6 +86,43 @@ def scoped_identity(customer_id, cfg, native_execution_id, process_start=None):
     )
 
 
+def validate_native_steps(rows):
+    if not isinstance(rows, list) or len(rows) > 100:
+        raise AdapterError("SCHEMA", "Bounded native step observations required")
+    for row in rows:
+        if (
+            not isinstance(row, dict)
+            or not isinstance(row.get("name"), str)
+            or not 1 <= len(row["name"]) <= 200
+            or row.get("status") not in {"SUCCESS", "FAILED", "RUNNING", "UNKNOWN"}
+        ):
+            raise AdapterError("SCHEMA", "Invalid native step observation")
+        copy = row.get("copy")
+        if copy is not None and (
+            not isinstance(copy, str) or not re.fullmatch(r"[0-9]{1,7}", copy)
+        ):
+            raise AdapterError("SCHEMA", "Invalid native step copy")
+        description = row.get("statusDescription")
+        if description is not None and (
+            not isinstance(description, str) or len(description) > 200
+        ):
+            raise AdapterError("SCHEMA", "Invalid native step description")
+        metrics = row.get("metrics") or {}
+        if not isinstance(metrics, dict) or set(metrics) - {
+            "errors",
+            "linesRead",
+            "linesWritten",
+            "linesInput",
+            "linesOutput",
+        }:
+            raise AdapterError("SCHEMA", "Invalid native step metrics")
+        for value in [row.get("nr_errors"), *metrics.values()]:
+            if value is not None and (
+                type(value) is not int or not 0 <= value <= 9999999
+            ):
+                raise AdapterError("SCHEMA", "Invalid native numeric evidence")
+
+
 def normalize_observation(record, cfg, customer_id):
     """Normalize an authenticated observation; identity assertions need live review.
 
@@ -141,6 +178,13 @@ def normalize_observation(record, cfg, customer_id):
         "ended_at",
         "provider_status",
         "nr_errors",
+        "native_result",
+        "native_exit_status",
+        "native_log_channel_id",
+        "native_log_date_raw",
+        "evidence_warnings",
+        "log_evidence_status",
+        "native_steps",
         "logs",
         "failure_cause",
     }
@@ -149,6 +193,8 @@ def normalize_observation(record, cfg, customer_id):
             "SCHEMA",
             "Unsupported observation fields; raw commands/credentials are not accepted",
         )
+    if "native_steps" in record:
+        validate_native_steps(record["native_steps"])
     scheduler = record.get("scheduler_identity")
     if scheduler is not None:
         allowed = {
@@ -340,6 +386,14 @@ def normalize_observation(record, cfg, customer_id):
             "completion_evidence": status in {"SUCCESS", "FAILED", "CANCELLED"},
         },
     )
+    warnings = set(record.get("evidence_warnings") or [])
+    if warnings & {"CONFLICTED_ERROR_COUNTS", "CONFLICTED_EXIT_STATUS"} or (
+        "CONFLICTED_OR_INCOMPLETE_NATIVE_RESULT" in warnings
+        and record.get("native_result") is not None
+        and record.get("nr_errors") is not None
+    ):
+        # Derived quarantine metadata, not a native PDI field or proof grant.
+        fact["event"]["pentaho_identity"]["native_evidence_conflict"] = True
     if record.get("failure_cause") is not None:
         from app.native_incidents.pentaho import cause_reference
 

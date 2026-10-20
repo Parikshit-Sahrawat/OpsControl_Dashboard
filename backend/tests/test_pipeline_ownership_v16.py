@@ -1445,21 +1445,28 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(root.primary_collector_id, first.id)
         self.assertNotEqual(root.primary_collector_id, second.id)
 
-    def _pentaho_r1_fixture(self, surface="KITCHEN_PAN"):
+    def _pentaho_r1_fixture(self, surface="KITCHEN_PAN", workload_kind="JOB"):
         from tests.test_pentaho_r1 import scope, observation, server_record
 
-        cfg = scope(surface)
+        cfg = scope(surface, workload_kind=workload_kind)
         self.integration.platform = "PENTAHO"
         self.connection.configuration = {"monitoring_context": cfg}
-        self.source.method_type = "FILE_LOG"
+        self.source.method_type = "PLATFORM_API" if surface == "CARTE" else "FILE_LOG"
         self.source.identity = {
             "host_resource_id": cfg["host_resource_id"],
             "path": "/controlled/pentaho.jsonl",
             "os": "Linux",
         }
+        if surface == "CARTE":
+            self.source.identity = {
+                "platform": "PENTAHO",
+                "endpoint": "https://carte.invalid/kettle",
+                "account": "controlled",
+                "physical_scope": "controlled",
+            }
         self.source.live_checkpoint = {"sources": {}}
-        self.method.transport = "AGENT"
-        self.method.configuration = {"method_type": "FILE_LOG"}
+        self.method.transport = "BACKEND" if surface == "CARTE" else "AGENT"
+        self.method.configuration = {"method_type": self.source.method_type}
         self.profile.platform_version = cfg["exact_build"]
         self.profile.definition = {"supported_methods": ["FILE_LOG"]}
         self.profile.evidence_status = "DOCUMENTED"

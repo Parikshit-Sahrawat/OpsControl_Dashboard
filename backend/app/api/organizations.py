@@ -6,8 +6,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.api.pagination import CollectionPage, page
 from app.models import Organization
-from app.schemas.organization import OrganizationCreate, OrganizationOut, OrganizationUpdate
+from app.schemas.organization import (
+    OrganizationCreate,
+    OrganizationOut,
+    OrganizationUpdate,
+)
 
 router = APIRouter(prefix="/api/v1/organizations", tags=["Organizations"])
 
@@ -19,16 +24,31 @@ def _get(db: Session, organization_id: UUID) -> Organization:
     return item
 
 
-@router.get("", response_model=list[OrganizationOut])
+@router.get("", response_model=list[OrganizationOut] | CollectionPage[OrganizationOut])
 def list_organizations(
     active: bool | None = Query(default=None),
     limit: int = Query(500, ge=1, le=1000),
+    offset: int = Query(0, ge=0),
+    paginated: bool = False,
+    search: str = Query("", max_length=200),
     db: Session = Depends(get_db),
 ):
-    stmt = select(Organization).order_by(Organization.name).limit(limit)
+    stmt = select(Organization)
     if active is not None:
         stmt = stmt.where(Organization.active == active)
-    return db.scalars(stmt).all()
+    if search:
+        stmt = stmt.where(Organization.name.ilike("%" + search + "%"))
+    ordering = (Organization.name, Organization.id)
+    if paginated:
+        return page(
+            db,
+            stmt,
+            ordering,
+            limit,
+            offset,
+            lambda r: OrganizationOut.model_validate(r),
+        )
+    return db.scalars(stmt.order_by(*ordering).offset(offset).limit(limit)).all()
 
 
 @router.get("/{organization_id}", response_model=OrganizationOut)
@@ -44,7 +64,9 @@ def create_organization(payload: OrganizationCreate, db: Session = Depends(get_d
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="Organization name or code already exists")
+        raise HTTPException(
+            status_code=409, detail="Organization name or code already exists"
+        )
     db.refresh(item)
     return item
 
@@ -63,7 +85,9 @@ def update_organization(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="Organization name or code already exists")
+        raise HTTPException(
+            status_code=409, detail="Organization name or code already exists"
+        )
     db.refresh(item)
     return item
 

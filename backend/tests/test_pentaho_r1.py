@@ -90,7 +90,11 @@ def status_xml(kind="jobstatus", errors="0", state="Finished", identity="r&amp;1
     error = "" if errors is None else "<nr_errors>" + errors + "</nr_errors>"
     return (
         f"<{kind}><id>{identity}</id><status_desc>{state}</status_desc>"
+        + "<result><result>"
+        + ("N" if errors not in {None, "0"} else "Y")
+        + "</result>"
         + error
+        + "</result>"
         + f"</{kind}>"
     ).encode()
 

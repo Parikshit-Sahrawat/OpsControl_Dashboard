@@ -85,7 +85,8 @@ def request(path, method="GET", body=None, token=None, expected=200):
         method=method,
         headers={
             "Content-Type": "application/json",
-            **({"Authorization": "Bearer " + token} if token else {}), **probe_headers(BASE, token, path)
+            **({"Authorization": "Bearer " + token} if token else {}),
+            **probe_headers(BASE, token, path),
         },
     )
     try:
@@ -187,6 +188,28 @@ def main():
                 "name": name,
                 "code": name,
                 "description": "Synthetic provider department",
+            },
+            admin,
+            201,
+        )
+
+    def delegate_identity_view(subject, departments):
+        # Explicit fixture-only Sprint08 administration boundary. A delegation
+        # budget grants no operational/customer permission by itself.
+        return request(
+            "/api/v1/access/boundaries",
+            "POST",
+            {
+                "user_id": subject["id"],
+                "kind": "DELEGATE",
+                "specification": {
+                    "departments": departments,
+                    "customers": [],
+                    "permissions": ["resources.view"],
+                },
+                "active": True,
+                "idempotency_key": uuid.uuid4().hex,
+                "reason": "Controlled explicit administrative view fixture",
             },
             admin,
             201,
@@ -298,6 +321,7 @@ def main():
         admin,
         201,
     )
+    delegate_identity_view(manager, [fixture_department, one["id"], two["id"]])
     access = login("access-manager")
     assert "access.view" in request("/api/v1/auth/me", token=access)["permissions"]
     for path in [
@@ -338,8 +362,10 @@ def main():
         "PATCH",
         {"platform_admin": False},
         access,
-        403,
+        404,  # Protected employees are intentionally non-discoverable to delegation.
     )
+    unchanged = request("/api/v1/access/employees/" + f["admin_id"], token=admin)
+    assert unchanged["platform_admin"] is True and unchanged["active"] is True
     request(
         "/api/v1/access/employees",
         "POST",
@@ -609,11 +635,19 @@ def main():
     paired = login("access-paired")
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]
     assert f["customer_a"] not in perms and perms[f["customer_b"]] == ["resources.view"]
-    role_snapshot = next(r for r in request("/api/v1/access/roles", token=admin) if r["id"] == custom["id"])
+    role_snapshot = next(
+        r
+        for r in request("/api/v1/access/roles", token=admin)
+        if r["id"] == custom["id"]
+    )
     request(
         "/api/v1/access/roles/" + custom["id"],
         "PATCH",
-        {"name": "Paired Resource Read", "permissions": ["alerts.view"], "expected_revision": role_snapshot["authorization_revision"]},
+        {
+            "name": "Paired Resource Read",
+            "permissions": ["alerts.view"],
+            "expected_revision": role_snapshot["authorization_revision"],
+        },
         admin,
     )
     perms = request("/api/v1/auth/me", token=paired)["customer_permissions"]
@@ -725,6 +759,7 @@ def main():
         admin,
         201,
     )
+    delegate_identity_view(limited_admin, [fixture_department, one["id"], two["id"]])
     department_admin = login("access-department-admin")
     request(
         "/api/v1/access/employees/" + limited_admin["id"],
@@ -804,6 +839,7 @@ def main():
         admin,
         201,
     )
+    delegate_identity_view(limited_admin, [protected_department["id"]])
     request(
         "/api/v1/access/departments/" + protected_department["id"] + "/roles",
         "POST",

@@ -1,0 +1,28 @@
+Populated existing identities/history and one explicit legacy mapping exception seeded
+No new upgrade operations detected.
+Populated ARCH-001 mapping preserves customer/VM/execution/step/password identities; invalid legacy environment staged; cross-tenant FK trigger PASS
+Empty ARCH-001 upgrade/downgrade/upgrade and schema comparison PASS
+ARCH-001 VM/customer/ETL/API onboarding, inheritance, safe imports/versioning, telemetry-gated activation and scope negatives PASS
+Native reconstruction/retry/parallel/late events, durable schedule windows, outage uncertainty, alert dedup/recovery and relationship correlation PASS (controlled engine boundary fixtures)
+Native incident HTTP lifecycle / recovery / customer authorization PASS
+Actual queued user-targeted in-app delivery / preferences / customer scopes / idempotency PASS
+Actual verified-TLS API and ingestion load: 100 requests per mode, 4 concurrent workers PASS
+Agent V1.5 actual API/DB enrollment, expiry, renewal/rotation/revocation, scope, checksum, receipts, deduplication and audit PASS
+Actual Agent + pinned Contrib logs/metrics/traces over verified TLS; filelog execution reconstruction and native failure alert PASS
+ARCH-001 OWNED ACCEPTANCE PASS
+Populated existing identities/history and one explicit legacy mapping exception seeded
+No new upgrade operations detected.
+Populated ARCH-001 mapping preserves customer/VM/execution/step/password identities; invalid legacy environment staged; cross-tenant FK trigger PASS
+Empty ARCH-001 upgrade/downgrade/upgrade and schema comparison PASS
+ARCH-001 VM/customer/ETL/API onboarding, inheritance, safe imports/versioning, telemetry-gated activation and scope negatives PASS
+Native reconstruction/retry/parallel/late events, durable schedule windows, outage uncertainty, alert dedup/recovery and relationship correlation PASS (controlled engine boundary fixtures)
+Native incident HTTP lifecycle / recovery / customer authorization PASS
+Actual queued user-targeted in-app delivery / preferences / customer scopes / idempotency PASS
+Private diagnostics: /tmp/opscontrol-arch001-te7gf9j4
+Traceback (most recent call last):
+  File "/workspace/scratch/opscontrol-p0-p1-remediation/scripts/arch001-acceptance.py", line 286, in <module>
+    run(["node", "scripts/arch001_acceptance.mjs"], ROOT / "frontend"),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/opscontrol-p0-p1-remediation/scripts/arch001-acceptance.py", line 40, in run
+    raise RuntimeError(
+RuntimeError: Owned ARCH-001 command failed; private diagnostics retained

@@ -46,7 +46,11 @@ from tests.test_pentaho_r1 import observation, END
 class PentahoExecutionTests(unittest.TestCase):
     def setUp(self):
         ownership.OwnershipTests.setUp(self)
-        self.cfg, _, _ = ownership.OwnershipTests._pentaho_r1_fixture(self)
+        self.cfg, _, _ = ownership.OwnershipTests._pentaho_r1_fixture(
+            self,
+            surface=getattr(self, "surface", "KITCHEN_PAN"),
+            workload_kind=getattr(self, "workload_kind", "JOB"),
+        )
         self.job = PipelineJob(
             organization_id=self.org.id,
             integration_id=self.integration.id,
@@ -71,7 +75,7 @@ class PentahoExecutionTests(unittest.TestCase):
         )
         self.profile.evidence_status = "RUNTIME_VERIFIED"
         self.profile.definition = {
-            "supported_methods": ["FILE_LOG"],
+            "supported_methods": [self.source.method_type],
             "verified_pentaho_claims": [
                 "INVOCATION",
                 "EXECUTION_OUTCOME",
@@ -83,7 +87,7 @@ class PentahoExecutionTests(unittest.TestCase):
             "fixture_state": "CONTROLLED_PREVERIFIED_NATIVE_AUTHORITY",
             "reader_definition_hash": s.reader_definition(self.db, self.method),
             "evidence": {
-                "surface": "KITCHEN_PAN",
+                "surface": self.cfg["surface"],
                 "exact_build": self.cfg["exact_build"],
             },
         }

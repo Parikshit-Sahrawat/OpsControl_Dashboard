@@ -9,7 +9,7 @@ import json
 import re
 import uuid
 from sqlalchemy import select
-from app.models import JobOrderHistory, ExecutionStatus, ExecutionType
+from app.models import JobOrderHistory, JobStepExecution, ExecutionStatus, ExecutionType
 from app.unified.pentaho_models import PentahoAlias, PentahoAttempt, PentahoRevision
 
 CLAIMS = {
@@ -20,6 +20,102 @@ CLAIMS = {
     "FAILURE_CAUSE",
 }
 TERMINAL = {"SUCCESS", "FAILED", "CANCELLED"}
+
+
+def project_native_fields(db, history, attempt, event):
+    """Project observed counters without treating them as child invocation IDs.
+
+    Called only after canonical identity/authority/revision acceptance. Raw
+    source observations stay in immutable normalized events and revisions.
+    """
+    from datetime import datetime
+    from app.services.etl_monitoring import step_key
+
+    provider = event.payload.get("provider_evidence") or {}
+    raw = provider.get("native_observation") or {}
+    if provider.get("v16_evidence_id"):
+        from app.data_pipelines.models import PipelineEvidence
+
+        evidence = db.get(PipelineEvidence, uuid.UUID(provider["v16_evidence_id"]))
+        if (
+            not evidence
+            or evidence.organization_id != history.pentaho_customer_id
+            or evidence.outcome != "ACCEPTED"
+        ):
+            return
+        raw = (evidence.payload.get("evidence") or {}).get("native_observation") or {}
+    if not raw or history.pentaho_review_state == "CONFLICTED_EVIDENCE":
+        return
+    previous = (history.source_evidence or {}).get("native_observed_at")
+    if previous and event.observed_at < datetime.fromisoformat(previous):
+        return
+    if history.pentaho_lifecycle == "TERMINAL" and event.payload[
+        "pentaho_identity"
+    ].get("native_outcome") not in {
+        history.pentaho_outcome,
+        (
+            "SUCCESS"
+            if history.pentaho_outcome == "SUCCESS_AFTER_RETRY"
+            else history.pentaho_outcome
+        ),
+    }:
+        return
+    history.source_evidence = {
+        **(history.source_evidence or {}),
+        **{
+            key: raw.get(key)
+            for key in (
+                "native_result",
+                "nr_errors",
+                "provider_status",
+                "native_exit_status",
+                "native_log_channel_id",
+                "log_evidence_status",
+            )
+        },
+        "native_observed_at": event.observed_at.isoformat(),
+    }
+    occurrences = {}
+    for row in raw.get("native_steps") or []:
+        pair = (row["name"], row.get("copy"))
+        ordinal = occurrences.get(pair, 0)
+        occurrences[pair] = ordinal + 1
+        key = (
+            "carte-step:" + hashlib.sha256(step_key(row, ordinal).encode()).hexdigest()
+        )
+        step = db.scalar(
+            select(JobStepExecution).where(
+                JobStepExecution.history_id == history.id,
+                JobStepExecution.external_step_id == key,
+                JobStepExecution.attempt == attempt.attempt_order,
+            )
+        )
+        if step is None:
+            step = JobStepExecution(
+                history_id=history.id,
+                external_step_id=key,
+                attempt=attempt.attempt_order,
+                name=row["name"],
+                status=row["status"],
+            )
+            db.add(step)
+        metrics = row.get("metrics") or {}
+        step.status = row["status"]
+        step.step_type = row.get("step_type")
+        step.records_read = metrics.get("linesRead")
+        step.records_written = metrics.get("linesWritten")
+        step.source_evidence = {
+            "event_id": str(event.id),
+            "native_copy": row.get("copy"),
+            "native_status_description": row.get("statusDescription"),
+            "nr_errors": row.get("nr_errors"),
+            "native_metrics": metrics,
+            "identity_provenance": (
+                "NATIVE_STEP_COPY"
+                if row.get("copy") is not None
+                else "OBSERVED_ORDER_ONLY"
+            ),
+        }
 
 
 def digest(value):
@@ -489,6 +585,8 @@ def reduce_events(db, resource, events, job=None):
             and native.get("completion_evidence") is True
         )
         disposition = "RETRY_UNVERIFIED" if claim["unverified_retry"] else "ACCEPTED"
+        if native.get("native_evidence_conflict") is True:
+            disposition = "CONFLICT_PENDING"
         conflict_claim = "EXECUTION_OUTCOME"
         if outcome in TERMINAL and outcome_verified:
             if attempt.outcome in TERMINAL and attempt.outcome != outcome:
@@ -611,6 +709,8 @@ def reduce_events(db, resource, events, job=None):
         # Materialize each accepted projection before a later claim in this
         # batch can conflict; freezing must preserve that defensible state.
         project_history(db, history, observed_at=event.observed_at)
+        if disposition == "ACCEPTED":
+            project_native_fields(db, history, attempt, event)
         if (
             history.pentaho_outcome == "FAILED"
             and history.ended_at

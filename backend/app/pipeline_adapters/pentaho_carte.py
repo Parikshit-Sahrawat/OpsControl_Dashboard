@@ -5,7 +5,7 @@ import hashlib
 import ssl
 from datetime import datetime, timezone
 from urllib.parse import quote
-from .core import AdapterError, Batch
+from .core import AdapterError, Batch, step_event
 from .pentaho_observations import context, normalize_observation
 from app.worker import pentaho_status as legacy
 
@@ -132,23 +132,20 @@ def parse_status(body, cfg, execution_id, observed_at, collect_logs=False, secre
     ).strip()
     if not description:
         raise AdapterError("SCHEMA", "Carte status missing")
-    error_text = root.findtext("result/nr_errors")
-    if error_text is None:
-        error_text = root.findtext("nr_errors")
-    errors = None
-    if error_text is not None:
-        if not error_text.isdecimal() or len(error_text) > 7:
-            raise AdapterError("SCHEMA", "Invalid Carte error count")
-        errors = int(error_text)
-    normalized = "UNKNOWN"
-    lower = description.casefold()
-    if lower in {"running", "initializing", "preparing", "waiting"}:
-        normalized = "RUNNING"
-    elif lower in {"finished", "completed"} and errors is not None:
-        normalized = "FAILED" if errors else "SUCCESS"
-    elif lower in {"failed", "error", "finished (with errors)"}:
-        normalized = "FAILED"
-    # Stopped or unknown descriptions never imply success or failure.
+    try:
+        steps = (
+            legacy._transformation_steps(root, secrets)
+            if cfg["workload_kind"] == "TRANSFORMATION"
+            else []
+        )
+        normalized, errors, indicator, exit_status, warnings = legacy._native_result(
+            root,
+            description,
+            cfg["workload_kind"],
+            any(row["nr_errors"] is not None and row["nr_errors"] > 0 for row in steps),
+        )
+    except legacy.PentahoStatusError:
+        raise AdapterError("SCHEMA", "Invalid Carte native result") from None
     record = {
         **cfg,
         "native_execution_id": native,
@@ -157,13 +154,55 @@ def parse_status(body, cfg, execution_id, observed_at, collect_logs=False, secre
         "status": normalized,
         "provider_status": description,
         "nr_errors": errors,
+        "native_result": indicator,
+        "native_exit_status": exit_status,
+        "native_log_channel_id": (
+            legacy.safe_text(root.findtext("result/log_channel_id"), secrets).strip()[
+                :200
+            ]
+            or None
+        ),
+        "native_log_date_raw": (
+            legacy.safe_text(root.findtext("log_date"), secrets).strip()[:100] or None
+        ),
+        "evidence_warnings": warnings,
+        "native_steps": steps,
         "started_at": legacy._source_time(root.findtext("start_date")),
         "ended_at": legacy._source_time(root.findtext("end_date")),
     }
     if collect_logs:
-        # Compressed/step schemas remain legacy-only until exact-build verified.
-        record["logs"] = legacy.safe_text(root.findtext("log_text"), secrets)
+        plain = root.findtext("log_text")
+        if plain is not None:
+            record["logs"] = legacy.safe_text(plain, secrets)
+            record["log_evidence_status"] = "AVAILABLE"
+        else:
+            record["logs"], record["log_evidence_status"] = legacy._decoded_log(
+                root.findtext("logging_string"), secrets
+            )
     return record
+
+
+def _facts(body, cfg, native, customer_id, collect_logs, secrets):
+    observation = parse_status(
+        body, cfg, native, datetime.now(timezone.utc).isoformat(), collect_logs, secrets
+    )
+    parent = normalize_observation(observation, cfg, customer_id)
+    facts = [parent]
+    occurrences = {}
+    for row in observation["native_steps"]:
+        # Position and native copy distinguish observed rows; neither is a
+        # native child execution UUID or a stable invocation identity.
+        pair = (row["name"], row.get("copy"))
+        ordinal = occurrences.get(pair, 0)
+        occurrences[pair] = ordinal + 1
+        step_id = (
+            "observed-step:"
+            + hashlib.sha256(repr((pair, ordinal)).encode()).hexdigest()
+        )
+        facts.append(
+            step_event("PENTAHO", parent, row, step_id, row["name"], row["status"])
+        )
+    return facts
 
 
 def collect(configuration, checkpoint, customer_id, transport=None):
@@ -183,38 +222,78 @@ def collect(configuration, checkpoint, customer_id, transport=None):
             "CONTINUITY", "Carte checkpoint epoch changed; reviewed handoff required"
         )
     get, secrets = reader(configuration, transport)
+    path = (
+        "/kettle/jobStatus/"
+        if cfg["workload_kind"] == "JOB"
+        else "/kettle/transStatus/"
+    )
+
+    def detail(identity):
+        return get(
+            path,
+            "name="
+            + quote(configuration["job_name"], safe="")
+            + "&id="
+            + quote(identity, safe="")
+            + "&xml=Y",
+        )
+
     native = configuration.get("execution_id")
     if not native:
         inventory = xml(get("/kettle/status/", "xml=Y"))
         if inventory.tag.replace("-", "_") not in {"server_status", "serverstatus"}:
             raise AdapterError("SCHEMA", "Unexpected Carte inventory root")
-        # Advisory only; no returned names become persistent native job IDs.
+        try:
+            entries = legacy._inventory_entries(
+                inventory, cfg["workload_kind"], configuration["job_name"]
+            )
+        except legacy.PentahoStatusError:
+            raise AdapterError("SCHEMA", "Invalid Carte inventory identity") from None
+        prior_hashes = previous.get("inventory_hashes", {})
+        if not isinstance(prior_hashes, dict) or len(prior_hashes) > 200:
+            prior_hashes = {}
+        hashes = {}
+        facts = []
+        for identity, inventory_status in entries:
+            body = detail(identity)
+            body_hash = hashlib.sha256(body).hexdigest()
+            hashes[identity] = body_hash
+            if prior_hashes.get(identity) == body_hash:
+                continue
+            observations = _facts(
+                body,
+                cfg,
+                identity,
+                customer_id,
+                configuration.get("collect_logs", False),
+                secrets,
+            )
+            native_status = observations[0]["evidence"]["native_observation"][
+                "provider_status"
+            ]
+            if inventory_status and native_status != inventory_status:
+                observations[0]["evidence"]["inventory_status_desc"] = inventory_status
+            facts.extend(observations)
         return Batch(
-            [],
+            facts,
             {
                 "platform": "PENTAHO",
                 "surface": "CARTE",
                 "read_only": True,
                 "persistent_inventory_authoritative": False,
                 "runtime_verified": False,
+                "inventory_complete": False,
+                "observed_execution_count": len(entries),
             },
-            dict(checkpoint or {}),
+            (
+                {"restart_epoch": cfg["restart_epoch"], "inventory_hashes": hashes}
+                if entries
+                else previous
+            ),
             False,
         )
     native = legacy._safe_token(native, "execution id")
-    path = (
-        "/kettle/jobStatus/"
-        if cfg["workload_kind"] == "JOB"
-        else "/kettle/transStatus/"
-    )
-    body = get(
-        path,
-        "name="
-        + quote(configuration["job_name"], safe="")
-        + "&id="
-        + quote(native, safe="")
-        + "&xml=Y",
-    )
+    body = detail(native)
     body_hash = hashlib.sha256(body).hexdigest()
     if (
         previous.get("status_sha256") == body_hash
@@ -231,17 +310,16 @@ def collect(configuration, checkpoint, customer_id, transport=None):
             previous,
             False,
         )
-    observation = parse_status(
+    facts = _facts(
         body,
         cfg,
         native,
-        datetime.now(timezone.utc).isoformat(),
+        customer_id,
         configuration.get("collect_logs", False),
         secrets,
     )
-    fact = normalize_observation(observation, cfg, customer_id)
     return Batch(
-        [fact],
+        facts,
         {
             "platform": "PENTAHO",
             "surface": "CARTE",

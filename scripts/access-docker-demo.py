@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Build and verify an owned Docker demo project; leave existing demos untouched."""
-import hashlib, json, os, secrets, socket, subprocess, tempfile, time, shutil
+import hashlib, json, os, secrets, socket, subprocess, tempfile, time, shutil, sys
 from pathlib import Path
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+from scripts.acceptance_scope import probe_headers
+
 source_commit = subprocess.check_output(
     ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
 ).strip()
@@ -20,7 +23,9 @@ def verify_source_head():
             ["git", "status", "--porcelain"], cwd=ROOT, text=True
         ).strip()
         if current != expected_commit or dirty:
-            raise RuntimeError("Exact-head Docker verification requires the expected clean commit")
+            raise RuntimeError(
+                "Exact-head Docker verification requires the expected clean commit"
+            )
 
 
 verify_source_head()
@@ -44,14 +49,20 @@ def port():
 fixed_ports = os.getenv("OPSCONTROL_DOCKER_TEST_PORTS")
 if fixed_ports:
     ports = [int(value) for value in fixed_ports.split(",")]
-    if len(ports) != 3 or len(set(ports)) != 3 or any(not 1024 <= value <= 65535 for value in ports):
+    if (
+        len(ports) != 3
+        or len(set(ports)) != 3
+        or any(not 1024 <= value <= 65535 for value in ports)
+    ):
         raise RuntimeError("Three distinct unprivileged test ports required")
     api_port, ui_port, gateway_port = ports
 else:
     api_port, ui_port, gateway_port = port(), port(), port()
 # A nested verification daemon exposes ports inside its private namespace;
 # its outer container must publish these only on the runner's loopback address.
-bind_address = "0.0.0.0" if os.getenv("OPSCONTROL_DOCKER_NESTED") == "1" else "127.0.0.1"
+bind_address = (
+    "0.0.0.0" if os.getenv("OPSCONTROL_DOCKER_NESTED") == "1" else "127.0.0.1"
+)
 subprocess.run(
     [
         str(ROOT / "backend/.venv/bin/python"),
@@ -134,6 +145,7 @@ def call(path, method="GET", body=None, token=None):
         headers={
             "Content-Type": "application/json",
             **({"Authorization": "Bearer " + token} if token else {}),
+            **probe_headers(f"http://127.0.0.1:{api_port}", token, path),
         },
     )
     with urlopen(req, timeout=10) as r:
@@ -151,8 +163,17 @@ try:
     image_paths = sorted(
         path.removeprefix("backend/")
         for path in subprocess.check_output(
-            ["git", "ls-files", "backend/app", "backend/migrations", "backend/scripts", "backend/alembic.ini", "backend/requirements*.txt"],
-            cwd=ROOT, text=True,
+            [
+                "git",
+                "ls-files",
+                "backend/app",
+                "backend/migrations",
+                "backend/scripts",
+                "backend/alembic.ini",
+                "backend/requirements*.txt",
+            ],
+            cwd=ROOT,
+            text=True,
         ).splitlines()
         if path.endswith((".py", ".ini", ".txt"))
     )
@@ -161,11 +182,23 @@ try:
         for path in image_paths
     }
     for service in ("api", "worker"):
-        actual = run(compose + ["exec", "-T", service, "python", "-c",
-            "import hashlib,json;from pathlib import Path;print(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in "
-            + repr(image_paths) + "}))"])
+        actual = run(
+            compose
+            + [
+                "exec",
+                "-T",
+                service,
+                "python",
+                "-c",
+                "import hashlib,json;from pathlib import Path;print(json.dumps({p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in "
+                + repr(image_paths)
+                + "}))",
+            ]
+        )
         if json.loads(actual) != source_hashes:
-            raise RuntimeError("Docker image does not match the checked-out pipeline source")
+            raise RuntimeError(
+                "Docker image does not match the checked-out pipeline source"
+            )
     for _ in range(120):
         try:
             call("/health")
@@ -255,11 +288,22 @@ try:
             time.sleep(0.5)
     else:
         raise RuntimeError("Docker demo restart/session persistence failed")
-    worker_command = run(compose + ["exec", "-T", "worker", "python", "-c",
-        'from pathlib import Path;print(Path("/proc/1/cmdline").read_bytes().replace(b"\\x00",b" ").decode())'])
+    worker_command = run(
+        compose
+        + [
+            "exec",
+            "-T",
+            "worker",
+            "python",
+            "-c",
+            'from pathlib import Path;print(Path("/proc/1/cmdline").read_bytes().replace(b"\\x00",b" ").decode())',
+        ]
+    )
     assert "scripts.run_collector_worker" in worker_command
     storage_driver = run(["docker", "info", "--format", "{{.Driver}}"])
-    manifest_hash = hashlib.sha256(json.dumps(source_hashes, sort_keys=True).encode()).hexdigest()
+    manifest_hash = hashlib.sha256(
+        json.dumps(source_hashes, sort_keys=True).encode()
+    ).hexdigest()
     out.mkdir(parents=True, exist_ok=True)
     verify_source_head()
     (out / "docker-smoke.txt").write_text(
@@ -301,8 +345,14 @@ try:
         "ISOLATED DOCKER BUILD / BOOTSTRAP / RESTART / AUTHENTICATION PASS", flush=True
     )
 except Exception:
-    logs = subprocess.run(compose + ["logs", "--no-color", "--tail", "160"],
-                          cwd=ROOT, env=env, capture_output=True, text=True, timeout=30)
+    logs = subprocess.run(
+        compose + ["logs", "--no-color", "--tail", "160"],
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
     (private / "services.log").write_text(logs.stdout + logs.stderr)
     raise
 finally:

@@ -331,13 +331,47 @@ export function ExecutionDrawer({
           <State feed={stepFeed} />
           <Table
             label="Observed steps"
-            headers={["Step", "Status", "Type", "Duration"]}
+            headers={[
+              "Step",
+              "Copy",
+              "Status",
+              "Native status",
+              "Errors",
+              "Read",
+              "Written",
+              "Input",
+              "Output",
+              "Type",
+              "Duration",
+            ]}
           >
             {steps.map((s, i) => (
               <tr key={s.id || i}>
                 <td>{s.name}</td>
+                <td>{s.source_evidence?.native_copy ?? "Not reported"}</td>
                 <td>
                   <Status value={s.status} />
+                </td>
+                <td>
+                  {s.source_evidence?.native_status_description ??
+                    "Not reported"}
+                </td>
+                <td>{s.source_evidence?.nr_errors ?? "Unknown"}</td>
+                <td>
+                  {s.source_evidence?.native_metrics?.linesRead ??
+                    s.records_read ??
+                    "Unknown"}
+                </td>
+                <td>
+                  {s.source_evidence?.native_metrics?.linesWritten ??
+                    s.records_written ??
+                    "Unknown"}
+                </td>
+                <td>
+                  {s.source_evidence?.native_metrics?.linesInput ?? "Unknown"}
+                </td>
+                <td>
+                  {s.source_evidence?.native_metrics?.linesOutput ?? "Unknown"}
                 </td>
                 <td>{s.step_type || "Not reported"}</td>
                 <td>

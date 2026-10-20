@@ -195,6 +195,26 @@ try {
     .nth(2)
     .waitFor();
   await screenshot(page, "execution-attempts");
+  await page
+    .getByRole("navigation", { name: "Execution detail sections" })
+    .getByRole("button", { name: "Steps", exact: true })
+    .click();
+  const observedSteps = page.getByRole("region", { name: "Observed steps" });
+  await observedSteps.getByRole("row").nth(2).waitFor();
+  const projected = await observedSteps
+    .locator("tbody tr")
+    .evaluateAll((rows) =>
+      rows.map((r) => [...r.cells].map((c) => c.textContent)),
+    );
+  assert.equal(projected.length, 2);
+  assert.equal(projected.find((r) => r[1] === "0")[5], "0");
+  assert.equal(projected.find((r) => r[1] === "0")[6], "4");
+  assert.equal(projected.find((r) => r[1] === "1")[4], "Unknown");
+  assert.equal(projected.find((r) => r[1] === "1")[5], "Unknown");
+  await screenshot(page, "synthetic-step-metrics");
+  checks.push(
+    "Synthetic native-field UI projection preserves repeated copies, numeric zero and missing counters; no child UUID claim",
+  );
   await close(page);
   checks.push(
     "Canonical outcomes, pending retry, attempt drawer, incomplete evidence and conflicts",
@@ -476,6 +496,7 @@ try {
   await page.getByRole("tab", { name: "Organizations", exact: true }).click();
   await page
     .getByRole("region", { name: "Monitored customer organizations" })
+    .getByRole("table")
     .getByText("Sprint 07 Alpha", { exact: true })
     .waitFor();
   await page
@@ -597,12 +618,23 @@ try {
     "Sprint 07 actual browser acceptance PASS: " + checks.length + " groups",
   );
 } catch (e) {
+  inspected =
+    inspected && !inspected.isClosed()
+      ? inspected
+      : browser
+          .contexts()
+          .flatMap((c) => c.pages())
+          .find((p) => !p.isClosed());
   if (inspected) {
-    await screenshot(inspected, "failure");
-    await writeFile(
-      join(process.env.V16_PRIVATE_DIR, "sprint07-failure-dom.txt"),
-      await inspected.locator("body").innerText(),
-    );
+    try {
+      await screenshot(inspected, "failure");
+      await writeFile(
+        join(process.env.V16_PRIVATE_DIR, "sprint07-failure-dom.txt"),
+        await inspected.locator("body").innerText(),
+      );
+    } catch (captureError) {
+      console.error("Failure capture:", captureError.message);
+    }
   }
   throw e;
 } finally {

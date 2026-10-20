@@ -14,6 +14,7 @@ class Pentaho(Adapter):
         "execution_id",
         "collect_logs",
         "job_order_id",
+        "workload_kind",
         "monitoring_context",
     )
     capabilities = ("carte_job_status", "step_results", "logs", "explicit_execution_id")
@@ -77,43 +78,83 @@ class Pentaho(Adapter):
             if getattr(self.transport, "__name__", "") != "http_request"
             else get_job_status(cfg)
         )
-        event = execution(
-            self.platform,
-            self.config["job_name"],
-            result["execution_id"],
-            result["execution_status"],
-            result.get("started_at"),
-            result.get("ended_at"),
-            evidence={
-                "steps": result.get("steps", []),
-                "nr_errors": result.get("nr_errors", 0),
-            },
+        records = (
+            result.get("executions") if "inventory_complete" in result else [result]
         )
-        rows = result.get("steps", [])
-        if not isinstance(rows, list) or len(rows) > 1000:
-            raise AdapterError("SCHEMA", "Invalid Carte step inventory")
-        events = [event]
-        for index, row in enumerate(rows):
-            name = row["name"]
-            identity = row.get("id") or name + ":" + str(index)
-            status = row.get("status", "UNKNOWN")
-            events.append(
-                step_event(
-                    self.platform,
-                    event,
-                    row,
-                    identity,
-                    name,
-                    status,
-                    row.get("started_at"),
-                    row.get("ended_at"),
-                    max(1, int(row.get("attempt", 1))),
-                )
+        if not isinstance(records, list) or len(records) > 200:
+            raise AdapterError("SCHEMA", "Invalid bounded Carte execution inventory")
+        events = []
+        for record in records:
+            if not isinstance(record, dict):
+                raise AdapterError("SCHEMA", "Invalid Carte execution record")
+            event = execution(
+                self.platform,
+                self.config["job_name"],
+                record["execution_id"],
+                record["execution_status"],
+                record.get("started_at"),
+                record.get("ended_at"),
+                evidence={
+                    "steps": record.get("steps", []),
+                    "nr_errors": record.get("nr_errors"),
+                    "native_status_desc": record.get("native_status_desc"),
+                    "native_result": record.get("native_result"),
+                    "native_exit_status": record.get("native_exit_status"),
+                    "native_log_channel_id": record.get("native_log_channel_id"),
+                    "native_log_date_raw": record.get("native_log_date_raw"),
+                    "evidence_warnings": record.get("evidence_warnings", []),
+                    "log_evidence_status": record.get("log_evidence_status"),
+                },
             )
+            events.append(event)
+            rows = record.get("steps", [])
+            if not isinstance(rows, list) or len(rows) > 1000:
+                raise AdapterError("SCHEMA", "Invalid Carte step inventory")
+            from app.services.etl_monitoring import step_key
+
+            occurrences = {}
+            for index, row in enumerate(rows):
+                name = row["name"]
+                pair = (name, row.get("copy"))
+                ordinal = occurrences.get(pair, 0)
+                occurrences[pair] = ordinal + 1
+                identity = row.get("id") or (
+                    name + ":" + str(index)
+                    if row.get("copy") is None
+                    else "observed-step:"
+                    + hashlib.sha256(step_key(row, ordinal).encode()).hexdigest()
+                )
+                status = row.get("status", "UNKNOWN")
+                events.append(
+                    step_event(
+                        self.platform,
+                        event,
+                        row,
+                        identity,
+                        name,
+                        status,
+                        row.get("started_at"),
+                        row.get("ended_at"),
+                        max(1, int(row.get("attempt", 1))),
+                    )
+                )
         return Batch(
             events,
-            {"platform": self.platform, "read_only": True},
-            {"execution_id": result["execution_id"]},
+            {
+                "platform": self.platform,
+                "read_only": True,
+                "inventory_complete": result.get("inventory_complete", False),
+            },
+            (
+                {"execution_id": result["execution_id"]}
+                if "execution_id" in result
+                else dict(checkpoint or {})
+            ),
+            (
+                True
+                if "inventory_complete" not in result
+                else bool(result["inventory_complete"])
+            ),
         )
 
 

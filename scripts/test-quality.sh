@@ -42,6 +42,20 @@ agent() {
   (cd backend && "$PYTHON" -m coverage run --rcfile="$CONFIG" -m unittest discover -s tests -p 'test_collection_v15.py' -v)
   bash -n agent/install-linux.sh agent/uninstall-linux.sh
 }
+pentaho() {
+  # Unit discovery intentionally skips owned-PostgreSQL cases. Execute them
+  # under the same coverage instrumentation before enforcing the unchanged80%.
+  local targets
+  targets=$("$PYTHON" -c 'from pathlib import Path;print(",".join("tests."+p.stem for p in sorted(Path("backend/tests").glob("test_*.py"))))')
+  ENV=test COVERAGE_PROCESS_START="$CONFIG" \
+    PYTHONPATH="$OUT/instrumentation${PYTHONPATH:+:$PYTHONPATH}" \
+    V16_STAGING_PRESERVATION=1 V16_PENTAHO_R1_ACCEPTANCE=1 \
+    V16_PENTAHO_REVIEW_ACCEPTANCE=1 V16_PENTAHO_HISTORY_ACCEPTANCE=1 \
+    V16_PENTAHO_INCIDENT_ACCEPTANCE=1 V16_SPRINT08_ACCEPTANCE=1 \
+    V16_SPRINT09_ACCEPTANCE=1 V16_SPRINT07_ACCEPTANCE=1 V16_SPRINT13_RECOVERY=1 \
+    V16_API_ACCEPTANCE=1 V16_BROWSER_ACCEPTANCE=1 V16_TEST_TARGETS="$targets" \
+    V16_EVIDENCE_DIR="$OUT/pentaho-postgres" "$PYTHON" scripts/v16-acceptance.py
+}
 owned_lab() {
   local mode=$1
   local runtime=0 browser=0
@@ -103,12 +117,13 @@ case "${1:-unit}" in
   integration) owned_lab runtime ;;
   e2e) owned_lab runtime; owned_lab browser ;;
   agent) agent ;;
+  pentaho) pentaho ;;
   quality) quality ;;
   security) security ;;
   compatibility) compatibility ;;
   coverage) coverage_report ;;
   performance) performance ;;
   docker) ACCESS_DOCKER_EVIDENCE_DIR="$OUT/docker-smoke" "$PYTHON" scripts/access-docker-demo.py ;;
-  all) quality; unit; agent; owned_lab runtime; owned_lab browser; compatibility; ACCESS_DOCKER_EVIDENCE_DIR="$OUT/docker-smoke" "$PYTHON" scripts/access-docker-demo.py; security; coverage_report ;;
+  all) quality; unit; agent; pentaho; owned_lab runtime; owned_lab browser; compatibility; ACCESS_DOCKER_EVIDENCE_DIR="$OUT/docker-smoke" "$PYTHON" scripts/access-docker-demo.py; security; coverage_report ;;
   *) printf 'Unknown test group: %s\n' "$1" >&2; exit 2 ;;
 esac

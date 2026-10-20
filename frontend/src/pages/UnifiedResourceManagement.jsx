@@ -630,6 +630,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                 </button>
               )}
               <h3>Resource relationships</h3>
+              <p className="muted">{selected.dependencies?.length || 0} of {selected.dependency_total ?? selected.dependencies?.length ?? 0} retained relationships</p>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -658,6 +659,43 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                   </tbody>
                 </table>
               </div>
+                  {selected.dependency_has_more && (
+                    <button
+                      onClick={async () => {
+                        const id = selected.id;
+                        try {
+                          const page = await control(
+                            base +
+                              "/resources/" +
+                              id +
+                              "/dependencies?limit=50&offset=" +
+                              selected.dependencies.length,
+                          );
+                          setSelected((current) =>
+                            current?.id === id
+                              ? {
+                                  ...current,
+                                  dependencies: [
+                                    ...new Map(
+                                      [
+                                        ...current.dependencies,
+                                        ...page.items,
+                                      ].map((row) => [row.id, row]),
+                                    ).values(),
+                                  ],
+                                  dependency_total: page.total,
+                                  dependency_has_more: page.has_more,
+                                }
+                              : current,
+                          );
+                        } catch (e) {
+                          setError(e.message);
+                        }
+                      }}
+                    >
+                      Load more relationships
+                    </button>
+                  )}
               {allowed("resources.update", selected.organization_id) && (
                 <div className="form-grid">
                   <Field label="Dependency resource">
@@ -774,6 +812,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           customers={customers}
           onClose={() => setForm(null)}
           onSaved={(r) => {
+            if (!form.item) setCustomer(r.organization_id);
             refresh();
             setSelected(r);
             onCustomerCreated?.();
@@ -1024,7 +1063,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         await control(base + "/parameters/" + r.id, "POST", {
           expected_resource_revision: r.revision,
           configuration: imported.configuration,
-        });
+        }, { customerIds: [r.organization_id] });
         setImported(null);
       }
       if (domain === "VM" && !item) setStep(2);

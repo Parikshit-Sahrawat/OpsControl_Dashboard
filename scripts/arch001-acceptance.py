@@ -289,12 +289,13 @@ try:
             print(
                 run(["node", "scripts/access_v15.mjs"], ROOT / "frontend"), flush=True
             )
+    migration_revision = module("alembic", "current").split()[0]
     (OUT / "report.json").write_text(
         json.dumps(
             {
                 "status": "PASS",
                 "origin": "OWNED_POSTGRES_AND_ACTUAL_API",
-                "migration": "0031_in_app_notifications",
+                "migration": migration_revision,
                 "production_modified": False,
             },
             indent=2,

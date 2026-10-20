@@ -2,6 +2,18 @@
 
 from collections import defaultdict
 from sqlalchemy import select, func
+from typing import Generic, TypeVar
+from pydantic import BaseModel
+
+T = TypeVar("T")
+
+
+class CollectionPage(BaseModel, Generic[T]):
+    items: list[T]
+    total: int
+    limit: int
+    offset: int
+    has_more: bool
 
 
 def page(db, query, ordering, limit, offset, serialize):

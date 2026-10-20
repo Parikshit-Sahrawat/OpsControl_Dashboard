@@ -1,0 +1,50 @@
+# Changed files
+
+Relative to audited main `c694af45055557b062bedeb974d73140ac75c6c9`. Evidence package files are additionally enumerated by Git. No migration, approved architecture, native fixture, requirements lock or security resolver file changed.
+
+- `.github/workflows/access-architecture.yml`
+- `.github/workflows/arch001-native-monitoring.yml`
+- `.github/workflows/consolidated-uat.yml`
+- `.github/workflows/etl-acceptance.yml`
+- `.github/workflows/http-golden-path.yml`
+- `.github/workflows/infrastructure-acceptance.yml`
+- `.github/workflows/operational-acceptance.yml`
+- `.github/workflows/phase1-staging.yml`
+- `.github/workflows/release-reliability.yml`
+- `.github/workflows/v15-quality.yml`
+- `Makefile`
+- `backend/app/api/organizations.py`
+- `backend/app/api/pagination.py`
+- `backend/app/api/resource_management.py`
+- `backend/app/pipeline_adapters/native.py`
+- `backend/app/pipeline_adapters/pentaho_carte.py`
+- `backend/app/pipeline_adapters/pentaho_observations.py`
+- `backend/app/services/etl_monitoring.py`
+- `backend/app/unified/api.py`
+- `backend/app/unified/pentaho_execution.py`
+- `backend/app/worker/pentaho_status.py`
+- `backend/scripts/access_acceptance_probe.py`
+- `backend/scripts/arch001_acceptance_probe.py`
+- `backend/scripts/pentaho_sprint07_browser_fixture.py`
+- `backend/tests/test_audit_remediation.py`
+- `backend/tests/test_pentaho_carte_compat.py`
+- `backend/tests/test_pentaho_execution_r1.py`
+- `backend/tests/test_pentaho_r1.py`
+- `backend/tests/test_pipeline_ownership_v16.py`
+- `frontend/package.json`
+- `frontend/scripts/access_acceptance.mjs`
+- `frontend/scripts/access_v15.mjs`
+- `frontend/scripts/arch001_acceptance.mjs`
+- `frontend/scripts/pagination.test.mjs`
+- `frontend/scripts/pipeline_sprint07_acceptance.mjs`
+- `frontend/src/pages/DomainReports.jsx`
+- `frontend/src/pages/ResourceManagementV2.jsx`
+- `frontend/src/pages/UnifiedResourceManagement.jsx`
+- `frontend/src/pagination.js`
+- `frontend/src/pipelines/ExecutionViews.jsx`
+- `frontend/src/resourceApi.js`
+- `scripts/access-docker-demo.py`
+- `scripts/arch001-acceptance.py`
+- `scripts/test-quality.sh`
+- `scripts/uat/local_environment.py`
+- `scripts/uat/seed_readiness.py`

@@ -1,0 +1,17 @@
+Populated existing identities/history and one explicit legacy mapping exception seeded
+No new upgrade operations detected.
+Populated ARCH-001 mapping preserves customer/VM/execution/step/password identities; invalid legacy environment staged; cross-tenant FK trigger PASS
+Empty ARCH-001 upgrade/downgrade/upgrade and schema comparison PASS
+ARCH-001 VM/customer/ETL/API onboarding, inheritance, safe imports/versioning, telemetry-gated activation and scope negatives PASS
+Native reconstruction/retry/parallel/late events, durable schedule windows, outage uncertainty, alert dedup/recovery and relationship correlation PASS (controlled engine boundary fixtures)
+Native incident HTTP lifecycle / recovery / customer authorization PASS
+Actual queued user-targeted in-app delivery / preferences / customer scopes / idempotency PASS
+ARCH-001 V1.5 actual browser, registry, ten-stage wizard, drafts, configuration, reports and access negatives PASS
+Private diagnostics: /tmp/opscontrol-arch001-4yutmloi
+Traceback (most recent call last):
+  File "/workspace/scratch/opscontrol-p0-p1-remediation/scripts/arch001-acceptance.py", line 290, in <module>
+    run(["node", "scripts/access_v15.mjs"], ROOT / "frontend"), flush=True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/opscontrol-p0-p1-remediation/scripts/arch001-acceptance.py", line 40, in run
+    raise RuntimeError(
+RuntimeError: Owned ARCH-001 command failed; private diagnostics retained

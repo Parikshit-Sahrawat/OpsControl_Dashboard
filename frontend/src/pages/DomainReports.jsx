@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { control, downloadText } from "../controlPlane";
 import { query, useNativeFeed } from "./UnifiedOverview";
+import { readAllPages } from "../pagination";
 const label = {
   ETL: "Data Pipeline Reports",
   VM: "Compute Health Reports",
@@ -20,6 +21,7 @@ export default function DomainReports({
   const [domain, setDomain] = useState("ETL"),
     [resource, setResource] = useState(""),
     [resources, setResources] = useState([]),
+    [resourceError, setResourceError] = useState(""),
     [offset, setOffset] = useState(0),
     [status, setStatus] = useState(""),
     [start, setStart] = useState(() =>
@@ -29,15 +31,25 @@ export default function DomainReports({
   useEffect(() => {
     let live = true;
     setResources([]);
+    setResourceError("");
     setResource("");
     setOffset(0);
     setStatus("");
-    control(
-      "/api/v1/unified/resources?" +
-        query(organizationIds, environment, { domain, limit: 200 }),
+    readAllPages(
+      (offset) =>
+        control(
+          "/api/v1/unified/resources?" +
+            query(organizationIds, environment, { domain, limit: 200, offset }),
+        ),
+      () => live,
     )
-      .then((v) => live && setResources(v.items))
-      .catch(() => live && setResources([]));
+      .then((v) => live && setResources(v))
+      .catch((e) => {
+        if (live) {
+          setResources([]);
+          setResourceError(e.message);
+        }
+      });
     return () => {
       live = false;
     };
@@ -184,9 +196,9 @@ export default function DomainReports({
           </label>
         )}
       </div>
-      {error && (
+      {(error || resourceError) && (
         <p role="alert" className="error-banner">
-          {error}
+          {error || resourceError}
         </p>
       )}
       {!data && !error && <p>Aggregating persisted monitoring data…</p>}

@@ -62,6 +62,8 @@ jobs:
           make test-agent
       - name: Actual disposable PostgreSQL, TLS Agent, OTel and browser UAT
         run: make test-e2e
+      - name: Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression
+        run: make test-pentaho
       - name: Independent Access and controlled legacy workflow regressions
         run: bash scripts/test-quality.sh compatibility
       - name: Authorization and dependency vulnerability checks

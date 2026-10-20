@@ -37,6 +37,10 @@ test-compatibility:
 	bash scripts/test-quality.sh compatibility
 
 .PHONY: test-pipeline-v16
+.PHONY: test-pentaho
+test-pentaho:
+	bash scripts/test-quality.sh pentaho
+
 test-pipeline-v16:
 	cd backend && ENV=test .venv/bin/python -m unittest discover -s tests -p 'test_pipeline_transport_v16.py' -v
 	V16_API_ACCEPTANCE=1 backend/.venv/bin/python scripts/v16-acceptance.py

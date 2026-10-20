@@ -55,7 +55,7 @@ async function login(name) {
   await page.getByLabel("Username", { exact: true }).fill(name);
   await page.getByLabel("Password", { exact: true }).fill(fixture.password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
+  await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
 }
 const section = async (name) => {
   await page
@@ -252,6 +252,12 @@ try {
   );
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await login("arch001-reader");
+  // The previous positive check left the viewport at390px. The mobile drawer
+  // is correctly closed after sign-in; open it before asserting RBAC absence.
+  await page
+    .getByRole("button", { name: "Open navigation", exact: true })
+    .click();
+  await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page
       .getByRole("navigation", { name: "Primary navigation" })

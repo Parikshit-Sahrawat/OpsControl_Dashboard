@@ -1,0 +1,17 @@
+bash scripts/test-quality.sh pentaho
+Sprint 08 existing authorization/history/holds preservation PASS
+{"status": "PASS", "scenario_status": {"REC-01": "PASS", "REC-02": "PASS", "REC-03": "PASS", "REC-04": "PASS", "REC-05": "PASS", "REC-06": "PASS"}, "source_bytes": 25761459, "restored_bytes": 23795379, "backup_bytes": 1469919, "backup_sha256": "9cf4d5abd207e8c40f2ab1954b4d4c3cb0dbf71f105f870822603b6c2ce2f5cb", "backup_seconds": 0.369, "restore_seconds": 0.89, "migration_head": "0037_access_boundaries", "restored_alembic_drift": false, "restored_populated_downgrade_refused": true, "table_counts": {"organizations": 227, "users": 361, "roles": 54, "customer_access_grants": 51, "data_sources": 669, "collectors": 662, "collector_methods": 1, "pipeline_sources": 201, "pipeline_evidence": 389, "pipeline_holds": 19, "job_order_histories": 152, "operational_incidents": 51, "incident_activities": 121, "security_audit_events": 1246}, "critical_projection_equal": true, "corrupt_artifact_rejected": true, "production_rpo_rto_certified": false}
+V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 9 groups
+Pentaho Sprint 03 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 04 actual HTTP acceptance PASS: 5 groups
+Pentaho Sprint 05 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 06 actual HTTP acceptance PASS: 5 groups
+Sprint 08 real authenticated HTTP authorization PASS: 14 groups
+Sprint 09 authenticated archive, compatibility and resilience PASS: 6 groups
+Sprint 09 measured PostgreSQL ownership/duplicate/restart resilience PASS: 9 scenarios
+Sprint 07 controlled fixtures ready; no vendor runtime accessed
+V1.6 actual browser eight-step/draft/activation/mobile acceptance PASS
+Sprint 07 actual browser acceptance PASS: 17 groups
+Sprint 08 actual Chromium authorization PASS: 5 groups
+Sprint 09 actual Chromium archive acceptance PASS: 3 groups
+V1.6 actual PostgreSQL ownership/durability/discovery/holds/recovery/scopes and additive migration PASS

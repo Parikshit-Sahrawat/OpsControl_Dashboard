@@ -1,6 +1,8 @@
 """Scoped ARCH-001 control plane. Existing contracts remain available for compatibility."""
 
 import hashlib, json, uuid
+from dataclasses import replace
+from functools import wraps
 from typing import Literal
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
@@ -135,6 +137,8 @@ def resource(db, id, permission="resources.view", write=False):
 
 def customer(db, payload):
     if payload.new_customer:
+        if payload.organization_id:
+            raise HTTPException(422, "Choose an existing customer or create one")
         require_permission("customers.create")
         # Preserve the existing no-implicit-grant contract. Inline creation by
         # a non-break-glass user requires separate, explicit grant assignment.
@@ -146,6 +150,25 @@ def customer(db, payload):
         org = Organization(**payload.new_customer.model_dump())
         db.add(org)
         db.flush()
+        # Explicit inline creation selects only the newly created ID for this
+        # atomic request. Existing platform authority, not customer selection,
+        # authorizes it. No employee grant, ALL authority or session is changed.
+        from app.security.boundaries import selected_customers
+
+        prior = current_principal.get()
+        scoped = replace(
+            prior, customer_directory_ids=prior.customer_directory_ids | {org.id}
+        )
+        db.info.setdefault("inline_customer_contexts", []).append(
+            (
+                current_principal.set(scoped),
+                selected_customers.set(
+                    frozenset(selected_customers.get() or ()) | {org.id}
+                ),
+                db.info.get("opscontrol_principal"),
+            )
+        )
+        db.info["opscontrol_principal"] = scoped
         return org
     if not payload.organization_id:
         raise HTTPException(422, "Customer required")
@@ -154,6 +177,27 @@ def customer(db, payload):
     if org is None or not org.active:
         raise HTTPException(404, "Customer unavailable")
     return org
+
+
+def inline_creation_scope(handler):
+    """Restore request filters on success/error; never expand persistent grants."""
+
+    @wraps(handler)
+    def guarded(*args, **kwargs):
+        db = kwargs.get("db") if "db" in kwargs else args[1]
+        try:
+            return handler(*args, **kwargs)
+        finally:
+            from app.security.boundaries import selected_customers
+
+            for principal_token, selection_token, session_principal in reversed(
+                db.info.pop("inline_customer_contexts", [])
+            ):
+                db.info["opscontrol_principal"] = session_principal
+                selected_customers.reset(selection_token)
+                current_principal.reset(principal_token)
+
+    return guarded
 
 
 def linked_vm(db, id, permission="resources.view"):
@@ -386,11 +430,14 @@ def inventory(
 @router.get("/resources/{id}")
 def details(id: uuid.UUID, db=Depends(get_db)):
     r = resource(db, id)
-    deps = db.scalars(
-        select(ResourceDependency)
-        .where(ResourceDependency.resource_id == id)
-        .order_by(ResourceDependency.valid_from.desc())
-    ).all()
+    dependencies = page(
+        db,
+        select(ResourceDependency).where(ResourceDependency.resource_id == id),
+        (ResourceDependency.valid_from.desc(), ResourceDependency.id.desc()),
+        50,
+        0,
+        document,
+    )
     versions = db.scalars(
         select(ParameterVersion)
         .where(ParameterVersion.resource_id == id)
@@ -405,10 +452,30 @@ def details(id: uuid.UUID, db=Depends(get_db)):
     ).all()
     return {
         **output(db, r),
-        "dependencies": [document(v) for v in deps],
+        "dependencies": dependencies["items"],
+        "dependency_total": dependencies["total"],
+        "dependency_has_more": dependencies["has_more"],
         "parameter_versions": [document(v) for v in versions],
         "conditions": [document(v) for v in conditions],
     }
+
+
+@router.get("/resources/{id}/dependencies")
+def dependency_history(
+    id: uuid.UUID,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+    db=Depends(get_db),
+):
+    resource(db, id)
+    return page(
+        db,
+        select(ResourceDependency).where(ResourceDependency.resource_id == id),
+        (ResourceDependency.valid_from.desc(), ResourceDependency.id.desc()),
+        limit,
+        offset,
+        document,
+    )
 
 
 @router.get("/mapping-issues")
@@ -424,6 +491,7 @@ def issues(limit: int = Query(100, ge=1, le=500), db=Depends(get_db)):
 
 
 @router.post("/resources/vm", status_code=201)
+@inline_creation_scope
 def create_vm(payload: VMCreate, db=Depends(get_db)):
     db.info["unified_manual_binding"] = True
     org = customer(db, payload)
@@ -500,6 +568,7 @@ def create_vm(payload: VMCreate, db=Depends(get_db)):
 
 
 @router.post("/resources/etl", status_code=201)
+@inline_creation_scope
 def create_etl(payload: ETLCreate, db=Depends(get_db)):
     db.info["unified_manual_binding"] = True
     parent = linked_vm(db, payload.vm_resource_id) if payload.vm_resource_id else None
@@ -634,6 +703,7 @@ def create_etl(payload: ETLCreate, db=Depends(get_db)):
 
 
 @router.post("/resources/api", status_code=201)
+@inline_creation_scope
 def create_api(payload: APICreate, db=Depends(get_db)):
     db.info["unified_manual_binding"] = True
     org = customer(db, payload)

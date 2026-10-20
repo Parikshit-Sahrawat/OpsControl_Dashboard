@@ -88,7 +88,14 @@ async function call(page, path, method = "GET", body) {
 const navigate = async (page, tab) => {
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: tab, exact: true })
+    .getByRole("button", {
+      name:
+        {
+          "Resource Management": "Data Sources / Resources",
+          "Access Management": "Employees",
+        }[tab] || tab,
+      exact: true,
+    })
     .click();
   await page.getByRole("heading", { name: tab, exact: true }).waitFor();
 };

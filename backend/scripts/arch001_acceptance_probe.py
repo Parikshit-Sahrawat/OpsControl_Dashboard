@@ -217,7 +217,8 @@ def call(path, method="GET", body=None, token=None, expected=200):
         method=method,
         headers={
             "Content-Type": "application/json",
-            **({"Authorization": "Bearer " + token} if token else {}), **probe_headers(os.environ["ARCH001_API_URL"], token, path)
+            **({"Authorization": "Bearer " + token} if token else {}),
+            **probe_headers(os.environ["ARCH001_API_URL"], token, path),
         },
         data=json.dumps(body).encode() if body is not None else None,
     )
@@ -736,6 +737,7 @@ def engines():
                 "catchup_hours": 24,
             },
             "no_run_grace_seconds": 5,
+            "pentaho_schedule_authority": {"mode": "MONITORING_EXPECTATION"},
         }
         newer = ParameterVersion(
             organization_id=r.organization_id,
@@ -794,6 +796,12 @@ def engines():
                 "checks": [],
                 "origin": "CONTROLLED_OUTAGE_FIXTURE",
             },
+        ), patch(
+            "app.unified.pentaho_schedule.coverage",
+            return_value=(
+                {"ready": False, "since": None, "origin": "CONTROLLED_COVERAGE_OUTAGE"},
+                [],
+            ),
         ):
             evaluate_schedule(db, r, newer, now)
         windows = db.scalars(
@@ -801,7 +809,8 @@ def engines():
                 ExpectedExecutionWindow.resource_id == r.id
             )
         ).all()
-        assert windows and any(w.status == "UNKNOWN" for w in windows)
+        assert windows and any(w.status == "INCOMPLETE" for w in windows)
+        assert not any(w.status == "NO_RUN" for w in windows)
         count = len(windows)
         with patch(
             "app.unified.engines.source_readiness",
@@ -810,6 +819,16 @@ def engines():
                 "checks": [],
                 "origin": "CONTROLLED_ENGINE_FIXTURE",
             },
+        ), patch(
+            "app.unified.pentaho_schedule.coverage",
+            return_value=(
+                {
+                    "ready": True,
+                    "since": (now - timedelta(hours=3)).isoformat(),
+                    "origin": "CONTROLLED_COMPLETE_COVERAGE_FIXTURE",
+                },
+                [],
+            ),
         ):
             evaluate_schedule(db, r, newer, now)
         assert (
