@@ -301,3 +301,20 @@ Pentaho RT-001–RT-020 remain NOT RUN, real target acceptance and production
 readiness remain blocked, and Sprint 12 has not started. No application code,
 architecture baseline, migration, prior verification evidence, PR, merge,
 deployment, real-source activation or ETL workload was changed/executed.
+
+## Sprint 14R — bounded remediation verification and UI foundations
+
+[Current Sprint14R evidence](docs/verification/sprint14r/REPORT.md) continues from
+verified main `59344c97401340e222627063f7c89bb5e2e89ead`, reusing existing P0/P1
+corrections and preserving historical delivery credit. It adds bounded responsive,
+keyboard, theme and inventory-table improvements. Approved ARCH-001/ARCH-ETL-001
+baselines, backend authorization, schema and native evidence remain unchanged.
+
+[Governance reconciliation](docs/verification/sprint14r/GOVERNANCE_RECONCILIATION.md)
+records the owner's Product Alignment/private-network decisions with explicit
+provenance. Original ENG-001 and roadmap wording remain incompletely recovered;
+full compliance is not claimed. The owner now calls the18 OC-IMP proposals approved;
+per-entry revision reconciliation and separately scoped implementation remain open.
+The62 original IMP definitions remain SOURCE_NOT_RECOVERED. Shared-resource design,
+independent UAT, RT-001–RT-020 and all production release gates remain open.
+Production remains NOT READY; no real-source activation or deployment is authorized.

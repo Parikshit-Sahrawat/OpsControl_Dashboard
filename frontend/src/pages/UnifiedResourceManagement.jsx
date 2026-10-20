@@ -391,7 +391,11 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
         </p>
       )}
       {!data && !error && <p>Loading authorized resources…</p>}
-      <section className="card table-wrap">
+      <section
+        className="card table-wrap inventory-scroll"
+        aria-label={(area === "resources" ? domainNames[domain] : parameterNames[domain]) + " records"}
+        tabIndex={0}
+      >
         <h2>
           {area === "resources" ? domainNames[domain] : parameterNames[domain]}
         </h2>

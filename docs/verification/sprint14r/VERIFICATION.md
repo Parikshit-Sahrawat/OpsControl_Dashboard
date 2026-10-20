@@ -1,0 +1,46 @@
+# Sprint14R executed verification
+
+Source: isolated `feat/sprint14r-foundations` working tree based on fetched main `59344c97401340e222627063f7c89bb5e2e89ead`. Tests exercise changed source, not pristine baseline. [Complete runtime/CSS/script hashes](evidence/tested-source-sha256.json) identify tested content; integration SHA and remote acceptance are recorded separately. Historical main CI is not substituted for current candidate CI.
+
+Environment: Python3.12.14, Node24.19/npm11.9, PostgreSQL17.11 disposable random projects, Docker28.4, actual Chromium `/usr/bin/chromium`, Playwright1.56.1, existing pinned Contrib0.123 binary. Installed locked dependencies reused through temporary local symlinks, never committed. No customer/production data or genuine Pentaho connection.
+
+Common exact environment:
+
+```bash
+export OPSCONTROL_TEST_EVIDENCE_DIR=/tmp/opscontrol-s14r/gates
+export PRETTIER_BIN=/tmp/opscontrol-remediation/tools/node_modules/.bin/prettier
+export PLAYWRIGHT_MODULE=/workspace/.golden-tools/node_modules/playwright/index.mjs
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium
+export OPSCONTROL_OTEL_BINARY=/tmp/opscontrol-remediation/otelcol-contrib
+```
+
+| Exact command / gate | Actual result / scope | Evidence |
+| --- | --- | --- |
+| `bash scripts/test-quality.sh unit` | PASS503 backend executions:293 passed,210 skipped without owned PostgreSQL flags; frontend5 test files pass, line97.35%/branch87.92%. The503-case owned gate below exercises database cases rather than promoting these skips. | [unit](evidence/unit.log) |
+| `bash scripts/test-quality.sh pentaho` | PASS503 backend executions,0 failures/skips; actual PostgreSQL, fences/duplicates/replay, stale revisions, independent decisions, scope/revocation,505-row pages,75 dependencies and inline onboarding/rollback. API V16/S03–06/S08/S09 and real Chromium V16 wizard/S07=17/S08=5/S09=3 groups pass. | [orchestration](evidence/pentaho.log), [all named tests](evidence/pentaho-postgres/ownership.txt), [report](evidence/pentaho-postgres/report.json) |
+| `cd backend; .venv/bin/python -m unittest tests.test_pentaho_carte_compat tests.test_pentaho_r1 tests.test_pipeline_adapters tests.test_pentaho_surface_contracts tests.test_pentaho_execution_contracts tests.test_pentaho_review_contracts tests.test_pentaho_history_contracts tests.test_pentaho_incident_contracts -v` | PASS92,0 failures/skips; published native artifacts and explicitly synthetic edge cases, no live vendor. | [native](evidence/native-confirmed.log) |
+| `bash scripts/test-quality.sh quality` | PASS scoped Black/Ruff, pinned Prettier, ESLint and production Vite build after final UI edit. Existing >500kB chunk warning remains. | [quality](evidence/quality-final.log) |
+| `bash scripts/test-quality.sh security` | PASS7 access+10 release+4 remote-auth tests; pip-audit no known vulnerabilities; npm audit0 vulnerabilities. | [security](evidence/security.log) |
+| `ACCESS_BROWSER_ACCEPTANCE=1 bash scripts/test-quality.sh compatibility` | PASS25 authenticated Access HTTP groups,7 Chromium groups and controlled consolidated UAT. Actual handlers/PostgreSQL, no future-feature assertion removal. | [compatibility](evidence/compatibility.log) |
+| `bash scripts/test-quality.sh agent` | PASS8 Agent+12 collection tests,0 skipped, with actual configured Contrib binary. | [Agent](evidence/agent.log) |
+| `OPSCONTROL_UAT_STATE_DIR=/tmp/opscontrol-s14r/uat-final S14R_EVIDENCE_DIR=/tmp/opscontrol-s14r/browser-paint node frontend/scripts/sprint14r_acceptance.mjs` | PASS82 checks; actual authenticated API/PostgreSQL, loaded synthetic inventory, light/dark at1366/768/720/390, token contrast, scrolling, focus/skip link, reduced-motion/forced colors and A-only direct B denial. | [log](evidence/browser-paint.log), [report/screenshots](evidence/browser-paint/report.json) |
+| `OPSCONTROL_UAT_STATE_DIR=/tmp/opscontrol-s14r/uat-final UI_RECOVERY_EVIDENCE_DIR=/tmp/opscontrol-s14r/ui-recovery-paint node frontend/scripts/ui_recovery_acceptance.mjs` | PASS52,0 failed; customer switching/stale clearing, active children, deep links/Back/Forward/refresh, mobile/tablet, organizations/departments, collector multiple-method flow, read-only controls and six pipeline pages. | [log](evidence/ui-recovery-paint.log) |
+| `bash scripts/test-quality.sh e2e` first execution | FAIL runtime latency gate: API100requests/4concurrent,p95=2133.382ms exceeded existing2000ms;0 errors. Ingestion p95=1470.296ms passed. Other heavy isolated test projects overlapped; contention is a hypothesis, not proven root cause. No threshold changed. Browser stage not reached. | [failure](evidence/failed-runtime/execution.log), [metrics](evidence/failed-runtime/performance.json) |
+
+Final isolated `bash scripts/test-quality.sh e2e`: PASS actual verified-TLS Agent/Contrib logs/metrics/traces, receipts, enrollment/renewal/revocation, reconstruction, actual HTTPS failure/recovery, API/DB and Chromium. API100requests/4concurrent,p95=811.944ms,14.443req/s; ingestion100/4,p95=177.660ms,26.704req/s; both0 errors and unchanged2000ms limit passed. [Execution](evidence/e2e-isolated.log), [actual runtime](evidence/owned-lab-runtime/runtime.json), [measurements](evidence/owned-lab-runtime/performance.json). This supports a contention hypothesis for the earlier overlap failure but is not proof of production capacity; API still exceeds the separate500ms engineering target.
+
+`bash scripts/test-quality.sh coverage`: PASS82.68% combined critical line/branch coverage, unchanged80% threshold, no excluded lines or narrowed critical source set. [Log](evidence/coverage.log), [exact JSON](evidence/coverage.json). Failed initial execution data remain retained; passing gate status comes from the complete isolated rerun, not coverage alone.
+
+`bash scripts/check-workflows.sh`: PASS with permitted network; changed documentation utility Black/Ruff, `python -m compileall -q backend/app backend/migrations`, `node --check frontend/scripts/sprint14r_acceptance.mjs` and [documentation checks](evidence/documentation.json) PASS. No typecheck script exists. Current-candidate remote CI remains pending until actual completion. A still-failing mandatory gate blocks main integration; no inherited result is counted as a rerun.
+
+## Preservation and recovery
+
+Owned head `0037_access_boundaries`; original migrations unchanged. Fresh schema and populated upgrade, safe empty downgrade/reupgrade, ORM drift and populated unsafe-downgrade refusal pass in the existing harness. [REC01–06](evidence/pentaho-postgres/sprint13-recovery.json) all PASS: source25,941,683bytes; archive1,470,827bytes; backup0.371s/restore0.850s; critical projection equality and corrupt artifact rejection true. Organizations227,users361,grants51,sources669,collectors662,pipeline evidence389,holds19,job histories152,incidents51,activities121,audit1246 survive. These are disposable local unencrypted measurements, not achieved production RPO15min/RTO4h, encrypted/offsite or WAL/PITR certification.
+
+## Reproducibility and limitations
+
+The existing UAT harness started a fresh owned project `opscontrol-s14-uat-379bdd36`: API `http://127.0.0.1:60775`, UI `http://127.0.0.1:46211`. Commands use `OPSCONTROL_UAT_EXPECTED_HEAD=59344c97401340e222627063f7c89bb5e2e89ead OPSCONTROL_UAT_STATE_DIR=/tmp/opscontrol-s14r/uat-final backend/.venv/bin/python scripts/uat/local_environment.py start`, then `seed`. This is changed working-tree content based on that commit; the harness stores its initial fingerprint; Vite served the subsequent bounded frontend corrections. The final committed content manifest includes those corrections and CSS. Future reviewers must use their exact reviewed commit and fresh state, not claim this port/state is permanent. Private generated credentials were never copied into evidence.
+
+Typecheck: NOT APPLICABLE; JavaScript/JSX package has no supported typecheck script. Existing ESLint/build/tests run; no invented typecheck or TypeScript migration. Independent UAT and full accessibility certification: PENDING. RT-001–RT-020: NOT RUN. Native repeated child execution identity: UNVERIFIED. Production: NOT READY. Actual proxy/VPN/CA/Windows/provider/CrowdStrike/Zscaler compatibility remains unverified.
+
+During development a native test invocation used a doubled `backend/` prefix while already inside backend and exited127; the corrected exact command above passed92. Initial default-sandbox workflow-check download exited7; permitted-network rerun is recorded separately. Initial UI screenshots exposed a skip-link compositing issue; final positioning and actual screenshots were corrected before freezing the UI. These are retained limitations/failures, not suppressed assertions.

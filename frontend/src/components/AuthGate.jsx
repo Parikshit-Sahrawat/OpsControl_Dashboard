@@ -33,7 +33,10 @@ export default function AuthGate() {
   }
   async function logout() { await signOut(); setUser(null); }
   if (loading) return <main className="login-layout"><p>Checking session…</p></main>;
-  if (user) return <><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App key={user.id} user={user} /></>;
+  if (user) return <><a className="skip-link" href="#main-content" onClick={(event) => {
+    event.preventDefault();
+    document.getElementById("main-content")?.focus();
+  }}>Skip to main content</a><div className="session-banner"><span>Signed in as <b>{user.username}</b> {user.platform_admin ? "(Platform administrator)" : ""}</span><button onClick={logout}>Sign out</button></div><App key={user.id} user={user} /></>;
   return <main className="login-layout"><div className="login-appearance"><ThemeToggle /></div><form className="login-card" onSubmit={submit}>
     <span className="login-eyebrow">MONITORING WORKSPACE</span>
     <h1>OpsControl</h1><p>Sign in to view your authorized monitoring resources.</p>

@@ -10,7 +10,7 @@ export function getTheme() {
 function applyTheme(value) {
   document.documentElement.dataset.theme = value;
   document.documentElement.style.colorScheme = value;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", value === "dark" ? "#09090b" : "#f8fafc");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", value === "dark" ? "#0b1020" : "#f3f5fb");
 }
 
 export function initializeTheme() {

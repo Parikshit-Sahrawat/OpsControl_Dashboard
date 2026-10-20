@@ -428,7 +428,7 @@ export default function App({ user }) {
         platformAdmin={user?.platform_admin}
         user={user}
       />
-      <main className="content">
+      <main id="main-content" className="content" tabIndex={-1}>
         {!scopeReady && <p>{error || "Loading authorized organizations…"}</p>}
         {scopeReady && error && active !== "Data Pipeline Monitoring" && (
           <p role="alert">{error}</p>

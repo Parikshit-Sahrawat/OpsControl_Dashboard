@@ -46,6 +46,7 @@ export default function TopNav({
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobileToggle = useRef(null);
+  const navigation = useRef(null);
   const [collapsed, setCollapsed] = useState(
     () => localStorage.getItem("opscontrol.sidebarCollapsed") === "true",
   );
@@ -62,6 +63,7 @@ export default function TopNav({
   }, [active, user?.authorization_revision]);
   useEffect(() => {
     if (!mobileOpen) return;
+    navigation.current?.querySelector(".nav-button")?.focus();
     const close = (event) => {
       if (event.key === "Escape") {
         setMobileOpen(false);
@@ -102,6 +104,9 @@ export default function TopNav({
     onOrganizationChange(allSelected ? [] : organizations.map((org) => org.id));
   };
 
+  const currentGroup = sections.find((section) => section.items.some(([key]) => key === active));
+  const currentDestination = currentGroup?.items.find(([key, , child]) =>
+    key === active && (!child || child === activeSection));
   return (
     <header className="topbar">
       <div className="brand">
@@ -121,10 +126,10 @@ export default function TopNav({
           </span>
         </button>
       </div>
-      <div className="workspace-breadcrumb">
-        <span>Workspace</span>
+      <div className="workspace-breadcrumb" aria-label="Current page">
+        <span>{currentGroup?.name || "Workspace"}</span>
         <span aria-hidden="true">/</span>
-        <b>{active}</b>
+        <b>{currentDestination?.[1] || active}</b>
       </div>
       <button
         ref={mobileToggle}
@@ -137,6 +142,7 @@ export default function TopNav({
         {mobileOpen ? "Close" : "Menu"}
       </button>
       <nav
+        ref={navigation}
         id="primary-navigation"
         aria-label="Primary navigation"
         className={`${collapsed ? "sidebar-collapsed" : ""} ${mobileOpen ? "mobile-nav-open" : ""}`}
@@ -153,7 +159,7 @@ export default function TopNav({
           const visible = section.items.filter(([key, , child]) =>
             child ? canOpenSection(user, key, child) : canNavigate(user, key));
           return visible.length ? (
-            <div className="nav-group" key={section.name}>
+            <div className="nav-group" role="group" aria-label={section.name} key={section.name}>
               <span className="nav-section-label">{section.name}</span>
               {visible.map(([key, label, child]) => (
                 <button
