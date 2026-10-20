@@ -1,0 +1,13 @@
+# Overlay ONLY for an existing UAT-owned Compose project. The operator-owned base
+# retains database volumes, secrets, CSP overrides, networks and service settings.
+services:
+  api:
+    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+    command: ["python", "-m", "scripts.run_api"]
+  worker:
+    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+  migration:
+    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+  frontend:
+    image: ${STAGE_B_FRONTEND_IMAGE:?digest-pinned frontend image required}
