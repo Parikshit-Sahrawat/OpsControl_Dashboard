@@ -1,6 +1,6 @@
 # Sprint14R — remediation verification, governance and UI foundations
 
-Status: LOCAL ACCEPTANCE PASS; REMOTE CI/INTEGRATION PENDING. Production remains NOT READY. Baseline `origin/main@59344c97401340e222627063f7c89bb5e2e89ead`, isolated branch `feat/sprint14r-foundations`. No concurrent work was overwritten. Full original ENG-001/roadmap compliance is UNVERIFIED; the owner explicitly permits bounded work under existing repository requirements while controlled wording is reconciled.
+Status: DELIVERED_WITH_GOVERNANCE_LIMITATIONS; IMPLEMENTATION MAIN VERIFIED. Production remains NOT READY. Baseline `origin/main@59344c97401340e222627063f7c89bb5e2e89ead`, isolated branch `feat/sprint14r-foundations`. No concurrent work was overwritten. Full original ENG-001/roadmap compliance is UNVERIFIED; the owner explicitly permits bounded work under existing repository requirements while controlled wording is reconciled.
 
 The existing main P0/P1 remediation is reused and regression-tested: conservative Carte outcomes, partial observations, native nullable fields/step copies, monitoring-health separation, authorized inline onboarding and scoped stable pagination. There is no duplicate engine, model or historical branch merge. [Dispositions and changed components](IMPLEMENTATION.md).
 
@@ -20,4 +20,4 @@ All [sixP0/eightP1/twoP2 readiness gaps](PRODUCTION_READINESS.md), AUD01–08 an
 
 The [reconciled12–42 planning framework](ROADMAP_RECONCILIATION.md) credits existing corrections and assigns deployment/network/certification dependencies. It adds14R as the current bounded correction; no future sprint starts. Recommended next increment is independent UAT and separately approved shared-resource design preparation, not another parser/navigation rewrite. No guarantee of production certification by42.
 
-RT-001–RT-020: **NOT RUN**. Native repeated child execution identity: **UNVERIFIED**. No ETL workload, real source, production configuration, deployment, PR creation or protected PR33 modification occurred. Main integration remains conditional on all mandatory current gates and remote recheck; see [integration ledger](INTEGRATION.md).
+RT-001–RT-020: **NOT RUN**. Native repeated child execution identity: **UNVERIFIED**. No ETL workload, real source, production configuration, deployment, PR creation or protected PR33 modification occurred. Implementation `e83172622af754a090caad22fd1c379d40c7e0ea` passed all mandatory gates and was normally pushed to main;278 source hashes and clean working tree were verified from fetched origin/main. This documentation-only follow-up preserves that exact tested runtime. See [integration ledger](INTEGRATION.md).
