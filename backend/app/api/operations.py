@@ -10,6 +10,8 @@ from app.db.session import get_db
 from app.models import (DataSource, Collector, CollectorRun, MetricDefinition, AlertState,
     JobOrder, JobOrderHistory, Organization)
 from app.security.http import actor
+from app.unified.models import MonitoringResource
+from app.unified.schemas import Environment
 
 router = APIRouter(prefix="/api/v1/operations", tags=["Operational Dashboards"])
 HTTP_TYPES = ("API", "HTTP", "HTTPS")
@@ -84,8 +86,14 @@ def service_snapshot(source, db, preloaded=None):
 
 @router.get("/services")
 def services(organization_id: list[UUID] = Query(default=[]), limit: int = Query(200, ge=1, le=500),
-    offset: int = Query(0, ge=0, le=1000000), db: Session = Depends(get_db)):
+    offset: int = Query(0, ge=0, le=1000000), environments: list[Environment] = Query(default=[]), db: Session = Depends(get_db)):
     stmt = scoped(select(DataSource).where(DataSource.source_type.in_(HTTP_TYPES)), DataSource, organization_id)
+    if environments:
+        scoped_sources = select(MonitoringResource.data_source_id).where(
+            MonitoringResource.domain == "API",
+            MonitoringResource.environment.in_(set(environments)),
+        )
+        stmt = stmt.where(DataSource.id.in_(scoped_sources))
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     sources = db.scalars(stmt.order_by(DataSource.name, DataSource.id).offset(offset).limit(limit)).all()
     preloaded = prefetch_services(sources, db)

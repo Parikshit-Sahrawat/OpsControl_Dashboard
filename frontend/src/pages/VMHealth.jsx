@@ -6,6 +6,7 @@ import InventoryPager from "../components/InventoryPager";
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 export default function VMHealth({
   organizationIds,
+  environment = [],
   initialSourceId,
   embedded = false,
 }) {
@@ -14,7 +15,7 @@ export default function VMHealth({
     [selected, setSelected] = useState(null),
     [history, setHistory] = useState([]);
   const [offset, setOffset] = useState(0),
-    scope = organizationIds.join(",");
+    scope = organizationIds.join(",") + ":" + environment.join(",");
   useEffect(() => setOffset(0), [scope]);
   const generation = useRef(0);
   const initialOpened = useRef(false);
@@ -32,6 +33,7 @@ export default function VMHealth({
     try {
       const query = new URLSearchParams();
       organizationIds.forEach((id) => query.append("organization_id", id));
+      environment.forEach((value) => query.append("environments", value));
       query.set("offset", offset);
       const response = await fetch(
         `${BASE}/api/v1/infrastructure/resources?${query}`,
@@ -54,7 +56,7 @@ export default function VMHealth({
       setData(null);
       setSelected(null);
     }
-  }, [organizationIds, offset]);
+  }, [organizationIds, environment, offset]);
   useEffect(() => {
     generation.current++;
     setSelected(null);

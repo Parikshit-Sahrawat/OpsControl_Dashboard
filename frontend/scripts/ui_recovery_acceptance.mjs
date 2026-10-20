@@ -139,6 +139,18 @@ try {
   await nav.getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();
   await desktop.locator('.org-context-button').click();
   await desktop.getByRole('checkbox',{name:/Synthetic UAT Customer B/}).check();
+  for (const [destination, evidence, panel] of [['Compute Health','Infrastructure adapter evidence','.vm-health'],['API Endpoint Monitoring','Service probe evidence','.operations-page']]) {
+    await nav.getByRole('button',{name:destination,exact:true}).click();
+    const primary=desktop.getByRole('region',{name:evidence});
+    await primary.waitFor();
+    check(await primary.locator(panel).count()===1,`${destination} opens existing operational evidence`);
+    check(await desktop.evaluate(() => {
+      const evidence=document.querySelector('.domain-adapter-primary');
+      const inventory=document.querySelector('.domain-monitoring > .table-wrap');
+      return Boolean(evidence && inventory && (evidence.compareDocumentPosition(inventory) & Node.DOCUMENT_POSITION_FOLLOWING));
+    }),`${destination} presents adapter evidence before registered resource context`);
+    if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,`${destination === 'Compute Health' ? 'compute-health' : 'api-monitoring'}-desktop.png`),fullPage:true});
+  }
   await nav.getByRole('button',{name:'Employees',exact:true}).click();
   await desktop.getByRole('navigation',{name:'Access Management sections'}).getByRole('button',{name:'Departments'}).click();
   check(await desktop.getByRole('button',{name:'Create department',exact:true}).count()===1,'single department create action');
@@ -149,6 +161,8 @@ try {
   check(await nav.getByRole('button',{name:'Organisational Access',exact:true}).getAttribute('aria-current')==='page','Organisational Access child is active');
   check(await desktop.getByLabel('Customer access filter').count()===1,'customer grant filter available');
   await desktop.getByText('Loading organisational access…').waitFor({state:'hidden',timeout:60000});
+  if (await desktop.getByRole('columnheader',{name:'Employee / provider department'}).count()===0)
+    throw new Error(`Organisational Access table unavailable: ${(await desktop.locator('.access-table').innerText()).slice(0,500)}`);
   await desktop.getByRole('columnheader',{name:'Employee / provider department'}).waitFor();
   check(await desktop.getByRole('columnheader',{name:'Employee / provider department'}).count()===1,'grant rows distinguish employee from provider department');
   await desktop.getByLabel('Customer access filter').selectOption({label:'Synthetic UAT Customer A'});

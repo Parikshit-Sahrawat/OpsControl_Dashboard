@@ -55,7 +55,21 @@ for (const [path, count] of endpoints) {
   check(count(single.body) === count(multiple.body) && count(other.body) <= count(single.body), `${path} retains SANDBOX evidence without inventing DEV records`);
   check(conflict.status === 422, `${path} rejects ambiguous scalar and list filters`);
 }
+for (const path of ["/api/v1/infrastructure/resources?", "/api/v1/operations/services?"]) {
+  const all = await request(admin, ids, path);
+  const sandbox = await request(admin, ids, path + "environments=SANDBOX");
+  const prod = await request(admin, ids, path + "environments=PROD");
+  const multiple = await request(admin, ids, path + "environments=SANDBOX&environments=PROD");
+  check([all, sandbox, prod, multiple].every((row) => row.status === 200), `${path} accepts authorized adapter environment filters`);
+  check(all.body.total > 0, `${path} starts with populated synthetic legacy adapter records`);
+  check(sandbox.body.total <= multiple.body.total && prod.body.total <= multiple.body.total && multiple.body.total <= all.body.total, `${path} adapter totals remain scoped and bounded`);
+  if (path.includes("/operations/")) check(prod.body.total > 0 && sandbox.body.total === 0, `${path} includes mapped PROD probes and excludes them from SANDBOX`);
+}
 const viewer = await login("uat-viewer-a");
 const unauthorized = await request(viewer, [a], `/api/v1/unified/resources?organization_id=${b}&environments=SANDBOX`);
 check(unauthorized.status === 403 || (unauthorized.status === 200 && !unauthorized.body.items?.length), "multi-environment selection does not grant another customer");
+for (const [path, key] of [["/api/v1/infrastructure/resources", "resources"], ["/api/v1/operations/services", "services"]]) {
+  const denied = await request(viewer, [a], `${path}?organization_id=${b}&environments=SANDBOX`);
+  check(denied.status === 403 || (denied.status === 200 && !denied.body[key]?.length), `${path} environment selection cannot reveal another customer's adapter data`);
+}
 console.log(`RESULT ${checks} passed, 0 failed; isolated synthetic HTTP fixture`);
