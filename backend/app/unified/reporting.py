@@ -27,12 +27,21 @@ from app.unified.schemas import Environment
 from app.security.scope import current_principal
 
 
-def root_query(organization_id, environment, resource_id=None, domain=None):
+def environment_values(environment, environments):
+    """Keep the existing scalar filter while accepting explicit multi-selection."""
+    selected = environments if isinstance(environments, list) else []
+    if environment and selected:
+        raise HTTPException(422, "Use environment or environments, not both")
+    return [environment] if environment else list(dict.fromkeys(selected))
+
+
+def root_query(organization_id, environment, resource_id=None, domain=None, environments=None):
     q = select(MonitoringResource)
     if organization_id:
         q = q.where(MonitoringResource.organization_id.in_(organization_id))
-    if environment:
-        q = q.where(MonitoringResource.environment == environment)
+    selected = environment_values(environment, environments)
+    if selected:
+        q = q.where(MonitoringResource.environment.in_(selected))
     if resource_id:
         q = q.where(MonitoringResource.id.in_(resource_id))
     if domain:
@@ -40,9 +49,9 @@ def root_query(organization_id, environment, resource_id=None, domain=None):
     return q
 
 
-def roots(db, organization_id, environment, resource_id=None, domain=None):
+def roots(db, organization_id, environment, resource_id=None, domain=None, environments=None):
     return db.scalars(
-        root_query(organization_id, environment, resource_id, domain).order_by(
+        root_query(organization_id, environment, resource_id, domain, environments).order_by(
             MonitoringResource.name, MonitoringResource.id
         )
     ).all()
@@ -108,9 +117,10 @@ def alerts_for(db, records, limit=100):
 def overview(
     organization_id: list[UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     db=Depends(get_db),
 ):
-    records = roots(db, organization_id, environment)
+    records = roots(db, organization_id, environment, environments=environments)
     principal = current_principal.get()
     domain = {
         kind: {
@@ -149,8 +159,9 @@ def overview(
     q = select(EventCorrelationGroup).where(
         EventCorrelationGroup.organization_id.in_(orgs)
     )
-    if environment:
-        q = q.where(EventCorrelationGroup.environment == environment)
+    selected_environments = environment_values(environment, environments)
+    if selected_environments:
+        q = q.where(EventCorrelationGroup.environment.in_(selected_environments))
     groups = db.scalars(
         q.order_by(EventCorrelationGroup.opened_at.desc()).limit(50)
     ).all()
@@ -178,6 +189,7 @@ def overview(
 def correlations(
     organization_id: list[UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     status: str | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -186,8 +198,9 @@ def correlations(
     q = select(EventCorrelationGroup)
     if organization_id:
         q = q.where(EventCorrelationGroup.organization_id.in_(organization_id))
-    if environment:
-        q = q.where(EventCorrelationGroup.environment == environment)
+    selected_environments = environment_values(environment, environments)
+    if selected_environments:
+        q = q.where(EventCorrelationGroup.environment.in_(selected_environments))
     if status:
         q = q.where(EventCorrelationGroup.status == status)
     total = db.scalar(select(func.count()).select_from(q.subquery()))
@@ -223,6 +236,7 @@ def domain_state(
     domain: str,
     organization_id: list[UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     resource_id: UUID | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -231,7 +245,7 @@ def domain_state(
     if domain not in {"VM", "ETL", "API"}:
         raise HTTPException(422, "Invalid monitoring domain")
     query = root_query(
-        organization_id, environment, [resource_id] if resource_id else None, domain
+        organization_id, environment, [resource_id] if resource_id else None, domain, environments
     )
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     page = db.scalars(
@@ -349,6 +363,7 @@ def reports(
     domain: str,
     organization_id: list[UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     resource_id: list[UUID] = Query(default=[]),
     status: str | None = None,
     start: datetime | None = None,
@@ -360,7 +375,7 @@ def reports(
     if domain not in {"VM", "ETL", "API"}:
         raise HTTPException(422, "Invalid report domain")
     start, end = range_bounds(start, end)
-    resources = roots(db, organization_id, environment, resource_id, domain)
+    resources = roots(db, organization_id, environment, resource_id, domain, environments)
     result = {
         "domain": domain,
         "start": start,
@@ -660,6 +675,7 @@ def reports(
 def unified_alerts(
     organization_id: list[UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     domain: str | None = None,
     resource_id: UUID | None = None,
     status: str | None = None,
@@ -685,8 +701,9 @@ def unified_alerts(
     )
     if organization_id:
         q = q.where(AlertState.organization_id.in_(organization_id))
-    if environment:
-        q = q.where(MonitoringResource.environment == environment)
+    selected_environments = environment_values(environment, environments)
+    if selected_environments:
+        q = q.where(MonitoringResource.environment.in_(selected_environments))
     if domain:
         q = q.where(MonitoringResource.domain == domain)
     if resource_id:

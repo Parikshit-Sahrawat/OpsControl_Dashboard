@@ -48,7 +48,8 @@ export const EXPLANATIONS = {
 export function params(ids, environment, extra = {}) {
   const q = new URLSearchParams();
   [...new Set(ids)].forEach((id) => q.append("organization_id", id));
-  if (environment) q.set("environment", environment);
+  if (Array.isArray(environment)) environment.forEach((value) => q.append("environments", value));
+  else if (environment) q.set("environment", environment);
   Object.entries(extra).forEach(([k, v]) => {
     if (v !== "" && v !== undefined && v !== null) q.set(k, String(v));
   });

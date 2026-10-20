@@ -394,6 +394,7 @@ def inventory(
     domain: Literal["VM", "ETL", "API"] | None = None,
     organization_id: list[uuid.UUID] = Query(default=[]),
     environment: Environment | None = None,
+    environments: list[Environment] = Query(default=[]),
     search: str = "",
     active: bool | None = None,
     limit: int = Query(50, ge=1, le=200),
@@ -405,8 +406,11 @@ def inventory(
         query = query.where(MonitoringResource.domain == domain)
     if organization_id:
         query = query.where(MonitoringResource.organization_id.in_(organization_id))
-    if environment:
-        query = query.where(MonitoringResource.environment == environment)
+    if environment and environments:
+        raise HTTPException(422, "Use environment or environments, not both")
+    selected_environments = [environment] if environment else list(dict.fromkeys(environments))
+    if selected_environments:
+        query = query.where(MonitoringResource.environment.in_(selected_environments))
     if search:
         query = query.where(MonitoringResource.name.ilike("%" + search[:200] + "%"))
     if active is not None:

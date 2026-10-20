@@ -5,7 +5,8 @@ import { hasPermission } from "../permissions";
 export const query = (ids, environment, extra = {}) => {
   const q = new URLSearchParams(extra);
   ids.forEach((id) => q.append("organization_id", id));
-  if (environment) q.set("environment", environment);
+  if (Array.isArray(environment)) environment.forEach((value) => q.append("environments", value));
+  else if (environment) q.set("environment", environment);
   return q.toString();
 };
 export function useNativeFeed(path) {
@@ -46,6 +47,7 @@ export function useNativeFeed(path) {
 }
 export default function UnifiedOverview({
   organizationIds,
+  organizations = [],
   environment,
   user,
   jobs = [],
@@ -62,7 +64,6 @@ export default function UnifiedOverview({
       <div className="page-heading">
         <div>
           <h1>Dashboard</h1>
-          <p>Operational evidence across ETL, hosts and endpoints.</p>
         </div>
         <div className="overview-header-controls">
           <WorldClock />
@@ -109,20 +110,29 @@ export default function UnifiedOverview({
                   ? "Compute Health Alerts"
                   : "API Endpoint Alerts"}
             </h2>
+            <p className="muted">Current open conditions from the latest bounded alert feed.</p>
             <table>
               <thead>
                 <tr>
+                  <th>Customer</th>
                   <th>Resource</th>
                   <th>Condition</th>
                   <th>Severity</th>
+                  <th>Started (UTC)</th>
                   <th>State</th>
                 </tr>
               </thead>
               <tbody>
                 {data?.alerts
                   .filter((a) => a.domain === domain && a.status === "OPEN")
+                  .sort((a, b) =>
+                    ({ CRITICAL: 0, HIGH: 1, WARNING: 2, MEDIUM: 3, LOW: 4 }[a.severity] ?? 5) -
+                    ({ CRITICAL: 0, HIGH: 1, WARNING: 2, MEDIUM: 3, LOW: 4 }[b.severity] ?? 5) ||
+                    (b.first_triggered_at || "").localeCompare(a.first_triggered_at || ""),
+                  )
                   .map((a) => (
                     <tr key={a.id}>
+                      <td>{organizations.find((org) => org.id === a.organization_id)?.name || "Unknown"}</td>
                       <td>
                         <button
                           onClick={() =>
@@ -134,6 +144,7 @@ export default function UnifiedOverview({
                       </td>
                       <td>{a.message}</td>
                       <td>{a.severity}</td>
+                      <td>{a.first_triggered_at ? new Date(a.first_triggered_at).toLocaleString("en-GB", { timeZone: "UTC" }) : "Unknown"}</td>
                       <td>
                         <button
                           onClick={() =>

@@ -43,6 +43,13 @@ try {
   await workspace.getByRole("button", { name: "Configure Collection Methods" }).click();
   await page.getByText("Collection Methods", { exact: false }).first().waitFor();
   check(true, "existing multiple-method Collector configuration opens from the workspace");
+  await page.getByRole("button", { name: "Close Collector Details" }).click();
+  await workspace.getByRole("button", { name: "Continue" }).click();
+  await workspace.getByRole("heading", { name: "Agent Installation" }).waitFor();
+  const packageRequest = page.waitForRequest((request) => request.url().includes("/api/v1/agent-control/packages/"));
+  await workspace.getByRole("button", { name: "Download approved agent package" }).click();
+  const request = await packageRequest;
+  check(new URL(request.url()).pathname === "/api/v1/agent-control/packages/linux", "Linux agent download uses the approved read-only package endpoint once");
   if (evidenceDir) {
     fs.mkdirSync(evidenceDir, { recursive: true });
     await page.screenshot({ path: path.join(evidenceDir, "compute-synthetic-identity-and-methods.png"), fullPage: true });

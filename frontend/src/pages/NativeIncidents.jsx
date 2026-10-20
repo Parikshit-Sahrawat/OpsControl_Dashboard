@@ -27,7 +27,7 @@ export default function NativeIncidents({
     [target, setTarget] = useState("ACKNOWLEDGED"),
     [assignee, setAssignee] = useState("");
   const detailGeneration = useRef(0);
-  useEffect(() => setOffset(0), [organizationIds.join(","), environment]);
+  useEffect(() => setOffset(0), [organizationIds.join(","), environment.join(",")]);
   useEffect(() => {
     let live = true;
     setData(null);
@@ -35,14 +35,14 @@ export default function NativeIncidents({
     const q = new URLSearchParams({ limit: 50, offset });
     organizationIds.forEach((id) => q.append("organization_id", id));
     if (status) q.set("status", status);
-    if (environment) q.set("environment", environment);
+    environment.forEach((value) => q.append("environments", value));
     control(base + "?" + q)
       .then((v) => live && setData(v))
       .catch((e) => live && setError(e.message));
     return () => {
       live = false;
     };
-  }, [organizationIds.join(","), environment, status, offset, revision]);
+  }, [organizationIds.join(","), environment.join(","), status, offset, revision]);
   useEffect(() => {
     if (data && offset && offset >= data.total)
       setOffset(data.total ? Math.floor((data.total - 1) / data.limit) * data.limit : 0);
@@ -51,7 +51,7 @@ export default function NativeIncidents({
     detailGeneration.current += 1;
     setSelected(null);
     setError("");
-  }, [organizationIds.join(","), environment, status, offset]);
+  }, [organizationIds.join(","), environment.join(","), status, offset]);
   const detail = async (id) => {
     try {
       const generation = ++detailGeneration.current;

@@ -81,8 +81,9 @@ export default function IncidentView({ organizationIds, environment, user }) {
             <td>
               <Identifier value={i.organization_id} />
               <small>
-                {environment ||
-                  "All selected environments · see resource evidence"}
+                {Array.isArray(environment)
+                  ? environment.length ? environment.join(", ") : "All selected environments · see resource evidence"
+                  : environment || "All selected environments · see resource evidence"}
               </small>
             </td>
             <td>

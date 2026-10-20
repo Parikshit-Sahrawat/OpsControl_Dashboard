@@ -30,6 +30,7 @@ const sections = [
     ["Access Management", "Access Audit", "Access Audit"],
   ] },
 ];
+const environmentChoices = ["PROD", "QA", "TEST", "DEV", "SANDBOX"];
 
 export default function TopNav({
   active,
@@ -47,6 +48,7 @@ export default function TopNav({
   onEnvironmentChange,
 }) {
   const [open, setOpen] = useState(false);
+  const [envOpen, setEnvOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState(() => {
     try {
@@ -71,6 +73,7 @@ export default function TopNav({
   const ref = useRef(null);
   useEffect(() => {
     setOpen(false);
+    setEnvOpen(false);
     setMobileOpen(false);
   }, [active, user?.authorization_revision]);
   useEffect(() => {
@@ -88,11 +91,24 @@ export default function TopNav({
 
   useEffect(() => {
     const close = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+        setEnvOpen(false);
+      }
     };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    const escape = (event) => {
+      if (event.key === "Escape") { setOpen(false); setEnvOpen(false); }
+    };
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", escape); };
   }, []);
+  const selectedEnvironments = Array.isArray(environment) ? environment : environment ? [environment] : [];
+  const toggleEnvironment = (value) => onEnvironmentChange?.(
+    selectedEnvironments.includes(value)
+      ? selectedEnvironments.filter((item) => item !== value)
+      : [...selectedEnvironments, value],
+  );
 
   const allSelected =
     organizations.length > 0 && organizationIds.length === organizations.length;
@@ -229,24 +245,22 @@ export default function TopNav({
         </div>
       ) : (
         <div className="global-context" ref={ref}>
-          <label className="environment-selector">
-            <span className="sr-only">Global environment</span>
-            <select
-              aria-label="Global environment"
-              value={environment}
-              onChange={(e) => onEnvironmentChange?.(e.target.value)}
-            >
-              <option value="">All environments</option>
-              {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
+          <div className="environment-selector">
+            <button type="button" aria-label="Global environments" aria-expanded={envOpen} aria-controls="environment-options"
+              onClick={() => { setEnvOpen((value) => !value); setOpen(false); }}>
+              <span className="environment-label" title={selectedEnvironments.join(", ") || "All environments"}>{selectedEnvironments.length ? selectedEnvironments.join(", ") : "All environments"}</span><span aria-hidden="true">▾</span>
+            </button>
+            {envOpen && <fieldset id="environment-options" className="environment-options">
+              <legend>Environment filter</legend>
+              <button type="button" onClick={() => onEnvironmentChange?.([])}>All environments</button>
+              {environmentChoices.map((value) => <label key={value}><input type="checkbox" checked={selectedEnvironments.includes(value)} onChange={() => toggleEnvironment(value)} />{value}</label>)}
+            </fieldset>}
+          </div>
           <span className="context-label">Organization</span>
           <button
             disabled={!organizations.length}
             className={open ? "org-context-button open" : "org-context-button"}
-            onClick={() => setOpen((value) => !value)}
+            onClick={() => { setOpen((value) => !value); setEnvOpen(false); }}
             aria-haspopup="true"
             aria-expanded={open}
           >

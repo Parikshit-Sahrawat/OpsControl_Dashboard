@@ -1602,9 +1602,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             onClick={() =>
               action(() =>
                 downloadPackage(
-                  "/api/v1/agent-control/packages/" +
-                    (form.os_type === "Windows" ? "windows" : "linux"),
-                  "opscontrol-agent-" + form.os_type.toLowerCase() + ".zip",
+                  form.os_type === "Windows" ? "windows" : "linux",
                 ),
               )
             }

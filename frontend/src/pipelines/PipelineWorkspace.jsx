@@ -58,7 +58,9 @@ export default function PipelineWorkspace({
   const resource =
     chosen.data &&
     inventoryIds.includes(chosen.data.organization_id) &&
-    (!environment || chosen.data.environment === environment)
+    (Array.isArray(environment)
+      ? (!environment.length || environment.includes(chosen.data.environment))
+      : (!environment || chosen.data.environment === environment))
       ? {
           ...chosen.data,
           binding: feed.data?.items.find((r) => r.id === resourceId)?.binding,

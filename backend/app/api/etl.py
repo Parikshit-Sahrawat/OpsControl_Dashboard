@@ -9,6 +9,7 @@ from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, St
 from sqlalchemy.exc import IntegrityError
 from app.schemas.monitoring import CorrelationRecordOut
 from app.services.correlation import correlate_execution
+from app.unified.schemas import Environment
 router = APIRouter(prefix="/api/v1/etl", tags=["ETL"])
 def _item(h, db=None):
     monitor='UNKNOWN'
@@ -30,11 +31,26 @@ def _load(eid,db):
 def _out(h,db=None):
     return ExecutionOut(**_item(h,db).model_dump(),source_error_code=h.source_error_code,source_error_message=h.source_error_message,source_exception=h.source_exception,source_log_location=h.source_log_location,source_result=h.source_result,steps=[StepOut.model_validate(s) for s in h.steps],source_evidence=h.source_evidence)
 @router.get("/executions",response_model=list[ExecutionListItem])
-def list_executions(status:ExecutionStatus|None=None,environment:str|None=None,execution_type:ExecutionType|None=None,search:str|None=None,organization_ids:list[UUID]|None=Query(default=None),limit:int=Query(100,ge=1,le=500),latest_only:bool=False,db:Session=Depends(get_db)):
+def list_executions(
+    status: ExecutionStatus | None = None,
+    environment: str | None = None,
+    environments: list[Environment] = Query(default=[]),
+    execution_type: ExecutionType | None = None,
+    search: str | None = None,
+    organization_ids: list[UUID] | None = Query(default=None),
+    limit: int = Query(100, ge=1, le=500),
+    latest_only: bool = False,
+    db: Session = Depends(get_db),
+):
     stmt=select(JobOrderHistory).join(JobOrder).outerjoin(JobOrder.vm).options(joinedload(JobOrderHistory.job_order).joinedload(JobOrder.vm),joinedload(JobOrderHistory.job_order).joinedload(JobOrder.organization))
     if organization_ids: stmt=stmt.where(JobOrder.organization_id.in_(organization_ids))
     if status: stmt=stmt.where(JobOrderHistory.status==status)
-    if environment: stmt=stmt.where(JobOrder.environment==environment)
+    if environment and environments:
+        raise HTTPException(422, "Use environment or environments, not both")
+    if environment:
+        stmt = stmt.where(JobOrder.environment == environment)
+    elif environments:
+        stmt = stmt.where(JobOrder.environment.in_(environments))
     if execution_type: stmt=stmt.where(JobOrderHistory.execution_type==execution_type)
     if search:
         p=f"%{search}%"; stmt=stmt.where(or_(JobOrder.name.ilike(p),JobOrder.vm.has(VM.hostname.ilike(p))))

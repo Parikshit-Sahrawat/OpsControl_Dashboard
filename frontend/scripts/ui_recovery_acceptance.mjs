@@ -42,6 +42,17 @@ try {
   await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).waitFor();
   await desktop.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
   check(await desktop.getByRole('heading',{name:'Running Data Pipeline Executions'}).count()===1,'dashboard includes scoped running execution evidence');
+  const environmentButton=desktop.getByRole('button',{name:'Global environments'});
+  await environmentButton.click();
+  await desktop.getByRole('checkbox',{name:'SANDBOX'}).check();
+  await desktop.getByRole('checkbox',{name:'DEV'}).check();
+  check((await environmentButton.textContent()).includes('SANDBOX') && (await environmentButton.textContent()).includes('DEV'),'global environment selector accepts several explicit values');
+  await desktop.reload();
+  await environmentButton.click();
+  check(await desktop.getByRole('checkbox',{name:'SANDBOX'}).isChecked() && await desktop.getByRole('checkbox',{name:'DEV'}).isChecked(),'environment selection persists across refresh');
+  await desktop.getByRole('button',{name:'All environments'}).click();
+  check(!(await desktop.getByRole('checkbox',{name:'SANDBOX'}).isChecked()) && !(await desktop.getByRole('checkbox',{name:'DEV'}).isChecked()),'All environments clears the filter without changing customer access');
+  await environmentButton.click();
   for (const section of ['Overview','Operations','Resource Management','Access Management']) check(await nav.getByText(section,{exact:true}).count()>0,`desktop ${section} group`);
   const resourceGroup=nav.getByRole('button',{name:'Resource Management navigation'});
   await resourceGroup.click();

@@ -145,7 +145,12 @@ export default function App({ user }) {
     () =>
       localStorage.getItem("opscontrol.customerSelectionMode") || "SELECTED",
   );
-  const [environment, setEnvironment] = useState(""),
+  const [environment, setEnvironment] = useState(() => {
+      try {
+        const saved = JSON.parse(localStorage.getItem("opscontrol.environments") || "[]");
+        return Array.isArray(saved) ? [...new Set(saved.filter((value) => ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(value)))] : [];
+      } catch { return []; }
+    }),
     [customerRefresh, setCustomerRefresh] = useState(0);
   const [scopeReady, setScopeReady] = useState(false),
     [target, setTarget] = useState({});
@@ -176,7 +181,7 @@ export default function App({ user }) {
       const value = await fetchExecutions({
         latest_only: true,
         organization_ids: organizationIds,
-        ...(environment ? { environment } : {}),
+        ...(environment.length ? { environments: environment } : {}),
       });
       if (version === generation.current) {
         setError(null);
@@ -400,13 +405,15 @@ export default function App({ user }) {
         onChange={navigate}
         environment={environment}
         onEnvironmentChange={(value) => {
+          const selected = [...new Set(value.filter((item) => ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(item)))];
           generation.current++;
           setJobs([]);
           setDetails({});
           setSelectedId(null);
           setTarget({});
           setLoading(true);
-          setEnvironment(value);
+          localStorage.setItem("opscontrol.environments", JSON.stringify(selected));
+          setEnvironment(selected);
         }}
         organizations={organizations}
         organizationIds={organizationIds}
@@ -437,6 +444,7 @@ export default function App({ user }) {
           <UnifiedOverview
             key={scopeKey}
             organizationIds={organizationIds}
+            organizations={organizations}
             environment={environment}
             user={user}
             jobs={jobs}
