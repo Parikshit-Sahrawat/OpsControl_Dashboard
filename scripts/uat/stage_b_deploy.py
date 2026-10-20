@@ -97,7 +97,16 @@ def checked_compose(base, project, env):
         )
     if not re.fullmatch(r"opscontrol-feature-uat-[a-z0-9-]+", project):
         raise ValueError("Refusing non-UAT Compose project")
-    base_args = ["docker", "compose", "--project-name", project, "--file", str(base)]
+    base_args = [
+        "docker",
+        "compose",
+        "--project-name",
+        project,
+        "--project-directory",
+        str(base.parent),
+        "--file",
+        str(base),
+    ]
     existing_config = json.loads(
         run(*base_args, "config", "--format", "json", env=env, capture=True)
     )
