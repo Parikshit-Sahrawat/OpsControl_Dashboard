@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import WorldClock from "../components/WorldClock";
 import { control } from "../controlPlane";
-import { hasPermission } from "../permissions";
 export const query = (ids, environment, extra = {}) => {
   const q = new URLSearchParams(extra);
   ids.forEach((id) => q.append("organization_id", id));
@@ -44,11 +43,6 @@ export function useNativeFeed(path) {
   }, [path, tick]);
   return { data, error, refresh: () => setTick((v) => v + 1) };
 }
-const pages = {
-  ETL: "Data Pipeline Monitoring",
-  VM: "Compute Health",
-  API: "API Endpoint Monitoring",
-};
 export default function UnifiedOverview({
   organizationIds,
   environment,
@@ -64,7 +58,7 @@ export default function UnifiedOverview({
     <div className="unified-overview">
       <div className="page-heading">
         <div>
-          <h1>Overview</h1>
+          <h1>Dashboard</h1>
           <p>Operational evidence across ETL, hosts and endpoints.</p>
         </div>
         <div className="overview-header-controls">
@@ -78,53 +72,6 @@ export default function UnifiedOverview({
         </p>
       )}
       {!data && !error && <p>Loading scoped operational evidence…</p>}
-      <section className="card table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Monitoring domain</th>
-              <th>Resources</th>
-              <th>Monitoring active</th>
-              <th>Open alerts</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(data?.domains || {}).map(([domain, v]) => (
-              <tr key={domain}>
-                <td>
-                  {domain === "ETL"
-                    ? "Data Pipeline Monitoring"
-                    : domain === "VM"
-                      ? "Compute Health"
-                      : "API Endpoint Monitoring"}
-                </td>
-                <td>
-                  <button onClick={() => onNavigate(pages[domain])}>
-                    {v.resources}
-                  </button>
-                </td>
-                <td>{v.monitoring_active}</td>
-                <td>
-                  <button
-                    disabled={!hasPermission(user, "alerts.view")}
-                    onClick={() =>
-                      onNavigate("Alerts", { domain, status: "OPEN" })
-                    }
-                  >
-                    {v.open_alerts}
-                  </button>
-                </td>
-                <td>
-                  <button onClick={() => onNavigate(pages[domain])}>
-                    View {domain.toLowerCase()} evidence
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
       <div className="overview-companions">
         {["ETL", "VM", "API"].map((domain) => (
           <section key={domain} className="card table-wrap">

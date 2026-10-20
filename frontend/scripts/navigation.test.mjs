@@ -21,3 +21,17 @@ test("organizational access is an access view, never a customer grant", () => {
   assert.equal(sectionHash("Access Management", "Organisational Access"), "#/access/organisational-access");
   assert.equal(sectionHash("Resource Management", "collectors"), "#/resources/collectors");
 });
+
+test("configuration sections have stable guarded routes", () => {
+  const viewer = user(["resources.view", "templates.view"]);
+  for (const [section, path] of [
+    ["parameters", "#/resources/event-parameters"],
+    ["rules", "#/resources/alert-rules"],
+    ["delivery", "#/resources/notification-delivery"],
+  ]) {
+    assert.equal(sectionHash("Resource Management", section), path);
+    assert.deepEqual(readSectionRoute(path, viewer), ["Resource Management", section]);
+    assert.equal(readSectionRoute(path, user(["resources.view"])), null);
+    assert.deepEqual(readSectionRoute(path, user(["templates.view"])), section === "delivery" ? ["Resource Management", section] : null);
+  }
+});

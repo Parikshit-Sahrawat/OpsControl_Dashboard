@@ -2,6 +2,7 @@ import { setAdministrativeCustomers } from "../auth";
 import { useEffect, useRef, useState } from "react";
 import { control, control as scopedControl, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
+import { canOpenSection } from "../navigation";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
 import DataPipelineIntegrations from "./DataPipelineIntegrations";
@@ -75,9 +76,24 @@ const blank = (domain) => ({
           probe_location: "NATIVE",
         }),
 });
-function Modal({ title, onClose, children, focus = true }) {
+function Modal({ title, onClose, children, focus = true, workspace = false }) {
   const ref = useRef(null);
-  useDialogFocus(ref, focus, onClose);
+  useDialogFocus(ref, focus && !workspace, onClose);
+  useEffect(() => {
+    if (!workspace) return;
+    const previous = document.activeElement;
+    ref.current?.querySelector("h1")?.focus();
+    return () => { if (previous?.isConnected) previous.focus(); };
+  }, [workspace]);
+  if (workspace) return (
+    <section ref={ref} className="resource-onboarding-workspace" aria-label={title}>
+      <div className="page-heading">
+        <div><p className="muted">RESOURCE MANAGEMENT / CONFIGURATION</p><h1 tabIndex={-1}>{title}</h1></div>
+        <button aria-label="Close resource form" onClick={onClose}>Close workspace</button>
+      </div>
+      {children}
+    </section>
+  );
   return (
     <div className="modal-backdrop">
       <section
@@ -99,7 +115,7 @@ function Modal({ title, onClose, children, focus = true }) {
   );
 }
 export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange }) {
-  const [area, setArea] = useState(section || "resources"),
+  const [area, setArea] = useState(section || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
     [domain, setDomain] = useState("VM"),
     [customers, setCustomers] = useState([]),
     [customer, setCustomer] = useState(""),
@@ -134,7 +150,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
   useEffect(() => {
-    if (["organizations", "resources", "collectors"].includes(section)) {
+    if (["organizations", "resources", "collectors", "parameters", "rules", "delivery"].includes(section)) {
       setArea(section);
       setSelected(null);
       setCollector(null);
@@ -142,9 +158,10 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     }
   }, [section]);
   const chooseArea = (next) => {
+    if (!canOpenSection(user, "Resource Management", next)) return;
     setArea(next);
     setSelected(null);
-    onSectionChange?.(["organizations", "resources", "collectors"].includes(next) ? next : "");
+    onSectionChange?.(next);
   };
   useEffect(() => {
     let live = true;
@@ -159,6 +176,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     const version = ++seq.current;
     setData(null);
     setError("");
+    if (!["resources", "parameters", "rules"].includes(area)) return;
     const q = new URLSearchParams({
       domain,
       limit: "50",
@@ -175,7 +193,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     return () => {
       seq.current++;
     };
-  }, [domain, customer, environment, search, offset, reload, customers]);
+  }, [area, domain, customer, environment, search, offset, reload, customers]);
   useEffect(() => {
     setSelected(null);
     setLegacyConfiguration(false);
@@ -217,15 +235,17 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   };
   const openCollector = async (r) => {
     try {
-      if (!r.primary_collector_id)
+      if (!r.primary_collector_id || !r.data_source_id)
         throw Error(
-          "This legacy VM requires explicit Collector reconciliation",
+          "This VM has no complete source and Collector association. Reconcile its legacy registration before configuring collection.",
         );
       const c = await control(
         "/api/v1/monitoring/collectors/" + r.primary_collector_id,
+        "GET", undefined, { customerIds: [r.organization_id] },
       );
       const s = await control(
         "/api/v1/monitoring/data-sources/" + r.data_source_id,
+        "GET", undefined, { customerIds: [r.organization_id] },
       );
       setCollector(c);
       setSource(s);
@@ -233,6 +253,21 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       setError(e.message);
     }
   };
+  const formView = form && (
+    <ResourceForm
+      {...form}
+      user={user}
+      customers={customers}
+      onClose={() => setForm(null)}
+      onSaved={(r) => {
+        if (!form.item) setCustomer(r.organization_id);
+        refresh();
+        setSelected(r);
+        onCustomerCreated?.();
+      }}
+    />
+  );
+  if (form?.domain === "VM") return formView;
   return (
     <div className="resource-management-v2 unified-resources">
       {!["organizations", "collectors"].includes(area) && <div className="page-heading">
@@ -252,48 +287,17 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           )}
         </div>
       </div>}
-      <div
-        role="tablist"
-        aria-label="Resource Management sections"
-        className="heading-actions"
-      >
-        <button
-          role="tab"
-          aria-selected={area === "organizations"}
-          onClick={() => chooseArea("organizations")}
-        >
-          Organizations
-        </button>
-        <button
-          role="tab"
-          aria-selected={area === "resources"}
-          onClick={() => chooseArea("resources")}
-        >
-          Data Resources
-        </button>
-        {hasPermission(user, "collectors.view") && hasPermission(user, "resources.view") && <button role="tab" aria-selected={area === "collectors"} onClick={() => chooseArea("collectors")}>Collectors</button>}
-        <button
-          role="tab"
-          aria-selected={area === "parameters"}
-          onClick={() => chooseArea("parameters")}
-        >
-          Event Parameters
-        </button>
-        <button
-          role="tab"
-          aria-selected={area === "rules"}
-          onClick={() => chooseArea("rules")}
-        >
-          Alert Rules
-        </button>
-        <button
-          role="tab"
-          aria-selected={area === "delivery"}
-          onClick={() => chooseArea("delivery")}
-        >
-          Notification Delivery
-        </button>
-      </div>
+      <label className="resource-section-select">
+        <span>Resource Management component</span>
+        <select value={area} onChange={(event) => chooseArea(event.target.value)}>
+          {canOpenSection(user, "Resource Management", "organizations") && <option value="organizations">Organizations</option>}
+          {canOpenSection(user, "Resource Management", "resources") && <option value="resources">Data Sources / Resources</option>}
+          {canOpenSection(user, "Resource Management", "collectors") && <option value="collectors">Collectors</option>}
+          {canOpenSection(user, "Resource Management", "parameters") && <option value="parameters">Event Parameters</option>}
+          {canOpenSection(user, "Resource Management", "rules") && <option value="rules">Alert Rules</option>}
+          {canOpenSection(user, "Resource Management", "delivery") && <option value="delivery">Notification Delivery</option>}
+        </select>
+      </label>
       {["organizations", "collectors"].includes(area) && (
         <ResourceManagementV2 user={user} section={area} embedded onOrganizationSaved={onCustomerCreated} />
       )}
@@ -809,20 +813,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           this view.
         </p>
       </details>
-      {form && (
-        <ResourceForm
-          {...form}
-          user={user}
-          customers={customers}
-          onClose={() => setForm(null)}
-          onSaved={(r) => {
-            if (!form.item) setCustomer(r.organization_id);
-            refresh();
-            setSelected(r);
-            onCustomerCreated?.();
-          }}
-        />
-      )}
+      {formView}
       {collector && source && (
         <CollectorControl
           collector={collector}
@@ -922,6 +913,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
     [customerName, setCustomerName] = useState(""),
     [customerCode, setCustomerCode] = useState(""),
     [step, setStep] = useState(1),
+    [maxUnlockedStep, setMaxUnlockedStep] = useState(1),
     [draftId, setDraftId] = useState(null),
     [draftRevision, setDraftRevision] = useState(null),
     [drafts, setDrafts] = useState([]),
@@ -947,11 +939,14 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
   }, [domain]);
   useEffect(() => {
     let live = true;
-    if (created?.primary_collector_id && domain === "VM")
+    if (created?.primary_collector_id && !created.data_source_id && domain === "VM")
+      setError("This VM has no canonical Data Source association. Reconcile the legacy registration before configuring collection.");
+    if (created?.primary_collector_id && created.data_source_id && domain === "VM")
       Promise.all([
-        control("/api/v1/monitoring/data-sources/" + created.data_source_id),
+        control("/api/v1/monitoring/data-sources/" + created.data_source_id, "GET", undefined, { customerIds: [created.organization_id] }),
         control(
           "/api/v1/monitoring/collectors/" + created.primary_collector_id,
+          "GET", undefined, { customerIds: [created.organization_id] },
         ),
       ])
         .then(([s, c]) => {
@@ -1000,12 +995,17 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       const { resource_id, ...configuration } = v.configuration;
       setForm({ ...blank(domain), ...configuration });
       setStep(v.stage);
+      setMaxUnlockedStep(v.stage);
       setDraftId(v.id);
       setDraftRevision(v.revision);
       if (resource_id)
         setCreated(await control(base + "/resources/" + resource_id));
     });
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const update = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setVerification(null);
+    setApproved(false);
+  };
   const inherited =
     domain === "ETL" ? vms.find((r) => r.id === form.vm_resource_id) : null;
   const action = async (fn) => {
@@ -1070,7 +1070,10 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         }, { customerIds: [r.organization_id] });
         setImported(null);
       }
-      if (domain === "VM" && !item) setStep(2);
+      if (domain === "VM" && !item) {
+        setStep(2);
+        setMaxUnlockedStep((current) => Math.max(current, 2));
+      }
       else onClose();
     });
   const chooseVM = (id) => {
@@ -1098,6 +1101,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       }
       onClose={onClose}
       focus={!openCollector}
+      workspace={domain === "VM"}
     >
       {error && (
         <p className="error-banner" role="alert">
@@ -1145,7 +1149,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               <button
                 type="button"
                 aria-current={visibleStep === i + 1 ? "step" : undefined}
-                disabled={!created && i > 0}
+                disabled={i + 1 > maxUnlockedStep || (!created && i > 0)}
                 onClick={() => setStep(i + 1)}
               >
                 {i + 1}. {s}
@@ -1587,9 +1591,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           <button disabled={!collector} onClick={() => setOpenCollector(true)}>
             Configure Collection Methods
           </button>
-          <button className="primary-button" onClick={() => setStep(3)}>
-            Next: Agent Installation
-          </button>
         </>
       )}
       {visibleStep === 3 && (
@@ -1616,9 +1617,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           >
             Download approved agent package
           </button>
-          <button className="primary-button" onClick={() => setStep(4)}>
-            Next: Verification
-          </button>
         </>
       )}
       {visibleStep === 4 && (
@@ -1639,9 +1637,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             Verify telemetry
           </button>
           {verification && <Verification data={verification} />}
-          <button className="primary-button" onClick={() => setStep(5)}>
-            Next: Configure Collection
-          </button>
         </>
       )}
       {visibleStep === 5 && (
@@ -1704,6 +1699,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             optional. Installation and required collection evidence remain
             mandatory.
           </p>
+          {!verification?.ready && <p role="status">Run readiness validation on step 9. Activation remains unavailable until the backend confirms current telemetry evidence.</p>}
           <label>
             <input
               type="checkbox"
@@ -1714,7 +1710,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </label>
           <button
             className="primary-button"
-            disabled={!approved || busy}
+            disabled={!approved || !verification?.ready || verification?.resource_id !== created?.id || busy}
             onClick={() =>
               action(async () => {
                 const r = await control(
@@ -1731,30 +1727,25 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
-      {visibleStep > 1 && visibleStep < 10 && (
-        <button
-          className="primary-button"
-          onClick={() => setStep((s) => Math.min(10, s + 1))}
-        >
-          Next step
-        </button>
-      )}
-      {visibleStep > 1 && (
-        <button onClick={() => setStep((s) => Math.max(1, s - 1))}>
-          Previous step
-        </button>
-      )}
+      {visibleStep > 1 && <div className="onboarding-actions">
+        <button onClick={() => setStep((s) => Math.max(1, s - 1))}>Previous</button>
+        {visibleStep < 10 && <button className="primary-button" onClick={() => {
+          const next = Math.min(10, visibleStep + 1);
+          setMaxUnlockedStep((current) => Math.max(current, next));
+          setStep(next);
+        }}>Continue</button>}
+      </div>}
       {openCollector && collector && source && (
         <CollectorControl
           collector={collector}
           sources={[source]}
           user={user}
           onClose={() => setOpenCollector(false)}
-          onSaved={async () =>
-            setCollector(
-              await control("/api/v1/monitoring/collectors/" + collector.id),
-            )
-          }
+          onSaved={async () => {
+            setVerification(null);
+            setApproved(false);
+            setCollector(await control("/api/v1/monitoring/collectors/" + collector.id));
+          }}
         />
       )}
     </Modal>

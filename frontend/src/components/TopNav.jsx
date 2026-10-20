@@ -18,6 +18,9 @@ const sections = [
     ["Resource Management", "Organizations", "organizations"],
     ["Resource Management", "Data Sources / Resources", "resources"],
     ["Resource Management", "Collectors", "collectors"],
+    ["Resource Management", "Event Parameters", "parameters"],
+    ["Resource Management", "Alert Rules", "rules"],
+    ["Resource Management", "Notification Delivery", "delivery"],
   ] },
   { name: "Access Management", items: [
     ["Access Management", "Employees", "Employees"],
@@ -45,6 +48,7 @@ export default function TopNav({
 }) {
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState({});
   const mobileToggle = useRef(null);
   const navigation = useRef(null);
   const [collapsed, setCollapsed] = useState(
@@ -105,6 +109,9 @@ export default function TopNav({
   };
 
   const currentGroup = sections.find((section) => section.items.some(([key]) => key === active));
+  useEffect(() => {
+    if (currentGroup) setExpandedGroups((previous) => ({ ...previous, [currentGroup.name]: true }));
+  }, [currentGroup]);
   const currentDestination = currentGroup?.items.find(([key, , child]) =>
     key === active && (!child || child === activeSection));
   return (
@@ -160,7 +167,17 @@ export default function TopNav({
             child ? canOpenSection(user, key, child) : canNavigate(user, key));
           return visible.length ? (
             <div className="nav-group" role="group" aria-label={section.name} key={section.name}>
-              <span className="nav-section-label">{section.name}</span>
+              <button
+                type="button"
+                className="nav-section-label nav-group-toggle"
+                aria-label={`${section.name} navigation`}
+                aria-expanded={collapsed || expandedGroups[section.name] !== false}
+                aria-controls={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`}
+                onClick={() => setExpandedGroups((previous) => ({ ...previous, [section.name]: previous[section.name] === false }))}
+              >
+                <span>{section.name}</span><span aria-hidden="true">{expandedGroups[section.name] === false && !collapsed ? "▸" : "▾"}</span>
+              </button>
+              <div id={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`} className="nav-group-items" hidden={!collapsed && expandedGroups[section.name] === false}>
               {visible.map(([key, label, child]) => (
                 <button
                   key={child || key}
@@ -178,6 +195,7 @@ export default function TopNav({
                   <span>{label}</span>
                 </button>
               ))}
+              </div>
             </div>
           ) : null;
         })}

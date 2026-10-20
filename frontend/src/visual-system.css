@@ -256,6 +256,10 @@ button:disabled{cursor:not-allowed;opacity:.5}
 
 /* UI recovery: retain existing page identities while making navigation legible. */
 .nav-group {display:grid;gap:4px;min-width:0}
+.nav-group-items {display:grid;gap:4px;min-width:0}
+.nav-group-items[hidden] {display:none}
+.nav-group-toggle {display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:transparent;cursor:pointer;text-align:left}
+.nav-group-toggle:hover,.nav-group-toggle:focus-visible {color:var(--accent)}
 .nav-group + .nav-group {margin-top:12px}
 .nav-group .nav-section-label {padding:0 12px 5px;text-transform:uppercase}
 .nav-group:has(.nav-button.active) .nav-section-label {color:var(--accent)}
