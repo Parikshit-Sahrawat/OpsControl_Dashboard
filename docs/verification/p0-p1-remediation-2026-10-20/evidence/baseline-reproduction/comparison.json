@@ -1,0 +1,70 @@
+{
+  "status": "PASS_EXPECTED_BASELINE_DEFECT_REPRODUCED",
+  "database": "Actual owned PostgreSQL17",
+  "results": {
+    "baseline": {
+      "source": "c694af45055557b062bedeb974d73140ac75c6c9",
+      "expected_partial_rows": 0,
+      "partial_batch_rows": 0,
+      "first_direct_rows": 3,
+      "repeat_direct_rows": 3,
+      "after_empty_partial_rows": 3,
+      "rows": [
+        {
+          "id": "002c9a3e-384a-4a38-b87c-836f04cd947a",
+          "native_id": "2054e48b-f4f9-4e0c-9935-ac569c7c12c9",
+          "outcome": "FAILED",
+          "error_count": 1,
+          "native_result": null
+        },
+        {
+          "id": "8f2a4aea-b585-441f-91af-5780dc5307fe",
+          "native_id": "03f2d2e9-60e2-4526-83db-d8d2cef5046b",
+          "outcome": "FAILED",
+          "error_count": 1,
+          "native_result": null
+        },
+        {
+          "id": "f8776911-963f-428b-8688-de53295e9ebe",
+          "native_id": "cf20aa45-7332-4f3a-a41e-282367d146e5",
+          "outcome": "SUCCESS",
+          "error_count": 0,
+          "native_result": null
+        }
+      ]
+    },
+    "corrected": {
+      "source": "e7c31b7a54efa46f89b468f9df94c7928ef99a0d",
+      "expected_partial_rows": 3,
+      "partial_batch_rows": 3,
+      "first_direct_rows": 3,
+      "repeat_direct_rows": 3,
+      "after_empty_partial_rows": 3,
+      "rows": [
+        {
+          "id": "0f85ca1f-39df-40b7-8bb4-991c92bb21d5",
+          "native_id": "2054e48b-f4f9-4e0c-9935-ac569c7c12c9",
+          "outcome": "FAILED",
+          "error_count": 1,
+          "native_result": "N"
+        },
+        {
+          "id": "3552b7a2-39b8-4df1-8770-a869d926b448",
+          "native_id": "cf20aa45-7332-4f3a-a41e-282367d146e5",
+          "outcome": "SUCCESS",
+          "error_count": 0,
+          "native_result": "Y"
+        },
+        {
+          "id": "ef1e0f1c-20f8-444e-aac4-bda649560617",
+          "native_id": "03f2d2e9-60e2-4526-83db-d8d2cef5046b",
+          "outcome": "FAILED",
+          "error_count": 1,
+          "native_result": "N"
+        }
+      ]
+    }
+  },
+  "native_fixture_modified": false,
+  "genuine_runtime": false
+}

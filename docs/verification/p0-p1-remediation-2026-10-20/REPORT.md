@@ -1,6 +1,6 @@
 # P0/P1 remediation — candidate acceptance
 
-Status: **LOCAL MANDATORY GATES PASS; EXACT-COMMIT REMOTE CI / MAIN INTEGRATION PENDING** at this candidate snapshot. This is not production readiness or owner UAT acceptance. See the final integration ledger when available; do not infer a push from this report.
+Status: **DELIVERED — RUNTIME REMEDIATION INTEGRATED AND REMOTE SOURCE VERIFIED**. Production remains NOT READY; independent remediation UAT remains pending. Runtime/main acceptance commit: `e7c31b7a54efa46f89b468f9df94c7928ef99a0d`. This containing follow-up is documentation/evidence only; use Git for its own SHA. [Final integration ledger](INTEGRATION.md) supersedes the earlier candidate-pending state.
 
 Repository: `Parikshit-Sahrawat/OpsControl_Dashboard`. Temporary branch: `fix/audit-p0-p1-remediation`. Audited/unchanged remote main: `c694af45055557b062bedeb974d73140ac75c6c9`. Implementation commit: `efabfb0f1d712d5b34ca2c018f29bf03bd8383f2`; exact runtime content is independently frozen in [source hashes](evidence/runtime-source-sha256.json). Tests before commit ran this working source, not pristine baseline.
 
@@ -21,9 +21,9 @@ Authorized P1 corrections cover atomic inline customer/resource onboarding, scop
 
 Exact commands, skips, initial failures and evidence maturity: [verification](VERIFICATION.md). [Changed files](CHANGED_FILES.md), [all finding dispositions](DISPOSITIONS.md), [readiness](PRODUCTION_READINESS.md), [roadmap amendment](ROADMAP_UPDATE.md), [independent UAT checklist](MANUAL_UAT_CHECKLIST.md).
 
-## Integration control
+## Integration control and result
 
-Main must remain untouched unless mandatory gates and exact-commit CI pass. Fetch/recheck main immediately before fast-forward integration; reconcile concurrent changes rather than overwrite them. Run post-integration smoke/targeted regressions, normal non-force push only, then verify remote SHA and runtime tree against this snapshot. No bypass/PR/deployment is authorized or needed. PR33 is read-only and its state/head remained unchanged in the recorded checks.
+Mandatory local and exact-commit CI gates passed before integration. Fetch/recheck main immediately before fast-forward integration; reconcile concurrent changes rather than overwrite them. Run post-integration smoke/targeted regressions, normal non-force push only, then verify remote SHA and runtime tree against this snapshot. The normal push succeeded and fetched origin/main matched the accepted commit. No bypass, PR or deployment occurred. PR33 is read-only and its state/head remained unchanged in the recorded checks.
 
 The original audit package and all historical sprint evidence remain unchanged. [Protected-file integrity](evidence/protected-integrity.json) covers approved architecture, migration history and native artifacts. No protected customer identities/records are rewritten. Runtime experiments used disposable owned PostgreSQL and synthetic/sanitized fixtures only.
 
@@ -32,3 +32,5 @@ The original audit package and all historical sprint evidence remain unchanged. 
 Production **NOT READY**: all six P0, eight P1 and two P2 production-readiness gaps remain open/partial at certification level. Canonical shared-resource multi-customer positive behavior (XBA06) is absent; optional legacy method attribution is an open policy question (XBA16). Graph/aggregate/fence performance, external-client adoption, fleet lifecycle, notifications, real provider/CA/private-route/offsite/PITR and storage/log cost evidence remain. Independent remediation UAT is pending. Historical IMP001–062 remain source-unrecovered and18OC-IMP proposals individually unapproved. RT001–020 **NOT RUN**; native repeated child identity **UNVERIFIED**.
 
 Next bounded proposal: close exact-source CI/integration and owner UAT, then seek specific approval for shared-resource association/attribution design before any schema/runtime increment. See [proposal](NEXT_SPRINT_PROPOSAL.md). No numbered future sprint, ETL workload, customer-source activation, deployment, branch deletion, history rewrite or PR33 modification occurred.
+
+Known adapter bounds remain explicit: numeric native input accepts up to seven decimal digits and at most100 structured step observations. Larger ranges/builds are not certified by these fixtures and can be rejected; no clamping, manufactured zero or unbounded native compatibility is claimed. Static offset pagination is deterministic; it does not provide a snapshot across concurrent dataset mutation. These limits and genuine child identity require separate representative evidence rather than an invented capability claim.

@@ -1,0 +1,1206 @@
+Preparing worktree (checking out 'main')
+HEAD is now at 2bb41a0 Merge pull request #34 from Parikshit-Sahrawat/feature/arch-001-v16-data-pipelines
+Updating 2bb41a0..c694af4
+Fast-forward
+ ARCH-001_IMPLEMENTATION_STATUS.md                  |  233 ++
+ README.md                                          |  277 +-
+ backend/app/api/access.py                          |  180 +-
+ backend/app/api/access_boundaries.py               |  208 +
+ backend/app/api/pagination.py                      |   42 +
+ backend/app/data_pipelines/agent_api.py            |   16 +-
+ backend/app/data_pipelines/api.py                  |  181 +-
+ backend/app/data_pipelines/bridge.py               |   14 +-
+ backend/app/data_pipelines/runtime.py              |   12 +-
+ backend/app/data_pipelines/service.py              |   96 +-
+ backend/app/data_pipelines/transport.py            |   20 +-
+ backend/app/db/session.py                          |   35 +-
+ backend/app/main.py                                |   17 +-
+ backend/app/models/__init__.py                     |    4 +
+ backend/app/models/entities.py                     |   48 +
+ backend/app/native_incidents/api.py                |  174 +-
+ backend/app/native_incidents/models.py             |   94 +
+ backend/app/native_incidents/pentaho.py            |  666 ++++
+ backend/app/native_incidents/service.py            |   70 +-
+ backend/app/pipeline_adapters/__init__.py          |   19 +-
+ backend/app/pipeline_adapters/native.py            |   38 +-
+ backend/app/pipeline_adapters/pentaho_carte.py     |  258 ++
+ backend/app/pipeline_adapters/pentaho_contracts.py |   96 +
+ .../app/pipeline_adapters/pentaho_observations.py  |  515 +++
+ backend/app/security/access_control.py             |   91 +-
+ backend/app/security/access_models.py              |   70 +-
+ backend/app/security/boundaries.py                 |  192 +
+ backend/app/security/delegation.py                 |  295 ++
+ backend/app/security/http.py                       |   45 +-
+ backend/app/security/permission_catalog.py         |    3 +
+ backend/app/security/resource_scope.py             |  298 ++
+ backend/app/security/scope.py                      |   54 +-
+ backend/app/telemetry/delivery.py                  |    6 +-
+ backend/app/telemetry/inbox.py                     |   44 +-
+ backend/app/telemetry/models.py                    |   26 +-
+ backend/app/unified/api.py                         |  756 +++-
+ backend/app/unified/engines.py                     |   44 +-
+ backend/app/unified/models.py                      |    7 +
+ backend/app/unified/pentaho_execution.py           |  761 ++++
+ backend/app/unified/pentaho_history.py             |  423 ++
+ backend/app/unified/pentaho_models.py              |  415 ++
+ backend/app/unified/pentaho_recovery.py            |  266 ++
+ backend/app/unified/pentaho_replay.py              |  241 ++
+ backend/app/unified/pentaho_review.py              |  552 +++
+ backend/app/unified/pentaho_schedule.py            |  457 +++
+ backend/app/unified/reconstruction.py              |   39 +-
+ backend/app/unified/schemas.py                     |    9 +
+ backend/app/worker/notifications.py                |   32 +-
+ backend/migrations/env.py                          |    1 +
+ .../migrations/versions/0033_pentaho_attempts.py   |  201 +
+ .../versions/0034_pentaho_evidence_review.py       |   80 +
+ .../versions/0035_pentaho_schedule_history.py      |  150 +
+ .../versions/0036_native_incident_recovery.py      |   48 +
+ .../migrations/versions/0037_access_boundaries.py  |  102 +
+ backend/scripts/acceptance_scope.py                |   36 +
+ backend/scripts/access_acceptance_probe.py         |    6 +-
+ backend/scripts/arch001_acceptance_probe.py        |    3 +-
+ backend/scripts/auth_tenant_probe.py               |    2 +
+ backend/scripts/consolidated_uat_probe.py          |    2 +
+ backend/scripts/etl_acceptance_probe.py            |    3 +-
+ backend/scripts/http_golden_path_probe.py          |    3 +-
+ backend/scripts/infrastructure_acceptance_probe.py |    3 +-
+ backend/scripts/live_https_acceptance.py           |    3 +-
+ backend/scripts/operations_migration_probe.py      |   12 +-
+ backend/scripts/pentaho_history_migration_probe.py |  151 +
+ .../scripts/pentaho_incident_migration_probe.py    |   76 +
+ backend/scripts/pentaho_migration_probe.py         |  150 +
+ backend/scripts/pentaho_review_migration_probe.py  |   93 +
+ backend/scripts/pentaho_sprint03_http_probe.py     |  216 ++
+ backend/scripts/pentaho_sprint04_http_probe.py     |  208 +
+ backend/scripts/pentaho_sprint05_http_probe.py     |  220 ++
+ backend/scripts/pentaho_sprint06_http_probe.py     |  162 +
+ .../scripts/pentaho_sprint07_browser_fixture.py    |  151 +
+ backend/scripts/release_runtime_probe.py           |    3 +-
+ backend/scripts/remote_protocol_probe.py           |    2 +
+ backend/scripts/security_release_probe.py          |    2 +
+ backend/scripts/sprint08_http_probe.py             |  584 +++
+ backend/scripts/sprint08_migration_probe.py        |  154 +
+ backend/scripts/sprint09_http_probe.py             |  492 +++
+ backend/scripts/sprint09_resilience_probe.py       |   80 +
+ backend/scripts/sprint13_recovery_probe.py         |  587 +++
+ backend/scripts/v16_api_probe.py                   |    5 +-
+ backend/tests/test_access_control.py               |   50 +
+ backend/tests/test_pentaho_execution_contracts.py  |  154 +
+ backend/tests/test_pentaho_execution_r1.py         |  636 +++
+ backend/tests/test_pentaho_history_contracts.py    |   96 +
+ backend/tests/test_pentaho_history_r1.py           |  730 ++++
+ backend/tests/test_pentaho_incident_contracts.py   |   66 +
+ backend/tests/test_pentaho_incident_r1.py          |  486 +++
+ .../tests/test_pentaho_metadata_registration.py    |   38 +
+ backend/tests/test_pentaho_r1.py                   |  579 +++
+ backend/tests/test_pentaho_review_contracts.py     |  122 +
+ backend/tests/test_pentaho_review_r1.py            |  681 ++++
+ backend/tests/test_pentaho_surface_contracts.py    |  116 +
+ backend/tests/test_pipeline_ownership_v16.py       |  203 +
+ backend/tests/test_pipeline_transport_v16.py       |   27 +
+ backend/tests/test_sprint07_frontend_contracts.py  |   77 +
+ backend/tests/test_sprint08_rbac.py                |  496 +++
+ backend/tests/test_sprint09_contracts.py           |   58 +
+ backend/tests/test_sprint09_hardening.py           |  300 ++
+ backend/tests/test_sprint12_shared_trust.py        |  211 +
+ docs/API_CUSTOMER_SCOPE.md                         |   97 +
+ docs/ARCH_001_V16.md                               |  304 ++
+ docs/QUICKSTART.md                                 |    4 +-
+ docs/REMOTE_AGENT_QUICKSTART.md                    |    2 +
+ docs/architecture/ARCH_001.md                      |  122 +
+ docs/architecture/ARCH_ETL_001_V16.md              |  137 +
+ .../ARCH_ETL_001_V16_R1_RECONCILIATION.md          |  121 +
+ docs/enterprise/02-user-manual.md                  |    4 +-
+ .../arch-etl-001-v16-r1/sprint01/REPORT.md         |   65 +
+ .../arch-etl-001-v16-r1/sprint01/api.json          |   17 +
+ .../arch-etl-001-v16-r1/sprint01/integration.txt   |    2 +
+ .../arch-etl-001-v16-r1/sprint01/ownership.txt     |   55 +
+ .../arch-etl-001-v16-r1/sprint01/unit.txt          |   74 +
+ .../arch-etl-001-v16-r1/sprint02/REPORT.md         |  189 +
+ .../arch-etl-001-v16-r1/sprint02/api.json          |   17 +
+ .../arch-etl-001-v16-r1/sprint02/integration.txt   |    2 +
+ .../arch-etl-001-v16-r1/sprint02/migrations.json   |   12 +
+ .../arch-etl-001-v16-r1/sprint02/ownership.txt     |   63 +
+ .../arch-etl-001-v16-r1/sprint02/unit.txt          |  115 +
+ .../arch-etl-001-v16-r1/sprint03/REPORT.md         |  272 ++
+ .../arch-etl-001-v16-r1/sprint03/api-existing.json |   17 +
+ .../arch-etl-001-v16-r1/sprint03/api-r1.json       |   12 +
+ .../arch-etl-001-v16-r1/sprint03/migration.json    |   12 +
+ .../arch-etl-001-v16-r1/sprint03/postgresql.txt    |   83 +
+ .../arch-etl-001-v16-r1/sprint03/preservation.json |    9 +
+ .../arch-etl-001-v16-r1/sprint03/runner.txt        |    3 +
+ .../arch-etl-001-v16-r1/sprint03/static.txt        |    3 +
+ .../arch-etl-001-v16-r1/sprint03/unit.txt          |  155 +
+ .../arch-etl-001-v16-r1/sprint04/REPORT.md         |  243 ++
+ .../arch-etl-001-v16-r1/sprint04/api-existing.json |   17 +
+ .../arch-etl-001-v16-r1/sprint04/api-sprint03.json |   12 +
+ .../arch-etl-001-v16-r1/sprint04/api-sprint04.json |   13 +
+ .../arch-etl-001-v16-r1/sprint04/migration.json    |   12 +
+ .../arch-etl-001-v16-r1/sprint04/postgresql.txt    |  108 +
+ .../arch-etl-001-v16-r1/sprint04/preservation.json |    8 +
+ .../sprint04/review-preservation.json              |    5 +
+ .../arch-etl-001-v16-r1/sprint04/runner.txt        |    4 +
+ .../sprint04/scope-security.txt                    |    4 +
+ .../sprint04/source-sha256.json                    |   19 +
+ .../arch-etl-001-v16-r1/sprint04/static.txt        |   15 +
+ .../arch-etl-001-v16-r1/sprint04/unit.txt          |  160 +
+ .../arch-etl-001-v16-r1/sprint05/REPORT.md         |  268 ++
+ .../arch-etl-001-v16-r1/sprint05/api-existing.json |   17 +
+ .../arch-etl-001-v16-r1/sprint05/api-sprint03.json |   12 +
+ .../arch-etl-001-v16-r1/sprint05/api-sprint04.json |   13 +
+ .../arch-etl-001-v16-r1/sprint05/api-sprint05.json |   12 +
+ .../arch-etl-001-v16-r1/sprint05/changed-files.txt |   48 +
+ .../sprint05/history-preservation.json             |    5 +
+ .../sprint05/http-migration.json                   |   13 +
+ .../arch-etl-001-v16-r1/sprint05/http-runner.txt   |    5 +
+ .../arch-etl-001-v16-r1/sprint05/migration.json    |   12 +
+ .../sprint05/postgresql-http-followup.txt          |   33 +
+ .../arch-etl-001-v16-r1/sprint05/postgresql.txt    |  134 +
+ .../arch-etl-001-v16-r1/sprint05/preservation.json |    8 +
+ .../sprint05/review-preservation.json              |    5 +
+ .../arch-etl-001-v16-r1/sprint05/runner.txt        |    5 +
+ .../sprint05/scope-security.txt                    |    4 +
+ .../sprint05/source-sha256.json                    |   28 +
+ .../arch-etl-001-v16-r1/sprint05/static.txt        |   15 +
+ .../arch-etl-001-v16-r1/sprint05/unit.txt          |  166 +
+ .../arch-etl-001-v16-r1/sprint06/REPORT.md         |  217 ++
+ .../arch-etl-001-v16-r1/sprint06/api-existing.json |   17 +
+ .../arch-etl-001-v16-r1/sprint06/api-sprint03.json |   12 +
+ .../arch-etl-001-v16-r1/sprint06/api-sprint04.json |   13 +
+ .../arch-etl-001-v16-r1/sprint06/api-sprint05.json |   12 +
+ .../arch-etl-001-v16-r1/sprint06/api-sprint06.json |   12 +
+ .../arch-etl-001-v16-r1/sprint06/changed-files.txt |   36 +
+ .../arch-etl-001-v16-r1/sprint06/followup.json     |   16 +
+ .../sprint06/history-preservation.json             |   21 +
+ .../sprint06/incident-preservation.json            |   32 +
+ .../arch-etl-001-v16-r1/sprint06/migration.json    |   12 +
+ .../sprint06/postgresql-followup.txt               |   27 +
+ .../arch-etl-001-v16-r1/sprint06/postgresql.txt    |  154 +
+ .../arch-etl-001-v16-r1/sprint06/preservation.json |   17 +
+ .../sprint06/review-preservation.json              |   21 +
+ .../sprint06/source-sha256.json                    |   19 +
+ .../arch-etl-001-v16-r1/sprint06/static.txt        |   23 +
+ .../sprint06/unit-remaining.txt                    |   79 +
+ .../arch-etl-001-v16-r1/sprint06/unit.txt          |  151 +
+ .../arch-etl-001-v16-r1/sprint07/REPORT.md         |  154 +
+ .../arch-etl-001-v16-r1/sprint07/api.json          |   17 +
+ .../arch-etl-001-v16-r1/sprint07/browser.json      |   21 +
+ .../arch-etl-001-v16-r1/sprint07/build.txt         |   13 +
+ .../arch-etl-001-v16-r1/sprint07/changed-files.txt |   60 +
+ .../arch-etl-001-v16-r1/sprint07/frontend-unit.txt |   26 +
+ .../arch-etl-001-v16-r1/sprint07/gate.txt          |    9 +
+ .../sprint07/history-migration-preservation.json   |   21 +
+ .../sprint07/incident-migration-preservation.json  |   32 +
+ .../arch-etl-001-v16-r1/sprint07/lint.txt          |    3 +
+ .../sprint07/migration-preservation.json           |   17 +
+ .../arch-etl-001-v16-r1/sprint07/ownership.txt     |   15 +
+ .../sprint07/pentaho-history-http.json             |   12 +
+ .../arch-etl-001-v16-r1/sprint07/pentaho-http.json |   12 +
+ .../sprint07/pentaho-incident-http.json            |   12 +
+ .../sprint07/pentaho-review-http.json              |   13 +
+ .../arch-etl-001-v16-r1/sprint07/pipeline-unit.txt |   21 +
+ .../sprint07/pipeline-v16-methods.png              |  Bin 0 -> 604863 bytes
+ .../sprint07/pipeline-v16-mobile.png               |  Bin 0 -> 334759 bytes
+ .../sprint07/pipeline-v16-viewer.png               |  Bin 0 -> 174167 bytes
+ .../sprint07/pipeline-v16-wizard.png               |  Bin 0 -> 600101 bytes
+ .../arch-etl-001-v16-r1/sprint07/report.json       |   12 +
+ .../sprint07/review-migration-preservation.json    |   21 +
+ .../sprint07/source-sha256.json                    |   23 +
+ .../sprint07/sprint07-browser.json                 |   25 +
+ .../sprint07/sprint07-evidence.png                 |  Bin 0 -> 104575 bytes
+ .../sprint07/sprint07-execution-attempts.png       |  Bin 0 -> 141998 bytes
+ .../sprint07/sprint07-executions.png               |  Bin 0 -> 191473 bytes
+ .../sprint07/sprint07-incident-recovery.png        |  Bin 0 -> 152862 bytes
+ .../sprint07/sprint07-incidents.png                |  Bin 0 -> 97184 bytes
+ .../sprint07/sprint07-inventory-390.png            |  Bin 0 -> 83783 bytes
+ .../sprint07/sprint07-inventory-768.png            |  Bin 0 -> 120348 bytes
+ .../sprint07/sprint07-inventory.png                |  Bin 0 -> 98315 bytes
+ .../sprint07/sprint07-pipeline-drawer.png          |  Bin 0 -> 120573 bytes
+ .../sprint07/sprint07-recovery-reversed.png        |  Bin 0 -> 249350 bytes
+ .../sprint07/sprint07-recovery.png                 |  Bin 0 -> 249331 bytes
+ .../sprint07/sprint07-review-drawer.png            |  Bin 0 -> 133653 bytes
+ .../sprint07/sprint07-schedule-drawer.png          |  Bin 0 -> 119079 bytes
+ .../sprint07/sprint07-schedules.png                |  Bin 0 -> 115807 bytes
+ .../arch-etl-001-v16-r1/sprint08/REPORT.md         |  245 ++
+ .../arch-etl-001-v16-r1/sprint08/changed-files.txt |  100 +
+ .../arch-etl-001-v16-r1/sprint08/commands.md       |  115 +
+ .../arch-etl-001-v16-r1/sprint08/evidence/api.json |   17 +
+ .../sprint08/evidence/black-command.json           |   25 +
+ .../sprint08/evidence/black.txt                    |    2 +
+ .../sprint08/evidence/browser.json                 |   21 +
+ .../sprint08/evidence/build.txt                    |   18 +
+ .../sprint08/evidence/compile-command.json         |   31 +
+ .../sprint08/evidence/compile.txt                  |    0
+ .../sprint08/evidence/frontend-unit.txt            |   26 +
+ .../arch-etl-001-v16-r1/sprint08/evidence/gate.txt |   12 +
+ .../sprint08/evidence/heads.txt                    |    1 +
+ .../evidence/history-migration-preservation.json   |   21 +
+ .../sprint08/evidence/imports.txt                  |    2 +
+ .../evidence/incident-migration-preservation.json  |   32 +
+ .../arch-etl-001-v16-r1/sprint08/evidence/lint.txt |    3 +
+ .../sprint08/evidence/migration-preservation.json  |   17 +
+ .../sprint08/evidence/ownership.txt                |  176 +
+ .../sprint08/evidence/pentaho-history-http.json    |   12 +
+ .../sprint08/evidence/pentaho-http.json            |   12 +
+ .../sprint08/evidence/pentaho-incident-http.json   |   12 +
+ .../sprint08/evidence/pentaho-review-http.json     |   13 +
+ .../sprint08/evidence/pipeline-v16-methods.png     |  Bin 0 -> 746328 bytes
+ .../sprint08/evidence/pipeline-v16-mobile.png      |  Bin 0 -> 394172 bytes
+ .../sprint08/evidence/pipeline-v16-viewer.png      |  Bin 0 -> 174767 bytes
+ .../sprint08/evidence/pipeline-v16-wizard.png      |  Bin 0 -> 740446 bytes
+ .../sprint08/evidence/report.json                  |   12 +
+ .../evidence/review-migration-preservation.json    |   21 +
+ .../sprint08/evidence/ruff-command.json            |   32 +
+ .../arch-etl-001-v16-r1/sprint08/evidence/ruff.txt |    1 +
+ .../sprint08/evidence/sprint07-browser.json        |   25 +
+ .../sprint08/evidence/sprint07-evidence.png        |  Bin 0 -> 104164 bytes
+ .../evidence/sprint07-execution-attempts.png       |  Bin 0 -> 141985 bytes
+ .../sprint08/evidence/sprint07-executions.png      |  Bin 0 -> 190752 bytes
+ .../evidence/sprint07-incident-recovery.png        |  Bin 0 -> 153318 bytes
+ .../sprint08/evidence/sprint07-incidents.png       |  Bin 0 -> 96651 bytes
+ .../sprint08/evidence/sprint07-inventory-390.png   |  Bin 0 -> 83896 bytes
+ .../sprint08/evidence/sprint07-inventory-768.png   |  Bin 0 -> 119476 bytes
+ .../sprint08/evidence/sprint07-inventory.png       |  Bin 0 -> 99004 bytes
+ .../sprint08/evidence/sprint07-pipeline-drawer.png |  Bin 0 -> 107433 bytes
+ .../evidence/sprint07-recovery-reversed.png        |  Bin 0 -> 249221 bytes
+ .../sprint08/evidence/sprint07-recovery.png        |  Bin 0 -> 254094 bytes
+ .../sprint08/evidence/sprint07-review-drawer.png   |  Bin 0 -> 133846 bytes
+ .../sprint08/evidence/sprint07-schedule-drawer.png |  Bin 0 -> 119079 bytes
+ .../sprint08/evidence/sprint07-schedules.png       |  Bin 0 -> 115638 bytes
+ .../sprint08/evidence/sprint08-access-mobile.png   |  Bin 0 -> 111077 bytes
+ .../sprint08/evidence/sprint08-all-scope.png       |  Bin 0 -> 87524 bytes
+ .../sprint08/evidence/sprint08-browser.json        |   12 +
+ .../evidence/sprint08-delegated-access.png         |  Bin 0 -> 150160 bytes
+ .../sprint08/evidence/sprint08-http.json           |   20 +
+ .../evidence/sprint08-migration-preservation.json  |  129 +
+ .../sprint08/evidence/sprint08-revoked-drawer.png  |  Bin 0 -> 87229 bytes
+ .../sprint08/evidence/staging-preservation.txt     |   76 +
+ .../arch-etl-001-v16-r1/sprint08/evidence/unit.txt |  161 +
+ .../sprint08/source-sha256.json                    |   46 +
+ .../arch-etl-001-v16-r1/sprint09/REPORT.md         |  191 +
+ .../arch-etl-001-v16-r1/sprint09/changed-files.txt |  112 +
+ .../arch-etl-001-v16-r1/sprint09/commands.md       |  171 +
+ .../sprint09/evidence/api-inventory.json           | 4042 ++++++++++++++++++++
+ .../arch-etl-001-v16-r1/sprint09/evidence/api.json |   17 +
+ .../sprint09/evidence/black-command.json           |   16 +
+ .../sprint09/evidence/black.txt                    |    2 +
+ .../sprint09/evidence/browser.json                 |   21 +
+ .../sprint09/evidence/build.txt                    |   18 +
+ .../sprint09/evidence/compile-command.json         |   28 +
+ .../sprint09/evidence/compile.txt                  |    0
+ .../sprint09/evidence/frontend-cases.txt           |   30 +
+ .../sprint09/evidence/frontend-unit.txt            |   29 +
+ .../arch-etl-001-v16-r1/sprint09/evidence/gate.txt |   15 +
+ .../sprint09/evidence/heads.txt                    |    1 +
+ .../evidence/history-migration-preservation.json   |   21 +
+ .../sprint09/evidence/imports.txt                  |    1 +
+ .../evidence/incident-migration-preservation.json  |   32 +
+ .../sprint09/evidence/legacy-ruff-baseline.json    |   72 +
+ .../arch-etl-001-v16-r1/sprint09/evidence/lint.txt |    3 +
+ .../sprint09/evidence/migration-preservation.json  |   17 +
+ .../sprint09/evidence/ownership.txt                |  184 +
+ .../sprint09/evidence/pentaho-history-http.json    |   12 +
+ .../sprint09/evidence/pentaho-http.json            |   12 +
+ .../sprint09/evidence/pentaho-incident-http.json   |   12 +
+ .../sprint09/evidence/pentaho-review-http.json     |   13 +
+ .../performance-before-inventory-batch.json        |   66 +
+ .../sprint09/evidence/pipeline-v16-methods.png     |  Bin 0 -> 694492 bytes
+ .../sprint09/evidence/pipeline-v16-mobile.png      |  Bin 0 -> 361139 bytes
+ .../sprint09/evidence/pipeline-v16-viewer.png      |  Bin 0 -> 173554 bytes
+ .../sprint09/evidence/pipeline-v16-wizard.png      |  Bin 0 -> 690942 bytes
+ .../sprint09/evidence/quality-check.txt            |   32 +
+ .../sprint09/evidence/report.json                  |   12 +
+ .../evidence/review-migration-preservation.json    |   21 +
+ .../sprint09/evidence/ruff-command.json            |   18 +
+ .../arch-etl-001-v16-r1/sprint09/evidence/ruff.txt |    1 +
+ .../sprint09/evidence/script-syntax.txt            |    1 +
+ .../sprint09/evidence/sprint07-browser.json        |   25 +
+ .../sprint09/evidence/sprint07-evidence.png        |  Bin 0 -> 104004 bytes
+ .../evidence/sprint07-execution-attempts.png       |  Bin 0 -> 141372 bytes
+ .../sprint09/evidence/sprint07-executions.png      |  Bin 0 -> 189426 bytes
+ .../evidence/sprint07-incident-recovery.png        |  Bin 0 -> 152011 bytes
+ .../sprint09/evidence/sprint07-incidents.png       |  Bin 0 -> 96967 bytes
+ .../sprint09/evidence/sprint07-inventory-390.png   |  Bin 0 -> 83515 bytes
+ .../sprint09/evidence/sprint07-inventory-768.png   |  Bin 0 -> 120218 bytes
+ .../sprint09/evidence/sprint07-inventory.png       |  Bin 0 -> 99368 bytes
+ .../sprint09/evidence/sprint07-pipeline-drawer.png |  Bin 0 -> 107218 bytes
+ .../evidence/sprint07-recovery-reversed.png        |  Bin 0 -> 241040 bytes
+ .../sprint09/evidence/sprint07-recovery.png        |  Bin 0 -> 245984 bytes
+ .../sprint09/evidence/sprint07-review-drawer.png   |  Bin 0 -> 133721 bytes
+ .../sprint09/evidence/sprint07-schedule-drawer.png |  Bin 0 -> 119318 bytes
+ .../sprint09/evidence/sprint07-schedules.png       |  Bin 0 -> 117901 bytes
+ .../sprint09/evidence/sprint08-access-mobile.png   |  Bin 0 -> 111734 bytes
+ .../sprint09/evidence/sprint08-all-scope.png       |  Bin 0 -> 87071 bytes
+ .../sprint09/evidence/sprint08-browser.json        |   12 +
+ .../evidence/sprint08-delegated-access.png         |  Bin 0 -> 150040 bytes
+ .../sprint09/evidence/sprint08-http.json           |   20 +
+ .../evidence/sprint08-migration-preservation.json  |  129 +
+ .../sprint09/evidence/sprint08-revoked-drawer.png  |  Bin 0 -> 87236 bytes
+ .../sprint09/evidence/sprint09-attempt-archive.png |  Bin 0 -> 181434 bytes
+ .../sprint09/evidence/sprint09-browser.json        |   10 +
+ .../sprint09/evidence/sprint09-http.json           |   12 +
+ .../evidence/sprint09-incident-activity.png        |  Bin 0 -> 171493 bytes
+ .../sprint09/evidence/sprint09-performance.json    |   66 +
+ .../sprint09/evidence/sprint09-resilience.json     |   47 +
+ .../sprint09/evidence/sprint09-schedule-filter.png |  Bin 0 -> 114727 bytes
+ .../sprint09/evidence/staging-preservation.txt     |   76 +
+ .../arch-etl-001-v16-r1/sprint09/evidence/unit.txt |  165 +
+ .../arch-etl-001-v16-r1/sprint09/performance.md    |   64 +
+ .../sprint09/source-sha256.json                    |   44 +
+ .../sprint10/ARCHITECTURE_TRACEABILITY.md          |   44 +
+ .../sprint10/CODE_AUDIT_FINDINGS.md                |   28 +
+ .../sprint10/DEPENDENCIES_AND_DECISIONS.md         |   43 +
+ .../sprint10/IMPROVEMENT_REGISTER.md               |   78 +
+ .../sprint10/NEW_IMPROVEMENTS.md                   |   26 +
+ .../sprint10/PRODUCTION_READINESS.md               |   67 +
+ .../arch-etl-001-v16-r1/sprint10/REPORT.md         |   28 +
+ .../arch-etl-001-v16-r1/sprint10/ROADMAP.md        |  493 +++
+ .../arch-etl-001-v16-r1/sprint10/VERIFICATION.md   |   78 +
+ .../sprint10/validate_docs.py.txt                  |   48 +
+ .../sprint10/validation-initial.json               |    5 +
+ .../sprint10/validation-results.json               |  124 +
+ .../sprint11/ARCHITECTURE_GOVERNANCE.md            |   28 +
+ .../arch-etl-001-v16-r1/sprint11/AUDIT_FINDINGS.md |   16 +
+ .../sprint11/IMPROVEMENT_REGISTER.md               |   74 +
+ .../sprint11/NEW_IMPROVEMENT_RECONCILIATION.md     |   24 +
+ .../sprint11/OWNER_INPUT_REGISTER.md               |   18 +
+ .../sprint11/PRODUCTION_READINESS.md               |   24 +
+ .../arch-etl-001-v16-r1/sprint11/REPORT.md         |   21 +
+ .../arch-etl-001-v16-r1/sprint11/ROADMAP.md        |  672 ++++
+ .../sprint11/SOURCE_RECOVERY.md                    |   22 +
+ .../arch-etl-001-v16-r1/sprint11/VERIFICATION.md   |   62 +
+ .../sprint11/validate_docs.py.txt                  |   48 +
+ .../sprint11/validation-results.json               |  204 +
+ .../sprint12/APPROVED_OWNER_DECISIONS.md           |   18 +
+ .../sprint12/DEPLOYMENT_TRUST_MODEL.md             |   18 +
+ .../sprint12/OC_IMP_V20_BASELINE.md                |   28 +
+ .../sprint12/PRODUCTION_READINESS.md               |   24 +
+ .../arch-etl-001-v16-r1/sprint12/REPORT.md         |   28 +
+ .../sprint12/SHARED_RESOURCE_AUTHORIZATION.md      |   43 +
+ .../arch-etl-001-v16-r1/sprint12/TEST_MATRIX.md    |   18 +
+ .../arch-etl-001-v16-r1/sprint12/THREAT_MODEL.md   |   17 +
+ .../arch-etl-001-v16-r1/sprint12/VERIFICATION.md   |   19 +
+ .../sprint13/BACKUP_INTEGRITY.md                   |   13 +
+ .../sprint13/LEGAL_HOLD_VALIDATION.md              |    7 +
+ .../sprint13/MIGRATION_SAFETY.md                   |   14 +
+ .../sprint13/PRODUCTION_READINESS.md               |   26 +
+ .../sprint13/RECOVERY_TEST_PLAN.md                 |   13 +
+ .../arch-etl-001-v16-r1/sprint13/REPORT.md         |   20 +
+ .../sprint13/RESTORE_PRESERVATION.md               |   24 +
+ .../sprint13/RPO_RTO_EVIDENCE.md                   |   16 +
+ .../arch-etl-001-v16-r1/sprint13/VERIFICATION.md   |   19 +
+ .../sprint14/ADAPTER_SAFETY_AUDIT.md               |   14 +
+ .../CREDENTIAL_AND_NETWORK_PREREQUISITES.md        |   14 +
+ .../sprint14/INSTALLED_BUILD_DISCOVERY.md          |   22 +
+ .../sprint14/PENTAHO_COMPATIBILITY_MATRIX.md       |   12 +
+ .../sprint14/PRODUCTION_READINESS.md               |   24 +
+ .../sprint14/READ_ONLY_CONNECTION_RUNBOOK.md       |   14 +
+ .../arch-etl-001-v16-r1/sprint14/REPORT.md         |   19 +
+ .../sprint14/RT001_RT020_ACCEPTANCE_MATRIX.md      |   28 +
+ .../arch-etl-001-v16-r1/sprint14/TEST_RESULTS.md   |   21 +
+ .../arch-etl-001-v16-r1/sprint14/VERIFICATION.md   |   24 +
+ .../RT-LAB-016C-evidence-manifest.json             |   66 +
+ .../RT-LAB-016D-final-reconciliation.md            |   89 +
+ .../ui-recovery/CURRENT_UI_AUDIT.md                |   33 +
+ .../ui-recovery/IMPLEMENTATION_EVIDENCE.md         |   45 +
+ .../ui-recovery/IUAT_S14_UI_003_FINDINGS.md        |   19 +
+ .../ui-recovery/MANUAL_UAT_CHECKLIST.md            |   25 +
+ .../ui-recovery/PAGE_REDESIGN_SPECIFICATION.md     |   20 +
+ .../ui-recovery/SIDEBAR_NAVIGATION_PROPOSAL.md     |   19 +
+ .../ui-recovery/TARGET_UI_ARCHITECTURE.md          |   31 +
+ .../ui-recovery/UI_RECOVERY_IMPLEMENTATION_PLAN.md |   23 +
+ .../ui-recovery/evidence/1366-resources.png        |  Bin 0 -> 132337 bytes
+ .../ui-recovery/evidence/390-access.png            |  Bin 0 -> 87218 bytes
+ .../ui-recovery/evidence/390-compute.png           |  Bin 0 -> 52500 bytes
+ .../ui-recovery/evidence/390-pipelines.png         |  Bin 0 -> 68713 bytes
+ .../ui-recovery/evidence/collectors-desktop.png    |  Bin 0 -> 127151 bytes
+ .../ui-recovery/evidence/implemented-desktop.png   |  Bin 0 -> 68837 bytes
+ .../ui-recovery/evidence/implemented-menu.png      |  Bin 0 -> 77132 bytes
+ .../ui-recovery/evidence/implemented-mobile.png    |  Bin 0 -> 71416 bytes
+ .../evidence/navigation-r2-mobile-menu.png         |  Bin 0 -> 77547 bytes
+ .../navigation-r2-organizations-mobile.png         |  Bin 0 -> 54610 bytes
+ .../evidence/navigation-r2-pipelines-desktop.png   |  Bin 0 -> 70200 bytes
+ .../evidence/organisational-access-desktop.png     |  Bin 0 -> 710670 bytes
+ .../ui-recovery/evidence/organizations-desktop.png |  Bin 0 -> 102596 bytes
+ frontend/package.json                              |    2 +-
+ frontend/scripts/access_acceptance.mjs             |   19 +-
+ frontend/scripts/access_v15.mjs                    |   43 +-
+ frontend/scripts/arch001_acceptance.mjs            |    2 +-
+ frontend/scripts/consolidated_uat.mjs              |    2 +
+ frontend/scripts/eks_inventory_acceptance.mjs      |    2 +-
+ frontend/scripts/explicit_scope.mjs                |   16 +
+ frontend/scripts/explicit_scope.test.mjs           |   24 +
+ frontend/scripts/http_golden_path.mjs              |    4 +-
+ frontend/scripts/navigation.test.mjs               |   23 +
+ frontend/scripts/pipeline_sprint07_acceptance.mjs  |  610 +++
+ frontend/scripts/pipeline_v16_acceptance.mjs       |   47 +-
+ frontend/scripts/pipelines.test.mjs                |  193 +
+ frontend/scripts/resource_crud_acceptance.mjs      |   13 +-
+ frontend/scripts/sprint08_acceptance.mjs           |  215 ++
+ frontend/scripts/sprint09_acceptance.mjs           |  178 +
+ frontend/scripts/test_access_management.mjs        |    4 +-
+ frontend/scripts/test_monitoring_setup.mjs         |    2 +-
+ frontend/scripts/ui_recovery_acceptance.mjs        |  157 +
+ frontend/src/App.jsx                               |  116 +-
+ frontend/src/auth.js                               |   56 +-
+ frontend/src/components/TopNav.jsx                 |  142 +-
+ frontend/src/controlPlane.js                       |   20 +-
+ frontend/src/navigation.js                         |   38 +
+ frontend/src/pages/AccessBoundaries.jsx            |  312 ++
+ frontend/src/pages/AccessManagement.jsx            |  263 +-
+ frontend/src/pages/DataPipelineIntegrations.jsx    |   38 +-
+ frontend/src/pages/ResourceManagementV2.jsx        |   30 +-
+ frontend/src/pages/UnifiedResourceManagement.jsx   |   86 +-
+ frontend/src/permissions.js                        |   22 +-
+ frontend/src/pipelines/ExecutionViews.jsx          |  547 +++
+ frontend/src/pipelines/IncidentView.jsx            |  494 +++
+ frontend/src/pipelines/PipelineWorkspace.jsx       |  432 +++
+ frontend/src/pipelines/RecoveryView.jsx            |  387 ++
+ frontend/src/pipelines/ReviewView.jsx              |  246 ++
+ frontend/src/pipelines/ScheduleView.jsx            |  141 +
+ frontend/src/pipelines/contracts.js                |  184 +
+ frontend/src/pipelines/pipelines.css               |  365 ++
+ frontend/src/pipelines/ui.jsx                      |  262 ++
+ frontend/src/pipelines/usePipelineFeed.js          |  145 +
+ frontend/src/visual-system.css                     |   39 +
+ scripts/v16-acceptance.py                          |  237 +-
+ .../RT-LAB-005B-execution-status.xml               |   47 +
+ .../native-evidence/RT-LAB-007-after-execution.xml |   64 +
+ .../RT-LAB-007-before-execution.xml                |   12 +
+ .../RT-LAB-008-after-start-error.xml               |   47 +
+ .../RT-LAB-008-before-execution.xml                |   12 +
+ .../native-evidence/RT-LAB-009B-after-restart.xml  |   19 +
+ .../native-evidence/RT-LAB-009B-before-restart.xml |   58 +
+ .../RT-LAB-009B-restart-persistence.json           |   39 +
+ .../native-evidence/RT-LAB-010D-job-status.xml     |   49 +
+ .../RT-LAB-010H-final-job-status.xml               |   49 +
+ .../RT-LAB-010O-final-job-status.xml               |   35 +
+ .../RT-LAB-010T-monitoring-contract.json           |   90 +
+ .../native-evidence/RT-LAB-011C-validation.json    |   35 +
+ .../native-evidence/RT-LAB-011D-validation.json    |   26 +
+ .../native-evidence/RT-LAB-011E-validation.json    |   55 +
+ .../RT-LAB-012A-native-inventory.xml               |   26 +
+ .../RT-LAB-013C-39-final-job-status.xml            |   36 +
+ .../RT-LAB-013C-41-decoded-native-job.log          |   12 +
+ 480 files changed, 39238 insertions(+), 551 deletions(-)
+ create mode 100644 backend/app/api/access_boundaries.py
+ create mode 100644 backend/app/api/pagination.py
+ create mode 100644 backend/app/native_incidents/pentaho.py
+ create mode 100644 backend/app/pipeline_adapters/pentaho_carte.py
+ create mode 100644 backend/app/pipeline_adapters/pentaho_contracts.py
+ create mode 100644 backend/app/pipeline_adapters/pentaho_observations.py
+ create mode 100644 backend/app/security/boundaries.py
+ create mode 100644 backend/app/security/delegation.py
+ create mode 100644 backend/app/security/resource_scope.py
+ create mode 100644 backend/app/unified/pentaho_execution.py
+ create mode 100644 backend/app/unified/pentaho_history.py
+ create mode 100644 backend/app/unified/pentaho_models.py
+ create mode 100644 backend/app/unified/pentaho_recovery.py
+ create mode 100644 backend/app/unified/pentaho_replay.py
+ create mode 100644 backend/app/unified/pentaho_review.py
+ create mode 100644 backend/app/unified/pentaho_schedule.py
+ create mode 100644 backend/migrations/versions/0033_pentaho_attempts.py
+ create mode 100644 backend/migrations/versions/0034_pentaho_evidence_review.py
+ create mode 100644 backend/migrations/versions/0035_pentaho_schedule_history.py
+ create mode 100644 backend/migrations/versions/0036_native_incident_recovery.py
+ create mode 100644 backend/migrations/versions/0037_access_boundaries.py
+ create mode 100644 backend/scripts/acceptance_scope.py
+ create mode 100644 backend/scripts/pentaho_history_migration_probe.py
+ create mode 100644 backend/scripts/pentaho_incident_migration_probe.py
+ create mode 100644 backend/scripts/pentaho_migration_probe.py
+ create mode 100644 backend/scripts/pentaho_review_migration_probe.py
+ create mode 100644 backend/scripts/pentaho_sprint03_http_probe.py
+ create mode 100644 backend/scripts/pentaho_sprint04_http_probe.py
+ create mode 100644 backend/scripts/pentaho_sprint05_http_probe.py
+ create mode 100644 backend/scripts/pentaho_sprint06_http_probe.py
+ create mode 100644 backend/scripts/pentaho_sprint07_browser_fixture.py
+ create mode 100644 backend/scripts/sprint08_http_probe.py
+ create mode 100644 backend/scripts/sprint08_migration_probe.py
+ create mode 100644 backend/scripts/sprint09_http_probe.py
+ create mode 100644 backend/scripts/sprint09_resilience_probe.py
+ create mode 100644 backend/scripts/sprint13_recovery_probe.py
+ create mode 100644 backend/tests/test_pentaho_execution_contracts.py
+ create mode 100644 backend/tests/test_pentaho_execution_r1.py
+ create mode 100644 backend/tests/test_pentaho_history_contracts.py
+ create mode 100644 backend/tests/test_pentaho_history_r1.py
+ create mode 100644 backend/tests/test_pentaho_incident_contracts.py
+ create mode 100644 backend/tests/test_pentaho_incident_r1.py
+ create mode 100644 backend/tests/test_pentaho_metadata_registration.py
+ create mode 100644 backend/tests/test_pentaho_r1.py
+ create mode 100644 backend/tests/test_pentaho_review_contracts.py
+ create mode 100644 backend/tests/test_pentaho_review_r1.py
+ create mode 100644 backend/tests/test_pentaho_surface_contracts.py
+ create mode 100644 backend/tests/test_sprint07_frontend_contracts.py
+ create mode 100644 backend/tests/test_sprint08_rbac.py
+ create mode 100644 backend/tests/test_sprint09_contracts.py
+ create mode 100644 backend/tests/test_sprint09_hardening.py
+ create mode 100644 backend/tests/test_sprint12_shared_trust.py
+ create mode 100644 docs/API_CUSTOMER_SCOPE.md
+ create mode 100644 docs/architecture/ARCH_ETL_001_V16.md
+ create mode 100644 docs/architecture/ARCH_ETL_001_V16_R1_RECONCILIATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint01/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint01/api.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint01/integration.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint01/ownership.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint01/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/api.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/integration.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/migrations.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/ownership.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint02/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/api-existing.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/api-r1.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/migration.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/postgresql.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/runner.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/static.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint03/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/api-existing.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/api-sprint03.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/api-sprint04.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/migration.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/postgresql.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/review-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/runner.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/scope-security.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/static.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint04/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/api-existing.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/api-sprint03.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/api-sprint04.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/api-sprint05.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/changed-files.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/history-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/http-migration.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/http-runner.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/migration.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/postgresql-http-followup.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/postgresql.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/review-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/runner.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/scope-security.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/static.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint05/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/api-existing.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/api-sprint03.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/api-sprint04.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/api-sprint05.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/api-sprint06.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/changed-files.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/followup.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/history-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/incident-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/migration.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/postgresql-followup.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/postgresql.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/review-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/static.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/unit-remaining.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint06/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/api.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/build.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/changed-files.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/frontend-unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/gate.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/history-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/incident-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/lint.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/ownership.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pentaho-history-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pentaho-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pentaho-incident-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pentaho-review-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pipeline-unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pipeline-v16-methods.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pipeline-v16-mobile.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pipeline-v16-viewer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/pipeline-v16-wizard.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/report.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/review-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-evidence.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-execution-attempts.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-executions.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-incident-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-incidents.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-inventory-390.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-inventory-768.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-inventory.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-pipeline-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-recovery-reversed.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-review-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-schedule-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint07/sprint07-schedules.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/changed-files.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/commands.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/api.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/black-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/black.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/build.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/compile-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/compile.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/frontend-unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/gate.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/heads.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/history-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/imports.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/incident-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/lint.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/ownership.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pentaho-history-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pentaho-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pentaho-incident-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pentaho-review-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pipeline-v16-methods.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pipeline-v16-mobile.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pipeline-v16-viewer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/pipeline-v16-wizard.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/report.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/review-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/ruff-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/ruff.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-evidence.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-execution-attempts.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-executions.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-incident-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-incidents.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-inventory-390.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-inventory-768.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-inventory.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-pipeline-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-recovery-reversed.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-review-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-schedule-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint07-schedules.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-access-mobile.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-all-scope.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-delegated-access.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/sprint08-revoked-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/staging-preservation.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/evidence/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint08/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/changed-files.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/commands.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/api-inventory.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/api.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/black-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/black.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/build.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/compile-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/compile.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/frontend-cases.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/frontend-unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/gate.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/heads.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/history-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/imports.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/incident-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/legacy-ruff-baseline.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/lint.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/ownership.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pentaho-history-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pentaho-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pentaho-incident-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pentaho-review-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/performance-before-inventory-batch.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pipeline-v16-methods.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pipeline-v16-mobile.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pipeline-v16-viewer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/pipeline-v16-wizard.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/quality-check.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/report.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/review-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/ruff-command.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/ruff.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/script-syntax.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-evidence.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-execution-attempts.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-executions.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-incident-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-incidents.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-inventory-390.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-inventory-768.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-inventory.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-pipeline-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-recovery-reversed.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-recovery.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-review-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-schedule-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint07-schedules.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-access-mobile.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-all-scope.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-delegated-access.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-migration-preservation.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint08-revoked-drawer.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-attempt-archive.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-browser.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-http.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-incident-activity.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-performance.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-resilience.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/sprint09-schedule-filter.png
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/staging-preservation.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/evidence/unit.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/performance.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint09/source-sha256.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/ARCHITECTURE_TRACEABILITY.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/CODE_AUDIT_FINDINGS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/DEPENDENCIES_AND_DECISIONS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/IMPROVEMENT_REGISTER.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/NEW_IMPROVEMENTS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/ROADMAP.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/VERIFICATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/validate_docs.py.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/validation-initial.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint10/validation-results.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/ARCHITECTURE_GOVERNANCE.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/AUDIT_FINDINGS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/IMPROVEMENT_REGISTER.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/NEW_IMPROVEMENT_RECONCILIATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/OWNER_INPUT_REGISTER.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/ROADMAP.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/SOURCE_RECOVERY.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/VERIFICATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/validate_docs.py.txt
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint11/validation-results.json
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/APPROVED_OWNER_DECISIONS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/DEPLOYMENT_TRUST_MODEL.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/OC_IMP_V20_BASELINE.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/SHARED_RESOURCE_AUTHORIZATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/TEST_MATRIX.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/THREAT_MODEL.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint12/VERIFICATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/BACKUP_INTEGRITY.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/LEGAL_HOLD_VALIDATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/MIGRATION_SAFETY.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/RECOVERY_TEST_PLAN.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/RESTORE_PRESERVATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/RPO_RTO_EVIDENCE.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint13/VERIFICATION.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/ADAPTER_SAFETY_AUDIT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/CREDENTIAL_AND_NETWORK_PREREQUISITES.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/INSTALLED_BUILD_DISCOVERY.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/PENTAHO_COMPATIBILITY_MATRIX.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/READ_ONLY_CONNECTION_RUNBOOK.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/REPORT.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/RT001_RT020_ACCEPTANCE_MATRIX.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/TEST_RESULTS.md
+ create mode 100644 docs/verification/arch-etl-001-v16-r1/sprint14/VERIFICATION.md
+ create mode 100644 docs/verification/pentaho-carte-compat-001/RT-LAB-016C-evidence-manifest.json
+ create mode 100644 docs/verification/pentaho-carte-compat-001/RT-LAB-016D-final-reconciliation.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/CURRENT_UI_AUDIT.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/IMPLEMENTATION_EVIDENCE.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/IUAT_S14_UI_003_FINDINGS.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/MANUAL_UAT_CHECKLIST.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/PAGE_REDESIGN_SPECIFICATION.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/SIDEBAR_NAVIGATION_PROPOSAL.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/TARGET_UI_ARCHITECTURE.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/UI_RECOVERY_IMPLEMENTATION_PLAN.md
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/1366-resources.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/390-access.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/390-compute.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/390-pipelines.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/collectors-desktop.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/implemented-desktop.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/implemented-menu.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/implemented-mobile.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/navigation-r2-mobile-menu.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/navigation-r2-organizations-mobile.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/navigation-r2-pipelines-desktop.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/organisational-access-desktop.png
+ create mode 100644 docs/verification/sprint14-baseline/ui-recovery/evidence/organizations-desktop.png
+ create mode 100644 frontend/scripts/explicit_scope.mjs
+ create mode 100644 frontend/scripts/explicit_scope.test.mjs
+ create mode 100644 frontend/scripts/navigation.test.mjs
+ create mode 100644 frontend/scripts/pipeline_sprint07_acceptance.mjs
+ create mode 100644 frontend/scripts/pipelines.test.mjs
+ create mode 100644 frontend/scripts/sprint08_acceptance.mjs
+ create mode 100644 frontend/scripts/sprint09_acceptance.mjs
+ create mode 100644 frontend/scripts/ui_recovery_acceptance.mjs
+ create mode 100644 frontend/src/navigation.js
+ create mode 100644 frontend/src/pages/AccessBoundaries.jsx
+ create mode 100644 frontend/src/pipelines/ExecutionViews.jsx
+ create mode 100644 frontend/src/pipelines/IncidentView.jsx
+ create mode 100644 frontend/src/pipelines/PipelineWorkspace.jsx
+ create mode 100644 frontend/src/pipelines/RecoveryView.jsx
+ create mode 100644 frontend/src/pipelines/ReviewView.jsx
+ create mode 100644 frontend/src/pipelines/ScheduleView.jsx
+ create mode 100644 frontend/src/pipelines/contracts.js
+ create mode 100644 frontend/src/pipelines/pipelines.css
+ create mode 100644 frontend/src/pipelines/ui.jsx
+ create mode 100644 frontend/src/pipelines/usePipelineFeed.js
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-005B-execution-status.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-007-after-execution.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-007-before-execution.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-008-after-start-error.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-008-before-execution.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-009B-after-restart.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-009B-before-restart.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-009B-restart-persistence.json
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-010D-job-status.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-010H-final-job-status.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-010O-final-job-status.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-010T-monitoring-contract.json
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-011C-validation.json
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-011D-validation.json
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-011E-validation.json
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-012A-native-inventory.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-013C-39-final-job-status.xml
+ create mode 100644 tests/fixtures/pentaho/native-evidence/RT-LAB-013C-41-decoded-native-job.log
+Updating c694af4..e7c31b7
+Fast-forward
+ .github/workflows/access-architecture.yml          |    2 +-
+ .github/workflows/arch001-native-monitoring.yml    |    2 +-
+ .github/workflows/consolidated-uat.yml             |    2 +-
+ .github/workflows/etl-acceptance.yml               |    2 +-
+ .github/workflows/http-golden-path.yml             |    2 +-
+ .github/workflows/infrastructure-acceptance.yml    |    2 +-
+ .github/workflows/operational-acceptance.yml       |    2 +-
+ .github/workflows/phase1-staging.yml               |    4 +-
+ .github/workflows/release-reliability.yml          |    2 +-
+ .github/workflows/v15-quality.yml                  |    2 +
+ Makefile                                           |    4 +
+ backend/app/api/organizations.py                   |   36 +-
+ backend/app/api/pagination.py                      |   12 +
+ backend/app/api/resource_management.py             |   84 +-
+ backend/app/pipeline_adapters/native.py            |  107 +-
+ backend/app/pipeline_adapters/pentaho_carte.py     |  158 +-
+ .../app/pipeline_adapters/pentaho_observations.py  |   54 +
+ backend/app/services/etl_monitoring.py             |  447 +-
+ backend/app/unified/api.py                         |   82 +-
+ backend/app/unified/pentaho_execution.py           |  102 +-
+ backend/app/worker/pentaho_status.py               |  579 +-
+ backend/scripts/access_acceptance_probe.py         |   44 +-
+ backend/scripts/arch001_acceptance_probe.py        |   23 +-
+ .../scripts/pentaho_sprint07_browser_fixture.py    |   40 +-
+ backend/tests/test_audit_remediation.py            |  715 +++
+ backend/tests/test_pentaho_carte_compat.py         |  703 +++
+ backend/tests/test_pentaho_execution_r1.py         |   10 +-
+ backend/tests/test_pentaho_r1.py                   |    4 +
+ backend/tests/test_pipeline_ownership_v16.py       |   17 +-
+ .../AUDIT_ROADMAP_REFERENCE.md                     |  600 ++
+ .../p0-p1-remediation-2026-10-20/CHANGED_FILES.md  |   50 +
+ .../p0-p1-remediation-2026-10-20/DISPOSITIONS.md   |   29 +
+ .../MANUAL_UAT_CHECKLIST.md                        |   30 +
+ .../NEXT_SPRINT_PROPOSAL.md                        |    9 +
+ .../PRODUCTION_READINESS.md                        |   24 +
+ .../p0-p1-remediation-2026-10-20/REPORT.md         |   34 +
+ .../p0-p1-remediation-2026-10-20/ROADMAP_UPDATE.md |   26 +
+ .../p0-p1-remediation-2026-10-20/VERIFICATION.md   |   50 +
+ .../evidence/access-browser.log                    |    8 +
+ .../evidence/access-browser/access-audit-dark.png  |  Bin 0 -> 390860 bytes
+ .../evidence/access-browser/browser.json           |   22 +
+ .../evidence/access-browser/departments-dark.png   |  Bin 0 -> 201205 bytes
+ .../evidence/access-browser/departments-light.png  |  Bin 0 -> 205186 bytes
+ .../evidence/access-browser/employees-dark.png     |  Bin 0 -> 237211 bytes
+ .../evidence/access-browser/migration.json         |   12 +
+ .../evidence/access-browser/roles-dark.png         |  Bin 0 -> 300093 bytes
+ .../evidence/access-browser/schema.json            |   22 +
+ .../evidence/access-browser/security.json          |   32 +
+ .../evidence/audit-source-hashes.json              |   12 +
+ .../evidence/bounded-pages-tests.txt               |   15 +
+ .../evidence/compatibility-3.log                   |    9 +
+ .../evidence/coverage.ini                          |   15 +
+ .../evidence/coverage.json                         |    1 +
+ .../evidence/coverage.xml                          | 6634 ++++++++++++++++++++
+ .../evidence/docker-final.log                      |    2 +
+ .../evidence/docker-smoke/docker-smoke.txt         |    8 +
+ .../evidence/docker-smoke/docker.json              |  249 +
+ .../evidence/main-protection.json                  |    1 +
+ .../evidence/native-confirmed.log                  |   99 +
+ .../evidence/npm-audit.json                        |   22 +
+ .../owned-lab-browser/access-v15-browser.json      |   10 +
+ .../owned-lab-browser/access-v15-failure.png       |  Bin 0 -> 87312 bytes
+ .../owned-lab-browser/access-v15-mobile.png        |  Bin 0 -> 69811 bytes
+ .../owned-lab-browser/access-v15-permissions.png   |  Bin 0 -> 195921 bytes
+ .../evidence/owned-lab-browser/api.json            |   10 +
+ .../owned-lab-browser/arch001-api-reports.png      |  Bin 0 -> 124591 bytes
+ .../arch001-compute-onboarding.png                 |  Bin 0 -> 176887 bytes
+ .../arch001-compute-resources.png                  |  Bin 0 -> 156959 bytes
+ .../owned-lab-browser/arch001-dark-resources.png   |  Bin 0 -> 110876 bytes
+ .../owned-lab-browser/arch001-light-resources.png  |  Bin 0 -> 112631 bytes
+ .../owned-lab-browser/arch001-mobile-resources.png |  Bin 0 -> 70043 bytes
+ .../arch001-native-incident-investigation.png      |  Bin 0 -> 223522 bytes
+ .../arch001-notification-delivery.png              |  Bin 0 -> 254692 bytes
+ .../evidence/owned-lab-browser/browser.json        |   23 +
+ .../evidence/owned-lab-browser/engines.json        |   13 +
+ .../evidence/owned-lab-browser/migration.json      |    6 +
+ .../owned-lab-browser/native-incidents.json        |   13 +
+ .../evidence/owned-lab-browser/notifications.json  |    8 +
+ .../evidence/owned-lab-browser/report.json         |    6 +
+ .../evidence/owned-lab-runtime/agent-v15.json      |   15 +
+ .../evidence/owned-lab-runtime/api.json            |   10 +
+ .../evidence/owned-lab-runtime/engines.json        |   13 +
+ .../evidence/owned-lab-runtime/migration.json      |    6 +
+ .../owned-lab-runtime/native-incidents.json        |   13 +
+ .../evidence/owned-lab-runtime/notifications.json  |    8 +
+ .../evidence/owned-lab-runtime/performance.json    |   44 +
+ .../evidence/owned-lab-runtime/report.json         |    6 +
+ .../evidence/owned-lab-runtime/runtime.json        |   12 +
+ .../evidence/pentaho-postgres/api.json             |   17 +
+ .../evidence/pentaho-postgres/browser.json         |   21 +
+ .../history-migration-preservation.json            |   21 +
+ .../incident-migration-preservation.json           |   32 +
+ .../pentaho-postgres/migration-preservation.json   |   17 +
+ .../evidence/pentaho-postgres/ownership.txt        |  514 ++
+ .../pentaho-postgres/pentaho-history-http.json     |   12 +
+ .../evidence/pentaho-postgres/pentaho-http.json    |   12 +
+ .../pentaho-postgres/pentaho-incident-http.json    |   12 +
+ .../pentaho-postgres/pentaho-review-http.json      |   13 +
+ .../pentaho-postgres/pipeline-v16-methods.png      |  Bin 0 -> 783267 bytes
+ .../pentaho-postgres/pipeline-v16-mobile.png       |  Bin 0 -> 438207 bytes
+ .../pentaho-postgres/pipeline-v16-viewer.png       |  Bin 0 -> 190597 bytes
+ .../pentaho-postgres/pipeline-v16-wizard.png       |  Bin 0 -> 778435 bytes
+ .../evidence/pentaho-postgres/report.json          |   12 +
+ .../review-migration-preservation.json             |   21 +
+ .../pentaho-postgres/sprint07-browser.json         |   26 +
+ .../pentaho-postgres/sprint07-evidence.png         |  Bin 0 -> 112175 bytes
+ .../sprint07-execution-attempts.png                |  Bin 0 -> 149068 bytes
+ .../pentaho-postgres/sprint07-executions.png       |  Bin 0 -> 196724 bytes
+ .../sprint07-incident-recovery.png                 |  Bin 0 -> 159785 bytes
+ .../pentaho-postgres/sprint07-incidents.png        |  Bin 0 -> 103517 bytes
+ .../pentaho-postgres/sprint07-inventory-390.png    |  Bin 0 -> 82077 bytes
+ .../pentaho-postgres/sprint07-inventory-768.png    |  Bin 0 -> 127363 bytes
+ .../pentaho-postgres/sprint07-inventory.png        |  Bin 0 -> 106292 bytes
+ .../pentaho-postgres/sprint07-pipeline-drawer.png  |  Bin 0 -> 114518 bytes
+ .../sprint07-recovery-reversed.png                 |  Bin 0 -> 249662 bytes
+ .../pentaho-postgres/sprint07-recovery.png         |  Bin 0 -> 253287 bytes
+ .../pentaho-postgres/sprint07-review-drawer.png    |  Bin 0 -> 140923 bytes
+ .../pentaho-postgres/sprint07-schedule-drawer.png  |  Bin 0 -> 126117 bytes
+ .../pentaho-postgres/sprint07-schedules.png        |  Bin 0 -> 125052 bytes
+ .../sprint07-synthetic-step-metrics.png            |  Bin 0 -> 138243 bytes
+ .../pentaho-postgres/sprint08-access-mobile.png    |  Bin 0 -> 110207 bytes
+ .../pentaho-postgres/sprint08-all-scope.png        |  Bin 0 -> 88060 bytes
+ .../pentaho-postgres/sprint08-browser.json         |   12 +
+ .../pentaho-postgres/sprint08-delegated-access.png |  Bin 0 -> 147616 bytes
+ .../evidence/pentaho-postgres/sprint08-http.json   |   20 +
+ .../sprint08-migration-preservation.json           |  129 +
+ .../pentaho-postgres/sprint08-revoked-drawer.png   |  Bin 0 -> 87646 bytes
+ .../pentaho-postgres/sprint09-attempt-archive.png  |  Bin 0 -> 183277 bytes
+ .../pentaho-postgres/sprint09-browser.json         |   10 +
+ .../evidence/pentaho-postgres/sprint09-http.json   |   12 +
+ .../sprint09-incident-activity.png                 |  Bin 0 -> 176991 bytes
+ .../pentaho-postgres/sprint09-performance.json     |   66 +
+ .../pentaho-postgres/sprint09-resilience.json      |   47 +
+ .../pentaho-postgres/sprint09-schedule-filter.png  |  Bin 0 -> 115324 bytes
+ .../pentaho-postgres/sprint13-recovery.json        |   39 +
+ .../pentaho-postgres/staging-preservation.txt      |   76 +
+ .../evidence/pip-audit.json                        |    1 +
+ .../evidence/pr33-readonly.json                    |    1 +
+ .../evidence/pr33-recheck.json                     |    1 +
+ .../evidence/protected-integrity.json              |   67 +
+ .../evidence/runtime-source-sha256.json            |  181 +
+ .../evidence/security.log                          |   37 +
+ .../evidence/ui-recovery-final.log                 |   53 +
+ .../ui-recovery-final/collectors-desktop.png       |  Bin 0 -> 127425 bytes
+ .../navigation-r2-mobile-menu.png                  |  Bin 0 -> 77313 bytes
+ .../navigation-r2-organizations-mobile.png         |  Bin 0 -> 54656 bytes
+ .../navigation-r2-pipelines-desktop.png            |  Bin 0 -> 70247 bytes
+ .../organisational-access-desktop.png              |  Bin 0 -> 234435 bytes
+ .../ui-recovery-final/organizations-desktop.png    |  Bin 0 -> 102726 bytes
+ .../evidence/verified-agent.log                    |   30 +
+ .../evidence/verified-bounded-pages.log            |    2 +
+ .../evidence/verified-browser-accepted.log         |   11 +
+ .../evidence/verified-browser-final.log            |   17 +
+ .../evidence/verified-coverage-final.log           |  139 +
+ .../evidence/verified-e2e.log                      |   28 +
+ .../evidence/verified-pentaho-gate.log             |   17 +
+ .../evidence/verified-quality.log                  |   27 +
+ .../evidence/verified-scoped-static.log            |    4 +
+ .../evidence/verified-unit.log                     |  563 ++
+ .../evidence/verified-workflows.log                |    1 +
+ frontend/package.json                              |    2 +-
+ frontend/scripts/access_acceptance.mjs             |    9 +-
+ frontend/scripts/access_v15.mjs                    |    8 +-
+ frontend/scripts/arch001_acceptance.mjs            |   25 +-
+ frontend/scripts/pagination.test.mjs               |   49 +
+ frontend/scripts/pipeline_sprint07_acceptance.mjs  |   42 +-
+ frontend/src/pages/DomainReports.jsx               |   26 +-
+ frontend/src/pages/ResourceManagementV2.jsx        |    2 +-
+ frontend/src/pages/UnifiedResourceManagement.jsx   |   41 +-
+ frontend/src/pagination.js                         |   41 +
+ frontend/src/pipelines/ExecutionViews.jsx          |   36 +-
+ frontend/src/resourceApi.js                        |  129 +-
+ scripts/access-docker-demo.py                      |   80 +-
+ scripts/arch001-acceptance.py                      |    3 +-
+ scripts/test-quality.sh                            |   17 +-
+ scripts/uat/local_environment.py                   |  439 ++
+ scripts/uat/seed_readiness.py                      |  254 +
+ 177 files changed, 14603 insertions(+), 395 deletions(-)
+ create mode 100644 backend/tests/test_audit_remediation.py
+ create mode 100644 backend/tests/test_pentaho_carte_compat.py
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/AUDIT_ROADMAP_REFERENCE.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/CHANGED_FILES.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/DISPOSITIONS.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/MANUAL_UAT_CHECKLIST.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/NEXT_SPRINT_PROPOSAL.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/PRODUCTION_READINESS.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/REPORT.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/ROADMAP_UPDATE.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/VERIFICATION.md
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/access-audit-dark.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/departments-dark.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/departments-light.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/employees-dark.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/migration.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/roles-dark.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/schema.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/access-browser/security.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/audit-source-hashes.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/bounded-pages-tests.txt
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/compatibility-3.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/coverage.ini
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/coverage.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/coverage.xml
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/docker-final.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/docker-smoke/docker-smoke.txt
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/docker-smoke/docker.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/main-protection.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/native-confirmed.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/npm-audit.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/access-v15-browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/access-v15-failure.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/access-v15-mobile.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/access-v15-permissions.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/api.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-api-reports.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-compute-onboarding.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-compute-resources.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-dark-resources.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-light-resources.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-mobile-resources.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-native-incident-investigation.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/arch001-notification-delivery.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/engines.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/migration.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/native-incidents.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/notifications.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-browser/report.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/agent-v15.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/api.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/engines.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/migration.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/native-incidents.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/notifications.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/performance.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/report.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/owned-lab-runtime/runtime.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/api.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/history-migration-preservation.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/incident-migration-preservation.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/migration-preservation.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/ownership.txt
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pentaho-history-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pentaho-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pentaho-incident-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pentaho-review-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pipeline-v16-methods.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pipeline-v16-mobile.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pipeline-v16-viewer.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/pipeline-v16-wizard.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/report.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/review-migration-preservation.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-evidence.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-execution-attempts.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-executions.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-incident-recovery.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-incidents.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-inventory-390.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-inventory-768.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-inventory.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-pipeline-drawer.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-recovery-reversed.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-recovery.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-review-drawer.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-schedule-drawer.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-schedules.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint07-synthetic-step-metrics.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-access-mobile.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-all-scope.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-delegated-access.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-migration-preservation.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint08-revoked-drawer.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-attempt-archive.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-browser.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-http.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-incident-activity.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-performance.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-resilience.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint09-schedule-filter.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/sprint13-recovery.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pentaho-postgres/staging-preservation.txt
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pip-audit.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pr33-readonly.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/pr33-recheck.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/protected-integrity.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/runtime-source-sha256.json
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/security.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/collectors-desktop.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/navigation-r2-mobile-menu.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/navigation-r2-organizations-mobile.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/navigation-r2-pipelines-desktop.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/organisational-access-desktop.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/ui-recovery-final/organizations-desktop.png
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-agent.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-bounded-pages.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-browser-accepted.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-browser-final.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-coverage-final.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-e2e.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-pentaho-gate.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-quality.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-scoped-static.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-unit.log
+ create mode 100644 docs/verification/p0-p1-remediation-2026-10-20/evidence/verified-workflows.log
+ create mode 100644 frontend/scripts/pagination.test.mjs
+ create mode 100644 frontend/src/pagination.js
+ create mode 100644 scripts/uat/local_environment.py
+ create mode 100644 scripts/uat/seed_readiness.py
