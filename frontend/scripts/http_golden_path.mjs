@@ -24,8 +24,9 @@ try {
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
   // The locked binding is populated asynchronously by the embedded view.
   await page.waitForFunction(expected => [...document.querySelectorAll('select')].some(select => select.disabled && select.value === expected), state.source_id);
-  assert.equal(await page.getByLabel(/^Data Source/).inputValue(), state.source_id);
-  assert.equal(await page.getByLabel(/^Data Source/).isDisabled(), true);
+  const lockedSource = page.locator('.monitoring-setup').getByLabel('Data Source', { exact: true });
+  assert.equal(await lockedSource.inputValue(), state.source_id);
+  assert.equal(await lockedSource.isDisabled(), true);
   const diag=page.getByTestId('monitoring-diagnostics');
   await diag.locator('p').filter({hasText:/Activation: ACTIVE/}).waitFor();
   if(phase==='configured') {
@@ -60,7 +61,7 @@ try {
     await other.getByRole('tab',{name:'API Endpoints',exact:true}).click();
     await other.getByText('No resources match these authorized filters.',{exact:true}).waitFor();
     assert.equal(await other.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).count(),0);
-    assert.equal(await other.getByLabel(/^Data Source/).count(),0);
+    assert.equal(await other.locator('.monitoring-setup').getByLabel('Data Source', { exact: true }).count(),0);
     await other.screenshot({path:`${output}/other-tenant.png`,fullPage:true});
   }
   assert.deepEqual(errors,[]);

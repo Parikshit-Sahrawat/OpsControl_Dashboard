@@ -97,7 +97,7 @@ async function login(page, who = "admin") {
     .getByLabel("Password", { exact: true })
     .fill(who === "admin" ? password : state[`${who}_password`]);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
 }
 
 async function chooseOrganization(page, name) {
@@ -381,7 +381,7 @@ try {
   );
 
   await page.reload();
-  await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   await themeIs(page, "light");
   checks.push(
     "Explicit light preference survives document reload while authenticated",

@@ -11,12 +11,16 @@ try {
   await page.getByLabel('Username').fill('test-north');
   await page.getByLabel('Password').fill('testing-only-StrongPassword-123!');
   await page.getByRole('button',{name:'Sign in',exact:true}).click();
-  await page.getByRole('heading',{name:'Overview',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
+  // Scope selection is explicit and is only a filter over this user's grants.
+  await page.locator('.org-context-button').click();
+  await page.locator('.org-menu').getByRole('checkbox').first().check();
+  await page.locator('.org-context-button').click();
   for (const theme of ['Dark','Light']) {
     await page.getByRole('button',{name:theme+' theme',exact:true}).click();
     for (const tab of ['Compute Health','API Endpoint Monitoring']) {
       await page.getByRole('button',{name:tab,exact:true}).click();
-      const label = tab === 'Compute Health' ? 'existing infrastructure adapters' : 'existing service probes';
+      const label = tab === 'Compute Health' ? 'infrastructure adapter health' : 'service probe health';
       // Domain navigation preserves the expanded compatibility inventory.
       const show = page.getByRole('button',{name:'Show '+label,exact:true});
       await page.getByRole('button',{name:new RegExp('^(Show|Hide) '+label+'$')}).waitFor();

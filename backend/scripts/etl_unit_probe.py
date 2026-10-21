@@ -44,7 +44,10 @@ def main():
         assert 'unapproved' not in path
         return 200,xml
     snapshot=get_job_status(cfg,transport,resolver,lambda ref:('reader','private-value'))
-    assert snapshot['inventory_complete'] and len(snapshot['executions'])==1 and len(calls)==2
+    # Carte's status list is observational, not authoritative schedule coverage.
+    # Retain the observed execution without promoting an incomplete inventory.
+    assert snapshot['inventory_complete'] is False and len(snapshot['executions'])==1 and len(calls)==2
+    assert snapshot['executions'][0]['execution_id']=='one' and snapshot['executions'][0]['execution_status']=='FAILED'
     denied(lambda:get_job_status(cfg,lambda *a:(503,b'<error/>'),resolver,lambda ref:('reader','private-value')))
     denied(lambda:get_job_status({**cfg,'url':'http://carte.example.test'},transport,resolver))
     for patch in ({'timezone':'No/Such/Zone'},{'sla_seconds':1},{'expected_window_start':'25:00','expected_window_end':'26:00'}):

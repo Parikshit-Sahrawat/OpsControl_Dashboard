@@ -51,10 +51,12 @@ def test_k8s():
     denied(lambda:kubernetes_health({"namespace":"demo","pod_name":"web-0","deployment_name":"frontend"},api),ProviderCheckError)
 
 def test_pentaho():
-    sample=b"<job_status><id>execution-0001</id><status_desc>Finished</status_desc><result><nr_errors>0</nr_errors></result></job_status>"
+    sample=b"<job_status><id>execution-0001</id><status_desc>Finished</status_desc><result><result>Y</result><nr_errors>0</nr_errors></result></job_status>"
     parsed=parse_carte_status(sample)
     assert parsed["execution_status"]=="SUCCESS" and parsed["nr_errors"]==0
-    fail=parse_carte_status(sample.replace(b"<nr_errors>0",b"<nr_errors>2"))
+    incomplete=parse_carte_status(sample.replace(b"<result>Y</result>",b""))
+    assert incomplete["execution_status"]=="UNKNOWN" and incomplete["native_result"] is None
+    fail=parse_carte_status(sample.replace(b"<result>Y</result>",b"<result>N</result>").replace(b"<nr_errors>0",b"<nr_errors>2"))
     assert fail["execution_status"]=="FAILED"
     denied(lambda:parse_carte_status(b'<!DOCTYPE foo [ <!ENTITY x "y"> ]><job_status/>'),PentahoStatusError)
     os.environ["OPSCONTROL_LOCAL_ALLOWED_HOSTS"]="carte.example.test"

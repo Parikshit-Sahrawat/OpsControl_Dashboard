@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import subprocess
@@ -97,14 +98,16 @@ def last_admin_concurrency():
     from threading import Barrier
     from app.security.http import change_user_status, UserStatus
     from app.security.passwords import hash_password
+    from app.security.access_control import resolve_access
     from fastapi import HTTPException
     with SessionLocal() as db:
         admin = db.scalar(select(User).where(User.username == 'test-admin'))
         second = User(username='concurrent-admin-fixture', password_hash=hash_password('synthetic-StrongPassword-123!'), platform_admin=True)
         db.add(second); db.flush(); first_id, second_id = admin.id, second.id; db.commit()
+        principal = resolve_access(db, admin)
     barrier = Barrier(2)
     def disable(uid):
-        context = current_principal.set(Principal(first_id, 'test-admin', True, {}, service_provider_id=PROVIDER_ID))
+        context = current_principal.set(principal)
         try:
             barrier.wait(timeout=5)
             try:
@@ -115,7 +118,9 @@ def last_admin_concurrency():
             current_principal.reset(context)
     with ThreadPoolExecutor(max_workers=2) as workers:
         outcomes = list(workers.map(disable, (first_id, second_id)))
-    assert sorted(outcomes) == [200,409], outcomes
+    # A concurrent decision may fail at the last-admin check (409) or earlier
+    # at the authoritative revision recheck (403) after self-revocation.
+    assert outcomes.count(200) == 1 and any(code in {403, 409} for code in outcomes), outcomes
     with SessionLocal() as db:
         assert db.scalar(select(func.count()).select_from(User).where(User.active.is_(True), User.platform_admin.is_(True))) == 1
         db.get(User, first_id).active = True; db.get(User, second_id).active = True; db.commit()
@@ -163,7 +168,15 @@ def scale():
             return json.load(response)
     first = get('/api/v1/infrastructure/resources?limit=2&offset=0')
     second = get('/api/v1/infrastructure/resources?limit=2&offset=2')
-    assert first['total'] == second['total'] == 205
+    from app.api.infrastructure import MONITORED_SOURCE_TYPES
+    with SessionLocal() as db:
+        north = db.scalar(select(DataSource.organization_id).where(DataSource.name == 'north-synthetic'))
+        expected_total = db.scalar(select(func.count()).select_from(DataSource).where(
+            DataSource.organization_id == north,
+            DataSource.source_type.in_(MONITORED_SOURCE_TYPES),
+        ))
+    # The browser CRUD check may have registered another authorized VM.
+    assert expected_total >= 205 and first['total'] == second['total'] == expected_total
     assert first['has_more'] and len(first['resources']) == 2
     assert not set(r['id'] for r in first['resources']) & set(r['id'] for r in second['resources'])
     with SessionLocal() as db:
@@ -258,10 +271,31 @@ def snapshot():
         print('Populated fingerprint saved:', len(data['tables']), 'tables;', sum(v['rows'] for v in data['tables'].values()), 'rows')
     else:
         expected = json.loads(path.read_text())
-        if expected != data:
+        def constraint_identity(rows):
+            result = {}
+            for table, name, kind, validated, definition in rows:
+                if kind == 'c' and 'ANY (' in definition:
+                    # pg_restore can rewrite varchar[]::text[] to element casts.
+                    # Normalize only those equivalent cast placements; retain
+                    # parentheses, operators, literal order and all other SQL.
+                    definition = re.sub(
+                        r"\('([^']*)'::character varying\)::text",
+                        r"'\1'::character varying",
+                        definition,
+                    )
+                    definition = re.sub(
+                        r'\(ARRAY\[([^]]*)\]\)::text\[\]',
+                        r'ARRAY[\1]',
+                        definition,
+                    )
+                result[(table, name, kind, validated)] = definition
+            assert len(result) == len(rows), 'Duplicate constraint identity'
+            return result
+        constraints_equal = constraint_identity(expected['constraints']) == constraint_identity(data['constraints'])
+        if expected['tables'] != data['tables'] or not constraints_equal:
             (PRIVATE/'fingerprint-actual.json').write_text(json.dumps(data,sort_keys=True))
             changed = [name for name in expected['tables'] if expected['tables'][name] != data['tables'].get(name)]
-            raise AssertionError(f'Restored integrity differs: tables={changed}; constraints_equal={expected["constraints"] == data["constraints"]}')
+            raise AssertionError(f'Restored integrity differs: tables={changed}; constraints_equal={constraints_equal}')
         with engine.begin() as connection:
             try:
                 with connection.begin_nested():

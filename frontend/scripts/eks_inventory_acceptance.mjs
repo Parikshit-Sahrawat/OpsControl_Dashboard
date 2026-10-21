@@ -27,7 +27,10 @@ try {
   await page.getByLabel("Username").fill("test-north");
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
+  await page.locator(".org-context-button").click();
+  await page.locator(".org-menu").getByRole("checkbox").first().check();
+  await page.locator(".org-context-button").click();
   await page
     .getByRole("button", { name: "Data Sources / Resources", exact: true })
     .click();
