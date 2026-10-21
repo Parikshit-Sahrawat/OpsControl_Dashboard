@@ -267,7 +267,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       }}
     />
   );
-  if (form?.domain === "VM") return formView;
+  if (form) return formView;
   return (
     <div className="resource-management-v2 unified-resources">
       {!["organizations", "collectors"].includes(area) && <div className="page-heading">
@@ -1099,7 +1099,25 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       setInline(false);
     }
   };
-  const visibleStep = domain === "VM" && created ? step : 1;
+  const visibleStep = domain === "VM" && !created ? 1 : step;
+  const guidedSteps = domain === "VM"
+    ? [
+        "Create Compute Instance",
+        "Configure Telemetry",
+        "Install Agent",
+        "Verify Connection",
+        "Configure Collection",
+        "Configure Event Parameters",
+        "Configure Alert Rules",
+        "Configure Notification Delivery",
+        "Validate Configuration",
+        "Activate Monitoring",
+      ]
+    : ["Resource identity", domain === "ETL" ? "Pipeline configuration" : "Probe configuration", "Review and save"];
+  const identityReady = Boolean(
+    form.name.trim() && form.environment &&
+    (form.organization_id || (inline && customerName.trim() && customerCode.trim())),
+  );
   return (
     <Modal
       title={
@@ -1112,27 +1130,15 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       }
       onClose={onClose}
       focus={!openCollector}
-      workspace={domain === "VM"}
+      workspace
     >
-      {domain === "VM" && (
-        <ol className="onboarding-steps" aria-label="VM onboarding steps">
-          {[
-            "Create Compute Instance",
-            "Configure Telemetry",
-            "Install Agent",
-            "Verify Connection",
-            "Configure Collection",
-            "Configure Event Parameters",
-            "Configure Alert Rules",
-            "Configure Notification Delivery",
-            "Validate Configuration",
-            "Activate Monitoring",
-          ].map((s, i) => (
+        <ol className="onboarding-steps" aria-label={`${domain === "VM" ? "VM" : domain === "ETL" ? "Data Pipeline" : "API Endpoint"} onboarding steps`}>
+          {guidedSteps.map((s, i) => (
             <li key={s} className={visibleStep === i + 1 ? "onboarding-step active" : "onboarding-step"}>
               <button
                 type="button"
                 aria-current={visibleStep === i + 1 ? "step" : undefined}
-                disabled={i + 1 > maxUnlockedStep || (!created && i > 0)}
+                disabled={i + 1 > maxUnlockedStep || (domain === "VM" && !created && i > 0)}
                 onClick={() => setStep(i + 1)}
               >
                 {i + 1}. {s}
@@ -1140,7 +1146,6 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             </li>
           ))}
         </ol>
-      )}
       <div className="resource-onboarding-content">
       {error && <p className="error-banner" role="alert">{error}</p>}
       {!item && <div className="heading-actions">
@@ -1340,6 +1345,10 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               </Field>
             </>
           )}
+        </>
+      )}
+      {domain !== "VM" && visibleStep === 2 && (
+        <>
           {domain === "ETL" && (
             <>
               <div className="form-grid">
@@ -1549,6 +1558,17 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               </p>
             </div>
           )}
+        </>
+      )}
+      {(domain === "VM" ? visibleStep === 1 : visibleStep === 3) && (
+        <>
+          {domain !== "VM" && (
+            <div className="card" role="status">
+              <strong>Review {domain === "ETL" ? "pipeline" : "endpoint"} identity</strong>
+              <p>{form.name || "Unnamed resource"} · {form.environment || "Environment unselected"} · {customers.find((customer) => customer.id === form.organization_id)?.name || (inline ? customerName : "Customer unselected")}</p>
+              <p>Saving configuration does not verify native collection or activate monitoring.</p>
+            </div>
+          )}
           <label>
             <input
               type="checkbox"
@@ -1570,12 +1590,12 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
                 ? "Saving…"
                 : item
                   ? "Save resource"
-                  : "Save resource identity"}
+                  : domain === "VM" ? "Save resource identity" : "Save configuration"}
             </button>
           </div>
         </>
       )}
-      {visibleStep === 2 && (
+      {domain === "VM" && visibleStep === 2 && (
         <>
           <h3>Collector Configuration</h3>
           <p>
@@ -1587,7 +1607,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
-      {visibleStep === 3 && (
+      {domain === "VM" && visibleStep === 3 && (
         <>
           <h3>Agent Installation</h3>
           <p>
@@ -1611,7 +1631,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
-      {visibleStep === 4 && (
+      {domain === "VM" && visibleStep === 4 && (
         <>
           <h3>Verification</h3>
           <button
@@ -1631,7 +1651,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           {verification && <Verification data={verification} />}
         </>
       )}
-      {visibleStep === 5 && (
+      {domain === "VM" && visibleStep === 5 && (
         <>
           <h3>Configure Collection</h3>
           <button disabled={!collector} onClick={() => setOpenCollector(true)}>
@@ -1639,19 +1659,19 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
-      {visibleStep === 6 && (
+      {domain === "VM" && visibleStep === 6 && (
         <>
           <h3>Event Parameters (optional)</h3>
           <DomainParameters resource={created} user={user} />
         </>
       )}
-      {visibleStep === 7 && (
+      {domain === "VM" && visibleStep === 7 && (
         <>
           <h3>Alert Rules (optional)</h3>
           <NativeAlertSetup resource={created} user={user} />
         </>
       )}
-      {visibleStep === 8 && (
+      {domain === "VM" && visibleStep === 8 && (
         <>
           <h3>Notification Delivery (optional)</h3>
           <EventDelivery
@@ -1663,7 +1683,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           />
         </>
       )}
-      {visibleStep === 9 && (
+      {domain === "VM" && visibleStep === 9 && (
         <>
           <h3>Validate Configuration</h3>
           <button
@@ -1683,7 +1703,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           {verification && <Verification data={verification} />}
         </>
       )}
-      {visibleStep === 10 && (
+      {domain === "VM" && visibleStep === 10 && (
         <>
           <h3>Activation</h3>
           <p>
@@ -1719,10 +1739,18 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </button>
         </>
       )}
-      {visibleStep > 1 && <div className="onboarding-actions">
+      {domain === "VM" && visibleStep > 1 && <div className="onboarding-actions">
         <button onClick={() => setStep((s) => Math.max(1, s - 1))}>Previous</button>
         {visibleStep < 10 && <button className="primary-button" onClick={() => {
           const next = Math.min(10, visibleStep + 1);
+          setMaxUnlockedStep((current) => Math.max(current, next));
+          setStep(next);
+        }}>Continue</button>}
+      </div>}
+      {domain !== "VM" && <div className="onboarding-actions">
+        {visibleStep > 1 && <button type="button" onClick={() => setStep((current) => current - 1)}>Previous</button>}
+        {visibleStep < 3 && <button type="button" className="primary-button" disabled={busy || (visibleStep === 1 && !identityReady)} onClick={() => {
+          const next = visibleStep + 1;
           setMaxUnlockedStep((current) => Math.max(current, next));
           setStep(next);
         }}>Continue</button>}

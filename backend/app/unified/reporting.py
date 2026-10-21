@@ -35,12 +35,16 @@ def environment_values(environment, environments):
     return [environment] if environment else list(dict.fromkeys(selected))
 
 
-def root_query(organization_id, environment, resource_id=None, domain=None, environments=None):
+def root_query(
+    organization_id, environment, resource_id=None, domain=None, environments=None
+):
     q = select(MonitoringResource)
     if organization_id:
         q = q.where(MonitoringResource.organization_id.in_(organization_id))
     selected = environment_values(environment, environments)
-    if selected:
+    if environment:
+        q = q.where(MonitoringResource.environment == environment)
+    elif selected:
         q = q.where(MonitoringResource.environment.in_(selected))
     if resource_id:
         q = q.where(MonitoringResource.id.in_(resource_id))
@@ -49,11 +53,13 @@ def root_query(organization_id, environment, resource_id=None, domain=None, envi
     return q
 
 
-def roots(db, organization_id, environment, resource_id=None, domain=None, environments=None):
+def roots(
+    db, organization_id, environment, resource_id=None, domain=None, environments=None
+):
     return db.scalars(
-        root_query(organization_id, environment, resource_id, domain, environments).order_by(
-            MonitoringResource.name, MonitoringResource.id
-        )
+        root_query(
+            organization_id, environment, resource_id, domain, environments
+        ).order_by(MonitoringResource.name, MonitoringResource.id)
     ).all()
 
 
@@ -245,7 +251,11 @@ def domain_state(
     if domain not in {"VM", "ETL", "API"}:
         raise HTTPException(422, "Invalid monitoring domain")
     query = root_query(
-        organization_id, environment, [resource_id] if resource_id else None, domain, environments
+        organization_id,
+        environment,
+        [resource_id] if resource_id else None,
+        domain,
+        environments,
     )
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     page = db.scalars(
@@ -375,7 +385,9 @@ def reports(
     if domain not in {"VM", "ETL", "API"}:
         raise HTTPException(422, "Invalid report domain")
     start, end = range_bounds(start, end)
-    resources = roots(db, organization_id, environment, resource_id, domain, environments)
+    resources = roots(
+        db, organization_id, environment, resource_id, domain, environments
+    )
     result = {
         "domain": domain,
         "start": start,
