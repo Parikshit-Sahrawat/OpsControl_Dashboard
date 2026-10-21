@@ -1,0 +1,28 @@
+name: Stage B UAT deployment contract validation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/stage-b-*.yml'
+      - 'scripts/uat/stage_b_*.py'
+      - 'scripts/uat/test_stage_b.py'
+      - 'deploy/uat/**'
+      - 'backend/Dockerfile.uat'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Deployment state and migration safety contracts
+        run: python -m unittest discover -s scripts/uat -p test_stage_b.py -v
+      - name: Python syntax and whitespace
+        run: |
+          python -m compileall -q scripts/uat/stage_b_state.py scripts/uat/stage_b_deploy.py scripts/uat/stage_b_smoke.py
+          git diff --check
+      - name: Existing pinned workflow contract check
+        run: bash scripts/check-workflows.sh

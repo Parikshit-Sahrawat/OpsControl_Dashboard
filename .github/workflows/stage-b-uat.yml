@@ -1,0 +1,242 @@
+name: Stage B branch-aware UAT (manual, disabled until pilot)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "record_main, deploy_feature, release, deploy_main, feature_mode, maintenance"
+        type: choice
+        required: true
+        options: [record_main, deploy_feature, release, deploy_main, feature_mode, maintenance]
+      source_branch:
+        description: "Exact reviewed feature branch (deploy_feature only)"
+        type: string
+      source_sha:
+        description: "Immutable 40-character commit SHA; latest branch tip"
+        type: string
+      approval_ref:
+        description: "Approved UAT change record"
+        type: string
+        required: true
+      migration_review_ref:
+        description: "Independent migration review record, when migrations differ"
+        type: string
+      migration_approver:
+        description: "Independent migration reviewer, when migrations differ"
+        type: string
+      backup_path:
+        description: "UAT-owned verified backup path, when migrations differ"
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: opscontrol-stage-b-uat
+  cancel-in-progress: false
+jobs:
+  record-pending-main:
+    if: github.event_name == 'push' && vars.STAGE_B_UAT_RECORD_MAIN_ENABLED == 'true'
+    runs-on: [self-hosted, Linux, X64, opscontrol-stage-b-uat]
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record latest main commit only; never deploy
+        env:
+          MAIN_SHA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -f /etc/opscontrol/stage-b-runner-approved
+          python3 scripts/uat/stage_b_deploy.py record-main \
+            --state-dir "$STAGE_B_UAT_STATE_DIR" --sha "$MAIN_SHA" \
+            --approval-ref automated-main-observation --request "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+  build:
+    if: github.event_name == 'workflow_dispatch' && (inputs.operation == 'deploy_feature' || inputs.operation == 'deploy_main')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: read
+      packages: write
+    outputs:
+      backend_digest: ${{ steps.backend.outputs.digest }}
+      frontend_digest: ${{ steps.frontend.outputs.digest }}
+      image_prefix: ${{ steps.names.outputs.prefix }}
+      migration_hash: ${{ steps.migrations.outputs.hash }}
+    steps:
+      - name: Guard pilot and immutable source
+        env:
+          ENABLED: ${{ vars.STAGE_B_UAT_ENABLED }}
+          OPERATION: ${{ inputs.operation }}
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$ENABLED" = true
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$OPERATION" = deploy_main ]]; then
+            branch=main
+          else
+            branch="$SOURCE_BRANCH"
+            [[ "$branch" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$ ]]
+            [[ "$branch" != main && "$branch" != *..* && "$branch" != *//* ]]
+          fi
+          remote=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$branch" --jq .object.sha)
+          test "$remote" = "$SOURCE_SHA"
+          gh api "repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/check-suites?per_page=100" > "$RUNNER_TEMP/stage-b-check-suites.json"
+          python3 - "$RUNNER_TEMP/stage-b-check-suites.json" <<'PY'
+          import json
+          import sys
+          items=json.load(open(sys.argv[1]))['check_suites']
+          if not items or any(item['status']!='completed' or item['conclusion']!='success' for item in items):
+              raise SystemExit('Source SHA requires completed successful GitHub check suites')
+          PY
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Verify checkout and image names
+        id: names
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "prefix=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - name: Verify reviewed source revision and migration digest
+        id: migrations
+        run: |
+          test -f backend/Dockerfile.uat
+          test -f frontend/Dockerfile.demo
+          hash=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: docker/setup-buildx-action@v3
+      - name: Build immutable backend image on isolated hosted runner
+        id: backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.uat
+          push: true
+          tags: ${{ steps.names.outputs.prefix }}-backend:${{ inputs.source_sha }}
+          provenance: true
+      - name: Build immutable frontend image on isolated hosted runner
+        id: frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.demo
+          push: true
+          tags: ${{ steps.names.outputs.prefix }}-frontend:${{ inputs.source_sha }}
+          build-args: |
+            VITE_API_BASE_URL=${{ vars.STAGE_B_UAT_PUBLIC_API_URL }}
+          provenance: true
+  operate:
+    needs: [build]
+    if: github.event_name == 'workflow_dispatch' && always() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.operation != 'deploy_feature' && inputs.operation != 'deploy_main'))
+    runs-on: [self-hosted, Linux, X64, opscontrol-stage-b-uat]
+    environment: stage-b-uat-migration
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Refuse unconfigured or unapproved runner
+        env:
+          ENABLED: ${{ vars.STAGE_B_UAT_ENABLED }}
+          RUNNER_MARKER: ${{ vars.STAGE_B_RUNNER_MARKER }}
+        run: |
+          test "$ENABLED" = true
+          test "$RUNNER_MARKER" = opscontrol-stage-b-uat
+          test -f /etc/opscontrol/stage-b-runner-approved
+          test -n "$STAGE_B_UAT_BASE_COMPOSE"
+          test -n "$STAGE_B_UAT_STATE_DIR"
+          test -n "$STAGE_B_UAT_PROJECT"
+      - name: Require configured independent environment protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          reviewers=$(gh api "repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration" --jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length')
+          test "$reviewers" -ge 1
+          self_review=$(gh api "repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration" --jq '.prevent_self_review')
+          test "$self_review" = true
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Require trusted deployment source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq .commit.sha)
+          test "$(git rev-parse HEAD)" = "$current"
+      - name: Operate only the owned UAT project
+        env:
+          OPERATION: ${{ inputs.operation }}
+          SOURCE_BRANCH: ${{ inputs.source_branch }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          APPROVAL_REF: ${{ inputs.approval_ref }}
+          MIGRATION_REVIEW_REF: ${{ inputs.migration_review_ref }}
+          MIGRATION_APPROVER: ${{ inputs.migration_approver }}
+          BACKUP_PATH: ${{ inputs.backup_path }}
+          BACKEND_DIGEST: ${{ needs.build.outputs.backend_digest }}
+          FRONTEND_DIGEST: ${{ needs.build.outputs.frontend_digest }}
+          IMAGE_PREFIX: ${{ needs.build.outputs.image_prefix }}
+          MIGRATION_HASH: ${{ needs.build.outputs.migration_hash }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          export STAGE_B_AUTH_SMOKE="$GITHUB_WORKSPACE/scripts/uat/stage_b_smoke.py"
+          args=(--state-dir "$STAGE_B_UAT_STATE_DIR" --approval-ref "$APPROVAL_REF" --request "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT")
+          case "$OPERATION" in
+            record_main) python3 scripts/uat/stage_b_deploy.py record-main "${args[@]}" --sha "$SOURCE_SHA" ;;
+            release) python3 scripts/uat/stage_b_deploy.py release "${args[@]}" ;;
+            feature_mode) python3 scripts/uat/stage_b_deploy.py feature-mode "${args[@]}" ;;
+            maintenance) python3 scripts/uat/stage_b_deploy.py maintenance "${args[@]}" ;;
+            deploy_feature|deploy_main)
+              branch="$SOURCE_BRANCH"
+              if [[ "$OPERATION" = deploy_main ]]; then branch=main; fi
+              docker_config=$(mktemp -d)
+              chmod 700 "$docker_config"
+              trap 'rm -rf -- "$docker_config"' EXIT
+              export DOCKER_CONFIG="$docker_config"
+              printf '%s' "$GH_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin >/dev/null
+              python3 scripts/uat/stage_b_deploy.py deploy "${args[@]}" \
+                --project "$STAGE_B_UAT_PROJECT" --base-compose "$STAGE_B_UAT_BASE_COMPOSE" \
+                --branch "$branch" --sha "$SOURCE_SHA" \
+                --backend-image "$IMAGE_PREFIX-backend@$BACKEND_DIGEST" \
+                --frontend-image "$IMAGE_PREFIX-frontend@$FRONTEND_DIGEST" \
+                --migration-hash "$MIGRATION_HASH" \
+                --migration-review-ref "$MIGRATION_REVIEW_REF" \
+                --migration-approver "$MIGRATION_APPROVER" \
+                --backup "$BACKUP_PATH" --backup-root "$STAGE_B_UAT_BACKUP_ROOT" \
+                --api-url "$STAGE_B_UAT_API_URL" --frontend-url "$STAGE_B_UAT_FRONTEND_URL"
+              ;;
+            *) exit 2 ;;
+          esac
+      - name: Upload sanitized deployment status
+        if: always()
+        env:
+          STAGE_B_STATE_DIR: ${{ vars.STAGE_B_UAT_STATE_DIR }}
+        run: |
+          if [[ -n "${STAGE_B_STATE_DIR:-}" && -f "$STAGE_B_STATE_DIR/state.json" ]]; then
+            python3 - "$STAGE_B_STATE_DIR/state.json" "$RUNNER_TEMP/stage-b-status.json" <<'PY'
+          import json,sys
+          state=json.load(open(sys.argv[1]))
+          for field in ('failed_attempt','inflight'):
+              state.pop(field,None)
+          with open(sys.argv[2],'w') as out: json.dump(state,out)
+          PY
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: stage-b-uat-${{ github.run_id }}
+          path: ${{ runner.temp }}/stage-b-status.json
+          if-no-files-found: warn
