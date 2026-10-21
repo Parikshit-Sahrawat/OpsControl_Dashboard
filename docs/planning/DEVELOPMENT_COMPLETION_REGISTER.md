@@ -1,14 +1,14 @@
 # OpsControl Development Completion Register v1.0
 
 Status: OWNER-APPROVED SCOPE; PRELIMINARY SOURCE-TRACEABILITY INVENTORY; NOT A FULL SOURCE/EXECUTION AUDIT.
-Baseline: main 4ebd8d8a64dff75ef7577c169c76e651e435dcc7 (2026-10-22 check). PR #41 is unmerged at c98809e7de630ed9fbb04178acc7e58dd76ba434 and must be reconciled separately. PR #33 protected.
+Baseline: main 65aa13114bdfe4a57e2bb3b396f822bd81090b38, the verified PR #41 merge commit. PR #41 is MERGED; its source is in main. Exact-head CI and coverage-policy discrepancies require a separate post-merge audit. PR #33 protected.
 Governance: Issue #42. Do not infer completion from sprint number, fixture success or PR description. Status codes: IMPLEMENTED_REPORTED, PARTIAL, NOT_IMPLEMENTED_REPORTED, SOURCE_AUDIT_REQUIRED, EXTERNAL_ACCEPTANCE_PENDING. The 'evidence' column is a lead for source audit, not proof of all individual feature files.
 
 | ID | Approved requirement / feature | Workstream | Current status | Evidence/source inspection starting points | Missing work / verification | Dependencies |
 | --- | --- | --- | --- | --- | --- | --- |
 | RM-01 | Customer Organizations are monitored customers, separate from provider departments | DEV-01 | IMPLEMENTED_REPORTED | docs/architecture/PRODUCT_ALIGNMENT_ADDENDUM.md; docs/verification/sprint14r/REPORT.md | Audit full frontend/API/DB mapping and UAT | RBAC |
 | RM-02 | Resource Management sole onboarding, inventory and configuration control plane | DEV-01 | PARTIAL | docs/architecture/PRODUCT_ALIGNMENT_ADDENDUM.md; ARCH_001_V16.md | Audit canonical resource workflows and persistence | RM-01 |
-| RM-03 | Compact resource lists, collapsible sidebar, responsive UX | DEV-01 | PARTIAL | docs/verification/sprint14r/REPORT.md; PR #41 | Integrate PR #41 when all gates pass; verify current exact UI | UI-001–023 |
+| RM-03 | Compact resource lists, collapsible sidebar, responsive UX | DEV-01 | PARTIAL | docs/verification/sprint14r/REPORT.md; PR #41 | PR #41 merged; audit exact merged UI and retained browser acceptance | UI-001–023 |
 | RM-04 | Collector multi-method add-one-at-a-time configuration | DEV-02 | PARTIAL | docs/verification/sprint14r/REPORT.md; docs/verification/sprint14r/PRODUCTION_READINESS.md | Real collector methods, lifecycle, end-to-end evidence | Identity and agent |
 | RM-05 | Method-specific canonical collection identity; one fenced active owner | DEV-02 | IMPLEMENTED_REPORTED | ARCH_001_V16.md; docs/verification/sprint14r/REPORT.md | Exact source audit and adversarial regression | RM-04 |
 | AM-01 | Provider employee departments, teams, roles and customer-scoped RBAC | DEV-01 | PARTIAL | docs/architecture/PRODUCT_ALIGNMENT_ADDENDUM.md; docs/verification/sprint14r/REPORT.md | Complete UI functional actions, negative scopes, user UAT findings | RM-01 |
