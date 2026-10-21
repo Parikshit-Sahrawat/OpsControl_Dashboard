@@ -1,6 +1,6 @@
 # OpsControl Phase 1 Development Completion Master Plan v1.0
 
-Status: OWNER-APPROVED OPERATING MODEL; PROVISIONAL IMPLEMENTATION PLAN. Repository baseline main 4ebd8d8a64dff75ef7577c169c76e651e435dcc7. See DEVELOPMENT_COMPLETION_REGISTER.md.
+Status: OWNER-APPROVED OPERATING MODEL; PROVISIONAL IMPLEMENTATION PLAN. Repository baseline main 65aa13114bdfe4a57e2bb3b396f822bd81090b38 (PR #41 merged). See DEVELOPMENT_COMPLETION_REGISTER.md.
 
 ## Four phases
 1. Development: complete all approved functional coding, with unit/integration/security/customer-isolation/CI/migration preservation checks on every bounded increment.
@@ -18,13 +18,13 @@ Status: OWNER-APPROVED OPERATING MODEL; PROVISIONAL IMPLEMENTATION PLAN. Reposit
 - Codex coding policy: prefer dedicated tools over shell; rg for search; inspect before editing; preserve dirty worktrees; never destructive git resets; conform to design system; root-cause fixes and real verification. Tool-specific guidance (such as multi_tool_use.parallel) applies only where actually available. Never identify as a different model as an operational policy.
 - PR #33 protected. No production deploy without explicit owner approval.
 
-## First integration gate: PR #41
-PR #41 at c98809e7de630ed9fbb04178acc7e58dd76ba434 is unmerged as of this record. Its current-head workflows include failures in Synthetic operational dashboard acceptance and ARCH-001 V1.5 continuous quality, despite many green checks. The PR description says the coverage floor was changed from 80% to 65%, and preceding-head CI measured 66.32%; this is a policy discrepancy requiring explicit reconciliation before merge certification. Preserve all completed UI work and Stage B safeguards. Do not merge until mandatory required checks pass on final immutable head and scope/coverage policy is resolved. Recheck main SHA, then verify resulting merged main. PR #33 untouched.
+## PR #41 merged baseline and post-merge verification debt
+PR #41 is MERGED into main at 65aa13114bdfe4a57e2bb3b396f822bd81090b38. Its head c98809e7de630ed9fbb04178acc7e58dd76ba434 had 16 successful and two failed workflow runs (Synthetic operational dashboard acceptance; ARCH-001 V1.5 continuous quality). The PR reports lowering critical backend coverage from 80% to 65% with a preceding-head measurement of 66.32%; this does not demonstrate compliance with the earlier 80% policy. Preserve UI work, classify post-merge technical debt separately, restore or explicitly reconcile the approved coverage policy, and rerun mandatory checks on current main. Do not label full technical certification, independent UAT or production readiness complete. PR #33 protected.
 
 ## Sequential packages
 | Package | Workstream | Target bounded slice | Dependency | Developer-level exit |
 | --- | --- | --- | --- | --- |
-| P1-00 | DEV-01 | PR #41 gate remediation and exact main reconciliation | CI and coverage policy | All required checks pass on final SHA, safe merge and post-merge verification |
+| P1-00 | DEV-01 | Post-merge PR #41 technical debt and exact main reconciliation | CI and coverage policy | Current-main required checks and coverage policy reconciled; retain merged UI |
 | P1-01 | DEV-01 | Recover UI-001–023 and source-path inventory; complete customer/employee workflows | P1-00 | All registered actions wired; RBAC negatives, browser tests |
 | P1-02 | DEV-01 | Profile and Help/SOP/FAQ UI and docs | P1-01 | Authenticated profile, permissions and responsive help navigation |
 | P1-03 | DEV-06 | Admin application settings API/persistence/security | P1-01 | Audited authorized changes; denied users cannot mutate |
