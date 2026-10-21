@@ -14,4 +14,7 @@ config={
 result=get_job_status(config)
 assert result["execution_status"]==sys.argv[1],result
 assert result["execution_id"]=="test-execution-001",result
+if sys.argv[1]=="UNKNOWN":
+    assert result["native_result"] is None,result
+    assert "CONFLICTED_OR_INCOMPLETE_NATIVE_RESULT" in result["evidence_warnings"],result
 print("CARTE TLS READ-ONLY STATUS PASS",result)
