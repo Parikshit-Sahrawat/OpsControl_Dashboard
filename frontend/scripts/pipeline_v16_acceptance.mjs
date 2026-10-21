@@ -59,42 +59,78 @@ try {
     name: "Data Pipelines integrations",
     exact: true,
   });
-  await panel
-    .getByRole("button", { name: "Create Data Pipeline", exact: true })
-    .click();
+  assert.equal(
+    await panel.getByRole("button", { name: "Create Data Pipeline", exact: true }).count(),
+    0,
+  );
+  // Resource Management retains the established legacy create flow. Seed a
+  // controlled native integration through its authorized API, then exercise
+  // the existing integration editor without reintroducing duplicate creation.
+  const adminToken = await page.evaluate(() =>
+    sessionStorage.getItem("opscontrol.sessionToken"),
+  );
+  const name = "Controlled browser draft " + Date.now();
+  const created = await page.request.post(
+    fixture.base_url + "/api/v1/data-pipelines/integrations",
+    {
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        "X-OpsControl-Customers": "ALL",
+      },
+      data: {
+        idempotency_key: crypto.randomUUID(),
+        organization_id: fixture.organization_id,
+        name,
+        platform: "AIRFLOW",
+        environment: "TEST",
+        configuration: {},
+        stage: 1,
+      },
+    },
+  );
+  assert.equal(created.status(), 201);
+  const integrationId = (await created.json()).id;
+  await panel.getByLabel("Search integrations", { exact: true }).fill(name);
+  await panel.getByRole("button", { name, exact: true }).click();
   const wizard = page.getByRole("region", {
     name: "Data Pipelines eight-step wizard",
     exact: true,
   });
   const nav = wizard.getByRole("navigation", { name: "Data Pipeline steps" });
+  await nav.getByRole("button", { name: "1. General", exact: true }).waitFor();
   assert.equal(await nav.getByRole("button").count(), 8);
   for (let i = 0; i < steps.length; i++)
     await nav
       .getByRole("button", { name: `${i + 1}. ${steps[i]}`, exact: true })
       .click();
   await nav.getByRole("button", { name: "1. General", exact: true }).click();
-  const name = "Controlled browser draft " + Date.now();
-  await wizard.getByLabel("Integration name", { exact: true }).fill(name);
-  await wizard
-    .getByLabel("Organization", { exact: true })
-    .selectOption(fixture.organization_id);
+  assert.equal(
+    await wizard.getByLabel("Integration name", { exact: true }).inputValue(),
+    name,
+  );
+  assert.equal(
+    await wizard.getByLabel("Organization", { exact: true }).inputValue(),
+    fixture.organization_id,
+  );
   await nav.getByRole("button", { name: "2. Platform", exact: true }).click();
-  await wizard
-    .getByLabel("Platform family", { exact: true })
-    .selectOption("AIRFLOW");
+  assert.equal(
+    await wizard.getByLabel("Platform family", { exact: true }).inputValue(),
+    "AIRFLOW",
+  );
   await nav.getByRole("button", { name: "3. Connection", exact: true }).click();
   await wizard.getByLabel(/Base url/i).fill("https://airflow.example.test");
   const saved = page.waitForResponse(
     (r) =>
-      new URL(r.url()).pathname === "/api/v1/data-pipelines/integrations" &&
-      r.request().method() === "POST",
+      new URL(r.url()).pathname ===
+        `/api/v1/data-pipelines/integrations/${integrationId}` &&
+      r.request().method() === "PUT",
   );
   await wizard
     .getByRole("button", { name: "Save / resume draft", exact: true })
     .click();
   const savedResponse = await saved;
-  assert.equal(savedResponse.status(), 201);
-  const integrationId = (await savedResponse.json()).id;
+  assert.equal(savedResponse.status(), 200);
+  assert.equal((await savedResponse.json()).id, integrationId);
   await wizard
     .getByRole("button", { name: "Close configuration", exact: true })
     .click();
@@ -265,9 +301,6 @@ try {
   await nav
     .getByRole("button", { name: "8. Validate & Activate", exact: true })
     .click();
-  const adminToken = await page.evaluate(() =>
-    sessionStorage.getItem("opscontrol.sessionToken"),
-  );
   const deniedActivation = await page.request.post(
     fixture.base_url +
       `/api/v1/data-pipelines/integrations/${integrationId}/activate`,

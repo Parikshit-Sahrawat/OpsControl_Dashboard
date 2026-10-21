@@ -135,10 +135,10 @@ def inventory(
     resource_id: UUID | None = None,
     history_id: UUID | None = None,
     environment: Environment | None = None,
-    environments: list[Environment] = Query(default=[]),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db=Depends(get_db),
+    environments: list[Environment] = Query(default=[]),
 ):
     require_permission("incidents.view")
     query = select(OperationalIncident)
@@ -146,9 +146,12 @@ def inventory(
         for organization in organization_id:
             require_permission("incidents.view", organization)
         query = query.where(OperationalIncident.organization_id.in_(organization_id))
-    if environment and environments:
+    listed_environments = environments if isinstance(environments, list) else []
+    if environment and listed_environments:
         raise HTTPException(422, "Use environment or environments, not both")
-    selected_environments = [environment] if environment else list(dict.fromkeys(environments))
+    selected_environments = (
+        [environment] if environment else list(dict.fromkeys(listed_environments))
+    )
     if selected_environments:
         # An environment filter requires an actual resource/correlation binding.
         # Unmapped legacy evidence remains unknown, never guessed from names.

@@ -80,6 +80,8 @@ try {
   await pipelineForm.getByLabel('Customer',{exact:true}).selectOption({label:'Synthetic UAT Customer A'});
   await pipelineForm.getByRole('button',{name:'Continue'}).click();
   check(await pipelineForm.getByLabel('Jobchain name').count()===1,'pipeline configuration retains native jobchain and platform fields');
+  check(await pipelineForm.getByRole('button',{name:'Continue'}).isDisabled(),'pipeline cannot review without jobchain identity');
+  await pipelineForm.getByLabel('Jobchain name').fill('synthetic-jobchain');
   await pipelineForm.getByRole('button',{name:'Continue'}).click();
   check(await pipelineForm.getByRole('button',{name:'Save configuration'}).count()===1,'pipeline review has one save action and no implicit activation');
   await pipelineForm.getByRole('button',{name:'Previous'}).click();
@@ -113,6 +115,8 @@ try {
   await apiForm.getByLabel('Customer',{exact:true}).selectOption({label:'Synthetic UAT Customer A'});
   await apiForm.getByRole('button',{name:'Continue'}).click();
   check(await apiForm.getByLabel('DNS / hostname').count()===1,'API probe configuration retains DNS and transport fields');
+  check(await apiForm.getByRole('button',{name:'Continue'}).isDisabled(),'endpoint cannot review without DNS identity');
+  await apiForm.getByLabel('DNS / hostname').fill('synthetic-api.example.test');
   await apiForm.getByRole('button',{name:'Continue'}).click();
   check(await apiForm.getByRole('button',{name:'Save configuration'}).count()===1,'API review has one save action and no implied probe result');
   await apiForm.getByRole('button',{name:'Close resource form'}).click();
@@ -243,6 +247,10 @@ try {
   check(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile API workspace has no page overflow');
   await mobile.getByRole('button',{name:'Close resource form'}).click();
   await mobile.getByRole('button',{name:'Open navigation'}).click();
+  await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();
+  await mobile.getByRole('heading',{name:'Pipeline Inventory',exact:true}).waitFor();
+  check(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile Pipeline Inventory contains table width within its own scroll region');
+  await mobile.getByRole('button',{name:'Open navigation'}).click();
   await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Organizations',exact:true}).click();
   await mobile.getByRole('heading',{name:'Organizations',exact:true}).waitFor();
   check(await mobile.getByRole('navigation',{name:'Primary navigation'}).isHidden(),'mobile Organizations destination closes drawer');
@@ -256,6 +264,10 @@ try {
   await login(tablet,'demo-admin');
   check(await tablet.getByRole('navigation',{name:'Primary navigation'}).isVisible(),'tablet sidebar remains available');
   check(await tablet.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'tablet document has no horizontal overflow');
+  const ultrawide=await browser.newPage({viewport:{width:1920,height:1080}});
+  await login(ultrawide,'demo-admin');
+  check(await ultrawide.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'ultrawide Dashboard has no horizontal overflow');
+  if (evidenceDir) await ultrawide.screenshot({path:path.join(evidenceDir,'dashboard-ultrawide.png'),fullPage:true});
   const viewer=await browser.newPage({viewport:{width:390,height:844}});
   await login(viewer,'uat-viewer-a');
   await viewer.getByRole('button',{name:'Open navigation'}).click();

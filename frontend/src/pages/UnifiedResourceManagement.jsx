@@ -1118,6 +1118,11 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
     form.name.trim() && form.environment &&
     (form.organization_id || (inline && customerName.trim() && customerCode.trim())),
   );
+  const configurationReady = domain === "ETL"
+    ? Boolean(form.jobchain?.trim())
+    : domain === "API"
+      ? Boolean(form.dns?.trim() && Number(form.port) >= 1 && Number(form.port) <= 65535)
+      : true;
   return (
     <Modal
       title={
@@ -1354,6 +1359,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               <div className="form-grid">
                 <Field label="Jobchain name">
                   <input
+                    required
                     value={form.jobchain}
                     disabled={!!item}
                     onChange={(e) => update("jobchain", e.target.value)}
@@ -1469,6 +1475,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
             <div className="form-grid">
               <Field label="DNS / hostname">
                 <input
+                  required
                   value={form.dns}
                   disabled={!!item}
                   onChange={(e) => update("dns", e.target.value)}
@@ -1749,7 +1756,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       </div>}
       {domain !== "VM" && <div className="onboarding-actions">
         {visibleStep > 1 && <button type="button" onClick={() => setStep((current) => current - 1)}>Previous</button>}
-        {visibleStep < 3 && <button type="button" className="primary-button" disabled={busy || (visibleStep === 1 && !identityReady)} onClick={() => {
+        {visibleStep < 3 && <button type="button" className="primary-button" disabled={busy || (visibleStep === 1 && !identityReady) || (visibleStep === 2 && !configurationReady)} onClick={() => {
           const next = visibleStep + 1;
           setMaxUnlockedStep((current) => Math.max(current, next));
           setStep(next);
