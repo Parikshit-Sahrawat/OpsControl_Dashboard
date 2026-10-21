@@ -1,13 +1,22 @@
 services:
-  postgres:
-    image: postgres:17
-    environment:
-      POSTGRES_DB: opscontrol
-      POSTGRES_USER: opscontrol
-      POSTGRES_PASSWORD: opscontrol
+  backend:
+    image: srajput2403/my-backend:v1
+    build: ./backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  frontend:
+    image: srajput2403/my-frontend:v1
+    build: ./frontend
     ports:
-      - "127.0.0.1:5432:5432"
-    volumes:
-      - opscontrol_pgdata:/var/lib/postgresql/data
-volumes:
-  opscontrol_pgdata:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
