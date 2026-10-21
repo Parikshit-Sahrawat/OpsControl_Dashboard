@@ -6,6 +6,13 @@ cd "$repo_root"
 run_dir="$(mktemp -d "${GOLDEN_RUNTIME_ROOT:-${TMPDIR:-/tmp}}/opscontrol-golden.XXXXXX")"
 export BUILDX_CONFIG="${BUILDX_CONFIG:-$run_dir/buildx}"
 project="golden-$(basename "$run_dir" | tr '[:upper:].' '[:lower:]-')"
+# Override only for a disposable lab when another test environment owns the
+# default range; never alter or remove the other environment's network.
+network_prefix="${GOLDEN_NETWORK_PREFIX:-172.28}"
+if [[ ! "$network_prefix" =~ ^172\.(2[0-9]|3[01])$ ]]; then
+  echo 'GOLDEN_NETWORK_PREFIX must be a private 172.20–172.31 prefix' >&2
+  exit 2
+fi
 export GOLDEN_EVIDENCE_DIR="${GOLDEN_EVIDENCE_DIR:-$repo_root/docs/screenshots/http-golden-path}"
 export GOLDEN_SESSION_FILE="$run_dir/private/session.json"
 export GOLDEN_UI_URL=http://127.0.0.1:15173
@@ -67,6 +74,7 @@ services:
       dockerfile: Dockerfile
     environment:
       ENVIRONMENT: demo
+      GOLDEN_NETWORK_PREFIX: "$network_prefix"
       OPSCONTROL_GOLDEN_PATH: "1"
       SEED_DEMO_DATA: "false"
       DATABASE_URL: postgresql+psycopg://opscontrol:golden-local-only@postgres:5432/opscontrol
@@ -90,18 +98,19 @@ openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
   -keyout "$run_dir/tls/tls.key" -out "$run_dir/tls/tls.crt" \
   -subj '/CN=portal.example.test' -addext 'subjectAltName=DNS:portal.example.test' >/dev/null 2>&1
 printf 'healthy\n' > "$run_dir/tls/state"
-docker network create --internal --subnet 172.28.77.0/24 "$project-target-net" >/dev/null
-docker network create --internal --subnet 172.28.78.0/24 "$project-control-net" >/dev/null
+docker network create --internal --subnet "$network_prefix.77.0/24" "$project-target-net" >/dev/null
+docker network create --internal --subnet "$network_prefix.78.0/24" "$project-control-net" >/dev/null
 docker network connect --alias opscontrol-control "$project-control-net" "$(compose ps -q api)"
 docker run -d --name "$project-target" --network "$project-target-net" \
-  --ip 172.28.77.10 --network-alias portal.example.test \
+  --ip "$network_prefix.77.10" --network-alias portal.example.test \
   -v "$run_dir/tls:/fixture:ro" -v "$repo_root/deploy/fixtures/private_https_target.py:/app.py:ro" \
   python:3.12-alpine python /app.py >/dev/null
 docker run -d --name "$project-agent" --network "$project-target-net" \
   -v "$repo_root/backend:/src:ro" -v "$repo_root/deploy/fixtures:/tests:ro" \
   -v "$run_dir/private:/golden/private:ro" -v "$run_dir/tls/tls.crt:/fixture/ca.crt:ro" \
   -e SSL_CERT_FILE=/fixture/ca.crt -e PYTHONPATH=/src \
-  -e NO_PROXY=opscontrol-control -e no_proxy=opscontrol-control python:3.12-alpine sleep 3600 >/dev/null
+  -e NO_PROXY=opscontrol-control -e no_proxy=opscontrol-control \
+  -e GOLDEN_NETWORK_PREFIX="$network_prefix" python:3.12-alpine sleep 3600 >/dev/null
 docker network connect "$project-control-net" "$project-agent"
 for attempt in {1..30}; do
   if docker exec "$project-target" python -c 'import socket;socket.create_connection(("127.0.0.1",443),1).close()' 2>/dev/null; then break; fi

@@ -22,6 +22,12 @@ jobs:
           import pathlib,secrets
           pathlib.Path(".demo-private/admin-password").write_text(secrets.token_urlsafe(32))
           PY
+          if ! docker pull public.ecr.aws/docker/library/postgres:17; then
+            # Public ECR occasionally rate-limits anonymous CI. Use the same
+            # official PostgreSQL 17 image from Docker Hub for this disposable lab.
+            docker pull postgres:17
+            docker tag postgres:17 public.ecr.aws/docker/library/postgres:17
+          fi
           docker compose -f docker-compose.demo.yml up --build -d postgres api
           for i in {1..75}; do
             if curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null; then break; fi

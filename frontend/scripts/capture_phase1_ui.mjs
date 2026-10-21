@@ -39,8 +39,14 @@ const categories = [
   ["API Endpoint Monitoring", "04-apis"],
   ["Alerts", "05-alerts"],
   ["Reports", "06-reports"],
-  ["Resource Management", "10-resource-management"],
+  ["Data Sources / Resources", "10-resource-management"],
 ];
+const navigationLabel = {
+  Overview: "Overview",
+  "Data Pipeline Monitoring": "Data Pipeline Monitoring",
+  "Compute Health": "Compute Health",
+  "API Endpoint Monitoring": "API Endpoint Monitoring",
+};
 
 async function capture(name, file) {
   await page.waitForTimeout(750);
@@ -74,6 +80,8 @@ try {
   await page.getByRole("textbox", { name: "Username" }).fill("test-north");
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button", { name: "Sign in" }).click();
+  await page.locator(".org-context-button").click();
+  await page.locator(".org-option").filter({ hasNotText: "Select every listed customer" }).last().getByRole("checkbox").check();
   try {
     await page.waitForSelector("button.nav-button", { timeout: 20000 });
   } catch (error) {
@@ -88,14 +96,10 @@ try {
   }
 
   for (const [label, filename] of categories) {
-    await page.locator("button.nav-button").filter({ hasText: label }).click();
+    await page.getByRole("button", { name: navigationLabel[label] || label, exact: true }).click();
     await capture(label, filename);
   }
   await page.waitForTimeout(1500);
-  const resourceSections = page.getByRole("tablist", {
-    name: "Resource Management sections",
-    exact: true,
-  });
   for (const [section, domains] of [
     [
       "Data Resources",
@@ -119,9 +123,7 @@ try {
     ],
     ["Notification Delivery", []],
   ]) {
-    await resourceSections
-      .getByRole("tab", { name: section, exact: true })
-      .click();
+    await page.getByLabel("Resource Management component").selectOption({ label: section === "Data Resources" ? "Data Sources / Resources" : section });
     if (!domains.length)
       await capture(
         "Resource Management / " + section,

@@ -68,17 +68,21 @@ def collect(phase):
 def verify(phase):
     state=load();reader=state['reader_token'];history=api(200,'GET','/api/v1/etl/executions',reader)
     current=api(200,'GET','/api/v1/etl/executions?latest_only=true',reader)
+    if phase=='no-run':
+        # Carte's inventory does not prove complete scheduler coverage. An
+        # empty list must remain absence of evidence, never a NO_RUN verdict.
+        assert history==[] and current==[],(len(history),len(current))
+        print('Partial Carte inventory did not fabricate NO_RUN PASS')
+        return
     assert len(current)==1
-    expected={'no-run':'NO_RUN','running':'RUNNING','long-running':'LONG_RUNNING','sla-breach':'LONG_RUNNING','failed':'FAILED','poll-failed':'FAILED','recovered':'SUCCESS'}[phase]
+    expected={'running':'RUNNING','long-running':'LONG_RUNNING','sla-breach':'LONG_RUNNING','failed':'FAILED','poll-failed':'FAILED','recovered':'SUCCESS'}[phase]
     assert current[0]['status']==expected,(phase,current[0]['status'])
     assert current[0]['monitoring_status']==('ERROR' if phase=='poll-failed' else 'CURRENT')
     detail=api(200,'GET','/api/v1/etl/executions/'+current[0]['id'],reader)
     evidence=api(200,'GET','/api/v1/etl/executions/'+current[0]['id']+'/evidence',reader)
-    if phase=='no-run':assert detail['started_at'] is None and detail['source_result']=='OPSCONTROL_SCHEDULE'
-    else:
-        assert detail['started_at'] and len(detail['steps'])==2
-        assert 'fixture-sensitive-marker' not in json.dumps(detail)
-        assert (PRIVATE/'carte-password').read_text().strip() not in json.dumps(detail)
+    assert detail['started_at'] and len(detail['steps'])==2
+    assert 'fixture-sensitive-marker' not in json.dumps(detail)
+    assert (PRIVATE/'carte-password').read_text().strip() not in json.dumps(detail)
     if phase=='sla-breach':assert detail['sla_status']=='BREACHED'
     if phase=='failed':
         assert detail['failed_step']=='Load warehouse'
@@ -95,14 +99,15 @@ def verify(phase):
         api(409,'POST','/api/v1/etl/executions/'+detail['id']+'/investigation/transitions',state['operator_token'],{'new_status':'RESOLVED','operator':'ignored'})
         api(200,'POST','/api/v1/etl/executions/'+detail['id']+'/correlation',state['operator_token'])
     if phase=='poll-failed':
-        assert len(history)==5 and detail['id']==state['failed_execution_id']
+        assert len(history)==4 and detail['id']==state['failed_execution_id']
     if phase=='recovered':
-        assert len(history)==6 and any(h['status']=='FAILED' for h in history) and any(h['status']=='NO_RUN' for h in history)
+        assert len(history)==5 and any(h['status']=='FAILED' for h in history) and not any(h['status']=='NO_RUN' for h in history)
         inv=api(200,'GET','/api/v1/etl/executions/'+state['failed_execution_id']+'/investigation',reader)
         assert inv['status']=='INVESTIGATING' and len(inv['notes'])==2
         by_reference={}
         for event in reversed(evidence['alert_events']):by_reference.setdefault(event['reference'],[]).append(event['event_type'])
-        assert len(by_reference)==4 and all(events[-1].endswith('_RESOLVED') for events in by_reference.values()),by_reference
+        assert len(by_reference)==3 and all(events[-1].endswith('_RESOLVED') for events in by_reference.values()),by_reference
+        assert not any('NO_RUN' in event['event_type'] for event in evidence['alert_events'])
     report=json.loads((PRIVATE/'report.json').read_text());report['phases'].append({'phase':phase,'execution':detail,'evidence':evidence})
     (PRIVATE/'report.json').write_text(json.dumps(report,indent=2)+'\n')
     print('ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS:',phase)
@@ -136,7 +141,7 @@ def isolation():
     successful=[r for r in requests if r['status']==200]
     assert successful and all(r['method']=='GET' and r['path'] in {'/kettle/status/','/kettle/jobStatus/'} for r in successful)
     with SessionLocal() as db:
-        assert db.scalar(select(func.count()).select_from(JobOrderHistory).where(JobOrderHistory.job_order_id==UUID(state['job_id'])))==6
+        assert db.scalar(select(func.count()).select_from(JobOrderHistory).where(JobOrderHistory.job_order_id==UUID(state['job_id'])))==5
         assert db.scalar(select(func.count()).select_from(CollectorRun).where(CollectorRun.collector_id==UUID(state['collector_id']),CollectorRun.status=='FAILED'))==2
         assert db.scalar(select(func.count()).select_from(Investigation))==1
     report=json.loads((PRIVATE/'report.json').read_text());audit=api(200,'GET','/api/v1/auth/audit?limit=500',state['admin_token'])

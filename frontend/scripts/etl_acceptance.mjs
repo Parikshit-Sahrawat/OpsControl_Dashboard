@@ -16,26 +16,29 @@ async function login(who){
   await page.getByRole('textbox',{name:'Username'}).fill(state[who+'_username']);
   await page.getByLabel('Password').fill(state[who+'_password']);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();return page;
+  await page.locator('.org-context-button').click();
+  await page.locator('.org-option').filter({hasText:who==='other'?'Other ETL Tenant':'Controlled ETL Lab'}).getByRole('checkbox').check();
+  await page.getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();
+  await page.getByRole('link',{name:'Execution History',exact:true}).click();
+  await page.getByRole('heading',{name:'Execution investigation',exact:true}).waitFor();
+  return page;
 }
 try{
   const page=await login('reader');
-  if(phase==='configured'){
+  if(phase==='configured'||phase==='no-run'){
     await page.getByRole('heading',{name:'No executions found'}).waitFor();
   }else{
-    const expected={'no-run':'NO RUN',running:'RUNNING','long-running':'LONG RUNNING','sla-breach':'LONG RUNNING',failed:'FAILED','poll-failed':'FAILED',recovered:'SUCCESS'}[phase];
+    const expected={running:'RUNNING','long-running':'LONG RUNNING','sla-breach':'LONG RUNNING',failed:'FAILED','poll-failed':'FAILED',recovered:'SUCCESS'}[phase];
     const row=page.locator('section.card').filter({has:page.getByRole('heading',{name:'Current Executions',exact:true})}).getByRole('row').filter({hasText:'Fictional Daily Warehouse'});
     await row.getByText(expected,{exact:true}).waitFor();
     await row.getByText(phase==='poll-failed'?'ERROR':'CURRENT',{exact:true}).waitFor();
     if(phase==='sla-breach')await row.getByText('SLA breach',{exact:true}).waitFor();
     await row.click();
     const drawer=page.getByRole('dialog');
-    await drawer.getByText(phase==='no-run'?'NO_RUN_OPEN':`controlled-${phase==='poll-failed'?'failed':phase}`,{exact:phase!=='no-run'}).first().waitFor();
-    if(phase!=='no-run'){
-      await drawer.getByText('Load warehouse',{exact:true}).first().waitFor();
-      await drawer.getByText(/password=\[REDACTED\]/).waitFor();
-      assert.equal(await drawer.getByText('fixture-sensitive-marker',{exact:false}).count(),0);
-    }
+    await drawer.getByText(`controlled-${phase==='poll-failed'?'failed':phase}`,{exact:true}).first().waitFor();
+    await drawer.getByText('Load warehouse',{exact:true}).first().waitFor();
+    await drawer.getByText(/password=\[REDACTED\]/).waitFor();
+    assert.equal(await drawer.getByText('fixture-sensitive-marker',{exact:false}).count(),0);
     if(phase==='failed'){
       await drawer.getByText('RESOURCE_ALERT',{exact:true}).waitFor();
       await drawer.getByText('Warehouse connection refused',{exact:false}).first().waitFor();

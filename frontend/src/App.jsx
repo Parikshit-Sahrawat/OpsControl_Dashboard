@@ -123,17 +123,18 @@ function mapDetail(execution, investigation, evidence) {
 }
 
 export default function App({ user }) {
-  const [active, setActive] = useState(() =>
-      readSectionRoute(window.location.hash, user)?.[0] ||
-      (window.location.hash.startsWith("#/pipelines/") &&
-      canNavigate(user, "Data Pipeline Monitoring")
-        ? "Data Pipeline Monitoring"
-        : Object.keys(NAV_PERMISSIONS).find((page) =>
-            canNavigate(user, page),
-          ) || "Unauthorized"),
+  const [active, setActive] = useState(
+      () =>
+        readSectionRoute(window.location.hash, user)?.[0] ||
+        (window.location.hash.startsWith("#/pipelines/") &&
+        canNavigate(user, "Data Pipeline Monitoring")
+          ? "Data Pipeline Monitoring"
+          : Object.keys(NAV_PERMISSIONS).find((page) =>
+              canNavigate(user, page),
+            ) || "Unauthorized"),
     ),
-    [navSection, setNavSection] = useState(() =>
-      readSectionRoute(window.location.hash, user)?.[1] || "",
+    [navSection, setNavSection] = useState(
+      () => readSectionRoute(window.location.hash, user)?.[1] || "",
     ),
     [jobs, setJobs] = useState([]),
     [details, setDetails] = useState({}),
@@ -147,9 +148,21 @@ export default function App({ user }) {
   );
   const [environment, setEnvironment] = useState(() => {
       try {
-        const saved = JSON.parse(localStorage.getItem("opscontrol.environments") || "[]");
-        return Array.isArray(saved) ? [...new Set(saved.filter((value) => ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(value)))] : [];
-      } catch { return []; }
+        const saved = JSON.parse(
+          localStorage.getItem("opscontrol.environments") || "[]",
+        );
+        return Array.isArray(saved)
+          ? [
+              ...new Set(
+                saved.filter((value) =>
+                  ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(value),
+                ),
+              ),
+            ]
+          : [];
+      } catch {
+        return [];
+      }
     }),
     [customerRefresh, setCustomerRefresh] = useState(0);
   const [scopeReady, setScopeReady] = useState(false),
@@ -172,8 +185,7 @@ export default function App({ user }) {
     if (
       !scopeReady ||
       !hasPermission(user, "etl.view") ||
-      administrationPage(active) ||
-      active === "Data Pipeline Monitoring"
+      administrationPage(active)
     )
       return;
     const version = generation.current;
@@ -328,7 +340,11 @@ export default function App({ user }) {
         setActive("Data Pipeline Monitoring");
         setNavSection("");
       } else if (!window.location.hash) {
-        setActive(Object.keys(NAV_PERMISSIONS).find((page) => canNavigate(user, page)) || "Unauthorized");
+        setActive(
+          Object.keys(NAV_PERMISSIONS).find((page) =>
+            canNavigate(user, page),
+          ) || "Unauthorized",
+        );
         setNavSection("");
       }
     };
@@ -341,10 +357,10 @@ export default function App({ user }) {
   }, [user]);
   const navigate = (page, selection = {}) => {
     if (!canNavigate(user, page)) return;
-    if (selection.section && !canOpenSection(user, page, selection.section)) return;
+    if (selection.section && !canOpenSection(user, page, selection.section))
+      return;
     const childHash = selection.section && sectionHash(page, selection.section);
-    if (childHash)
-      window.location.hash = childHash.slice(1);
+    if (childHash) window.location.hash = childHash.slice(1);
     else if (page === "Data Pipeline Monitoring")
       window.location.hash = "/pipelines/inventory";
     else if (window.location.hash)
@@ -405,14 +421,23 @@ export default function App({ user }) {
         onChange={navigate}
         environment={environment}
         onEnvironmentChange={(value) => {
-          const selected = [...new Set(value.filter((item) => ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(item)))];
+          const selected = [
+            ...new Set(
+              value.filter((item) =>
+                ["PROD", "QA", "TEST", "DEV", "SANDBOX"].includes(item),
+              ),
+            ),
+          ];
           generation.current++;
           setJobs([]);
           setDetails({});
           setSelectedId(null);
           setTarget({});
           setLoading(true);
-          localStorage.setItem("opscontrol.environments", JSON.stringify(selected));
+          localStorage.setItem(
+            "opscontrol.environments",
+            JSON.stringify(selected),
+          );
           setEnvironment(selected);
         }}
         organizations={organizations}
@@ -470,18 +495,32 @@ export default function App({ user }) {
             organizationIds={organizationIds}
             environment={environment}
             initialResourceId={target.resourceId}
+            jobs={jobs}
+            loading={loading}
+            error={error}
+            onRetry={refresh}
+            onSelectLegacyExecution={selectJob}
           />
         )}
         {active === "Access Management" &&
           hasPermission(user, "access.view") && (
-            <AccessManagement key={scopeKey} user={user} section={navSection} onSectionChange={(section) => navigate("Access Management", { section })} />
+            <AccessManagement
+              key={scopeKey}
+              user={user}
+              section={navSection}
+              onSectionChange={(section) =>
+                navigate("Access Management", { section })
+              }
+            />
           )}
         {active === "Resource Management" && (
           <ResourceManagement
             key={scopeKey}
             user={user}
             section={navSection}
-            onSectionChange={(section) => navigate("Resource Management", { section })}
+            onSectionChange={(section) =>
+              navigate("Resource Management", { section })
+            }
             onCustomerCreated={() => setCustomerRefresh((v) => v + 1)}
           />
         )}

@@ -15,7 +15,11 @@ async function login(who){
   await page.getByRole('textbox',{name:'Username'}).fill(state[who+'_username']);
   await page.getByLabel('Password').fill(state[who+'_password']);
   await page.getByRole('button',{name:'Sign in'}).click();
-  await page.getByRole('button',{name:'Compute Health',exact:true}).click();await page.getByRole('button',{name:'Show existing infrastructure adapters',exact:true}).click();return page;
+  await page.locator('.org-context-button').click();
+  await page.locator('.org-option').filter({hasText:who==='other'?'Other Infrastructure Tenant':'Infrastructure Controlled Lab'}).getByRole('checkbox').check();
+  await page.getByRole('button',{name:'Compute Health',exact:true}).click();
+  await page.getByRole('heading',{name:'Infrastructure adapter health',exact:true}).waitFor();
+  return page;
 }
 try{
   const page=await login('reader');

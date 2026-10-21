@@ -14,6 +14,7 @@ import {
   Evidence,
 } from "./ui";
 import { ExecutionHistory } from "./ExecutionViews";
+import ETLJobs from "../pages/ETLJobs";
 import ScheduleView from "./ScheduleView";
 import ReviewView from "./ReviewView";
 import RecoveryView from "./RecoveryView";
@@ -28,6 +29,11 @@ export default function PipelineWorkspace({
   environment,
   user,
   initialResourceId,
+  jobs = [],
+  loading = false,
+  error = null,
+  onRetry,
+  onSelectLegacyExecution,
 }) {
   const [page, setPage] = useState(hashPage),
     [search, setSearch] = useState(""),
@@ -59,8 +65,8 @@ export default function PipelineWorkspace({
     chosen.data &&
     inventoryIds.includes(chosen.data.organization_id) &&
     (Array.isArray(environment)
-      ? (!environment.length || environment.includes(chosen.data.environment))
-      : (!environment || chosen.data.environment === environment))
+      ? !environment.length || environment.includes(chosen.data.environment)
+      : !environment || chosen.data.environment === environment)
       ? {
           ...chosen.data,
           binding: feed.data?.items.find((r) => r.id === resourceId)?.binding,
@@ -126,6 +132,18 @@ export default function PipelineWorkspace({
           Showing only selected customers with etl.view. Multiple selections do
           not grant ALL access.
         </p>
+      )}
+      {page === "executions" && (
+        <section aria-label="Registered job order execution evidence">
+          <ETLJobs
+            embedded
+            jobs={jobs}
+            loading={loading}
+            error={error}
+            onRetry={onRetry}
+            onSelect={onSelectLegacyExecution}
+          />
+        </section>
       )}
       {page !== "incidents" && inventoryIds.length === 0 && (
         <p role="status">

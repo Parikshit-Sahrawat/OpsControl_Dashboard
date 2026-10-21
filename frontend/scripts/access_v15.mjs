@@ -183,14 +183,18 @@ try {
     .click();
   dialog = page.getByRole("dialog");
   await dialog
-    .getByRole("button", { name: "3. Permissions", exact: true })
+    .getByLabel("Select existing department")
+    .selectOption({ label: departmentName });
+  await dialog
+    .getByRole("button", { name: "Find existing employee in this department" })
     .click();
   await dialog
     .locator('input[placeholder="Name, username or employee ID"]')
     .fill(username);
   await dialog
-    .getByLabel("Employee", { exact: true })
-    .selectOption(employee.id);
+    .locator(".access-employee-results")
+    .getByRole("button", { name: new RegExp(employeeName) })
+    .click();
   await dialog
     .getByRole("heading", { name: "Existing organization scopes", exact: true })
     .waitFor();

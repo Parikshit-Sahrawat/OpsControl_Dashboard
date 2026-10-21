@@ -67,7 +67,7 @@ def setup():
         {'organization_id':state['org_id'],'name':'golden-private-agent','expires_in_days':1})
     state['worker_id'], state['worker_token'] = worker['id'], worker['worker_token']
     api(200,'PUT','/api/v1/remote-probes/workers/'+worker['id']+'/network-policy',admin,
-        {'allowed_hosts':['portal.example.test'],'allowed_cidrs':['172.28.77.0/24']})
+        {'allowed_hosts':['portal.example.test'],'allowed_cidrs':[os.environ.get('GOLDEN_NETWORK_PREFIX','172.28')+'.77.0/24']})
     versions = []
     for kind, name, definition in [
         ('METRIC','golden-readiness',{'name':'probe_up','metric_type':'GAUGE'}),

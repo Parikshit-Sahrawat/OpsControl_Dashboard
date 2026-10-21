@@ -36,9 +36,11 @@ page.on("response", (response) => {
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("dialog", (dialog) => dialog.accept());
 const nav = async (name) => {
+  if (await page.evaluate(() => window.innerWidth < 768))
+    await page.getByRole("button", { name: "Open navigation" }).click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name, exact: true })
+    .getByRole("button", { name: name === "Resource Management" ? "Data Sources / Resources" : name === "Access Management" ? "Employees" : name, exact: true })
     .click();
 };
 const waitFor = async (fn, label = "condition") => {
@@ -49,9 +51,11 @@ const waitFor = async (fn, label = "condition") => {
   throw new Error("Browser condition timed out: " + label);
 };
 try {
-  await page.addInitScript(() =>
-    localStorage.setItem("opscontrol.theme", "dark"),
-  );
+  await page.addInitScript((customerId) => {
+    localStorage.setItem("opscontrol.theme", "dark");
+    localStorage.setItem("opscontrol.organizationIds", JSON.stringify([customerId]));
+    localStorage.setItem("opscontrol.customerSelectionMode", "SELECTED");
+  }, fixture.organization);
   await page.goto(ui);
   await page.getByLabel("Username", { exact: true }).fill("uat-admin");
   await page.getByLabel("Password", { exact: true }).fill(password);
@@ -70,11 +74,11 @@ try {
   );
   await nav("Data Pipeline Monitoring");
   await page
-    .getByRole("heading", { name: "Data Pipeline Monitoring", exact: true })
+    .getByRole("heading", { name: "Pipeline Inventory", exact: true })
     .waitFor();
   await nav("Resource Management");
   await page
-    .getByRole("heading", { name: "Compute Instances", exact: true })
+    .getByRole("heading", { name: "Resource Management", exact: true })
     .waitFor();
   assert.equal(await page.locator(".org-context-button").count(), 0);
   await page
@@ -246,9 +250,7 @@ try {
   checks.push(
     "Real same-type method add/edit/disable; correct inherited OS, real signal counters and YAML excludes disabled method",
   );
-  await page
-    .getByRole("tab", { name: "Notification Delivery", exact: true })
-    .click();
+  await page.getByLabel("Resource Management component").selectOption("delivery");
   await page
     .getByRole("heading", { name: "Notification Delivery", exact: true })
     .waitFor();
@@ -257,9 +259,7 @@ try {
     path: join(out, "notification-delivery-dark.png"),
     fullPage: true,
   });
-  await page
-    .getByRole("tab", { name: "Event Parameters", exact: true })
-    .click();
+  await page.getByLabel("Resource Management component").selectOption("parameters");
   await page
     .getByRole("tab", { name: "Compute Health Parameters", exact: true })
     .click();
@@ -339,19 +339,13 @@ try {
   await waitFor(
     async () =>
       (await guide
-        .getByLabel("Employee", { exact: true })
-        .locator("option")
-        .filter({ hasText: "Browser UAT Employee" })
+        .locator(".access-employee-results")
+        .getByRole("button", { name: /Browser UAT Employee/ })
         .count()) === 1,
-    "employee selector",
+    "employee result",
   );
-  const employeeOption = guide
-    .getByLabel("Employee", { exact: true })
-    .locator("option")
-    .last();
-  await guide
-    .getByLabel("Employee", { exact: true })
-    .selectOption(await employeeOption.getAttribute("value"));
+  await guide.locator(".access-employee-results")
+    .getByRole("button", { name: /Browser UAT Employee/ }).click();
   await guide
     .getByRole("heading", { name: "Effective permissions", exact: true })
     .waitFor();
@@ -392,7 +386,7 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await nav("Resource Management");
   await page
-    .getByRole("heading", { name: "Compute Instances", exact: true })
+    .getByRole("heading", { name: "Resource Management", exact: true })
     .waitFor();
   assert.ok(
     await page.evaluate(

@@ -18,13 +18,15 @@ try {
   await page.getByRole('textbox',{name:'Username'}).fill(state.operator_username);
   await page.getByLabel('Password').fill(state.operator_password);
   await page.getByRole('button',{name:'Sign in'}).click();
+  await page.locator('.org-context-button').click();
+  await page.locator('.org-option').filter({hasText:'Golden HTTP Lab'}).getByRole('checkbox').check();
   await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
   await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
   await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
   // The locked binding is populated asynchronously by the embedded view.
   await page.waitForFunction(expected => [...document.querySelectorAll('select')].some(select => select.disabled && select.value === expected), state.source_id);
-  const lockedSource = page.locator('.monitoring-setup').getByLabel('Data Source', { exact: true });
+  const lockedSource = page.locator('.monitoring-setup select').first();
   assert.equal(await lockedSource.inputValue(), state.source_id);
   assert.equal(await lockedSource.isDisabled(), true);
   const diag=page.getByTestId('monitoring-diagnostics');
@@ -57,13 +59,19 @@ try {
     await other.getByRole('textbox',{name:'Username'}).fill(state.other_username);
     await other.getByLabel('Password').fill(state.other_password);
     await other.getByRole('button',{name:'Sign in'}).click();
+    await other.locator('.org-context-button').click();
+    await other.locator('.org-option').filter({hasText:'Other Fictional Tenant'}).getByRole('checkbox').check();
     await other.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
     await other.getByRole('tab',{name:'API Endpoints',exact:true}).click();
     await other.getByText('No resources match these authorized filters.',{exact:true}).waitFor();
     assert.equal(await other.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).count(),0);
-    assert.equal(await other.locator('.monitoring-setup').getByLabel('Data Source', { exact: true }).count(),0);
+    assert.equal(await other.locator('.monitoring-setup').count(),0);
     await other.screenshot({path:`${output}/other-tenant.png`,fullPage:true});
   }
   assert.deepEqual(errors,[]);
   console.log(`PLAYWRIGHT ${phase}: authenticated UI, diagnostics and screenshot PASS`);
+} catch (error) {
+  const page = browser.contexts().flatMap(context => context.pages())[0];
+  if (page) await page.screenshot({path:`${output}/browser-failure-${phase}.png`,fullPage:true});
+  throw error;
 } finally { await browser.close(); }

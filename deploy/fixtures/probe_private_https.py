@@ -1,9 +1,9 @@
 """Run INSIDE a Docker internal network (never connects to real infrastructure)."""
-import sys
+import os,sys
 from app.worker.egress import probe_https,EgressDenied
 conf={"url":"https://portal.example.test/ready","expected_status":200,"timeout_seconds":4}
 policy_hosts=["portal.example.test"]
-policy_cidrs=["172.28.77.0/24"]
+policy_cidrs=[os.environ.get('GOLDEN_NETWORK_PREFIX','172.28')+'.77.0/24']
 result=probe_https(conf,policy_hosts,policy_cidrs)
 expected=sys.argv[1]
 assert result["outcome"]==expected,(expected,result)
