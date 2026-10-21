@@ -11,15 +11,16 @@ import StatusBadge from "../components/StatusBadge";
 
 export default function APIs({
   organizationIds,
+  environment = [],
   initialSourceId,
   onNavigate,
   embedded = false,
 }) {
   const [offset, setOffset] = useState(0),
-    scope = organizationIds.join(",");
+    scope = organizationIds.join(",") + ":" + environment.join(",");
   useEffect(() => setOffset(0), [scope]);
   const { data, error, refresh } = useOperationalFeed(
-    "/services?" + scopeQuery(organizationIds, { offset }),
+    "/services?" + scopeQuery(organizationIds, { offset }) + environment.map((value) => "&environments=" + encodeURIComponent(value)).join(""),
   );
   const [health, setHealth] = useState("ALL"),
     [search, setSearch] = useState(""),

@@ -58,7 +58,9 @@ export default function AccessOnboarding({
       setError("");
       control(
         "/api/v1/access/employees?limit=50&search=" +
-          encodeURIComponent(search),
+          encodeURIComponent(search) +
+          "&department_id=" +
+          encodeURIComponent(department),
       )
         .then((data) => live && setPeople(data.items))
         .catch((e) => {
@@ -72,7 +74,7 @@ export default function AccessOnboarding({
     return () => {
       live = false;
     };
-  }, [step, search]);
+  }, [step, search, department]);
   useEffect(() => {
     let live = true;
     setEffective(null);
@@ -110,7 +112,7 @@ export default function AccessOnboarding({
             <button
               type="button"
               key={label}
-              disabled={busy || (i + 1 === 2 && !department)}
+              disabled={busy || (i > 0 && !department)}
               aria-current={step === i + 1 ? "step" : undefined}
               onClick={() => setStep(i + 1)}
             >
@@ -126,7 +128,10 @@ export default function AccessOnboarding({
               <select
                 aria-label="Select existing department"
                 value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                onChange={(e) => {
+                  setDepartment(e.target.value);
+                  setEmployeeId("");
+                }}
               >
                 <option value="">Select department</option>
                 {options
@@ -182,6 +187,13 @@ export default function AccessOnboarding({
               onClick={() => setStep(2)}
             >
               Continue to Employee
+            </button>
+            <button
+              type="button"
+              disabled={busy || !department}
+              onClick={() => setStep(3)}
+            >
+              Find existing employee in this department
             </button>
           </div>
         )}
@@ -255,23 +267,30 @@ export default function AccessOnboarding({
                 placeholder="Name, username or employee ID"
               />
             </label>
-            <label className="form-field">
-              <span>Employee</span>
-              <select
-                aria-label="Employee"
-                value={employeeId}
-                onChange={(e) => setEmployeeId(e.target.value)}
-              >
-                <option value="">Select employee</option>
-                {people
-                  .filter((p) => p.active)
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.full_name} · {p.username}
-                    </option>
-                  ))}
-              </select>
-            </label>
+            <div
+              className="access-employee-results"
+              aria-label="Matching employees"
+            >
+              {people
+                .filter((p) => p.active)
+                .map((person) => (
+                  <button
+                    type="button"
+                    key={person.id}
+                    aria-pressed={employeeId === person.id}
+                    onClick={() => setEmployeeId(person.id)}
+                  >
+                    {person.full_name} <small>{person.username}</small>
+                  </button>
+                ))}
+            </div>
+            {employeeId && (
+              <p role="status">
+                Selected employee:{" "}
+                {people.find((person) => person.id === employeeId)?.full_name ||
+                  employeeId}
+              </p>
+            )}
             {peopleLoading && <p role="status">Searching employees…</p>}
             {!peopleLoading && !people.length && <p>No matching employees.</p>}
             <label className="form-field">

@@ -28,7 +28,7 @@ async function login(who) {
     .getByLabel("Password", { exact: true })
     .fill(state[who + "_password"]);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   return page;
 }
 async function nav(page, name) {
@@ -47,9 +47,10 @@ try {
     0,
   );
   await nav(page, "API Endpoint Monitoring");
-  await page
-    .getByRole("button", { name: "Show existing service probes", exact: true })
-    .click();
+  const showProbes = page.getByRole("button", { name: "Show service probe health", exact: true });
+  await page.getByRole("button", { name: /^(Show|Hide) service probe health$/ }).waitFor();
+  if (await showProbes.isVisible()) await showProbes.click();
+  await page.getByRole("button", { name: "Hide service probe health", exact: true }).waitFor();
   const service = page
     .getByTestId("service-row")
     .filter({ hasText: "Fictional NOC HTTPS Portal" });

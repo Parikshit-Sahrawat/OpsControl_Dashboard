@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import DataSource,Collector,MetricDefinition,MetricSample,AlertRule,AlertState,InfrastructureEvidence
 from app.worker.infrastructure import INFRA_TYPES
+from app.unified.models import MonitoringResource
+from app.unified.schemas import Environment
 
 router=APIRouter(prefix='/api/v1/infrastructure',tags=['Infrastructure Health'])
+MONITORED_SOURCE_TYPES = INFRA_TYPES | {'LINUX', 'WINDOWS'}
 
 def utc(value): return value.replace(tzinfo=timezone.utc) if value and value.tzinfo is None else value
 
@@ -50,9 +53,15 @@ def snapshot(source,db):
             'resolved_at':a.resolved_at.isoformat() if a.resolved_at else None} for a in alerts]}
 
 @router.get('/resources')
-def resources(organization_id:list[UUID]=Query(default=[]),limit:int=Query(200,ge=1,le=500),offset:int=Query(0,ge=0,le=1000000),db:Session=Depends(get_db)):
-    stmt=select(DataSource).where(DataSource.source_type.in_(INFRA_TYPES))
+def resources(organization_id:list[UUID]=Query(default=[]),environments:list[Environment]=Query(default=[]),limit:int=Query(200,ge=1,le=500),offset:int=Query(0,ge=0,le=1000000),db:Session=Depends(get_db)):
+    stmt=select(DataSource).where(DataSource.source_type.in_(MONITORED_SOURCE_TYPES))
     if organization_id: stmt=stmt.where(DataSource.organization_id.in_(organization_id))
+    if environments:
+        scoped_sources = select(MonitoringResource.data_source_id).where(
+            MonitoringResource.domain == "VM",
+            MonitoringResource.environment.in_(set(environments)),
+        )
+        stmt = stmt.where(DataSource.id.in_(scoped_sources))
     total=db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows=[snapshot(source,db) for source in db.scalars(stmt.order_by(DataSource.name,DataSource.id).offset(offset).limit(limit)).all()]
     return {'resources':rows,'summary':{state:sum(r['health']==state for r in rows)
@@ -62,7 +71,7 @@ def resources(organization_id:list[UUID]=Query(default=[]),limit:int=Query(200,g
 @router.get('/resources/{source_id}')
 def resource(source_id:UUID,db:Session=Depends(get_db)):
     source=db.get(DataSource,source_id)
-    if source is None or source.source_type not in INFRA_TYPES: raise HTTPException(404,'Infrastructure source unavailable')
+    if source is None or source.source_type not in MONITORED_SOURCE_TYPES: raise HTTPException(404,'Infrastructure source unavailable')
     return snapshot(source,db)
 
 @router.get('/resources/{source_id}/history')

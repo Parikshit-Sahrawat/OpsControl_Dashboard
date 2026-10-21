@@ -39,7 +39,10 @@ class Handler(BaseHTTPRequestHandler):
         message='Warehouse connection refused' if errors else 'Read-only fixture execution status'
         logs=message+' password="'+(private/'carte-password').read_text().strip()+'" token=fixture-sensitive-marker'
         entries='<jobentry_results><jobentry_result><name>Extract customers</name><result><nr_errors>0</nr_errors></result></jobentry_result><jobentry_result><name>Load warehouse</name><result><nr_errors>'+str(errors)+'</nr_errors></result><comment>'+message+'</comment></jobentry_result></jobentry_results>'
-        return self.response(200,'<job-status><id>controlled-'+phase+'</id><status_desc>'+status+'</status_desc><nr_errors>'+str(errors)+'</nr_errors><start_date>'+started+'</start_date>'+ended+entries+'<log_text>'+escape(logs)+'</log_text></job-status>')
+        # This controlled SUCCESS phase includes native result evidence. A
+        # finished status and zero errors alone cannot establish success.
+        native_result='<result><result>Y</result><nr_errors>0</nr_errors></result>' if phase=='recovered' else ''
+        return self.response(200,'<job-status><id>controlled-'+phase+'</id><status_desc>'+status+'</status_desc><nr_errors>'+str(errors)+'</nr_errors>'+native_result+'<start_date>'+started+'</start_date>'+ended+entries+'<log_text>'+escape(logs)+'</log_text></job-status>')
     def do_POST(self):self.response(403,'<error>Mutation forbidden</error>')
     do_DELETE=do_POST
     do_PUT=do_POST

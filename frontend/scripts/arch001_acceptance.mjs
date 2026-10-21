@@ -68,9 +68,9 @@ try {
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
     1,
   );
-  await page
-    .getByLabel("Global environment", { exact: true })
-    .selectOption("QA");
+  await page.getByRole("button", { name: "Global environments" }).click();
+  await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();
+  await page.getByRole("button", { name: "Global environments" }).click();
   await nav("Resource Management");
   assert.equal(
     await page.getByLabel("Global environment", { exact: true }).count(),
@@ -78,7 +78,7 @@ try {
   );
   assert.equal(await page.locator(".org-context-button").count(), 0);
   await page
-    .getByRole("heading", { name: "Compute Instances", exact: true })
+    .getByRole("heading", { name: "Resource Management", exact: true })
     .waitFor();
   await page
     .getByRole("button", { name: fixture.vm_resource.name, exact: true })
@@ -97,7 +97,7 @@ try {
   const registry = await (await registryResponse).json();
   assert(registry.version >= 1);
   assert(registry.definitions.VM.fields.some((f) => f.key === "environment"));
-  const dialog = page.getByRole("dialog");
+  const dialog = page.getByRole("region", { name: "Create Compute Instance" });
   await dialog.getByLabel(/^Environment/).selectOption("DEV");
   const steps = dialog.getByRole("list", { name: "VM onboarding steps" });
   assert.equal(await steps.getByRole("button").count(), 10);
@@ -121,10 +121,12 @@ try {
   assert.equal(createdResponse.status(), 201);
   const created = await createdResponse.json();
   for (let stage = 2; stage <= 10; stage++) {
+    if (stage > 2)
+      await dialog.getByRole("button", { name: "Continue", exact: true }).click();
     await steps
       .getByRole("button")
       .nth(stage - 1)
-      .click();
+      .waitFor();
     assert.equal(
       await steps
         .getByRole("button")
@@ -150,27 +152,14 @@ try {
   await dialog
     .getByRole("heading", { name: "Event Parameters (optional)", exact: true })
     .waitFor();
-  await steps.getByRole("button").nth(9).click();
+  for (let stage = 7; stage <= 10; stage++)
+    await dialog.getByRole("button", { name: "Continue", exact: true }).click();
   await dialog.getByLabel("Approve verified monitoring activation").check();
-  const activationResponse = response(
-    "/api/v1/unified/resources/" + created.id + "/activate",
-    "POST",
-  );
-  await dialog
-    .getByRole("button", { name: "Activate monitoring", exact: true })
-    .click();
-  const activation = await activationResponse;
   assert.equal(
-    activation.status(),
-    409,
-    "An unregistered/no-telemetry host must not activate, even when optional stages are skipped",
+    await dialog.getByRole("button", { name: "Activate monitoring", exact: true }).isDisabled(),
+    true,
+    "An unregistered/no-telemetry host must not activate",
   );
-  assert.equal(
-    (await activation.json()).detail.message,
-    "Required telemetry verification has not passed",
-    "Skipping optional stages must reach genuine telemetry readiness checks",
-  );
-  await dialog.getByRole("alert").waitFor();
   await close();
 
   for (const [area, listName, names] of [
@@ -193,15 +182,15 @@ try {
       ],
     ],
   ]) {
-    await page.getByRole("tab", { name: area, exact: true }).click();
+    await page.getByLabel("Resource Management component").selectOption(
+      area === "Event Parameters" ? "parameters" : "rules",
+    );
     const domains = page.getByRole("tablist", { name: listName });
     assert.equal(await domains.getByRole("tab").count(), 3);
     for (const domainName of names)
       await domains.getByRole("tab", { name: domainName, exact: true }).click();
   }
-  await page
-    .getByRole("tab", { name: "Notification Delivery", exact: true })
-    .click();
+  await page.getByLabel("Resource Management component").selectOption("delivery");
   await page
     .getByRole("heading", { name: "Notification Delivery", exact: true })
     .waitFor();
@@ -232,13 +221,14 @@ try {
     await nav(name);
     await page
       .getByRole("heading", {
-        name: name === "Data Pipeline Monitoring" ? "Pipeline Inventory" : name,
+        name: name === "Data Pipeline Monitoring" ? "Pipeline Inventory" : name === "Overview" ? "Dashboard" : name,
         exact: true,
       })
       .waitFor();
   }
   await nav("Incidents");
-  await page.getByLabel("Global environment", { exact: true }).selectOption("");
+  await page.getByRole("button", { name: "Global environments" }).click();
+  await page.getByRole("button", { name: "All environments", exact: true }).click();
   await page
     .getByLabel("Incident status", { exact: true })
     .selectOption("OPEN");

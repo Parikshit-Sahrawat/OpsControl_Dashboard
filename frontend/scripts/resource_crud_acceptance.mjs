@@ -26,7 +26,7 @@ try {
   await page.getByLabel("Username").fill("test-north");
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByRole("heading", { name: "Overview", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   phase = "open onboarding";
   await page
     .getByRole("button", { name: "Data Sources / Resources", exact: true })
@@ -34,7 +34,7 @@ try {
   await page
     .getByRole("button", { name: "Create Compute Instance", exact: true })
     .click();
-  let modal = page.getByRole("dialog", {
+  let modal = page.getByRole("region", {
     name: "Create Compute Instance",
     exact: true,
   });
@@ -248,7 +248,7 @@ try {
   phase = "disable resource";
   row = page.getByRole("row").filter({ hasText: "Wizard sequence refreshed" });
   await row.getByRole("button", { name: "Edit", exact: true }).click();
-  modal = page.getByRole("dialog", {
+  modal = page.getByRole("region", {
     name: "Edit Compute Instance",
     exact: true,
   });

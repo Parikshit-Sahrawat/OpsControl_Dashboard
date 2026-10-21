@@ -399,14 +399,21 @@ def inventory(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db=Depends(get_db),
+    environments: list[Environment] = Query(default=[]),
 ):
     query = select(MonitoringResource)
     if domain:
         query = query.where(MonitoringResource.domain == domain)
     if organization_id:
         query = query.where(MonitoringResource.organization_id.in_(organization_id))
-    if environment:
-        query = query.where(MonitoringResource.environment == environment)
+    listed_environments = environments if isinstance(environments, list) else []
+    if environment and listed_environments:
+        raise HTTPException(422, "Use environment or environments, not both")
+    selected_environments = (
+        [environment] if environment else list(dict.fromkeys(listed_environments))
+    )
+    if selected_environments:
+        query = query.where(MonitoringResource.environment.in_(selected_environments))
     if search:
         query = query.where(MonitoringResource.name.ilike("%" + search[:200] + "%"))
     if active is not None:

@@ -97,7 +97,9 @@ const navigate = async (page, tab) => {
       exact: true,
     })
     .click();
-  await page.getByRole("heading", { name: tab, exact: true }).waitFor();
+  await page.getByRole("heading", { name: {
+    Overview: "Dashboard",
+  }[tab] || tab, exact: true }).waitFor();
 };
 const section = async (page, tab) => {
   await page

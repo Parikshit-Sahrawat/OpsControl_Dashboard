@@ -546,3 +546,7 @@ class NormalizationAndReportContracts(unittest.TestCase):
         self.assertEqual(query.params["organization_id_1"], [org])
         self.assertEqual(query.params["id_1"], [resource])
         self.assertEqual(query.params["environment_1"], "QA")
+        multi_query = reporting.root_query(
+            [org], None, [resource], "ETL", ["QA", "DEV"]
+        ).compile(dialect=postgresql.dialect())
+        self.assertEqual(multi_query.params["environment_1"], ["QA", "DEV"])

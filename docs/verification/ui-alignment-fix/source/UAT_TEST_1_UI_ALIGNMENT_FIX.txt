@@ -1,0 +1,184 @@
+OpsControl UAT Test 1 - UI Alignment Fix
+
+Act as a combination of a Senior Frontend Architect, UI Designer, UX Researcher, Tailwind CSS Expert, Framer Motion Expert, and Design Systems Engineer.
+
+Your task is to completely refactor my existing UI code while preserving all business logic, API calls, state management, data flow, functionality, and component behavior.
+
+Primary Goal:
+Transform the UI into a premium, modern, enterprise-grade application with Glassmorphism design, excellent visual hierarchy, polished animations, and pixel-perfect alignment.
+
+Requirements:
+
+DESIGN SYSTEM
+- Use modern Glassmorphism styling throughout.
+- Frosted glass cards with backdrop blur.
+- Subtle borders using white/10 to white/20 opacity.
+- Soft shadows and glow effects.
+- Premium dark theme.
+- Modern gradient backgrounds.
+- Consistent border radius (xl, 2xl).
+- Professional SaaS dashboard appearance.
+
+LAYOUT
+- Fix all alignment issues.
+- Eliminate overlapping, clipping, and inconsistent spacing.
+- Use responsive grid layouts.
+- Maintain proper whitespace.
+- Ensure perfect responsiveness for:
+  - Mobile
+  - Tablet
+  - Desktop
+  - Ultrawide screens
+
+VISUAL HIERARCHY
+- Improve typography scale.
+- Clear distinction between:
+  - Headers
+  - Subheaders
+  - Labels
+  - Content
+- Modern font sizing.
+- Consistent spacing system.
+
+ANIMATIONS
+- Add smooth, performant transitions.
+- Use Framer Motion where appropriate.
+- Add:
+  - Fade-in animations
+  - Scale animations
+  - Hover effects
+  - Page transitions
+  - Loading skeletons
+- Avoid excessive animations.
+
+USER EXPERIENCE
+- Improve readability.
+- Modernize forms.
+- Modernize tables.
+- Improve button styling.
+- Improve navigation.
+- Improve empty states.
+- Improve error states.
+- Improve loading states.
+
+COMPONENT QUALITY
+- Refactor duplicated code.
+- Improve component structure.
+- Follow modern React best practices.
+- Optimize performance.
+- Improve accessibility.
+- Improve maintainability.
+
+TAILWIND GUIDELINES
+Prefer:
+- backdrop-blur-xl
+- backdrop-blur-2xl
+- bg-white/5
+- bg-white/10
+- border-white/10
+- border-white/20
+- shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+- rounded-3xl
+- transition-all
+- duration-300
+
+OUTPUT REQUIREMENTS
+1. First identify all UI/UX issues found in the code.
+2. Explain the improvements being made.
+3. Return the complete refactored code.
+4. Add comments for major changes.
+5. Ensure code is production ready.
+6. Preserve all existing functionality exactly as-is.
+7. Do not remove any existing features.
+8. Make the UI look like a modern premium SaaS product used by Microsoft, Stripe, Linear, Vercel, or Notion.
+
+Additional Requirement:
+If there are any sections that feel visually outdated, redesign them with modern patterns while keeping their functionality unchanged.
+
+#Overview -
+
+a. All Enviroment and All Customers - Drop down boxes should be same size. 
+b. All Enviroment - There should be check box to select one or more enviroments.
+c. Clock bar - Should be alinged with All Enviroment and All Customers box. parallel.
+d. Refresh button - Should be alinged with All Enviroment, clock bar and All Customers box. parallel.
+e. Head bar - All components should be same size like [All Enviroment, All Customers, Clock bar, refresh button and notification button. Exclude day night mode button.
+f. Overview - Should display as Dashboard and no need for subheadline "Opertaional ....". 
+g. Monitoring Domain , Resources, Monitoring Active, Open Alerts, Action - No need for this here. 
+h. Display Data pipelines running executions, Data pipelines Current Alerts, Compute Health Alerts, API Endpiont Alerts, and Correlated Events.
+I. Data Pipeline running executions - Show running executions of data pipelines with Job/Workflow name, Host Name, Duration, order name, Organization, running task/Step name with start time, Job/Workflow start time, current host timestamp, status. Once task/step execution completed it should merge into completed task.
+When user clicks Job/Workflow name - Workflow/Job details panel should be opened with detailed Job/Workflow status should be there. Like - Job/Workflow name, Order name, Host Name, Organization, running task/Step name with start time, Job/Workflow start time, current host timestamp, status. completed task/Step end time. Job/Workflow order schedule time.
+J. Data pipelines Current Alerts/Incidents - Current effected jobs/Workflows with correct status like - Long running, running, failed, etc. and every jobs/Workflows should be clickable and point to Workflow/Job details panel. Also alerts should be clickable and point to alerts panel that contain alert details and jobs with similar issue.
+K. Compute Health Alerts - It will display current compute alerts with Organization name, Host name, state, Metric, Severity, Issue, start timestamps. it will will sorted by priority/severity based alerts. and every alert and every compute/host should be clickable and point to compute/host details panel. Also alerts should be clickable and point to alerts panel that contain alert details and compute with similar issue.
+L. API Endpiont Alerts - It will display current API alerts with Organization name, Host name, Severity, Issue, status, start timestamps. it will will sorted by priority/severity based alerts. and every alert and every API Endpiont should be clickable and point to API Endpiont details panel. Also alerts should be clickable and point to alerts panel that contain alert details and API with similar issue.
+M. Sidebar - fold button is too big and an arrow shape. It should be top right corner of sidebar and with x and + shape. samller and compact. sidebar should be arranged and opens in drop down sections. also add administartor section, Help, and platform settings section in sidebar.
+N. Make UI/UX on industry standard.
+
+#Data Pipelines
+
+All components should be alinged and in proper working format.
+
+a. Pipeline Inventory - Pipelilne/Native Type should be Jobs/Workflows. show useful headers like - Show running executions of data pipelines with Job/Workflow name, Host Name, order name, Organization, Duration, running task/Step name with start time, Job/Workflow start time, current host timestamp, status. Once task/step execution completed it should merge into completed task.
+b. Execution History - Remove single selected pipeline drop down box. No need show single pipeline. it can be filtered out by customer, enviroment and saerch pipeline box. show useful headers like - Show running executions of data pipelines with Job/Workflow name, Host Name, Attempts, type/retry, Incidents, order name, Organization, Duration, running task/Step name with start time, Job/Workflow start time, current host timestamp, status. Once task/step execution completed it should merge into completed task.
+c. Scheduled Monitoring - Remove single selected pipeline drop down box. No need show single pipeline. it can be filtered out by customer, enviroment and saerch pipeline box.
+d. Evidence Review - Remove single selected pipeline drop down box. No need show single pipeline. it can be filtered out by customer, enviroment and saerch pipeline box.
+
+#Compute Health - 
+
+a. Show only Infrastructure adapter health. No need to just list compute instances. We will show overview status of current alerts not all added compute list.
+b. Apply Infrastructure adapter health architecture on whole page. with clickable status box. 
+c. In alerts list - show useful headers like Organization name, Host name, state, Metric, Severity, Issue, start timestamps. it will will sorted by priority/severity based alerts. and every alert and every compute/host should be clickable and point to compute/host details panel. Also alerts should be clickable and point to alerts panel that contain alert details and compute with similar issue.
+
+#API Endpoint Monitoring -
+
+a. Show only Exiting service probes. No need to just list all APIs. We will show overview status of current alerts not all added API list.
+b. Apply Exiting service probes architecture on whole page. with clickable status box. 
+c. In alerts list - show useful headers like Organization name, Host name, state, Metric, Severity, Issue, start timestamps. it will will sorted by priority/severity based alerts. and every alert and every compute/host should be clickable and point to compute/host details panel. Also alerts should be clickable and point to alerts panel that contain alert details and compute with similar issue.
+
+#Alerts - 
+
+For now ignore.
+
+#Reports- 
+
+a. No drop down menu or proper component alignment. Sections button should be imporved and better look.
+b. Start Time, End Time and Report reource, Report status shold in parallel and same shape. 
+c. Report resource box should be search box not a selectable drop down. in all 3 sub pages.
+d. Make the whole page aligment and better report visualization.
+
+#Resource Management - 
+
+1.Organization - 
+a. Remove - Remove Resource Organization filter drop down menu. Only search Organization box is enough.
+
+2. Data Resources -
+a. Compute Instances - Create compute Instance - On board jorney is corrupted and broken. No fuctionality and sequence. UI is unrecognizable. messed boxes, buttons and details. Unnesseccery boxes and detail requested. request forms not correct.
+Create compute Instance - all steps displaying at once no tab by tab on board sequence. Service name, Process name ingestion is incorrect and non fuctional. No defined pattern to enter these details.
+No next button or save resource identity button not working.
+Configure telemetry - no fuctional, buttons are overlapped. 2 next step buttons. 
+configure collector is working without agent installation and collector activated.
+No agent to download. Agent registration is working.No sequence in steps user can move any tab.
+No fix definitions and simplification.]collector and agent functionalty not working.
+
+b. Data Pipeline - Remove data pipelines Integration section and create data pipeline button and form. We will keep only create legacy data pipeline.
+Not correct data pipeline on boarding. rquest form is misaligned and overlapped buttons. Unwanted options and details requested. 
+
+c. API ENdpoints - Not correct API ENdpoints on boarding. rquest form is misaligned and overlapped buttons. Unwanted options and details requested. 
+
+3.Event Parameters - Not functional and unrelated and unwanted information asked. Not coorect form to configure Events. also this section is missing from sidebar.
+
+4. Alerts rules - Same as Event Parameters. Also no define or inherited details from Organization, Data Resources and Event Parameters.also this section is missing from sidebar.
+
+5. Notification Delivery - this section is missing from sidebar.
+
+#Access Management -
+
+Guided Department Employee Permissions - not working up to mark. Permission tab is displayed duplicate employee selector. only search box is enough.
+a. Employee - tab is coming before department. create employee - Not asking for job designation.
+b. Departement - Not functional and unrelated and unwanted information asked in form. Not correct create form.
+c. Roles & Permissions - No fix definitions and simplification.
+
+#Sidebar - 
+
+Missing details and drop down function.
+No section for administartor page, Platform settings and help tab.
+No user manual or training section.

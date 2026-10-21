@@ -25,7 +25,7 @@ export default function DomainMonitoring({
     [selected, setSelected] = useState(initialResourceId || null),
     [history, setHistory] = useState(null),
     [detailError, setDetailError] = useState(""),
-    [compat, setCompat] = useState(false);
+    [compat, setCompat] = useState(true);
   const feed = useNativeFeed(
     "/api/v1/unified/domain-state/" +
       domain +
@@ -57,6 +57,17 @@ export default function DomainMonitoring({
       </div>
       {feed.error && <p role="alert">{feed.error}</p>}
       {!feed.data && !feed.error && <p>Loading monitored resources…</p>}
+      {domain !== "ETL" && (
+        <section className="domain-adapter-primary" aria-label={domain === "VM" ? "Infrastructure adapter evidence" : "Service probe evidence"}>
+          <button type="button" className="filter-button" aria-expanded={compat} onClick={() => setCompat((value) => !value)}>
+            {compat ? "Hide" : "Show"} {domain === "VM" ? "infrastructure adapter health" : "service probe health"}
+          </button>
+          {compat && (domain === "VM"
+            ? <LegacyVMHealth embedded organizationIds={organizationIds} environment={environment} />
+            : <LegacyAPIs embedded organizationIds={organizationIds} environment={environment} onNavigate={onNavigate} />)}
+        </section>
+      )}
+      {domain !== "ETL" && <h2>Registered monitoring resource context</h2>}
       <section className="card table-wrap">
         <table>
           <thead>
@@ -300,24 +311,6 @@ export default function DomainMonitoring({
             onSelect={onSelectExecution}
             onRetry={feed.refresh}
           />
-        </section>
-      )}
-      {domain !== "ETL" && (
-        <section className="card">
-          <button onClick={() => setCompat((v) => !v)}>
-            {compat ? "Hide" : "Show"} existing{" "}
-            {domain === "VM" ? "infrastructure adapters" : "service probes"}
-          </button>
-          {compat &&
-            (domain === "VM" ? (
-              <LegacyVMHealth embedded organizationIds={organizationIds} />
-            ) : (
-              <LegacyAPIs
-                embedded
-                organizationIds={organizationIds}
-                onNavigate={onNavigate}
-              />
-            ))}
         </section>
       )}
     </div>

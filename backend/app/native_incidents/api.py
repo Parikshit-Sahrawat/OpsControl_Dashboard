@@ -138,6 +138,7 @@ def inventory(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     db=Depends(get_db),
+    environments: list[Environment] = Query(default=[]),
 ):
     require_permission("incidents.view")
     query = select(OperationalIncident)
@@ -145,7 +146,13 @@ def inventory(
         for organization in organization_id:
             require_permission("incidents.view", organization)
         query = query.where(OperationalIncident.organization_id.in_(organization_id))
-    if environment:
+    listed_environments = environments if isinstance(environments, list) else []
+    if environment and listed_environments:
+        raise HTTPException(422, "Use environment or environments, not both")
+    selected_environments = (
+        [environment] if environment else list(dict.fromkeys(listed_environments))
+    )
+    if selected_environments:
         # An environment filter requires an actual resource/correlation binding.
         # Unmapped legacy evidence remains unknown, never guessed from names.
         bound = (
@@ -159,7 +166,7 @@ def inventory(
                 MonitoringResource.id == ResourceCondition.resource_id,
             )
             .where(
-                MonitoringResource.environment == environment,
+                MonitoringResource.environment.in_(selected_environments),
                 MonitoringResource.organization_id
                 == NativeIncidentAlert.organization_id,
             )
@@ -171,16 +178,16 @@ def inventory(
                 MonitoringResource.id == NativeIncidentFailure.resource_id,
             )
             .where(
-                MonitoringResource.environment == environment,
+                MonitoringResource.environment.in_(selected_environments),
                 MonitoringResource.organization_id
                 == NativeIncidentFailure.organization_id,
             )
         )
         sources = select(MonitoringResource.data_source_id).where(
-            MonitoringResource.environment == environment
+            MonitoringResource.environment.in_(selected_environments)
         )
         groups = select(cast(EventCorrelationGroup.id, String)).where(
-            EventCorrelationGroup.environment == environment
+            EventCorrelationGroup.environment.in_(selected_environments)
         )
         query = query.where(
             or_(

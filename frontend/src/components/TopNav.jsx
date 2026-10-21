@@ -18,15 +18,19 @@ const sections = [
     ["Resource Management", "Organizations", "organizations"],
     ["Resource Management", "Data Sources / Resources", "resources"],
     ["Resource Management", "Collectors", "collectors"],
+    ["Resource Management", "Event Parameters", "parameters"],
+    ["Resource Management", "Alert Rules", "rules"],
+    ["Resource Management", "Notification Delivery", "delivery"],
   ] },
   { name: "Access Management", items: [
-    ["Access Management", "Employees", "Employees"],
     ["Access Management", "Departments", "Departments"],
+    ["Access Management", "Employees", "Employees"],
     ["Access Management", "Roles & Permissions", "Roles & Permissions"],
     ["Access Management", "Organisational Access", "Organisational Access"],
     ["Access Management", "Access Audit", "Access Audit"],
   ] },
 ];
+const environmentChoices = ["PROD", "QA", "TEST", "DEV", "SANDBOX"];
 
 export default function TopNav({
   active,
@@ -44,7 +48,17 @@ export default function TopNav({
   onEnvironmentChange,
 }) {
   const [open, setOpen] = useState(false);
+  const [envOpen, setEnvOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("opscontrol.navGroups") || "{}");
+      return Object.fromEntries(sections.map(({ name }) => [name, saved?.[name] !== false]));
+    } catch { return {}; }
+  });
+  useEffect(() => {
+    localStorage.setItem("opscontrol.navGroups", JSON.stringify(expandedGroups));
+  }, [expandedGroups]);
   const mobileToggle = useRef(null);
   const navigation = useRef(null);
   const [collapsed, setCollapsed] = useState(
@@ -59,11 +73,12 @@ export default function TopNav({
   const ref = useRef(null);
   useEffect(() => {
     setOpen(false);
+    setEnvOpen(false);
     setMobileOpen(false);
   }, [active, user?.authorization_revision]);
   useEffect(() => {
     if (!mobileOpen) return;
-    navigation.current?.querySelector(".nav-button")?.focus();
+    navigation.current?.querySelector(".nav-group-toggle, .nav-button")?.focus();
     const close = (event) => {
       if (event.key === "Escape") {
         setMobileOpen(false);
@@ -76,11 +91,24 @@ export default function TopNav({
 
   useEffect(() => {
     const close = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(event.target)) {
+        setOpen(false);
+        setEnvOpen(false);
+      }
     };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    const escape = (event) => {
+      if (event.key === "Escape") { setOpen(false); setEnvOpen(false); }
+    };
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", escape); };
   }, []);
+  const selectedEnvironments = Array.isArray(environment) ? environment : environment ? [environment] : [];
+  const toggleEnvironment = (value) => onEnvironmentChange?.(
+    selectedEnvironments.includes(value)
+      ? selectedEnvironments.filter((item) => item !== value)
+      : [...selectedEnvironments, value],
+  );
 
   const allSelected =
     organizations.length > 0 && organizationIds.length === organizations.length;
@@ -105,6 +133,9 @@ export default function TopNav({
   };
 
   const currentGroup = sections.find((section) => section.items.some(([key]) => key === active));
+  useEffect(() => {
+    if (currentGroup) setExpandedGroups((previous) => ({ ...previous, [currentGroup.name]: true }));
+  }, [currentGroup]);
   const currentDestination = currentGroup?.items.find(([key, , child]) =>
     key === active && (!child || child === activeSection));
   return (
@@ -113,7 +144,7 @@ export default function TopNav({
         <button
           className="brand-link"
           onClick={() => onChange("Overview")}
-          aria-label="Go to Overview"
+          aria-label="Go to Dashboard"
         >
           <span className="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 24 24">
@@ -153,14 +184,24 @@ export default function TopNav({
           aria-expanded={!collapsed}
           onClick={() => setCollapsed((v) => !v)}
         >
-          {collapsed ? "→" : "←"}
+          {collapsed ? "+" : "×"}
         </button>
         {sections.map((section) => {
           const visible = section.items.filter(([key, , child]) =>
             child ? canOpenSection(user, key, child) : canNavigate(user, key));
           return visible.length ? (
             <div className="nav-group" role="group" aria-label={section.name} key={section.name}>
-              <span className="nav-section-label">{section.name}</span>
+              <button
+                type="button"
+                className="nav-section-label nav-group-toggle"
+                aria-label={`${section.name} navigation`}
+                aria-expanded={collapsed || expandedGroups[section.name] !== false}
+                aria-controls={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`}
+                onClick={() => setExpandedGroups((previous) => ({ ...previous, [section.name]: previous[section.name] === false }))}
+              >
+                <span>{section.name}</span><span aria-hidden="true">{expandedGroups[section.name] === false && !collapsed ? "▸" : "▾"}</span>
+              </button>
+              <div id={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`} className="nav-group-items" hidden={!collapsed && expandedGroups[section.name] === false}>
               {visible.map(([key, label, child]) => (
                 <button
                   key={child || key}
@@ -178,6 +219,7 @@ export default function TopNav({
                   <span>{label}</span>
                 </button>
               ))}
+              </div>
             </div>
           ) : null;
         })}
@@ -203,24 +245,22 @@ export default function TopNav({
         </div>
       ) : (
         <div className="global-context" ref={ref}>
-          <label className="environment-selector">
-            <span className="sr-only">Global environment</span>
-            <select
-              aria-label="Global environment"
-              value={environment}
-              onChange={(e) => onEnvironmentChange?.(e.target.value)}
-            >
-              <option value="">All environments</option>
-              {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </label>
+          <div className="environment-selector">
+            <button type="button" aria-label="Global environments" aria-expanded={envOpen} aria-controls="environment-options"
+              onClick={() => { setEnvOpen((value) => !value); setOpen(false); }}>
+              <span className="environment-label" title={selectedEnvironments.join(", ") || "All environments"}>{selectedEnvironments.length ? selectedEnvironments.join(", ") : "All environments"}</span><span aria-hidden="true">▾</span>
+            </button>
+            {envOpen && <fieldset id="environment-options" className="environment-options">
+              <legend>Environment filter</legend>
+              <button type="button" onClick={() => onEnvironmentChange?.([])}>All environments</button>
+              {environmentChoices.map((value) => <label key={value}><input type="checkbox" checked={selectedEnvironments.includes(value)} onChange={() => toggleEnvironment(value)} />{value}</label>)}
+            </fieldset>}
+          </div>
           <span className="context-label">Organization</span>
           <button
             disabled={!organizations.length}
             className={open ? "org-context-button open" : "org-context-button"}
-            onClick={() => setOpen((value) => !value)}
+            onClick={() => { setOpen((value) => !value); setEnvOpen(false); }}
             aria-haspopup="true"
             aria-expanded={open}
           >

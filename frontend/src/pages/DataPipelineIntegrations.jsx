@@ -30,6 +30,7 @@ export default function DataPipelineIntegrations({
   customers,
   organizationId,
   onResourceSelected,
+  existingOnly = false,
 }) {
   const [list, setList] = useState(null),
     [catalogue, setCatalogue] = useState(null),
@@ -316,13 +317,13 @@ export default function DataPipelineIntegrations({
     >
       <div className="page-heading">
         <div>
-          <h2>Data Pipelines integrations</h2>
+          <h2>{existingOnly ? "Existing native integration configuration" : "Data Pipelines integrations"}</h2>
           <p className="muted">
             One customer-scoped platform connection, multiple jobs and
             independently owned sources.
           </p>
         </div>
-        {hasPermission(user, "resources.create", organizationId) &&
+        {!existingOnly && hasPermission(user, "resources.create", organizationId) &&
           hasPermission(user, "etl.configure", organizationId) && (
             <button className="primary-button" onClick={create}>
               Create Data Pipeline

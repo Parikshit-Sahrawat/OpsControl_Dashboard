@@ -36,7 +36,7 @@ export function hasPermission(user, key, customerId, resource) {
 
 export function canNavigate(user, page) {
   if (page === "Resource Management")
-    return ["customers.view", "customers.create", "resources.view"].some(
+    return ["customers.view", "customers.create", "resources.view", "templates.view"].some(
       (key) => hasPermission(user, key),
     );
   return Boolean(
