@@ -19,12 +19,12 @@ Status: OWNER-APPROVED OPERATING MODEL; PROVISIONAL IMPLEMENTATION PLAN. Reposit
 - PR #33 protected. No production deploy without explicit owner approval.
 
 ## PR #41 merged baseline and post-merge verification debt
-PR #41 is MERGED into main at 65aa13114bdfe4a57e2bb3b396f822bd81090b38. Its head c98809e7de630ed9fbb04178acc7e58dd76ba434 had 16 successful and two failed workflow runs (Synthetic operational dashboard acceptance; ARCH-001 V1.5 continuous quality). The PR reports lowering critical backend coverage from 80% to 65% with a preceding-head measurement of 66.32%; this does not demonstrate compliance with the earlier 80% policy. Preserve UI work, classify post-merge technical debt separately, restore or explicitly reconcile the approved coverage policy, and rerun mandatory checks on current main. Do not label full technical certification, independent UAT or production readiness complete. PR #33 protected.
+PR #41 is MERGED into main at 65aa13114bdfe4a57e2bb3b396f822bd81090b38. Its head c98809e7de630ed9fbb04178acc7e58dd76ba434 had 16 successful and two failed workflow runs (Synthetic operational dashboard acceptance; ARCH-001 V1.5 continuous quality). The PR reports changing the critical backend coverage threshold from 80% to 65%, with preceding-head coverage of 66.32%. The owner has now withdrawn fixed percentage coverage thresholds for active development: record measured coverage as informational and preserve all functional, security, tenancy and migration gates. Preserve UI work, classify post-merge technical debt separately, restore or explicitly reconcile the approved coverage policy, and rerun mandatory checks on current main. Do not label full technical certification, independent UAT or production readiness complete. PR #33 protected.
 
 ## Sequential packages
 | Package | Workstream | Target bounded slice | Dependency | Developer-level exit |
 | --- | --- | --- | --- | --- |
-| P1-00 | DEV-01 | Post-merge PR #41 technical debt and exact main reconciliation | CI and coverage policy | Current-main required checks and coverage policy reconciled; retain merged UI |
+| P1-00 | DEV-01 | Post-merge PR #41 technical debt and exact main reconciliation | CI failures and coverage policy | Current-main functional/security checks verified; percentage coverage informational; retain merged UI |
 | P1-01 | DEV-01 | Recover UI-001–023 and source-path inventory; complete customer/employee workflows | P1-00 | All registered actions wired; RBAC negatives, browser tests |
 | P1-02 | DEV-01 | Profile and Help/SOP/FAQ UI and docs | P1-01 | Authenticated profile, permissions and responsive help navigation |
 | P1-03 | DEV-06 | Admin application settings API/persistence/security | P1-01 | Audited authorized changes; denied users cannot mutate |
@@ -46,7 +46,7 @@ Estimates: each package is decomposed into 2–3.5 hour active Codex slices afte
 Sprint 12–14/14R credit preserved. Sprint 15 baseline; 16 shared-resource design (correct to Kubernetes shared cluster, not VM); 17–19 identity/telemetry; 20 notifications; 21–22 agent/compute; 23 Kubernetes/cloud; 24–26 integrations; 27–29 topology; 30–31 SLO; 32–33 incident/analytics; 34–39 recovery/scale/lifecycle; 40 comprehensive UAT (Phase 2); 41 resilience and self-monitoring; 42 release decision (Phase 4). Sprint numbers do not establish code completeness. The original roadmap wording is not fully recovered; do not claim verbatim reconciliation.
 
 ## Phase 1 definition of done
-Every approved feature mapped to code and tests, frontend/backend/database integrated, security and customer-isolation negatives passing, critical coverage/CI policy met, populated-data preservation verified, documentation updated, final main SHA reconciled. Independent UAT and production certification remain distinct and unclaimed.
+Every approved feature mapped to code and tests, frontend/backend/database integrated, security and customer-isolation negatives passing, mandatory functional/security/CI checks met; measured code coverage reported without a fixed percentage threshold, populated-data preservation verified, documentation updated, final main SHA reconciled. Independent UAT and production certification remain distinct and unclaimed.
 
 ## Audit backlog
 Full main source-level and execution audit still required. This register is a documented starting inventory, not proof that every approved feature is enumerated. Codex should enrich exact source/test paths and provide actual run logs before reporting completion percentage.
