@@ -1,0 +1,49 @@
+# Development Completion Register — canonical Phase 1 index
+
+Status: **reconciled planning baseline**, 2026-10-22. Source snapshot: `origin/main` `ae4df971d07fa65bbe9e50fbdacba2c68ceae7be`. This is the sole Phase 1 requirement index; the 26 audit families and eight AUD findings are evidence/cross-references, not additional requirements. [Traceability](../verification/issue-47/TRACEABILITY.md), [actionable backlog](../verification/issue-47/BACKLOG.md), and [reconciliation evidence](../verification/issue-47/REPORT.md) extend this index. PR #43 remains a draft, documentation-only audit; its source findings are cited, not merged or edited. The prior planning-branch register at `955917474672df8c964e63f384513a2f373661d0` was a preliminary inventory at an older main SHA; this file supersedes it for planning, without overwriting that branch.
+
+## Authority and status rules
+
+[ARCH-001 V1.6](../ARCH_001_V16.md), [ARCH-ETL-001 V1.6](../architecture/ARCH_ETL_001_V16.md), the [Product Alignment Addendum](../architecture/PRODUCT_ALIGNMENT_ADDENDUM.md), the owner-approved [UI register](../verification/ui-alignment-fix/source/UI_001_023_REGISTER.md) and [Issue #42](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/42) establish approved development scope. The later explicit owner decision removed fixed-percentage development coverage gates; main's `scripts/test-quality.sh` measures and reports coverage without `--fail-under`. Behavioral, security, tenant-isolation, migration and CI checks remain mandatory. VM/EC2 has exactly one owning customer; shared-cluster associations require explicit authorization. Historical shared-VM planning is superseded for VMs. Resource Management owns configuration; Operations consumes monitoring evidence. Customer Organizations and provider Departments remain distinct. Pentaho remains monitoring-only.
+
+`IMPLEMENTED_VERIFIED` means the bounded source path has controlled automated execution evidence, **not** independent UAT or real-provider proof. `IMPLEMENTED_UNVERIFIED` means a source path exists but its end-to-end behavior is not demonstrated. `PARTIALLY_IMPLEMENTED` means an approved path is incomplete or a proposed requirement has only source overlap. `NOT_IMPLEMENTED` requires a confirmed absence after related-source search. `BLOCKED_ARCHITECTURE` means a new exact design/approval is needed before implementation. `SOURCE_NOT_RECOVERED` means original authority is absent. The 26 family assessments in the draft [PR #43 audit](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/43) are 14 bounded-source COMPLETE and 12 PARTIAL at `65aa131`; they are neither product-completion percentages nor current independent acceptance. Issue #46 extends controlled developer verification at `ae4df971` without changing code. Each requirement's source/test and next action are in [TRACEABILITY.md](../verification/issue-47/TRACEABILITY.md).
+
+| Canonical ID | Approved requirement / source wording | Owner | Development state at audited source | Next bounded action |
+| --- | --- | --- | --- | --- |
+| RM-01 | Customer Organizations are monitored customers, distinct from provider Departments | DEV-01 | IMPLEMENTED_VERIFIED | Retain negative cross-entity tests; independent UAT |
+| RM-02 | Resource Management is sole onboarding/inventory/configuration plane | DEV-01 | PARTIALLY_IMPLEMENTED | Recheck end-to-end draft/activation and avoid duplicate controls |
+| RM-03 | Compact lists, collapsible sidebar and responsive UX | DEV-01 | PARTIALLY_IMPLEMENTED | Target reproduced 390/768/1366 issues |
+| RM-04 | Collector configuration supports multiple independently added methods | DEV-02 | IMPLEMENTED_VERIFIED | Verify method attribution and real agent separately |
+| RM-05 | Method-specific canonical collection identity and one fenced active owner | DEV-02 | IMPLEMENTED_VERIFIED | Retain generation/fencing regression under concurrency |
+| AM-01 | Internal employees, departments, direct/inherited roles and customer-scoped RBAC | DEV-01 | IMPLEMENTED_VERIFIED | Independent UAT of all authorized actions |
+| AM-02 | Employee table Name/Username/Email and header actions | DEV-01 | IMPLEMENTED_UNVERIFIED | Reproduce UAT Cycle 2 findings before UI correction |
+| AM-03 | Departments Members & access navigation and assignment | DEV-01 | IMPLEMENTED_UNVERIFIED | Confirm actionable route and write permissions |
+| SET-01 | Profile/account security, display and notification preferences | DEV-01 | PARTIALLY_IMPLEMENTED | Map existing profile contracts; implement only missing approved UI/API |
+| SET-02 | Admin-authorized platform settings with safe persistence/audit | DEV-06 | NOT_IMPLEMENTED | Define safe editable keys; keep resource-specific settings in RM |
+| HELP-01 | Manual, technical docs, provider SOP/runbooks, FAQ | DEV-01 | PARTIALLY_IMPLEMENTED | Inventory existing help content and scoped SOP presentation |
+| TEL-01 | Windows/Linux agent install/enrollment and authenticated bridge | DEV-02 | PARTIALLY_IMPLEMENTED | Bound installed-build fixture/packaging checks; real OS acceptance later |
+| TEL-02 | Logs, metrics, traces with explicit method identity | DEV-02 | PARTIALLY_IMPLEMENTED | Verify each signal path and attribution |
+| TEL-03 | Durable ingestion, backpressure, replay and loss accounting | DEV-02 | PARTIALLY_IMPLEMENTED | Define approved delivery contract before additions |
+| TEL-04 | Certificate lifecycle/private trust/clock uncertainty | DEV-06 | BLOCKED_ARCHITECTURE | Provider CA, network and clock policies; controlled implementation later |
+| CMP-01 | Windows/Linux VM/EC2 native operational health | DEV-03 | IMPLEMENTED_VERIFIED | Preserve source/health distinction; real-provider acceptance later |
+| CMP-02 | One owning customer for each VM/EC2 | DEV-03 | IMPLEMENTED_VERIFIED | Retain FK and forged-ID negatives |
+| DP-01 | Read-only Pentaho outcome, health, identity and evidence | DEV-03 | PARTIALLY_IMPLEMENTED | Native child evidence and RT-001–020 remain open |
+| DP-02 | Nine platform-native classifications and version-aware profiles | DEV-03 | PARTIALLY_IMPLEMENTED | Exact build/method capability evidence, no invented support |
+| API-01 | HTTP/TLS/synthetic endpoint operational monitoring | DEV-03 | IMPLEMENTED_VERIFIED | Confirm actual target freshness/authorization; real-network acceptance later |
+| K8S-01 | Authorized multi-customer canonical Kubernetes clusters | DEV-04 | BLOCKED_ARCHITECTURE | Approve additive identity/association/attribution design |
+| K8S-02 | EKS discovery and node/pod/cluster health | DEV-04 | PARTIALLY_IMPLEMENTED | Verify provider-native data and private API in approved lab |
+| TOP-01 | Customer-safe topology relationships, freshness/history | DEV-04 | PARTIALLY_IMPLEMENTED | Benchmark graph and specify version/expiry policy |
+| OPS-01 | Alerting, incident/service ownership and notifications | DEV-05 | PARTIALLY_IMPLEMENTED | Delivery and escalation contract/negative tests |
+| OPS-02 | Versioned SLO policy, denominator and reproducible evidence | DEV-05 | BLOCKED_ARCHITECTURE | Recover source or approve precise SLO contract |
+| OPS-03 | Recovery validation with health, workload, dependencies and observation | DEV-05 | IMPLEMENTED_VERIFIED | Independent downstream/recovery UAT; no automatic certification |
+| OPS-04 | Coverage/blind spots, self-monitoring and scoped reporting | DEV-05 | PARTIALLY_IMPLEMENTED | Inject outages; define completeness projections |
+| PLT-01 | Populated migrations, backup, restore, legal holds and DR | DEV-06 | PARTIALLY_IMPLEMENTED | Controlled preservation recheck; real WAL/PITR/DR later |
+| PLT-02 | Stage B branch-aware Feature UAT and controlled deployment | DEV-06 | PARTIALLY_IMPLEMENTED | Isolated runner rehearsal subject to approval; no auto-deploy |
+| PLT-03 | Security, residency, legal holds and retention | DEV-06 | PARTIALLY_IMPLEMENTED | Decide data policy before residency implementation |
+| PLT-04 | Performance, fleet lifecycle, bounded inventory and storage cost | DEV-06 | PARTIALLY_IMPLEMENTED | Measure representative workload before optimization |
+
+UI-001–UI-023 are **individually approved** and mapped individually in [TRACEABILITY.md](../verification/issue-47/TRACEABILITY.md). They refine the RM/AM/CMP/DP/API/OPS requirements rather than create parallel products. [OC-IMP-001–018](../verification/arch-etl-001-v16-r1/sprint12/OC_IMP_V20_BASELINE.md) are **individually `PROPOSED_OWNER_REVIEW`**, even where source code overlaps or later planning calls the group “approved.” The approval to *create the proposal baseline* is documented; individual approval records are not. No OC-IMP proposal is a coding authorization by this index. `OC-IMP-017`'s shared-VM example conflicts with the later one-customer VM decision and must be redrafted around Kubernetes before any approval. `AUD-01–08` are evidence/findings, not new approved requirements. Their mappings are in the traceability table. All historical `IMP-001–IMP-062` original definitions and approval records remain `SOURCE_NOT_RECOVERED`; the eight known titles are not sufficient definitions. No tasks are inferred from missing original text.
+
+## Development Complete exit rule
+
+Phase 1 is Development Complete only when every approved development-scope item is implemented with frontend/backend integration, durable persistence/migration safety where relevant, RBAC and tenant-isolation negatives, meaningful automated tests and required CI at an exact immutable SHA; any remaining item must have explicit owner disposition. No unresolved critical development defect may remain. Measure/report actual coverage; **no fixed percentage gate** applies during active development. Phase 2 independent UAT, genuine Pentaho and other provider acceptance, representative capacity tests, Phase 4 recovery certification and deployment approval remain separate. Current state is **NOT Development Complete; production NOT READY**.
