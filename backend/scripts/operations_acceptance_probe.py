@@ -283,9 +283,40 @@ def phase(phase):
     assert item["observations"] == (2 if phase == "failed" else 3)
     assert item["sample_success_percent"] == (50 if phase == "failed" else 66.67)
     assert item["unknown"] == 0 and item["failed"] == 1
+    assert len(reports["etl"]) == 1
     etl = reports["etl"][0]
-    assert etl["executions"] == (5 if phase == "failed" else 6)
-    assert etl["no_run"] == 1 and etl["sla_excluded"] == 4
+    assert etl["id"] == state["job_id"]
+    # Partial Carte inventory did not prove a missed occurrence. The four
+    # observed failed-phase invocations, then a distinct recovered invocation,
+    # are the complete customer-scoped history for this fixture.
+    expected_ids = {
+        "controlled-running",
+        "controlled-long-running",
+        "controlled-sla-breach",
+        "controlled-failed",
+    }
+    if phase == "recovered":
+        expected_ids.add("controlled-recovered")
+    from app.models import JobOrderHistory
+
+    with SessionLocal() as db:
+        rows = db.scalars(
+            select(JobOrderHistory).where(
+                JobOrderHistory.job_order_id == UUID(state["job_id"])
+            )
+        ).all()
+    assert {row.provider_execution_id for row in rows} == expected_ids
+    assert all(row.status.value != "NO_RUN" for row in rows)
+    window_start = datetime.fromisoformat(reports["window_start"])
+    window_end = datetime.fromisoformat(reports["window_end"])
+    assert all(
+        row.detected_at is not None and window_start <= row.detected_at <= window_end
+        for row in rows
+    )
+    execution_rows = api(200, "GET", "/api/v1/etl/executions", state["reader_token"])
+    assert {row["provider_execution_id"] for row in execution_rows} == expected_ids
+    assert etl["executions"] == len(rows) == len(execution_rows)
+    assert etl["no_run"] == 0 and etl["sla_excluded"] == 3
     assert (
         etl["runtime_sla_percent"] == 100
     )  # outcome failure and runtime SLA are distinct

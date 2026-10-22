@@ -90,7 +90,25 @@ try {
   checks.push(
     "Independent monitoring alerts render; reader cannot acknowledge",
   );
+  const etlReportResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/v1/unified/reports/ETL",
+  );
   await nav(page, "Reports");
+  const etlReport = await (await etlReportResponse).json();
+  if (phase === "failed" || phase === "recovered") {
+    const expectedExecutions = phase === "failed" ? 4 : 5;
+    assert.equal(etlReport.summary.observed_executions, expectedExecutions);
+    assert.equal(etlReport.summary.no_run, 0);
+    await page
+      .getByText("observed executions", { exact: true })
+      .locator("..")
+      .getByRole("cell", { name: String(expectedExecutions), exact: true })
+      .waitFor();
+    checks.push(
+      "Scoped ETL report count matches persisted executions without a false No Run",
+    );
+  }
   const reportResponse = page.waitForResponse(
     (r) =>
       new URL(r.url()).pathname === "/api/v1/unified/reports/API" &&
