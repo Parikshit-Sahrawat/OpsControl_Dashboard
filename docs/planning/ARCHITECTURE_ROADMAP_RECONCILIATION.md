@@ -15,7 +15,7 @@ Baseline: main 65aa13114bdfe4a57e2bb3b396f822bd81090b38 (PR #41 merged). This is
 | Historical statement | Resolution | Verification obligation |
 | --- | --- | --- |
 | Shared VM / multi-customer VM association in Sprint 12/16/27–29 and historical P0-03 | SUPERSEDED for VM/EC2 by exclusive customer ownership; shared-resource scenarios apply to explicitly authorized Kubernetes clusters | Inspect models, constraints, API, telemetry, browser customer selection and negative tests |
-| Sprint 14R unchanged 80% backend coverage versus PR #41 description lowering gate to 65% | POLICY CONFLICT; PR #41 merged but 80% was earlier approved and no new owner approval for 65% established in this conversation | Identify active CI threshold, compare original approval, obtain explicit policy decision or restore 80%; run current main coverage |
+| Historical 80% backend coverage requirement versus PR #41's 65% threshold | SUPERSEDED by owner decision: no fixed code-coverage percentage gate during active feature development | Report measured coverage as informational; keep tests, build, security, tenant-isolation and migration-integrity checks mandatory |
 | PR #41 pending in older planning files | SUPERSEDED: merged into main 65aa13114bdfe4a57e2bb3b396f822bd81090b38 | Run current-main technical validation; do not re-merge |
 | Sprint 40 formal independent UAT during development | MOVE ACCEPTANCE to Phase 2; implementation test infrastructure may be coded during Phase 1 | Separate implementation complete from independently accepted |
 | Sprint 42 controlled adoption/release decision during development | MOVE RELEASE to Phase 4 | Preserve seven release gates and explicit owner authorization |
