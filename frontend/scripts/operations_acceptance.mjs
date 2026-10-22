@@ -46,6 +46,12 @@ try {
       .count(),
     0,
   );
+  await page.locator(".org-context-button").click();
+  const organizations = page.locator(".org-menu");
+  assert.equal(await organizations.getByText("Other ETL Tenant").count(), 0);
+  await organizations
+    .getByRole("checkbox", { name: /Controlled ETL Lab/ })
+    .check();
   await nav(page, "API Endpoint Monitoring");
   const showProbes = page.getByRole("button", { name: "Show service probe health", exact: true });
   await page.getByRole("button", { name: /^(Show|Hide) service probe health$/ }).waitFor();
