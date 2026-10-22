@@ -44,11 +44,11 @@ Windows packaging workflow and target-host validation.
 | `make test-e2e` | TLS runtime lab followed sequentially by a separate HTTP API/browser lab |
 | `make test-security` | Access, release-hardening and remote-authentication regressions; actual Python/npm advisory scans |
 | `make test-quality` | Black checks, Ruff correctness checks, focused Prettier checks, ESLint and production frontend build |
-| `make test-coverage` | Merge executed coverage, emit JSON/XML and enforce the configured critical-module target |
+| `make test-coverage` | Merge executed coverage and emit JSON/XML and human-readable summaries; invalid or missing evidence fails |
 | `make test-performance` | Actual bounded local API and authenticated OTLP load, requiring private input configuration |
 | `make test-compatibility` | Independent Access schema/API/security regression and controlled legacy monitoring UAT |
 | `make test-docker` | Owned Docker image builds, populated bootstrap, startup/restart and authentication smoke |
-| `make test-all` | Quality, unit, Agent, sequential runtime/browser labs, Access/legacy workflow regressions, Docker smoke, security and coverage gate |
+| `make test-all` | Quality, unit, Agent, sequential runtime/browser labs, Access/legacy workflow regressions, Docker smoke, security and coverage reporting |
 
 Failures return a nonzero exit status. The quality workflow runs on every push to
 `main`, pull requests and manual dispatch. Dependency downloads use pip/npm
@@ -84,7 +84,7 @@ tools; missing tools are errors, not skipped success.
 Do not run networking integration harnesses concurrently with the browser run.
 Docker networking changes can invalidate Chromium's current network context.
 
-## Coverage evidence and target
+## Coverage evidence and development policy
 
 Coverage includes branch and statement execution for these critical areas:
 
@@ -103,10 +103,14 @@ processes retain executed coverage. Forced SIGKILL cannot flush evidence and mus
 not be described as verified coverage. Unexecuted modules remain in the denominator. Fixture and browser test code is
 not included in the critical application coverage denominator.
 
-The target is **80%**; `make test-coverage` fails below it. The threshold can be
-changed explicitly with `OPSCONTROL_COVERAGE_MIN`, but a lower local threshold is
-not evidence that the standard target passed. The main workflow fixes the target
-at 80%.
+During active development, actual coverage is measured and reported without a
+fixed minimum-percentage CI gate. Mandatory behavioral, authorization, security,
+migration and integration tests remain enforced. The earlier 80% and 65% floors
+are historical decisions, superseded by Issue #45 for the development phase.
+`make test-coverage` still fails when required coverage data is missing or invalid;
+it produces JSON, XML and a human-readable statement/branch summary when data is
+valid. A numerical report is evidence of executed tests, not independent UAT or
+production certification.
 
 The current clean verification results are recorded in `ARCH-001_IMPLEMENTATION_STATUS.md`. Always use a fresh evidence directory for a source revision; historical coverage and screenshots do not certify subsequently changed code.
 
