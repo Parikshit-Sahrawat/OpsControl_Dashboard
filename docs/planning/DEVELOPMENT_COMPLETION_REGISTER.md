@@ -1,7 +1,7 @@
 # OpsControl Development Completion Register v1.0
 
 Status: OWNER-APPROVED SCOPE; PRELIMINARY SOURCE-TRACEABILITY INVENTORY; NOT A FULL SOURCE/EXECUTION AUDIT.
-Baseline: main 65aa13114bdfe4a57e2bb3b396f822bd81090b38, the verified PR #41 merge commit. PR #41 is MERGED; its source is in main. Exact-head CI and coverage-policy discrepancies require a separate post-merge audit. PR #33 protected.
+Baseline: main 65aa13114bdfe4a57e2bb3b396f822bd81090b38, the verified PR #41 merge commit. PR #41 is MERGED; its source is in main. Exact-head CI failures require post-merge audit; the owner has withdrawn fixed percentage coverage thresholds during active development. PR #33 protected.
 Governance: Issue #42. Do not infer completion from sprint number, fixture success or PR description. Status codes: IMPLEMENTED_REPORTED, PARTIAL, NOT_IMPLEMENTED_REPORTED, SOURCE_AUDIT_REQUIRED, EXTERNAL_ACCEPTANCE_PENDING. The 'evidence' column is a lead for source audit, not proof of all individual feature files.
 
 | ID | Approved requirement / feature | Workstream | Current status | Evidence/source inspection starting points | Missing work / verification | Dependencies |
