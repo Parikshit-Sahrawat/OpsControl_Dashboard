@@ -8,6 +8,7 @@ from sqlalchemy import select, func, text
 from sqlalchemy.exc import DBAPIError
 from app.db.session import SessionLocal
 from app.models import OperationalIncident, IncidentActivity, CollectorRun, Collector
+from app.unified.models import MonitoringResource
 from scripts.etl_acceptance_probe import PRIVATE, BASE, api, login, load
 
 OUT = Path(os.environ["OPERATIONAL_EVIDENCE_DIR"])
@@ -233,6 +234,17 @@ def setup():
     state["mixed_token"] = login("noc-mixed", password)
     save(state)
     collect_http(200)
+    with SessionLocal() as db:
+        resource = db.get(MonitoringResource, UUID(state["http_source_id"]))
+        assert resource and resource.data_source_id == resource.id
+        assert resource.organization_id == UUID(state["org_id"])
+    scoped_path = (
+        "/api/v1/unified/resources?domain=API&organization_id=" + state["org_id"]
+    )
+    own_resources = api(200, "GET", scoped_path, state["reader_token"])["items"]
+    assert any(row["id"] == state["http_source_id"] for row in own_resources)
+    other_resources = api(200, "GET", scoped_path, state["other_token"])["items"]
+    assert all(row["id"] != state["http_source_id"] for row in other_resources)
     services = api(200, "GET", "/api/v1/operations/services", state["reader_token"])
     assert services["summary"] == {
         "HEALTHY": 1,

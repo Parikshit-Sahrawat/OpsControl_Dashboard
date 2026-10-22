@@ -104,9 +104,19 @@ try {
     report.summary.completed_probes > 0,
     "Reports must contain actual completed probe evidence",
   );
+  const reportResource = `Fictional NOC HTTPS Portal · PROD · ${state.http_source_id}`;
   await page
-    .getByRole("option", { name: "Fictional NOC HTTPS Portal", exact: true })
+    .locator(`#report-resource-choices option[value="${reportResource}"]`)
     .waitFor({ state: "attached" });
+  const filteredResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/v1/unified/reports/API" &&
+      url.searchParams.getAll("resource_id").includes(state.http_source_id);
+  });
+  await page.getByLabel("Report resource").fill(reportResource);
+  const filteredReport = await (await filteredResponse).json();
+  assert.deepEqual(filteredReport.resources.map((row) => row.id), [state.http_source_id]);
+  assert(filteredReport.summary.completed_probes > 0);
   await page
     .getByRole("button", { name: "Export JSON", exact: true })
     .waitFor();
@@ -115,7 +125,7 @@ try {
   );
   await nav(page, "Data Pipeline Monitoring");
   await page
-    .getByRole("heading", { name: "Data Pipeline Monitoring", exact: true })
+    .getByRole("heading", { name: "Pipeline Inventory", exact: true })
     .waitFor();
   checks.push("Data pipeline execution screen remains functional");
   await page.screenshot({ path: out + "/" + phase + ".png", fullPage: true });
