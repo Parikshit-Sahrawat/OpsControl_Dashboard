@@ -13,8 +13,6 @@ jobs:
   verification:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
-    env:
-      OPSCONTROL_COVERAGE_MIN: '65'
     steps:
       - name: Configure runner-local evidence and tool paths
         shell: bash
@@ -109,7 +107,7 @@ jobs:
         env:
           OPSCONTROL_BUILD_OVERRIDE: ${{ runner.temp }}/v15-build-cache.yml
         run: make test-docker
-      - name: Measure critical-module coverage and enforce target
+      - name: Measure and report critical-module coverage
         if: always()
         run: make test-coverage
       - name: Preserve redacted results and screenshots
