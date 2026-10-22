@@ -60,6 +60,15 @@ async function route(p, key) {
     .click();
   await p.getByRole("heading", { name: pages[key], exact: true }).waitFor();
 }
+async function selectEnvironment(p, current, next) {
+  const selector = p.getByRole("button", { name: "Global environments" });
+  await selector.click();
+  const options = p.getByRole("group", { name: "Environment filter" });
+  if (current) await options.getByRole("checkbox", { name: current }).uncheck();
+  await options.getByRole("checkbox", { name: next }).check();
+  await selector.click();
+  assert.match(await selector.textContent(), new RegExp(next));
+}
 async function search(p, value = "Orders") {
   await p.getByLabel("Find pipeline", { exact: true }).fill(value);
   await p
@@ -419,7 +428,7 @@ try {
   checks.push(
     "Real customer selection clears sensitive data and discards delayed response",
   );
-  await page.getByLabel("Global environment").selectOption("PROD");
+  await selectEnvironment(page, "TEST", "PROD");
   await page
     .getByText("No matching records in this authorized scope.", { exact: true })
     .waitFor();
@@ -429,7 +438,7 @@ try {
       .count(),
     0,
   );
-  await page.getByLabel("Global environment").selectOption("TEST");
+  await selectEnvironment(page, "PROD", "TEST");
   await page
     .getByRole("button", { name: "Beta isolated pipeline", exact: true })
     .waitFor();
@@ -491,9 +500,8 @@ try {
     .click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Data Sources / Resources", exact: true })
+    .getByRole("button", { name: "Organizations", exact: true })
     .click();
-  await page.getByRole("tab", { name: "Organizations", exact: true }).click();
   await page
     .getByRole("region", { name: "Monitored customer organizations" })
     .getByRole("table")

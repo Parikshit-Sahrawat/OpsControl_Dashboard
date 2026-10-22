@@ -46,6 +46,12 @@ try {
       .count(),
     0,
   );
+  await page.locator(".org-context-button").click();
+  const organizations = page.locator(".org-menu");
+  assert.equal(await organizations.getByText("Other ETL Tenant").count(), 0);
+  await organizations
+    .getByRole("checkbox", { name: /Controlled ETL Lab/ })
+    .check();
   await nav(page, "API Endpoint Monitoring");
   const showProbes = page.getByRole("button", { name: "Show service probe health", exact: true });
   await page.getByRole("button", { name: /^(Show|Hide) service probe health$/ }).waitFor();
@@ -84,7 +90,25 @@ try {
   checks.push(
     "Independent monitoring alerts render; reader cannot acknowledge",
   );
+  const etlReportResponse = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === "/api/v1/unified/reports/ETL",
+  );
   await nav(page, "Reports");
+  const etlReport = await (await etlReportResponse).json();
+  if (phase === "failed" || phase === "recovered") {
+    const expectedExecutions = phase === "failed" ? 4 : 5;
+    assert.equal(etlReport.summary.observed_executions, expectedExecutions);
+    assert.equal(etlReport.summary.no_run, 0);
+    await page
+      .getByText("observed executions", { exact: true })
+      .locator("..")
+      .getByRole("cell", { name: String(expectedExecutions), exact: true })
+      .waitFor();
+    checks.push(
+      "Scoped ETL report count matches persisted executions without a false No Run",
+    );
+  }
   const reportResponse = page.waitForResponse(
     (r) =>
       new URL(r.url()).pathname === "/api/v1/unified/reports/API" &&
@@ -98,9 +122,19 @@ try {
     report.summary.completed_probes > 0,
     "Reports must contain actual completed probe evidence",
   );
+  const reportResource = `Fictional NOC HTTPS Portal · PROD · ${state.http_source_id}`;
   await page
-    .getByRole("option", { name: "Fictional NOC HTTPS Portal", exact: true })
+    .locator(`#report-resource-choices option[value="${reportResource}"]`)
     .waitFor({ state: "attached" });
+  const filteredResponse = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return url.pathname === "/api/v1/unified/reports/API" &&
+      url.searchParams.getAll("resource_id").includes(state.http_source_id);
+  });
+  await page.getByLabel("Report resource").fill(reportResource);
+  const filteredReport = await (await filteredResponse).json();
+  assert.deepEqual(filteredReport.resources.map((row) => row.id), [state.http_source_id]);
+  assert(filteredReport.summary.completed_probes > 0);
   await page
     .getByRole("button", { name: "Export JSON", exact: true })
     .waitFor();
@@ -109,7 +143,7 @@ try {
   );
   await nav(page, "Data Pipeline Monitoring");
   await page
-    .getByRole("heading", { name: "Data Pipeline Monitoring", exact: true })
+    .getByRole("heading", { name: "Pipeline Inventory", exact: true })
     .waitFor();
   checks.push("Data pipeline execution screen remains functional");
   await page.screenshot({ path: out + "/" + phase + ".png", fullPage: true });

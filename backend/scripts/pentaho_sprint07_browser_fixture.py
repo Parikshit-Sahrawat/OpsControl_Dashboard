@@ -91,6 +91,7 @@ try:
         "incidents.manage",
         "incidents.acknowledge",
         "resources.view",
+        "customers.view",
         "access.view",
     ]
     lab.grant(lab.user, keys)

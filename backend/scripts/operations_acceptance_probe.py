@@ -8,6 +8,7 @@ from sqlalchemy import select, func, text
 from sqlalchemy.exc import DBAPIError
 from app.db.session import SessionLocal
 from app.models import OperationalIncident, IncidentActivity, CollectorRun, Collector
+from app.unified.models import MonitoringResource
 from scripts.etl_acceptance_probe import PRIVATE, BASE, api, login, load
 
 OUT = Path(os.environ["OPERATIONAL_EVIDENCE_DIR"])
@@ -233,6 +234,17 @@ def setup():
     state["mixed_token"] = login("noc-mixed", password)
     save(state)
     collect_http(200)
+    with SessionLocal() as db:
+        resource = db.get(MonitoringResource, UUID(state["http_source_id"]))
+        assert resource and resource.data_source_id == resource.id
+        assert resource.organization_id == UUID(state["org_id"])
+    scoped_path = (
+        "/api/v1/unified/resources?domain=API&organization_id=" + state["org_id"]
+    )
+    own_resources = api(200, "GET", scoped_path, state["reader_token"])["items"]
+    assert any(row["id"] == state["http_source_id"] for row in own_resources)
+    other_resources = api(200, "GET", scoped_path, state["other_token"])["items"]
+    assert all(row["id"] != state["http_source_id"] for row in other_resources)
     services = api(200, "GET", "/api/v1/operations/services", state["reader_token"])
     assert services["summary"] == {
         "HEALTHY": 1,
@@ -271,9 +283,40 @@ def phase(phase):
     assert item["observations"] == (2 if phase == "failed" else 3)
     assert item["sample_success_percent"] == (50 if phase == "failed" else 66.67)
     assert item["unknown"] == 0 and item["failed"] == 1
+    assert len(reports["etl"]) == 1
     etl = reports["etl"][0]
-    assert etl["executions"] == (5 if phase == "failed" else 6)
-    assert etl["no_run"] == 1 and etl["sla_excluded"] == 4
+    assert etl["id"] == state["job_id"]
+    # Partial Carte inventory did not prove a missed occurrence. The four
+    # observed failed-phase invocations, then a distinct recovered invocation,
+    # are the complete customer-scoped history for this fixture.
+    expected_ids = {
+        "controlled-running",
+        "controlled-long-running",
+        "controlled-sla-breach",
+        "controlled-failed",
+    }
+    if phase == "recovered":
+        expected_ids.add("controlled-recovered")
+    from app.models import JobOrderHistory
+
+    with SessionLocal() as db:
+        rows = db.scalars(
+            select(JobOrderHistory).where(
+                JobOrderHistory.job_order_id == UUID(state["job_id"])
+            )
+        ).all()
+    assert {row.provider_execution_id for row in rows} == expected_ids
+    assert all(row.status.value != "NO_RUN" for row in rows)
+    window_start = datetime.fromisoformat(reports["window_start"])
+    window_end = datetime.fromisoformat(reports["window_end"])
+    assert all(
+        row.detected_at is not None and window_start <= row.detected_at <= window_end
+        for row in rows
+    )
+    execution_rows = api(200, "GET", "/api/v1/etl/executions", state["reader_token"])
+    assert {row["provider_execution_id"] for row in execution_rows} == expected_ids
+    assert etl["executions"] == len(rows) == len(execution_rows)
+    assert etl["no_run"] == 0 and etl["sla_excluded"] == 3
     assert (
         etl["runtime_sla_percent"] == 100
     )  # outcome failure and runtime SLA are distinct

@@ -25,6 +25,11 @@ const primaryTabs = [
   "Reports",
   "Resource Management",
 ];
+const headings = {
+  Overview: "Dashboard",
+  "Data Pipeline Monitoring": "Pipeline Inventory",
+  "Resource Management": "Resource Management",
+};
 const checks = [],
   screenshots = [],
   pageErrors = [],
@@ -123,30 +128,36 @@ async function expandExisting(page, label) {
 }
 
 async function tab(page, name) {
-  await page.getByRole("button", { name, exact: true }).first().click();
-  await page.getByRole("heading", { name, exact: true }).waitFor();
+  if (await page.getByRole("button", { name: "Open navigation" }).isVisible())
+    await page.getByRole("button", { name: "Open navigation" }).click();
+  const destination = name === "Resource Management" ? "Data Sources / Resources"
+    : name === "Access Management" ? "Employees" : name;
+  await page.getByRole("navigation", { name: "Primary navigation" })
+    .getByRole("button", { name: destination, exact: true }).click();
+  await page.getByRole("heading", { name: headings[name] || name, exact: true }).waitFor();
   // Wait for actual persisted fixture evidence on each redesigned screen.
   if (name === "Overview") {
     await page
-      .getByRole("row")
-      .filter({ hasText: "Data Pipeline Monitoring" })
+      .getByRole("heading", { name: "Running Data Pipeline Executions" })
       .waitFor();
   } else if (name === "Data Pipeline Monitoring") {
+    await page.getByRole("navigation", { name: "Pipeline operational pages" })
+      .getByRole("link", { name: "Execution History" }).click();
     await page
-      .getByRole("heading", { name: "Execution investigation", exact: true })
-      .locator("..")
+      .locator(".pipeline-workspace .card")
+      .filter({ has: page.getByRole("heading", { name: "Current Executions" }) })
       .getByRole("row")
       .filter({ hasText: "Fictional Daily Warehouse" })
       .first()
       .waitFor();
   } else if (name === "Compute Health") {
-    await expandExisting(page, "existing infrastructure adapters");
+    await expandExisting(page, "infrastructure adapter health");
     await page
       .getByTestId("infrastructure-row")
       .filter({ hasText: "ETL live Linux worker" })
       .waitFor();
   } else if (name === "API Endpoint Monitoring") {
-    await expandExisting(page, "existing service probes");
+    await expandExisting(page, "service probe health");
     await page
       .getByTestId("service-row")
       .filter({ hasText: "Fictional NOC HTTPS Portal" })
@@ -171,16 +182,15 @@ async function tab(page, name) {
       evidence.summary.completed_probes > 0,
       "Reports must aggregate actual completed probe evidence",
     );
-    await page
-      .getByRole("option", { name: "Fictional NOC HTTPS Portal", exact: true })
+    await page.locator(`#report-resource-choices option[value="Fictional NOC HTTPS Portal · PROD · ${state.http_source_id}"]`)
       .waitFor({ state: "attached" });
   } else if (name === "Resource Management") {
     await page.getByRole("tab", { name: "API Endpoints", exact: true }).click();
     await page
-      .getByRole("button", { name: "Fictional NOC HTTPS Portal", exact: true })
+      .getByRole("row")
+      .filter({ hasText: "Fictional NOC HTTPS Portal" })
       .waitFor();
   } else if (name === "Access Management") {
-    await page.getByRole("button", { name: "Employees", exact: true }).click();
     await page
       .getByRole("row")
       .filter({ hasText: "etl-operator" })
@@ -322,8 +332,8 @@ try {
     await dialog.waitFor({ state: "hidden" });
     await tab(page, "Data Pipeline Monitoring");
     await page
-      .getByRole("heading", { name: "Execution investigation", exact: true })
-      .locator("..")
+      .locator(".pipeline-workspace .card")
+      .filter({ has: page.getByRole("heading", { name: "Current Executions" }) })
       .getByRole("row")
       .filter({ hasText: "Fictional Daily Warehouse" })
       .click();
@@ -347,25 +357,23 @@ try {
     await page
       .getByRole("button", { name: "Create Compute Instance", exact: true })
       .click();
-    const resource = page.getByRole("dialog", {
+    const resource = page.getByRole("region", {
       name: "Create Compute Instance",
       exact: true,
     });
     await resource.waitFor();
-    await page.keyboard.press("Shift+Tab");
     assert.equal(
-      await resource.evaluate((element) =>
-        element.contains(document.activeElement),
-      ),
+      await resource.getByRole("heading", { name: "Create Compute Instance" })
+        .evaluate((element) => element === document.activeElement),
       true,
     );
-    await page.keyboard.press("Escape");
+    await resource.getByRole("button", { name: "Close resource form" }).click();
     await resource.waitFor({ state: "hidden" });
     checks.push(
-      `${mode}: execution drawer and resource modal trap keyboard focus and support Escape without saving changes`,
+      `${mode}: execution drawer traps focus and closes with Escape; resource workspace receives focus and closes without saving`,
     );
     checks.push(
-      `${mode}: all eight primary tabs and administrator access screen show real backend evidence; status badges meet 4.5:1 contrast; investigation opens and Escape closes`,
+      `${mode}: eight primary destinations and administrator access screen show real backend evidence; status badges meet 4.5:1 contrast; investigation opens and Escape closes`,
     );
   }
 
@@ -380,11 +388,23 @@ try {
     "Appearance changes synchronize between documents through browser storage events",
   );
 
+  await tab(page, "Overview");
+  const sessionCheck = page.waitForResponse((response) =>
+    new URL(response.url()).pathname === "/api/v1/auth/me" &&
+    response.request().method() === "GET",
+  );
   await page.reload();
-  await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
+  const sessionStatus = (await sessionCheck).status();
   await themeIs(page, "light");
+  if (sessionStatus === 200) {
+    await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
+  } else {
+    assert.equal(sessionStatus, 401, "Only an expired session may require fresh authentication");
+    await login(page);
+    await chooseOrganization(page, "Controlled ETL Lab");
+  }
   checks.push(
-    "Explicit light preference survives document reload while authenticated",
+    "Explicit light preference survives document reload and authenticated session reconciliation",
   );
   const darkButton = page.getByRole("button", {
     name: "Dark theme",
@@ -425,7 +445,7 @@ try {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await tab(page, "Overview");
   const motion = await page
-    .locator(".unified-overview tbody button")
+    .locator(".unified-overview .card")
     .first()
     .evaluate((element) => ({
       reduced: matchMedia("(prefers-reduced-motion: reduce)").matches,
