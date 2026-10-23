@@ -35,6 +35,7 @@ class ApiServiceHealthProjectionTests(unittest.TestCase):
             ("RUNNING", "UNKNOWN"),
             ("ERROR", "CRITICAL"),
             ("HEALTHY", "HEALTHY"),
+            ("SUCCESS", "HEALTHY"),  # authenticated remote probe completion
         ):
             with self.subTest(status=status):
                 collector.status = status
