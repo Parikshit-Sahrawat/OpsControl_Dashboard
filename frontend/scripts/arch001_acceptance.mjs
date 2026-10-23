@@ -286,6 +286,23 @@ try {
   );
   await close();
 
+  // A new component starts at its own unfiltered inventory. A prior search
+  // must not hide authorized resources after dropdown or sidebar navigation.
+  const resourceCustomer = await page.getByLabel("Resource customer filter").inputValue();
+  await page.getByLabel("Search resources", { exact: true }).fill("no-resource-sentinel");
+  await page.getByText("No resources match these authorized filters.").waitFor();
+  await page.getByLabel("Resource Management component").selectOption("parameters");
+  assert.equal(await page.getByLabel("Search resources", { exact: true }).inputValue(), "");
+  assert.equal(await page.getByLabel("Resource customer filter").inputValue(), resourceCustomer);
+  await page.getByRole("button", { name: fixture.vm_resource.name, exact: true }).waitFor();
+  await page.getByLabel("Search resources", { exact: true }).fill("no-resource-sentinel");
+  await page.getByText("No resources match these authorized filters.").waitFor();
+  await page.getByRole("navigation", { name: "Primary navigation" })
+    .getByRole("button", { name: "Alert Rules", exact: true }).click();
+  await page.getByRole("tab", { name: "Compute Instances Alert Setup", exact: true }).waitFor();
+  assert.equal(await page.getByLabel("Search resources", { exact: true }).inputValue(), "");
+  await page.getByRole("button", { name: fixture.vm_resource.name, exact: true }).waitFor();
+
   for (const [area, listName, names] of [
     [
       "Event Parameters",
