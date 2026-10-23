@@ -897,6 +897,7 @@ export function Verification({ data }) {
   );
 }
 function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+  const draftSelection = useRef(0);
   const [form, setForm] = useState(
       item
         ? {
@@ -990,18 +991,41 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       setDraftId(v.id);
       setDraftRevision(v.revision);
     });
-  const resumeDraft = async (id) =>
-    action(async () => {
+  const resumeDraft = async (id) => {
+    const selection = ++draftSelection.current;
+    setBusy(true);
+    setError("");
+    try {
       const v = await control("/api/v1/resource-drafts/" + id);
       const { resource_id, ...configuration } = v.configuration;
+      // Resolve the linked resource before changing the form. A failed or
+      // superseded request must not leave one draft's fields on another's ID.
+      const linked = resource_id
+        ? await control(base + "/resources/" + resource_id)
+        : null;
+      if (selection !== draftSelection.current) return;
       setForm({ ...blank(domain), ...configuration });
       setStep(v.stage);
       setMaxUnlockedStep(v.stage);
       setDraftId(v.id);
       setDraftRevision(v.revision);
-      if (resource_id)
-        setCreated(await control(base + "/resources/" + resource_id));
-    });
+      setCreated(linked);
+      setSource(null);
+      setCollector(null);
+      setOpenCollector(false);
+      setVerification(null);
+      setApproved(false);
+      setImported(null);
+      setFileName("");
+      setInline(false);
+      setCustomerName("");
+      setCustomerCode("");
+    } catch (e) {
+      if (selection === draftSelection.current) setError(e.message);
+    } finally {
+      if (selection === draftSelection.current) setBusy(false);
+    }
+  };
   const update = (k, v) => {
     setForm((f) => ({ ...f, [k]: v }));
     setVerification(null);
