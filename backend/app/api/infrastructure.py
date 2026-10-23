@@ -44,6 +44,8 @@ def snapshot(source,db):
     if not source.enabled or not enabled: health='DISABLED'
     elif any(c['freshness']!='CURRENT' for c in enabled): health='UNKNOWN'
     elif open_alerts: health='CRITICAL' if any(a.severity=='CRITICAL' for a in open_alerts) else 'WARNING'
+    elif any(c['status']=='ERROR' for c in enabled): health='WARNING'
+    elif any(c['status']!='HEALTHY' for c in enabled): health='UNKNOWN'
     elif any((c['evidence'] or {}).get('outcome') not in ('SUCCESS',) for c in enabled): health='WARNING'
     else: health='HEALTHY'
     return {'id':str(source.id),'organization_id':str(source.organization_id),'name':source.name,
