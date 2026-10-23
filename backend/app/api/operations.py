@@ -77,6 +77,8 @@ def service_snapshot(source, db, preloaded=None):
     if not source.enabled or not enabled: health = "DISABLED"
     elif any(row["freshness"] != "CURRENT" for row in enabled): health = "UNKNOWN"
     elif open_count or any(row["latest_run"]["status"] == "FAILED" for row in enabled): health = "CRITICAL"
+    elif any(row["status"] == "ERROR" for row in enabled): health = "CRITICAL"
+    elif any(row["status"] not in {"HEALTHY", "SUCCESS"} for row in enabled): health = "UNKNOWN"
     elif any(row["latest_run"]["status"] != "SUCCESS" for row in enabled): health = "UNKNOWN"
     else: health = "HEALTHY"
     return {"id": str(source.id), "organization_id": str(source.organization_id), "name": source.name,
