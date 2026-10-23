@@ -513,9 +513,12 @@ class MethodAttributionTests(unittest.TestCase):
     def test_selected_signals_are_enforced_for_attributed_telemetry(self):
         from app.telemetry.ingestion import (
             approved_method_signals,
+            attributes,
+            validate_method_attribution,
             validate_method_identity,
         )
         from fastapi import HTTPException
+        from opentelemetry.proto.common.v1.common_pb2 import AnyValue, KeyValue
 
         key = str(uuid4())
         allowed = approved_method_signals(
@@ -548,3 +551,49 @@ class MethodAttributionTests(unittest.TestCase):
                 validate_method_identity(attrs, allowed, signal)
             self.assertEqual(failure.exception.status_code, 422)
         self.assertIsNone(validate_method_identity({}, allowed, "metrics"))
+        other = str(uuid4())
+        allowed[other] = {"logs", "metrics"}
+        self.assertEqual(
+            validate_method_attribution(
+                {"opscontrol.method.id": key}, {}, allowed, "metrics"
+            ),
+            key,
+        )
+        self.assertEqual(
+            validate_method_attribution(
+                {}, {"opscontrol_method_id": other}, allowed, "logs"
+            ),
+            other,
+        )
+        for resource_attrs, record_attrs in [
+            ({"opscontrol.method.id": key}, {"opscontrol.method.id": other}),
+            ({"opscontrol_method_id": key}, {"opscontrol.method.id": other}),
+            ({"opscontrol.method.id": other}, {"opscontrol.method.id": key}),
+        ]:
+            with self.assertRaises(HTTPException) as failure:
+                validate_method_attribution(
+                    resource_attrs, record_attrs, allowed, "metrics"
+                )
+            self.assertEqual(failure.exception.status_code, 422)
+        with self.assertRaises(HTTPException) as failure:
+            validate_method_attribution(
+                {"opscontrol.method.id": key},
+                {"opscontrol.method.id": other},
+                {key: {"traces"}, other: {"traces"}},
+                "traces",
+            )
+        self.assertEqual(failure.exception.status_code, 422)
+        with self.assertRaises(HTTPException) as failure:
+            attributes(
+                [
+                    KeyValue(
+                        key="opscontrol.method.id",
+                        value=AnyValue(string_value=key),
+                    ),
+                    KeyValue(
+                        key="opscontrol.method.id",
+                        value=AnyValue(string_value=other),
+                    ),
+                ]
+            )
+        self.assertEqual(failure.exception.status_code, 422)

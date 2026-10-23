@@ -4,6 +4,7 @@ No assertions infer genuine host health from this labeled synthetic observation.
 Run after the owned Agent runtime test so revocation cannot interrupt that test.
 """
 
+import copy
 import json
 import os
 import time
@@ -15,6 +16,7 @@ from sqlalchemy import func, select
 from app.main import app  # Register security and scoped model contracts.
 from app.core.config import settings
 from app.db.session import SessionLocal
+from app.models import LogEvent, LogSource, MetricSample
 from app.security.http import token_digest
 from app.security.models import SecurityAuditEvent, WorkerIdentity
 from app.telemetry.models import AgentRegistration, ManagedAgent, TelemetryReceipt
@@ -55,6 +57,17 @@ def run(fixture, call):
             "name": "Controlled selected signals",
             "method_type": "OTLP_RECEIVER",
             "configuration": {"signals": ["Logs", "Metrics"], "port": 15437},
+        },
+        admin,
+        201,
+    )
+    other_method = call(
+        prefix + "/methods",
+        "POST",
+        {
+            "name": "Independent controlled receiver",
+            "method_type": "OTLP_RECEIVER",
+            "configuration": {"signals": ["Logs", "Metrics"], "port": 15438},
         },
         admin,
         201,
@@ -231,6 +244,40 @@ def run(fixture, call):
         {"key": "opscontrol_method_id", "value": {"stringValue": foreign_method}}
     )
     call("/api/v1/agent/otlp/v1/metrics", "POST", conflicting, credential, 422)
+    duplicate_key = metrics(method["id"], time.time_ns())
+    duplicate_key["resourceMetrics"][0]["scopeMetrics"][0]["metrics"][0]["gauge"][
+        "dataPoints"
+    ][0]["attributes"].append(
+        {
+            "key": "opscontrol.method.id",
+            "value": {"stringValue": other_method["id"]},
+        }
+    )
+    call("/api/v1/agent/otlp/v1/metrics", "POST", duplicate_key, credential, 422)
+    cross_level = metrics(other_method["id"], time.time_ns())
+    cross_level["resourceMetrics"][0]["resource"] = {
+        "attributes": [
+            {"key": "opscontrol.method.id", "value": {"stringValue": method["id"]}}
+        ]
+    }
+    # Both methods are configured and permitted for metrics. Different IDs at
+    # resource and point level must not silently attribute the point to one.
+    with SessionLocal() as db:
+        before_conflict = db.scalar(
+            select(func.count())
+            .select_from(TelemetryReceipt)
+            .where(TelemetryReceipt.agent_id == uuid.UUID(identity["agent_id"]))
+        )
+    call("/api/v1/agent/otlp/v1/metrics", "POST", cross_level, credential, 422)
+    with SessionLocal() as db:
+        assert (
+            db.scalar(
+                select(func.count())
+                .select_from(TelemetryReceipt)
+                .where(TelemetryReceipt.agent_id == uuid.UUID(identity["agent_id"]))
+            )
+            == before_conflict
+        )
     unselected_trace = {
         "resourceSpans": [
             {
@@ -259,6 +306,21 @@ def run(fixture, call):
     call("/api/v1/agent/otlp/v1/traces", "POST", unselected_trace, credential, 422)
     payload = metrics(method["id"], time.time_ns())
     call("/api/v1/agent/otlp/v1/metrics", "POST", payload, credential)
+    call(
+        "/api/v1/agent/otlp/v1/metrics",
+        "POST",
+        metrics(other_method["id"], time.time_ns()),
+        credential,
+    )
+    with SessionLocal() as db:
+        for method_id in (method["id"], other_method["id"]):
+            assert db.scalar(
+                select(MetricSample.id).where(
+                    MetricSample.collector_id == uuid.UUID(collector_id),
+                    MetricSample.dimensions["opscontrol.method.id"].as_string()
+                    == method_id,
+                )
+            ), "Each approved method retains its own metric attribution"
     with SessionLocal() as db:
         receipt_count = db.scalar(
             select(func.count())
@@ -310,7 +372,32 @@ def run(fixture, call):
             }
         ]
     }
+    conflicting_logs = copy.deepcopy(logs)
+    conflicting_logs["resourceLogs"][0]["resource"] = {
+        "attributes": [
+            {"key": "opscontrol.method.id", "value": {"stringValue": method["id"]}}
+        ]
+    }
+    conflicting_logs["resourceLogs"][0]["scopeLogs"][0]["logRecords"][0]["attributes"][
+        0
+    ]["value"]["stringValue"] = other_method["id"]
+    call("/api/v1/agent/otlp/v1/logs", "POST", conflicting_logs, credential, 422)
     call("/api/v1/agent/otlp/v1/logs", "POST", logs, credential)
+    alias_logs = copy.deepcopy(logs)
+    alias_record = alias_logs["resourceLogs"][0]["scopeLogs"][0]["logRecords"][0]
+    alias_record["attributes"][0]["key"] = "opscontrol_method_id"
+    alias_record["attributes"][0]["value"]["stringValue"] = other_method["id"]
+    call("/api/v1/agent/otlp/v1/logs", "POST", alias_logs, credential)
+    with SessionLocal() as db:
+        assert db.scalar(
+            select(LogEvent.id)
+            .join(LogSource, LogSource.id == LogEvent.log_source_id)
+            .where(
+                LogSource.collector_id == uuid.UUID(collector_id),
+                LogEvent.attributes["opscontrol.method.id"].as_string()
+                == other_method["id"],
+            )
+        ), "Accepted alias telemetry retains canonical method attribution"
     acknowledgement = call(
         "/api/v1/agent/heartbeat",
         "POST",
