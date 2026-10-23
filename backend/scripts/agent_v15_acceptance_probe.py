@@ -408,6 +408,31 @@ def run(fixture, call):
     status = call(prefix, token=admin)["agent"]
     assert status["last_working_revision"] == version["revision"]
     assert "previous_token_hash" not in status and "token_hash" not in status
+    before_stop = call(prefix, token=admin)
+    received = {
+        row["signal"]: row
+        for row in before_stop["signals"]
+        if row["signal"] in {"logs", "metrics"}
+    }
+    assert all(
+        row["status"] == "RECEIVING" and row["count"] > 0 for row in received.values()
+    )
+    call(
+        "/api/v1/agent/heartbeat",
+        "POST",
+        {"version": "1.5.0", "runtime_version": "0.123.0", "health": "STOPPED"},
+        credential,
+    )
+    stopped = call(prefix, token=admin)
+    assert stopped["agent"]["health"] == "STOPPED"
+    for row in stopped["signals"]:
+        if row["signal"] in received:
+            assert row["status"] == "STOPPED"
+            assert row["count"] == received[row["signal"]]["count"]
+    for row in stopped["methods"]:
+        if row["id"] in {method["id"], other_method["id"]}:
+            assert row["collection_status"] == "STOPPED"
+    call("/api/v1/agent/heartbeat", "POST", heartbeat, credential)
 
     rotated = call("/api/v1/agent/credentials/rotate", "POST", {}, credential)
     new_credential = rotated["access_token"]
