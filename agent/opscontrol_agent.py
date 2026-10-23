@@ -199,12 +199,17 @@ class Agent:
         previous = self.config.read_text() if self.config.exists() else None
         self.stop_runtime()
         self.write_private(self.config, text)
-        self.start_runtime()
-        if self.process.poll() is not None:
+        try:
+            self.start_runtime()
+            if self.process.poll() is not None:
+                raise RuntimeError("COLLECTOR_START_FAILED")
+        except Exception as start_error:
             if previous:
                 self.write_private(self.config, previous)
                 self.start_runtime()
-            raise RuntimeError("COLLECTOR_START_FAILED")
+            else:
+                self.config.unlink(missing_ok=True)
+            raise RuntimeError("COLLECTOR_START_FAILED") from start_error
         self.applied = version["revision"]
         self.checksum = version["sha256"]
         self.agent_configuration = runtime_configuration
