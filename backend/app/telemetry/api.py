@@ -129,11 +129,9 @@ def method_evidence(db, collector_id, method_id, applied_at):
     }
 
 
-def method_collection_state(method, agent, applied, current, evidence):
-    if not method.enabled:
+def agent_delivery_state(agent, collector_enabled=True):
+    if not collector_enabled:
         return "DISABLED"
-    if not current or not applied:
-        return "NOT_APPLIED"
     if (
         not agent
         or not agent.enabled
@@ -141,6 +139,34 @@ def method_collection_state(method, agent, applied, current, evidence):
         or agent.last_seen_at < utc() - timedelta(seconds=90)
     ):
         return "DISCONNECTED"
+    if agent.health in {"STOPPED", "ERROR"}:
+        return agent.health
+    if agent.health != "RUNNING":
+        return "NO_DATA"
+    return None
+
+
+def signal_delivery_state(agent, last_received_at, collector_enabled=True):
+    if last_received_at is None:
+        return "NO_DATA"
+    unavailable = agent_delivery_state(agent, collector_enabled)
+    if unavailable:
+        return unavailable
+    return "RECEIVING" if last_received_at > utc() - timedelta(minutes=5) else "NO_DATA"
+
+
+def method_collection_state(
+    method, agent, applied, current, evidence, collector_enabled=True
+):
+    if not method.enabled:
+        return "DISABLED"
+    if not collector_enabled:
+        return "DISABLED"
+    if not current or not applied:
+        return "NOT_APPLIED"
+    unavailable = agent_delivery_state(agent)
+    if unavailable:
+        return unavailable
     observation = (agent.method_health or {}).get(str(method.id), {})
     if observation.get("applied_revision") != applied.revision:
         observation = {}
@@ -191,11 +217,7 @@ def details(id: uuid.UUID, db=Depends(get_db)):
                     "signal": signal,
                     "count": count or 0,
                     "last_received_at": last,
-                    "status": (
-                        "RECEIVING"
-                        if last and last > utc() - timedelta(minutes=5)
-                        else "NO_DATA"
-                    ),
+                    "status": signal_delivery_state(a, last, c.enabled),
                 }
             )
     versions = db.scalars(
@@ -251,7 +273,7 @@ def details(id: uuid.UUID, db=Depends(get_db)):
                 "deployment_status": deployed,
                 "binary_validation": "VALIDATED" if valid else "NOT_VALIDATED",
                 "collection_status": method_collection_state(
-                    method, a, applied, current, evidence
+                    method, a, applied, current, evidence, c.enabled
                 ),
                 "method_observation": (
                     (a.method_health or {}).get(str(method.id)) if a else None

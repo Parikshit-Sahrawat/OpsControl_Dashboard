@@ -458,13 +458,14 @@ class MethodHealthTests(unittest.TestCase):
             self.assertEqual(error["error_code"], "LOG_PATH_NOT_FOUND")
 
     def test_idle_observation_is_distinct_from_real_reception(self):
-        from datetime import datetime, timezone
-        from app.telemetry.api import method_collection_state
+        from datetime import datetime, timedelta, timezone
+        from app.telemetry.api import method_collection_state, signal_delivery_state
 
         now = datetime.now(timezone.utc)
         method = S(id=uuid4(), enabled=True, method_type="FILE_LOG")
         agent = S(
             enabled=True,
+            health="RUNNING",
             last_seen_at=now,
             method_health={
                 str(method.id): {
@@ -485,6 +486,33 @@ class MethodHealthTests(unittest.TestCase):
             ),
             "RECEIVING",
         )
+        agent.health = "STOPPED"
+        self.assertEqual(
+            method_collection_state(
+                method, agent, applied, True, {"last_received_at": now}
+            ),
+            "STOPPED",
+        )
+        self.assertEqual(signal_delivery_state(agent, now), "STOPPED")
+        self.assertEqual(signal_delivery_state(agent, None), "NO_DATA")
+        agent.health = "ERROR"
+        self.assertEqual(signal_delivery_state(agent, now), "ERROR")
+        self.assertEqual(
+            method_collection_state(
+                method, agent, applied, True, {"last_received_at": now}
+            ),
+            "ERROR",
+        )
+        agent.health = "RUNNING"
+        self.assertEqual(signal_delivery_state(agent, now), "RECEIVING")
+        self.assertEqual(signal_delivery_state(agent, now, False), "DISABLED")
+        self.assertEqual(
+            method_collection_state(method, agent, applied, True, {}, False),
+            "DISABLED",
+        )
+        agent.last_seen_at = now - timedelta(minutes=2)
+        self.assertEqual(signal_delivery_state(agent, now), "DISCONNECTED")
+        agent.last_seen_at = now
         agent.method_health[str(method.id)]["state"] = "ERROR"
         self.assertEqual(
             method_collection_state(
