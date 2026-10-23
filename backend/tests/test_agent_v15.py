@@ -89,6 +89,45 @@ class AgentLifecycleTests(unittest.TestCase):
             self.assertEqual(agent.config.read_text(), "working")
             self.assertEqual(agent.applied, 1)
 
+    def test_runtime_launch_exception_restores_previous_yaml(self):
+        with tempfile.TemporaryDirectory() as directory:
+            agent = self.bare_agent(directory)
+            agent.config.write_text("working")
+            with patch.object(agent, "stop_runtime"), patch.object(
+                agent,
+                "start_runtime",
+                side_effect=[OSError("launch failed"), None, None],
+            ) as start, patch(
+                "opscontrol_agent.subprocess.run",
+                return_value=SimpleNamespace(returncode=0),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "COLLECTOR_START_FAILED"):
+                    agent.apply(self.version())
+                self.assertEqual(start.call_count, 2)
+                self.assertEqual(agent.config.read_text(), "working")
+                self.assertEqual(agent.applied, 1)
+                agent.apply(self.version())
+                self.assertEqual(agent.applied, 2)
+                self.assertEqual(
+                    json.loads(agent.state.read_text())["applied_revision"], 2
+                )
+
+    def test_first_runtime_launch_exception_leaves_no_unapproved_config(self):
+        with tempfile.TemporaryDirectory() as directory:
+            agent = self.bare_agent(directory)
+            agent.applied = None
+            with patch.object(agent, "stop_runtime"), patch.object(
+                agent, "start_runtime", side_effect=OSError("launch failed")
+            ) as start, patch(
+                "opscontrol_agent.subprocess.run",
+                return_value=SimpleNamespace(returncode=0),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "COLLECTOR_START_FAILED"):
+                    agent.apply(self.version())
+            start.assert_called_once()
+            self.assertFalse(agent.config.exists())
+            self.assertFalse(agent.state.exists())
+
     def test_missing_or_private_log_path_is_not_healthy(self):
         with tempfile.TemporaryDirectory() as directory:
             agent = self.bare_agent(directory)
