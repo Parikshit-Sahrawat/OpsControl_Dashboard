@@ -273,10 +273,43 @@ try {
   await dialog
     .getByLabel("Employee", { exact: true })
     .selectOption(employee.id);
+  const memberDepartment = (
+    await call(admin, "/api/v1/access/departments?search=Browser Support")
+  ).data.items[0];
+  let droppedRoleRefresh = false;
+  const roleRefreshPath = "**/api/v1/access/roles";
+  await admin.route(roleRefreshPath, async (route) => {
+    if (route.request().method() === "GET" && !droppedRoleRefresh) {
+      droppedRoleRefresh = true;
+      await route.abort("failed");
+    } else await route.continue();
+  });
+  const memberMutation = admin.waitForResponse(
+    (r) => new URL(r.url()).pathname ===
+      `/api/v1/access/employees/${employee.id}/department` &&
+      r.request().method() === "PUT",
+  );
+  const failedDirectory = admin.waitForEvent("requestfailed", {
+    predicate: (request) => new URL(request.url()).pathname ===
+      "/api/v1/access/roles",
+  });
   await dialog
     .getByRole("button", { name: "Save changes", exact: true })
     .click();
-  await dialog.waitFor({ state: "hidden" });
+  assert.equal((await memberMutation).status(), 200);
+  await failedDirectory;
+  const persistedMember = (
+    await call(admin, `/api/v1/access/employees?search=${employee.employee_id}`)
+  ).data.items[0];
+  assert(persistedMember.departments.some((d) =>
+    d.id === memberDepartment.id && d.active));
+  await dialog.waitFor({ state: "hidden", timeout: 3000 });
+  await admin.unroute(roleRefreshPath);
+  await admin.getByRole("status").getByText(/saved.*refresh failed/i).waitFor();
+  await admin.getByRole("button", { name: "Refresh", exact: true }).click();
+  checks.push(
+    "A persisted member transfer closes the form and reports a failed directory refresh without inviting a duplicate mutation",
+  );
   await row
     .getByRole("button", { name: "Members & access", exact: true })
     .click();

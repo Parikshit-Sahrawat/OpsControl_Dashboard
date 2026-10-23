@@ -373,11 +373,20 @@ export default function AccessManagement({ user, section, onSectionChange }) {
       await api(path, method, body);
       // Keep the modal busy until the saved snapshot is fully available.
       // Closing earlier lets a new detail selection get erased by this refresh.
-      await directories();
+      let directoryError = null;
+      try {
+        await directories();
+      } catch (e) {
+        directoryError = e;
+      }
       await latestReload.current();
       detailEpoch.current++;
       setSelected(null);
-      setNotice(message);
+      setNotice(
+        directoryError
+          ? `${message} Directory refresh failed: ${directoryError.message}. Select Refresh to load current access.`
+          : message,
+      );
       setDialog(null);
     } catch (e) {
       setError(e.message);
