@@ -48,3 +48,15 @@ class EksDiscoveryTests(unittest.TestCase):
         session=SimpleNamespace(client=lambda name:SimpleNamespace(get_caller_identity=lambda:{'Account':ACCOUNT}) if name=='sts' else client)
         with self.assertRaises(ProviderCheckError):
             aws_eks_candidates({'region':REGION,'account_id':ACCOUNT,'cluster_names':['sequence-eks']},lambda region_name:session)
+
+    def test_provider_cluster_id_is_projected_only_when_supplied_and_valid(self):
+        def candidate(value):
+            client=SimpleNamespace(describe_cluster=lambda **kw:{'cluster':{'name':'sequence-eks',
+                'arn':f'arn:aws:eks:{REGION}:{ACCOUNT}:cluster/sequence-eks',
+                'id':value,'status':'ACTIVE','version':'1.32'}})
+            session=SimpleNamespace(client=lambda name:SimpleNamespace(get_caller_identity=lambda:{'Account':ACCOUNT}) if name=='sts' else client)
+            return aws_eks_candidates({'region':REGION,'account_id':ACCOUNT,
+                'cluster_names':['sequence-eks']},lambda region_name:session)
+        self.assertEqual(candidate('provider-cluster-1')[0]['provider_cluster_id'],
+                         'provider-cluster-1')
+        with self.assertRaises(ProviderCheckError): candidate('../unverified')

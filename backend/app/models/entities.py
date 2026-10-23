@@ -1125,3 +1125,49 @@ class InfrastructureEvidence(Base):
     __table_args__ = (
         Index("ix_infra_evidence_latest", collector_id, observed_at.desc(), id.desc()),
     )
+
+
+class KubernetesCluster(Base):
+    """Provider-verified EKS identity, independent of customer-owned sources."""
+
+    __tablename__ = "kubernetes_clusters"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    provider_identity: Mapped[str] = mapped_column(String(512), nullable=False)
+    provider_cluster_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    __table_args__ = (
+        UniqueConstraint("provider_identity", "provider_cluster_id", name="uq_k8s_verified_cluster_identity"),
+    )
+
+
+class KubernetesClusterAssociation(Base):
+    """Current customer authorization; workload scope defaults to none."""
+
+    __tablename__ = "kubernetes_cluster_associations"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    cluster_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("kubernetes_clusters.id", ondelete="RESTRICT"), nullable=False)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="RESTRICT"), nullable=False, index=True)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    __table_args__ = (
+        UniqueConstraint("cluster_id", "organization_id", name="uq_k8s_cluster_customer"),
+        CheckConstraint("revision > 0", name="ck_k8s_association_revision"),
+    )
+
+
+class KubernetesClusterAssociationDecision(Base):
+    """Append-only grant/revocation evidence; updates and deletes are DB-blocked."""
+
+    __tablename__ = "kubernetes_cluster_association_decisions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    association_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("kubernetes_cluster_associations.id", ondelete="RESTRICT"), nullable=False)
+    actor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    reason: Mapped[str] = mapped_column(String(2000), nullable=False)
+    recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    __table_args__ = (
+        UniqueConstraint("association_id", "revision", name="uq_k8s_association_decision_revision"),
+        CheckConstraint("revision > 0", name="ck_k8s_decision_revision"),
+    )

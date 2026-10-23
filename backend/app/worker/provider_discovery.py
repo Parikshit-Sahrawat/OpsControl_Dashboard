@@ -145,9 +145,14 @@ def aws_eks_candidates(config, session_factory=None, max_results=100):
         if not isinstance(cluster,dict) or cluster.get('name')!=name or cluster.get('arn')!=expected:
             raise ProviderCheckError('EKS cluster identity does not match approved scope')
         status,version=cluster.get('status'),cluster.get('version')
+        physical_id=cluster.get('id')
+        if physical_id is not None and (not isinstance(physical_id,str) or
+                not re.fullmatch(r'[A-Za-z0-9_-]{1,128}',physical_id)):
+            raise ProviderCheckError('Invalid EKS provider cluster identity')
         if status not in {'CREATING','ACTIVE','DELETING','FAILED','UPDATING','PENDING'} or not isinstance(version,str) or not re.fullmatch(r'\d{1,2}\.\d{1,2}',version):
             raise ProviderCheckError('Invalid EKS control-plane facts')
         rows.append({'external_id':f'aws:{account}:{region}:eks:{name}','resource_type':'EKS_CLUSTER',
                      'cluster_name':name,'region':region,'account_id':account,'arn':expected,
+                     **({'provider_cluster_id':physical_id} if physical_id else {}),
                      'provider_status':status,'kubernetes_version':version})
     return rows

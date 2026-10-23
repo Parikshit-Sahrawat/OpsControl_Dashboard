@@ -65,6 +65,31 @@ def predicates(p):
         c = t.c
         if name == "MonitoringResource":
             value = c.id.in_(visible)
+        elif name == "KubernetesClusterAssociation":
+            # Cluster IDs are their own scoped resources; they are not VM
+            # MonitoringResource IDs and cannot inherit VM visibility.
+            terms = []
+            for customer in affected:
+                for key in keys:
+                    if not p.allows(key, customer):
+                        continue
+                    rows = relevant(p, customer, key)
+
+                    def matches(boundary):
+                        scope = boundary["specification"]
+                        return false() if scope["environments"] else (
+                            c.cluster_id.in_(scope["resources"])
+                            if scope["resources"] else true()
+                        )
+
+                    limits = [matches(b) for b in rows if b["kind"] == "LIMIT"]
+                    denies = [matches(b) for b in rows if b["kind"] == "DENY"]
+                    terms.append(and_(
+                        c.organization_id == customer,
+                        and_(*limits) if limits else true(),
+                        ~or_(*denies) if denies else true(),
+                    ))
+            value = or_(*terms) if terms else false()
         elif name == "Organization":
             value = true()
         elif name == "JobOrder":

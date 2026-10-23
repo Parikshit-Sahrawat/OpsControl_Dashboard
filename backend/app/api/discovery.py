@@ -8,10 +8,14 @@ from datetime import datetime,timezone
 from typing import Literal
 from fastapi import APIRouter,Depends,HTTPException
 from pydantic import BaseModel,ConfigDict,Field
-from sqlalchemy import select
+from sqlalchemy import select, text
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.models import DataSource,Collector
+from app.models import (
+    DataSource, Collector, KubernetesCluster, KubernetesClusterAssociation,
+    KubernetesClusterAssociationDecision,
+)
 from app.security.scope import current_principal
 from app.worker.provider_discovery import aws_ec2_candidates,k8s_pod_candidates,aws_eks_candidates
 from app.worker.provider_checks import ProviderCheckError
@@ -51,6 +55,52 @@ def scan(source):
              "monitoring_status":"NOT_CONFIGURED",
              **record} for record in rows]
 
+
+def register_approved_eks(db, source, candidate, actor_id):
+    """Serialize the verified ARN into one cluster and an explicit customer grant.
+
+    Re-import never reactivates a revoked association. Namespace/workload scope
+    remains empty: this discovery interface has no verified namespace UIDs.
+    """
+    identity = candidate["arn"]  # Verified against account/region/name by the reader.
+    physical_id = candidate["provider_cluster_id"]
+    # Serialize competing customer imports for the same provider identity.
+    db.execute(text("SELECT pg_advisory_xact_lock(hashtextextended(:identity, 0))"),
+               {"identity": identity})
+    if db.scalar(select(KubernetesCluster.id).where(
+        KubernetesCluster.provider_identity == identity,
+        KubernetesCluster.provider_cluster_id != physical_id,
+    ).limit(1)):
+        raise HTTPException(409, "Provider cluster identity changed; review prior association evidence")
+    cluster_id = uuid.uuid4()
+    db.execute(
+        insert(KubernetesCluster).values(
+            id=cluster_id, provider_identity=identity,
+            provider_cluster_id=physical_id,
+            created_at=datetime.now(timezone.utc),
+        ).on_conflict_do_nothing(constraint="uq_k8s_verified_cluster_identity")
+    )
+    cluster = db.scalar(select(KubernetesCluster).where(
+        KubernetesCluster.provider_identity == identity,
+        KubernetesCluster.provider_cluster_id == physical_id,
+    ).with_for_update())
+    association = db.scalar(select(KubernetesClusterAssociation).where(
+        KubernetesClusterAssociation.cluster_id == cluster.id,
+        KubernetesClusterAssociation.organization_id == source.organization_id,
+    ).with_for_update())
+    if association is None:
+        association = KubernetesClusterAssociation(
+            cluster_id=cluster.id, organization_id=source.organization_id,
+            revision=1, active=True,
+        )
+        db.add(association)
+        db.flush()
+        db.add(KubernetesClusterAssociationDecision(
+            association_id=association.id, actor_id=actor_id, revision=1,
+            active=True, reason="Approved read-only EKS discovery import",
+        ))
+    return cluster, association
+
 @router.get("/capabilities")
 def capabilities():
     return [
@@ -86,6 +136,7 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
             raise HTTPException(422,"Duplicate resource import ID")
         selected.append(candidates[identity])
     results=[]
+    actor=current_principal.get()
     for candidate in selected:
         external_id=candidate["external_id"]
         display_name=external_id[:200]
@@ -116,9 +167,19 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
                 db.add(Collector(data_source_id=new_source.id,name="provider-readonly",
                     collector_type=ctype,configuration=config,enabled=False,status="STOPPED"))
             existing=new_source
+        cluster=None
+        association=None
+        if (candidate["resource_type"] == "EKS_CLUSTER" and not payload.dry_run
+                and candidate.get("provider_cluster_id")):
+            cluster, association = register_approved_eks(db, source, candidate, actor.user_id)
         results.append({"external_id":external_id,"action":"WOULD_IMPORT" if payload.dry_run and new else
                         "IMPORTED" if new else "ALREADY_IMPORTED",
                         "data_source_id":str(existing.id) if existing else None,
+                        **({"cluster_id":str(cluster.id),
+                            "association_revision":association.revision,
+                            "association_active":association.active} if cluster else
+                           {"cluster_identity_status":"UNVERIFIED"}
+                           if candidate["resource_type"] == "EKS_CLUSTER" else {}),
                         "monitoring_status":"NOT_CONFIGURED"})
     if not payload.dry_run:db.commit()
     return {"dry_run":payload.dry_run,"resources":results}

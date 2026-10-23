@@ -122,6 +122,7 @@ _PATHS = {
     "OperationalIncident": ("organization",),
     "IncidentActivity": ("organization",),
     "DataSource": ("organization",),
+    "KubernetesClusterAssociation": (),
     "Collector": ("data_source", "organization"),
     "InfrastructureEvidence": ("organization",),
     "CollectorRun": ("collector", "data_source", "organization"),
@@ -190,6 +191,8 @@ _PATHS.update(
     }
 )
 _GLOBAL = {
+    "KubernetesCluster",
+    "KubernetesClusterAssociationDecision",
     "MonitoringTemplate",
     "MonitoringTemplateVersion",
     "AttributeRegistryVersion",
