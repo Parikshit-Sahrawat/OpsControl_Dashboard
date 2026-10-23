@@ -1,7 +1,9 @@
 // Actual authenticated browser and API evidence; no interception or fabricated telemetry.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE);
 const fixture = JSON.parse(
   await readFile(join(process.env.ARCH001_PRIVATE_DIR, "fixture.json"), "utf8"),
@@ -47,6 +49,22 @@ const response = (path, method = "GET") =>
     (r) =>
       new URL(r.url()).pathname === path && r.request().method() === method,
   );
+const draftSwitchDatabaseState = (resourceId, draftId, newName) => {
+  const backend = fileURLToPath(new URL("../../backend/", import.meta.url));
+  const probe = `
+import json, sys, uuid
+from sqlalchemy import select, func
+from app.db.session import SessionLocal
+from app.unified.models import MonitoringResource
+from app.registry.models import ResourceDraft
+with SessionLocal() as db:
+    original = db.get(MonitoringResource, uuid.UUID(sys.argv[1]))
+    draft = db.get(ResourceDraft, uuid.UUID(sys.argv[2]))
+    created = db.scalar(select(func.count()).select_from(MonitoringResource).where(MonitoringResource.name == sys.argv[3]))
+    print(json.dumps({"original_id": str(original.id), "original_name": original.name, "original_revision": original.revision, "draft_id": str(draft.id), "draft_resource_id": draft.configuration.get("resource_id"), "new_name_count": created}))
+`;
+  return JSON.parse(execFileSync(join(backend, ".venv/bin/python"), ["-c", probe, resourceId, draftId, newName], { cwd: backend, env: process.env, encoding: "utf8" }));
+};
 const close = () =>
   page.getByRole("button", { name: "Close resource form" }).click();
 try {
@@ -145,6 +163,112 @@ try {
   assert.equal(draft.configuration.resource_id, created.id);
   await shot("arch001-compute-onboarding.png");
   await close();
+
+  // Switching from a resource-linked draft to an unlinked draft must create
+  // the second resource, never edit the first resource kept in local state.
+  await page.getByRole("button", { name: "Create Compute Instance", exact: true }).click();
+  const secondName = "Browser second draft " + Date.now();
+  await dialog.getByLabel(/^Environment/).selectOption("DEV");
+  await dialog.getByLabel("Resource name", { exact: true }).fill(secondName);
+  await dialog.getByLabel("Customer", { exact: true }).selectOption(created.organization_id);
+  await dialog.getByLabel("Hostname", { exact: true }).fill("browser-second-compute.example.test");
+  await dialog.getByLabel("DNS / IP address", { exact: true }).fill("203.0.113.72");
+  await dialog.getByLabel("OS", { exact: true }).selectOption("Linux");
+  const secondDraftResponse = response("/api/v1/resource-drafts", "POST");
+  await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
+  const secondDraft = await (await secondDraftResponse).json();
+  assert.equal(secondDraft.configuration.resource_id, null);
+  await close();
+
+  await page.getByRole("button", { name: "Create Compute Instance", exact: true }).click();
+  await dialog.getByLabel("Resume draft").selectOption(draft.id);
+  await dialog.getByRole("heading", { name: "Event Parameters (optional)", exact: true }).waitFor();
+  await dialog.getByLabel("Resume draft").selectOption(secondDraft.id);
+  await page.waitForFunction((expected) =>
+    [...document.querySelectorAll("input")].some((input) => input.value === expected), secondName);
+  assert.equal(await dialog.getByLabel("Resource name", { exact: true }).inputValue(), secondName);
+  const switchSaveResponse = page.waitForResponse((r) => {
+    const path = new URL(r.url()).pathname;
+    return path.startsWith("/api/v1/unified/resources/") &&
+      ["POST", "PUT"].includes(r.request().method());
+  });
+  await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
+  const switchSave = await switchSaveResponse;
+  const state = draftSwitchDatabaseState(created.id, secondDraft.id, secondName);
+  await writeFile(join(out, "draft-switch.json"), JSON.stringify({
+    linked_draft_id: draft.id,
+    unlinked_draft_id: secondDraft.id,
+    original_resource_id: created.id,
+    request_method: switchSave.request().method(),
+    request_path: new URL(switchSave.url()).pathname,
+    response_status: switchSave.status(),
+    database: state,
+  }, null, 2));
+  assert.equal(switchSave.request().method(), "POST", "An unlinked draft must create its own resource");
+  assert.equal(switchSave.status(), 201);
+  assert.equal(state.original_name, name);
+  assert.equal(state.new_name_count, 1);
+  await close();
+
+  await page.getByRole("button", { name: "Create Compute Instance", exact: true }).click();
+  let releaseLinkedDetail;
+  const detailGate = new Promise((resolve) => { releaseLinkedDetail = resolve; });
+  let signalLinkedRequest;
+  const linkedRequest = new Promise((resolve) => { signalLinkedRequest = resolve; });
+  const linkedDetailPath = "/api/v1/unified/resources/" + created.id;
+  await page.route("**" + linkedDetailPath, async (route) => {
+    if (route.request().method() !== "GET") return route.continue();
+    const actual = await route.fetch();
+    signalLinkedRequest();
+    await detailGate;
+    await route.fulfill({ response: actual });
+  });
+  await dialog.getByLabel("Resume draft").selectOption(draft.id);
+  await linkedRequest;
+  await dialog.getByLabel("Resume draft").selectOption(secondDraft.id);
+  await page.waitForFunction((expected) =>
+    [...document.querySelectorAll("input")].some((input) => input.value === expected), secondName);
+  assert.equal(await dialog.getByLabel("Resource name", { exact: true }).inputValue(), secondName);
+  const delayedDetailResponse = response(linkedDetailPath);
+  releaseLinkedDetail();
+  await delayedDetailResponse;
+  await page.unroute("**" + linkedDetailPath);
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  const savedSecondDraftResponse = response("/api/v1/resource-drafts/" + secondDraft.id, "PUT");
+  await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
+  const savedSecondDraft = await (await savedSecondDraftResponse).json();
+  assert.equal(savedSecondDraft.id, secondDraft.id);
+  assert.equal(savedSecondDraft.configuration.resource_id, null, "A delayed linked-resource response must not relink the current draft");
+  await dialog.getByLabel("Hostname", { exact: true }).fill("");
+  await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
+  await dialog.getByRole("alert").getByText("Hostname and DNS/IP address are required before saving a Compute Instance").waitFor();
+  await dialog.getByLabel("Resume draft").selectOption(draft.id);
+  await dialog.getByRole("heading", { name: "Event Parameters (optional)", exact: true }).waitFor();
+  assert.equal(await dialog.getByRole("alert").count(), 0);
+  await steps.getByRole("button").first().click();
+  const reverseSaveResponse = page.waitForResponse((r) => {
+    const path = new URL(r.url()).pathname;
+    return path.startsWith("/api/v1/unified/resources/") &&
+      ["POST", "PUT"].includes(r.request().method());
+  });
+  await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
+  const reverseSave = await reverseSaveResponse;
+  const reverseState = draftSwitchDatabaseState(created.id, secondDraft.id, secondName);
+  assert.equal(reverseSave.request().method(), "PUT");
+  assert.equal(new URL(reverseSave.url()).pathname, linkedDetailPath);
+  assert.equal(reverseSave.status(), 200);
+  assert.equal(reverseState.original_name, name);
+  assert.equal(reverseState.new_name_count, 1);
+  await writeFile(join(out, "draft-switch.json"), JSON.stringify({
+    linked_draft_id: draft.id,
+    unlinked_draft_id: secondDraft.id,
+    original_resource_id: created.id,
+    forward: { method: switchSave.request().method(), path: new URL(switchSave.url()).pathname, status: switchSave.status(), database: state },
+    reverse: { method: reverseSave.request().method(), path: new URL(reverseSave.url()).pathname, status: reverseSave.status() },
+    database: reverseState,
+  }, null, 2));
+  await close();
+
   await page
     .getByRole("button", { name: "Create Compute Instance", exact: true })
     .click();
