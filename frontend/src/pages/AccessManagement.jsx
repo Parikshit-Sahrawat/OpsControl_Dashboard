@@ -382,9 +382,11 @@ export default function AccessManagement({ user, section, onSectionChange }) {
       await latestReload.current();
       detailEpoch.current++;
       setSelected(null);
-      setNotice(directoryError
-        ? `${message} Directory refresh failed: ${directoryError.message}. Select Refresh to load current access.`
-        : message);
+      setNotice(
+        directoryError
+          ? `${message} Directory refresh failed: ${directoryError.message}. Select Refresh to load current access.`
+          : message,
+      );
       setDialog(null);
     } catch (e) {
       setError(e.message);
