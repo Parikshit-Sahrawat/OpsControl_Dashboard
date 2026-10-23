@@ -155,12 +155,16 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       setSelected(null);
       setCollector(null);
       setSource(null);
+      setSearch("");
+      setOffset(0);
     }
   }, [section]);
   const chooseArea = (next) => {
     if (!canOpenSection(user, "Resource Management", next)) return;
     setArea(next);
     setSelected(null);
+    setSearch("");
+    setOffset(0);
     onSectionChange?.(next);
   };
   useEffect(() => {
