@@ -1,0 +1,253 @@
+{
+  "seed": 420042,
+  "base_counts": {
+    "resources": 1000,
+    "relationships": 3000
+  },
+  "postgresql_version": "17.11",
+  "revision": "0038_k8s_cluster_associations",
+  "api": {
+    "authorized_detail": 200,
+    "foreign_detail": 404,
+    "forged_scope": 404,
+    "foreign_history": 404,
+    "foreign_write": 404,
+    "cross_customer_edge": 404,
+    "invalid_type": 422,
+    "self_cycle": 422,
+    "two_cycle": 409,
+    "multi_cycle": 409,
+    "deep_cycle": 409,
+    "duplicate": 409,
+    "created_edge": 201,
+    "inventory_total_a": 500,
+    "empty_preview_total": 0,
+    "history_limits": {
+      "0": 422,
+      "1": 200,
+      "200": 200,
+      "201": 422
+    },
+    "history_total": 253,
+    "history_unique_ids": 253,
+    "retired_edge": 204
+  },
+  "read_benchmark": {
+    "graph_preview": {
+      "samples": 20,
+      "min_ms": 65.458,
+      "p50_ms": 79.976,
+      "p95_ms": 103.108,
+      "p99_ms": 103.108,
+      "max_ms": 291.966,
+      "mean_ms": 92.095,
+      "query_counts": [
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19
+      ]
+    },
+    "history_200": {
+      "samples": 20,
+      "min_ms": 45.774,
+      "p50_ms": 55.673,
+      "p95_ms": 86.226,
+      "p99_ms": 86.226,
+      "max_ms": 287.247,
+      "mean_ms": 69.663,
+      "query_counts": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ]
+    }
+  },
+  "query_plan": {
+    "Node Type": "Index Only Scan",
+    "Parallel Aware": false,
+    "Async Capable": false,
+    "Scan Direction": "Forward",
+    "Index Name": "uq_dependency_current",
+    "Relation Name": "resource_dependencies",
+    "Alias": "resource_dependencies",
+    "Startup Cost": 0.28,
+    "Total Cost": 20.97,
+    "Plan Rows": 268,
+    "Plan Width": 16,
+    "Index Cond": "(resource_id = 'd4d39fab-3cba-5787-bdf8-5aba2cdce4a6'::uuid)"
+  },
+  "benchmark": {
+    "create": {
+      "samples": 20,
+      "min_ms": 2140.861,
+      "p50_ms": 2613.203,
+      "p95_ms": 3094.45,
+      "p99_ms": 3094.45,
+      "max_ms": 3197.203,
+      "mean_ms": 2681.543,
+      "query_counts": [
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280
+      ],
+      "transaction_ms": {
+        "samples": 20,
+        "min_ms": 2140.518,
+        "p50_ms": 2612.822,
+        "p95_ms": 3093.99,
+        "p99_ms": 3093.99,
+        "max_ms": 3196.676,
+        "mean_ms": 2681.066
+      }
+    },
+    "cycle_rejection": {
+      "samples": 20,
+      "min_ms": 2108.606,
+      "p50_ms": 3362.736,
+      "p95_ms": 4683.683,
+      "p99_ms": 4683.683,
+      "max_ms": 5222.407,
+      "mean_ms": 3455.678,
+      "query_counts": [
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276
+      ],
+      "transaction_ms": {
+        "samples": 20,
+        "min_ms": 2108.531,
+        "p50_ms": 3362.649,
+        "p95_ms": 4683.509,
+        "p99_ms": 4683.509,
+        "max_ms": 5222.314,
+        "mean_ms": 3455.523
+      }
+    },
+    "concurrent_eight": [
+      {
+        "status": 201,
+        "ms": 3840.994,
+        "transaction_ms": 3838.39,
+        "queries": 281
+      },
+      {
+        "status": 201,
+        "ms": 6654.834,
+        "transaction_ms": 6647.949,
+        "queries": 282
+      },
+      {
+        "status": 201,
+        "ms": 12528.352,
+        "transaction_ms": 12522.242,
+        "queries": 283
+      },
+      {
+        "status": 201,
+        "ms": 9830.995,
+        "transaction_ms": 9819.07,
+        "queries": 284
+      },
+      {
+        "status": 409,
+        "ms": 20006.233,
+        "transaction_ms": 20006.151,
+        "queries": 279
+      },
+      {
+        "status": 409,
+        "ms": 28968.861,
+        "transaction_ms": 28968.727,
+        "queries": 278
+      },
+      {
+        "status": 409,
+        "ms": 16313.992,
+        "transaction_ms": 16313.898,
+        "queries": 277
+      },
+      {
+        "status": 409,
+        "ms": 24771.081,
+        "transaction_ms": 24768.639,
+        "queries": 276
+      }
+    ],
+    "committed_active_edges_customer_a": 1526,
+    "committed_cycle": false,
+    "lock_sample_count": 479,
+    "lock_wait_samples": 409,
+    "max_concurrent_lock_waiters": 7,
+    "lock_wait_events": [
+      "advisory"
+    ]
+  }
+}
