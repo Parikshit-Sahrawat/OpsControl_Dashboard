@@ -395,6 +395,26 @@ def snapshot(engine, ids: dict) -> dict:
         }
 
 
+def assert_preserved_downgrade(
+    downgrade, revision_before: str, revision_after: str
+) -> None:
+    """Accept only an explicit preservation refusal with no committed schema change."""
+    guards = (
+        "V1.6 identities/evidence/checkpoints exist",
+        "Pentaho attempts/identity/evidence/recovery exist",
+        "Pentaho evidence review/decisions exist",
+        "Pentaho schedule/replay/notification evidence exists",
+        "Native incident recovery evidence exists",
+        "Access boundaries or decisions exist",
+        "Canonical cluster or association evidence exists",
+    )
+    assert (
+        downgrade.returncode != 0
+        and any(marker in downgrade.stderr for marker in guards)
+        and revision_after == revision_before
+    ), "Populated restored downgrade did not refuse with preservation guard"
+
+
 def main() -> None:
     name = controlled_container()
     source_url = make_url(os.environ["DATABASE_URL"])
@@ -448,6 +468,10 @@ def main() -> None:
                 timeout=120,
             )
             assert drift.returncode == 0, "Restored database has Alembic drift"
+            with Session(target_engine) as db:
+                revision_before = db.scalar(
+                    text("SELECT version_num FROM alembic_version")
+                )
             downgrade = subprocess.run(
                 [
                     sys.executable,
@@ -462,27 +486,13 @@ def main() -> None:
                 text=True,
                 timeout=120,
             )
-            assert downgrade.returncode != 0 and any(
-                marker in downgrade.stderr
-                for marker in (
-                    "V1.6 identities/evidence/checkpoints exist",
-                    "Pentaho attempts/identity/evidence/recovery exist",
-                    "Pentaho evidence review/decisions exist",
-                    "Pentaho schedule/replay/notification evidence exists",
-                    "Native incident recovery evidence exists",
-                    "Access boundaries or decisions exist",
+            with Session(target_engine) as db:
+                revision_after = db.scalar(
+                    text("SELECT version_num FROM alembic_version")
                 )
-            ), "Populated restored downgrade did not refuse with preservation guard"
+            assert_preserved_downgrade(downgrade, revision_before, revision_after)
             assert snapshot(target_engine, ids) == expected
             with Session(target_engine) as db:
-                assert (
-                    db.scalar(
-                        text(
-                            "SELECT count(*) FROM alembic_version WHERE version_num='0037_access_boundaries'"
-                        )
-                    )
-                    == 1
-                )
                 target_bytes = db.scalar(
                     text("SELECT pg_database_size(current_database())")
                 )
@@ -566,7 +576,7 @@ def main() -> None:
                 "backup_sha256": manifest["sha256"],
                 "backup_seconds": round(backup_seconds, 3),
                 "restore_seconds": round(restore_seconds, 3),
-                "migration_head": "0037_access_boundaries",
+                "migration_head": revision_after,
                 "restored_alembic_drift": False,
                 "restored_populated_downgrade_refused": True,
                 "table_counts": expected["table_counts"],

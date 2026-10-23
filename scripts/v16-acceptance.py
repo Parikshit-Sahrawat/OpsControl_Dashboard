@@ -459,6 +459,7 @@ try:
             "Pentaho schedule/replay/notification evidence exists",
             "Native incident recovery evidence exists",
             "Access boundaries or decisions exist",
+            "Canonical cluster or association evidence exists",
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
