@@ -61,11 +61,20 @@ def value(v):
 
 
 def attributes(attrs):
-    return {
-        a.key[:200]: value(a.value)
-        for a in list(attrs)[:100]
-        if a.key not in ("organization_id", "customer_id", "agent_id")
-    }
+    result = {}
+    for attr in list(attrs)[:100]:
+        if attr.key in ("organization_id", "customer_id", "agent_id"):
+            continue
+        key = attr.key[:200]
+        item = value(attr.value)
+        if (
+            key in ("opscontrol.method.id", "opscontrol_method_id")
+            and key in result
+            and result[key] != item
+        ):
+            raise HTTPException(422, "Telemetry method identity is contradictory")
+        result[key] = item
+    return result
 
 
 def name_key(name):
@@ -170,6 +179,15 @@ def validate_method_identity(attrs, allowed, signal):
     return value
 
 
+def validate_method_attribution(resource_attrs, record_attrs, allowed, signal):
+    """Resolve both OTLP attribute levels without masking conflicting methods."""
+    resource_id = validate_method_identity(resource_attrs, allowed, signal)
+    record_id = validate_method_identity(record_attrs, allowed, signal)
+    if resource_id and record_id and resource_id != record_id:
+        raise HTTPException(422, "Telemetry method identity conflicts across levels")
+    return record_id or resource_id
+
+
 def store(obj, signal, request, digest):
     with SessionLocal() as db:
         a, c, s, w = authenticate(db, request)
@@ -198,8 +216,10 @@ def store(obj, signal, request, digest):
         # without treating incoming telemetry as an apply acknowledgment.
         method_signals = approved_method_signals(approved_versions)
 
-        def method_identity(attrs):
-            return validate_method_identity(attrs, method_signals, signal)
+        def method_identity(resource_attrs, record_attrs):
+            return validate_method_attribution(
+                resource_attrs, record_attrs, method_signals, signal
+            )
 
         count = 0
 
@@ -236,12 +256,12 @@ def store(obj, signal, request, digest):
                             if isinstance(body, str)
                             else json.dumps(body, ensure_ascii=False)
                         )
-                        method_identity(
-                            {
-                                **attributes(resource.resource.attributes),
-                                **attributes(record.attributes),
-                            }
-                        )
+                        resource_attrs = attributes(resource.resource.attributes)
+                        record_attrs = attributes(record.attributes)
+                        identity = method_identity(resource_attrs, record_attrs)
+                        stored_attrs = {**resource_attrs, **record_attrs}
+                        if identity:
+                            stored_attrs["opscontrol.method.id"] = identity
                         db.add(
                             LogEvent(
                                 organization_id=a.organization_id,
@@ -252,10 +272,7 @@ def store(obj, signal, request, digest):
                                 ),
                                 severity=record.severity_text[:30] or None,
                                 message=message[:65536],
-                                attributes={
-                                    **attributes(resource.resource.attributes),
-                                    **attributes(record.attributes),
-                                },
+                                attributes=stored_attrs,
                                 event_type="OTLP",
                             )
                         )
@@ -293,7 +310,7 @@ def store(obj, signal, request, digest):
                     raise HTTPException(422, "Non-finite metric value")
                 series = attributes(point.attributes)
                 identity = method_identity(
-                    {**attributes(resource.resource.attributes), **series}
+                    attributes(resource.resource.attributes), series
                 )
                 if identity:
                     series["opscontrol.method.id"] = identity
@@ -396,12 +413,12 @@ def store(obj, signal, request, digest):
                         end = timestamp(span.end_time_unix_nano)
                         if end < start:
                             raise HTTPException(422, "Span ends before it starts")
-                        method_identity(
-                            {
-                                **attributes(resource.resource.attributes),
-                                **attributes(span.attributes),
-                            }
-                        )
+                        resource_attrs = attributes(resource.resource.attributes)
+                        span_attrs = attributes(span.attributes)
+                        identity = method_identity(resource_attrs, span_attrs)
+                        stored_attrs = {**resource_attrs, **span_attrs}
+                        if identity:
+                            stored_attrs["opscontrol.method.id"] = identity
                         db.add(
                             TraceSpan(
                                 organization_id=a.organization_id,
@@ -411,10 +428,7 @@ def store(obj, signal, request, digest):
                                 name=span.name[:255],
                                 started_at=start,
                                 ended_at=end,
-                                attributes={
-                                    **attributes(resource.resource.attributes),
-                                    **attributes(span.attributes),
-                                },
+                                attributes=stored_attrs,
                             )
                         )
         if count:
