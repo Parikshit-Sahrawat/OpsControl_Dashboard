@@ -72,7 +72,7 @@ def execute_claim(job,hosts,cidrs):
 
 def run_once(base,token,hosts,cidrs):
     call(base,token,"/api/v1/worker/heartbeat",{})
-    claimed=call(base,token,"/api/v1/worker/claim",{})
+    claimed=call(base,token,"/api/v1/worker/claim",{"api_protocol":2})
     job=claimed.get("job")
     if not job: return False
     try:
