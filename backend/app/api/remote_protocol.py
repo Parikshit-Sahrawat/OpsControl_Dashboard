@@ -222,8 +222,12 @@ def enqueue_probe(payload:QueueRequest):
         db.commit()
         return {"job_id":str(job.id),"state":"QUEUED","duplicate":False}
 
+class WorkerCapabilities(BaseModel):
+    model_config=ConfigDict(extra="forbid")
+    api_protocol: Literal[1, 2] = 1
+
 @worker_router.post("/claim")
-def claim_probe(identity=Depends(worker_from_request)):
+def claim_probe(capabilities: WorkerCapabilities | None = None, identity=Depends(worker_from_request)):
     with SessionLocal() as db:
         now=utc()
         worker=db.get(WorkerIdentity,identity["id"])
@@ -235,7 +239,10 @@ def claim_probe(identity=Depends(worker_from_request)):
                       ((RemoteProbeJob.state=="LEASED") & (RemoteProbeJob.lease_expires_at<now))))
               .order_by(RemoteProbeJob.planned_for)
               .with_for_update(skip_locked=True).limit(1))
-        job=db.scalar(stmt)
+        # Legacy workers can only claim GET probes without custom headers.
+        jobs=db.scalars(stmt.limit(32)).all()
+        version=capabilities.api_protocol if capabilities else 1
+        job=next((item for item in jobs if version>=2 or ((item.config_snapshot or {}).get("method","GET")=="GET" and not (item.config_snapshot or {}).get("headers"))),None)
         if not job: return {"job":None}
         collector=db.get(Collector,job.collector_id)
         source=db.get(DataSource,collector.data_source_id) if collector else None
