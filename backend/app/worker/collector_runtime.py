@@ -854,6 +854,21 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
 
 def _due_collector_ids(limit, excluded=()):
     with SessionLocal() as db:
+        # Persistently retire previously enabled Kubernetes-only collectors.
+        # This changes no evidence, monitoring resources, or association rows.
+        retired = db.scalars(
+            select(Collector).where(
+                Collector.enabled.is_(True),
+                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS")),
+                Collector.remote_worker_id.is_(None),
+            )
+        ).all()
+        for collector in retired:
+            collector.enabled = False
+            collector.status = "STOPPED"
+            collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
+        if retired:
+            db.commit()
         return list(
             db.scalars(
                 select(Collector.id)
