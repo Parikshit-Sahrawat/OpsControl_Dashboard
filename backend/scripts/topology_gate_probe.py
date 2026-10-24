@@ -375,6 +375,8 @@ def main():
 
     # Time the actual handler while counting every SQL statement per caller thread.
     counts = {}
+    lock_sql_started = {}
+    lock_sql_ms = {}
     count_lock = Lock()
 
     def count_sql(conn, cursor, statement, parameters, context, executemany):
@@ -382,13 +384,26 @@ def main():
         with count_lock:
             if ident in counts:
                 counts[ident] += 1
+                if "pg_advisory_xact_lock" in statement:
+                    lock_sql_started[ident] = time.perf_counter()
+
+    def after_sql(conn, cursor, statement, parameters, context, executemany):
+        if "pg_advisory_xact_lock" not in statement:
+            return
+        ident = get_ident()
+        with count_lock:
+            started = lock_sql_started.pop(ident, None)
+            if started is not None:
+                lock_sql_ms[ident] = (time.perf_counter() - started) * 1000
 
     event.listen(engine, "before_cursor_execute", count_sql)
+    event.listen(engine, "after_cursor_execute", after_sql)
 
     def operation(child, parent):
         ident = get_ident()
         with count_lock:
             counts[ident] = 0
+            lock_sql_ms.pop(ident, None)
         started = time.perf_counter()
         with principal_session(org_ids) as db:
             transaction_started = time.perf_counter()
@@ -402,11 +417,13 @@ def main():
         elapsed = (time.perf_counter() - started) * 1000
         with count_lock:
             queries = counts.pop(ident)
+            lock_ms = lock_sql_ms.pop(ident, None)
         return {
             "status": status,
             "ms": round(elapsed, 3),
             "transaction_ms": round(transaction_ms, 3),
             "queries": queries,
+            "lock_sql_ms": round(lock_ms, 3) if lock_ms is not None else None,
         }
 
     try:
@@ -453,6 +470,7 @@ def main():
         )
     finally:
         event.remove(engine, "before_cursor_execute", count_sql)
+        event.remove(engine, "after_cursor_execute", after_sql)
     with Session(engine) as db:
         active = db.scalars(
             select(ResourceDependency).where(
@@ -492,11 +510,13 @@ def main():
             **summary([r["ms"] for r in samples]),
             "query_counts": [r["queries"] for r in samples],
             "transaction_ms": summary([r["transaction_ms"] for r in samples]),
+            "lock_sql_ms": summary([r["lock_sql_ms"] for r in samples]),
         },
         "cycle_rejection": {
             **summary([r["ms"] for r in rejects]),
             "query_counts": [r["queries"] for r in rejects],
             "transaction_ms": summary([r["transaction_ms"] for r in rejects]),
+            "lock_sql_ms": summary([r["lock_sql_ms"] for r in rejects]),
         },
         "concurrent_eight": concurrent,
         "committed_active_edges_customer_a": len(active),
