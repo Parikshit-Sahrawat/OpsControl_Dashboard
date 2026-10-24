@@ -56,7 +56,7 @@ def module(name, *args, env=None):
             # No tokens, request bodies or fixture data in public CI output.
             # Only expose the final exception category and failing source line.
             import re
-            frames=re.findall(r'File "[^"]+", line (\\d+), in ([^\\n]+)', result.stderr)
+            frames=re.findall(r'File "[^"]+", line (\d+), in ([^\n]+)', result.stderr)
             category=re.findall(r'(?m)^([A-Za-z_][A-Za-z_0-9.]*(?:Error|Exception|Failure)):', result.stderr)
             print('Kubernetes retirement probe failed at '+str(frames[-1] if frames else 'unknown frame')+' ('+(category[-1] if category else 'unknown error')+')',flush=True)
         raise RuntimeError('Acceptance probe failed; see private diagnostics')
