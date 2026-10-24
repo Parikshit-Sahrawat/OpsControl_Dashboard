@@ -10,6 +10,13 @@ Created from `main` at PR #63 merge commit `6d5fdbf126f9bde296de473a8cdbbaebb0af
 - Worker network policies, tenant isolation, Basic-auth credential references, DNS pinning and existing evidence remain intact.
 - Contract tests cover backward compatibility and rejection cases.
 
+## Increment 2: hybrid API worker execution (in progress)
+- Versioned claim payload: v1 workers receive only GET without custom headers; upgraded agents advertise `api_protocol: 2`.
+- V2 supports HTTPS GET and HEAD, a single narrowly approved `x-opscontrol-check` header, bounded status/timeouts and pinned TLS with existing DNS/network policies.
+- Existing Basic-auth credential references remain worker-policy-gated and resolved only after destination validation. No raw secrets, bodies, URLs or request headers enter evidence.
+- POST, arbitrary Authorization headers, request bodies, query strings and redirects remain denied.
+- Compatibility and injection tests added; CI and integrated acceptance still need verification.
+
 ## Next increments
 1. Design versioned remote-worker capability negotiation before permitting HEAD or additional methods.
 2. Implement allowlisted headers and canonical request serialization with no secret-bearing telemetry.
