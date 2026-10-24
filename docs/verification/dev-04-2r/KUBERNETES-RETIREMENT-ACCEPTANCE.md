@@ -12,7 +12,7 @@ Retire **Kubernetes/EKS cluster and workload monitoring** only. Do not retire Ku
 
 ## Verification and outstanding operational gates
 - CI success is required **for the final head SHA**. Earlier 18/18 green result was for e8b1492, before the remote scheduler update; it cannot validate later changes.
-- Confirm cancellation of queued and leased Kubernetes jobs in a disposable PostgreSQL environment, including jobs whose collector is already disabled. Confirm a worker cannot lease or submit a cancelled job; an already executing worker may require a separate drain/quiescence procedure.
+- Automated disposable PostgreSQL gate: `backend/scripts/kubernetes_retirement_acceptance_probe.py`, invoked by `scripts/release-acceptance.py`, seeds not-yet-due Kubernetes remote collectors and QUEUED/LEASED jobs, checks persistent cancellation and lease nonce invalidation. Its result must be verified on the latest CI head; jobs whose collector was already disabled are not explicitly seeded. Confirm a worker cannot lease or submit a cancelled job; an already executing worker may require a separate drain/quiescence procedure.
 - Confirm local and remote collectors of all three retired provider aliases stop, including not-yet-due collectors, and no new provider requests are made.
 - Verify preserved cluster identities, association revisions, immutable decisions, historical evidence, and explicit revocation continue to function.
 - Verify protected EC2/Linux/Windows, ETL/Pentaho, HTTP/API, shared topology and security workflows.
