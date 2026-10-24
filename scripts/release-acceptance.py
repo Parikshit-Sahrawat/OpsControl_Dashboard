@@ -112,6 +112,8 @@ try:
     record('Native alert recovery and independent in-app leased delivery; retired ITSM rejected')
     module('scripts.eks_acceptance_probe')
     record('Retired EKS discovery/import/activation denied; tenant boundaries and inventory preservation checked')
+    module('scripts.kubernetes_retirement_acceptance_probe')
+    record('Disposable PostgreSQL: Kubernetes remote collectors retired, queued/leased jobs cancelled, evidence retained')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
