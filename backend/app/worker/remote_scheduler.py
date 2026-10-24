@@ -32,6 +32,23 @@ def queue_due_once(limit=100):
             RemoteProbeJob.attempts>=3,
             RemoteProbeJob.lease_expires_at<now
         ).values(state="EXPIRED",lease_nonce_hash=None))
+        # Retire all remote Kubernetes collectors, including those not yet due,
+        # and invalidate queued/leased jobs without deleting their history.
+        retired=db.scalars(select(Collector).where(
+            Collector.remote_worker_id.is_not(None),
+            Collector.enabled.is_(True),
+            Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS")),
+        ).with_for_update()).all()
+        for collector in retired:
+            collector.enabled=False
+            collector.status="STOPPED"
+            collector.last_error="Kubernetes monitoring retired; historical evidence retained"
+        db.execute(update(RemoteProbeJob).where(
+            RemoteProbeJob.collector_id.in_(select(Collector.id).where(
+                Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS"))
+            )),
+            RemoteProbeJob.state.in_(("QUEUED", "LEASED"))
+        ).values(state="CANCELLED",lease_nonce_hash=None))
         collectors=db.scalars(
             select(Collector).where(
                 Collector.enabled.is_(True),Collector.remote_worker_id.is_not(None),
