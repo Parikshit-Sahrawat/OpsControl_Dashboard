@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from app.worker.egress import EgressDenied, check_target
 
 ALLOWED_METHODS = frozenset({"GET", "HEAD"})
-ALLOWED_HEADERS = frozenset({"accept", "user-agent", "x-opscontrol-check"})
+ALLOWED_HEADERS = frozenset({"x-opscontrol-check"})
 MAX_HEADER_VALUE = 256
 
 
