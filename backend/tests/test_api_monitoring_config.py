@@ -27,12 +27,18 @@ class APIConfigTests(unittest.TestCase):
             {"url": "https://api.example.test/health?secret=x"},
             {"expected_status": True}, {"expected_status": 600},
             {"timeout_seconds": 0}, {"timeout_seconds": 11},
+            {"max_response_time_ms": True}, {"max_response_time_ms": 0},
+            {"max_response_time_ms": 10001},
         ]
         for config in cases:
             with self.subTest(config=config):
                 with self.assertRaises(HTTPException) as error:
                     build_api_config(config, self.source, self.worker)
                 self.assertEqual(error.exception.status_code, 422)
+
+    def test_bounded_latency_assertion_is_retained(self):
+        cfg=build_api_config({"max_response_time_ms":250},self.source,self.worker)
+        self.assertEqual(cfg["max_response_time_ms"],250)
 
     def test_head_and_allowlisted_headers_are_valid(self):
         config=build_api_config({"method":"HEAD","headers":{"X-OpsControl-Check":"ready"}},self.source,self.worker)
