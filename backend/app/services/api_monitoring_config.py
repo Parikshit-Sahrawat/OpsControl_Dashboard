@@ -54,4 +54,9 @@ def build_api_config(collector_config, source, worker):
         raise HTTPException(422, "Invalid expected_status")
     if type(config["timeout_seconds"]) is not int or not 1 <= config["timeout_seconds"] <= 10:
         raise HTTPException(422, "Timeout must be 1..10 seconds")
+    latency=cfg.get("max_response_time_ms")
+    if latency is not None:
+        if type(latency) is not int or not 1 <= latency <= 10000:
+            raise HTTPException(422, "Maximum response time must be 1..10000 ms")
+        config["max_response_time_ms"]=latency
     return config
