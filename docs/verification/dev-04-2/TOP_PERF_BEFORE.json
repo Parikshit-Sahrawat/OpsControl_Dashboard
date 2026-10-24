@@ -1,0 +1,279 @@
+{
+  "seed": 420042,
+  "base_counts": {
+    "resources": 1000,
+    "relationships": 3000
+  },
+  "postgresql_version": "17.11",
+  "revision": "0038_k8s_cluster_associations",
+  "api": {
+    "authorized_detail": 200,
+    "foreign_detail": 404,
+    "forged_scope": 404,
+    "foreign_history": 404,
+    "foreign_write": 404,
+    "cross_customer_edge": 404,
+    "invalid_type": 422,
+    "self_cycle": 422,
+    "two_cycle": 409,
+    "multi_cycle": 409,
+    "deep_cycle": 409,
+    "duplicate": 409,
+    "created_edge": 201,
+    "inventory_total_a": 500,
+    "empty_preview_total": 0,
+    "history_limits": {
+      "0": 422,
+      "1": 200,
+      "200": 200,
+      "201": 422
+    },
+    "history_total": 253,
+    "history_unique_ids": 253,
+    "retired_edge": 204
+  },
+  "read_benchmark": {
+    "graph_preview": {
+      "samples": 20,
+      "min_ms": 60.909,
+      "p50_ms": 65.16,
+      "p95_ms": 121.271,
+      "p99_ms": 121.271,
+      "max_ms": 270.058,
+      "mean_ms": 79.772,
+      "query_counts": [
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19,
+        19
+      ]
+    },
+    "history_200": {
+      "samples": 20,
+      "min_ms": 38.829,
+      "p50_ms": 41.769,
+      "p95_ms": 47.905,
+      "p99_ms": 47.905,
+      "max_ms": 243.664,
+      "mean_ms": 52.289,
+      "query_counts": [
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15,
+        15
+      ]
+    }
+  },
+  "query_plan": {
+    "Node Type": "Index Only Scan",
+    "Parallel Aware": false,
+    "Async Capable": false,
+    "Scan Direction": "Forward",
+    "Index Name": "uq_dependency_current",
+    "Relation Name": "resource_dependencies",
+    "Alias": "resource_dependencies",
+    "Startup Cost": 0.28,
+    "Total Cost": 24.83,
+    "Plan Rows": 260,
+    "Plan Width": 16,
+    "Index Cond": "(resource_id = 'd4d39fab-3cba-5787-bdf8-5aba2cdce4a6'::uuid)"
+  },
+  "benchmark": {
+    "create": {
+      "samples": 20,
+      "min_ms": 1870.072,
+      "p50_ms": 2353.304,
+      "p95_ms": 2738.864,
+      "p99_ms": 2738.864,
+      "max_ms": 3203.301,
+      "mean_ms": 2348.843,
+      "query_counts": [
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271,
+        272,
+        273,
+        274,
+        275,
+        276,
+        277,
+        278,
+        279,
+        280
+      ],
+      "transaction_ms": {
+        "samples": 20,
+        "min_ms": 1869.753,
+        "p50_ms": 2352.977,
+        "p95_ms": 2738.087,
+        "p99_ms": 2738.087,
+        "max_ms": 3202.894,
+        "mean_ms": 2348.417
+      },
+      "lock_sql_ms": {
+        "samples": 20,
+        "min_ms": 0.241,
+        "p50_ms": 0.392,
+        "p95_ms": 0.859,
+        "p99_ms": 0.859,
+        "max_ms": 2.175,
+        "mean_ms": 0.54
+      }
+    },
+    "cycle_rejection": {
+      "samples": 20,
+      "min_ms": 1914.842,
+      "p50_ms": 2262.693,
+      "p95_ms": 2799.399,
+      "p99_ms": 2799.399,
+      "max_ms": 2849.561,
+      "mean_ms": 2323.985,
+      "query_counts": [
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276,
+        276
+      ],
+      "transaction_ms": {
+        "samples": 20,
+        "min_ms": 1914.763,
+        "p50_ms": 2262.612,
+        "p95_ms": 2799.295,
+        "p99_ms": 2799.295,
+        "max_ms": 2849.481,
+        "mean_ms": 2323.899
+      },
+      "lock_sql_ms": {
+        "samples": 20,
+        "min_ms": 0.256,
+        "p50_ms": 0.433,
+        "p95_ms": 0.596,
+        "p99_ms": 0.596,
+        "max_ms": 0.751,
+        "mean_ms": 0.443
+      }
+    },
+    "concurrent_eight": [
+      {
+        "status": 201,
+        "ms": 2358.501,
+        "transaction_ms": 2357.202,
+        "queries": 281,
+        "lock_sql_ms": 8.094
+      },
+      {
+        "status": 201,
+        "ms": 4919.6,
+        "transaction_ms": 4910.454,
+        "queries": 282,
+        "lock_sql_ms": 1975.26
+      },
+      {
+        "status": 201,
+        "ms": 9771.375,
+        "transaction_ms": 9762.783,
+        "queries": 283,
+        "lock_sql_ms": 7130.117
+      },
+      {
+        "status": 201,
+        "ms": 7527.187,
+        "transaction_ms": 7520.826,
+        "queries": 284,
+        "lock_sql_ms": 4511.757
+      },
+      {
+        "status": 409,
+        "ms": 16403.407,
+        "transaction_ms": 16403.322,
+        "queries": 279,
+        "lock_sql_ms": 13706.08
+      },
+      {
+        "status": 409,
+        "ms": 14093.092,
+        "transaction_ms": 14093.01,
+        "queries": 278,
+        "lock_sql_ms": 11602.957
+      },
+      {
+        "status": 409,
+        "ms": 11975.254,
+        "transaction_ms": 11975.172,
+        "queries": 277,
+        "lock_sql_ms": 9355.262
+      },
+      {
+        "status": 409,
+        "ms": 18340.792,
+        "transaction_ms": 18340.669,
+        "queries": 276,
+        "lock_sql_ms": 15982.257
+      }
+    ],
+    "committed_active_edges_customer_a": 1526,
+    "committed_cycle": false,
+    "lock_sample_count": 354,
+    "lock_wait_samples": 308,
+    "max_concurrent_lock_waiters": 7,
+    "lock_wait_events": [
+      "advisory"
+    ]
+  }
+}
