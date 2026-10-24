@@ -35,6 +35,10 @@ def source_access(db,source_id):
         raise HTTPException(403,"Platform administrator must authorize discovery using deployment identity")
     if source.source_type not in {"AWS_EC2","EC2","AWS_EKS","KUBERNETES","K8S"}:
         raise HTTPException(422,"Source is not a supported resource-discovery connection")
+    # Kubernetes/EKS discovery is deferred, without deleting historical imports
+    # or cluster association/decision records. EC2 discovery stays available.
+    if source.source_type in {"AWS_EKS", "KUBERNETES", "K8S"}:
+        raise HTTPException(422, "Kubernetes discovery is deferred; existing records are preserved")
     if not source.enabled:raise HTTPException(409,"Discovery source disabled")
     return source
 
