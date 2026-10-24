@@ -305,6 +305,16 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
         source=db.get(DataSource,collector.data_source_id) if collector else None
         if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=identity["organization_id"] or collector.remote_worker_id!=identity["id"]:
             raise HTTPException(409,"Collector no longer authorized")
+        # A successful assertion must agree with its immutable leased contract.
+        # Do not trust a worker to mark a latency violation healthy.
+        snap=job.config_snapshot or {}
+        latency_limit=snap.get("max_response_time_ms")
+        if payload.outcome=="SUCCESS" and latency_limit is not None:
+            if (type(latency_limit) is not int or not 1<=latency_limit<=10000
+                    or payload.response_time_ms is None
+                    or payload.response_time_ms>latency_limit
+                    or payload.http_status!=snap.get("expected_status",200)):
+                raise HTTPException(422,"Reported success violates leased API assertions")
         expects_basic = (job.config_snapshot or {}).get("credential_ref") is not None
         if expects_basic and payload.auth_mode != "BASIC":
             raise HTTPException(422,"Assigned probe requires Basic authentication support")
