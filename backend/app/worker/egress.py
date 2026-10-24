@@ -125,6 +125,9 @@ def probe_https(config, hosts, cidrs):
                 or not isinstance(value,str) or not value or len(value)>256
                 or any(ord(ch)<32 or ord(ch)>126 for ch in value)):
             raise EgressDenied("Unsafe API request header")
+    latency_limit=config.get("max_response_time_ms")
+    if latency_limit is not None and (type(latency_limit) is not int or not 1<=latency_limit<=10000):
+        raise EgressDenied("Invalid maximum response time assertion")
     ip=resolve_target(parts.hostname,networks)
     authorization = None
     reference = config.get("credential_ref")
@@ -154,7 +157,7 @@ def probe_https(config, hosts, cidrs):
     else:
         status,size=_pinned_https(parts.hostname,ip,path,timeout,authorization,method,headers)
     elapsed=min(int((time.monotonic()-started)*1000),600000)
-    result = {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
+    result = {"outcome":"SUCCESS" if status==expected and (latency_limit is None or elapsed<=latency_limit) else "ASSERTION_FAILED",
               "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
     if authorization:
         result["auth_mode"] = "BASIC"
