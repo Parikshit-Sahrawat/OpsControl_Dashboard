@@ -95,7 +95,7 @@ def _pinned_https(host,ip,path,timeout,authorization=None,method='GET',headers=N
             auth_header = f"Authorization: {authorization}\r\n" if authorization else ""
             if authorization and (len(authorization)>8192 or any(ord(c)<32 or ord(c)>126 for c in authorization)):
                 raise EgressDenied("Invalid authentication header encoding")
-            extra="".join(f"{name}: {value}\\r\\n" for name,value in (headers or {}).items())
+            extra="".join(f"{name}: {value}\r\n" for name,value in (headers or {}).items())
             request=(f"{method} {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: OpsControl-RemoteProbe/1\r\nAccept: application/json\r\n{auth_header}{extra}Connection: close\r\n\r\n").encode("ascii")
             secure.sendall(request)
             response=http.client.HTTPResponse(secure)
