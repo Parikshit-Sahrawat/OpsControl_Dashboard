@@ -25,10 +25,7 @@ def build_api_config(collector_config, source, worker):
     method = cfg.get("method", "GET")
     if not isinstance(method, str) or method not in ALLOWED_METHODS:
         raise HTTPException(422, "API method must be GET or HEAD")
-    if method != "GET":
-        # HEAD is reserved until remote workers negotiate the corresponding capability.
-        raise HTTPException(422, "HEAD requires an upgraded API monitoring worker")
-    config["method"] = "GET"
+    config["method"] = method
     headers = cfg.get("headers", {})
     if not isinstance(headers, dict) or len(headers) > 8:
         raise HTTPException(422, "API headers must be an object with at most eight entries")
@@ -44,8 +41,7 @@ def build_api_config(collector_config, source, worker):
             raise HTTPException(422, "Duplicate API header")
         normalized[key] = value
     if normalized:
-        # Validated configuration only: existing worker protocol does not send custom headers.
-        raise HTTPException(422, "Custom API headers require an upgraded API monitoring worker")
+        config["headers"] = normalized
     if any(key in cfg for key in ("body", "payload", "query", "params", "follow_redirects")):
         raise HTTPException(422, "API request bodies, queries and redirects are not supported")
     if not isinstance(config["url"], str):
