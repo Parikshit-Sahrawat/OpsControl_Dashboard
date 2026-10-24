@@ -18,9 +18,9 @@ class APIConfigTests(unittest.TestCase):
 
     def test_unsupported_or_unsafe_api_configuration_fails_closed(self):
         cases = [
-            {"method": "POST"}, {"method": "DELETE"}, {"method": "HEAD"},
+            {"method": "POST"}, {"method": "DELETE"},
             {"method": "get"}, {"headers": {"Authorization": "Bearer secret"}},
-            {"headers": {"Accept": "application/json"}},
+            {"headers": {"X-Evil": "unexpected"}},
             {"body": {"password": "secret"}}, {"query": {"token": "sensitive"}},
             {"url": "http://api.example.test/health"},
             {"url": "https://evil.example.test/health"},
@@ -33,6 +33,15 @@ class APIConfigTests(unittest.TestCase):
                 with self.assertRaises(HTTPException) as error:
                     build_api_config(config, self.source, self.worker)
                 self.assertEqual(error.exception.status_code, 422)
+
+    def test_head_and_allowlisted_headers_are_valid(self):
+        config=build_api_config({"method":"HEAD","headers":{"X-OpsControl-Check":"ready"}},self.source,self.worker)
+        self.assertEqual(config["method"],"HEAD")
+        self.assertEqual(config["headers"],{"x-opscontrol-check":"ready"})
+
+    def test_header_injection_is_rejected(self):
+        with self.assertRaises(HTTPException):
+            build_api_config({"headers":{"Accept":"text/plain\\r\\nAuthorization: token"}},self.source,self.worker)
 
     def test_valid_explicit_get_preserves_status_and_timeout(self):
         config = build_api_config({"method": "GET", "expected_status": 204, "timeout_seconds": 5}, self.source, self.worker)
