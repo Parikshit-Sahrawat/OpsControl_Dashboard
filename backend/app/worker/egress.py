@@ -121,7 +121,7 @@ def probe_https(config, hosts, cidrs):
     if not isinstance(headers,dict) or len(headers)>8:
         raise EgressDenied("Invalid API headers")
     for name,value in headers.items():
-        if (not isinstance(name,str) or name not in {"accept","user-agent","x-opscontrol-check"}
+        if (not isinstance(name,str) or name not in {"x-opscontrol-check"}
                 or not isinstance(value,str) or not value or len(value)>256
                 or any(ord(ch)<32 or ord(ch)>126 for ch in value)):
             raise EgressDenied("Unsafe API request header")
