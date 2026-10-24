@@ -65,7 +65,7 @@ def main():
     # retirement, even with the previously valid nonce.
     leased_job=ids[1][1]
     submission={"event_id":str(uuid.uuid4()),"job_id":str(leased_job),
-                "lease_nonce":"stale-lease-token",
+                "lease_nonce":"stale-lease-token-"+"x"*48,
                 "observed_at":datetime.now(timezone.utc).isoformat(),
                 "outcome":"SUCCESS","http_status":200,"response_time_ms":25,
                 "response_size_bytes":10}
