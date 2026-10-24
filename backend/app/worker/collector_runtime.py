@@ -751,6 +751,14 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
     collector = db.get(Collector, collector_id)
     if not collector or not collector.enabled or collector.remote_worker_id is not None:
         return
+    # Retire legacy Kubernetes-only collectors before any provider SDK call.
+    # Never delete collector runs, metrics, evidence, or cluster associations.
+    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+        collector.enabled = False
+        collector.status = "STOPPED"
+        collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
+        db.commit()
+        return
     due = collector.next_run_at
     if due and due.tzinfo is None:
         due = due.replace(tzinfo=timezone.utc)
@@ -856,7 +864,7 @@ def _due_collector_ids(limit, excluded=()):
                     Organization.active.is_(True),
                     Collector.enabled.is_(True),
                     func.upper(Collector.collector_type).not_in(
-                        ("OTEL", "PIPELINE_V16_PROXY")
+                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS")
                     ),
                     Collector.remote_worker_id.is_(None),
                     Collector.id.not_in(excluded),
