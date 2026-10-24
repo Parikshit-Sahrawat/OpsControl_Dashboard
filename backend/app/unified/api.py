@@ -7,7 +7,7 @@ from typing import Literal
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import Field
-from sqlalchemy import select, func, or_, case, cast, String
+from sqlalchemy import select, func, or_, case, cast, literal, String
 from sqlalchemy.exc import IntegrityError
 from app.db.session import get_db
 from app.api.pagination import page, children
@@ -1476,25 +1476,27 @@ def add_dependency(id: uuid.UUID, payload: DependencyInput, db=Depends(get_db)):
         raise HTTPException(
             422, "Host relationships must match resource onboarding inheritance"
         )
-    seen = {r.id}
-    queue = [parent.id]
-    while queue:
-        item = queue.pop()
-        if item == r.id:
-            raise HTTPException(409, "Dependency cycle detected")
-        if item in seen:
-            continue
-        seen.add(item)
-        queue.extend(
-            db.scalars(
-                select(ResourceDependency.depends_on_id).where(
-                    ResourceDependency.resource_id == item,
-                    ResourceDependency.valid_to.is_(None),
-                )
-            ).all()
+    # Follow the same child -> parent direction as the former DFS. UNION (not
+    # UNION ALL) visits each identity once, even when the existing graph has
+    # multiple paths. The outer limit retains the former 1,000-node safety
+    # bound without issuing a query for every visited node.
+    edges = ResourceDependency.__table__
+    reachable = select(literal(parent.id).label("node")).cte(
+        "reachable_dependencies", recursive=True
+    )
+    reachable = reachable.union(
+        select(edges.c.depends_on_id)
+        .select_from(edges.join(reachable, edges.c.resource_id == reachable.c.node))
+        .where(
+            edges.c.organization_id == r.organization_id,
+            edges.c.valid_to.is_(None),
         )
-        if len(seen) > 1000:
-            raise HTTPException(409, "Dependency graph exceeds validation bound")
+    )
+    nodes = db.scalars(select(reachable.c.node).limit(1000)).all()
+    if r.id in nodes:
+        raise HTTPException(409, "Dependency cycle detected")
+    if len(nodes) == 1000:
+        raise HTTPException(409, "Dependency graph exceeds validation bound")
     d = ResourceDependency(
         organization_id=r.organization_id, resource_id=id, **payload.model_dump()
     )
