@@ -29,6 +29,22 @@ class APIWorkerV2Tests(unittest.TestCase):
         self.assertEqual(result["outcome"],"SUCCESS")
         self.assertEqual(len(transport.call_args.args),4)
 
+    def test_latency_assertion_marks_slow_probe_failed(self):
+        cfg=dict(self.config,max_response_time_ms=1)
+        with patch("app.worker.egress.resolve_target",return_value="203.0.113.10"), patch(
+            "app.worker.egress._pinned_https",return_value=(204,0)
+        ), patch("app.worker.egress.time.monotonic",side_effect=[1.0,1.02]):
+            result=probe_https(cfg,self.hosts,self.cidrs)
+        self.assertEqual(result["outcome"],"ASSERTION_FAILED")
+        self.assertEqual(result["http_status"],204)
+        self.assertEqual(result["response_time_ms"],20)
+
+    def test_invalid_latency_limit_is_denied_before_dns(self):
+        with patch("app.worker.egress.resolve_target") as resolver:
+            with self.assertRaises(EgressDenied):
+                probe_https(dict(self.config,max_response_time_ms=True),self.hosts,self.cidrs)
+            resolver.assert_not_called()
+
     def test_untrusted_header_is_denied_before_dns(self):
         cfg=dict(self.config,headers={"authorization":"Bearer secret"})
         with patch("app.worker.egress.resolve_target") as resolver:
