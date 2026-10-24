@@ -67,6 +67,11 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     if source is None: raise HTTPException(404,"Data source not found")
     if not source.enabled: raise HTTPException(409,"Data source disabled")
     provider=normalize(source.source_type)
+    # Kubernetes cluster/workload monitoring is deferred. Preserve existing
+    # collectors, evidence, associations, and their audit history; only block
+    # new monitoring activations for these provider types.
+    if provider == 'KUBERNETES':
+        raise HTTPException(422, 'Kubernetes monitoring is deferred; existing monitoring history is preserved')
     if provider == 'AWS_EKS':
         raise HTTPException(422,'EKS inventory is discovery-only; use an approved in-cluster Kubernetes source for workload monitoring')
     infrastructure=provider in INFRA_TYPES

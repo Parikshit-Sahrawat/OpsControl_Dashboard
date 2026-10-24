@@ -109,9 +109,14 @@ export default function MonitoringSetup({
         ? api(API + "/remote-probes/workers?organization_id=" + organizationId)
         : Promise.resolve([]),
     ]);
+    // Keep deferred Kubernetes sources out of new monitoring activation flows.
+    // Existing data and evidence remain accessible through other inventories.
+    const activeMonitoringSources = sourceRows.filter(
+      (row) => !["AWS_EKS", "KUBERNETES", "K8S"].includes(row.source_type),
+    );
     const scopedSources = lockedSourceId
-      ? sourceRows.filter((row) => row.id === lockedSourceId)
-      : sourceRows;
+      ? activeMonitoringSources.filter((row) => row.id === lockedSourceId)
+      : activeMonitoringSources;
     setSources(scopedSources);
     setCatalogs(catalogRows);
     setWorkers(workerRows);

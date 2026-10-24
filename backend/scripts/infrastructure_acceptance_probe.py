@@ -13,7 +13,7 @@ from sqlalchemy import select
 from app.db.session import SessionLocal
 from app.models import InfrastructureEvidence,MetricSample,MetricDefinition,AlertState,AlertRule,Collector
 from app.worker.collector_runtime import ADAPTERS,execute_collector
-from scripts.infrastructure_controlled_providers import EC2Controlled,K8sControlled,WindowsControlled,kube_client
+from scripts.infrastructure_controlled_providers import EC2Controlled,WindowsControlled
 PRIVATE=Path(os.environ['INFRA_PRIVATE_DIR']);BASE='http://127.0.0.1:18000'
 
 def api(status,method,path,token=None,body=None):
@@ -43,17 +43,16 @@ def setup():
         api(201,'POST','/api/v1/auth/memberships',admin,{'user_id':user['id'],'organization_id':scope['id'],'role':role})
         state[name+'_username']='infra-'+name;state[name+'_password']=password;state[name+'_token']=login('infra-'+name,password)
     resources=[]
-    for label,kind,cfg in [('EC2 connection (controlled SDK)','AWS_EC2',{'region':'ap-south-1','account_id':'123456789012'}),
-        ('Kubernetes connection (controlled TLS)','KUBERNETES',{'namespace':'infra-lab','resource_types':['POD','DEPLOYMENT','NODE'],'approved_nodes':['fixture-node']})]:
+    for label,kind,cfg in [('EC2 connection (controlled SDK)','AWS_EC2',{'region':'ap-south-1','account_id':'123456789012'})]:
         connection=api(201,'POST','/api/v1/resource-management/data-sources',admin,{'organization_id':org['id'],'name':label,'source_type':kind,'connection_config':cfg})
         scan=api(200,'POST','/api/v1/resource-discovery/sources/'+connection['id']+'/scan',admin)
         ids=[c['external_id'] for c in scan['candidates']]
-        assert len(ids)==(1 if kind=='AWS_EC2' else 3)
+        assert len(ids)==1
         imported=api(200,'POST','/api/v1/resource-discovery/sources/'+connection['id']+'/import',admin,{'approved_external_ids':ids,'dry_run':False})
         again=api(200,'POST','/api/v1/resource-discovery/sources/'+connection['id']+'/import',admin,{'approved_external_ids':ids,'dry_run':False})
         assert all(r['action']=='ALREADY_IMPORTED' for r in again['resources'])
         for candidate,row in zip(scan['candidates'],imported['resources']):
-            label='EC2 controlled SDK fixture' if kind=='AWS_EC2' else candidate['resource_type']+' controlled TLS fixture'
+            label='EC2 controlled SDK fixture'
             source=api(200,'PATCH','/api/v1/resource-management/data-sources/'+row['data_source_id'],admin,{'name':label})
             resources.append(source)
         after_rename=api(200,'POST','/api/v1/resource-discovery/sources/'+connection['id']+'/import',admin,{'approved_external_ids':ids,'dry_run':False})
@@ -79,13 +78,13 @@ def setup():
         assert not again['changed'] and again['collector_id']==activation['collector_id']
         state['resources'].append({'id':source['id'],'name':source['name'],'provider':source['source_type'],'collector_id':activation['collector_id'],'activation':payload})
     (PRIVATE/'session.json').write_text(json.dumps(state));(PRIVATE/'session.json').chmod(0o600)
-    report={'origins':{'AWS_EC2':'CONTROLLED_BOTOCORE_STUBBER','KUBERNETES':'CONTROLLED_AUTHENTICATED_TLS_API','LINUX_HOST':'LIVE_LOCAL_LINUX','WINDOWS_HOST':'CONTROLLED_WINDOWS_API_INPUTS'},'genuine_aws':'PENDING_SANDBOX_IDENTITY','genuine_kubernetes':'PENDING_CLUSTER_KERNEL_SUPPORT','genuine_windows':'PENDING_NATIVE_WORKER','phases':[]}
+    report={'origins':{'AWS_EC2':'CONTROLLED_BOTOCORE_STUBBER','LINUX_HOST':'LIVE_LOCAL_LINUX','WINDOWS_HOST':'CONTROLLED_WINDOWS_API_INPUTS'},'genuine_aws':'PENDING_SANDBOX_IDENTITY','genuine_windows':'PENDING_NATIVE_WORKER','phases':[]}
     (PRIVATE/'report.json').write_text(json.dumps(report,indent=2))
     print('Scoped discovery/import and versioned infrastructure activation PASS')
 
 def collect(phase):
     state=json.loads((PRIVATE/'session.json').read_text());(PRIVATE/'phase').write_text('failed' if phase=='failed' else 'healthy')
-    ADAPTERS.update({'AWS_EC2':EC2Controlled(),'KUBERNETES':K8sControlled(),'WINDOWS_HOST':WindowsControlled()})
+    ADAPTERS.update({'AWS_EC2':EC2Controlled(),'WINDOWS_HOST':WindowsControlled()})
     for resource in state['resources']:
         if phase=='recovered' and resource['provider']=='LINUX_HOST':
             api(200,'PATCH','/api/v1/resource-management/data-sources/'+resource['id'],state['admin_token'],{'connection_config':{'disk_path':'/','process_pid':int(os.environ['LINUX_TARGET_PID'])}})
@@ -111,7 +110,7 @@ def verify(phase):
             'metrics':item['metrics'],'latest_evidence':active[0]['evidence'],'alerts':item['alerts']})
     with SessionLocal() as db:
         rows=db.scalars(select(InfrastructureEvidence)).all()
-        assert len(rows)==6*{'healthy':1,'failed':2,'recovered':3}[phase]
+        assert len(rows)==3*{'healthy':1,'failed':2,'recovered':3}[phase]
         assert all(str(row.organization_id)==state['org_id'] for row in rows)
         assert not any('password' in json.dumps(row.payload).lower() or 'token' in json.dumps(row.payload).lower() for row in rows)
     report['phases'].append({'phase':phase,'resources':evidence})
@@ -139,17 +138,11 @@ def isolation():
     with SessionLocal() as db:
         for identity,observed in originals.items():db.get(InfrastructureEvidence,identity).observed_at=observed
         db.commit()
-    from kubernetes.client.exceptions import ApiException
-    client=kube_client().CoreV1Api()
-    for operation in [lambda:client.list_namespaced_pod('other-namespace'),lambda:client.list_namespaced_secret('infra-lab'),lambda:client.delete_namespaced_pod('web-0','infra-lab')]:
-        try:operation()
-        except ApiException as error:assert error.status==403
-        else:raise AssertionError('Controlled Kubernetes read-only boundary failed')
     report=json.loads((PRIVATE/'report.json').read_text());report['security']='PASS';report['stale_evidence']='UNKNOWN'
     audit=api(200,'GET','/api/v1/auth/audit?limit=500',state['admin_token'])
     assert any(e['outcome']=='SUCCESS' and e['target_id']=='/api/v1/data-sources/'+resource['id']+'/activations' for e in audit)
     report['audit_event_count']=len(audit);(PRIVATE/'report.json').write_text(json.dumps(report,indent=2)+'\n')
-    print('Tenant isolation, local-worker authorization, stale evidence and controlled Kubernetes read policy PASS')
+    print('Tenant isolation, local-worker authorization, stale evidence PASS')
 
 if __name__=='__main__':
     if os.getenv('ENVIRONMENT')!='demo' or os.getenv('OPSCONTROL_INFRA_ACCEPTANCE')!='1':raise SystemExit('Disposable controlled acceptance only')
