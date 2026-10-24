@@ -105,9 +105,8 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
         if not metric_names <= HTTP_METRICS: raise HTTPException(422,'Metric incompatible with HTTP provider')
         if cc.get("type", "HTTP").upper() not in {"HTTP","API"}:
             raise HTTPException(422,"Unsupported remote HTTP collector type")
-        config={"url":cc.get("url") or source.endpoint,
-                "expected_status":cc.get("expected_status",200),
-                "timeout_seconds":cc.get("timeout_seconds",8)}
+        from app.services.api_monitoring_config import build_api_config
+        config=build_api_config(cc,source,worker)
         reference = cc.get("credential_ref")
         if reference is None and str(source.auth_type or "").upper() == "BASIC":
             reference = (source.connection_config or {}).get("credential_ref")
@@ -121,13 +120,6 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
                 raise HTTPException(422,"Production requires an external credential reference")
         elif str(source.auth_type or "").upper() == "BASIC":
             raise HTTPException(422,"Basic authentication requires an approved credential reference")
-        if not isinstance(config["url"],str): raise HTTPException(422,"Target HTTPS URL is missing")
-        try: check_target(config["url"],worker.allowed_hosts,worker.allowed_cidrs)
-        except EgressDenied as exc:raise HTTPException(422,str(exc))
-        if type(config["expected_status"]) is not int or not 100<=config["expected_status"]<=599:
-            raise HTTPException(422,"Invalid expected_status")
-        if type(config["timeout_seconds"]) is not int or not 1<=config["timeout_seconds"]<=10:
-            raise HTTPException(422,"Timeout must be 1..10 seconds")
         collector_type='HTTP'
     try: interval=int(cc.get("interval_seconds",60))
     except (ValueError,TypeError): raise HTTPException(422,"Invalid polling interval")
