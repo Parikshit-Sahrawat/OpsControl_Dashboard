@@ -101,7 +101,12 @@ class KubernetesClusterAssociationTests(unittest.TestCase):
             current_principal.reset(p)
 
     def import_for(self, source):
-        with patch("app.api.discovery.scan", return_value=[self.candidate]):
+        # Seed legacy association history through the historical import handler
+        # in this disposable test only; production source_access still rejects
+        # new EKS imports. Authorization/revocation assertions remain unchanged.
+        with patch("app.api.discovery.scan", return_value=[self.candidate]), patch(
+            "app.api.discovery.source_access", return_value=source
+        ):
             return self.call(
                 self.principal(admin=True),
                 [source.organization_id],
