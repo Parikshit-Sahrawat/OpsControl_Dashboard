@@ -111,7 +111,7 @@ try:
     module('scripts.alert_notification_acceptance_probe')
     record('Native alert recovery and independent in-app leased delivery; retired ITSM rejected')
     module('scripts.eks_acceptance_probe')
-    record('Read-only EKS SDK list/describe, tenant denial, dry-run and idempotent unmonitored inventory import')
+    record('Retired EKS discovery/import/activation denied; tenant boundaries and inventory preservation checked')
     module('scripts.release_runtime_probe','seed')
     if environment.get('RELEASE_BROWSER_ACCEPTANCE') == '1':
         ui_environment = {**environment, 'VITE_API_BASE_URL':base, 'RELEASE_UI_BASE':f'http://127.0.0.1:{ui_port}', 'RELEASE_EVIDENCE_DIR':str(OUT)}
@@ -120,7 +120,6 @@ try:
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
-        run(['node','frontend/scripts/eks_inventory_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
         record('Browser resource CRUD, logical OTEL configuration persistence and cross-tenant denial')
