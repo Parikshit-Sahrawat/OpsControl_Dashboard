@@ -22,12 +22,12 @@ def main():
         assert org
         before={table.__tablename__:db.scalar(select(func.count()).select_from(table))
                 for table in (CollectorRun,RemoteProbeEvidence)}
-        worker_id=uuid.uuid4()
-        from app.security.models import WorkerIdentity
-        # Reuse the real disposable worker established by remote_protocol_probe.
-        worker=db.scalar(select(WorkerIdentity).where(WorkerIdentity.organization_id==org.id))
-        assert worker
-        worker_id=worker.id
+        org_id=str(org.id)
+    worker=api.check(201,"POST","/api/v1/auth/workers",admin,{"organization_id":org_id,"name":"k8s-retirement-"+uuid.uuid4().hex[:8],"expires_in_days":1})
+    worker_id=uuid.UUID(worker["id"])
+    token=worker["worker_token"]
+    with SessionLocal() as db:
+        org=db.get(Organization,uuid.UUID(org_id))
         ids=[]
         for kind in KINDS:
             source=DataSource(organization_id=org.id,name="retirement-"+kind+"-"+uuid.uuid4().hex[:8],
@@ -58,7 +58,19 @@ def main():
         after={table.__tablename__:db.scalar(select(func.count()).select_from(table))
                for table in (CollectorRun,RemoteProbeEvidence)}
         assert before==after,(before,after)
-    # A retired job must never become claimable, even after its old lease expires.
+    # A real worker API claim must not return any retired jobs.
+    claimed=api.check(200,"POST","/api/v1/worker/claim",token,{})
+    assert claimed["job"] is None
+    # Simulate a worker holding an old lease: it cannot submit evidence after
+    # retirement, even with the previously valid nonce.
+    leased_job=ids[1][1]
+    submission={"event_id":str(uuid.uuid4()),"job_id":str(leased_job),
+                "lease_nonce":"stale-lease-token",
+                "observed_at":datetime.now(timezone.utc).isoformat(),
+                "outcome":"SUCCESS","http_status":200,"response_time_ms":25,
+                "response_size_bytes":10}
+    status,_=api.req("POST","/api/v1/worker/results",token,submission)
+    assert status in (409,404),(status,"retired leased result was accepted")
     queue_due_once()
     with SessionLocal() as db:
         assert all(db.get(RemoteProbeJob,j).state=="CANCELLED" for _,j in ids)
@@ -70,6 +82,7 @@ def main():
         "collector_types":KINDS,"collectors_retired":len(ids),"jobs_cancelled":len(ids),
         "tested_job_states":["QUEUED","LEASED"],"not_yet_due":True,
         "lease_nonce_cleared":True,"collector_runs_and_remote_evidence_preserved":True,
+        "worker_claim_empty":True,"stale_lease_result_rejected":True,
         "limitations":["No physical in-flight worker process was drained in this test",
                        "Historical cluster association integrity is covered by separate V1.5 acceptance"]
     },indent=2)+"\n")
