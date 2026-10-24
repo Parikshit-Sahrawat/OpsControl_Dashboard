@@ -39,6 +39,11 @@ def queue_due_once(limit=100):
             ).order_by(Collector.next_run_at.nullsfirst()).with_for_update(skip_locked=True).limit(limit)
         ).all()
         for collector in collectors:
+            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+                collector.enabled=False
+                collector.status="STOPPED"
+                collector.last_error="Kubernetes monitoring retired; historical evidence retained"
+                continue
             last=collector.last_run_at or collector.created_at
             if last.tzinfo is None: last=last.replace(tzinfo=timezone.utc)
             if (now-last).total_seconds()>max(2*collector.interval_seconds+30,120):
