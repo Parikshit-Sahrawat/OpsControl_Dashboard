@@ -30,7 +30,10 @@ try{
     await row.getByRole('cell',{name:health,exact:true}).waitFor();
   }
   await page.getByRole('button',{name:`Filter ${health}`,exact:true}).click();
-  assert.equal(await page.getByTestId('infrastructure-row').count(),6);
+  // The Kubernetes fixture is retired; the three protected infrastructure
+  // providers (EC2, Linux and Windows) must remain visible in this browser gate.
+  assert.equal(await page.getByTestId('infrastructure-row').count(),state.resources.length);
+  assert.equal(state.resources.length,3);
   await page.getByLabel('Provider',{exact:true}).selectOption('LINUX_HOST');
   await page.getByLabel('Search infrastructure').fill('Linux');
   assert.equal(await page.getByTestId('infrastructure-row').count(),1);
