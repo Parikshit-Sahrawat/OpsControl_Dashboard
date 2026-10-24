@@ -17,6 +17,13 @@ Created from `main` at PR #63 merge commit `6d5fdbf126f9bde296de473a8cdbbaebb0af
 - POST, arbitrary Authorization headers, request bodies, query strings and redirects remain denied.
 - Compatibility and injection tests added; CI and integrated acceptance still need verification.
 
+## Increment 3: operational evidence and response assertions (initial slice)
+- Optional `max_response_time_ms` (1..10000) is validated in the control plane and again by the worker.
+- Worker evaluates both expected HTTP status and latency threshold, returning `ASSERTION_FAILED` on violations while preserving bounded status, elapsed time and response-size evidence.
+- Result ingestion rejects a reported `SUCCESS` when it contradicts the leased status/latency contract; existing availability, response-time metrics, log events and alert evaluation continue to operate.
+- No raw response bodies, headers, credentials or target URLs are accepted in result evidence.
+- Follow-up: explicit recovery transition acceptance and end-to-end worker/database verification; CI results must pass before marking this slice complete.
+
 ## Next increments
 1. Design versioned remote-worker capability negotiation before permitting HEAD or additional methods.
 2. Implement allowlisted headers and canonical request serialization with no secret-bearing telemetry.
