@@ -186,13 +186,6 @@ def _snapshot(collector:Collector,source:DataSource,worker:WorkerIdentity):
             raise HTTPException(422,"Production requires an external credential reference")
     elif str(source.auth_type or "").upper() == "BASIC":
         raise HTTPException(422,"Basic authentication requires an approved credential reference")
-    try:
-        check_target(url,worker.allowed_hosts,worker.allowed_cidrs)
-        if type(snapshot["expected_status"]) is not int or not 100<=snapshot["expected_status"]<=599:
-            raise EgressDenied("Invalid expected status")
-        if type(snapshot["timeout_seconds"]) is not int or not 1<=snapshot["timeout_seconds"]<=10:
-            raise EgressDenied("Timeout must be between 1 and 10 seconds")
-    except EgressDenied as exc: raise HTTPException(422,str(exc))
     return snapshot
 
 @admin_router.post("/jobs",status_code=201)
