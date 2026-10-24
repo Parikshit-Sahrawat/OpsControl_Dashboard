@@ -171,8 +171,8 @@ def _snapshot(collector:Collector,source:DataSource,worker:WorkerIdentity):
         raise HTTPException(422,"Only configured HTTP probes supported by this worker protocol")
     url=cfg.get("url") or source.endpoint
     if not isinstance(url,str): raise HTTPException(422,"HTTPS probe URL required")
-    snapshot={"url":url,"expected_status":cfg.get("expected_status",200),
-              "timeout_seconds":cfg.get("timeout_seconds",8)}
+    from app.services.api_monitoring_config import build_api_config
+    snapshot=build_api_config(cfg,source,worker)
     reference = cfg.get("credential_ref")
     if reference is None and str(source.auth_type or "").upper() == "BASIC":
         reference = (source.connection_config or {}).get("credential_ref")
