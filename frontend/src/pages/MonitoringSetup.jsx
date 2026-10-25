@@ -427,6 +427,8 @@ export default function MonitoringSetup({
               value={sourceId}
               onChange={(e) => {
                 setSourceId(e.target.value);
+                setApiUrl(""); setApiMethod("GET"); setApiStatus("200");
+                setApiTimeout("8"); setApiLatency(""); setApiHeader("");
                 setPreview(null);
                 setActivation(null);
               }}
