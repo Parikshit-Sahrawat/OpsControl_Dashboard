@@ -9,6 +9,24 @@ from urllib.parse import urlsplit
 
 VERSION = "1.5.0"
 RUNTIME_VERSION = "0.123.0"
+FILELOG_HANDOFF_MARKER = (
+    "# opscontrol-filelog-durable-handoff-v1: stanza.synchronousLogEmitter\n"
+)
+
+
+def filelog_runtime_flags(config):
+    """One fixed handoff contract from the checksummed generated configuration.
+
+    Read the actual file so apply, offline restart and rollback use the same
+    contract. No arbitrary flags and no runtime version-guard bypass.
+    """
+    with Path(config).open() as stream:
+        marker = stream.readline()
+    return (
+        ["--feature-gates=stanza.synchronousLogEmitter"]
+        if marker == FILELOG_HANDOFF_MARKER
+        else []
+    )
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -190,7 +208,8 @@ class Agent:
             "OPSCONTROL_AGENT_STATE_DIR": str(self.home.resolve()),
         }
         result = subprocess.run(
-            [self.runtime, "validate", "--config", str(candidate)],
+            [self.runtime, "validate", "--config", str(candidate)]
+            + filelog_runtime_flags(candidate),
             env=env,
             capture_output=True,
             timeout=30,
@@ -234,7 +253,8 @@ class Agent:
             os.chmod(self.home / "runtime.log", 0o600)
         try:
             self.process = subprocess.Popen(
-                [self.runtime, "--config", str(self.config)],
+                [self.runtime, "--config", str(self.config)]
+                + filelog_runtime_flags(self.config),
                 env={
                     **os.environ,
                     "OPSCONTROL_AGENT_TOKEN": self.token,
@@ -267,7 +287,8 @@ class Agent:
             ):
                 raise RuntimeError("CONFIG_CHECKSUM_MISMATCH")
             result = subprocess.run(
-                [self.runtime, "validate", "--config", str(self.config)],
+                [self.runtime, "validate", "--config", str(self.config)]
+                + filelog_runtime_flags(self.config),
                 env={
                     **os.environ,
                     "OPSCONTROL_AGENT_TOKEN": self.token,
