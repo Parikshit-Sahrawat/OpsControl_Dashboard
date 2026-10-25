@@ -45,6 +45,27 @@ class APIWorkerV2Tests(unittest.TestCase):
                 probe_https(dict(self.config,max_response_time_ms=True),self.hosts,self.cidrs)
             resolver.assert_not_called()
 
+    def test_agent_executes_v2_claim_under_local_policy(self):
+        from scripts.run_remote_agent import execute_claim
+        job={"config":self.config,"network_policy":{
+            "allowed_hosts":self.hosts,"allowed_cidrs":["10.20.0.0/16"]}}
+        with patch("app.worker.egress.resolve_target",return_value="10.20.1.4"), patch(
+            "app.worker.egress._pinned_https",return_value=(204,0)
+        ) as transport:
+            result=execute_claim(job,self.hosts,__import__("app.worker.egress",fromlist=["policy_cidrs"]).policy_cidrs(["10.20.0.0/16"]))
+        self.assertEqual(result["outcome"],"SUCCESS")
+        self.assertEqual(transport.call_args.args[5],"HEAD")
+
+    def test_agent_rejects_server_policy_expansion(self):
+        from scripts.run_remote_agent import execute_claim
+        from app.worker.egress import policy_cidrs
+        job={"config":self.config,"network_policy":{
+            "allowed_hosts":["evil.example.test"],"allowed_cidrs":["10.20.0.0/16"]}}
+        with patch("app.worker.egress.resolve_target") as resolver:
+            with self.assertRaises(EgressDenied):
+                execute_claim(job,self.hosts,policy_cidrs(["10.20.0.0/16"]))
+            resolver.assert_not_called()
+
     def test_untrusted_header_is_denied_before_dns(self):
         cfg=dict(self.config,headers={"authorization":"Bearer secret"})
         with patch("app.worker.egress.resolve_target") as resolver:
