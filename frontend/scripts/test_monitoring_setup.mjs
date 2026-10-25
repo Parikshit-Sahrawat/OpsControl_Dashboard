@@ -17,6 +17,10 @@ try{
   await page.getByRole("heading",{name:"Legacy monitoring configuration",exact:true}).waitFor();
   await page.getByText("Select a Data Source and private-network worker").waitFor();
   await page.getByText("Choose independent Metric, Log and Alert Rules").waitFor();
+  await page.getByTestId("api-monitoring-settings").waitFor();
+  await page.getByLabel("HTTP method").selectOption("HEAD");
+  await page.getByLabel("Expected HTTP status").fill("204");
+  await page.getByLabel("Maximum response time (ms, optional)").fill("250");
   await page.getByRole("button",{name:"Validate & Preview"}).waitFor();
   await page.getByRole("button",{name:"Save immutable rule v1"}).waitFor();
   await page.getByRole("button",{name:"Create worker and network policy"}).waitFor();
