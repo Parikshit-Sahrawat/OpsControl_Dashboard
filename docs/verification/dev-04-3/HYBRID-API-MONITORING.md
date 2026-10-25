@@ -31,6 +31,17 @@ Created from `main` at PR #63 merge commit `6d5fdbf126f9bde296de473a8cdbbaebb0af
 - Source changes clear unsaved request settings. Authenticated UI smoke covers the API editor.
 - Follow-up acceptance: verify browser/backend round-trip, reload behavior, worker dispatch and failure/recovery transitions. CI is required before this stage is complete.
 
+## Increment 5: integration and security acceptance
+Acceptance coverage added to the disposable PostgreSQL `backend/scripts/phase2_activation_probe.py`:
+- Create independent metric/log/alert rules, preview v2 HEAD/latency/header configuration, activate, and assert the collector persisted exactly those validated settings.
+- Confirm v1 claim cannot lease a HEAD job and v2 claim receives its immutable API request snapshot.
+- Submit failed evidence and assert availability sample, sanitized operational log and OPEN alert; then submit recovered evidence and assert RESOLVED alert, fresh diagnostics and successful collector state.
+- Reject false SUCCESS status/latency reports, raw response-body evidence, unapproved Authorization override, credential reference injection, unsafe metadata endpoint, invalid threshold and cross-tenant diagnostics access.
+- `backend/tests/test_api_worker_v2.py` also exercises the real agent claim execution path with mocked DNS/TLS and rejects server-side widening of the locally approved egress policy.
+- Authenticated browser smoke asserts API request settings and approved header are editable and retained in the form. End-to-end browser activation and reload still require dedicated runtime verification.
+
+Acceptance limits: database-backed API tests submit simulated probe observations; isolated worker tests mock the outbound TLS transport. They do not constitute a live network probe. CI green is required to claim the automated acceptance suite passed. Production-grade secret-store and browser reload checks remain deployment-specific.
+
 ## Next increments
 1. Design versioned remote-worker capability negotiation before permitting HEAD or additional methods.
 2. Implement allowlisted headers and canonical request serialization with no secret-bearing telemetry.
