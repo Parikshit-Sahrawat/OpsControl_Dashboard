@@ -117,3 +117,10 @@ turn. Verified binary caches are local non-secret dependencies, not committed ar
 No broad Docker cleanup was run. Resource observations are in `cleanup.json`.
 All original DEV-05.0/05.1 evidence paths have zero changes from the branch baseline.
 No PR was merged, and production deployment remains prohibited.
+
+Draft PR: https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/69.
+PR check snapshot `evidence/pr-ci-snapshot.json` observes head
+`1ba89a23abb8734929ab29515d1152570f3b0965`; checks were queued/in progress,
+not successful outcomes. This evidence-only follow-up commit can enqueue new checks;
+inspect the live PR at its final SHA. Required-check completeness remains blocked
+by the protection API permission denial. No all-green CI assertion is made.
