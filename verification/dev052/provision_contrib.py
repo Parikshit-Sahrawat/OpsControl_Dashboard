@@ -17,7 +17,8 @@ SHA256 = "6bca4ddd928b4b0880f7ec6c16511922f740c497b4efa4b33915b2d54a729213"
 
 
 def verify(path):
-    digest = hashlib.file_digest(path.open("rb"), "sha256").hexdigest()
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
     if digest != SHA256:
         raise ValueError("Contrib SHA-256 mismatch; artifact must not be executed")
     return digest

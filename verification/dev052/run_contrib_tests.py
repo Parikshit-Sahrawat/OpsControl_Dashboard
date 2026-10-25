@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--binary", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 args = parser.parse_args()
+report_path = args.report.resolve()
 verify(args.binary)
 os.environ["OPSCONTROL_OTEL_BINARY"] = str(args.binary.resolve())
 root = Path(__file__).resolve().parents[2]
@@ -25,7 +26,7 @@ result = unittest.TextTestRunner(verbosity=2).run(
     unittest.defaultTestLoader.loadTestsFromNames(names)
 )
 ok = result.wasSuccessful() and result.testsRun == 2 and not result.skipped
-args.report.resolve().write_text(
+report_path.write_text(
     json.dumps(
         {
             "tests": names,
