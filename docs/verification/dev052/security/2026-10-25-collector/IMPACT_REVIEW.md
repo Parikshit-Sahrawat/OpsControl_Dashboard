@@ -44,8 +44,9 @@ with the same generated config and populated storage. No checkpoint was deleted
 to force a pass. Neighbor and prerelease version output is rejected, rather than
 turning a single-version guard into a general allowlist.
 
-This setting does **not** automatically convert already-written protobuf
-checkpoints. A host previously run with default 0.163.2 needs a separately reviewed
+Conversion of already-written protobuf checkpoints was **NOT TESTED** in this
+experiment; changing the write setting alone is not migration proof. A host
+previously run with default 0.163.2 needs a separately reviewed
 state backup/migration/rollback procedure. The failed default-encoding experiment
 is retained; resetting or abandoning state is not an approved remediation.
 

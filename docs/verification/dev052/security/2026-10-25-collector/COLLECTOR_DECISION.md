@@ -27,8 +27,8 @@ checkpoints prevent 0.123.0 rollback startup. The failed version-only experiment
 retained. The final experimental overlay explicitly disables
 `filelog.protobufCheckpointEncoding` when validating/starting 0.163.2, retaining
 legacy JSON writes. The same populated state then starts successfully on 0.123.0.
-This does not convert checkpoints from the failed/default experiment and does not
-approve a coordinated production downgrade.
+Conversion of checkpoints from the failed/default experiment was NOT TESTED;
+these results do not approve a coordinated production downgrade.
 
 ## Exact results
 
