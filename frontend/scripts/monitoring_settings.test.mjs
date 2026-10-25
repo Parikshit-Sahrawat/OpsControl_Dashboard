@@ -56,3 +56,11 @@ test('source switch cancels a real pending settings read and no stale state or e
 test('permission failures propagate instead of silently exposing an editable default configuration',async()=>{
   await assert.rejects(readMonitoringSettings(async()=>{throw Error('Not authorized');},'source-a'),/Not authorized/);
 });
+test('saved selections are applied before controls become ready',async()=>{
+  const guard=createHydrationGuard();let shown, ready=false;
+  hydrateMonitoringSettings(request,'source-a',guard,value=>{shown=value;},()=>{
+    assert.deepEqual(shown.rules,['metric-v1','alert-v1']);assert.equal(shown.method,'HEAD');ready=true;
+  },error=>{throw error;});
+  assert.equal(ready,false);
+  await new Promise(resolve=>setImmediate(resolve));assert.equal(ready,true);
+});

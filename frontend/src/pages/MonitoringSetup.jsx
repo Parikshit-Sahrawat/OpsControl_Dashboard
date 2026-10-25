@@ -546,7 +546,10 @@ function MonitoringSetupForm({
       <section className="card monitoring-setup-panel">
         <h2>2. Choose independent Metric, Log and Alert Rules</h2>
         <div className="monitoring-rule-list">
-          {versionRows.map(({ id, catalog, version }) => (
+          {!settingsReady && <p role="status">{error
+            ? "Saved settings unavailable. Reselect the Data Source to retry."
+            : "Loading saved monitoring settings…"}</p>}
+          {settingsReady && versionRows.map(({ id, catalog, version }) => (
             <label className="monitoring-rule-option" key={id}>
               <input
                 disabled={!canWrite || !settingsReady}
@@ -566,7 +569,7 @@ function MonitoringSetupForm({
               <small>Version {version.version}</small>
             </label>
           ))}
-          {!versionRows.length && (
+          {settingsReady && !versionRows.length && (
             <p className="monitoring-helper">
               No rule versions yet. Create a Metric Rule to get started.
             </p>
