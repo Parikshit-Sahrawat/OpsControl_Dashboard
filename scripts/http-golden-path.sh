@@ -42,15 +42,15 @@ PY
 # Use the host's verified trust bundle for package downloads through cloud proxies.
 mkdir -p "$run_dir/backend"
 cp -R backend/app backend/scripts backend/migrations "$run_dir/backend/"
-cp backend/requirements.txt backend/alembic.ini "$run_dir/backend/"
+cp backend/requirements.txt backend/alembic.ini backend/bootstrap_pip.py backend/pip-bootstrap.json "$run_dir/backend/"
 cp "${GOLDEN_BUILD_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}" "$run_dir/backend/build-ca.crt"
 cat > "$run_dir/backend/Dockerfile" <<'EOF'
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY build-ca.crt /build-ca.crt
-COPY requirements.txt .
-RUN PIP_CERT=/build-ca.crt pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt bootstrap_pip.py pip-bootstrap.json ./
+RUN PIP_CERT=/build-ca.crt python bootstrap_pip.py && PIP_CERT=/build-ca.crt python -m pip install --no-cache-dir -r requirements.txt
 COPY . .
 CMD ["sh","-c","alembic upgrade head && python -m scripts.bootstrap_public_demo && exec uvicorn app.main:app --host 0.0.0.0 --port 8000"]
 EOF
