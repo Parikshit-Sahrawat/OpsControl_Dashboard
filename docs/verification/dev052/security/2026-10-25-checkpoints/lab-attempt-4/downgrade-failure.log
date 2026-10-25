@@ -1,0 +1,19 @@
+2026-10-25T13:24:04.139Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-25T13:24:04.139Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-25T13:24:04.140Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-25T13:24:04.140Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-25T13:24:04.140Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T13:24:04.140Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-25T13:24:04.140Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T13:24:04.140Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T13:24:04.140Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T13:24:04.140Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-25T13:24:04.140Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-25T13:24:04.140Z	error	graph/graph.go:438	Failed to start component	{"error": "start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value", "type": "Receiver", "id": "filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a"}
+2026-10-25T13:24:04.141Z	info	service@v0.123.0/service.go:329	Starting shutdown...
+2026-10-25T13:24:04.141Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "unavailable"}
+2026-10-25T13:24:04.141Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-25T13:24:04.141Z	info	extensions/extensions.go:69	Stopping extensions...
+2026-10-25T13:24:04.141Z	info	service@v0.123.0/service.go:343	Shutdown complete.
+Error: cannot start pipelines: failed to start "filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a" receiver: start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value
+2026/10/25 13:24:04 collector server run finished with error: cannot start pipelines: failed to start "filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a" receiver: start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value

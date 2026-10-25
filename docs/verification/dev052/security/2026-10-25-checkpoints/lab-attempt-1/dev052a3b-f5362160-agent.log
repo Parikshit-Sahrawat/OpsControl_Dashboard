@@ -1,0 +1,11 @@
+legacy IDs persisted before backup: PASS
+populated JSON state upgrades to compatible candidate: PASS
+repeated candidate restarts preserve consumed offsets: PASS
+rotated input IDs persisted: PASS
+copy-truncate with retained archive persists IDs: PASS
+Traceback (most recent call last):
+  File "/verification/e2e.py", line 302, in <module>
+    wait(
+  File "/verification/e2e.py", line 108, in wait
+    raise AssertionError("Timeout: " + label)
+AssertionError: Timeout: interrupted default upgrade restarts and delivers retained IDs

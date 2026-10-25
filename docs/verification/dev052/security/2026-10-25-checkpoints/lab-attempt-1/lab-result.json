@@ -1,0 +1,41 @@
+{
+  "status": "FAIL",
+  "scope": "owned disposable fixture, not provider certification",
+  "api_dependencies": "existing local backend/.venv; not a release image",
+  "runner_fixture_image": "sha256:f4b7b8044a873fcc0f348549a19b9075cd77bd56ead7177192cfec38d85bce4a",
+  "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "source": {
+    "source_commit": "28fbe93f06fcc1b8535b0a1b5c628c4bc2e2392a",
+    "source_archive_sha256": "dd445111ebb360c4c205f0097db5df38eb89f2635b1341c309de2f1ad290e060",
+    "production_guard_modified": false,
+    "scope": "Checkpoint-only direct pinned runtime benchmark; legacy API/control-plane guard retained; no Agent transition claimed"
+  },
+  "constraints": {
+    "ReadonlyRootfs": true,
+    "Memory": 536870912,
+    "NanoCpus": 1000000000,
+    "PidsLimit": 128,
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges:true"
+    ]
+  },
+  "error": "AssertionError: Agent E2E failed; retained redacted logs",
+  "cleanup": {
+    "status": "PASS",
+    "errors": [],
+    "owned_containers": [
+      "dev052a3b-f5362160-pg",
+      "dev052a3b-f5362160-denied-target",
+      "dev052a3b-f5362160-agent"
+    ],
+    "owned_networks": [
+      "dev052a3b-f5362160",
+      "dev052a3b-f5362160-denied"
+    ],
+    "private_credentials_tls_and_database_volume_removed": true,
+    "broad_cleanup": false
+  }
+}

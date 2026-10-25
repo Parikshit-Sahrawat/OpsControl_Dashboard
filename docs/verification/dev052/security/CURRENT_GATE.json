@@ -1,11 +1,11 @@
 {
-  "phase": "DEV-05.2A.3",
+  "phase": "DEV-05.2A.3B",
   "security_gate": "BLOCKED",
   "vulnerability_acceptance_gate": "FAIL",
   "release": "NO-GO",
   "next_phase_authorized": false,
-  "evidence": "2026-10-25-collector/COLLECTOR_DECISION.md",
-  "matrix": "2026-10-25-collector/release-gates.json",
+  "evidence": "2026-10-25-checkpoints/CHECKPOINT_DECISION.md",
+  "matrix": "2026-10-25-checkpoints/test-matrix.json",
   "python_high_matches": 110,
   "python_unique_high_cves": 14,
   "python_unique_cve_package_version_advisory": 55,
@@ -35,5 +35,16 @@
   "baseline_hosted_calico_check": "FAIL at0d18681; not manually rerun",
   "default_guard_changed": false,
   "full_coordinated_rollback_gate": "BLOCKED",
-  "genuine_platform_certification": "BLOCKED / NOT TESTED"
+  "genuine_platform_certification": "BLOCKED / NOT TESTED",
+  "checkpoint_native_acceptance": "FAIL",
+  "checkpoint_interrupted_upgrade_delivery": "FAIL:16 of44 source IDs absent after restart within65s",
+  "checkpoint_bounded_recovery": {
+    "status": "PASS",
+    "scope": "finite synthetic case only",
+    "distinct_ids": 44,
+    "source_rows": 100,
+    "duplicate_rows": 56,
+    "missing_ids": 0
+  },
+  "checkpoint_procedure_approval": "BLOCKED"
 }

@@ -1,0 +1,13 @@
+usage: recovery.py [-h] {backup,archive,recover,check-start} ...
+
+Offline Linux checkpoint backup + bounded archive replay, not a BoltDB
+converter. Requires an operator-confirmed stopped collector, confirmed healthy
+legacy cut, unchanged config and independently complete stable-ID source
+archive. Never edits BoltDB internals, deletes failed state, or promises
+exactly-once delivery.
+
+positional arguments:
+  {backup,archive,recover,check-start}
+
+options:
+  -h, --help            show this help message and exit
