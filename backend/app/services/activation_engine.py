@@ -255,7 +255,7 @@ def apply(db,source_id,version_ids,worker_id,include_templates=True,api_config=N
             if rule["version_id"]:
                 db.add(MonitoringRuleBinding(activation_id=existing.id,
                     rule_version_id=uuid.UUID(rule["version_id"]),materialized_id=identity,kind=kind))
-    existing.details={"generated":created,"plan":plan}
+    existing.details={"generated":created,"plan":plan,"include_templates":include_templates}
     db.commit()
     return {"status":"ACTIVE","changed":True,"version":existing.version,
             "collector_id":str(collector.id),"generated":created}

@@ -44,7 +44,9 @@ def activation_state(source_id:uuid.UUID,db:Session=Depends(get_db)):
     if not record:return {"status":"NOT_CONFIGURED","version":0,"collector_id":None}
     return {"status":record.status,"version":record.version,
             "collector_id":str(record.collector_id) if record.collector_id else None,
-            "applied_at":record.applied_at.isoformat(),"generated":record.details.get("generated",[])}
+            "applied_at":record.applied_at.isoformat(),"generated":record.details.get("generated",[]),
+            "rule_version_ids":[r["version_id"] for r in record.details.get("plan",{}).get("rules",[]) if r.get("version_id")],
+            "include_templates":record.details.get("include_templates", any(r.get("source")=="TEMPLATE" for r in record.details.get("plan",{}).get("rules",[])))}
 
 @router.post("/{source_id}/deactivation")
 def activation_disable(source_id:uuid.UUID,db:Session=Depends(get_db)):
