@@ -64,13 +64,26 @@ def main():
     bad=request(201,"POST","/api/v1/rule-catalogs",north,
         {"organization_id":org_id,"kind":"ALERT","name":"bad-reference",
          "definition":{"name":"bad","metric_name":"http_response_time_ms","operator":"GT","threshold_value":10}})
-    payload={"remote_worker_id":wid,"rule_version_ids":rule_ids,"include_templates":False}
+    payload={"remote_worker_id":wid,"rule_version_ids":rule_ids,"include_templates":False,
+             "api_config":{"method":"HEAD","expected_status":204,"timeout_seconds":5,
+                           "max_response_time_ms":250,
+                           "headers":{"x-opscontrol-check":"ready"}}}
+    request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
+            {**payload,"api_config":{"headers":{"Authorization":"Bearer leaked"}}})
+    request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
+            {**payload,"api_config":{"url":"https://169.254.169.254/latest/meta-data"}})
+    request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
+            {**payload,"api_config":{"credential_ref":"env://UNAPPROVED"}})
+    request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
+            {**payload,"api_config":{"max_response_time_ms":True}})
     request(403,"POST",f"/api/v1/data-sources/{source_id}/activations",viewer,payload)
     request(404,"POST",f"/api/v1/data-sources/{other_id}/activations",north,payload)
     request(422,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,
             {**payload,"rule_version_ids":rule_ids+[bad["versions"][0]["id"]]})
     plan=request(200,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,payload)
     assert plan["status"]=="CHANGES_REQUIRED" and len(plan["plan"]["rules"])==3
+    assert plan["plan"]["collector"]["configuration"]["method"]=="HEAD"
+    assert plan["plan"]["collector"]["configuration"]["max_response_time_ms"]==250
     response=request(200,"POST",f"/api/v1/data-sources/{source_id}/activations",north,payload)
     assert response["status"]=="ACTIVE" and response["changed"]
     collector_id=response["collector_id"]
@@ -82,6 +95,8 @@ def main():
     with SessionLocal() as db:
         cc=db.get(Collector,uuid.UUID(collector_id))
         assert cc.enabled and str(cc.remote_worker_id)==wid and cc.status in {"STOPPED","STALE"}
+        assert cc.configuration["method"]=="HEAD"
+        assert cc.configuration["headers"]=={"x-opscontrol-check":"ready"}
         assert len(db.scalars(select(MetricDefinition).where(
             MetricDefinition.collector_id==cc.id,MetricDefinition.name=="probe_up")).all())==1
         assert len(db.scalars(select(LogSource).where(LogSource.collector_id==cc.id)).all())==1
@@ -89,7 +104,11 @@ def main():
             AlertRule.name.like("%unavailable"))).all())==1
     from app.worker.remote_scheduler import queue_due_once
     assert queue_due_once()>=1
-    job=request(200,"POST","/api/v1/worker/claim",worker["worker_token"],{})["job"]
+    legacy=request(200,"POST","/api/v1/worker/claim",worker["worker_token"],{})["job"]
+    assert legacy is None,"Legacy workers must not claim HEAD jobs"
+    job=request(200,"POST","/api/v1/worker/claim",worker["worker_token"],{"api_protocol":2})["job"]
+    assert job["config"]["method"]=="HEAD"
+    assert job["config"]["max_response_time_ms"]==250
     assert job is not None
     result={"event_id":str(uuid.uuid4()),"job_id":job["job_id"],"lease_nonce":job["lease_nonce"],
             "observed_at":datetime.now(timezone.utc).isoformat(),
@@ -106,6 +125,35 @@ def main():
         state=db.scalar(select(AlertState).join(AlertRule).where(
             AlertRule.name.like("%unavailable"),AlertState.status=="OPEN"))
         assert state is not None
+    # Recovery: a fresh successful result resolves the alert and restores health.
+    next_id=str(uuid.uuid4())
+    request(201,"POST","/api/v1/remote-probes/jobs",north,
+            {"collector_id":collector_id,"worker_id":wid,"idempotency_key":next_id})
+    recovered=request(200,"POST","/api/v1/worker/claim",worker["worker_token"],
+                      {"api_protocol":2})["job"]
+    assert recovered and recovered["job_id"]==next_id
+    good={"event_id":str(uuid.uuid4()),"job_id":next_id,
+          "lease_nonce":recovered["lease_nonce"],
+          "observed_at":datetime.now(timezone.utc).isoformat(),
+          "outcome":"SUCCESS","http_status":204,"response_time_ms":40,
+          "response_size_bytes":0}
+    request(422,"POST","/api/v1/worker/results",worker["worker_token"],
+            {**good,"response_time_ms":251})
+    request(422,"POST","/api/v1/worker/results",worker["worker_token"],
+            {**good,"http_status":200})
+    request(422,"POST","/api/v1/worker/results",worker["worker_token"],
+            {**good,"response_body":"secret"})
+    request(202,"POST","/api/v1/worker/results",worker["worker_token"],good)
+    diagnostic=request(200,"GET",f"/api/v1/data-sources/{source_id}/diagnostics",north)
+    assert diagnostic["open_alert_count"]==0 and diagnostic["resolved_alert_count"]>=1
+    assert diagnostic["latest_evidence"]["outcome"]=="SUCCESS"
+    assert diagnostic["freshness"]=="CURRENT"
+    request(404,"GET",f"/api/v1/data-sources/{source_id}/diagnostics",south)
+    with SessionLocal() as db:
+        states=db.scalars(select(AlertState).join(AlertRule).where(
+            AlertRule.name.like("%unavailable"))).all()
+        assert states and all(s.status=="RESOLVED" for s in states)
+        assert db.get(Collector,uuid.UUID(collector_id)).status=="SUCCESS"
     disabled=request(200,"POST",f"/api/v1/data-sources/{source_id}/deactivation",north)
     assert disabled["status"]=="DISABLED"
     again=request(200,"POST",f"/api/v1/data-sources/{source_id}/deactivation",north)
