@@ -78,6 +78,18 @@
       "name": "Full legacy stack/native Windows/Kubernetes/genuine provider execution",
       "result": "NOT TESTED",
       "reason": "Not executed in scoped followup; native/authorized provider inputs missing"
+    },
+    {
+      "name": "Source diff whitespace check",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "source-diff-check.log"
+    },
+    {
+      "name": "Raw artifact whitespace check",
+      "result": "FAIL",
+      "reason": "Trailing whitespace in raw diagnostic stdout; preserved unchanged",
+      "log": "artifact-whitespace-check.log"
     }
   ],
   "unchanged_assertions": true,

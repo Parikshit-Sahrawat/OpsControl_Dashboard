@@ -168,6 +168,11 @@ gap in `nine-advisory-dispositions.json`; see `PIP_DISPOSITIONS.md`.
 | Native Windows, full legacy stack, Kubernetes execution | NOT TESTED; no provider/deployment authority |
 | Frontend/full product/provider suites | NOT RERUN; prior evidence remains historical, not fresh acceptance |
 
+Source diff whitespace checks pass. The evidence commit whitespace check flags
+trailing spaces in raw BuildKit cache diagnostics; those bytes are retained, not
+normalized or represented as a passing artifact-whitespace check. See
+`artifact-whitespace-check.log`.
+
 An initial targeted invocation used incorrect relative paths and did not run tests;
 the failure and corrected results are retained. Parallel VFS builds exhausted disk
 space; completed images and build logs survived. Only specifically identified
