@@ -75,8 +75,12 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     if provider == 'AWS_EKS':
         raise HTTPException(422,'EKS inventory is discovery-only; use an approved in-cluster Kubernetes source for workload monitoring')
     infrastructure=provider in INFRA_TYPES
-    if api_config is not None and (infrastructure or not isinstance(api_config,dict)):
-        raise HTTPException(422,"API overrides require an HTTP/API data source")
+    if api_config is not None:
+        if infrastructure or not isinstance(api_config,dict):
+            raise HTTPException(422,"API overrides require an HTTP/API data source")
+        allowed={"url","method","headers","expected_status","timeout_seconds","max_response_time_ms"}
+        if set(api_config)-allowed:
+            raise HTTPException(422,"Unsupported API monitoring setting")
     worker=db.get(WorkerIdentity,worker_id) if worker_id else None
     if not infrastructure and (worker is None or not worker.enabled or worker.organization_id!=source.organization_id or worker.expires_at.replace(tzinfo=timezone.utc)<=now()):
         raise HTTPException(422,"An active organization-scoped remote worker is required")
