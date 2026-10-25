@@ -373,15 +373,33 @@ try:
         stream.write("a3-after-outage " + "e" * 1200 + "\n")
     wait(lambda: (PRIVATE / "api-restored").exists(), "same API endpoint restored")
     wait(lambda: file_count() > outage_before, "queued delivery after API interruption")
-    listeners = []
-    for line in Path("/proc/net/tcp").read_text().splitlines()[1:]:
-        fields = line.split()
-        if fields[3] == "0A":
+    listeners = {}
+    for protocol, listen_state in [
+        ("tcp", "0A"),
+        ("tcp6", "0A"),
+        ("udp", "07"),
+        ("udp6", "07"),
+    ]:
+        path = Path("/proc/net") / protocol
+        assert path.exists(), "Listener family unavailable: " + protocol
+        endpoints = []
+        for line in path.read_text().splitlines()[1:]:
+            fields = line.split()
+            if fields[3] != listen_state:
+                continue
             address = fields[1].split(":")[0]
-            assert address.startswith("0100007F") or address == "0B00007F", fields[1]
-            listeners.append(fields[1])
-    report["tcp_listeners"] = listeners
-    passed("no non-loopback TCP listeners in agent container")
+            if protocol.endswith("6"):
+                loopback = address == "00000000000000000000000001000000" or (
+                    address.startswith("0000000000000000FFFF0000")
+                    and address.endswith("7F")
+                )
+            else:
+                loopback = address.endswith("7F")
+            assert loopback, (protocol, fields[1])
+            endpoints.append(fields[1])
+        listeners[protocol] = endpoints
+    report["listeners"] = listeners
+    passed("no non-loopback TCP/UDP IPv4/IPv6 listeners in agent container")
     # Retain real generated configuration acceptance on the guarded binary too.
     env = {
         **os.environ,
