@@ -124,3 +124,7 @@ PR check snapshot `evidence/pr-ci-snapshot.json` observes head
 not successful outcomes. This evidence-only follow-up commit can enqueue new checks;
 inspect the live PR at its final SHA. Required-check completeness remains blocked
 by the protection API permission denial. No all-green CI assertion is made.
+
+## DEV-05.2A follow-up
+
+[Image security decision](../security/2026-10-25/SECURITY_DECISION.md): **BLOCKED**, release **NO-GO**. Nine declared candidate/reference images (eight unique snapshots) now have OS+application/transitive CycloneDX SBOMs and Grype scans bound to immutable config IDs and archive checksums. This closes the absence of candidate scans, not whole-release clearance: local candidates lack approved release registry digests; reported High/Critical matches are not waived; all nine previous Black/pip dispositions remain UNRESOLVED pending accountable review; license/NOTICE obligations are not signed off. Prior gates/evidence retain their historical scope.

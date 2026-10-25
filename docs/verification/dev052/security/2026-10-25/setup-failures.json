@@ -1,0 +1,23 @@
+{
+  "resolved": [
+    {
+      "operation": "initial Grype database update",
+      "error": "read-only /home/agent/.cache/grype",
+      "correction": "GRYPE_DB_CACHE_DIR=/tmp/dev052a-grype-db; normal verified update succeeded"
+    },
+    {
+      "operation": "demo scan while image build pending",
+      "error": "image not yet available",
+      "correction": "after successful build, targeted scan; historical BLOCKED row retained"
+    },
+    {
+      "operation": "retry helper loop",
+      "error": "argparse variable shadowed by command argument list after completing scan",
+      "correction": "separate options variable; targeted retry completed exit 0"
+    }
+  ],
+  "unresolved": [
+    "Final release registry digests not designated",
+    "Accountable vulnerability applicability review and license/NOTICE signoff missing"
+  ]
+}

@@ -107,6 +107,11 @@
       "gate": "Resource cleanup",
       "status": "PASS",
       "evidence_or_blocker": "Only named artifact extraction containers used and removed; runtime tests own local processes/tempfiles; no product stack or synthetic secrets created"
+    },
+    {
+      "gate": "DEV-05.2A image security/license gate",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "9 candidate/reference image-level SBOM+scan pairs; High/Critical matches not waived; 9 prior advisories UNRESOLVED, final registry digests unset, accountable review and license/NOTICE signoff absent. See ../security/2026-10-25/SECURITY_DECISION.md"
     }
   ]
 }

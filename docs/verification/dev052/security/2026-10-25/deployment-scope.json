@@ -1,0 +1,36 @@
+{
+  "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+  "scanned_references": 9,
+  "unique_image_config_digests": 8,
+  "architecture": "linux/amd64",
+  "uat_bindings_present": {
+    "STAGE_B_BACKEND_IMAGE": false,
+    "STAGE_B_FRONTEND_IMAGE": false
+  },
+  "release_approval": "NOT PROVIDED; locally built/obtained candidates only",
+  "production_paths": {
+    "backend/Dockerfile.runtime": "restricted API/worker runtime",
+    "backend/Dockerfile.uat": "UAT API/worker plus migration tool image; not automatically production approved",
+    "backend/Dockerfile.demo": "demo API/worker, embedded Contrib, root + automatic migrations/seed; not production approved",
+    "frontend/Dockerfile.demo": "Node build stage then nginx final static web; potential UAT frontend",
+    "deploy/uat/compose.images.yml": "operator-provided GHCR manifest digests unknown, cannot substitute local candidate image IDs",
+    "docker-compose.yml": "local PostgreSQL 17",
+    "docker-compose.demo.yml": "demo ancillary postgres ECR and nginx gateway"
+  },
+  "excluded_test_only": {
+    "verification/dev05/*Dockerfile": "disposable synthetic API/frontend/browser images",
+    "scripts/http-golden-path.sh": "generated TLS fixture/golden path images",
+    "scripts/access-docker-demo.py": "generated acceptance-only images",
+    "scripts/uat/local_environment.py": "local UAT generated frontend images",
+    "deploy/fixtures/*": "Python/Carte/Kubernetes synthetic fixtures, not native provider or release artifacts",
+    "deploy/fixtures/kind-calico.yaml": "test cluster network fixture; no deployment performed",
+    "*.github/workflows/private-https*, infrastructure*, etl*": "test-only isolated fixtures"
+  },
+  "build_only": {
+    "node:20-alpine": "frontend build stage; npm/Vite build risk remains, Node not final frontend runtime",
+    "python:3.12-slim": "backend final base AND test/build stages; final base OS/Python/pip covered by final-image scans",
+    "node:24-bookworm-slim": "verification-only Vite/browser/tool images",
+    "python:3.12-alpine": "test fixture/stdlib probe containers"
+  },
+  "coverage_limit": "Scanned candidates, not every possible operator-selected future image or build-stage artifact; no registry publication/deployment."
+}
