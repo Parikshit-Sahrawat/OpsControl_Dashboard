@@ -21,6 +21,11 @@ try{
   await page.getByLabel("HTTP method").selectOption("HEAD");
   await page.getByLabel("Expected HTTP status").fill("204");
   await page.getByLabel("Maximum response time (ms, optional)").fill("250");
+  await page.getByLabel("Approved x-opscontrol-check header (optional)").fill("ready");
+  await page.getByLabel("Timeout (seconds)").fill("5");
+  if(await page.getByLabel("HTTP method").inputValue()!=="HEAD") throw new Error("API method form mismatch");
+  if(await page.getByLabel("Expected HTTP status").inputValue()!=="204") throw new Error("API status form mismatch");
+  if(await page.getByLabel("Maximum response time (ms, optional)").inputValue()!=="250") throw new Error("API latency form mismatch");
   await page.getByRole("button",{name:"Validate & Preview"}).waitFor();
   await page.getByRole("button",{name:"Save immutable rule v1"}).waitFor();
   await page.getByRole("button",{name:"Create worker and network policy"}).waitFor();
