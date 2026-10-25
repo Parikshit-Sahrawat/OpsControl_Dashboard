@@ -35,7 +35,7 @@ def activation_preview(source_id:uuid.UUID,payload:ActivationRequest,db:Session=
 @router.post("/{source_id}/activations")
 def activation_apply(source_id:uuid.UUID,payload:ActivationRequest,db:Session=Depends(get_db)):
     can_manage(db,source_id)
-    return apply(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates)
+    return apply(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates,payload.api_config)
 
 @router.get("/{source_id}/activation")
 def activation_state(source_id:uuid.UUID,db:Session=Depends(get_db)):
