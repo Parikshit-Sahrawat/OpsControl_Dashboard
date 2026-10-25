@@ -57,6 +57,12 @@ export default function MonitoringSetup({
   const [sources, setSources] = useState([]),
     [catalogs, setCatalogs] = useState([]),
     [workers, setWorkers] = useState([]);
+  const [apiMethod,setApiMethod]=useState("GET");
+  const [apiUrl,setApiUrl]=useState("");
+  const [apiStatus,setApiStatus]=useState("200");
+  const [apiTimeout,setApiTimeout]=useState("8");
+  const [apiLatency,setApiLatency]=useState("");
+  const [apiHeader,setApiHeader]=useState("");
   const [sourceId, setSourceId] = useState(""),
     [workerId, setWorkerId] = useState("");
   const [selectedRules, setSelectedRules] = useState([]),
@@ -181,6 +187,15 @@ export default function MonitoringSetup({
       },
     );
   }
+  const apiSource=Boolean(sourceId)&&!infrastructure;
+  function apiSettings() {
+    if (!apiSource) return null;
+    const settings={method:apiMethod,expected_status:Number(apiStatus),timeout_seconds:Number(apiTimeout)};
+    if(apiUrl.trim()) settings.url=apiUrl.trim();
+    if(apiLatency.trim()) settings.max_response_time_ms=Number(apiLatency);
+    if(apiHeader.trim()) settings.headers={"x-opscontrol-check":apiHeader.trim()};
+    return settings;
+  }
   async function doPreview() {
     if (!sourceId || (!infrastructure && !workerId)) {
       setError("Choose a Data Source and approved remote worker.");
@@ -190,6 +205,7 @@ export default function MonitoringSetup({
       remote_worker_id: infrastructure ? null : workerId,
       rule_version_ids: selectedRules,
       include_templates: includeTemplates,
+      api_config: apiSettings(),
     };
     await run(
       () =>
@@ -212,6 +228,7 @@ export default function MonitoringSetup({
       remote_worker_id: infrastructure ? null : workerId,
       rule_version_ids: selectedRules,
       include_templates: includeTemplates,
+      api_config: apiSettings(),
     };
     await run(
       () =>
