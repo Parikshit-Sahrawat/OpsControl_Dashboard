@@ -1,0 +1,121 @@
+{
+  "phase": "DEV-05.2A.3",
+  "results": [
+    {
+      "name": "Guarded unchanged baseline",
+      "status": "PASS",
+      "tests_run": 12,
+      "skips": 0,
+      "log": "baseline-collection.log"
+    },
+    {
+      "name": "Version-only staged full suite",
+      "status": "PASS",
+      "tests_run": 53,
+      "skips": 0,
+      "log": "updated-full-suite.log"
+    },
+    {
+      "name": "Checkpoint-compatible staged full suite",
+      "status": "PASS",
+      "tests_run": 53,
+      "skips": 0,
+      "log": "compatible-full-suite.log"
+    },
+    {
+      "name": "Exact version negatives",
+      "status": "PASS",
+      "tests_run": 2,
+      "skips": 0,
+      "log": "exact-version-negative-tests.log"
+    },
+    {
+      "name": "Offline provisioning and staging pin negatives",
+      "status": "PASS",
+      "tests_run": 2,
+      "skips": 0,
+      "log": "provisioning-negative-test-final.log"
+    },
+    {
+      "name": "Unchanged candidate under original guard",
+      "status": "FAIL",
+      "tests_run": 12,
+      "passed": 11,
+      "errors": 1,
+      "reason": "Preserved production version guard",
+      "log": "unchanged-candidate.log"
+    },
+    {
+      "name": "Initial baseline launch",
+      "status": "FAIL",
+      "executed_collection_tests": 0,
+      "reason": "Wrong working directory / app import; corrected before implementation",
+      "log": "baseline-initial.log"
+    },
+    {
+      "name": "Lab attempt 1",
+      "status": "FAIL",
+      "reason": "RuntimeError: Owned lab command failed: docker",
+      "evidence": "lab-attempt-1/lab-result.json",
+      "cleanup": "PASS"
+    },
+    {
+      "name": "Lab attempt 2",
+      "status": "FAIL",
+      "reason": "AssertionError: Agent E2E failed; retained redacted logs",
+      "evidence": "lab-attempt-2/lab-result.json",
+      "cleanup": "PASS"
+    },
+    {
+      "name": "Lab attempt 3",
+      "status": "PASS",
+      "reason": null,
+      "evidence": "lab-attempt-3/lab-result.json",
+      "cleanup": "PASS"
+    },
+    {
+      "name": "Lab attempt 4",
+      "status": "PASS",
+      "reason": null,
+      "evidence": "lab-attempt-4/lab-result.json",
+      "cleanup": "PASS"
+    },
+    {
+      "name": "provision-online.log",
+      "status": "PASS",
+      "log": "provision-online.log"
+    },
+    {
+      "name": "provision-offline.log",
+      "status": "PASS",
+      "log": "provision-offline.log"
+    },
+    {
+      "name": "Fresh digest/binary-bound SBOM and Grype",
+      "status": "PASS",
+      "images": 2,
+      "evidence": "subject-bindings.json"
+    },
+    {
+      "name": "Genuine systemd/Windows/Pentaho certification",
+      "status": "NOT TESTED",
+      "certification_gate": "BLOCKED",
+      "reason": "No approved genuine runtime/target/credentials; synthetic lab is not certification"
+    },
+    {
+      "name": "Coordinated default contract/packaging/registry transition",
+      "status": "BLOCKED",
+      "reason": "Approval, final image identity, full platform/rollback acceptance and license signoff missing"
+    },
+    {
+      "name": "Baseline hosted Calico NetworkPolicy check",
+      "status": "FAIL",
+      "source_sha": "0d186819b40c9aa0046b5d5d4781731f832570f5",
+      "evidence": "baseline-hosted-checks.json",
+      "manually_rerun": false
+    }
+  ],
+  "counts_are_per_run_not_additive": true,
+  "security_gate": "BLOCKED",
+  "release": "NO-GO"
+}

@@ -1,11 +1,11 @@
 {
-  "phase": "DEV-05.2A.2",
+  "phase": "DEV-05.2A.3",
   "security_gate": "BLOCKED",
   "vulnerability_acceptance_gate": "FAIL",
   "release": "NO-GO",
   "next_phase_authorized": false,
-  "evidence": "2026-10-25-followup/FOLLOWUP_DECISION.md",
-  "matrix": "2026-10-25-followup/release-gates.json",
+  "evidence": "2026-10-25-collector/COLLECTOR_DECISION.md",
+  "matrix": "2026-10-25-collector/release-gates.json",
   "python_high_matches": 110,
   "python_unique_high_cves": 14,
   "python_unique_cve_package_version_advisory": 55,
@@ -17,7 +17,7 @@
   "new_collector_evaluation_critical": 0,
   "rejected_bookworm_high": 79,
   "rejected_bookworm_critical": 3,
-  "collector_contract": "0.123.0 unchanged;0.163.2 promotion BLOCKED",
+  "collector_contract": "0.123.0 production guard unchanged; explicit .163.2 legacy-checkpoint experimental contract passes synthetic Linux lab; promotion BLOCKED",
   "pip_dispositions": {
     "UNRESOLVED": 6,
     "patched_scope": "declared Linux bootstrap/build/CI; native/legacy execution and owner disposition incomplete"
@@ -28,5 +28,12 @@
   },
   "license_gate": "BLOCKED",
   "registry_release_identity_gate": "BLOCKED",
-  "exceptions": []
+  "exceptions": [],
+  "collector_promotion": "BLOCKED",
+  "experimental_linux_contract": "PASS in stated fixture scope only",
+  "fresh_collector_scans": 2,
+  "baseline_hosted_calico_check": "FAIL at0d18681; not manually rerun",
+  "default_guard_changed": false,
+  "full_coordinated_rollback_gate": "BLOCKED",
+  "genuine_platform_certification": "BLOCKED / NOT TESTED"
 }

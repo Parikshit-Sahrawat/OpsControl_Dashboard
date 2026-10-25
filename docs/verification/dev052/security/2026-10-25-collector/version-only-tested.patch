@@ -1,0 +1,41 @@
+--- a/backend/app/telemetry/configuration.py
++++ b/backend/app/telemetry/configuration.py
+@@ -8,7 +8,7 @@
+ from pydantic import BaseModel, ConfigDict, Field, model_validator
+ from app.security.secret_refs import require_safe_config
+ 
+-RUNTIME_VERSION = "0.123.0"
++RUNTIME_VERSION = "0.163.2"
+ 
+ 
+ class Strict(BaseModel):
+--- a/agent/opscontrol_agent.py
++++ b/agent/opscontrol_agent.py
+@@ -1,14 +1,14 @@
+ #!/usr/bin/env python3
+ """OpsControl Agent supervises upstream OTel; never executes backend shell commands."""
+ 
+-import argparse, glob, hashlib, json, os, platform, signal, ssl, subprocess, tempfile, threading, time
++import argparse, glob, hashlib, json, os, platform, re, signal, ssl, subprocess, tempfile, threading, time
+ from pathlib import Path
+ from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHandler
+ from urllib.error import HTTPError
+ from urllib.parse import urlsplit
+ 
+ VERSION = "1.5.0"
+-RUNTIME_VERSION = "0.123.0"
++RUNTIME_VERSION = "0.163.2"
+ 
+ 
+ class NoRedirect(HTTPRedirectHandler):
+@@ -69,7 +69,9 @@
+         result = subprocess.run(
+             [self.runtime, "--version"], capture_output=True, text=True, timeout=10
+         )
+-        if result.returncode or RUNTIME_VERSION not in result.stdout:
++        if result.returncode or not re.search(
++            r"(?<![\d.])" + re.escape(RUNTIME_VERSION) + r"(?![\d.])", result.stdout
++        ):
+             raise RuntimeError("OTel runtime version mismatch")
+ 
+     def request(self, path, body=None):

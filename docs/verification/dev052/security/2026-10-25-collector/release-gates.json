@@ -1,0 +1,282 @@
+{
+  "phase": "DEV-05.2A.3",
+  "security_gate": "BLOCKED",
+  "release": "NO-GO",
+  "default_version": "0.123.0",
+  "experimental_version": "0.163.2",
+  "gates": [
+    {
+      "gate": "Pinned Contrib runtime",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 2 exact runtime tests passed, zero skips; image and binary hashes verified",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Targeted auth/tenant/worker/TLS/redaction/Pentaho contracts",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 57 unit/contract tests; not genuine provider certification",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Frontend regression/lint/build",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 36 tests; lint/build completed",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Provision mismatch rejection",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 1 negative test",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Historical RT-LAB integrity",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 5/5 hashes; offline historical integrity only",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Genuine Pentaho Carte/Pan/Kitchen",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: No approved reachable runtime/build/license, scoped credentials, CA or workload authority",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Cloud and native Windows live certification",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: No approved identities or hosts",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Kubernetes monitoring",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Deferred baseline; not approved for this release",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Required GitHub checks",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Branch protection API denied HTTP 403; PR checks captured separately after creation; main checks not substitutes",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Python environment vulnerability scan",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical failure, not rerun as the old environment audit. See fresh A.2 image/advisory gates: 9 observed advisories: black 25.1.0 (3), pip 25.0.1 (6); tooling/env scope, applicability triage required, no production exploit claim",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "npm dependency audit",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: 0 reported vulnerabilities at observation time",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Python environment CycloneDX SBOM",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: Generated; not an image SBOM or license clearance",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Image provenance/SBOM/license/container security",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Contrib image digest verified; release images not pinned universally, complete image SBOM/scans and license review unavailable",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Fresh populated migration/backup/restore/rollback rehearsal",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Fresh alert/dashboard/recovery end-to-end",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Production control-plane TLS",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Load testing",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Real external notification delivery",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Operational DR",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Observability",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: Actual collector acceptance and scrape/file restart test; full deployed observability remains untested",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Resource cleanup",
+      "prior_phase_status": "NOT TESTED",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Not rerun in DEV-05.2A.2. Prior result remains historical: Only named artifact extraction containers used and removed; runtime tests own local processes/tempfiles; no product stack or synthetic secrets created",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "DEV-05.2A image security/license gate",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 9 candidate/reference image-level SBOM+scan pairs; High/Critical matches not waived; 9 prior advisories UNRESOLVED, final registry digests unset, accountable review and license/NOTICE signoff absent. See ../security/2026-10-25/SECURITY_DECISION.md",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Exact candidate image SBOM/scan coverage",
+      "prior_phase_status": "PASS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 8 images; subject-bindings.json; not final release identity approval",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "High/Critical vulnerability acceptance",
+      "prior_phase_status": "FAIL",
+      "status": "FAIL",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Unresolved scanner matches: Python 110 High; guarded collector 14 Critical/68 High; no exception or applicability signoff",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Final registry/source identity",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: No approved registry publication/final manifests; dirty-tree candidates lack complete committed-source attestation",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Collector 0.163.2 promotion",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 12 unchanged tests:11 pass1guardERROR; scoped functional probe passes; no explicit upgrade approval; .123guard unchanged",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Guarded collector regression",
+      "prior_phase_status": "PASS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 12 unchanged tests pass with .123 verified binary; does not waive vulnerabilities",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Patched bootstrap and targeted contracts",
+      "prior_phase_status": "PASS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 29 local +36 exact API +36 Bookworm tests; online/offline wheel install, checksum rejection; rejected Bookworm vulnerability profile",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "All nine advisory dispositions",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: 3 prior Black scoped FIXED;6 pip UNRESOLVED globally, patched declared Linux paths; owner/native/legacy coverage pending",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "License NOTICE/source offer/application terms",
+      "prior_phase_status": "BLOCKED",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: Per-component inventory+189 npm lock entries; no human signoff or application license decision",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Scoped cleanup",
+      "prior_phase_status": "PASS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical A.2 result; not independently rerun here: cleanup.json; no task containers/networks/volumes/archives; only exact owned cache entries removed",
+      "prior_matrix": "../2026-10-25-followup/release-gates.json"
+    },
+    {
+      "gate": "Unchanged collection baseline",
+      "status": "PASS",
+      "evidence_or_blocker": "12 tests with pinned .123 before implementation"
+    },
+    {
+      "gate": "Unchanged candidate under production guard",
+      "status": "FAIL",
+      "evidence_or_blocker": "11 pass1guardERROR; required rejection preserved"
+    },
+    {
+      "gate": "Experimental .163 exact contract + legacy checkpoint mode",
+      "status": "PASS",
+      "evidence_or_blocker": "53 full suite;2 exact-guard tests;2 pin negatives; final authenticated five-method lab4 PASS, TCP/UDP IPv4/IPv6 checks"
+    },
+    {
+      "gate": "Checkpoint rollback/config startup",
+      "status": "PASS",
+      "scope": "synthetic compatibility only",
+      "evidence_or_blocker": "Default protobuf failed in lab2; explicit .163 legacy mode passes .123 startup with populated storage in lab3/lab4; not an approved coordinated downgrade"
+    },
+    {
+      "gate": "Default supported-version transition and full coordinated rollback",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Accountable review, genuine platforms, existing-protobuf-state migration, installers/CI transition and final source-attested images missing"
+    },
+    {
+      "gate": "Fresh collector SBOM/scan identity chains",
+      "status": "PASS",
+      "evidence_or_blocker": "2 exact images; archive/config/binary/SBOM binding verified"
+    },
+    {
+      "gate": "Vulnerability acceptance",
+      "status": "FAIL",
+      "evidence_or_blocker": "Guard remains .123 with14Critical68High; backend110High and six pip findings remain unresolved, not rescanned/waived"
+    },
+    {
+      "gate": "License/NOTICE/source and application terms",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "2025 component records; legal reviewer/NOTICE assembly/source obligations/application license unresolved"
+    },
+    {
+      "gate": "Hosted required CI at final head",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Baseline0d18681 has failed calico-networkpolicy; not rerun. Final-head checks need assessment"
+    },
+    {
+      "gate": "Genuine systemd/Windows/Pentaho providers",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Not executed; synthetic process fixture is not certification"
+    },
+    {
+      "gate": "Scoped cleanup and prior evidence",
+      "status": "PASS",
+      "evidence_or_blocker": "Four lab cleanups; no task resources;260 prior hashes intact"
+    }
+  ]
+}

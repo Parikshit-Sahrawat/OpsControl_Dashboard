@@ -1,0 +1,37 @@
+{
+  "status": "FAIL",
+  "scope": "owned disposable fixture, not provider certification",
+  "api_dependencies_image": "sha256:531dd9fb58fd7723dedaceba177a1ea241b5c6834c7c200273eff3c16dd60b4d",
+  "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "source": {
+    "version": "0.163.2",
+    "platform": "linux/amd64",
+    "image": "otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849",
+    "image_config_digest": "sha256:a64fa52ad3b55378bb62d8642439aaf0ec3abf45a8ddc1ac02bac31eea7a6565",
+    "binary_sha256": "dbd12d55073b70add777895457040f8ede59fc1ee7198d6ae179a37087eea8bb",
+    "promotion": "BLOCKED; verification overlay only; no production version transition approval",
+    "source_commit": "0d186819b40c9aa0046b5d5d4781731f832570f5",
+    "source_archive_sha256": "506bd0eaa906825d96a7267893816e92bd5b3386f927f1aed9a6cc4fa12f4013",
+    "experimental_patch_sha256": "ef712bf80784abbfa7e6b51229ee43ab2512c81bef9a03b3619c19cf7dba2d75",
+    "fixture_literal_updates": [
+      "backend/tests/test_agent_v15.py",
+      "backend/scripts/agent_v15_acceptance_probe.py"
+    ],
+    "stage": "/tmp/dev052a3-source",
+    "production_guard_modified": false
+  },
+  "error": "RuntimeError: Owned lab command failed: docker",
+  "cleanup": {
+    "status": "PASS",
+    "errors": [],
+    "owned_containers": [
+      "dev052a3-f6753cc3-pg"
+    ],
+    "owned_networks": [
+      "dev052a3-f6753cc3",
+      "dev052a3-f6753cc3-denied"
+    ],
+    "private_credentials_tls_and_database_volume_removed": true,
+    "broad_cleanup": false
+  }
+}
