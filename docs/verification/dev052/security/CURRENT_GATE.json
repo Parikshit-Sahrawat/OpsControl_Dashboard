@@ -1,11 +1,11 @@
 {
-  "phase": "DEV-05.2A.3B",
+  "phase": "DEV-05.2A.3C",
   "security_gate": "BLOCKED",
   "vulnerability_acceptance_gate": "FAIL",
   "release": "NO-GO",
   "next_phase_authorized": false,
-  "evidence": "2026-10-25-checkpoints/CHECKPOINT_DECISION.md",
-  "matrix": "2026-10-25-checkpoints/test-matrix.json",
+  "evidence": "2026-10-25-durability/DURABILITY_DECISION.md",
+  "matrix": "2026-10-25-durability/test-matrix.json",
   "python_high_matches": 110,
   "python_unique_high_cves": 14,
   "python_unique_cve_package_version_advisory": 55,
@@ -37,7 +37,7 @@
   "full_coordinated_rollback_gate": "BLOCKED",
   "genuine_platform_certification": "BLOCKED / NOT TESTED",
   "checkpoint_native_acceptance": "FAIL",
-  "checkpoint_interrupted_upgrade_delivery": "FAIL:16 of44 source IDs absent after restart within65s",
+  "checkpoint_interrupted_upgrade_delivery": "Original16/44 failure reproduced; candidate handoff mitigation passes finite probes; default0.123 full-queue restart still loses10/267",
   "checkpoint_bounded_recovery": {
     "status": "PASS",
     "scope": "finite synthetic case only",
@@ -46,5 +46,15 @@
     "duplicate_rows": 56,
     "missing_ids": 0
   },
-  "checkpoint_procedure_approval": "BLOCKED"
+  "checkpoint_procedure_approval": "BLOCKED",
+  "checkpoint_delivery_gap": "FAIL",
+  "checkpoint_protobuf_rollback": "BLOCKED",
+  "checkpoint_delivery_selected_matrix": {
+    "PASS": 20,
+    "FAIL": 6,
+    "missing_ids": 27,
+    "physical_duplicate_rows": 263
+  },
+  "collector_handoff_candidate_commit": "7af6927a16056597794c42549a813d3408860a57",
+  "collector_handoff_owner_review": "BLOCKED"
 }

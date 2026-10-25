@@ -1,0 +1,246 @@
+[
+  {
+    "name": "0.163.2-before_enqueue",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0000",
+      "event-0001",
+      "event-0002",
+      "event-0003"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0000",
+      "event-0001",
+      "event-0002",
+      "event-0003"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0000": 0,
+      "event-0001": 0,
+      "event-0002": 0,
+      "event-0003": 0
+    },
+    "api_counts_by_id": {
+      "event-0000": 0,
+      "event-0001": 0,
+      "event-0002": 0,
+      "event-0003": 0
+    },
+    "controller_status": "FAIL",
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/15/task/15/children'"
+  },
+  {
+    "name": "0.163.2-after_enqueue_before_checkpoint",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0004",
+      "event-0005",
+      "event-0006",
+      "event-0007"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0004",
+      "event-0005",
+      "event-0006",
+      "event-0007"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0004": 0,
+      "event-0005": 0,
+      "event-0006": 0,
+      "event-0007": 0
+    },
+    "api_counts_by_id": {
+      "event-0004": 0,
+      "event-0005": 0,
+      "event-0006": 0,
+      "event-0007": 0
+    },
+    "controller_status": "FAIL",
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/35/task/35/children'"
+  },
+  {
+    "name": "0.163.2-queue_saturation",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0008",
+      "event-0009",
+      "event-0010",
+      "event-0011",
+      "event-0012",
+      "event-0013",
+      "event-0014",
+      "event-0015",
+      "event-0016",
+      "event-0017"
+    ],
+    "expected_distinct": 10,
+    "persisted_distinct": 10,
+    "missing_ids": [],
+    "api_accepted_attempts": 10,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 10,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0008": 1,
+      "event-0009": 1,
+      "event-0010": 1,
+      "event-0011": 1,
+      "event-0012": 1,
+      "event-0013": 1,
+      "event-0014": 1,
+      "event-0015": 1,
+      "event-0016": 1,
+      "event-0017": 1
+    },
+    "api_counts_by_id": {
+      "event-0008": 1,
+      "event-0009": 1,
+      "event-0010": 1,
+      "event-0011": 1,
+      "event-0012": 1,
+      "event-0013": 1,
+      "event-0014": 1,
+      "event-0015": 1,
+      "event-0016": 1,
+      "event-0017": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-before_enqueue",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0018",
+      "event-0019",
+      "event-0020",
+      "event-0021"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0018",
+      "event-0019",
+      "event-0020",
+      "event-0021"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0018": 0,
+      "event-0019": 0,
+      "event-0020": 0,
+      "event-0021": 0
+    },
+    "api_counts_by_id": {
+      "event-0018": 0,
+      "event-0019": 0,
+      "event-0020": 0,
+      "event-0021": 0
+    },
+    "controller_status": "FAIL",
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/74/task/74/children'"
+  },
+  {
+    "name": "0.123.0-after_enqueue_before_checkpoint",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0022",
+      "event-0023",
+      "event-0024",
+      "event-0025"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0022",
+      "event-0023",
+      "event-0024",
+      "event-0025"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0022": 0,
+      "event-0023": 0,
+      "event-0024": 0,
+      "event-0025": 0
+    },
+    "api_counts_by_id": {
+      "event-0022": 0,
+      "event-0023": 0,
+      "event-0024": 0,
+      "event-0025": 0
+    },
+    "controller_status": "FAIL",
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/96/task/96/children'"
+  },
+  {
+    "name": "0.123.0-queue_saturation",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0026",
+      "event-0027",
+      "event-0028",
+      "event-0029",
+      "event-0030",
+      "event-0031",
+      "event-0032",
+      "event-0033",
+      "event-0034",
+      "event-0035"
+    ],
+    "expected_distinct": 10,
+    "persisted_distinct": 9,
+    "missing_ids": [
+      "event-0026"
+    ],
+    "api_accepted_attempts": 9,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 9,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0026": 0,
+      "event-0027": 1,
+      "event-0028": 1,
+      "event-0029": 1,
+      "event-0030": 1,
+      "event-0031": 1,
+      "event-0032": 1,
+      "event-0033": 1,
+      "event-0034": 1,
+      "event-0035": 1
+    },
+    "api_counts_by_id": {
+      "event-0026": 0,
+      "event-0027": 1,
+      "event-0028": 1,
+      "event-0029": 1,
+      "event-0030": 1,
+      "event-0031": 1,
+      "event-0032": 1,
+      "event-0033": 1,
+      "event-0034": 1,
+      "event-0035": 1
+    },
+    "controller_status": "FAIL",
+    "error": "AssertionError: Timed out waiting for observed boundary"
+  }
+]

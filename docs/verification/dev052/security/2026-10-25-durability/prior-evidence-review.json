@@ -1,0 +1,892 @@
+{
+  "all_files_read": 86,
+  "hashes_verified": 85,
+  "summary": [
+    {
+      "file": "existing-regressions.log",
+      "lines": 58,
+      "signals": []
+    },
+    {
+      "file": "format-check.log",
+      "lines": 2,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/api.log",
+      "lines": 8,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/commands.log",
+      "lines": 559,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/dev052a3b-f5362160-agent.log",
+      "lines": 11,
+      "signals": [
+        "    raise AssertionError(\"Timeout: \" + label)",
+        "AssertionError: Timeout: interrupted default upgrade restarts and delivers retained IDs"
+      ]
+    },
+    {
+      "file": "lab-attempt-1/dev052a3b-f5362160-denied-target.log",
+      "lines": 1,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/dev052a3b-f5362160-pg.log",
+      "lines": 59,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/e2e.json",
+      "data": {
+        "status": "FAIL",
+        "error": "AssertionError: Timeout: interrupted default upgrade restarts and delivers retained IDs"
+      }
+    },
+    {
+      "file": "lab-attempt-1/lab-result.json",
+      "data": {
+        "status": "FAIL",
+        "error": "AssertionError: Agent E2E failed; retained redacted logs"
+      }
+    },
+    {
+      "file": "lab-attempt-1/logs_app.1.log",
+      "lines": 16,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/logs_app.log",
+      "lines": 20,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-1/runtime.log",
+      "lines": 149,
+      "signals": [
+        "2026-10-25T13:04:18.803Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"229458ad-c3c5-4d99-b854-147e381fcb10\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:04:24.029Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"8158f590-3165-40eb-8a68-f61b99f8c2fe\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:04:24.030Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"8158f590-3165-40eb-8a68-f61b99f8c2fe\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:04:30.739Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"90438c04-51e8-49db-9abd-e630be461809\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:04:30.739Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"90438c04-51e8-49db-9abd-e630be461809\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:04:37.516Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"ee7e99a2-9de7-412f-aebf-1f9eacf2ed9e\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:04:37.516Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"ee7e99a2-9de7-412f-aebf-1f9eacf2ed9e\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:04:47.674Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"8c3964ae-0d20-48d7-9c74-87ace5245023\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:04:47.674Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"8c3964ae-0d20-48d7-9c74-87ace5245023\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:04:48.794Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"70302227-2fec-46ab-8739-d17705f557a7\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:04:48.795Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"70302227-2fec-46ab-8739-d17705f557a7\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c3a12f7f52ad44a9981f06cfc3a677c6_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}"
+      ]
+    },
+    {
+      "file": "lab-attempt-2/api.log",
+      "lines": 8,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/commands.log",
+      "lines": 665,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/dev052a3b-fa522aa9-agent.log",
+      "lines": 14,
+      "signals": [
+        "unclean default upgrade delivery: FAIL (preserved; testing independent archive recovery)"
+      ]
+    },
+    {
+      "file": "lab-attempt-2/dev052a3b-fa522aa9-denied-target.log",
+      "lines": 1,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/dev052a3b-fa522aa9-pg.log",
+      "lines": 59,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/downgrade-failure.log",
+      "lines": 19,
+      "signals": [
+        "2026-10-25T13:11:29.782Z\terror\tgraph/graph.go:438\tFailed to start component\t{\"error\": \"start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value\", \"type\": \"Receiver\", \"id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\"}",
+        "Error: cannot start pipelines: failed to start \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value",
+        "2026/10/25 13:11:29 collector server run finished with error: cannot start pipelines: failed to start \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value"
+      ]
+    },
+    {
+      "file": "lab-attempt-2/e2e.json",
+      "data": {
+        "status": "FAIL",
+        "failed_cases": [
+          {
+            "case": "unclean default upgrade delivery",
+            "status": "FAIL",
+            "error": "Timeout: interrupted default upgrade restarts and delivers retained IDs",
+            "missing_ids": [
+              "event-0028",
+              "event-0029",
+              "event-0030",
+              "event-0031",
+              "event-0032",
+              "event-0033",
+              "event-0034",
+              "event-0035",
+              "event-0036",
+              "event-0037",
+              "event-0038",
+              "event-0039",
+              "event-0040",
+              "event-0041",
+              "event-0042",
+              "event-0043"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "lab-attempt-2/event-accounting.json",
+      "data": {
+        "status": "PASS",
+        "expected_distinct_ids": 44,
+        "persisted_distinct_ids": 44,
+        "lost_ids": [],
+        "api_accepted_record_attempts": 100,
+        "db_source_event_rows": 100,
+        "db_duplicate_event_rows": 56
+      }
+    },
+    {
+      "file": "lab-attempt-2/lab-result.json",
+      "data": {
+        "status": "FAIL",
+        "fixture_exit_code": 1,
+        "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS"
+      }
+    },
+    {
+      "file": "lab-attempt-2/logs_app.1.log",
+      "lines": 16,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/logs_app.log",
+      "lines": 20,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/logs_recovery-rollback-1.log",
+      "lines": 45,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-2/phase-db-reconciliation.json",
+      "data": [
+        {
+          "phase": "legacy-cut",
+          "cut_utc": "2026-10-25T13:09:53.855976+00:00",
+          "expected": 8,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 8,
+          "db_distinct_at_cut": 8,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "compatible-upgrade-rotation-truncation",
+          "cut_utc": "2026-10-25T13:10:22.731979+00:00",
+          "expected": 28,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "interrupted-default-upgrade",
+          "cut_utc": "2026-10-25T13:10:23.841189+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "default-protobuf-after-restart",
+          "cut_utc": "2026-10-25T13:11:29.719115+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "legacy-recovery-replay",
+          "cut_utc": "2026-10-25T13:11:35.982599+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "final",
+          "cut_utc": "2026-10-25T13:11:56.113078+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        }
+      ]
+    },
+    {
+      "file": "lab-attempt-2/runtime.log",
+      "lines": 249,
+      "signals": [
+        "2026-10-25T13:09:59.172Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"05bae9cd-3aaf-4f9c-ba3e-bf3f550307ee\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:10:05.874Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"adb4cb83-6796-48a7-b773-d3669d773776\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:10:05.874Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"adb4cb83-6796-48a7-b773-d3669d773776\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:10:12.590Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"7a886aba-3603-4a0d-af05-0b9648fbd489\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:10:12.590Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"7a886aba-3603-4a0d-af05-0b9648fbd489\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:10:22.837Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"16321f28-d0a6-4616-87fb-2c4b37ab693a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:10:22.837Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"16321f28-d0a6-4616-87fb-2c4b37ab693a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:10:23.950Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"1e629238-daae-4cd2-9002-d63092763a8a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:10:23.950Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"1e629238-daae-4cd2-9002-d63092763a8a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:11:29.931Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"603f7d44-70f1-4940-af1a-371cff22f2a7\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:11:29.932Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"603f7d44-70f1-4940-af1a-371cff22f2a7\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/c917cdf22cf54728b6052be28d81bdba_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:11:30.833Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:11:36.104Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:11:42.751Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:11:49.463Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}"
+      ]
+    },
+    {
+      "file": "lab-attempt-3/api.log",
+      "lines": 8,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/commands.log",
+      "lines": 665,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/dev052a3b-4f0eac60-agent.log",
+      "lines": 14,
+      "signals": [
+        "unclean default upgrade delivery: FAIL (preserved; testing independent archive recovery)"
+      ]
+    },
+    {
+      "file": "lab-attempt-3/dev052a3b-4f0eac60-denied-target.log",
+      "lines": 1,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/dev052a3b-4f0eac60-pg.log",
+      "lines": 59,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/downgrade-failure.log",
+      "lines": 19,
+      "signals": [
+        "2026-10-25T13:20:37.996Z\terror\tgraph/graph.go:438\tFailed to start component\t{\"error\": \"start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value\", \"type\": \"Receiver\", \"id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\"}",
+        "Error: cannot start pipelines: failed to start \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value",
+        "2026/10/25 13:20:37 collector server run finished with error: cannot start pipelines: failed to start \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value"
+      ]
+    },
+    {
+      "file": "lab-attempt-3/e2e.json",
+      "data": {
+        "status": "FAIL",
+        "failed_cases": [
+          {
+            "case": "unclean default upgrade delivery",
+            "status": "FAIL",
+            "error": "Timeout: interrupted default upgrade restarts and delivers retained IDs",
+            "missing_ids": [
+              "event-0028",
+              "event-0029",
+              "event-0030",
+              "event-0031",
+              "event-0032",
+              "event-0033",
+              "event-0034",
+              "event-0035",
+              "event-0036",
+              "event-0037",
+              "event-0038",
+              "event-0039",
+              "event-0040",
+              "event-0041",
+              "event-0042",
+              "event-0043"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "lab-attempt-3/event-accounting.json",
+      "data": {
+        "status": "PASS",
+        "expected_distinct_ids": 44,
+        "persisted_distinct_ids": 44,
+        "lost_ids": [],
+        "api_accepted_record_attempts": 100,
+        "db_source_event_rows": 100,
+        "db_duplicate_event_rows": 56
+      }
+    },
+    {
+      "file": "lab-attempt-3/lab-result.json",
+      "data": {
+        "status": "FAIL",
+        "fixture_exit_code": 1,
+        "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS"
+      }
+    },
+    {
+      "file": "lab-attempt-3/logs_app.1.log",
+      "lines": 16,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/logs_app.log",
+      "lines": 20,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/logs_recovery-rollback-1.log",
+      "lines": 45,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-3/phase-db-reconciliation.json",
+      "data": [
+        {
+          "phase": "legacy-cut",
+          "cut_utc": "2026-10-25T13:19:02.062339+00:00",
+          "expected": 8,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 8,
+          "db_distinct_at_cut": 8,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "compatible-upgrade-rotation-truncation",
+          "cut_utc": "2026-10-25T13:19:30.943960+00:00",
+          "expected": 28,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "interrupted-default-upgrade",
+          "cut_utc": "2026-10-25T13:19:32.053169+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "default-protobuf-after-restart",
+          "cut_utc": "2026-10-25T13:20:37.933228+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "legacy-recovery-replay",
+          "cut_utc": "2026-10-25T13:20:44.207706+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "final",
+          "cut_utc": "2026-10-25T13:21:04.338827+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        }
+      ]
+    },
+    {
+      "file": "lab-attempt-3/runtime.log",
+      "lines": 249,
+      "signals": [
+        "2026-10-25T13:19:07.371Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"1861bf2f-b563-45ba-8d75-6c1a165c7b73\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:19:14.096Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"71e3b428-535f-4655-ba01-5a8ddc3f57bf\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:19:14.096Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"71e3b428-535f-4655-ba01-5a8ddc3f57bf\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:19:20.800Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"9438055c-7f0c-42ae-8e28-6122885e9efd\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:19:20.800Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"9438055c-7f0c-42ae-8e28-6122885e9efd\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:19:31.032Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"ae793563-0672-4fe4-9a76-bcbb559a5625\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:19:31.033Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"ae793563-0672-4fe4-9a76-bcbb559a5625\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:19:32.141Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"1eba35e1-3ece-419a-b318-ceed0e88601a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:19:32.142Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"1eba35e1-3ece-419a-b318-ceed0e88601a\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:20:38.140Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"a9438f72-bc56-4c13-be47-559d4a7d63db\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:20:38.140Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"a9438f72-bc56-4c13-be47-559d4a7d63db\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b28f40542b8e4adba01d35772105cd34_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:20:39.042Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:20:44.265Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:20:50.986Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:20:57.681Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}"
+      ]
+    },
+    {
+      "file": "lab-attempt-4/api.log",
+      "lines": 8,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/commands.log",
+      "lines": 665,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/dev052a3b-20afaec6-agent.log",
+      "lines": 14,
+      "signals": [
+        "unclean default upgrade delivery: FAIL (preserved; testing independent archive recovery)"
+      ]
+    },
+    {
+      "file": "lab-attempt-4/dev052a3b-20afaec6-denied-target.log",
+      "lines": 1,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/dev052a3b-20afaec6-pg.log",
+      "lines": 59,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/downgrade-failure.log",
+      "lines": 19,
+      "signals": [
+        "2026-10-25T13:24:04.140Z\terror\tgraph/graph.go:438\tFailed to start component\t{\"error\": \"start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value\", \"type\": \"Receiver\", \"id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\"}",
+        "Error: cannot start pipelines: failed to start \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value",
+        "2026/10/25 13:24:04 collector server run finished with error: cannot start pipelines: failed to start \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\" receiver: start stanza: read known files from database: decoding file count: invalid character '\u00c7' looking for beginning of value"
+      ]
+    },
+    {
+      "file": "lab-attempt-4/e2e.json",
+      "data": {
+        "status": "FAIL",
+        "failed_cases": [
+          {
+            "case": "unclean default upgrade delivery",
+            "status": "FAIL",
+            "error": "Timeout: interrupted default upgrade restarts and delivers retained IDs",
+            "missing_ids": [
+              "event-0028",
+              "event-0029",
+              "event-0030",
+              "event-0031",
+              "event-0032",
+              "event-0033",
+              "event-0034",
+              "event-0035",
+              "event-0036",
+              "event-0037",
+              "event-0038",
+              "event-0039",
+              "event-0040",
+              "event-0041",
+              "event-0042",
+              "event-0043"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "file": "lab-attempt-4/event-accounting.json",
+      "data": {
+        "status": "PASS",
+        "expected_distinct_ids": 44,
+        "persisted_distinct_ids": 44,
+        "lost_ids": [],
+        "api_accepted_record_attempts": 100,
+        "db_source_event_rows": 100,
+        "db_duplicate_event_rows": 56
+      }
+    },
+    {
+      "file": "lab-attempt-4/lab-result.json",
+      "data": {
+        "status": "FAIL",
+        "fixture_exit_code": 1,
+        "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS"
+      }
+    },
+    {
+      "file": "lab-attempt-4/logs_app.1.log",
+      "lines": 16,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/logs_app.log",
+      "lines": 20,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/logs_recovery-rollback-1.log",
+      "lines": 45,
+      "signals": []
+    },
+    {
+      "file": "lab-attempt-4/phase-db-reconciliation.json",
+      "data": [
+        {
+          "phase": "legacy-cut",
+          "cut_utc": "2026-10-25T13:22:28.207494+00:00",
+          "expected": 8,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 8,
+          "db_distinct_at_cut": 8,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "compatible-upgrade-rotation-truncation",
+          "cut_utc": "2026-10-25T13:22:57.088007+00:00",
+          "expected": 28,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "interrupted-default-upgrade",
+          "cut_utc": "2026-10-25T13:22:58.197192+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "default-protobuf-after-restart",
+          "cut_utc": "2026-10-25T13:24:04.079986+00:00",
+          "expected": 44,
+          "api_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_missing_ids": [
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031",
+            "event-0032",
+            "event-0033",
+            "event-0034",
+            "event-0035",
+            "event-0036",
+            "event-0037",
+            "event-0038",
+            "event-0039",
+            "event-0040",
+            "event-0041",
+            "event-0042",
+            "event-0043"
+          ],
+          "db_rows_at_cut": 28,
+          "db_distinct_at_cut": 28,
+          "db_duplicates_at_cut": 0,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "legacy-recovery-replay",
+          "cut_utc": "2026-10-25T13:24:10.298839+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        },
+        {
+          "phase": "final",
+          "cut_utc": "2026-10-25T13:24:30.430852+00:00",
+          "expected": 44,
+          "api_missing_ids": [],
+          "db_missing_ids": [],
+          "db_rows_at_cut": 100,
+          "db_distinct_at_cut": 44,
+          "db_duplicates_at_cut": 56,
+          "api_db_missing_ids_agree": true
+        }
+      ]
+    },
+    {
+      "file": "lab-attempt-4/runtime.log",
+      "lines": 249,
+      "signals": [
+        "2026-10-25T13:22:33.521Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"8b7b6de8-215e-472e-b87d-718c92f0ada5\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:22:40.231Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"6593e7fb-9276-470e-b1f3-bd8c44eda797\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:22:40.232Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"6593e7fb-9276-470e-b1f3-bd8c44eda797\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:22:46.933Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"9aeea9f4-dd57-4c85-9b55-cb59e9a2c8dc\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 2, \"writeIndex\": 2, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:22:46.934Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"9aeea9f4-dd57-4c85-9b55-cb59e9a2c8dc\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:22:57.173Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"fcfa3230-c273-4b41-b114-2f1d0c3d8a2f\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:22:57.173Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"fcfa3230-c273-4b41-b114-2f1d0c3d8a2f\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:22:58.281Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"6227dd19-af9f-4aee-9fd2-9282737cb839\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:22:58.282Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"6227dd19-af9f-4aee-9fd2-9282737cb839\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:24:04.248Z\tinfo\tqueue/persistent_queue.go:186\tLoaded queue metadata\t{\"resource\": {\"service.instance.id\": \"e08c2577-7147-4b61-b665-0599d0d21401\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"otlphttp/opscontrol\", \"otelcol.component.kind\": \"exporter\", \"otelcol.signal\": \"logs\", \"readIndex\": 4, \"writeIndex\": 4, \"itemsSize\": 0, \"bytesSize\": 0, \"dispatchedItems\": 0}",
+        "2026-10-25T13:24:04.248Z\tinfo\tfileconsumer/file.go:77\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"resource\": {\"service.instance.id\": \"e08c2577-7147-4b61-b665-0599d0d21401\", \"service.name\": \"otelcol-contrib\", \"service.version\": \"0.163.2\"}, \"otelcol.component.id\": \"filelog/b10599774c4d4ff8993da5f6625d85ad_2140d08644768f3a\", \"otelcol.component.kind\": \"receiver\", \"otelcol.signal\": \"logs\", \"component\": \"fileconsumer\"}",
+        "2026-10-25T13:24:05.147Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:24:10.357Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:24:17.070Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}",
+        "2026-10-25T13:24:23.782Z\tinfo\tfileconsumer/file.go:62\tResuming from previously known offset(s). 'start_at' setting is not applicable.\t{\"component\": \"fileconsumer\"}"
+      ]
+    },
+    {
+      "file": "operator-help.log",
+      "lines": 13,
+      "signals": []
+    },
+    {
+      "file": "test-matrix.json",
+      "data": {
+        "overall_native_acceptance": "FAIL"
+      }
+    },
+    {
+      "file": "unit-final.log",
+      "lines": 22,
+      "signals": []
+    },
+    {
+      "file": "unit-initial.log",
+      "lines": 15,
+      "signals": []
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+# HELP otelcol_exporter_queue_capacity Fixed capacity of the retry queue (in batches) [alpha]
+# TYPE otelcol_exporter_queue_capacity gauge
+otelcol_exporter_queue_capacity{data_type="logs",exporter="otlphttp/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 256
+# HELP otelcol_exporter_queue_size Current size of the retry queue (in batches) [alpha]
+# TYPE otelcol_exporter_queue_size gauge
+otelcol_exporter_queue_size{data_type="logs",exporter="otlphttp/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 0
+# HELP otelcol_exporter_send_failed_log_records Number of log records in failed attempts to send to destination. [alpha]
+# TYPE otelcol_exporter_send_failed_log_records counter
+otelcol_exporter_send_failed_log_records{exporter="otlphttp/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 0
+# HELP otelcol_exporter_sent_log_records Number of log record successfully sent to destination. [alpha]
+# TYPE otelcol_exporter_sent_log_records counter
+otelcol_exporter_sent_log_records{exporter="otlphttp/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+# HELP otelcol_fileconsumer_open_files Number of open files
+# TYPE otelcol_fileconsumer_open_files gauge
+otelcol_fileconsumer_open_files{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 1
+# HELP otelcol_fileconsumer_reading_files Number of open files that are being read
+# TYPE otelcol_fileconsumer_reading_files gauge
+otelcol_fileconsumer_reading_files{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 0
+# HELP otelcol_process_cpu_seconds Total CPU user and system time in seconds [alpha]
+# TYPE otelcol_process_cpu_seconds counter
+otelcol_process_cpu_seconds{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 0.1
+# HELP otelcol_process_memory_rss Total physical memory (resident set size) [alpha]
+# TYPE otelcol_process_memory_rss gauge
+otelcol_process_memory_rss{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 1.96808704e+08
+# HELP otelcol_process_runtime_heap_alloc_bytes Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [alpha]
+# TYPE otelcol_process_runtime_heap_alloc_bytes gauge
+otelcol_process_runtime_heap_alloc_bytes{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4.1594408e+07
+# HELP otelcol_process_runtime_total_alloc_bytes Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [alpha]
+# TYPE otelcol_process_runtime_total_alloc_bytes counter
+otelcol_process_runtime_total_alloc_bytes{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 5.8171472e+07
+# HELP otelcol_process_runtime_total_sys_memory_bytes Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [alpha]
+# TYPE otelcol_process_runtime_total_sys_memory_bytes gauge
+otelcol_process_runtime_total_sys_memory_bytes{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 6.1691144e+07
+# HELP otelcol_process_uptime Uptime of the process [alpha]
+# TYPE otelcol_process_uptime counter
+otelcol_process_uptime{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 0.392913664
+# HELP otelcol_processor_accepted_log_records Number of log records successfully pushed into the next component in the pipeline. [deprecated since v0.110.0]
+# TYPE otelcol_processor_accepted_log_records counter
+otelcol_processor_accepted_log_records{processor="memory_limiter",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+# HELP otelcol_processor_incoming_items Number of items passed to the processor. [alpha]
+# TYPE otelcol_processor_incoming_items counter
+otelcol_processor_incoming_items{otel_signal="logs",processor="memory_limiter",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+otelcol_processor_incoming_items{otel_signal="logs",processor="resource/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+# HELP otelcol_processor_outgoing_items Number of items emitted from the processor. [alpha]
+# TYPE otelcol_processor_outgoing_items counter
+otelcol_processor_outgoing_items{otel_signal="logs",processor="memory_limiter",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+otelcol_processor_outgoing_items{otel_signal="logs",processor="resource/opscontrol",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 4
+# HELP otelcol_receiver_accepted_log_records Number of log records successfully pushed into the pipeline. [alpha]
+# TYPE otelcol_receiver_accepted_log_records counter
+otelcol_receiver_accepted_log_records{receiver="filelog/bcef537ece1148e38e967e4bfa383b09_700bddceffd69782",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0",transport=""} 4
+# HELP otelcol_receiver_refused_log_records Number of log records that could not be pushed into the pipeline. [alpha]
+# TYPE otelcol_receiver_refused_log_records counter
+otelcol_receiver_refused_log_records{receiver="filelog/bcef537ece1148e38e967e4bfa383b09_700bddceffd69782",service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0",transport=""} 0
+# HELP promhttp_metric_handler_errors_total Total number of internal errors encountered by the promhttp metric handler.
+# TYPE promhttp_metric_handler_errors_total counter
+promhttp_metric_handler_errors_total{cause="encoding"} 0
+promhttp_metric_handler_errors_total{cause="gathering"} 0
+# HELP target_info Target metadata
+# TYPE target_info gauge
+target_info{service_instance_id="c4dffbb9-27ec-430c-a5bf-36a085d25c34",service_name="otelcol-contrib",service_version="0.123.0"} 1

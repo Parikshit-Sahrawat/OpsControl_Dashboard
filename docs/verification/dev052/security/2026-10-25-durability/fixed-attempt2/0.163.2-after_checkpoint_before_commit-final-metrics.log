@@ -1,0 +1,43 @@
+# HELP otelcol_exporter_in_flight_requests Number of export requests currently in-flight (including retry backoff). [Development]
+# TYPE otelcol_exporter_in_flight_requests gauge
+otelcol_exporter_in_flight_requests{data_type="logs",exporter="otlphttp/opscontrol"} 0
+# HELP otelcol_exporter_queue_capacity Fixed capacity of the retry queue (in batches). [Alpha]
+# TYPE otelcol_exporter_queue_capacity gauge
+otelcol_exporter_queue_capacity{data_type="logs",exporter="otlphttp/opscontrol"} 256
+# HELP otelcol_exporter_queue_size Current size of the retry queue (in batches). [Alpha]
+# TYPE otelcol_exporter_queue_size gauge
+otelcol_exporter_queue_size{data_type="logs",exporter="otlphttp/opscontrol"} 0
+# HELP otelcol_exporter_sent_log_records Number of log record successfully sent to destination. [Alpha]
+# TYPE otelcol_exporter_sent_log_records counter
+otelcol_exporter_sent_log_records{exporter="otlphttp/opscontrol",server_address="172.18.0.1",server_port="42579",url_path="/api/v1/agent/otlp/v1/logs"} 4
+# HELP otelcol_fileconsumer_open_files Number of open files [Development]
+# TYPE otelcol_fileconsumer_open_files gauge
+otelcol_fileconsumer_open_files 1
+# HELP otelcol_fileconsumer_reading_files Number of open files that are being read [Development]
+# TYPE otelcol_fileconsumer_reading_files gauge
+otelcol_fileconsumer_reading_files 0
+# HELP otelcol_process_cpu_seconds Total CPU user and system time in seconds [Alpha]
+# TYPE otelcol_process_cpu_seconds counter
+otelcol_process_cpu_seconds 0.13
+# HELP otelcol_process_memory_rss Total physical memory (resident set size) [Alpha]
+# TYPE otelcol_process_memory_rss gauge
+otelcol_process_memory_rss 2.1673984e+08
+# HELP otelcol_process_runtime_heap_alloc_bytes Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
+# TYPE otelcol_process_runtime_heap_alloc_bytes gauge
+otelcol_process_runtime_heap_alloc_bytes 3.2212328e+07
+# HELP otelcol_process_runtime_total_alloc_bytes Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [Alpha]
+# TYPE otelcol_process_runtime_total_alloc_bytes counter
+otelcol_process_runtime_total_alloc_bytes 4.6908056e+07
+# HELP otelcol_process_runtime_total_sys_memory_bytes Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
+# TYPE otelcol_process_runtime_total_sys_memory_bytes gauge
+otelcol_process_runtime_total_sys_memory_bytes 4.4669192e+07
+# HELP otelcol_process_uptime Uptime of the process [Alpha]
+# TYPE otelcol_process_uptime counter
+otelcol_process_uptime 0.335023599
+# HELP promhttp_metric_handler_errors_total Total number of internal errors encountered by the promhttp metric handler.
+# TYPE promhttp_metric_handler_errors_total counter
+promhttp_metric_handler_errors_total{cause="encoding"} 0
+promhttp_metric_handler_errors_total{cause="gathering"} 0
+# HELP target_info Target metadata
+# TYPE target_info gauge
+target_info{service_instance_id="d33e7d89-a9bc-40e3-8b00-60fa8c2d2ea5",service_name="otelcol-contrib",service_version="0.163.2"} 1

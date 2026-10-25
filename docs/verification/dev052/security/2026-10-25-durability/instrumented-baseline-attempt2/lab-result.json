@@ -1,0 +1,646 @@
+{
+  "status": "FAIL",
+  "scope": "owned disposable fixture, not provider certification",
+  "api_dependencies": "existing local backend/.venv; not a release image",
+  "runner_fixture_image": "sha256:f4b7b8044a873fcc0f348549a19b9075cd77bd56ead7177192cfec38d85bce4a",
+  "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "source": {
+    "source_commit": "76a97e3fcf6709533151fffb36b16138e4475aba",
+    "source_archive_sha256": "9c2ff7279cf6b7225004f3df145cc7b6a8be73584b9e6ef671ecfe8b0ad7f0cf",
+    "production_guard_modified": false,
+    "scope": "CHK001 baseline unchanged direct-runtime reproduction",
+    "durability_suite": "baseline",
+    "durability_versions": [
+      "0.163.2",
+      "0.123.0"
+    ]
+  },
+  "constraints": {
+    "ReadonlyRootfs": true,
+    "Memory": 536870912,
+    "NanoCpus": 1000000000,
+    "PidsLimit": 128,
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges:true"
+    ]
+  },
+  "fixture_exit_code": 1,
+  "e2e": {
+    "status": "FAIL",
+    "cases": [
+      {
+        "name": "0.163.2-batch_checkpoint_gap",
+        "scenario": "batch_checkpoint_gap",
+        "runtime": "0.163.2",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009",
+          "event-0010",
+          "event-0011",
+          "event-0012",
+          "event-0013",
+          "event-0014",
+          "event-0015"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792937881844381583,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792937881845016040,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 7
+          },
+          {
+            "time_ns": 1792937882295875414,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0000",
+              "event-0001",
+              "event-0002",
+              "event-0003",
+              "event-0004",
+              "event-0005",
+              "event-0006",
+              "event-0007",
+              "event-0008",
+              "event-0009",
+              "event-0010",
+              "event-0011",
+              "event-0012",
+              "event-0013",
+              "event-0014",
+              "event-0015"
+            ],
+            "bytes": 20624,
+            "sha256": "ce03d5bd25d9352fc262326165c1617552420e16bd73e4d6e4d96a5286f024b8"
+          },
+          {
+            "time_ns": 1792937882327165281,
+            "stage": "snapshot",
+            "label": "batch-window"
+          },
+          {
+            "time_ns": 1792937882358143008,
+            "stage": "snapshot",
+            "label": "batch-window"
+          },
+          {
+            "time_ns": 1792937882389309068,
+            "stage": "snapshot",
+            "label": "batch-window"
+          },
+          {
+            "time_ns": 1792937882391914267,
+            "stage": "SIGKILL",
+            "pid": 7
+          },
+          {
+            "time_ns": 1792937882424053897,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 16
+          },
+          {
+            "time_ns": 1792937890884310119,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792937890884392723,
+            "stage": "SIGTERM",
+            "pid": 16
+          },
+          {
+            "time_ns": 1792937890892175515,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792937882327150769,
+            "label": "batch-window",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 0,
+                      "write_index": 0,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "258114f345043ccc098dffbeb6c1230b56c443306095c58313fadb5939b26e98",
+                "committed_txid": 4,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": []
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792937882358129688,
+            "label": "batch-window",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 0,
+                      "write_index": 0,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "258114f345043ccc098dffbeb6c1230b56c443306095c58313fadb5939b26e98",
+                "committed_txid": 4,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": []
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792937882389294466,
+            "label": "batch-window",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 0,
+                      "write_index": 0,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "3e63a3d4a2b3c8f43647a3dbde183ca1f9acddbc2ef6517bfcc22c7bc20479c0",
+                "committed_txid": 5,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1101,
+                    "sha256": "5592909859199a4516f86522d28c78002ce7e0f28cd14d6e6cd17065b72bf295",
+                    "event_ids": [
+                      "event-0000"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 20624,
+                        "record_num": 16
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792937890884292232,
+            "label": "final",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "c6735ef44ac2830e42c8f90a19c79467991d917bfaf1325527f1d083371c87cb",
+                "committed_txid": 13,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 0,
+                      "write_index": 0,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "cc6cde3826ebed5554d19c09f215b28acd9e158c6f73d89ca858eabae48f8654",
+                "committed_txid": 48,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1101,
+                    "sha256": "5592909859199a4516f86522d28c78002ce7e0f28cd14d6e6cd17065b72bf295",
+                    "event_ids": [
+                      "event-0000"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 20624,
+                        "record_num": 16
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "9063fecdac40d7befc201154687ed4004a5de06493656dd2d5f1515388478c79",
+        "confirmed_window": "checkpoint EOF; queue has no IDs; API received none; before 5s batch flush",
+        "accepted_attempt_counts": {
+          "event-0000": 0,
+          "event-0001": 0,
+          "event-0002": 0,
+          "event-0003": 0,
+          "event-0004": 0,
+          "event-0005": 0,
+          "event-0006": 0,
+          "event-0007": 0,
+          "event-0008": 0,
+          "event-0009": 0,
+          "event-0010": 0,
+          "event-0011": 0,
+          "event-0012": 0,
+          "event-0013": 0,
+          "event-0014": 0,
+          "event-0015": 0
+        },
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009",
+          "event-0010",
+          "event-0011",
+          "event-0012",
+          "event-0013",
+          "event-0014",
+          "event-0015"
+        ],
+        "detected_loss": true
+      },
+      {
+        "name": "0.123.0-batch_checkpoint_gap",
+        "scenario": "batch_checkpoint_gap",
+        "runtime": "0.123.0",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0016",
+          "event-0017",
+          "event-0018",
+          "event-0019",
+          "event-0020",
+          "event-0021",
+          "event-0022",
+          "event-0023",
+          "event-0024",
+          "event-0025",
+          "event-0026",
+          "event-0027",
+          "event-0028",
+          "event-0029",
+          "event-0030",
+          "event-0031"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792937890894014177,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792937890896239391,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 24
+          },
+          {
+            "time_ns": 1792937891347118371,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0016",
+              "event-0017",
+              "event-0018",
+              "event-0019",
+              "event-0020",
+              "event-0021",
+              "event-0022",
+              "event-0023",
+              "event-0024",
+              "event-0025",
+              "event-0026",
+              "event-0027",
+              "event-0028",
+              "event-0029",
+              "event-0030",
+              "event-0031"
+            ],
+            "bytes": 20624,
+            "sha256": "28055fbefdefcec796d38cf26a87451da9001a6a6d9e24f35646d17bd0a48b82"
+          },
+          {
+            "time_ns": 1792937891347728020,
+            "stage": "snapshot",
+            "label": "batch-window"
+          },
+          {
+            "time_ns": 1792937891378612415,
+            "stage": "snapshot",
+            "label": "batch-window"
+          },
+          {
+            "time_ns": 1792937891380478048,
+            "stage": "SIGKILL",
+            "pid": 24
+          },
+          {
+            "time_ns": 1792937891388293544,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 35
+          },
+          {
+            "time_ns": 1792937899844494069,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792937899844566568,
+            "stage": "SIGTERM",
+            "pid": 35
+          },
+          {
+            "time_ns": 1792937899852307941,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792937891347716814,
+            "label": "batch-window",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+                "committed_txid": 4,
+                "entries": []
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "0b1c820864e2db1fe3beeeb60af13eba786fe079eb6939da3e9c48a1b2525b5d",
+                "committed_txid": 4,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 2,
+                    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+                    "event_ids": [],
+                    "json": 0
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792937891378600066,
+            "label": "batch-window",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+                "committed_txid": 4,
+                "entries": []
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "468f9accb2dc0a57dbc3dde2b4b4e950ed530da760169644f2fb414435f6819f",
+                "committed_txid": 5,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1634,
+                    "sha256": "cd90e777942553b10bcb960adb12de65285709343b4969dd4ad6a0681deed5f2",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDE2IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbg=="
+                        },
+                        "Offset": 20624,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T14:18:11.358310609Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792937899844480819,
+            "label": "final",
+            "source_bytes": 20624,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "56d05da3a1ce66d479c4d1df5494d679a7f36c60fff1c3197d1a82c628cbf846",
+                "committed_txid": 7,
+                "entries": []
+              },
+              "receiver_filelog_c6424baf140a446cad307f7d2908face_700bddceffd69782": {
+                "file_sha256": "daf7a5d4490c36b1aed547974b7513ca1c665a15218efa25e5d5356e9d2f3837",
+                "committed_txid": 48,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1634,
+                    "sha256": "cd90e777942553b10bcb960adb12de65285709343b4969dd4ad6a0681deed5f2",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDE2IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbnQtMDAxNmV2ZW50LTAwMTZldmVudC0wMDE2ZXZlbg=="
+                        },
+                        "Offset": 20624,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T14:18:11.358310609Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "9063fecdac40d7befc201154687ed4004a5de06493656dd2d5f1515388478c79",
+        "confirmed_window": "checkpoint EOF; queue has no IDs; API received none; before 5s batch flush",
+        "accepted_attempt_counts": {
+          "event-0016": 0,
+          "event-0017": 0,
+          "event-0018": 0,
+          "event-0019": 0,
+          "event-0020": 0,
+          "event-0021": 0,
+          "event-0022": 0,
+          "event-0023": 0,
+          "event-0024": 0,
+          "event-0025": 0,
+          "event-0026": 0,
+          "event-0027": 0,
+          "event-0028": 0,
+          "event-0029": 0,
+          "event-0030": 0,
+          "event-0031": 0
+        },
+        "missing_ids": [
+          "event-0016",
+          "event-0017",
+          "event-0018",
+          "event-0019",
+          "event-0020",
+          "event-0021",
+          "event-0022",
+          "event-0023",
+          "event-0024",
+          "event-0025",
+          "event-0026",
+          "event-0027",
+          "event-0028",
+          "event-0029",
+          "event-0030",
+          "event-0031"
+        ],
+        "detected_loss": true
+      }
+    ],
+    "scope": "finite synthetic filelog delivery; SIGKILL, not power failure; no exactly-once guarantee",
+    "collector_id": "9ccd8234-9c22-46dd-ad5f-039f37043da9",
+    "agent_id": "f9bfce2b-dcd6-40fa-974d-c30a5470926e",
+    "method_id": "c6424baf-140a-446c-ad30-7f7d2908face",
+    "generated_sha256": "9063fecdac40d7befc201154687ed4004a5de06493656dd2d5f1515388478c79"
+  },
+  "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS",
+  "cleanup": {
+    "status": "PASS",
+    "errors": [],
+    "owned_containers": [
+      "dev052a3c-f62e4ba3-pg",
+      "dev052a3c-f62e4ba3-denied-target",
+      "dev052a3c-f62e4ba3-agent"
+    ],
+    "owned_networks": [
+      "dev052a3c-f62e4ba3",
+      "dev052a3c-f62e4ba3-denied"
+    ],
+    "private_credentials_tls_and_database_volume_removed": true,
+    "broad_cleanup": false
+  }
+}

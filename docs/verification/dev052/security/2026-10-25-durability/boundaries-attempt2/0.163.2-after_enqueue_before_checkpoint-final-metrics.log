@@ -1,0 +1,63 @@
+# HELP otelcol_exporter_in_flight_requests Number of export requests currently in-flight (including retry backoff). [Development]
+# TYPE otelcol_exporter_in_flight_requests gauge
+otelcol_exporter_in_flight_requests{data_type="logs",exporter="otlphttp/opscontrol"} 0
+# HELP otelcol_exporter_queue_capacity Fixed capacity of the retry queue (in batches). [Alpha]
+# TYPE otelcol_exporter_queue_capacity gauge
+otelcol_exporter_queue_capacity{data_type="logs",exporter="otlphttp/opscontrol"} 256
+# HELP otelcol_exporter_queue_size Current size of the retry queue (in batches). [Alpha]
+# TYPE otelcol_exporter_queue_size gauge
+otelcol_exporter_queue_size{data_type="logs",exporter="otlphttp/opscontrol"} 0
+# HELP otelcol_exporter_sent_log_records Number of log record successfully sent to destination. [Alpha]
+# TYPE otelcol_exporter_sent_log_records counter
+otelcol_exporter_sent_log_records{exporter="otlphttp/opscontrol",server_address="172.18.0.1",server_port="44897",url_path="/api/v1/agent/otlp/v1/logs"} 8
+# HELP otelcol_fileconsumer_open_files Number of open files [Development]
+# TYPE otelcol_fileconsumer_open_files gauge
+otelcol_fileconsumer_open_files 1
+# HELP otelcol_fileconsumer_reading_files Number of open files that are being read [Development]
+# TYPE otelcol_fileconsumer_reading_files gauge
+otelcol_fileconsumer_reading_files 0
+# HELP otelcol_process_cpu_seconds Total CPU user and system time in seconds [Alpha]
+# TYPE otelcol_process_cpu_seconds counter
+otelcol_process_cpu_seconds 0.15
+# HELP otelcol_process_memory_rss Total physical memory (resident set size) [Alpha]
+# TYPE otelcol_process_memory_rss gauge
+otelcol_process_memory_rss 2.20393472e+08
+# HELP otelcol_process_runtime_heap_alloc_bytes Bytes of allocated heap objects (see 'go doc runtime.MemStats.HeapAlloc') [Alpha]
+# TYPE otelcol_process_runtime_heap_alloc_bytes gauge
+otelcol_process_runtime_heap_alloc_bytes 4.867596e+07
+# HELP otelcol_process_runtime_total_alloc_bytes Cumulative bytes allocated for heap objects (see 'go doc runtime.MemStats.TotalAlloc') [Alpha]
+# TYPE otelcol_process_runtime_total_alloc_bytes counter
+otelcol_process_runtime_total_alloc_bytes 7.0745912e+07
+# HELP otelcol_process_runtime_total_sys_memory_bytes Total bytes of memory obtained from the OS (see 'go doc runtime.MemStats.Sys') [Alpha]
+# TYPE otelcol_process_runtime_total_sys_memory_bytes gauge
+otelcol_process_runtime_total_sys_memory_bytes 7.4164504e+07
+# HELP otelcol_process_uptime Uptime of the process [Alpha]
+# TYPE otelcol_process_uptime counter
+otelcol_process_uptime 0.359209384
+# HELP otelcol_processor_incoming_items Number of items passed to the processor. [Alpha]
+# TYPE otelcol_processor_incoming_items counter
+otelcol_processor_incoming_items{otel_signal="logs",processor="memory_limiter"} 4
+otelcol_processor_incoming_items{otel_signal="logs",processor="resource/opscontrol"} 4
+# HELP otelcol_processor_memory_limiter_accepted_log_records Number of log records successfully pushed into the next component in the pipeline. [Alpha]
+# TYPE otelcol_processor_memory_limiter_accepted_log_records counter
+otelcol_processor_memory_limiter_accepted_log_records{processor="memory_limiter"} 4
+# HELP otelcol_processor_outgoing_items Number of items emitted from the processor. [Alpha]
+# TYPE otelcol_processor_outgoing_items counter
+otelcol_processor_outgoing_items{otel_signal="logs",processor="memory_limiter"} 4
+otelcol_processor_outgoing_items{otel_signal="logs",processor="resource/opscontrol"} 4
+# HELP otelcol_receiver_accepted_log_records Number of log records successfully pushed into the pipeline. [Alpha]
+# TYPE otelcol_receiver_accepted_log_records counter
+otelcol_receiver_accepted_log_records{receiver="filelog/0e58e35b86e34552a8bdab6248994249_700bddceffd69782",transport=""} 4
+# HELP otelcol_receiver_failed_log_records The number of log records that failed to be processed by the receiver due to internal errors. [Alpha]
+# TYPE otelcol_receiver_failed_log_records counter
+otelcol_receiver_failed_log_records{receiver="filelog/0e58e35b86e34552a8bdab6248994249_700bddceffd69782",transport=""} 0
+# HELP otelcol_receiver_refused_log_records Number of log records that could not be pushed into the pipeline. [Alpha]
+# TYPE otelcol_receiver_refused_log_records counter
+otelcol_receiver_refused_log_records{receiver="filelog/0e58e35b86e34552a8bdab6248994249_700bddceffd69782",transport=""} 0
+# HELP promhttp_metric_handler_errors_total Total number of internal errors encountered by the promhttp metric handler.
+# TYPE promhttp_metric_handler_errors_total counter
+promhttp_metric_handler_errors_total{cause="encoding"} 0
+promhttp_metric_handler_errors_total{cause="gathering"} 0
+# HELP target_info Target metadata
+# TYPE target_info gauge
+target_info{service_instance_id="07edf267-338d-46bd-a52b-26be9595a411",service_name="otelcol-contrib",service_version="0.163.2"} 1
