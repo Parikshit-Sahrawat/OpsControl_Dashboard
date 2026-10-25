@@ -1,0 +1,80 @@
+{
+  "decision": "NO-GO",
+  "scope": "owner-approved production candidate set, not a claim about unknown live deployments",
+  "roles": [
+    {
+      "role": "backend-runtime",
+      "candidate_id": "sha256:7920f97d3bd59c07173c499023b1f8de18ffb10621db54d4b24d71dff13c349a",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "source_commit": "9a9ef36398a816826f38840e8ef5832336bc09e9",
+      "status": "ELIGIBLE_CANDIDATE_NOT_RELEASE_APPROVED",
+      "approved_release_registry_digest": null
+    },
+    {
+      "role": "migration",
+      "candidate_id": "sha256:3177a6b7b4f3f9e33bd3bd4d3dce32efd200b9768ed48ea15eb9ef0a6985af15",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "source_commit": "9a9ef36398a816826f38840e8ef5832336bc09e9",
+      "status": "ELIGIBLE_CANDIDATE_NOT_RELEASE_APPROVED",
+      "approved_release_registry_digest": null
+    },
+    {
+      "role": "postgres-alpine",
+      "candidate_id": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "repoDigests": [
+        "postgres@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb"
+      ],
+      "architecture": "amd64",
+      "source_commit": null,
+      "status": "ELIGIBLE_CANDIDATE_NOT_RELEASE_APPROVED",
+      "approved_release_registry_digest": null
+    },
+    {
+      "role": "contrib",
+      "candidate_id": "sha256:a64fa52ad3b55378bb62d8642439aaf0ec3abf45a8ddc1ac02bac31eea7a6565",
+      "repoDigests": [
+        "otel/opentelemetry-collector-contrib@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849"
+      ],
+      "architecture": "amd64",
+      "source_commit": null,
+      "status": "EVALUATION_ONLY_VERSION_CONTRACT_BLOCKED",
+      "approved_release_registry_digest": null
+    },
+    {
+      "role": "frontend",
+      "candidate_id": "sha256:fb9acf2bc1639c247cab2e3a802b69daac3c8d0e9dcbefbd5763ca147f32fd5f",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "status": "ELIGIBLE_CANDIDATE_NOT_RELEASE_APPROVED",
+      "approved_release_registry_digest": null
+    },
+    {
+      "role": "gateway",
+      "candidate_id": "sha256:df6f3e96d19c6bcdf3ac9518a4fc7318ee79c68f373ce79b41c1d14c7bb819c6",
+      "repoDigests": [],
+      "architecture": "amd64",
+      "source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "status": "ELIGIBLE_CANDIDATE_NOT_RELEASE_APPROVED",
+      "approved_release_registry_digest": null
+    }
+  ],
+  "exclusions": {
+    "backend/Dockerfile.demo": "automatic schema bootstrap/seeding, bundled legacy collector and root execution are demo-only",
+    "backend/Dockerfile.uat": "UAT-owned API/worker/migration is excluded; production maintenance target now separately built without pip",
+    "frontend/Dockerfile.demo": "demo-only build path replaced by frontend/Dockerfile.runtime; its image is not promoted",
+    "docker-compose.demo.yml": "demo orchestration and credentials, never a production deployment template",
+    "docker-compose.yml": "local development database; cannot infer actual production image from it",
+    "verification/dev05 and deploy/fixtures": "synthetic verification fixtures and browser/build tools, not production",
+    "Debian postgres/ECR variants": "declared local/demo reference only; no waiver of an unknown existing deployment"
+  },
+  "identity_gaps": [
+    "No owner-approved registry publication or final release manifest digests; local config IDs are not OCI registry manifest digests",
+    "Production data migration/locale/restore approval needed before selecting Alpine PostgreSQL for an existing datastore",
+    "Frontend endpoint and matching CSP/operator TLS ingress configuration need approved final values; build uses reserved example.invalid, never a customer endpoint",
+    "Collector 0.163.2 is evaluation-only: schema validation succeeds but runtime version contract remains 0.123.0, not changed",
+    "Production runtime permissions/capabilities, real provider, DR and license signoff remain separate gates"
+  ]
+}

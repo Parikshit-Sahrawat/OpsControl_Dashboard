@@ -1,0 +1,71 @@
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/monitoring_settings.test.mjs
+
+✔ owned browser clients explicitly select a UUID snapshot and empty stays empty (1.052858ms)
+✔ failed customer lookup cannot fall back to unrestricted operational requests (1.510488ms)
+✔ authorized active collector restores all editable settings and pinned selections without copying credentials (3.115307ms)
+✔ legacy default GET settings remain explicit and optional assertions empty (0.195655ms)
+✔ NOT_CONFIGURED does not fetch or restore a historical collector (0.194333ms)
+✔ DISABLED does not fetch or restore a historical collector (0.075624ms)
+✔ disabled collector resets controls; a collector belonging to another source fails closed (1.081901ms)
+✔ out-of-order source fetch cannot replace the selected source or organization (0.303587ms)
+✔ pending hydration preserves actual user edits and invalidates an in-flight preview (5.674136ms)
+✔ source switch cancels a real pending settings read and no stale state or error is applied (0.627015ms)
+✔ permission failures propagate instead of silently exposing an editable default configuration (0.496318ms)
+✔ saved selections are applied before controls become ready (0.803992ms)
+✔ approved child hashes open only existing authorized sections (2.452268ms)
+✔ organizational access is an access view, never a customer grant (0.197828ms)
+✔ configuration sections have stable guarded routes (0.176556ms)
+Pagination traversal, duplicate, mutation, incomplete and scope-change regressions passed
+✔ scripts/pagination.test.mjs (37.757187ms)
+✔ navigation and customer actions default deny (1.900225ms)
+✔ administrative pages use independent filters (0.161373ms)
+✔ revocation replaces UI affordances; platform capability is explicit (0.110787ms)
+✔ malformed cached customer preferences cannot corrupt selector state (0.84247ms)
+✔ retired navigation cannot be enabled by cached permissions (0.162865ms)
+✔ native incident visibility requires its backend permission (0.120812ms)
+✔ six pages and seven existing incident states (0.951775ms)
+✔ pending retry remains nonterminal despite failed attempt (0.129525ms)
+✔ scheduler or process success cannot imply verified native success (0.118869ms)
+✔ scheduler retry and manual recovery preserve original failure (0.084658ms)
+✔ explicit customer scope never expands to ALL (0.258019ms)
+✔ old success or failure is invalidated on customer switch (0.187743ms)
+✔ native workload classifications remain distinct (0.15925ms)
+✔ persisted schedule authority and incomplete coverage stay explicit (0.146991ms)
+✔ review actions require category and verified completion (1.012747ms)
+✔ independent recovery confirmation and confirmed-only reversal (0.175534ms)
+✔ timestamps use explicit UTC (0.392431ms)
+✔ capabilities follow bound methods only (0.262817ms)
+✔ revision and authorization errors are explicit (0.263247ms)
+✔ resource restriction affordances do not become grants (0.813677ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 147.565067
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------------
+ℹ file                    | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------------
+ℹ scripts                 |        |          |         | 
+ℹ  explicit_scope.mjs     | 100.00 |   100.00 |  100.00 | 
+ℹ src                     |        |          |         | 
+ℹ  monitoringSettings.js  | 100.00 |    92.11 |   92.31 | 
+ℹ  navigation.js          |  97.73 |    88.46 |  100.00 | 34
+ℹ  pagination.js          | 100.00 |   100.00 |  100.00 | 
+ℹ  permissions.js         | 100.00 |    93.33 |  100.00 | 
+ℹ  pipelines              |        |          |         | 
+ℹ   contracts.js          |  95.68 |    80.28 |   77.78 | 88 122-127 152
+ℹ ------------------------------------------------------------------------
+ℹ all files               |  97.71 |    88.66 |   87.93 | 
+ℹ ------------------------------------------------------------------------
+ℹ end of coverage report
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

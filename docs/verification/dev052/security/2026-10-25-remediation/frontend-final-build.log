@@ -1,0 +1,87 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.runtime
+#1 transferring dockerfile: 787B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 76B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+#5 DONE 0.0s
+
+#6 [stage-1 1/4] FROM docker.io/library/nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+#6 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 5.82kB done
+#7 DONE 0.0s
+
+#8 [build 2/6] WORKDIR /src
+#8 CACHED
+
+#9 [build 3/6] COPY package*.json ./
+#9 CACHED
+
+#10 [build 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --ignore-scripts --no-audit --no-fund
+#10 CACHED
+
+#11 [build 5/6] COPY . .
+#11 DONE 1.7s
+
+#12 [stage-1 2/4] RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache && apk del --no-network curl
+#12 3.166 (1/1) Upgrading brotli-libs (1.2.0-r1 -> 1.2.1-r0)
+#12 3.413 OK: 59.1 MiB in 71 packages
+#12 3.437 WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.24/main/x86_64/APKINDEX.tar.gz: No such file or directory
+#12 3.437 WARNING: opening from cache https://dl-cdn.alpinelinux.org/alpine/v3.24/community/x86_64/APKINDEX.tar.gz: No such file or directory
+#12 3.437 (1/7) Purging curl (8.22.0-r0)
+#12 3.437 (2/7) Purging libcurl (8.22.0-r0)
+#12 3.437 (3/7) Purging libpsl (0.21.5-r3)
+#12 3.437 (4/7) Purging nghttp2-libs (1.70.0-r0)
+#12 3.437 (5/7) Purging c-ares (1.34.9-r0)
+#12 3.437 (6/7) Purging libidn2 (2.3.8-r0)
+#12 3.437 (7/7) Purging libunistring (1.4.2-r0)
+#12 3.438 Executing busybox-1.37.0-r31.trigger
+#12 3.441 OK: 55.6 MiB in 64 packages
+#12 DONE 3.4s
+
+#13 [build 6/6] RUN npm run build
+#13 1.368 
+#13 1.368 > opscontrol-frontend@0.1.0 build
+#13 1.368 > vite build
+#13 1.368 
+#13 1.556 vite v7.3.7 building client environment for production...
+#13 1.615 transforming...
+#13 2.853 ✓ 83 modules transformed.
+#13 3.096 rendering chunks...
+#13 3.105 computing gzip size...
+#13 3.123 dist/index.html                   0.93 kB │ gzip:   0.51 kB
+#13 3.123 dist/assets/index-DLv8jrTq.css   82.95 kB │ gzip:  14.90 kB
+#13 3.123 dist/assets/index-DOv7xxH5.js   581.88 kB │ gzip: 160.82 kB
+#13 3.124 
+#13 3.124 (!) Some chunks are larger than 500 kB after minification. Consider:
+#13 3.124 - Using dynamic import() to code-split the application
+#13 3.124 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+#13 3.124 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+#13 3.124 ✓ built in 1.54s
+#13 DONE 3.2s
+
+#14 [stage-1 3/4] COPY --from=build /src/dist /usr/share/nginx/html
+#14 DONE 0.1s
+
+#15 [stage-1 4/4] COPY nginx.demo.conf /etc/nginx/conf.d/default.conf
+#15 DONE 0.2s
+
+#16 exporting to image
+#16 exporting layers
+#16 exporting layers 0.5s done
+#16 writing image sha256:fb9acf2bc1639c247cab2e3a802b69daac3c8d0e9dcbefbd5763ca147f32fd5f done
+#16 naming to docker.io/library/dev052a1-frontend done
+#16 DONE 0.5s

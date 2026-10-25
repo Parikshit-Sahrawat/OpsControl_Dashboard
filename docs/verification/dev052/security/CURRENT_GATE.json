@@ -1,0 +1,31 @@
+{
+  "phase": "DEV-05.2A.1",
+  "security_gate": "BLOCKED",
+  "release": "NO-GO",
+  "next_phase_authorized": false,
+  "evidence": "2026-10-25-remediation/REMEDIATION_DECISION.md",
+  "production_roles": [
+    "backend runtime API/worker",
+    "separate migration target",
+    "frontend",
+    "gateway",
+    "PostgreSQL Alpine candidate",
+    "collector evaluation only (not promoted)"
+  ],
+  "remaining_high": 110,
+  "remaining_critical": 0,
+  "collector_contract": "0.123.0 unchanged; 0.163.2 candidate rejected by guard",
+  "advisory_dispositions": {
+    "Black": {
+      "FIXED": 3,
+      "scope": "patched declared toolchain, owner signoff pending"
+    },
+    "pip": {
+      "UNRESOLVED": 6,
+      "scope": "runtime removal/build patch complete, effective bootstrap/test supply-chain review pending"
+    }
+  },
+  "license_gate": "BLOCKED",
+  "registry_release_identity_gate": "BLOCKED",
+  "exceptions": []
+}
