@@ -1,0 +1,157 @@
+{
+  "started_at": "2026-10-25T05:35:22.066732+00:00",
+  "baseline": "f617cc653a965c2ad1bb7edf9e20237e40044b97",
+  "project": "dev05-60c7da0501",
+  "checks": [
+    {
+      "name": "synthetic_seed_activation",
+      "status": "PASS",
+      "seconds": 4.61
+    },
+    {
+      "name": "organizations_sources_templates_collectors",
+      "status": "PASS",
+      "seconds": 2.72
+    },
+    {
+      "name": "live_linux_infrastructure_lifecycle",
+      "status": "PASS",
+      "seconds": 5.39
+    },
+    {
+      "name": "browser_activation_reload_saved_config",
+      "status": "PASS",
+      "seconds": 10.63
+    },
+    {
+      "name": "https_get_persisted_healthy",
+      "status": "PASS",
+      "seconds": 7.57
+    },
+    {
+      "name": "browser_diagnostics_healthy",
+      "status": "PASS",
+      "seconds": 12.97
+    },
+    {
+      "name": "https_get_persisted_failed",
+      "status": "PASS",
+      "seconds": 6.42
+    },
+    {
+      "name": "browser_diagnostics_failed",
+      "status": "PASS",
+      "seconds": 8.29
+    },
+    {
+      "name": "https_get_persisted_recovered",
+      "status": "PASS",
+      "seconds": 5.32
+    },
+    {
+      "name": "browser_diagnostics_recovered",
+      "status": "PASS",
+      "seconds": 9.53
+    },
+    {
+      "name": "tenant_isolation_audit_redaction",
+      "status": "PASS",
+      "seconds": 2.33
+    },
+    {
+      "name": "https_head_latency_persistence",
+      "status": "PASS",
+      "seconds": 2.16
+    },
+    {
+      "name": "https_head_worker_execution",
+      "status": "PASS",
+      "seconds": 0.63
+    },
+    {
+      "name": "https_head_evidence",
+      "status": "PASS",
+      "seconds": 1.89
+    },
+    {
+      "name": "browser_saved_api_settings",
+      "status": "FAIL",
+      "detail": "Command failed (1): docker compose -p dev05-60c7da0501 -f /tmp/opscontrol-dev05-iy7rrdrn/context/verification/dev05/compose.yml exec -T browser node /verification/settings.mjs",
+      "seconds": 7.87
+    },
+    {
+      "name": "worker_authorization_negatives",
+      "status": "PASS",
+      "seconds": 2.38
+    },
+    {
+      "name": "tls_egress_methods_headers_latency_negatives",
+      "status": "PASS",
+      "seconds": 0.73
+    },
+    {
+      "name": "scoped_existing_regressions",
+      "status": "PASS",
+      "seconds": 3.88
+    },
+    {
+      "name": "frontend_existing_tests_build",
+      "status": "PASS",
+      "seconds": 3.85
+    },
+    {
+      "name": "genuine_provider_runtime_certification",
+      "status": "BLOCKED",
+      "detail": "No genuine Pentaho, cloud, Kubernetes or customer targets/credentials authorized. Synthetic contracts only."
+    },
+    {
+      "name": "production_deployment",
+      "status": "NOT TESTED",
+      "detail": "Strictly prohibited."
+    },
+    {
+      "name": "raw_artifact_secret_scan",
+      "status": "PASS",
+      "files": []
+    },
+    {
+      "name": "project_scoped_cleanup",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Synthetic disposable Docker only; no production/provider certification",
+  "harness_parent_or_head": "f617cc653a965c2ad1bb7edf9e20237e40044b97",
+  "unrelated_before": {
+    "containers": [
+      "ef199ff7c61c"
+    ],
+    "networks": [
+      "56c97c8c87f5",
+      "5ca8b3b2c065",
+      "04610cde2d77"
+    ],
+    "volumes": []
+  },
+  "finished_at": "2026-10-25T05:37:46.562465+00:00",
+  "result": "FAIL",
+  "artifacts": {
+    "cleanup.json": "83ee22fe065f1d7d7b7a0aef03da38c0de54da28b9c043f231d4aea0d4254f86",
+    "images.json": "c930ed55ce8ea35368630971ddc60d9368e037514514d2cb3b8e1cd456e95391",
+    "report.json": "1abc43a6576777a22e2bfb869edf74ba8fd724b02b54d9c088934c3be030f69a",
+    "infrastructure.json": "0327deec218098e70a1e6343122b24ec98cbf524d2448ae4a6a779f4e2eb0c81",
+    "configured.png": "8aa7a42f78a389b08e99fc7408531bbaab16054d9a0bcdeab7a40b202b98a8a4",
+    "healthy.png": "c378df0e1136bfae57d11575e01fba32187680e831189a742260cf9e47a4c544",
+    "dashboard-healthy.png": "7d9f1dc08fe37f27475cafa2554612bc8f7d56a419e641cf5c1829a28c29ce06",
+    "failed.png": "c64b337c078acb4e4677eca9a984cf31fca5661a10f6224e44898243d5052508",
+    "dashboard-failed.png": "58e06b3d3e7c98f6341bd4beacaed567605732e54fc70317fb9431e011bdd0f8",
+    "recovered.png": "1e1452d6cd9ef42ba809c7a48201ae5c1497690ddd3d60ea44f6207d29853eac",
+    "other-tenant.png": "e0ed2b6a12b620f52dc5d43d383fe77e454add27254c26b13f17ea2df4910201",
+    "dashboard-recovered.png": "3ba5cf4c7014bd15e463fb4b1bbaa018c2dcd2b5a10e797f0b33377088938942",
+    "saved-api-settings.png": "4cb79a71ffac7da439f1c050f5d92a6db9a3386170376db07826f96ca500f824",
+    "saved-api-settings.json": "d4322adeb23f9a738b9094d6b6a5fe474036e26d96b4e58bfbc6039ceea58d62",
+    "worker-negatives.json": "c866deb4ef33fa7e2c5013802ca160c617ef73b453440cc4dd5816ca84b62eab",
+    "regressions.json": "68dbfa87e85f887ffca2dd42a923e292b317ee83e01c6fba04e239a6ec7399ea",
+    "service.log": "28f4a33855bc760a9452007f1539405af9bb9736a6150c556d1a94d04b14d6d6",
+    "commands.log": "a08b1a134c291bfd0cb1488234f48b31d85259dad16ac61128f890b18706c422"
+  }
+}

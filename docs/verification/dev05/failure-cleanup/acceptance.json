@@ -1,0 +1,53 @@
+{
+  "started_at": "2026-10-25T05:36:11.681043+00:00",
+  "baseline": "f617cc653a965c2ad1bb7edf9e20237e40044b97",
+  "project": "dev05-da4d877658",
+  "checks": [
+    {
+      "name": "harness_execution",
+      "status": "FAIL",
+      "detail": "Intentional failure to verify cleanup"
+    },
+    {
+      "name": "raw_artifact_secret_scan",
+      "status": "PASS",
+      "files": []
+    },
+    {
+      "name": "project_scoped_cleanup",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Synthetic disposable Docker only; no production/provider certification",
+  "harness_parent_or_head": "f617cc653a965c2ad1bb7edf9e20237e40044b97",
+  "unrelated_before": {
+    "containers": [
+      "b53c1338bd0c",
+      "a55019dfc166",
+      "e365928ee16d",
+      "e1ecd7abf58e",
+      "0131f43c4eec",
+      "6c91facaeec0",
+      "ef199ff7c61c"
+    ],
+    "networks": [
+      "56c97c8c87f5",
+      "3a83910a59b1",
+      "30c1944c827c",
+      "819698b03068",
+      "5ca8b3b2c065",
+      "04610cde2d77"
+    ],
+    "volumes": [
+      "dev05-60c7da0501_pgdata"
+    ]
+  },
+  "finished_at": "2026-10-25T05:37:08.651113+00:00",
+  "result": "FAIL",
+  "artifacts": {
+    "cleanup.json": "a560467ea52fbd632cb5a2c5fe6a22085614d5e428735f26913233d8adb7d6f2",
+    "images.json": "750eae594544439e840c57a139e83fb7c9e864821c5ce349234b169076f031c3",
+    "service.log": "ecb8547a98e42f046d3b84ee11b37e5fb80d462d9fe41f85b3de744e46ea2c91",
+    "commands.log": "5c609d56bd37e009dd01e90ba169ae6e4af28535d99c6250c8cdcff3079dac38"
+  }
+}
