@@ -62,7 +62,7 @@ def _rules(db,source,version_ids,include_templates):
         seen.add(key)
     return selected
 
-def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True):
+def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True,api_config=None):
     source=db.get(DataSource,source_id)
     if source is None: raise HTTPException(404,"Data source not found")
     if not source.enabled: raise HTTPException(409,"Data source disabled")
@@ -75,6 +75,12 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     if provider == 'AWS_EKS':
         raise HTTPException(422,'EKS inventory is discovery-only; use an approved in-cluster Kubernetes source for workload monitoring')
     infrastructure=provider in INFRA_TYPES
+    if api_config is not None:
+        if infrastructure or not isinstance(api_config,dict):
+            raise HTTPException(422,"API overrides require an HTTP/API data source")
+        allowed={"url","method","headers","expected_status","timeout_seconds","max_response_time_ms"}
+        if set(api_config)-allowed:
+            raise HTTPException(422,"Unsupported API monitoring setting")
     worker=db.get(WorkerIdentity,worker_id) if worker_id else None
     if not infrastructure and (worker is None or not worker.enabled or worker.organization_id!=source.organization_id or worker.expires_at.replace(tzinfo=timezone.utc)<=now()):
         raise HTTPException(422,"An active organization-scoped remote worker is required")
@@ -105,9 +111,8 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
         if not metric_names <= HTTP_METRICS: raise HTTPException(422,'Metric incompatible with HTTP provider')
         if cc.get("type", "HTTP").upper() not in {"HTTP","API"}:
             raise HTTPException(422,"Unsupported remote HTTP collector type")
-        config={"url":cc.get("url") or source.endpoint,
-                "expected_status":cc.get("expected_status",200),
-                "timeout_seconds":cc.get("timeout_seconds",8)}
+        from app.services.api_monitoring_config import build_api_config
+        config=build_api_config({**cc,**(api_config or {})},source,worker)
         reference = cc.get("credential_ref")
         if reference is None and str(source.auth_type or "").upper() == "BASIC":
             reference = (source.connection_config or {}).get("credential_ref")
@@ -121,13 +126,6 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
                 raise HTTPException(422,"Production requires an external credential reference")
         elif str(source.auth_type or "").upper() == "BASIC":
             raise HTTPException(422,"Basic authentication requires an approved credential reference")
-        if not isinstance(config["url"],str): raise HTTPException(422,"Target HTTPS URL is missing")
-        try: check_target(config["url"],worker.allowed_hosts,worker.allowed_cidrs)
-        except EgressDenied as exc:raise HTTPException(422,str(exc))
-        if type(config["expected_status"]) is not int or not 100<=config["expected_status"]<=599:
-            raise HTTPException(422,"Invalid expected_status")
-        if type(config["timeout_seconds"]) is not int or not 1<=config["timeout_seconds"]<=10:
-            raise HTTPException(422,"Timeout must be 1..10 seconds")
         collector_type='HTTP'
     try: interval=int(cc.get("interval_seconds",60))
     except (ValueError,TypeError): raise HTTPException(422,"Invalid polling interval")
@@ -141,8 +139,8 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     plan["fingerprint"]=fingerprint
     return plan
 
-def preview(db,source_id,version_ids,worker_id,include_templates=True):
-    plan=build_plan(db,source_id,version_ids,worker_id,include_templates)
+def preview(db,source_id,version_ids,worker_id,include_templates=True,api_config=None):
+    plan=build_plan(db,source_id,version_ids,worker_id,include_templates,api_config)
     current=db.scalar(select(MonitoringActivation).where(MonitoringActivation.data_source_id==source_id))
     return {"status":"UNCHANGED" if current and current.status=="ACTIVE" and current.fingerprint==plan["fingerprint"] else "CHANGES_REQUIRED",
             "current_version":current.version if current else None,
@@ -156,11 +154,11 @@ def _disable_previous(db,activation):
         obj=db.get(model,rid) if model else None
         if obj: obj.enabled=False
 
-def apply(db,source_id,version_ids,worker_id,include_templates=True):
+def apply(db,source_id,version_ids,worker_id,include_templates=True,api_config=None):
     # Lock the Data Source to serialize concurrent activation and assignment.
     source=db.scalar(select(DataSource).where(DataSource.id==source_id).with_for_update())
     if source is None:raise HTTPException(404,"Data source not found")
-    plan=build_plan(db,source_id,version_ids,worker_id,include_templates)
+    plan=build_plan(db,source_id,version_ids,worker_id,include_templates,api_config)
     existing=db.scalar(select(MonitoringActivation).where(
         MonitoringActivation.data_source_id==source_id).with_for_update())
     if existing and existing.status=="ACTIVE" and existing.fingerprint==plan["fingerprint"]:

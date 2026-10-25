@@ -85,7 +85,7 @@ def resolve_target(host, networks, resolver=socket.getaddrinfo):
     ips=[validate_ip(item[4][0],networks) for item in answers]
     return str(ips[0])
 
-def _pinned_https(host,ip,path,timeout,authorization=None):
+def _pinned_https(host,ip,path,timeout,authorization=None,method='GET',headers=None):
     context=ssl.create_default_context()
     sock=socket.create_connection((ip,443),timeout=timeout)
     sock.settimeout(timeout)
@@ -95,7 +95,8 @@ def _pinned_https(host,ip,path,timeout,authorization=None):
             auth_header = f"Authorization: {authorization}\r\n" if authorization else ""
             if authorization and (len(authorization)>8192 or any(ord(c)<32 or ord(c)>126 for c in authorization)):
                 raise EgressDenied("Invalid authentication header encoding")
-            request=(f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: OpsControl-RemoteProbe/1\r\nAccept: application/json\r\n{auth_header}Connection: close\r\n\r\n").encode("ascii")
+            extra="".join(f"{name}: {value}\r\n" for name,value in (headers or {}).items())
+            request=(f"{method} {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: OpsControl-RemoteProbe/1\r\nAccept: application/json\r\n{auth_header}{extra}Connection: close\r\n\r\n").encode("ascii")
             secure.sendall(request)
             response=http.client.HTTPResponse(secure)
             response.begin()
@@ -113,6 +114,20 @@ def probe_https(config, hosts, cidrs):
     expected=config.get("expected_status",200)
     if type(expected) is not int or not 100<=expected<=599:
         raise EgressDenied("Invalid expected response status")
+    method=config.get("method","GET")
+    if type(method) is not str or method not in ("GET","HEAD"):
+        raise EgressDenied("Unsupported API method")
+    headers=config.get("headers",{})
+    if not isinstance(headers,dict) or len(headers)>8:
+        raise EgressDenied("Invalid API headers")
+    for name,value in headers.items():
+        if (not isinstance(name,str) or name not in {"x-opscontrol-check"}
+                or not isinstance(value,str) or not value or len(value)>256
+                or any(ord(ch)<32 or ord(ch)>126 for ch in value)):
+            raise EgressDenied("Unsafe API request header")
+    latency_limit=config.get("max_response_time_ms")
+    if latency_limit is not None and (type(latency_limit) is not int or not 1<=latency_limit<=10000):
+        raise EgressDenied("Invalid maximum response time assertion")
     ip=resolve_target(parts.hostname,networks)
     authorization = None
     reference = config.get("credential_ref")
@@ -136,10 +151,13 @@ def probe_https(config, hosts, cidrs):
     # No redirects are followed. 3xx is an observed result, not a new hop.
     timeout= min(max(int(config.get("timeout_seconds",8)),1),10)
     started=time.monotonic()
-    status,size=(_pinned_https(parts.hostname,ip,path,timeout,authorization) if authorization
-                 else _pinned_https(parts.hostname,ip,path,timeout))
+    if method=="GET" and not headers:
+        status,size=(_pinned_https(parts.hostname,ip,path,timeout,authorization) if authorization
+                     else _pinned_https(parts.hostname,ip,path,timeout))
+    else:
+        status,size=_pinned_https(parts.hostname,ip,path,timeout,authorization,method,headers)
     elapsed=min(int((time.monotonic()-started)*1000),600000)
-    result = {"outcome":"SUCCESS" if status==expected else "ASSERTION_FAILED",
+    result = {"outcome":"SUCCESS" if status==expected and (latency_limit is None or elapsed<=latency_limit) else "ASSERTION_FAILED",
               "http_status":status,"response_time_ms":elapsed,"response_size_bytes":size}
     if authorization:
         result["auth_mode"] = "BASIC"

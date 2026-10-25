@@ -87,7 +87,8 @@ def main():
     assert empty["job"] is None
     claimed=check(200,"POST","/api/v1/worker/claim",token,{})["job"]
     assert claimed and claimed["job_id"]==job_id
-    assert set(claimed["config"])=={"url","expected_status","timeout_seconds"}
+    assert set(claimed["config"])=={"url","expected_status","timeout_seconds","method"}
+    assert claimed["config"]["method"]=="GET"
     assert "password" not in json.dumps(claimed).lower()
     check(200,"POST","/api/v1/worker/claim",token,{})
     event=str(uuid.uuid4())

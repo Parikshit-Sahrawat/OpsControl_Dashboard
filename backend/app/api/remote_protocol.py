@@ -171,8 +171,8 @@ def _snapshot(collector:Collector,source:DataSource,worker:WorkerIdentity):
         raise HTTPException(422,"Only configured HTTP probes supported by this worker protocol")
     url=cfg.get("url") or source.endpoint
     if not isinstance(url,str): raise HTTPException(422,"HTTPS probe URL required")
-    snapshot={"url":url,"expected_status":cfg.get("expected_status",200),
-              "timeout_seconds":cfg.get("timeout_seconds",8)}
+    from app.services.api_monitoring_config import build_api_config
+    snapshot=build_api_config(cfg,source,worker)
     reference = cfg.get("credential_ref")
     if reference is None and str(source.auth_type or "").upper() == "BASIC":
         reference = (source.connection_config or {}).get("credential_ref")
@@ -186,13 +186,6 @@ def _snapshot(collector:Collector,source:DataSource,worker:WorkerIdentity):
             raise HTTPException(422,"Production requires an external credential reference")
     elif str(source.auth_type or "").upper() == "BASIC":
         raise HTTPException(422,"Basic authentication requires an approved credential reference")
-    try:
-        check_target(url,worker.allowed_hosts,worker.allowed_cidrs)
-        if type(snapshot["expected_status"]) is not int or not 100<=snapshot["expected_status"]<=599:
-            raise EgressDenied("Invalid expected status")
-        if type(snapshot["timeout_seconds"]) is not int or not 1<=snapshot["timeout_seconds"]<=10:
-            raise EgressDenied("Timeout must be between 1 and 10 seconds")
-    except EgressDenied as exc: raise HTTPException(422,str(exc))
     return snapshot
 
 @admin_router.post("/jobs",status_code=201)
@@ -229,8 +222,12 @@ def enqueue_probe(payload:QueueRequest):
         db.commit()
         return {"job_id":str(job.id),"state":"QUEUED","duplicate":False}
 
+class WorkerCapabilities(BaseModel):
+    model_config=ConfigDict(extra="forbid")
+    api_protocol: Literal[1, 2] = 1
+
 @worker_router.post("/claim")
-def claim_probe(identity=Depends(worker_from_request)):
+def claim_probe(capabilities: WorkerCapabilities | None = None, identity=Depends(worker_from_request)):
     with SessionLocal() as db:
         now=utc()
         worker=db.get(WorkerIdentity,identity["id"])
@@ -242,7 +239,10 @@ def claim_probe(identity=Depends(worker_from_request)):
                       ((RemoteProbeJob.state=="LEASED") & (RemoteProbeJob.lease_expires_at<now))))
               .order_by(RemoteProbeJob.planned_for)
               .with_for_update(skip_locked=True).limit(1))
-        job=db.scalar(stmt)
+        # Legacy workers can only claim GET probes without custom headers.
+        jobs=db.scalars(stmt.limit(32)).all()
+        version=capabilities.api_protocol if capabilities else 1
+        job=next((item for item in jobs if version>=2 or ((item.config_snapshot or {}).get("method","GET")=="GET" and not (item.config_snapshot or {}).get("headers"))),None)
         if not job: return {"job":None}
         collector=db.get(Collector,job.collector_id)
         source=db.get(DataSource,collector.data_source_id) if collector else None
@@ -305,6 +305,16 @@ def ingest_probe(payload:EvidenceInput,identity=Depends(worker_from_request)):
         source=db.get(DataSource,collector.data_source_id) if collector else None
         if not collector or not collector.enabled or not source or not source.enabled or source.organization_id!=identity["organization_id"] or collector.remote_worker_id!=identity["id"]:
             raise HTTPException(409,"Collector no longer authorized")
+        # A successful assertion must agree with its immutable leased contract.
+        # Do not trust a worker to mark a latency violation healthy.
+        snap=job.config_snapshot or {}
+        latency_limit=snap.get("max_response_time_ms")
+        if payload.outcome=="SUCCESS" and latency_limit is not None:
+            if (type(latency_limit) is not int or not 1<=latency_limit<=10000
+                    or payload.response_time_ms is None
+                    or payload.response_time_ms>latency_limit
+                    or payload.http_status!=snap.get("expected_status",200)):
+                raise HTTPException(422,"Reported success violates leased API assertions")
         expects_basic = (job.config_snapshot or {}).get("credential_ref") is not None
         if expects_basic and payload.auth_mode != "BASIC":
             raise HTTPException(422,"Assigned probe requires Basic authentication support")

@@ -17,6 +17,7 @@ class ActivationRequest(BaseModel):
     remote_worker_id:uuid.UUID | None=None
     rule_version_ids:list[uuid.UUID]=Field(default_factory=list,max_length=100)
     include_templates:bool=True
+    api_config:dict | None=None
 
 def can_manage(db,source_id,permission="collectors.manage"):
     source=db.get(DataSource,source_id)
@@ -29,12 +30,12 @@ def can_manage(db,source_id,permission="collectors.manage"):
 @router.post("/{source_id}/activation-preview")
 def activation_preview(source_id:uuid.UUID,payload:ActivationRequest,db:Session=Depends(get_db)):
     can_manage(db,source_id)
-    return preview(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates)
+    return preview(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates,payload.api_config)
 
 @router.post("/{source_id}/activations")
 def activation_apply(source_id:uuid.UUID,payload:ActivationRequest,db:Session=Depends(get_db)):
     can_manage(db,source_id)
-    return apply(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates)
+    return apply(db,source_id,payload.rule_version_ids,payload.remote_worker_id,payload.include_templates,payload.api_config)
 
 @router.get("/{source_id}/activation")
 def activation_state(source_id:uuid.UUID,db:Session=Depends(get_db)):
