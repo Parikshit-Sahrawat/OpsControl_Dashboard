@@ -1,0 +1,880 @@
+
+$ git rev-parse HEAD
+87f8ee08f347e0db3830a94e3aa6597c50c991ba
+
+$ docker info
+Client:
+ Version:    28.4.0
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.31.0
+    Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3
+    Path:     /usr/libexec/docker/cli-plugins/docker-compose
+
+Server:
+ Containers: 1
+  Running: 0
+  Paused: 0
+  Stopped: 1
+ Images: 17
+ Server Version: 28.4.0
+ Storage Driver: vfs
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc runsc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: b98a3aace656320842a23f4a392a33f46af97866
+ runc version: v1.3.0-0-g4ca628d
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.18.55
+ Operating System: Debian GNU/Linux 13 (trixie) (containerized)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 5
+ Total Memory: 33.29GiB
+ Name: 2470dba3a1f7
+ ID: 7a38029c-88d6-42b2-b580-34c599de2541
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http://proxy:8080
+ HTTPS Proxy: http://proxy:8080
+ No Proxy: localhost,127.0.0.1,::1
+ Experimental: false
+ Insecure Registries:
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Product License: Community Engine
+
+
+$ docker network ls -q
+4cd945dd734f
+5ca8b3b2c065
+04610cde2d77
+
+$ docker network inspect 4cd945dd734f
+[
+    {
+        "Name": "bridge",
+        "Id": "4cd945dd734fd9b7f5348645145b27a2adbd3bab1b8dd5ab6564d8352aeb2dd3",
+        "Created": "2026-10-25T06:14:33.855127408Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+
+$ docker network inspect 5ca8b3b2c065
+[
+    {
+        "Name": "host",
+        "Id": "5ca8b3b2c06515dc07987f677d461c138c98a2d49d215d87f71dd9ce5d2b64d4",
+        "Created": "2026-10-25T05:12:56.16378676Z",
+        "Scope": "local",
+        "Driver": "host",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ docker network inspect 04610cde2d77
+[
+    {
+        "Name": "none",
+        "Id": "04610cde2d77e3ef7a6d5b3bd6018109b16d71fd665c4d298c14119acf85efd9",
+        "Created": "2026-10-25T05:12:56.162263131Z",
+        "Scope": "local",
+        "Driver": "null",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ openssl req -x509 -newkey rsa:2048 -nodes -days 1 -keyout /tmp/opscontrol-dev05-5o_of6wq/tls/tls.key -out /tmp/opscontrol-dev05-5o_of6wq/tls/tls.crt -subj /CN=portal.example.test -addext subjectAltName=DNS:portal.example.test
+.....+...+......+.....+..........+......+......+..+.+.....+.+...............+++++++++++++++++++++++++++++++++++++++*..+.....+.........+++++++++++++++++++++++++++++++++++++++*....+.+...............+............+..+......+.......+..............+...+...+...+............+...+.......+..+.......+...+.....+.......+...+...+...+..+.......+..+...............++++++
+....+......+...+.+...+++++++++++++++++++++++++++++++++++++++*......+....+...+++++++++++++++++++++++++++++++++++++++*.........+......+...........+....+...........+......+...+...............+.........+......+..........+.....+....+........+...+....+...+.....+...+....+......+...........+................+..+..........+.....+.+......+........+.+..+.......+..................+........+.......+.....+.......+...........+....+...........+.+.....+...+.+.....+......+.+..+............+.+.....+...+......+.............+..+...+.........................+...........+.+......+.........+......+..++++++
+-----
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml config --quiet
+
+$ docker ps -aq
+ef199ff7c61c
+
+$ docker network ls -q
+4cd945dd734f
+5ca8b3b2c065
+04610cde2d77
+
+$ docker volume ls -q
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml build api frontend browser
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.36kB done
+#1 DONE 0.0s
+
+#2 [browser internal] load build definition from browser.Dockerfile
+#2 transferring dockerfile: 598B done
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from frontend.Dockerfile
+#3 transferring dockerfile: 382B done
+#3 DONE 0.0s
+
+#4 [api internal] load build definition from backend.Dockerfile
+#4 transferring dockerfile: 422B done
+#4 DONE 0.0s
+
+#5 [browser internal] load metadata for docker.io/library/node:24-bookworm-slim
+#5 DONE 1.6s
+
+#6 [browser internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [frontend stage-0 1/5] FROM docker.io/library/node:24-bookworm-slim@sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205
+#7 DONE 0.0s
+
+#8 [browser stage-0 2/4] WORKDIR /tools
+#8 CACHED
+
+#9 [browser stage-0 3/4] RUN --mount=type=secret,id=proxy_ca,required=true     apt-get update && apt-get install -y --no-install-recommends chromium fonts-liberation     && rm -rf /var/lib/apt/lists/*     && NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm install --no-audit --no-fund playwright@1.56.1
+#9 CACHED
+
+#10 [browser stage-0 4/4] WORKDIR /repo
+#10 CACHED
+
+#11 [browser] exporting to image
+#11 exporting layers done
+#11 writing image sha256:2abe3ed5dca7b689d07e1e92ec89c06bab8a27479ec58e08313f94f190f70357 done
+#11 naming to docker.io/library/dev05-598fde0a64-browser done
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 1.09MB 0.0s done
+#12 DONE 0.0s
+
+#13 [frontend stage-0 2/5] WORKDIR /app
+#13 CACHED
+
+#14 [browser] resolving provenance for metadata file
+#14 DONE 0.0s
+
+#15 [api internal] load metadata for docker.io/library/python:3.12-slim
+#15 DONE 1.8s
+
+#16 [frontend stage-0 3/5] COPY frontend/package*.json ./
+#16 ...
+
+#6 [api internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#17 [api stage-0 1/8] FROM docker.io/library/python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+#17 DONE 0.0s
+
+#18 [api internal] load build context
+#18 transferring context: 3.14MB 0.1s done
+#18 DONE 0.1s
+
+#19 [api stage-0 3/8] COPY backend/requirements*.txt ./
+#19 CACHED
+
+#20 [api stage-0 2/8] WORKDIR /app
+#20 CACHED
+
+#21 [api stage-0 4/8] RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+#21 CACHED
+
+#22 [api stage-0 5/8] COPY backend/ /app/
+#22 ...
+
+#16 [frontend stage-0 3/5] COPY frontend/package*.json ./
+#16 DONE 1.0s
+
+#23 [frontend stage-0 4/5] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --no-audit --no-fund
+#23 ...
+
+#22 [api stage-0 5/8] COPY backend/ /app/
+#22 DONE 1.4s
+
+#24 [api stage-0 6/8] COPY tests/ /tests/
+#24 DONE 0.6s
+
+#23 [frontend stage-0 4/5] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --no-audit --no-fund
+#23 ...
+
+#25 [api stage-0 7/8] COPY agent/ /agent/
+#25 DONE 0.6s
+
+#26 [api stage-0 8/8] COPY deploy/fixtures/ /fixtures/
+#26 DONE 0.7s
+
+#23 [frontend stage-0 4/5] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --no-audit --no-fund
+#23 3.199 
+#23 3.199 added 140 packages in 3s
+#23 3.201 npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+#23 3.201 npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+#23 3.201 npm warn install-scripts
+#23 3.201 npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+#23 3.202 npm notice
+#23 3.202 npm notice New major version of npm available! 11.19.1 -> 12.2.1
+#23 3.202 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+#23 3.202 npm notice To update run: npm install -g npm@12.2.1
+#23 3.202 npm notice
+#23 DONE 3.2s
+
+#27 [api] exporting to image
+#27 exporting layers 0.7s done
+#27 writing image sha256:755c5ee65f42733ff69c8149bdd18e1bfcbe3018aa1907e846ee5473ea84b593 done
+#27 naming to docker.io/library/dev05-598fde0a64-backend done
+#27 DONE 0.7s
+
+#28 [api] resolving provenance for metadata file
+#28 DONE 0.0s
+
+#29 [frontend stage-0 5/5] COPY frontend/ ./
+#29 DONE 0.6s
+
+#30 [frontend] exporting to image
+#30 exporting layers 0.6s done
+#30 writing image sha256:47c3a42e94843cd8346727603494d13de88d3f9e51de5c094afa166c93e32864 done
+#30 naming to docker.io/library/dev05-598fde0a64-frontend done
+#30 DONE 0.6s
+
+#31 [frontend] resolving provenance for metadata file
+#31 DONE 0.0s
+ dev05-598fde0a64-backend  Built
+ dev05-598fde0a64-frontend  Built
+ dev05-598fde0a64-browser  Built
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml up -d --wait --wait-timeout 180 postgres api frontend fixture worker browser
+ Network dev05-598fde0a64_control  Creating
+ Network dev05-598fde0a64_control  Created
+ Network dev05-598fde0a64_database  Creating
+ Network dev05-598fde0a64_database  Created
+ Network dev05-598fde0a64_target  Creating
+ Network dev05-598fde0a64_target  Created
+ Volume dev05-598fde0a64_pgdata  Creating
+ Volume dev05-598fde0a64_pgdata  Created
+ Container dev05-598fde0a64-browser-1  Creating
+ Container dev05-598fde0a64-frontend-1  Creating
+ Container dev05-598fde0a64-postgres-1  Creating
+ Container dev05-598fde0a64-fixture-1  Creating
+ Container dev05-598fde0a64-worker-1  Creating
+ Container dev05-598fde0a64-postgres-1  Created
+ Container dev05-598fde0a64-api-1  Creating
+ Container dev05-598fde0a64-frontend-1  Created
+ Container dev05-598fde0a64-fixture-1  Created
+ Container dev05-598fde0a64-worker-1  Created
+ Container dev05-598fde0a64-api-1  Created
+ Container dev05-598fde0a64-browser-1  Created
+ Container dev05-598fde0a64-frontend-1  Starting
+ Container dev05-598fde0a64-postgres-1  Starting
+ Container dev05-598fde0a64-browser-1  Starting
+ Container dev05-598fde0a64-fixture-1  Starting
+ Container dev05-598fde0a64-worker-1  Starting
+ Container dev05-598fde0a64-postgres-1  Started
+ Container dev05-598fde0a64-postgres-1  Waiting
+ Container dev05-598fde0a64-browser-1  Started
+ Container dev05-598fde0a64-fixture-1  Started
+ Container dev05-598fde0a64-worker-1  Started
+ Container dev05-598fde0a64-frontend-1  Started
+ Container dev05-598fde0a64-postgres-1  Healthy
+ Container dev05-598fde0a64-api-1  Starting
+ Container dev05-598fde0a64-api-1  Started
+ Container dev05-598fde0a64-postgres-1  Waiting
+ Container dev05-598fde0a64-api-1  Waiting
+ Container dev05-598fde0a64-frontend-1  Waiting
+ Container dev05-598fde0a64-fixture-1  Waiting
+ Container dev05-598fde0a64-worker-1  Waiting
+ Container dev05-598fde0a64-browser-1  Waiting
+ Container dev05-598fde0a64-fixture-1  Healthy
+ Container dev05-598fde0a64-browser-1  Healthy
+ Container dev05-598fde0a64-postgres-1  Healthy
+ Container dev05-598fde0a64-frontend-1  Healthy
+ Container dev05-598fde0a64-worker-1  Healthy
+ Container dev05-598fde0a64-api-1  Healthy
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q postgres
+c8b4bccb69450ea7823827938fe880d8ad6dc8921d43f7233daefc8f26237f59
+
+$ docker inspect --format {{json .Image}} c8b4bccb69450ea7823827938fe880d8ad6dc8921d43f7233daefc8f26237f59
+"sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q api
+c77ffa74b62316b9a9a2e04bd5bb6546db38c5797d6e9788edaabfb254017f11
+
+$ docker inspect --format {{json .Image}} c77ffa74b62316b9a9a2e04bd5bb6546db38c5797d6e9788edaabfb254017f11
+"sha256:755c5ee65f42733ff69c8149bdd18e1bfcbe3018aa1907e846ee5473ea84b593"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q frontend
+8501ff744922dc6b99745e418983e94d280b763846753f1d7711a5e80ea1bb9e
+
+$ docker inspect --format {{json .Image}} 8501ff744922dc6b99745e418983e94d280b763846753f1d7711a5e80ea1bb9e
+"sha256:47c3a42e94843cd8346727603494d13de88d3f9e51de5c094afa166c93e32864"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q fixture
+00a47365be15de9302e41abe848356bf480453cfbe3fdbf6a5d6da351e27d0ce
+
+$ docker inspect --format {{json .Image}} 00a47365be15de9302e41abe848356bf480453cfbe3fdbf6a5d6da351e27d0ce
+"sha256:755c5ee65f42733ff69c8149bdd18e1bfcbe3018aa1907e846ee5473ea84b593"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q worker
+253c1fa9b0c5f31371b556a90975e9697b84862ca63d9dad9101c3af0b678758
+
+$ docker inspect --format {{json .Image}} 253c1fa9b0c5f31371b556a90975e9697b84862ca63d9dad9101c3af0b678758
+"sha256:755c5ee65f42733ff69c8149bdd18e1bfcbe3018aa1907e846ee5473ea84b593"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml ps -q browser
+fc677ee10ce636bce54a2f024a0ae0ec96297d29a81249ade2d38d7ad132fec2
+
+$ docker inspect --format {{json .Image}} fc677ee10ce636bce54a2f024a0ae0ec96297d29a81249ade2d38d7ad132fec2
+"sha256:2abe3ed5dca7b689d07e1e92ec89c06bab8a27479ec58e08313f94f190f70357"
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser chromium --version
+Chromium 156.0.8078.47 built on Debian GNU/Linux 12 (bookworm)
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py setup
+Authenticated scoped onboarding, immutable v1/v2 and idempotent activation PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py regression
+Synthetic organizations, scoped sources, versioned template materialization and collectors PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py infrastructure
+Live disposable Linux process monitoring, persisted history, alerts and tenant isolation PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser node /verification/browser.mjs configured
+Chromium: 156.0.8078.47
+PLAYWRIGHT configured: authenticated UI, diagnostics and screenshot PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py schedule
+One real HTTPS job queued
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T worker python /fixtures/golden_agent_cycle.py
+Real TLS probe delivered sanitized evidence
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py healthy
+Real TLS evidence, database and alert lifecycle: healthy PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser node /verification/browser.mjs healthy
+Chromium: 156.0.8078.47
+PLAYWRIGHT healthy: authenticated UI, diagnostics and screenshot PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py schedule
+One real HTTPS job queued
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T worker python /fixtures/golden_agent_cycle.py
+Real TLS probe delivered sanitized evidence
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py failed
+Real TLS evidence, database and alert lifecycle: failed PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser node /verification/browser.mjs failed
+Chromium: 156.0.8078.47
+PLAYWRIGHT failed: authenticated UI, diagnostics and screenshot PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py schedule
+One real HTTPS job queued
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T worker python /fixtures/golden_agent_cycle.py
+Real TLS probe delivered sanitized evidence
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py recovered
+Real TLS evidence, database and alert lifecycle: recovered PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser node /verification/browser.mjs recovered
+Chromium: 156.0.8078.47
+PLAYWRIGHT recovered: authenticated UI, diagnostics and screenshot PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py isolation
+Anonymous denial, cross-tenant reads/writes, scoped lists and redacted audit history PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py configure-head
+One real HTTPS job queued
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T worker python /fixtures/golden_agent_cycle.py
+Real TLS probe delivered sanitized evidence
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py verify-head
+Real HEAD with approved header, latency assertion and persisted evidence PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T browser node /verification/settings.mjs
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.check: Clicking the checkbox did not change its state
+Call log:
+  - waiting for locator('.monitoring-rule-option').filter({ hasText: 'golden-readiness' }).filter({ hasText: 'Version 1' }).getByRole('checkbox')
+    - locator resolved to <input disabled type="checkbox"/>
+  - attempting click action
+    2 × waiting for element to be visible, enabled and stable
+      - element is not enabled
+    - retrying click action
+    - waiting 20ms
+    - waiting for element to be visible, enabled and stable
+    - element is not enabled
+  - retrying click action
+    - waiting 100ms
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - element is outside of the viewport
+  - retrying click action
+    - waiting 100ms
+    - waiting for element to be visible, enabled and stable
+    - element is not stable
+  - retrying click action
+    - waiting 500ms
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - <div class="session-banner">…</div> intercepts pointer events
+  - retrying click action
+    - waiting 500ms
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+    - click action done
+    - waiting for scheduled navigations to finish
+    - navigations have finished
+
+    at /verification/settings.mjs:26:126 {
+  name: 'Error'
+}
+
+Node.js v24.22.1
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/probe.py authorization
+Anonymous, invalid, human, revoked worker and forged heartbeat boundaries PASS
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T worker python /verification/worker_checks.py
+Real TLS, policy, method/header and synthetic Carte checks PASS: 22
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T api python /verification/regressions.py
+test_bounded_latency_assertion_is_retained (tests.test_api_monitoring_config.APIConfigTests.test_bounded_latency_assertion_is_retained) ... ok
+test_get_defaults_preserve_existing_remote_worker_protocol (tests.test_api_monitoring_config.APIConfigTests.test_get_defaults_preserve_existing_remote_worker_protocol) ... ok
+test_head_and_allowlisted_headers_are_valid (tests.test_api_monitoring_config.APIConfigTests.test_head_and_allowlisted_headers_are_valid) ... ok
+test_header_injection_is_rejected (tests.test_api_monitoring_config.APIConfigTests.test_header_injection_is_rejected) ... ok
+test_unsupported_or_unsafe_api_configuration_fails_closed (tests.test_api_monitoring_config.APIConfigTests.test_unsupported_or_unsafe_api_configuration_fails_closed) ... ok
+test_valid_explicit_get_preserves_status_and_timeout (tests.test_api_monitoring_config.APIConfigTests.test_valid_explicit_get_preserves_status_and_timeout) ... ok
+test_agent_executes_v2_claim_under_local_policy (tests.test_api_worker_v2.APIWorkerV2Tests.test_agent_executes_v2_claim_under_local_policy) ... ok
+test_agent_rejects_server_policy_expansion (tests.test_api_worker_v2.APIWorkerV2Tests.test_agent_rejects_server_policy_expansion) ... ok
+test_crlf_injection_is_denied (tests.test_api_worker_v2.APIWorkerV2Tests.test_crlf_injection_is_denied) ... ok
+test_head_uses_pinned_tls_and_only_approved_header (tests.test_api_worker_v2.APIWorkerV2Tests.test_head_uses_pinned_tls_and_only_approved_header) ... ok
+test_invalid_latency_limit_is_denied_before_dns (tests.test_api_worker_v2.APIWorkerV2Tests.test_invalid_latency_limit_is_denied_before_dns) ... ok
+test_latency_assertion_marks_slow_probe_failed (tests.test_api_worker_v2.APIWorkerV2Tests.test_latency_assertion_marks_slow_probe_failed) ... ok
+test_legacy_get_preserves_transport_signature (tests.test_api_worker_v2.APIWorkerV2Tests.test_legacy_get_preserves_transport_signature) ... ok
+test_post_is_denied (tests.test_api_worker_v2.APIWorkerV2Tests.test_post_is_denied) ... ok
+test_untrusted_header_is_denied_before_dns (tests.test_api_worker_v2.APIWorkerV2Tests.test_untrusted_header_is_denied_before_dns) ... ok
+test_approved_reference_sends_basic_only_to_pinned_verified_transport (tests.test_remote_auth.RemoteBasicAuthTests.test_approved_reference_sends_basic_only_to_pinned_verified_transport) ... ok
+test_colon_account_rejected_before_transport (tests.test_remote_auth.RemoteBasicAuthTests.test_colon_account_rejected_before_transport) ... ok
+test_reference_validation_never_resolves_credentials (tests.test_remote_auth.RemoteBasicAuthTests.test_reference_validation_never_resolves_credentials) ... ok
+test_unapproved_reference_is_denied_before_secret_retrieval_and_transport (tests.test_remote_auth.RemoteBasicAuthTests.test_unapproved_reference_is_denied_before_secret_retrieval_and_transport) ... ok
+test_stopped_collector_with_recent_success_is_not_healthy (tests.test_infrastructure_health_projection.InfrastructureHealthProjectionTests.test_stopped_collector_with_recent_success_is_not_healthy) ... ok
+test_stopped_probe_with_recent_success_is_not_healthy (tests.test_api_service_health_projection.ApiServiceHealthProjectionTests.test_stopped_probe_with_recent_success_is_not_healthy) ... ok
+test_actual_contrib_accepts_five_methods (tests.test_collection_v15.CollectionV15Tests.test_actual_contrib_accepts_five_methods) ... skipped 'Pinned Contrib binary not configured'
+test_concurrent_five_methods_reference_unique_receivers (tests.test_collection_v15.CollectionV15Tests.test_concurrent_five_methods_reference_unique_receivers) ... ok
+test_file_checkpoints_are_path_stable (tests.test_collection_v15.CollectionV15Tests.test_file_checkpoints_are_path_stable) ... ok
+test_five_schemas_and_advanced_transport (tests.test_collection_v15.CollectionV15Tests.test_five_schemas_and_advanced_transport) ... ok
+test_invalid_source_configurations_fail_closed (tests.test_collection_v15.CollectionV15Tests.test_invalid_source_configurations_fail_closed) ... ok
+test_legacy_short_interval_gets_compatible_timeout (tests.test_collection_v15.CollectionV15Tests.test_legacy_short_interval_gets_compatible_timeout) ... ok
+test_scrape_timeout_filter_labels_and_verified_tls (tests.test_collection_v15.CollectionV15Tests.test_scrape_timeout_filter_labels_and_verified_tls) ... ok
+test_selected_signals_are_enforced_for_attributed_telemetry (tests.test_collection_v15.MethodAttributionTests.test_selected_signals_are_enforced_for_attributed_telemetry) ... ok
+test_actual_quiet_file_is_idle_and_missing_file_is_error (tests.test_collection_v15.MethodHealthTests.test_actual_quiet_file_is_idle_and_missing_file_is_error) ... ok
+test_idle_observation_is_distinct_from_real_reception (tests.test_collection_v15.MethodHealthTests.test_idle_observation_is_distinct_from_real_reception) ... ok
+test_observations_are_closed_and_bounded (tests.test_collection_v15.MethodHealthTests.test_observations_are_closed_and_bounded) ... ok
+test_actual_scrape_and_log_rotation_truncation_restart (tests.test_collection_v15.RealCollectionRuntimeTests.test_actual_scrape_and_log_rotation_truncation_restart) ... skipped 'Pinned Contrib binary not configured'
+test_base64_gzip_cdata_whitespace_and_redaction (tests.test_pentaho_carte_compat.CarteCompatTests.test_base64_gzip_cdata_whitespace_and_redaction) ... ok
+test_inventory_empty_multiple_and_explicit_only_use_get (tests.test_pentaho_carte_compat.CarteCompatTests.test_inventory_empty_multiple_and_explicit_only_use_get) ... ok
+test_legacy_adapter_preserves_step_copy_identity_on_reorder (tests.test_pentaho_carte_compat.CarteCompatTests.test_legacy_adapter_preserves_step_copy_identity_on_reorder) ... ok
+test_missing_zero_and_malformed_numbers_stay_distinct (tests.test_pentaho_carte_compat.CarteCompatTests.test_missing_zero_and_malformed_numbers_stay_distinct) ... ok
+test_monitoring_transport_failure_is_not_execution_failure (tests.test_pentaho_carte_compat.CarteCompatTests.test_monitoring_transport_failure_is_not_execution_failure) ... ok
+test_native_fixture_scoped_read_only_poll_and_idempotent_checkpoint (tests.test_pentaho_carte_compat.CarteCompatTests.test_native_fixture_scoped_read_only_poll_and_idempotent_checkpoint) ... ok
+test_native_inventory_extracts_job_despite_empty_transformations (tests.test_pentaho_carte_compat.CarteCompatTests.test_native_inventory_extracts_job_despite_empty_transformations) ... ok
+test_native_result_requires_consistent_evidence (tests.test_pentaho_carte_compat.CarteCompatTests.test_native_result_requires_consistent_evidence) ... ok
+test_native_step_observation_shape_fails_closed (tests.test_pentaho_carte_compat.CarteCompatTests.test_native_step_observation_shape_fails_closed) ... ok
+test_native_transformation_outcomes_and_step_metrics (tests.test_pentaho_carte_compat.CarteCompatTests.test_native_transformation_outcomes_and_step_metrics) ... ok
+test_partial_inventory_ingests_observed_runs_without_claiming_no_run (tests.test_pentaho_carte_compat.CarteCompatTests.test_partial_inventory_ingests_observed_runs_without_claiming_no_run) ... ok
+test_r1_rejects_wrong_status_root (tests.test_pentaho_carte_compat.CarteCompatTests.test_r1_rejects_wrong_status_root) ... ok
+test_repeated_child_names_do_not_merge_or_invent_native_uuid (tests.test_pentaho_carte_compat.CarteCompatTests.test_repeated_child_names_do_not_merge_or_invent_native_uuid) ... ok
+test_supplied_pdi_94_native_job_status_fixtures (tests.test_pentaho_carte_compat.CarteCompatTests.test_supplied_pdi_94_native_job_status_fixtures)
+Read supplied lab bytes; this is not a live OpsControl RT acceptance. ... ok
+test_transformation_missing_counters_and_conflicts_remain_unknown (tests.test_pentaho_carte_compat.CarteCompatTests.test_transformation_missing_counters_and_conflicts_remain_unknown) ... ok
+test_declared_retry_authority_needs_native_scheduler_evidence (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_declared_retry_authority_needs_native_scheduler_evidence) ... ok
+test_names_and_time_matching_configuration_cannot_group_r1_invocations (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_names_and_time_matching_configuration_cannot_group_r1_invocations) ... ok
+test_native_cancelled_terminal_does_not_invent_sla_success_or_staleness (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_cancelled_terminal_does_not_invent_sla_success_or_staleness) ... ok
+test_native_completion_proof_and_cancellation_are_monitoring_only (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_completion_proof_and_cancellation_are_monitoring_only) ... ok
+test_native_lifecycle_outcome_and_completeness_are_separate (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_lifecycle_outcome_and_completeness_are_separate) ... ok
+test_routes_require_view_or_investigation_not_resource_creation (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_routes_require_view_or_investigation_not_resource_creation) ... ok
+test_unattested_observation_never_self_certifies_identity (tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_unattested_observation_never_self_certifies_identity) ... ok
+test_historical_worker_failure_does_not_prevent_live_alert_delivery (tests.test_pentaho_history_contracts.HistoryContracts.test_historical_worker_failure_does_not_prevent_live_alert_delivery) ... Historical notification worker failed; live alert delivery completed independently
+ok
+test_native_schedule_requires_immutable_identity_inventory_and_hash (tests.test_pentaho_history_contracts.HistoryContracts.test_native_schedule_requires_immutable_identity_inventory_and_hash) ... ok
+test_replay_privileges_not_implicitly_inherited (tests.test_pentaho_history_contracts.HistoryContracts.test_replay_privileges_not_implicitly_inherited) ... ok
+test_schedule_authority_not_implicitly_configured (tests.test_pentaho_history_contracts.HistoryContracts.test_schedule_authority_not_implicitly_configured) ... ok
+test_spring_gap_skipped_and_fall_fold_is_explicit (tests.test_pentaho_history_contracts.HistoryContracts.test_spring_gap_skipped_and_fall_fold_is_explicit) ... ok
+test_authority_integrity_snapshot_required_for_reviewed_correction (tests.test_pentaho_review_contracts.ReviewContracts.test_authority_integrity_snapshot_required_for_reviewed_correction) ... ok
+test_claim_categories_do_not_mix_identity_outcomes_and_recovery (tests.test_pentaho_review_contracts.ReviewContracts.test_claim_categories_do_not_mix_identity_outcomes_and_recovery) ... ok
+test_conflict_projection_guard_does_not_query_or_modify_outcome (tests.test_pentaho_review_contracts.ReviewContracts.test_conflict_projection_guard_does_not_query_or_modify_outcome) ... ok
+test_granular_permission_not_granted_to_existing_investigators (tests.test_pentaho_review_contracts.ReviewContracts.test_granular_permission_not_granted_to_existing_investigators) ... ok
+test_review_input_no_override_fields_or_workload_actions (tests.test_pentaho_review_contracts.ReviewContracts.test_review_input_no_override_fields_or_workload_actions) ... ok
+
+----------------------------------------------------------------------
+Ran 65 tests in 0.244s
+
+OK (skipped=2)
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml exec -T frontend sh -ec npm test && npm run lint && npm run build
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/monitoring_settings.test.mjs
+
+✔ owned browser clients explicitly select a UUID snapshot and empty stays empty (1.944658ms)
+✔ failed customer lookup cannot fall back to unrestricted operational requests (0.520957ms)
+✔ authorized active collector restores all editable settings and pinned selections without copying credentials (1.590212ms)
+✔ legacy default GET settings remain explicit and optional assertions empty (0.175705ms)
+✔ NOT_CONFIGURED does not fetch or restore a historical collector (0.281746ms)
+✔ DISABLED does not fetch or restore a historical collector (0.080392ms)
+✔ disabled collector resets controls; a collector belonging to another source fails closed (0.524602ms)
+✔ out-of-order source fetch cannot replace the selected source or organization (0.245721ms)
+✔ pending hydration preserves actual user edits and invalidates an in-flight preview (8.021705ms)
+✔ source switch cancels a real pending settings read and no stale state or error is applied (1.064758ms)
+✔ permission failures propagate instead of silently exposing an editable default configuration (0.262306ms)
+✔ approved child hashes open only existing authorized sections (2.463831ms)
+✔ organizational access is an access view, never a customer grant (0.21884ms)
+✔ configuration sections have stable guarded routes (0.229897ms)
+Pagination traversal, duplicate, mutation, incomplete and scope-change regressions passed
+✔ scripts/pagination.test.mjs (31.309752ms)
+✔ navigation and customer actions default deny (1.568189ms)
+✔ administrative pages use independent filters (0.156557ms)
+✔ revocation replaces UI affordances; platform capability is explicit (0.106601ms)
+✔ malformed cached customer preferences cannot corrupt selector state (0.808832ms)
+✔ retired navigation cannot be enabled by cached permissions (0.153211ms)
+✔ native incident visibility requires its backend permission (0.111929ms)
+✔ six pages and seven existing incident states (1.277059ms)
+✔ pending retry remains nonterminal despite failed attempt (0.146181ms)
+✔ scheduler or process success cannot imply verified native success (0.167594ms)
+✔ scheduler retry and manual recovery preserve original failure (1.002494ms)
+✔ explicit customer scope never expands to ALL (0.389579ms)
+✔ old success or failure is invalidated on customer switch (0.274805ms)
+✔ native workload classifications remain distinct (0.217989ms)
+✔ persisted schedule authority and incomplete coverage stay explicit (0.198891ms)
+✔ review actions require category and verified completion (1.060702ms)
+✔ independent recovery confirmation and confirmed-only reversal (0.235956ms)
+✔ timestamps use explicit UTC (0.351651ms)
+✔ capabilities follow bound methods only (0.643813ms)
+✔ revision and authorization errors are explicit (0.188835ms)
+✔ resource restriction affordances do not become grants (0.725166ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 126.99696
+ℹ start of coverage report
+ℹ ------------------------------------------------------------------------
+ℹ file                    | line % | branch % | funcs % | uncovered lines
+ℹ ------------------------------------------------------------------------
+ℹ scripts                 |        |          |         | 
+ℹ  explicit_scope.mjs     | 100.00 |   100.00 |  100.00 | 
+ℹ src                     |        |          |         | 
+ℹ  monitoringSettings.js  | 100.00 |    92.11 |   92.31 | 
+ℹ  navigation.js          |  97.73 |    88.46 |  100.00 | 34
+ℹ  pagination.js          | 100.00 |   100.00 |  100.00 | 
+ℹ  permissions.js         | 100.00 |    93.33 |  100.00 | 
+ℹ  pipelines              |        |          |         | 
+ℹ   contracts.js          |  95.68 |    80.28 |   77.78 | 88 122-127 152
+ℹ ------------------------------------------------------------------------
+ℹ all files               |  97.71 |    88.66 |   87.93 | 
+ℹ ------------------------------------------------------------------------
+ℹ end of coverage report
+
+> opscontrol-frontend@0.1.0 lint
+> eslint src
+
+
+> opscontrol-frontend@0.1.0 build
+> vite build
+
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 83 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.93 kB │ gzip:   0.51 kB
+dist/assets/index-DLv8jrTq.css   82.95 kB │ gzip:  14.90 kB
+dist/assets/index-BVDsgWjs.js   581.62 kB │ gzip: 160.75 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.24s
+
+$ docker compose -p dev05-598fde0a64 -f /tmp/opscontrol-dev05-5o_of6wq/context/verification/dev05/compose.yml logs --no-color
+api-1  | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+api-1  | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+api-1  | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+api-1  | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+api-1  | INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+api-1  | Revision ID: 0015_remote_jobs
+api-1  | Revises: 0014_audit_mutation_guard
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+api-1  | Revision ID: 0015_remote_jobs
+api-1  | Revises: 0014_audit_mutation_guard
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+api-1  | Revision ID: 0016_remote_collector_assignment
+api-1  | Revises: 0015_remote_jobs
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+api-1  | Revision ID: 0016_remote_collector_assignment
+api-1  | Revises: 0015_remote_jobs
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+api-1  | Revision ID: 0018_pentaho_execution_identity
+api-1  | Revises: 0017_rule_catalogs_activation
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+api-1  | Revision ID: 0018_pentaho_execution_identity
+api-1  | Revises: 0017_rule_catalogs_activation
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+api-1  | INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+api-1  | Public-safe, fictional demo seeded (no live infrastructure connections).
+api-1  | INFO:     Started server process [1]
+api-1  | INFO:     Waiting for application startup.
+api-1  | INFO:     Application startup complete.
+api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+postgres-1  | ********************************************************************************
+postgres-1  | WARNING: POSTGRES_HOST_AUTH_METHOD has been set to "trust". This will allow
+postgres-1  |          anyone with access to the Postgres port to access your database without
+postgres-1  |          a password, even if POSTGRES_PASSWORD is set. See PostgreSQL
+postgres-1  |          documentation about "trust":
+postgres-1  |          https://www.postgresql.org/docs/current/auth-trust.html
+postgres-1  |          In Docker's default configuration, this is effectively any other
+postgres-1  |          container on the same system.
+postgres-1  | 
+postgres-1  |          It is not recommended to use POSTGRES_HOST_AUTH_METHOD=trust. Replace
+postgres-1  |          it with "-e POSTGRES_PASSWORD=password" instead to set a password in
+postgres-1  |          "docker run".
+frontend-1  | 
+frontend-1  | > opscontrol-frontend@0.1.0 dev
+frontend-1  | > vite --host 0.0.0.0 --port 5173 --strictPort
+frontend-1  | 
+postgres-1  | ********************************************************************************
+postgres-1  | The files belonging to this database system will be owned by user "postgres".
+postgres-1  | This user must also own the server process.
+postgres-1  | 
+postgres-1  | The database cluster will be initialized with locale "en_US.utf8".
+postgres-1  | The default database encoding has accordingly been set to "UTF8".
+postgres-1  | The default text search configuration will be set to "english".
+postgres-1  | 
+postgres-1  | Data page checksums are disabled.
+postgres-1  | 
+postgres-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+postgres-1  | creating subdirectories ... ok
+postgres-1  | selecting dynamic shared memory implementation ... posix
+postgres-1  | selecting default "max_connections" ... 100
+postgres-1  | selecting default "shared_buffers" ... 128MB
+postgres-1  | selecting default time zone ... UTC
+postgres-1  | creating configuration files ... ok
+postgres-1  | running bootstrap script ... ok
+postgres-1  | sh: locale: not found
+postgres-1  | 2026-10-25 06:57:41.906 UTC [37] WARNING:  no usable system locales were found
+postgres-1  | performing post-bootstrap initialization ... ok
+postgres-1  | syncing data to disk ... ok
+postgres-1  | initdb: warning: enabling "trust" authentication for local connections
+postgres-1  | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-1  | 
+postgres-1  | 
+postgres-1  | Success. You can now start the database server using:
+postgres-1  | 
+postgres-1  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-1  | 
+postgres-1  | waiting for server to start....2026-10-25 06:57:42.487 UTC [43] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-10-25 06:57:42.488 UTC [43] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-10-25 06:57:42.490 UTC [46] LOG:  database system was shut down at 2026-10-25 06:57:42 UTC
+postgres-1  | 2026-10-25 06:57:42.492 UTC [43] LOG:  database system is ready to accept connections
+postgres-1  |  done
+postgres-1  | server started
+postgres-1  | CREATE DATABASE
+postgres-1  | 
+postgres-1  | 
+postgres-1  | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+postgres-1  | 
+postgres-1  | waiting for server to shut down....2026-10-25 06:57:42.608 UTC [43] LOG:  received fast shutdown request
+postgres-1  | 2026-10-25 06:57:42.608 UTC [43] LOG:  aborting any active transactions
+postgres-1  | 2026-10-25 06:57:42.610 UTC [43] LOG:  background worker "logical replication launcher" (PID 49) exited with exit code 1
+postgres-1  | 2026-10-25 06:57:42.610 UTC [44] LOG:  shutting down
+postgres-1  | 2026-10-25 06:57:42.610 UTC [44] LOG:  checkpoint starting: shutdown immediate
+postgres-1  | 2026-10-25 06:57:42.704 UTC [44] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.005 s, sync=0.087 s, total=0.095 s; sync files=301, longest=0.002 s, average=0.001 s; distance=4266 kB, estimate=4266 kB; lsn=0/191E790, redo lsn=0/191E790
+postgres-1  | 2026-10-25 06:57:42.707 UTC [43] LOG:  database system is shut down
+postgres-1  |  done
+postgres-1  | server stopped
+postgres-1  | 
+postgres-1  | PostgreSQL init process complete; ready for start up.
+postgres-1  | 
+postgres-1  | 2026-10-25 06:57:42.720 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-10-25 06:57:42.720 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-1  | 2026-10-25 06:57:42.720 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1  | 2026-10-25 06:57:42.721 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-10-25 06:57:42.722 UTC [59] LOG:  database system was shut down at 2026-10-25 06:57:42 UTC
+postgres-1  | 2026-10-25 06:57:42.724 UTC [1] LOG:  database system is ready to accept connections
+postgres-1  | 2026-10-25 06:58:30.105 UTC [246] ERROR:  Security audit events are append-only
+postgres-1  | 2026-10-25 06:58:30.105 UTC [246] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+postgres-1  | 2026-10-25 06:58:30.105 UTC [246] STATEMENT:  UPDATE security_audit_events SET outcome=outcome WHERE id=$1
+postgres-1  | 2026-10-25 06:58:30.106 UTC [246] ERROR:  Security audit events are append-only
+postgres-1  | 2026-10-25 06:58:30.106 UTC [246] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+postgres-1  | 2026-10-25 06:58:30.106 UTC [246] STATEMENT:  DELETE FROM security_audit_events WHERE id=$1
+frontend-1  | 
+frontend-1  |   VITE v7.3.7  ready in 132 ms
+frontend-1  | 
+frontend-1  |   ➜  Local:   http://localhost:5173/
+frontend-1  |   ➜  Network: http://172.18.0.4:5173/
