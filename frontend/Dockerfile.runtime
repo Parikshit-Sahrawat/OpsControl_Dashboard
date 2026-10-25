@@ -7,7 +7,7 @@ ARG VITE_API_BASE_URL=https://api.example.invalid
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 RUN npm run build
 FROM nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
-RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache && apk del --no-network curl
 COPY --from=build /src/dist /usr/share/nginx/html
 COPY nginx.demo.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

@@ -2,6 +2,7 @@
 """Isolated TLS/auth-forwarding gateway smoke; owns no database or demo volumes."""
 import importlib.util
 import json
+import os
 import secrets
 import shutil
 import ssl
@@ -114,7 +115,7 @@ HTTPServer(("0.0.0.0",8000),H).serve_forever()
                 str(private / "gateway/tls.crt") + ":/etc/opscontrol/tls/tls.crt:ro",
                 "--volume",
                 str(private / "gateway/tls.key") + ":/etc/opscontrol/tls/tls.key:ro",
-                "nginx:1.28-alpine",
+                os.environ.get("OPSCONTROL_GATEWAY_TEST_IMAGE", "nginx:1.28-alpine"),
                 "nginx",
                 "-g",
                 "daemon off;",
