@@ -127,7 +127,7 @@ def main():
         assert state is not None
     # Recovery: a fresh successful result resolves the alert and restores health.
     next_id=str(uuid.uuid4())
-    request(201,"POST","/api/v1/remote-probes/jobs",north,
+    request(201,"POST","/api/v1/remote-probes/jobs",admin,
             {"collector_id":collector_id,"worker_id":wid,"idempotency_key":next_id})
     recovered=request(200,"POST","/api/v1/worker/claim",worker["worker_token"],
                       {"api_protocol":2})["job"]
