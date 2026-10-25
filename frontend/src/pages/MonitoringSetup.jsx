@@ -474,6 +474,40 @@ export default function MonitoringSetup({
           </p>
         )}
       </section>
+      {apiSource && (
+        <section className="card monitoring-setup-panel" data-testid="api-monitoring-settings">
+          <h2>API monitoring request and assertions</h2>
+          <p className="monitoring-helper">HTTPS only. Request bodies, query strings and redirects are disabled. Basic authentication uses the Data Source's approved worker credential reference.</p>
+          <div className="monitoring-setup-grid">
+            <label>HTTPS endpoint override (optional)
+              <input type="url" placeholder="Use Data Source endpoint" value={apiUrl} disabled={!canWrite}
+                onChange={(e)=>{setApiUrl(e.target.value);setPreview(null);}} />
+            </label>
+            <label>HTTP method
+              <select value={apiMethod} disabled={!canWrite} onChange={(e)=>{setApiMethod(e.target.value);setPreview(null);}}>
+                <option value="GET">GET</option><option value="HEAD">HEAD</option>
+              </select>
+            </label>
+            <label>Expected HTTP status
+              <input type="number" min="100" max="599" value={apiStatus} disabled={!canWrite}
+                onChange={(e)=>{setApiStatus(e.target.value);setPreview(null);}} />
+            </label>
+            <label>Timeout (seconds)
+              <input type="number" min="1" max="10" value={apiTimeout} disabled={!canWrite}
+                onChange={(e)=>{setApiTimeout(e.target.value);setPreview(null);}} />
+            </label>
+            <label>Maximum response time (ms, optional)
+              <input type="number" min="1" max="10000" value={apiLatency} disabled={!canWrite}
+                onChange={(e)=>{setApiLatency(e.target.value);setPreview(null);}} />
+            </label>
+            <label>Approved x-opscontrol-check header (optional)
+              <input maxLength={256} value={apiHeader} disabled={!canWrite}
+                onChange={(e)=>{setApiHeader(e.target.value);setPreview(null);}} />
+            </label>
+          </div>
+          <p className="monitoring-helper">Preview validates the worker's destination policy. Activation persists the configuration and schedules monitoring; health remains unknown until fresh evidence arrives.</p>
+        </section>
+      )}
       <section className="card monitoring-setup-panel">
         <h2>2. Choose independent Metric, Log and Alert Rules</h2>
         <div className="monitoring-rule-list">
