@@ -103,8 +103,9 @@ provenance, not an independent signature or release-owner approval.
 
 Failed attempts remain intact: initial baseline import working-directory error;
 lab attempt 1's unsupported internal-network published-port lookup; lab attempt 2's
-real protobuf-checkpoint rollback failure; source-tag lookup and later runner CLI
-static-check setup errors. Lab attempt 2 also reached zero free VFS space, but the
+real protobuf-checkpoint rollback failure; source-tag lookup, later runner CLI
+static-check setup errors and derived legal-inventory JSON-stream normalization.
+The original legal-inventory stream is retained; raw scanner JSON was not changed. Lab attempt 2 also reached zero free VFS space, but the
 recorded rollback error was a decoding failure, not relabeled as a disk failure.
 The final stdlib-only runner reduced writable-layer space use. No unrelated images
 or caches were pruned. Unified-diff blank context lines trigger whitespace warnings

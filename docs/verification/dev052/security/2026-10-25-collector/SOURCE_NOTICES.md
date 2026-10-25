@@ -5,7 +5,8 @@ The unmodified `upstream-checkpoint.go.txt`,
 `upstream-generated-feature-gates.go.txt` snapshots are from
 `open-telemetry/opentelemetry-collector-contrib`, tag `v0.163.0`, under their original
 OpenTelemetry copyright/SPDX headers. The complete upstream Apache-2.0 license is
-retained as `upstream-CHECKPOINT-LICENSE.txt`. Source URLs and file hashes are in
+retained as `upstream-CHECKPOINT-LICENSE.txt`; its upstream NOTICE is retained as
+`upstream-CHECKPOINT-NOTICE.txt`. Source URLs and file hashes are in
 `source-provenance.json` and the artifact checksum manifest. No source-file change
 or authorship is asserted.
 
