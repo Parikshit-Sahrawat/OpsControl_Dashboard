@@ -1,0 +1,753 @@
+
+$ git rev-parse HEAD
+f617cc653a965c2ad1bb7edf9e20237e40044b97
+
+$ docker info
+Client:
+ Version:    28.4.0
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.31.0
+    Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.40.3
+    Path:     /usr/libexec/docker/cli-plugins/docker-compose
+
+Server:
+ Containers: 7
+  Running: 7
+  Paused: 0
+  Stopped: 0
+ Images: 14
+ Server Version: 28.4.0
+ Storage Driver: vfs
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc runsc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: b98a3aace656320842a23f4a392a33f46af97866
+ runc version: v1.3.0-0-g4ca628d
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.18.55
+ Operating System: Debian GNU/Linux 13 (trixie) (containerized)
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 5
+ Total Memory: 33.29GiB
+ Name: 2d994ad3dc4f
+ ID: 7a38029c-88d6-42b2-b580-34c599de2541
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http://proxy:8080
+ HTTPS Proxy: http://proxy:8080
+ No Proxy: localhost,127.0.0.1,::1
+ Experimental: false
+ Insecure Registries:
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Product License: Community Engine
+
+
+$ docker network ls -q
+56c97c8c87f5
+3a83910a59b1
+30c1944c827c
+819698b03068
+5ca8b3b2c065
+04610cde2d77
+
+$ docker network inspect 56c97c8c87f5
+[
+    {
+        "Name": "bridge",
+        "Id": "56c97c8c87f58acd0374fec18fd6032c03c959711717c4555be00add7c6190d6",
+        "Created": "2026-10-25T05:18:31.408146461Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    "Gateway": "172.17.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {
+            "com.docker.network.bridge.default_bridge": "true",
+            "com.docker.network.bridge.enable_icc": "true",
+            "com.docker.network.bridge.enable_ip_masquerade": "true",
+            "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0",
+            "com.docker.network.bridge.name": "docker0",
+            "com.docker.network.driver.mtu": "1500"
+        },
+        "Labels": {}
+    }
+]
+
+$ docker network inspect 3a83910a59b1
+[
+    {
+        "Name": "dev05-60c7da0501_control",
+        "Id": "3a83910a59b1f14988318e93c5291cdc8b5a998acc0455ca77abf523c10654ac",
+        "Created": "2026-10-25T05:35:24.285465479Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "0131f43c4eec68b58485e2024b5f813bd7cc0c071ee56b802b55263e9c90b34e": {
+                "Name": "dev05-60c7da0501-browser-1",
+                "EndpointID": "229dab7276cf95bcf3a185a5a2b146a7f03a0d8a35991c0859641b44d8677a1e",
+                "MacAddress": "0a:c2:65:e1:cd:d4",
+                "IPv4Address": "172.19.0.2/16",
+                "IPv6Address": ""
+            },
+            "a55019dfc166de81d91bbca5459fa5aaf5e8b534a67708e997e222c56186f40c": {
+                "Name": "dev05-60c7da0501-worker-1",
+                "EndpointID": "724c12a8c837fd429a8193c510f6977da2ad14a00663cb6123ea52cfb2f352b1",
+                "MacAddress": "4a:4c:31:a7:af:63",
+                "IPv4Address": "172.19.0.3/16",
+                "IPv6Address": ""
+            },
+            "b53c1338bd0cd63e2f29da10feec4f9ec6088528488196d6b48d9abf753aa438": {
+                "Name": "dev05-60c7da0501-api-1",
+                "EndpointID": "44aa1fe57d3fcb81d06b9eedd1903289f54f51e9753a68e2b1c69e7d6be5e274",
+                "MacAddress": "06:8c:bb:da:c3:fc",
+                "IPv4Address": "172.19.0.5/16",
+                "IPv6Address": ""
+            },
+            "e1ecd7abf58edaf18c29611f445c92a7247510d7ab3bdc7fe2ae32adc3731403": {
+                "Name": "dev05-60c7da0501-frontend-1",
+                "EndpointID": "7a46cf207cd1e39813c081e39fdacddc47ffbcc75f0e8d2ac89290ea360228ab",
+                "MacAddress": "2a:8e:9e:5c:e7:1f",
+                "IPv4Address": "172.19.0.4/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.config-hash": "39e0ce8e0b3cf244b3d689802141dfce41f2427b6fad203e2c5d2ea42c497892",
+            "com.docker.compose.network": "control",
+            "com.docker.compose.project": "dev05-60c7da0501",
+            "com.docker.compose.version": "2.40.3"
+        }
+    }
+]
+
+$ docker network inspect 30c1944c827c
+[
+    {
+        "Name": "dev05-60c7da0501_database",
+        "Id": "30c1944c827c6d1ac2b94be451bc4e20d7184c1d29ac7e0b492a79f514a9556f",
+        "Created": "2026-10-25T05:35:24.239799807Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "6c91facaeec0556038b1b3bbf58b5a5f9b7da2dab7f6545720641a37dd6882cb": {
+                "Name": "dev05-60c7da0501-postgres-1",
+                "EndpointID": "a3506a2dba859986c9b60e59336248bdba5fbc44c37222bd2118fd2dbf95394f",
+                "MacAddress": "1a:0f:07:ae:78:ab",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "b53c1338bd0cd63e2f29da10feec4f9ec6088528488196d6b48d9abf753aa438": {
+                "Name": "dev05-60c7da0501-api-1",
+                "EndpointID": "b0203cc77e7fc12a99098c09e9a4ac11ef37d60211b51e9e0efe20a81d7c4422",
+                "MacAddress": "b6:a7:56:d8:6c:cb",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.config-hash": "5968f28bdf19d9137be542bd41a5c479ec5f1bfe387d97483afcb2b3fb08c12f",
+            "com.docker.compose.network": "database",
+            "com.docker.compose.project": "dev05-60c7da0501",
+            "com.docker.compose.version": "2.40.3"
+        }
+    }
+]
+
+$ docker network inspect 819698b03068
+[
+    {
+        "Name": "dev05-60c7da0501_target",
+        "Id": "819698b030687d3bcfeaa22926444e38307eb3fbeba42a91403dd48dc47ebf16",
+        "Created": "2026-10-25T05:35:24.263431935Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.20.77.0/24"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "a55019dfc166de81d91bbca5459fa5aaf5e8b534a67708e997e222c56186f40c": {
+                "Name": "dev05-60c7da0501-worker-1",
+                "EndpointID": "73c5b9a20cb2c5a2b3f38621c5b1edae69a09a8024ac6f133655d073639a4cd4",
+                "MacAddress": "82:65:1a:31:7e:6f",
+                "IPv4Address": "172.20.77.2/24",
+                "IPv6Address": ""
+            },
+            "e365928ee16d0e965458192865436ef81f9250fbe8a6573fbc19e7b70d5eae85": {
+                "Name": "dev05-60c7da0501-fixture-1",
+                "EndpointID": "0bb77d1509a6c7d875e778c6e37d8fd66483a2f529678fa735cff38459a331a8",
+                "MacAddress": "5a:78:af:2d:2b:85",
+                "IPv4Address": "172.20.77.10/24",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.config-hash": "780c1c91a83597ac00269432fe9ec0311180ae50857673773480ea73b3f509fd",
+            "com.docker.compose.network": "target",
+            "com.docker.compose.project": "dev05-60c7da0501",
+            "com.docker.compose.version": "2.40.3"
+        }
+    }
+]
+
+$ docker network inspect 5ca8b3b2c065
+[
+    {
+        "Name": "host",
+        "Id": "5ca8b3b2c06515dc07987f677d461c138c98a2d49d215d87f71dd9ce5d2b64d4",
+        "Created": "2026-10-25T05:12:56.16378676Z",
+        "Scope": "local",
+        "Driver": "host",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ docker network inspect 04610cde2d77
+[
+    {
+        "Name": "none",
+        "Id": "04610cde2d77e3ef7a6d5b3bd6018109b16d71fd665c4d298c14119acf85efd9",
+        "Created": "2026-10-25T05:12:56.162263131Z",
+        "Scope": "local",
+        "Driver": "null",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": null
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+
+$ openssl req -x509 -newkey rsa:2048 -nodes -days 1 -keyout /tmp/opscontrol-dev05-uo9as_pj/tls/tls.key -out /tmp/opscontrol-dev05-uo9as_pj/tls/tls.crt -subj /CN=portal.example.test -addext subjectAltName=DNS:portal.example.test
+..+...........+....+..+.+..+..........+......+............+..+.......+...+...+.........+.....+......+...+............+.........+......+...+....+...+..+.+++++++++++++++++++++++++++++++++++++++*..+++++++++++++++++++++++++++++++++++++++*..+..+............+.+..+............+...+..................+...+.+...+......+...........+...+................+......+........+...+....+...+..+.+........+......+....+.....+....+...........+.......+...+...........+.+.....++++++
+......+..........+++++++++++++++++++++++++++++++++++++++*...+...+.......+..+............+...+...+.......+..+.+.....+++++++++++++++++++++++++++++++++++++++*...........+...+..+......+...+....+......+..+............+...+.......+...+.....+....+......+..+.+.....+......++++++
+-----
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml config --quiet
+
+$ docker ps -aq
+b53c1338bd0c
+a55019dfc166
+e365928ee16d
+e1ecd7abf58e
+0131f43c4eec
+6c91facaeec0
+ef199ff7c61c
+
+$ docker network ls -q
+56c97c8c87f5
+3a83910a59b1
+30c1944c827c
+819698b03068
+5ca8b3b2c065
+04610cde2d77
+
+$ docker volume ls -q
+dev05-60c7da0501_pgdata
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml build api frontend browser
+#1 [internal] load local bake definitions
+#1 reading from stdin 2.36kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from frontend.Dockerfile
+#2 transferring dockerfile:
+#2 transferring dockerfile: 382B 0.0s done
+#2 DONE 0.0s
+
+#3 [api internal] load build definition from backend.Dockerfile
+#3 transferring dockerfile: 422B done
+#3 DONE 0.0s
+
+#4 [browser internal] load build definition from browser.Dockerfile
+#4 transferring dockerfile: 598B done
+#4 DONE 0.0s
+
+#5 [browser internal] load metadata for docker.io/library/node:24-bookworm-slim
+#5 DONE 0.5s
+
+#6 [browser internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [frontend stage-0 1/4] FROM docker.io/library/node:24-bookworm-slim@sha256:55fb5f5a527ea2c5c4a95f963e48ef90aa38c7b346054fdc8ee9957a2b55d205
+#7 DONE 0.0s
+
+#8 [browser stage-0 2/4] WORKDIR /tools
+#8 CACHED
+
+#9 [browser stage-0 3/4] RUN --mount=type=secret,id=proxy_ca,required=true     apt-get update && apt-get install -y --no-install-recommends chromium fonts-liberation     && rm -rf /var/lib/apt/lists/*     && NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm install --no-audit --no-fund playwright@1.56.1
+#9 CACHED
+
+#10 [browser stage-0 4/4] WORKDIR /repo
+#10 CACHED
+
+#11 [browser] exporting to image
+#11 exporting layers done
+#11 writing image sha256:057bbb5ef6ffe4f307f706b8df041b8d674cdbeda9534bc155b6d85f86bbef6b done
+#11 naming to docker.io/library/dev05-da4d877658-browser done
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 1.08MB 0.1s done
+#12 DONE 0.1s
+
+#6 [api internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#13 [frontend stage-0 2/5] WORKDIR /app
+#13 CACHED
+
+#14 [frontend stage-0 4/5] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --no-audit --no-fund
+#14 CACHED
+
+#15 [frontend stage-0 3/5] COPY frontend/package*.json ./
+#15 CACHED
+
+#16 [frontend stage-0 5/5] COPY frontend/ ./
+#16 CACHED
+
+#17 [browser] resolving provenance for metadata file
+#17 DONE 0.0s
+
+#18 [api internal] load metadata for docker.io/library/python:3.12-slim
+#18 DONE 0.7s
+
+#19 [api stage-0 1/8] FROM docker.io/library/python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+#19 DONE 0.0s
+
+#20 [frontend] exporting to image
+#20 exporting layers done
+#20 writing image sha256:576ab8b10bda4f29521d454a3a4dcb0223910cdb9d610482143432b4ec5361c5 done
+#20 naming to docker.io/library/dev05-da4d877658-frontend done
+#20 DONE 0.0s
+
+#21 [frontend] resolving provenance for metadata file
+#21 DONE 0.0s
+
+#22 [api internal] load build context
+#22 transferring context: 3.14MB 0.2s done
+#22 DONE 0.2s
+
+#23 [api stage-0 6/8] COPY tests/ /tests/
+#23 CACHED
+
+#24 [api stage-0 4/8] RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+#24 CACHED
+
+#25 [api stage-0 2/8] WORKDIR /app
+#25 CACHED
+
+#26 [api stage-0 3/8] COPY backend/requirements*.txt ./
+#26 CACHED
+
+#27 [api stage-0 7/8] COPY agent/ /agent/
+#27 CACHED
+
+#28 [api stage-0 5/8] COPY backend/ /app/
+#28 CACHED
+
+#29 [api stage-0 8/8] COPY deploy/fixtures/ /fixtures/
+#29 CACHED
+
+#30 [api] exporting to image
+#30 exporting layers done
+#30 writing image sha256:a012b73e2fdda9b37b072f19042a928c3543f5cb8f38f55e89c22ba8345e4e54 done
+#30 naming to docker.io/library/dev05-da4d877658-backend done
+#30 DONE 0.0s
+
+#31 [api] resolving provenance for metadata file
+#31 DONE 0.0s
+ dev05-da4d877658-backend  Built
+ dev05-da4d877658-frontend  Built
+ dev05-da4d877658-browser  Built
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml up -d --wait --wait-timeout 180 postgres api frontend fixture worker browser
+ Network dev05-da4d877658_target  Creating
+ Network dev05-da4d877658_target  Created
+ Network dev05-da4d877658_database  Creating
+ Network dev05-da4d877658_database  Created
+ Network dev05-da4d877658_control  Creating
+ Network dev05-da4d877658_control  Created
+ Volume dev05-da4d877658_pgdata  Creating
+ Volume dev05-da4d877658_pgdata  Created
+ Container dev05-da4d877658-postgres-1  Creating
+ Container dev05-da4d877658-browser-1  Creating
+ Container dev05-da4d877658-fixture-1  Creating
+ Container dev05-da4d877658-worker-1  Creating
+ Container dev05-da4d877658-frontend-1  Creating
+ Container dev05-da4d877658-postgres-1  Created
+ Container dev05-da4d877658-api-1  Creating
+ Container dev05-da4d877658-frontend-1  Created
+ Container dev05-da4d877658-fixture-1  Created
+ Container dev05-da4d877658-worker-1  Created
+ Container dev05-da4d877658-browser-1  Created
+ Container dev05-da4d877658-api-1  Created
+ Container dev05-da4d877658-postgres-1  Starting
+ Container dev05-da4d877658-frontend-1  Starting
+ Container dev05-da4d877658-fixture-1  Starting
+ Container dev05-da4d877658-worker-1  Starting
+ Container dev05-da4d877658-browser-1  Starting
+ Container dev05-da4d877658-frontend-1  Started
+ Container dev05-da4d877658-browser-1  Started
+ Container dev05-da4d877658-fixture-1  Started
+ Container dev05-da4d877658-postgres-1  Started
+ Container dev05-da4d877658-postgres-1  Waiting
+ Container dev05-da4d877658-worker-1  Started
+ Container dev05-da4d877658-postgres-1  Healthy
+ Container dev05-da4d877658-api-1  Starting
+ Container dev05-da4d877658-api-1  Started
+ Container dev05-da4d877658-worker-1  Waiting
+ Container dev05-da4d877658-browser-1  Waiting
+ Container dev05-da4d877658-postgres-1  Waiting
+ Container dev05-da4d877658-api-1  Waiting
+ Container dev05-da4d877658-frontend-1  Waiting
+ Container dev05-da4d877658-fixture-1  Waiting
+ Container dev05-da4d877658-fixture-1  Healthy
+ Container dev05-da4d877658-browser-1  Healthy
+ Container dev05-da4d877658-postgres-1  Healthy
+ Container dev05-da4d877658-worker-1  Healthy
+ Container dev05-da4d877658-frontend-1  Healthy
+ Container dev05-da4d877658-api-1  Healthy
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q postgres
+0a3b8bd3ea10d5885ab96a8de157558856dff131db7942f3c5af0956d811ec3f
+
+$ docker inspect --format {{json .Image}} 0a3b8bd3ea10d5885ab96a8de157558856dff131db7942f3c5af0956d811ec3f
+"sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q api
+18df04d3cb182ab8087bc6ebd3ce325c676f819c2db1f7c199c45953bf033a16
+
+$ docker inspect --format {{json .Image}} 18df04d3cb182ab8087bc6ebd3ce325c676f819c2db1f7c199c45953bf033a16
+"sha256:a012b73e2fdda9b37b072f19042a928c3543f5cb8f38f55e89c22ba8345e4e54"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q frontend
+ddd2400bec11cdc88ba4655a796793b2347ff1a7b959de78da0b60b3a6223335
+
+$ docker inspect --format {{json .Image}} ddd2400bec11cdc88ba4655a796793b2347ff1a7b959de78da0b60b3a6223335
+"sha256:576ab8b10bda4f29521d454a3a4dcb0223910cdb9d610482143432b4ec5361c5"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q fixture
+a2627a988071eabc967a04235a591fc7dadf5cf14d30da2ad3558925b4bf60e8
+
+$ docker inspect --format {{json .Image}} a2627a988071eabc967a04235a591fc7dadf5cf14d30da2ad3558925b4bf60e8
+"sha256:a012b73e2fdda9b37b072f19042a928c3543f5cb8f38f55e89c22ba8345e4e54"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q worker
+ef0280397f05c1f1c61723fb2466af3c66be165b0333febab3855a0b8a494de0
+
+$ docker inspect --format {{json .Image}} ef0280397f05c1f1c61723fb2466af3c66be165b0333febab3855a0b8a494de0
+"sha256:a012b73e2fdda9b37b072f19042a928c3543f5cb8f38f55e89c22ba8345e4e54"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml ps -q browser
+3bb3815fbaa8911958859b0916245756a1e3c5bb66d8e44aecd84bf3bfeb2400
+
+$ docker inspect --format {{json .Image}} 3bb3815fbaa8911958859b0916245756a1e3c5bb66d8e44aecd84bf3bfeb2400
+"sha256:057bbb5ef6ffe4f307f706b8df041b8d674cdbeda9534bc155b6d85f86bbef6b"
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml exec -T browser chromium --version
+Chromium 156.0.8078.47 built on Debian GNU/Linux 12 (bookworm)
+
+$ docker compose -p dev05-da4d877658 -f /tmp/opscontrol-dev05-uo9as_pj/context/verification/dev05/compose.yml logs --no-color
+postgres-1  | ********************************************************************************
+postgres-1  | WARNING: POSTGRES_HOST_AUTH_METHOD has been set to "trust". This will allow
+postgres-1  |          anyone with access to the Postgres port to access your database without
+postgres-1  |          a password, even if POSTGRES_PASSWORD is set. See PostgreSQL
+postgres-1  |          documentation about "trust":
+postgres-1  |          https://www.postgresql.org/docs/current/auth-trust.html
+postgres-1  |          In Docker's default configuration, this is effectively any other
+postgres-1  |          container on the same system.
+postgres-1  | 
+postgres-1  |          It is not recommended to use POSTGRES_HOST_AUTH_METHOD=trust. Replace
+postgres-1  |          it with "-e POSTGRES_PASSWORD=password" instead to set a password in
+postgres-1  |          "docker run".
+postgres-1  | ********************************************************************************
+postgres-1  | The files belonging to this database system will be owned by user "postgres".
+postgres-1  | This user must also own the server process.
+postgres-1  | 
+postgres-1  | The database cluster will be initialized with locale "en_US.utf8".
+postgres-1  | The default database encoding has accordingly been set to "UTF8".
+postgres-1  | The default text search configuration will be set to "english".
+postgres-1  | 
+postgres-1  | Data page checksums are disabled.
+postgres-1  | 
+postgres-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+postgres-1  | creating subdirectories ... ok
+postgres-1  | selecting dynamic shared memory implementation ... posix
+postgres-1  | selecting default "max_connections" ... 100
+postgres-1  | selecting default "shared_buffers" ... 128MB
+postgres-1  | selecting default time zone ... UTC
+postgres-1  | creating configuration files ... ok
+postgres-1  | running bootstrap script ... ok
+postgres-1  | sh: locale: not found
+postgres-1  | 2026-10-25 05:36:43.405 UTC [35] WARNING:  no usable system locales were found
+postgres-1  | performing post-bootstrap initialization ... ok
+postgres-1  | syncing data to disk ... ok
+postgres-1  | 
+postgres-1  | 
+postgres-1  | Success. You can now start the database server using:
+postgres-1  | 
+postgres-1  |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-1  | 
+postgres-1  | initdb: warning: enabling "trust" authentication for local connections
+postgres-1  | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-1  | waiting for server to start....2026-10-25 05:36:44.317 UTC [41] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-10-25 05:36:44.318 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-10-25 05:36:44.320 UTC [44] LOG:  database system was shut down at 2026-10-25 05:36:43 UTC
+postgres-1  | 2026-10-25 05:36:44.324 UTC [41] LOG:  database system is ready to accept connections
+postgres-1  |  done
+postgres-1  | server started
+postgres-1  | CREATE DATABASE
+api-1       | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+postgres-1  | 
+postgres-1  | 
+postgres-1  | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+postgres-1  | 
+api-1       | INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+api-1       | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+api-1       | INFO  [alembic.runtime.migration] Will assume transactional DDL.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+api-1       | INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+postgres-1  | waiting for server to shut down...2026-10-25 05:36:44.468 UTC [41] LOG:  received fast shutdown request
+postgres-1  | .2026-10-25 05:36:44.468 UTC [41] LOG:  aborting any active transactions
+postgres-1  | 2026-10-25 05:36:44.471 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+postgres-1  | 2026-10-25 05:36:44.472 UTC [42] LOG:  shutting down
+postgres-1  | 2026-10-25 05:36:44.473 UTC [42] LOG:  checkpoint starting: shutdown immediate
+postgres-1  | 2026-10-25 05:36:44.575 UTC [42] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.007 s, sync=0.093 s, total=0.103 s; sync files=301, longest=0.002 s, average=0.001 s; distance=4266 kB, estimate=4266 kB; lsn=0/191E790, redo lsn=0/191E790
+postgres-1  | 2026-10-25 05:36:44.580 UTC [41] LOG:  database system is shut down
+postgres-1  |  done
+postgres-1  | server stopped
+postgres-1  | 
+postgres-1  | PostgreSQL init process complete; ready for start up.
+postgres-1  | 
+postgres-1  | 2026-10-25 05:36:44.693 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+postgres-1  | 2026-10-25 05:36:44.693 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+postgres-1  | 2026-10-25 05:36:44.694 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1  | 2026-10-25 05:36:44.695 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1  | 2026-10-25 05:36:44.697 UTC [57] LOG:  database system was shut down at 2026-10-25 05:36:44 UTC
+postgres-1  | 2026-10-25 05:36:44.702 UTC [1] LOG:  database system is ready to accept connections
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+api-1       | Revision ID: 0015_remote_jobs
+api-1       | Revises: 0014_audit_mutation_guard
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+api-1       | Revision ID: 0015_remote_jobs
+api-1       | Revises: 0014_audit_mutation_guard
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+api-1       | Revision ID: 0016_remote_collector_assignment
+api-1       | Revises: 0015_remote_jobs
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+api-1       | Revision ID: 0016_remote_collector_assignment
+api-1       | Revises: 0015_remote_jobs
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+api-1       | Revision ID: 0018_pentaho_execution_identity
+api-1       | Revises: 0017_rule_catalogs_activation
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+api-1       | Revision ID: 0018_pentaho_execution_identity
+api-1       | Revises: 0017_rule_catalogs_activation
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+api-1       | INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+api-1       | Public-safe, fictional demo seeded (no live infrastructure connections).
+api-1       | INFO:     Started server process [1]
+api-1       | INFO:     Waiting for application startup.
+api-1       | INFO:     Application startup complete.
+api-1       | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+frontend-1  | 
+frontend-1  | > opscontrol-frontend@0.1.0 dev
+frontend-1  | > vite --host 0.0.0.0 --port 5173 --strictPort
+frontend-1  | 
+frontend-1  | 
+frontend-1  |   VITE v7.3.7  ready in 202 ms
+frontend-1  | 
+frontend-1  |   ➜  Local:   http://localhost:5173/
+frontend-1  |   ➜  Network: http://172.23.0.2:5173/

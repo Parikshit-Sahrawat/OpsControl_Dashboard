@@ -1,0 +1,138 @@
+# All runtime networks are internal. No host ports, real endpoints or credentials.
+x-common: &common
+  image: ${DEV05_IMAGE}
+  build:
+    context: ../..
+    dockerfile: verification/dev05/backend.Dockerfile
+    secrets: [proxy_ca]
+  environment: &environment
+    PYTHONPATH: /app
+    ENVIRONMENT: demo
+    DATABASE_URL: postgresql+psycopg://opscontrol@postgres/opscontrol
+    CORS_ORIGINS: http://frontend:5173
+    OPSCONTROL_GOLDEN_PATH: '1'
+    GOLDEN_NETWORK_PREFIX: ${DEV05_PREFIX}
+    NO_PROXY: '*'
+    no_proxy: '*'
+    HTTP_PROXY: ''
+    HTTPS_PROXY: ''
+    ALL_PROXY: ''
+    all_proxy: ''
+    http_proxy: ''
+    https_proxy: ''
+    SSL_CERT_FILE: /fixture/tls.crt
+  volumes:
+    - ${DEV05_RUNTIME}/context/verification/dev05:/verification:ro
+    - ${DEV05_RUNTIME}/private:/golden/private
+    - ${DEV05_RUNTIME}/private/admin-password:/run/secrets/demo_admin_password:ro
+    - ${DEV05_RUNTIME}/tls/tls.crt:/fixture/tls.crt:ro
+    - ${DEV05_RUNTIME}/evidence:/golden/evidence
+  networks: [control]
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: opscontrol
+      POSTGRES_DB: opscontrol
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes: [pgdata:/var/lib/postgresql/data]
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U opscontrol -d opscontrol']
+      interval: 2s
+      timeout: 3s
+      retries: 40
+  api:
+    <<: *common
+    command: [sh, -ec, 'alembic upgrade head && python -m scripts.bootstrap_public_demo && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log']
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks:
+      database: {}
+      control:
+        aliases: [opscontrol-control]
+    healthcheck:
+      test: [CMD, python, -c, 'import urllib.request; urllib.request.urlopen("http://127.0.0.1:8000/health/db", timeout=3)']
+      interval: 2s
+      timeout: 5s
+      retries: 60
+  frontend:
+    build:
+      context: ../..
+      dockerfile: verification/dev05/frontend.Dockerfile
+      secrets: [proxy_ca]
+    environment:
+      HTTP_PROXY: ''
+      HTTPS_PROXY: ''
+      VITE_API_BASE_URL: http://api:8000
+      __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS: frontend
+      http_proxy: ''
+      https_proxy: ''
+      ALL_PROXY: ''
+      all_proxy: ''
+      NO_PROXY: '*'
+      no_proxy: '*'
+    networks: [control]
+    healthcheck:
+      test: [CMD, node, -e, 'fetch("http://127.0.0.1:5173/").then(r=>{if(!r.ok)process.exit(1)})']
+      interval: 2s
+      timeout: 5s
+      retries: 40
+  fixture:
+    image: ${DEV05_IMAGE}
+    command: [python, /verification/fixture.py]
+    volumes:
+      - ${DEV05_RUNTIME}/context/verification/dev05:/verification:ro
+      - ${DEV05_RUNTIME}/tls:/fixture:ro
+    networks:
+      target:
+        ipv4_address: ${DEV05_PREFIX}.77.10
+        aliases: [portal.example.test, wrong.example.test]
+  worker:
+    <<: *common
+    command: [sleep, infinity]
+    environment:
+      <<: *environment
+      DATABASE_URL: ''
+    volumes:
+      - ${DEV05_RUNTIME}/context/verification/dev05:/verification:ro
+      - ${DEV05_RUNTIME}/private/worker-session.json:/golden/private/session.json:ro
+      - ${DEV05_RUNTIME}/tls/tls.crt:/fixture/tls.crt:ro
+      - ${DEV05_RUNTIME}/evidence:/golden/evidence
+    networks: [control, target]
+  browser:
+    build:
+      context: ../..
+      dockerfile: verification/dev05/browser.Dockerfile
+      secrets: [proxy_ca]
+    environment:
+      GOLDEN_SESSION_FILE: /golden/private/session.json
+      GOLDEN_UI_URL: http://frontend:5173
+      GOLDEN_EVIDENCE_DIR: /golden/evidence
+      HTTP_PROXY: ''
+      HTTPS_PROXY: ''
+      NO_PROXY: '*'
+      no_proxy: '*'
+      http_proxy: ''
+      https_proxy: ''
+      ALL_PROXY: ''
+      all_proxy: ''
+    volumes:
+      - ${DEV05_RUNTIME}/context/verification/dev05:/verification:ro
+      - ${DEV05_RUNTIME}/context/frontend/scripts:/repo/frontend/scripts:ro
+      - ${DEV05_RUNTIME}/private/browser-session.json:/golden/private/session.json:ro
+      - ${DEV05_RUNTIME}/evidence:/golden/evidence
+    networks: [control]
+networks:
+  database: {internal: true}
+  control: {internal: true}
+  target:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${DEV05_PREFIX}.77.0/24
+volumes:
+  pgdata:
+secrets:
+  proxy_ca:
+    file: ${DEV05_CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}
