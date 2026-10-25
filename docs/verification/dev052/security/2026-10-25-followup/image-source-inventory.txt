@@ -1,0 +1,165 @@
+frontend/Dockerfile.runtime:1:FROM node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS build
+frontend/Dockerfile.runtime:9:FROM nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+deploy/release/Dockerfile.gateway:1:FROM nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+.github/workflows/release-reliability.yml:31:          docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend
+deploy/uat/compose.images.yml:5:    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+deploy/uat/compose.images.yml:8:    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+deploy/uat/compose.images.yml:10:    image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}
+deploy/uat/compose.images.yml:13:    image: ${STAGE_B_FRONTEND_IMAGE:?digest-pinned frontend image required}
+.github/workflows/phase1-staging.yml:15:        image: postgres:17
+frontend/Dockerfile.demo:1:FROM node:20-alpine AS build
+frontend/Dockerfile.demo:9:FROM nginx:1.27-alpine
+docker-compose.demo.yml:4:    image: public.ecr.aws/docker/library/postgres:17
+docker-compose.demo.yml:60:    image: nginx:1.28-alpine
+backend/tests/test_pipeline_runtime_v15.py:88:            self.db.scalar(text("SELECT count(*) FROM acceptance_evidence")), 1
+backend/tests/test_pipeline_runtime_v15.py:108:            self.db.scalar(text("SELECT count(*) FROM acceptance_evidence")), 0
+.github/workflows/live-http-alert-recovery.yml:25:          if ! docker pull public.ecr.aws/docker/library/postgres:17; then
+.github/workflows/live-http-alert-recovery.yml:28:            docker pull postgres:17
+.github/workflows/consolidated-uat.yml:26:          docker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+backend/tests/test_pentaho_review_r1.py:347:            "DELETE FROM pentaho_evidence_reviews WHERE id=:id",
+backend/tests/test_pentaho_review_r1.py:349:            "DELETE FROM pentaho_evidence_decisions WHERE review_id=:id",
+.github/workflows/arch001-native-monitoring.yml:26:          docker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+backend/tests/test_pentaho_incident_r1.py:258:                "DELETE FROM " + table,
+backend/tests/test_pentaho_history_r1.py:228:            "DELETE FROM pentaho_historical_notices WHERE id=:id",
+backend/tests/test_pentaho_history_r1.py:230:            "DELETE FROM in_app_notifications WHERE historical_notice_id=:id",
+backend/tests/test_pentaho_execution_r1.py:565:            "DELETE FROM pentaho_native_aliases WHERE history_id=:id",
+backend/tests/test_pentaho_execution_r1.py:566:            "DELETE FROM job_order_histories WHERE id=:id",
+backend/scripts/topology_gate_probe.py:197:        results["revision"] = db.scalar(text("SELECT version_num FROM alembic_version"))
+backend/scripts/topology_gate_probe.py:449:                                "SELECT wait_event FROM pg_stat_activity "
+backend/scripts/topology_gate_probe.py:503:                "EXPLAIN (FORMAT JSON) SELECT depends_on_id FROM resource_dependencies WHERE resource_id=:id AND valid_to IS NULL"
+backend/scripts/sprint13_recovery_probe.py:377:                table: db.scalar(text("SELECT count(*) FROM " + table))
+backend/scripts/sprint13_recovery_probe.py:473:                    text("SELECT version_num FROM alembic_version")
+backend/scripts/sprint13_recovery_probe.py:491:                    text("SELECT version_num FROM alembic_version")
+docker-compose.yml:3:    image: postgres:17
+backend/scripts/release_runtime_probe.py:313:                assert connection.scalar(text(f'SELECT count(*) FROM {table}')) > 0
+backend/scripts/release_runtime_probe.py:335:        names = connection.scalars(text("SELECT indexname FROM pg_indexes WHERE schemaname='public'")).all()
+backend/scripts/arch001_acceptance_probe.py:52:                "INSERT INTO users(id,username,password_hash,active,platform_admin,service_provider_id,created_at) VALUES (:id,'arch001-admin',:hash,true,true,(SELECT id FROM service_providers LIMIT 1),now())"
+backend/scripts/arch001_acceptance_probe.py:123:                    text("SELECT " + cols + " FROM " + t + " ORDER BY id")
+backend/scripts/arch001_acceptance_probe.py:150:                    text("SELECT " + cols + " FROM " + t + " ORDER BY id")
+backend/scripts/access_schema_probe.py:59:            "SELECT count(*) FROM pg_index i JOIN pg_class t ON t.oid = i.indrelid "
+backend/scripts/access_schema_probe.py:65:            db.exec_driver_sql("SELECT version_num FROM alembic_version").scalar()
+verification/dev05/frontend.Dockerfile:1:FROM node:24-bookworm-slim
+backend/scripts/pentaho_review_migration_probe.py:23:            text("SELECT row_to_json(t) FROM " + table + " t WHERE id=:id"),
+backend/scripts/pentaho_review_migration_probe.py:44:            text("SELECT id FROM monitoring_resources WHERE job_order_id=:job"),
+backend/scripts/pentaho_review_migration_probe.py:77:                "SELECT row_to_json(t)::jsonb - 'pentaho_review_state' FROM job_order_histories t WHERE id=:id"
+verification/dev05/compose.yml:3:  image: ${DEV05_IMAGE}
+verification/dev05/compose.yml:33:    image: postgres:17-alpine
+verification/dev05/compose.yml:82:    image: ${DEV05_IMAGE}
+verification/dev05/browser.Dockerfile:2:FROM node:24-bookworm-slim
+backend/scripts/pentaho_incident_migration_probe.py:35:                    text("SELECT row_to_json(t)::text FROM " + table + " t")
+backend/scripts/pentaho_incident_migration_probe.py:45:        org = db.scalar(text("SELECT id FROM organizations LIMIT 1"))
+backend/scripts/pentaho_incident_migration_probe.py:46:        user = db.scalar(text("SELECT id FROM users LIMIT 1"))
+verification/dev05/backend.Dockerfile:1:FROM python:3.12-slim
+backend/scripts/pentaho_history_migration_probe.py:29:        text("SELECT row_to_json(t) FROM " + table + " t WHERE id=:id"),
+backend/Dockerfile.uat:1:FROM python:3.12-slim
+backend/scripts/existing_database_upgrade_probe.py:32:        SELECT d.organization_id, o.code FROM data_sources d
+backend/scripts/existing_database_upgrade_probe.py:45:        FROM monitoring_resources WHERE data_source_id=:source FOR UPDATE
+backend/scripts/existing_database_upgrade_probe.py:63:            DELETE FROM monitoring_resources
+backend/scripts/existing_database_upgrade_probe.py:70:        text("DELETE FROM data_sources WHERE id=:source AND organization_id=:org"),
+backend/scripts/existing_database_upgrade_probe.py:74:        text("DELETE FROM organizations WHERE id=:org AND code=:code"),
+backend/scripts/existing_database_upgrade_probe.py:88:        current = connection.scalar(text("SELECT version_num FROM alembic_version"))
+backend/scripts/existing_database_upgrade_probe.py:122:              FROM data_sources d
+backend/scripts/existing_database_upgrade_probe.py:134:        rev = connection.scalar(text("SELECT version_num FROM alembic_version"))
+backend/Dockerfile.runtime:1:FROM python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704 AS dependencies
+backend/Dockerfile.runtime:8:FROM python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704 AS runtime_base
+backend/Dockerfile.runtime:19:FROM runtime_base AS migration
+backend/Dockerfile.runtime:26:FROM runtime_base AS runtime
+backend/Dockerfile.demo:1:FROM otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2 AS telemetryruntime
+backend/Dockerfile.demo:2:FROM python:3.12-slim
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:118:            "SELECT EXISTS(SELECT 1 FROM kubernetes_clusters) OR "
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:119:            "EXISTS(SELECT 1 FROM kubernetes_cluster_associations) OR "
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:120:            "EXISTS(SELECT 1 FROM kubernetes_cluster_association_decisions)"
+backend/scripts/http_golden_path_probe.py:183:                          'DELETE FROM security_audit_events WHERE id=:id']:
+backend/migrations/versions/0037_access_boundaries.py:94:            "SELECT EXISTS(SELECT 1 FROM access_boundaries) OR EXISTS(SELECT 1 FROM access_boundary_decisions)"
+backend/migrations/versions/0036_native_incident_recovery.py:40:            "SELECT EXISTS(SELECT 1 FROM native_incident_failures) OR EXISTS(SELECT 1 FROM native_recovery_assessments)"
+backend/migrations/versions/0035_pentaho_schedule_history.py:65:      IF (NEW.id,NEW.organization_id,NEW.resource_id,NEW.history_id,NEW.event_id,NEW.destination_id,NEW.payload,NEW.created_at) IS DISTINCT FROM (OLD.id,OLD.organization_id,OLD.resource_id,OLD.history_id,OLD.event_id,OLD.destination_id,OLD.payload,OLD.created_at)
+backend/migrations/versions/0035_pentaho_schedule_history.py:78:        IF (NEW.id,NEW.organization_id,NEW.resource_id,NEW.scheduled_at,NEW.deadline,NEW.parameter_version,NEW.pentaho_authority) IS DISTINCT FROM (OLD.id,OLD.organization_id,OLD.resource_id,OLD.scheduled_at,OLD.deadline,OLD.parameter_version,OLD.pentaho_authority)
+backend/migrations/versions/0035_pentaho_schedule_history.py:119:            "SELECT EXISTS(SELECT 1 FROM pentaho_historical_notices) OR EXISTS(SELECT 1 FROM expected_execution_windows WHERE pentaho_authority IS NOT NULL) OR EXISTS(SELECT 1 FROM pipeline_operations WHERE configuration->>'mode'='ACCEPTED_PENTAHO_EVIDENCE')"
+backend/migrations/versions/0035_pentaho_schedule_history.py:126:        "DELETE FROM permissions WHERE key IN ('etl.replay','etl.approve_replay')"
+backend/migrations/versions/0034_pentaho_evidence_review.py:60:            "SELECT EXISTS(SELECT 1 FROM pentaho_evidence_reviews) OR EXISTS(SELECT 1 FROM pentaho_evidence_decisions)"
+backend/migrations/versions/0034_pentaho_evidence_review.py:68:            "SELECT EXISTS(SELECT 1 FROM role_permissions WHERE permission_key='etl.resolve_identity')"
+backend/migrations/versions/0034_pentaho_evidence_review.py:75:    op.execute("DELETE FROM permissions WHERE key='etl.resolve_identity'")
+backend/migrations/versions/0033_pentaho_attempts.py:132:      IF OLD.pentaho_resource_id IS NOT NULL AND (NEW.pentaho_customer_id,NEW.pentaho_resource_id,NEW.job_order_id,NEW.provider_execution_id) IS DISTINCT FROM (OLD.pentaho_customer_id,OLD.pentaho_resource_id,OLD.job_order_id,OLD.provider_execution_id)
+backend/migrations/versions/0033_pentaho_attempts.py:145:        IF NEW.payload IS DISTINCT FROM OLD.payload THEN RAISE EXCEPTION 'Pentaho source evidence is immutable'; END IF;
+backend/migrations/versions/0033_pentaho_attempts.py:160:            "SELECT EXISTS(SELECT 1 FROM job_order_histories WHERE pentaho_resource_id IS NOT NULL)"
+backend/migrations/versions/0033_pentaho_attempts.py:163:        db.scalar(sa.text("SELECT EXISTS(SELECT 1 FROM " + table + ")"))
+backend/migrations/versions/0032_pipeline_ownership.py:63:        if db.scalar(sa.text("SELECT EXISTS(SELECT 1 FROM " + table + ")")):
+backend/migrations/versions/0031_in_app_notifications.py:61:            "SELECT EXISTS(SELECT 1 FROM in_app_notifications) OR EXISTS(SELECT 1 FROM users WHERE notification_preferences <> '{}'::jsonb)"
+backend/migrations/versions/0030_native_incidents_v15.py:136:            "SELECT EXISTS (SELECT 1 FROM native_incident_details) OR EXISTS (SELECT 1 FROM native_incident_alerts) OR EXISTS (SELECT 1 FROM operational_incidents WHERE status NOT IN ('OPEN','ACKNOWLEDGED','INVESTIGATING','RESOLVED')) OR EXISTS (SELECT 1 FROM role_permissions WHERE (active AND permission_key LIKE 'incidents.%') OR (NOT active AND permission_key NOT LIKE 'incidents.%'))"
+scripts/verify-firewall-docker.sh:8:if ! docker image inspect "$image" >/dev/null 2>&1 && ! docker pull "$image"; then
+scripts/verify-firewall-docker.sh:10:  docker pull "$image"
+backend/scripts/database_integrity.py:14:            f'SELECT to_jsonb(t)::text FROM public.{quoted} t ORDER BY to_jsonb(t)::text')):
+backend/scripts/database_integrity.py:21:        FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid
+backend/migrations/versions/0028_attribute_registry.py:5780:        """CREATE FUNCTION opscontrol_runtime_scope_guard() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NOT EXISTS (SELECT 1 FROM collectors c JOIN data_sources s ON s.id=c.data_source_id WHERE c.id=NEW.collector_id AND s.organization_id=NEW.organization_id) THEN RAISE EXCEPTION 'Collector runtime state tenant mismatch'; END IF; RETURN NEW; END; $$"""
+backend/migrations/versions/0028_attribute_registry.py:5788:        """UPDATE monitoring_resources r SET configuration=jsonb_set(r.configuration,'{alert_setup}',jsonb_build_object('enabled',true,'parameter_version',p.version,'severities',jsonb_build_array('WARNING','CRITICAL'),'destinations','[]'::jsonb,'in_app',true,'revision',1,'provenance','PRESERVED_EXISTING_NATIVE_RULES')) FROM resource_parameter_versions p WHERE p.resource_id=r.id AND p.status='ACTIVE' AND NOT (r.configuration ? 'alert_setup') AND EXISTS (SELECT 1 FROM metric_definitions m JOIN alert_rules a ON a.metric_definition_id=m.id WHERE m.resource_id=r.id AND m.metric_type='DERIVED_CONDITION' AND a.enabled)"""
+backend/migrations/versions/0028_attribute_registry.py:5795:        connection.scalar(sa.text("SELECT count(*) FROM resource_drafts"))
+backend/migrations/versions/0028_attribute_registry.py:5796:        or connection.scalar(sa.text("SELECT count(*) FROM collector_runtime_states"))
+backend/migrations/versions/0028_attribute_registry.py:5798:            sa.text("SELECT count(*) FROM attribute_registry_versions WHERE version<>1")
+backend/scripts/database_backup.py:59:        "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND c.relkind IN ('r','p','v','m','S','f')"],
+backend/migrations/versions/0027_unified_monitoring.py:132:      FROM vms WHERE upper(environment) IN ('PROD','QA','TEST','DEV','SANDBOX')"""
+backend/migrations/versions/0027_unified_monitoring.py:136:      SELECT v.id, array_agg(s.id) AS ids FROM vms v JOIN data_sources s ON s.organization_id=v.organization_id
+backend/migrations/versions/0027_unified_monitoring.py:141:      UPDATE monitoring_resources r SET data_source_id=m.ids[1] FROM matches m WHERE r.vm_id=m.id AND cardinality(m.ids)=1"""
+backend/migrations/versions/0027_unified_monitoring.py:148:      FROM job_orders WHERE upper(environment) IN ('PROD','QA','TEST','DEV','SANDBOX') AND (vm_id IS NULL OR EXISTS(SELECT 1 FROM vms v WHERE v.id=job_orders.vm_id AND v.organization_id=job_orders.organization_id))"""
+backend/migrations/versions/0027_unified_monitoring.py:155:      FROM data_sources WHERE upper(source_type) IN ('API','HTTP','HTTPS')
+backend/migrations/versions/0027_unified_monitoring.py:159:        """WITH candidates AS (SELECT data_source_id,array_agg(id) AS ids FROM collectors WHERE upper(collector_type)='OTEL' GROUP BY data_source_id)
+backend/migrations/versions/0027_unified_monitoring.py:160:      UPDATE monitoring_resources r SET primary_collector_id=c.ids[1] FROM candidates c
+backend/migrations/versions/0027_unified_monitoring.py:164:        """WITH candidates AS (SELECT data_source_id,array_agg(id) AS ids FROM collectors WHERE upper(collector_type) IN ('API','NATIVE_API') GROUP BY data_source_id)
+backend/migrations/versions/0027_unified_monitoring.py:165:      UPDATE monitoring_resources r SET primary_collector_id=c.ids[1] FROM candidates c
+backend/migrations/versions/0027_unified_monitoring.py:170:      FROM (SELECT j.id,jsonb_agg(jsonb_build_object('template_id',t.template_id,'version',t.template_version,'enabled',t.enabled)) AS docs
+backend/migrations/versions/0027_unified_monitoring.py:171:      FROM job_orders j JOIN monitoring_template_attachments t ON t.data_source_id=j.host_data_source_id GROUP BY j.id) a
+backend/migrations/versions/0027_unified_monitoring.py:179:      FROM vms v LEFT JOIN monitoring_resources r ON r.vm_id=v.id WHERE r.id IS NULL OR r.data_source_id IS NULL"""
+backend/migrations/versions/0027_unified_monitoring.py:184:      FROM job_orders j LEFT JOIN monitoring_resources r ON r.job_order_id=j.id WHERE r.id IS NULL"""
+backend/migrations/versions/0027_unified_monitoring.py:189:      coalesce((SELECT jsonb_agg(c.id) FROM collectors c WHERE c.data_source_id=r.data_source_id AND upper(c.collector_type)='OTEL'),'[]'::jsonb)
+backend/migrations/versions/0027_unified_monitoring.py:190:      FROM monitoring_resources r WHERE r.domain='VM' AND (SELECT count(*) FROM collectors c WHERE c.data_source_id=r.data_source_id AND upper(c.collector_type)='OTEL')>1"""
+backend/migrations/versions/0027_unified_monitoring.py:196:      IF NEW.vm_id IS NOT NULL THEN SELECT organization_id INTO parent_org FROM vms WHERE id=NEW.vm_id;
+backend/migrations/versions/0027_unified_monitoring.py:197:        IF parent_org IS DISTINCT FROM NEW.organization_id THEN RAISE EXCEPTION 'resource VM scope mismatch'; END IF; END IF;
+backend/migrations/versions/0027_unified_monitoring.py:198:      IF NEW.linked_vm_id IS NOT NULL THEN SELECT organization_id INTO parent_org FROM vms WHERE id=NEW.linked_vm_id;
+backend/migrations/versions/0027_unified_monitoring.py:199:        IF parent_org IS DISTINCT FROM NEW.organization_id THEN RAISE EXCEPTION 'linked VM scope mismatch'; END IF; END IF;
+backend/migrations/versions/0027_unified_monitoring.py:200:      IF NEW.job_order_id IS NOT NULL THEN SELECT organization_id INTO parent_org FROM job_orders WHERE id=NEW.job_order_id;
+backend/migrations/versions/0027_unified_monitoring.py:201:        IF parent_org IS DISTINCT FROM NEW.organization_id THEN RAISE EXCEPTION 'job scope mismatch'; END IF; END IF;
+backend/migrations/versions/0027_unified_monitoring.py:202:      IF NEW.data_source_id IS NOT NULL THEN SELECT organization_id INTO parent_org FROM data_sources WHERE id=NEW.data_source_id;
+backend/migrations/versions/0027_unified_monitoring.py:203:        IF parent_org IS DISTINCT FROM NEW.organization_id THEN RAISE EXCEPTION 'source scope mismatch'; END IF; END IF;
+backend/migrations/versions/0027_unified_monitoring.py:204:      IF NEW.primary_collector_id IS NOT NULL THEN SELECT data_source_id INTO source_id FROM collectors WHERE id=NEW.primary_collector_id;
+backend/migrations/versions/0027_unified_monitoring.py:205:        IF source_id IS DISTINCT FROM NEW.data_source_id THEN RAISE EXCEPTION 'collector source mismatch'; END IF; END IF;
+backend/migrations/versions/0027_unified_monitoring.py:214:      BEGIN IF TG_OP='DELETE' THEN RAISE EXCEPTION 'parameter versions are immutable'; END IF; IF NEW.configuration IS DISTINCT FROM OLD.configuration OR NEW.resource_id IS DISTINCT FROM OLD.resource_id
+backend/migrations/versions/0027_unified_monitoring.py:215:      OR NEW.version IS DISTINCT FROM OLD.version OR NEW.sha256 IS DISTINCT FROM OLD.sha256
+backend/migrations/versions/0027_unified_monitoring.py:216:      OR NEW.organization_id IS DISTINCT FROM OLD.organization_id THEN RAISE EXCEPTION 'parameter versions are immutable'; END IF; RETURN NEW; END $$"""
+backend/migrations/versions/0027_unified_monitoring.py:225:    if bind.scalar(sa.text("SELECT count(*) FROM job_orders WHERE vm_id IS NULL")):
+backend/migrations/versions/0027_unified_monitoring.py:230:        "SELECT count(*) FROM collector_config_versions WHERE agent_configuration <> '{}'::jsonb",
+backend/migrations/versions/0027_unified_monitoring.py:231:        "SELECT count(*) FROM job_order_histories WHERE monitoring_conditions IS NOT NULL",
+backend/migrations/versions/0027_unified_monitoring.py:232:        "SELECT count(*) FROM job_step_executions WHERE external_step_id IS NOT NULL OR attempt<>1 OR source_evidence IS NOT NULL",
+backend/migrations/versions/0027_unified_monitoring.py:233:        "SELECT count(*) FROM collector_runs WHERE source_metadata IS NOT NULL AND source_metadata<>'{}'::jsonb",
+backend/migrations/versions/0027_unified_monitoring.py:240:        if bind.scalar(sa.text("SELECT count(*) FROM " + table)):
+backend/migrations/versions/0026_managed_telemetry_uat.py:68:        "INSERT INTO role_permissions(role_id,permission_key) SELECT role_id,CASE WHEN permission_key='incidents.view' THEN 'alerts.view' ELSE 'alerts.acknowledge' END FROM role_permissions WHERE permission_key IN ('incidents.view','incidents.acknowledge','incidents.manage') ON CONFLICT DO NOTHING"
+backend/migrations/versions/0026_managed_telemetry_uat.py:79:          PERFORM id FROM users WHERE id=NEW.user_id FOR UPDATE;
+backend/migrations/versions/0026_managed_telemetry_uat.py:80:          IF EXISTS(SELECT 1 FROM department_memberships WHERE user_id=NEW.user_id AND active AND id<>NEW.id) THEN
+backend/migrations/versions/0026_managed_telemetry_uat.py:106:            db.execute(sa.text("SELECT EXISTS(SELECT 1 FROM " + name + ")")).scalar()
+backend/migrations/versions/0026_managed_telemetry_uat.py:111:                "SELECT EXISTS(SELECT 1 FROM alert_rules WHERE evaluation_config IS NOT NULL)"
+backend/migrations/versions/0025_provider_department_rbac.py:359:        text("SELECT id,user_id,organization_id,role FROM organization_memberships")
+backend/migrations/versions/0025_provider_department_rbac.py:388: IF NEW.id IS DISTINCT FROM OLD.id OR (to_jsonb(NEW)->>'service_provider_id') IS DISTINCT FROM (to_jsonb(OLD)->>'service_provider_id') THEN RAISE EXCEPTION 'Identity and provider ownership are immutable'; END IF; RETURN NEW; END $$"""
+scripts/uat/local_environment.py:178:    image: postgres:17-alpine
+scripts/uat/acceptance.py:142: c.execute(text("INSERT INTO users(id,service_provider_id,username,full_name,password_hash,active,platform_admin,created_at) VALUES (:id,(SELECT id FROM service_providers LIMIT 1),'uat-admin','UAT Administrator',:h,true,true,now())"),{'id':f['admin'],'h':hash_password(f['password'])})
+backend/migrations/versions/0021_operational_incidents.py:45:        FROM alert_states a JOIN alert_rules r ON r.id=a.alert_rule_id
+backend/migrations/versions/0021_operational_incidents.py:54:        FROM alert_incident_events e JOIN job_order_histories h ON h.id=e.history_id JOIN job_orders j ON j.id=h.job_order_id
+backend/migrations/versions/0021_operational_incidents.py:55:        LEFT JOIN LATERAL (SELECT min(r.timestamp) recovered_at FROM alert_incident_events r
+backend/migrations/versions/0021_operational_incidents.py:61:        SELECT md5(id::text||'-opened')::uuid,organization_id,id,'SOURCE_OPENED','migration',opened_at FROM operational_incidents""")
+backend/migrations/versions/0021_operational_incidents.py:64:        FROM operational_incidents WHERE recovered_at IS NOT NULL""")
+scripts/http-golden-path.sh:48:FROM python:3.12-slim
+scripts/http-golden-path.sh:60:    image: postgres:17
+scripts/demo-up.sh:29:  if docker pull postgres:17; then
+scripts/backup-local-demo.py:115:    sql = "SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename"
+scripts/backup-local-demo.py:137:        query = 'SELECT count(*) FROM "' + table + '"'
+scripts/access-docker-demo.py:83:    image: postgres:17-alpine
+scripts/access-acceptance.py:139: before={table:[list(map(str,r)) for r in c.execute(text('SELECT '+columns+' FROM '+table+' ORDER BY id'))] for table,columns in [('users','id,username,password_hash,active,platform_admin,created_at'),('organizations','id,name,code,active,created_at'),('vms','id,organization_id,hostname'),('access_sessions','id,user_id,token_hash,expires_at,created_at'),('organization_memberships','id,user_id,organization_id,role')]}
+scripts/access-acceptance.py:197:            "from sqlalchemy import create_engine,text;from app.core.config import settings; c=create_engine(settings.database_url).connect();assert c.scalar(text('SELECT version_num FROM alembic_version'))=='0024_notification_leases';assert c.scalar(text(\"SELECT to_regclass('public.service_providers')\")) is None;assert c.scalar(text('SELECT count(*) FROM users'))==1;c.close()",
+backend/app/data_pipelines/bridge.py:235:        p.project_id,p.package_guid FROM catalog.executions e
+backend/app/data_pipelines/bridge.py:482:                "SELECT TOP (10001) project_id,package_guid,name FROM catalog.packages ORDER BY project_id,package_guid"
+backend/app/pipeline_adapters/native.py:284:            f"SELECT TOP ({limit}) execution_id,folder_name,project_name,package_name,status,start_time,end_time FROM SSISDB.catalog.executions WHERE "
+backend/app/services/retention.py:27:                SELECT e.id FROM {table} e JOIN {parent} p ON p.id = e.{key}
+backend/app/services/retention.py:29:                  AND NOT EXISTS (SELECT 1 FROM correlation_evidence c WHERE c.source_id = e.id)
+backend/app/services/retention.py:31:            ) DELETE FROM {table} WHERE id IN (SELECT id FROM expired)
+backend/app/services/retention.py:40:            WITH expired AS (SELECT {key} FROM {table} WHERE {condition}
+backend/app/services/retention.py:42:            DELETE FROM {table} WHERE {key} IN (SELECT {key} FROM expired)
+backend/app/security/deployment.py:29:            SELECT table_name, column_name FROM information_schema.columns
+backend/app/security/deployment.py:38:                OR EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+backend/app/security/deployment.py:43:            FROM pg_roles r JOIN pg_database d ON d.datname = current_database()

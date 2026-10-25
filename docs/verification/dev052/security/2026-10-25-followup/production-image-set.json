@@ -1,0 +1,241 @@
+{
+  "decision": "NO-GO",
+  "scope": "owner-approved production candidate set, not a claim about unknown live deployments",
+  "exclusions": {
+    "backend/Dockerfile.demo": "automatic schema bootstrap/seeding, bundled legacy collector and root execution are demo-only",
+    "backend/Dockerfile.uat": "UAT-owned API/worker/migration is excluded; production maintenance target now separately built without pip",
+    "frontend/Dockerfile.demo": "demo-only build path replaced by frontend/Dockerfile.runtime; its image is not promoted",
+    "docker-compose.demo.yml": "demo orchestration and credentials, never a production deployment template",
+    "docker-compose.yml": "local development database; cannot infer actual production image from it",
+    "verification/dev05 and deploy/fixtures": "synthetic verification fixtures and browser/build tools, not production",
+    "Debian postgres/ECR variants": "declared local/demo reference only; no waiver of an unknown existing deployment"
+  },
+  "identity_gaps": [
+    "No owner-approved registry publication or final release manifest digests; local config IDs are not OCI registry manifest digests",
+    "Production data migration/locale/restore approval needed before selecting Alpine PostgreSQL for an existing datastore",
+    "Frontend endpoint and matching CSP/operator TLS ingress configuration need approved final values; build uses reserved example.invalid, never a customer endpoint",
+    "Collector 0.163.2 is evaluation-only: schema validation succeeds but runtime version contract remains 0.123.0, not changed",
+    "Production runtime permissions/capabilities, real provider, DR and license signoff remain separate gates"
+  ],
+  "phase": "DEV-05.2A.2",
+  "approved_release_images": [],
+  "registry_publication_authority": "NOT PROVIDED",
+  "current_candidates": [
+    {
+      "previous_attempts": [],
+      "name": "bookworm-alternative",
+      "requested_reference": "dev052a2-bookworm",
+      "role": "supported Debian Bookworm evaluation only; NOT promoted",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:33:57.947961+00:00",
+      "source_commit": null,
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:b2e1f8187f10563a4a6d5c1cf23eaac60b3af6fe2f3e0c2a1d5f74fb03cdb686",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [],
+      "archive_sha256": "dcec10d947256b19677a45ef225455b306f3c253b964ebda38002951f229344a",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "source_parent_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "source_status": "Built from DEV-05.2A.2 working tree before final Python formatting. No exact committed-tree attestation; release provenance BLOCKED. Base commit is not presented as full build source.",
+      "build_context": "backend",
+      "dockerfile": "Dockerfile.bookworm.evaluated",
+      "base_images": {
+        "builder_and_final": "python:3.12-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "backend-runtime",
+      "requested_reference": "dev052a2-backend",
+      "role": "production API/worker candidate",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:06.532162+00:00",
+      "source_commit": null,
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:531dd9fb58fd7723dedaceba177a1ea241b5c6834c7c200273eff3c16dd60b4d",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [],
+      "archive_sha256": "af06db3199d980712c9ce921d49197bf1a09dce5e38db26677aa395a1216e062",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "source_parent_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "source_status": "Built from DEV-05.2A.2 working tree before final Python formatting. No exact committed-tree attestation; release provenance BLOCKED. Base commit is not presented as full build source.",
+      "build_context": "backend",
+      "dockerfile": "backend/Dockerfile.runtime",
+      "base_images": {
+        "builder": "python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
+        "final": "python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "migration",
+      "requested_reference": "dev052a2-migration",
+      "role": "production schema-maintenance candidate; not an API service",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:13.003489+00:00",
+      "source_commit": null,
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:bd8910833cae1071891ee926913fcab49d0dfba336a855e2d3336a9dc27d8801",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [],
+      "archive_sha256": "5ed0e5a07886b06bc9e7b240bb62e8286324d834870d1698b4c687f0913b39c3",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "source_parent_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "source_status": "Built from DEV-05.2A.2 working tree before final Python formatting. No exact committed-tree attestation; release provenance BLOCKED. Base commit is not presented as full build source.",
+      "build_context": "backend",
+      "dockerfile": "backend/Dockerfile.runtime",
+      "base_images": {
+        "builder": "python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704",
+        "final": "python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "frontend",
+      "requested_reference": "dev052a1-frontend",
+      "role": "production static frontend candidate",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:20.348536+00:00",
+      "source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "upstream_source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "id": "sha256:fb9acf2bc1639c247cab2e3a802b69daac3c8d0e9dcbefbd5763ca147f32fd5f",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [],
+      "archive_sha256": "482cc97b83c658ebdf478cd7789893c81c342adfdb489c09142fbd9afe90ea64",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "source_status": "Exact prior candidate reused; source attribution inherited, not newly attested",
+      "build_context": "frontend",
+      "dockerfile": "frontend/Dockerfile.runtime",
+      "base_images": {
+        "builder": "node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53",
+        "final": "nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "gateway",
+      "requested_reference": "dev052a1-gateway",
+      "role": "production TLS ingestion gateway candidate",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:24.745361+00:00",
+      "source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "upstream_source_commit": "cdb8e06072c107c77a8749a41eaa4e039c9646a6",
+      "id": "sha256:df6f3e96d19c6bcdf3ac9518a4fc7318ee79c68f373ce79b41c1d14c7bb819c6",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [],
+      "archive_sha256": "21acdd097f56785aff943547c4def6a5f80718ee1f149f9bcc34313d72a199e9",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "source_status": "Exact prior candidate reused; source attribution inherited, not newly attested",
+      "build_context": "repository",
+      "dockerfile": "deploy/release/Dockerfile.gateway",
+      "base_images": {
+        "final": "nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "postgres-alpine",
+      "requested_reference": "postgres:17-alpine@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb",
+      "role": "production database candidate; migration/collation approval pending",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:29.131502+00:00",
+      "source_commit": null,
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [
+        "postgres@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb"
+      ],
+      "archive_sha256": "01c1b1d69655669c8b4bf440eff978478f2f6a65c4b28ff98cb9969f3d74698f",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "build_context": "upstream image, no local Dockerfile",
+      "base_images": {
+        "upstream": "postgres:17-alpine@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "contrib",
+      "requested_reference": "otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849",
+      "role": "collector evaluation candidate; version contract blocked, NOT promoted",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:34:35.092903+00:00",
+      "source_commit": null,
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:a64fa52ad3b55378bb62d8642439aaf0ec3abf45a8ddc1ac02bac31eea7a6565",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [
+        "otel/opentelemetry-collector-contrib@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849"
+      ],
+      "archive_sha256": "6abb35a61a0618b42e79fe9025c351affae93087d172cc51d4105234ff71a1fd",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "build_context": "upstream image, no local Dockerfile",
+      "base_images": {
+        "upstream": "otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849"
+      }
+    },
+    {
+      "previous_attempts": [],
+      "name": "contrib-guarded",
+      "requested_reference": "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2",
+      "role": "currently guarded collector; vulnerabilities unresolved, not release approved",
+      "repository_manifest_commit": "6f8360c5fee09c560e0a82578b1824bda67217da",
+      "timestamp_utc": "2026-10-25T09:37:19.974149+00:00",
+      "source_commit": null,
+      "source_status": "Prior immutable candidate/upstream image; see prior provenance",
+      "upstream_source_commit": "NOT INDEPENDENTLY ATTESTED",
+      "id": "sha256:f0eaa24275f0eac77186cf0c9b1d1c72c9edde884a7c6bf9e5332ca8b5939d97",
+      "architecture": "amd64",
+      "os": "linux",
+      "repoDigests": [
+        "otel/opentelemetry-collector-contrib@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+      ],
+      "archive_sha256": "27414c60263fdda06674c95ebb64901e7bd30d80ef44909133c335b83530c9b4",
+      "sbom_exit_code": 0,
+      "scan_exit_code": 0,
+      "status": "SCANNED",
+      "registry_release_manifest_digest": null,
+      "release_approved": false,
+      "build_context": "upstream image, no local Dockerfile",
+      "base_images": {
+        "upstream": "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+      }
+    }
+  ],
+  "prior_candidate_policy": "deploy/release/image-policy.json at 6f8360c5fee09c560e0a82578b1824bda67217da"
+}

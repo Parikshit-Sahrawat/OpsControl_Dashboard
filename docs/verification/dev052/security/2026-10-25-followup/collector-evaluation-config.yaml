@@ -1,0 +1,117 @@
+exporters:
+  otlphttp/opscontrol:
+    compression: none
+    encoding: json
+    endpoint: http://127.0.0.1:41847
+extensions:
+  file_storage/opscontrol:
+    create_directory: true
+    directory: ${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints
+  health_check:
+    endpoint: 127.0.0.1:0
+processors:
+  batch:
+    send_batch_size: 512
+    timeout: 200ms
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  resource/method_f9adf6ce9919488d904ab071740c0428:
+    attributes:
+    - action: upsert
+      key: opscontrol.method.id
+      value: f9adf6ce-9919-488d-904a-b071740c0428
+receivers:
+  filelog/4752860e0f754775bb97e420b228ed01_fa3517410dcfa4a5:
+    exclude:
+    - ${env:OPSCONTROL_AGENT_STATE_DIR}/**
+    include:
+    - /tmp/dev052a2-five-method-b9ae7_y1/application.log
+    include_file_name: true
+    include_file_path: true
+    operators:
+    - field: attributes["opscontrol.method.id"]
+      type: add
+      value: 4752860e-0f75-4775-bb97-e420b228ed01
+    - field: attributes["opscontrol.log.source.id"]
+      type: add
+      value: 4752860e-0f75-4775-bb97-e420b228ed01:fa3517410dcfa4a5
+    start_at: beginning
+    storage: file_storage/opscontrol
+  hostmetrics/f9adf6ce9919488d904ab071740c0428:
+    collection_interval: 5s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      disk: {}
+      filesystem: {}
+      memory: {}
+      network: {}
+  otlp/services_23cdfe440a87466b84590288f53801b6:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:0
+  prometheus/097033793117458c9abec810fd9a50f3:
+    config:
+      scrape_configs:
+      - job_name: opscontrol_097033793117458c9abec810fd9a50f3
+        metric_relabel_configs:
+        - action: keep
+          regex: (?:up|scrape_duration_seconds|scrape_samples_scraped)|(?:followup_.*)
+          source_labels:
+          - __name__
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 5s
+        scrape_timeout: 2s
+        static_configs:
+        - labels:
+            opscontrol_method_id: 09703379-3117-458c-9abe-c810fd9a50f3
+          targets:
+          - 127.0.0.1:41847
+  syslog/259aa1efdd8545968528c33c08ce8bbb:
+    operators:
+    - field: attributes["opscontrol.method.id"]
+      type: add
+      value: 259aa1ef-dd85-4596-8528-c33c08ce8bbb
+    protocol: rfc5424
+    tcp:
+      listen_address: 127.0.0.1:53281
+service:
+  extensions:
+  - health_check
+  - file_storage/opscontrol
+  pipelines:
+    logs:
+      exporters:
+      - otlphttp/opscontrol
+      processors:
+      - memory_limiter
+      - batch
+      receivers:
+      - syslog/259aa1efdd8545968528c33c08ce8bbb
+      - filelog/4752860e0f754775bb97e420b228ed01_fa3517410dcfa4a5
+    metrics:
+      exporters:
+      - otlphttp/opscontrol
+      processors:
+      - memory_limiter
+      - batch
+      receivers:
+      - otlp/services_23cdfe440a87466b84590288f53801b6
+      - prometheus/097033793117458c9abec810fd9a50f3
+    metrics/f9adf6ce9919488d904ab071740c0428:
+      exporters:
+      - otlphttp/opscontrol
+      processors:
+      - memory_limiter
+      - resource/method_f9adf6ce9919488d904ab071740c0428
+      - batch
+      receivers:
+      - hostmetrics/f9adf6ce9919488d904ab071740c0428
+  telemetry:
+    metrics:
+      level: none

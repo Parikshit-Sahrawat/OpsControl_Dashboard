@@ -1,0 +1,85 @@
+{
+  "counts_are_per_run_not_unique_tests": true,
+  "results": [
+    {
+      "name": "targeted-tests",
+      "tests_run": 29,
+      "result": "PASS",
+      "skipped": 0,
+      "log": "targeted-tests.log"
+    },
+    {
+      "name": "candidate-tests",
+      "tests_run": 36,
+      "result": "PASS",
+      "skipped": 0,
+      "log": "candidate-tests.log"
+    },
+    {
+      "name": "bookworm-tests",
+      "tests_run": 36,
+      "result": "PASS",
+      "skipped": 0,
+      "log": "bookworm-tests.log"
+    },
+    {
+      "name": "collector-guarded",
+      "tests_run": 12,
+      "result": "PASS",
+      "skipped": 0,
+      "log": "collector-guarded.log"
+    },
+    {
+      "name": "bootstrap-final-unit",
+      "tests_run": 1,
+      "result": "PASS",
+      "skipped": 0,
+      "log": "bootstrap-final-unit.log"
+    },
+    {
+      "name": "Unchanged full suite against Contrib0.163.2",
+      "tests_run": 12,
+      "passed": 11,
+      "errors": 1,
+      "result": "FAIL",
+      "error": "Existing runtime version guard rejects candidate; guard unchanged",
+      "log": "collector-full.log"
+    },
+    {
+      "name": "Scoped five-method functional probe",
+      "result": "PASS",
+      "scope": "real Linux process/uptime observation + local OTLP serialization; not genuine systemd/Windows certification",
+      "evidence": "collector-five-method-runtime.json",
+      "not_certification": true
+    },
+    {
+      "name": "bootstrap",
+      "result": "PASS",
+      "log": "bootstrap.log"
+    },
+    {
+      "name": "bootstrap-offline",
+      "result": "PASS",
+      "log": "bootstrap-offline.log"
+    },
+    {
+      "name": "workflows",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "workflows.log"
+    },
+    {
+      "name": "workflows-all",
+      "result": "PASS",
+      "exit_code": 0,
+      "log": "workflows-all.log"
+    },
+    {
+      "name": "Full legacy stack/native Windows/Kubernetes/genuine provider execution",
+      "result": "NOT TESTED",
+      "reason": "Not executed in scoped followup; native/authorized provider inputs missing"
+    }
+  ],
+  "unchanged_assertions": true,
+  "unexecuted_not_certified": true
+}
