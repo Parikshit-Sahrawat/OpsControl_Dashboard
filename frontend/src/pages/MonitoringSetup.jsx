@@ -1,6 +1,8 @@
 import { hasPermission } from "../permissions";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authHeaders } from "../auth";
+
+import { createHydrationGuard, hydrateMonitoringSettings } from "../monitoringSettings";
 
 const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 async function api(path, options = {}) {
@@ -47,13 +49,17 @@ const DEFAULTS = {
   },
 };
 
-export default function MonitoringSetup({
+function MonitoringSetupForm({
   organizationId,
   organizationName,
   user,
   lockedSourceId,
   embedded = false,
 }) {
+  const guard = useRef(createHydrationGuard());
+  const reloadGeneration = useRef(0);
+  const [settingsReady, setSettingsReady] = useState(false);
+  const [settingsRevision, setSettingsRevision] = useState(0);
   const [sources, setSources] = useState([]),
     [catalogs, setCatalogs] = useState([]),
     [workers, setWorkers] = useState([]);
@@ -102,6 +108,7 @@ export default function MonitoringSetup({
   const canWrite = hasPermission(user, "collectors.manage", organizationId);
 
   const reload = useCallback(async () => {
+    const generation = ++reloadGeneration.current;
     if (!organizationId) {
       setSources([]);
       setCatalogs([]);
@@ -115,6 +122,7 @@ export default function MonitoringSetup({
         ? api(API + "/remote-probes/workers?organization_id=" + organizationId)
         : Promise.resolve([]),
     ]);
+    if (generation !== reloadGeneration.current) return;
     // Keep deferred Kubernetes sources out of new monitoring activation flows.
     // Existing data and evidence remain accessible through other inventories.
     const activeMonitoringSources = sourceRows.filter(
@@ -134,30 +142,46 @@ export default function MonitoringSetup({
     setWorkerId((previous) =>
       workerRows.some((r) => r.id === previous)
         ? previous
-        : workerRows[0]?.id || "",
+        : "",
     );
   }, [organizationId, canWrite, lockedSourceId]);
 
   useEffect(() => {
-    reload().catch((e) => setError(e.message));
+    let live = true;
+    reload().catch((e) => { if (live) setError(e.message); });
     setSelectedRules([]);
     setPreview(null);
     setActivation(null);
+    return () => { live = false; reloadGeneration.current++; };
   }, [reload]);
 
+  function applySettings(settings) {
+    setApiUrl(settings.url); setApiMethod(settings.method); setApiStatus(settings.status);
+    setApiTimeout(settings.timeout); setApiLatency(settings.latency); setApiHeader(settings.header);
+    setWorkerId(settings.workerId); setSelectedRules(settings.rules);
+    setIncludeTemplates(settings.includeTemplates);
+  }
+  useEffect(() => {
+    setSettingsReady(false); setBusy(false); setPreview(null); setActivation(null);
+    setError(""); setMessage(""); setOneTimeToken("");
+    return hydrateMonitoringSettings(api, sourceId, guard.current, applySettings,
+      () => setSettingsReady(true), (error) => setError(error.message));
+  }, [sourceId, settingsRevision]);
+
   async function run(action, onSuccess) {
+    const ticket = guard.current.ticket();
     setBusy(true);
     setError("");
     setMessage("");
     try {
       const result = await action();
-      onSuccess?.(result);
+      if (guard.current.current(ticket)) await onSuccess?.(result);
       return result;
     } catch (e) {
-      setError(e.message || "Operation failed");
+      if (guard.current.sameSource(ticket)) setError(e.message || "Operation failed");
       return null;
     } finally {
-      setBusy(false);
+      if (guard.current.sameSource(ticket)) setBusy(false);
     }
   }
   function makeRule(event) {
@@ -264,6 +288,7 @@ export default function MonitoringSetup({
         setActivation(result);
         setPreview(null);
         setMessage("Monitoring disabled; history preserved.");
+        setSettingsRevision((v) => v + 1);
         refreshDiagnostics();
       },
     );
@@ -342,17 +367,20 @@ export default function MonitoringSetup({
   }
   async function refreshDiagnostics() {
     if (!sourceId) return;
+    const ticket = guard.current.ticket();
     setDiagBusy(true);
     try {
       const details = await api(
         API + "/data-sources/" + sourceId + "/diagnostics",
       );
-      setDiagnostics(details);
+      if (guard.current.sameSource(ticket)) setDiagnostics(details);
     } catch (e) {
-      setDiagnostics(null);
-      setError(e.message || "Could not load monitoring diagnostics");
+      if (guard.current.sameSource(ticket)) {
+        setDiagnostics(null);
+        setError(e.message || "Could not load monitoring diagnostics");
+      }
     } finally {
-      setDiagBusy(false);
+      if (guard.current.sameSource(ticket)) setDiagBusy(false);
     }
   }
   useEffect(() => {
@@ -361,7 +389,7 @@ export default function MonitoringSetup({
     refreshDiagnostics();
     const timer = window.setInterval(refreshDiagnostics, 15000);
     return () => window.clearInterval(timer);
-  }, [sourceId]);
+  }, [sourceId, settingsRevision]);
   const versionRows = catalogs.flatMap((c) =>
     c.versions.map((v) => ({ id: v.id, catalog: c, version: v })),
   );
@@ -376,7 +404,10 @@ export default function MonitoringSetup({
     setRuleName(next.toLowerCase() + "-rule");
   }
   return (
-    <div className="monitoring-setup">
+    <div className="monitoring-setup" onChangeCapture={() => {
+      if (settingsReady) guard.current.edit();
+      setPreview(null);
+    }}>
       <div className="page-heading">
         <div>
           {embedded ? (
@@ -426,6 +457,7 @@ export default function MonitoringSetup({
               disabled={Boolean(lockedSourceId)}
               value={sourceId}
               onChange={(e) => {
+                guard.current.invalidate(); setSettingsReady(false); setBusy(false);
                 setSourceId(e.target.value);
                 setApiUrl(""); setApiMethod("GET"); setApiStatus("200");
                 setApiTimeout("8"); setApiLatency(""); setApiHeader("");
@@ -450,6 +482,7 @@ export default function MonitoringSetup({
             <label>
               Approved remote worker
               <select
+                disabled={!settingsReady}
                 value={workerId}
                 onChange={(e) => {
                   setWorkerId(e.target.value);
@@ -482,28 +515,28 @@ export default function MonitoringSetup({
           <p className="monitoring-helper">HTTPS only. Request bodies, query strings and redirects are disabled. Basic authentication uses the Data Source's approved worker credential reference.</p>
           <div className="monitoring-setup-grid">
             <label>HTTPS endpoint override (optional)
-              <input type="url" placeholder="Use Data Source endpoint" value={apiUrl} disabled={!canWrite}
+              <input type="url" placeholder="Use Data Source endpoint" value={apiUrl} disabled={!canWrite || !settingsReady}
                 onChange={(e)=>{setApiUrl(e.target.value);setPreview(null);}} />
             </label>
             <label>HTTP method
-              <select value={apiMethod} disabled={!canWrite} onChange={(e)=>{setApiMethod(e.target.value);setPreview(null);}}>
+              <select value={apiMethod} disabled={!canWrite || !settingsReady} onChange={(e)=>{setApiMethod(e.target.value);setPreview(null);}}>
                 <option value="GET">GET</option><option value="HEAD">HEAD</option>
               </select>
             </label>
             <label>Expected HTTP status
-              <input type="number" min="100" max="599" value={apiStatus} disabled={!canWrite}
+              <input type="number" min="100" max="599" value={apiStatus} disabled={!canWrite || !settingsReady}
                 onChange={(e)=>{setApiStatus(e.target.value);setPreview(null);}} />
             </label>
             <label>Timeout (seconds)
-              <input type="number" min="1" max="10" value={apiTimeout} disabled={!canWrite}
+              <input type="number" min="1" max="10" value={apiTimeout} disabled={!canWrite || !settingsReady}
                 onChange={(e)=>{setApiTimeout(e.target.value);setPreview(null);}} />
             </label>
             <label>Maximum response time (ms, optional)
-              <input type="number" min="1" max="10000" value={apiLatency} disabled={!canWrite}
+              <input type="number" min="1" max="10000" value={apiLatency} disabled={!canWrite || !settingsReady}
                 onChange={(e)=>{setApiLatency(e.target.value);setPreview(null);}} />
             </label>
             <label>Approved x-opscontrol-check header (optional)
-              <input maxLength={256} value={apiHeader} disabled={!canWrite}
+              <input maxLength={256} value={apiHeader} disabled={!canWrite || !settingsReady}
                 onChange={(e)=>{setApiHeader(e.target.value);setPreview(null);}} />
             </label>
           </div>
@@ -516,7 +549,7 @@ export default function MonitoringSetup({
           {versionRows.map(({ id, catalog, version }) => (
             <label className="monitoring-rule-option" key={id}>
               <input
-                disabled={!canWrite}
+                disabled={!canWrite || !settingsReady}
                 type="checkbox"
                 checked={selectedRules.includes(id)}
                 onChange={(e) => {
@@ -650,7 +683,7 @@ export default function MonitoringSetup({
         <div className="monitoring-setup-actions">
           <button
             disabled={
-              !canActivate ||
+              !settingsReady || !canActivate ||
               busy ||
               !sourceId ||
               (!infrastructure && !workerId)
@@ -660,7 +693,7 @@ export default function MonitoringSetup({
             Validate & Preview
           </button>
           <button
-            disabled={!canActivate || busy || !preview}
+            disabled={!canActivate || busy || !settingsReady || !preview}
             className="primary-button"
             onClick={doActivate}
           >
@@ -889,4 +922,9 @@ export default function MonitoringSetup({
       )}
     </div>
   );
+}
+
+// Scope changes remount the editor, immediately discarding the previous tenant's draft.
+export default function MonitoringSetup(props) {
+  return <MonitoringSetupForm key={`${props.organizationId || ""}:${props.lockedSourceId || ""}`} {...props} />;
 }
