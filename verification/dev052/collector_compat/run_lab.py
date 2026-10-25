@@ -27,7 +27,18 @@ FIXTURE_IMAGE = (
 )
 
 
-def main():
+def main(
+    *,
+    fixture_dir=None,
+    validation_contract="candidate",
+    project_prefix="dev052a3-",
+    api_fixture=None,
+    postcheck_after_fixture_failure=False,
+):
+    fixture_dir = Path(fixture_dir) if fixture_dir else HERE
+    if validation_contract not in {"candidate", "guarded"}:
+        raise ValueError("Unknown fixture validation contract")
+
     def interrupted(signum, frame):
         raise KeyboardInterrupt("Owned lab interrupted; scoped cleanup required")
 
@@ -62,7 +73,7 @@ def main():
         )
     out.mkdir(parents=True, exist_ok=False)
     private = Path(tempfile.mkdtemp(prefix="dev052a3-lab-"))
-    name = "dev052a3-" + secrets.token_hex(4)
+    name = project_prefix + secrets.token_hex(4)
     containers, networks = [], []
     processes = []
     password = secrets.token_urlsafe(32)
@@ -73,7 +84,11 @@ def main():
         "OPSCONTROL_ARCH001_ACCEPTANCE": "1",
         "ARCH001_PRIVATE_DIR": str(private),
         "ARCH001_EVIDENCE_DIR": str(out),
-        "OPSCONTROL_OTEL_BINARY": str(args.binary.resolve()),
+        "OPSCONTROL_OTEL_BINARY": str(
+            (
+                args.guarded_binary if validation_contract == "guarded" else args.binary
+            ).resolve()
+        ),
         "AWS_EC2_METADATA_DISABLED": "true",
     }
     report = {
@@ -215,11 +230,13 @@ def main():
             NO_PROXY=env.get("NO_PROXY", "") + "," + gateway,
         )
         env["no_proxy"] = env["NO_PROXY"]
+        if api_fixture:
+            shutil.copy2(api_fixture, stage / "backend/scripts/dev052a3b_api.py")
         api_args[:] = [
             str(PYTHON),
             "-m",
             "uvicorn",
-            "app.main:app",
+            "scripts.dev052a3b_api:app" if api_fixture else "app.main:app",
             "--host",
             gateway,
             "--port",
@@ -350,7 +367,7 @@ def main():
                 "--volume",
                 f"{stage}:/work:ro",
                 "--volume",
-                f"{HERE}:/verification:ro",
+                f"{fixture_dir}:/verification:ro",
                 "--volume",
                 f"{private}:/fixture:rw",
                 "--volume",
@@ -383,9 +400,9 @@ def main():
                 run([*DOCKER, "inspect", "--format", "{{json .State}}", runner])
             )
             if not state["Running"]:
-                assert (
-                    state["ExitCode"] == 0
-                ), "Agent E2E failed; retained redacted logs"
+                report["fixture_exit_code"] = state["ExitCode"]
+                if state["ExitCode"] != 0 and not postcheck_after_fixture_failure:
+                    raise AssertionError("Agent E2E failed; retained redacted logs")
                 break
             if not outage and (private / "request-api-outage").exists():
                 outage = True
@@ -410,10 +427,15 @@ def main():
         # Independently query persisted evidence and exercise unchanged authenticated
         # enrollment/rotation/revocation/tenant/method/negative API assertions.
         shutil.copy2(
-            HERE / "postcheck.py", stage / "backend/scripts/dev052a3_postcheck.py"
+            fixture_dir / "postcheck.py",
+            stage / "backend/scripts/dev052a3_postcheck.py",
         )
         module("scripts.dev052a3_postcheck")
-        report["status"] = "PASS"
+        report["status"] = "PASS" if report["fixture_exit_code"] == 0 else "FAIL"
+        if report["status"] == "FAIL":
+            report["error"] = (
+                "Fixture retained failed cases; independent postcheck completed, not a global PASS"
+            )
     except (Exception, KeyboardInterrupt) as error:
         report["error"] = type(error).__name__ + ": " + str(error)
     finally:
