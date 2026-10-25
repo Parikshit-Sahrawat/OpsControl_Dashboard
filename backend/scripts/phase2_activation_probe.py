@@ -163,6 +163,17 @@ def main():
         assert not cc.enabled and cc.remote_worker_id is None
         assert not db.scalar(select(MetricDefinition).where(
             MetricDefinition.collector_id==cc.id)).enabled
+    # Regression: explicit HEAD overrides must persist; default GET remains compatible.
+    get_payload={**payload,"api_config":{"expected_status":200}}
+    get_plan=request(200,"POST",f"/api/v1/data-sources/{source_id}/activation-preview",north,get_payload)
+    assert get_plan["plan"]["collector"]["configuration"]["method"]=="GET"
+    get_activation=request(200,"POST",f"/api/v1/data-sources/{source_id}/activations",north,get_payload)
+    assert get_activation["status"]=="ACTIVE" and get_activation["changed"]
+    with SessionLocal() as db:
+        get_collector=db.get(Collector,uuid.UUID(get_activation["collector_id"]))
+        assert get_collector.configuration["method"]=="GET"
+        assert get_collector.configuration["expected_status"]==200
+    request(200,"POST",f"/api/v1/data-sources/{source_id}/deactivation",north)
     print("PHASE 2 RULE CATALOG / ACTIVATION / REAL EVIDENCE TESTS PASS")
 
 if __name__=="__main__":main()
