@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """OpsControl Agent supervises upstream OTel; never executes backend shell commands."""
+
 import argparse, glob, hashlib, json, os, platform, signal, ssl, subprocess, tempfile, threading, time
 from pathlib import Path
 from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHandler

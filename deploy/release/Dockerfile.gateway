@@ -1,0 +1,5 @@
+FROM nginx:stable-alpine@sha256:47928bf67eb62a1863cb08d9ecb52d3e704304ba614eaee17884204677702951
+RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+COPY deploy/gateway/nginx.conf /etc/nginx/nginx.conf
+# TLS keys/CA are runtime-owned inputs; never bake credentials into images.
+EXPOSE 8443

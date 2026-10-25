@@ -19,7 +19,7 @@ jobs:
       - name: Install existing locked frontend and backend dependencies
         run: |
           python -m venv backend/.venv
-          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          backend/.venv/bin/python -m pip install pip==26.2 && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
           npm ci --prefix frontend --no-audit --no-fund
           npm install --prefix "$RUNNER_TEMP/release-tools" --no-audit --no-fund playwright@1.56.1
           "$RUNNER_TEMP/release-tools/node_modules/.bin/playwright" install --with-deps chromium
@@ -28,7 +28,7 @@ jobs:
       - name: Non-root runtime image under a restrictive checkout umask
         run: |
           chmod -R go-rwx backend/app backend/scripts
-          docker build -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend
+          docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend
           docker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print("Non-root read-only runtime imports PASS")'
       - name: Populated restore, bounded retention, multi-process recovery and actual TLS ingress
         env:
