@@ -509,7 +509,7 @@ function MonitoringSetupForm({
           </p>
         )}
       </section>
-      {apiSource && (
+      {apiSource && settingsReady && (
         <section className="card monitoring-setup-panel" data-testid="api-monitoring-settings">
           <h2>API monitoring request and assertions</h2>
           <p className="monitoring-helper">HTTPS only. Request bodies, query strings and redirects are disabled. Basic authentication uses the Data Source's approved worker credential reference.</p>
