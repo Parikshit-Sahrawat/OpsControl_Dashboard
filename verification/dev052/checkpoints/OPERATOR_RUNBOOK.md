@@ -12,7 +12,9 @@ vulnerable rollback runtime as security clearance.
   fsync and cooperative BoltDB flock locking. No sequential-rename fallback.
 - Execute as the state-owning service UID. State, vault and log roots must be
   private owned 0700 directories; state files must be nonlinked regular 0600
-  files. Stop all collectors/operators that could write these paths. No symlinks,
+  files. Stop the Agent supervisor, service manager/watchdog and every collector;
+  prevent automatic restart throughout maintenance. Killing only the child runtime
+  is insufficient. Stop other operators that could write these paths. No symlinks,
   hardlinked state, live writers or cross-filesystem state exchange.
 - Only JSON-line **filelog telemetry** with stable unique `event_id` strings and
   unchanged collector/source/method identity, input paths, credentials context,
