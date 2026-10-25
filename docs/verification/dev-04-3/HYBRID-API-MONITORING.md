@@ -24,6 +24,13 @@ Created from `main` at PR #63 merge commit `6d5fdbf126f9bde296de473a8cdbbaebb0af
 - No raw response bodies, headers, credentials or target URLs are accepted in result evidence.
 - Follow-up: explicit recovery transition acceptance and end-to-end worker/database verification; CI results must pass before marking this slice complete.
 
+## Increment 4: Monitoring Setup UI (initial integration)
+- Monitoring Setup now exposes HTTPS endpoint override, GET/HEAD method, expected status, timeout, bounded latency assertion, and approved check header for non-infrastructure sources.
+- Preview and activation pass the same `api_config` object. The control plane accepts only explicit non-secret API fields, validates them against worker network policy, and persists approved settings in the activated collector.
+- Worker selection, rule-version bindings, activation and live diagnostics use the existing organization-scoped workflow. No health is implied until fresh evidence arrives.
+- Source changes clear unsaved request settings. Authenticated UI smoke covers the API editor.
+- Follow-up acceptance: verify browser/backend round-trip, reload behavior, worker dispatch and failure/recovery transitions. CI is required before this stage is complete.
+
 ## Next increments
 1. Design versioned remote-worker capability negotiation before permitting HEAD or additional methods.
 2. Implement allowlisted headers and canonical request serialization with no secret-bearing telemetry.
