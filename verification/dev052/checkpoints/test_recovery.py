@@ -67,6 +67,13 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Nonempty"):
             r.seal_archive([], [], self.vault / "empty-archive")
 
+    def test_unidentified_source_record_is_not_silently_dropped(self):
+        r.atomic(self.logs / "no-id.log", b'{"message":"unknown source event"}\n')
+        with self.assertRaisesRegex(ValueError, "without stable"):
+            r.seal_archive(
+                list(self.logs.glob("*.log")), self.expected, self.vault / "missing-id"
+            )
+
     def test_backup_cut_cannot_be_overwritten(self):
         digest = r.sha(self.backup / "manifest.json")
         with self.assertRaisesRegex(ValueError, "already exists"):

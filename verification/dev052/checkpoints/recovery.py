@@ -187,7 +187,18 @@ def seal_archive(files, expected_ids, output):
             record = json.loads(line)
             event_id = record.get("event_id")
             if event_id is None:
-                continue
+                if (
+                    record.get("control") == "bounded replay"
+                    and re.fullmatch(
+                        r"[A-Za-z0-9_-]{1,60}",
+                        str(record.get("recovery_generation", "")),
+                    )
+                    and set(record) <= {"control", "recovery_generation", "padding"}
+                ):
+                    continue  # Explicit reserved tool marker, not a source event.
+                raise ValueError(
+                    "Source record without stable event ID; refusing incomplete replay"
+                )
             if not isinstance(event_id, str) or not re.fullmatch(
                 r"[A-Za-z0-9_.:-]{1,120}", event_id
             ):
