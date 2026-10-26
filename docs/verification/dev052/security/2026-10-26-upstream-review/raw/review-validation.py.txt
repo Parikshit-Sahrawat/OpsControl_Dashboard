@@ -1,0 +1,72 @@
+from pathlib import Path
+import base64,datetime,hashlib,json,re,subprocess,urllib.parse
+repo=Path('/workspace/OpsControl_Dashboard');out=repo/'docs/verification/dev052/security/2026-10-26-upstream-review';old=out.parent/'2026-10-26-native-feasibility'
+def read(p):return json.loads(p.read_text())
+def put(p,d):p.write_text(json.dumps(d,indent=2)+'\n')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+# Retain decoded bytes exactly, including upstream whitespace.
+idx=[]
+for p in sorted((out/'raw').glob('*.json')):
+ d=read(p)
+ if isinstance(d,dict) and d.get('encoding')=='base64':
+  b=base64.b64decode(d['content']);dest=out/'source'/(p.stem+'.txt');dest.write_bytes(b)
+  assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()==d['sha']
+  idx.append(dict(path=str(dest.relative_to(out)),api=str(p.relative_to(out)),git_blob=d['sha'],sha256=sha(dest),url=d['html_url']))
+put(out/'SOURCE_INDEX.json',idx)
+assert sha(out/'source/core163-queue.txt')==sha(out/'source/core-main-queue.txt')=='a98bd9990c2405d0b24cdee951ccacec01b58b4dc347ceb6b7c256ceea789d98'
+assert sha(out/'source/storage-client.txt')==sha(out/'source/storage-client-pinned.txt')
+fetch=read(out/'FETCH_LOG.json')
+for f in fetch:assert sha(out/f['path'])==f['sha256']
+search=[]
+for f in fetch:
+ if f['name'].startswith('search-'):
+  d=read(out/f['path']);assert not d['incomplete_results'];assert d['total_count']==len(d['items'])
+  search.append(dict(endpoint=f['endpoint'],response=f['path'],total_count=d['total_count'],returned=len(d['items']),incomplete_results=d['incomplete_results']))
+prs=[]
+for n in [13126,13330,15680,16140,15739,15993,16230]:
+ p=read(out/'raw'/f'pr{n}.json');reviews=read(out/'raw'/f'pr{n}-reviews.json');comments=read(out/'raw'/f'pr{n}-comments.json')
+ assert len(comments)==p['comments'];assert len(reviews)<100
+ v=dict(number=n,state=p['state'],merged=p['merged'],draft=p['draft'],head=p['head']['sha'],merge_commit=p['merge_commit_sha'],comments_returned=len(comments),reviews_returned=len(reviews),source=f'raw/pr{n}.json')
+ ip=out/'raw'/f'pr{n}-inline.json'
+ if ip.exists():v['inline_comments_returned']=len(read(ip));assert v['inline_comments_returned']==p['review_comments']
+ prs.append(v)
+put(out/'RESEARCH_REVIEW.json',dict(task='DEV-05.2A.3G',observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),fetches=len(fetch),failed_fetches=[f for f in fetch if f['exit_code']],searches=search,pull_requests=prs,source_captures=len(idx),source_checks='SHA-256 plus Git blob verification; core release/main queue identical; storage tag/pinned bytes identical',candidate='BLOCKED',candidate_binary=None,candidate_config=None,new_runtime_tests=0,upstream_submission='NOT SUBMITTED',support_commitment='PENDING',limitations=['Finite indexed search; no claim about every vendor or unpublished fix.','Author tests and reviewer comments are not local runtime validation.','No new binary/archive/signature verification.','Comments and inline reviews captured at up to 100 entries; captured endpoint counts fit in one page.']))
+prior=[]
+for dirname,fn in [('2026-10-25-checkpoints','artifact-sha256.json'),('2026-10-25-durability','artifact-sha256.json'),('2026-10-26-queue','artifact-sha256.json'),('2026-10-26-adr','ARTIFACT_SHA256.json'),('2026-10-26-native-feasibility','ARTIFACT_SHA256.json')]:
+ m=out.parent/dirname/fn;d=read(m)
+ for path,digest in d.items():assert sha(m.parent/path)==digest,(dirname,path)
+ prior.append(dict(manifest=str(m.relative_to(repo)),sha256=sha(m),verified_files=len(d),status='PASS'))
+put(out/'PRIOR_EVIDENCE_CHECK.json',dict(prior=prior,files_verified=sum(v['verified_files'] for v in prior),classification='Integrity review only; no historical runtime tests rerun'))
+put(out/'NATIVE_TEST_STATUS.json',dict(task='DEV-05.2A.3G',candidate='BLOCKED',cases=[dict(id=f'N{i}',execution='NOT RUN',qualification='BLOCKED',expected=None,persisted_distinct=None,missing=None,accepted_attempts=None,physical_rows=None,physical_duplicates=None,reason='Design-only task; no qualifying supported candidate; future qualification needs separate scoped authorization') for i in range(1,5)],runtime_executions=0))
+for f in ['VALIDATION.json','ARTIFACT_SHA256.json']:
+ if not (out/f).exists():put(out/f,{})
+links=[];external=[]
+for p in sorted(out.glob('*.md')):
+ for target in re.findall(r'\[[^\]]*\]\(([^)]+)\)',p.read_text()):
+  if target.startswith('https://'):
+   u=urllib.parse.urlsplit(target);assert u.netloc=='github.com';external.append(dict(file=p.name,url=target));continue
+  assert not target.startswith('/');q=(p.parent/target.split('#')[0]);assert q.is_file(),(p,target)
+  links.append(dict(file=p.name,target=target))
+text=(out/'MAINTAINER_ISSUE_DRAFT.md').read_text()
+for pat in [r'OpsControl',r'Parikshit',r'/workspace',r'/tmp/',r'docs/verification',r'CHK-00',r'Bearer\s+',r'x-worker',r'BEGIN .*PRIVATE KEY',r'https?://(?!github\.com)[^\s)>]+',r'\b(?:\d{1,3}\.){3}\d{1,3}\b']:
+ assert not re.search(pat,text,re.I),pat
+# All authored documents (source captures intentionally preserve original whitespace).
+whitespace=[]
+for p in list(out.glob('*.md'))+list(out.glob('*.json')):
+ for i,l in enumerate(p.read_text().splitlines(),1):
+  if l!=l.rstrip():whitespace.append(dict(file=p.name,line=i))
+assert not whitespace,whitespace
+changed=subprocess.check_output(['git','diff','--name-only','432afb6943c980cf027bc31df5bdb2b972bb7ad5'],cwd=repo,text=True).splitlines()
+untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=repo,text=True).splitlines()
+allowed=str(out.relative_to(repo))+'/'
+assert all(v.startswith(allowed) for v in changed+untracked),(changed,untracked)
+assert subprocess.check_output(['git','branch','--show-current'],cwd=repo,text=True).strip()=='release/dev-05-2-hardening'
+assert 'RUNTIME_VERSION = "0.123.0"' in (repo/'agent/opscontrol_agent.py').read_text()
+pr=read(out/'raw/internal-pr69.json');assert pr['draft'] and pr['state']=='open' and pr['head']['sha']=='432afb6943c980cf027bc31df5bdb2b972bb7ad5'
+put(out/'VALIDATION.json',dict(task='DEV-05.2A.3G',baseline='432afb6943c980cf027bc31df5bdb2b972bb7ad5',checks=dict(local_links='PASS',local_link_count=len(links),links=links,external_link_review='GitHub URL syntax and captured source/review references checked; issue submission route is a proposed target, not a new issue',external_links=external,source_git_blob_checks=len(idx),fetch_sha256_checks=len(fetch),prior_evidence_hashes=sum(v['verified_files'] for v in prior),public_draft_redaction='PASS: targeted project/path/IP/credential-pattern checks and manual review; raw captures not approved public attachments',authored_whitespace='PASS',scope='PASS: only new upstream-review directory; no prior tracked path changed',production_pin='UNCHANGED: 0.123.0',draft_pr='OPEN/DRAFT at baseline; recheck after push'),new_runtime_tests=0,new_binaries=0,new_configs=0,upstream_writes=0,cleanup=dict(containers_created=0,networks_created=0,volumes_created=0,synthetic_credentials_created=0,status='NOT APPLICABLE: research/documentation only',broad_cleanup=False),mandatory_gates={'CHK-001':'FAIL','CHK-002':'BLOCKED','SECURITY':'BLOCKED','RELEASE':'NO-GO'}))
+ws=subprocess.run(['git','diff','--cached','--check'],cwd=repo,capture_output=True,text=True)
+(out/'raw/whitespace-review.log').write_text(ws.stdout+ws.stderr)
+v=read(out/'VALIDATION.json');v['checks']['all_files_whitespace']={'exit_code':ws.returncode,'result':'WARN: five trailing-space lines in upstream source captures preserved verbatim for blob identity' if ws.returncode else 'PASS','log':'raw/whitespace-review.log'};v['retained_failed_attempts']=[{'path':'raw/storage-interface.json','reason':'404 initial filename lookup; located storage.go via directory API'},{'path':'raw/design-validation-attempt1.log','reason':'Local link checker rejected incorrect runbook location; corrected to preserved verification/dev052/checkpoints/OPERATOR_RUNBOOK.md and validation rerun passed'}];put(out/'VALIDATION.json',v)
+put(out/'ARTIFACT_SHA256.json',{str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*')) if p.is_file() and p.name!='ARTIFACT_SHA256.json'})
+for name,h in read(out/'ARTIFACT_SHA256.json').items():assert sha(out/name)==h
+print(json.dumps(dict(result='PASS',fetches=len(fetch),failed_lookup_retained=[f['name'] for f in fetch if f['exit_code']],sources=len(idx),prior_hashes_verified=sum(v['verified_files'] for v in prior),local_links=len(links),artifacts=len(read(out/'ARTIFACT_SHA256.json')),manifest_sha256=sha(out/'ARTIFACT_SHA256.json')),indent=2))
