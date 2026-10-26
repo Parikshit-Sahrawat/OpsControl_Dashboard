@@ -1,0 +1,44 @@
+[
+  {
+    "command": [
+      "python",
+      "-m",
+      "py_compile",
+      "verification/dev052/queue_restart/test_replay.py",
+      "verification/dev052/queue_restart/replay.py",
+      "verification/dev052/queue_restart/e2e.py",
+      "verification/dev052/queue_restart/run_lab.py",
+      "verification/dev052/queue_restart/api_fixture.py",
+      "verification/dev052/queue_restart/postcheck.py",
+      "verification/dev052/queue_restart/state_view.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "check": "final replay and unit-test AST equals preformat frozen replay-marker source",
+    "status": "PASS"
+  }
+]

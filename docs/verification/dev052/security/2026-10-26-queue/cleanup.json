@@ -1,0 +1,105 @@
+{
+  "runs": [
+    {
+      "run": "guarded-baseline",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3c-322f7174-pg",
+        "dev052a3c-322f7174-denied-target",
+        "dev052a3c-322f7174-agent"
+      ],
+      "owned_networks": [
+        "dev052a3c-322f7174",
+        "dev052a3c-322f7174-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "run": "replay-attempt1",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3d-7bb38a3b-pg",
+        "dev052a3d-7bb38a3b-denied-target",
+        "dev052a3d-7bb38a3b-agent"
+      ],
+      "owned_networks": [
+        "dev052a3d-7bb38a3b",
+        "dev052a3d-7bb38a3b-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "run": "boundaries-attempt1",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3d-ff540bf9-pg",
+        "dev052a3d-ff540bf9-denied-target",
+        "dev052a3d-ff540bf9-agent"
+      ],
+      "owned_networks": [
+        "dev052a3d-ff540bf9",
+        "dev052a3d-ff540bf9-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "run": "replay-marker",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3d-f69ac013-pg",
+        "dev052a3d-f69ac013-denied-target",
+        "dev052a3d-f69ac013-agent"
+      ],
+      "owned_networks": [
+        "dev052a3d-f69ac013",
+        "dev052a3d-f69ac013-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "run": "boundaries-repeat",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3d-a1614cd0-pg",
+        "dev052a3d-a1614cd0-denied-target",
+        "dev052a3d-a1614cd0-agent"
+      ],
+      "owned_networks": [
+        "dev052a3d-a1614cd0",
+        "dev052a3d-a1614cd0-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "run": "faults-attempt1",
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3d-8f317ba7-pg",
+        "dev052a3d-8f317ba7-denied-target",
+        "dev052a3d-8f317ba7-agent"
+      ],
+      "owned_networks": [
+        "dev052a3d-8f317ba7",
+        "dev052a3d-8f317ba7-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    }
+  ],
+  "final_owned_container_residue": [],
+  "final_owned_network_residue": [],
+  "all_six_scoped_cleanups": "PASS",
+  "images_built_or_published": false,
+  "broad_cleanup": false
+}

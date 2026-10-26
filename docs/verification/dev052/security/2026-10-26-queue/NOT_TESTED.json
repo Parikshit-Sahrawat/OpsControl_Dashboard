@@ -1,0 +1,23 @@
+{
+  "BLOCKED": [
+    "CHK-002 protobuf rollback, unchanged",
+    "native queue correction and production integration",
+    "custom binary/upstream fork review and transition approval",
+    "matching public source-tag provenance for .163.2-labelled experimental binary",
+    "real-target bounded replay owner approval",
+    "corrupt queue repair, expired or incomplete archive recovery",
+    "independent security, license, release image, provider and CI gates unchanged"
+  ],
+  "NOT_TESTED": [
+    "physical power loss or storage-controller durability",
+    "arbitrary corruption, persistent ENOSPC or other I/O fault permutations beyond owned metadata corruption and injected queue pwrite ENOSPC",
+    "production load, prolonged outages, unbounded history and arbitrary log formats",
+    "genuine provider certification in this synthetic queue experiment"
+  ],
+  "NOT_CLAIMED": [
+    "exactly-once or global event ordering",
+    "native zero-loss guarantee",
+    "production missing-ID detection or automatic replay",
+    "release GO"
+  ]
+}
