@@ -97,8 +97,6 @@ function MonitoringSetupForm({
   const infrastructure = [
     "AWS_EC2",
     "EC2",
-    "KUBERNETES",
-    "K8S",
     "LINUX_HOST",
     "WINDOWS_HOST",
   ].includes(sourceType);
@@ -123,7 +121,7 @@ function MonitoringSetupForm({
         : Promise.resolve([]),
     ]);
     if (generation !== reloadGeneration.current) return;
-    // Keep deferred Kubernetes sources out of new monitoring activation flows.
+    // Keep excluded orchestration sources out of new monitoring activation flows.
     // Existing data and evidence remain accessible through other inventories.
     const activeMonitoringSources = sourceRows.filter(
       (row) => !/(^|[^a-z0-9])(kubernetes|k8s|eks|aks|gke|openshift)([^a-z0-9]|$)/i.test(row.source_type),
@@ -470,10 +468,8 @@ function MonitoringSetupForm({
                 <option
                   key={s.id}
                   value={s.id}
-                  disabled={s.source_type === "AWS_EKS"}
                 >
                   {s.name} · {s.source_type}
-                  {s.source_type === "AWS_EKS" ? " (discovery only)" : ""}
                 </option>
               ))}
             </select>

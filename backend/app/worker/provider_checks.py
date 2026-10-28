@@ -1,4 +1,4 @@
-"""Read-only, provider-neutral cloud/K8s/ETL health collectors.
+"""Read-only, provider-neutral cloud/ETL health collectors.
 
 No static cloud credentials, AssumeRole, arbitrary kubeconfig, arbitrary HTTP
 methods or private endpoint overrides. SDK credentials come from workload

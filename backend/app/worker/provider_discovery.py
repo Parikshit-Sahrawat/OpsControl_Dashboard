@@ -1,11 +1,10 @@
 """Provider-neutral read-only inventory discovery, using workload identity only.
 
 No network scanning, caller-defined provider endpoints, credential keys,
-cluster-wide Kubernetes enumeration or automatic monitoring activation.
+or automatic monitoring activation.
 """
 import re
-from datetime import datetime,timezone
-from app.worker.provider_checks import ProviderCheckError,_AWS_REGION,_AWS_INSTANCE,_DNS_LABEL
+from app.worker.provider_checks import ProviderCheckError,_AWS_REGION,_AWS_INSTANCE
 
 def aws_ec2_candidates(config,session_factory=None,max_results=100):
     allowed={"region","account_id"}

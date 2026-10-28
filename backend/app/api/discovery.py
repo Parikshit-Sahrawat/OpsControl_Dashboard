@@ -5,11 +5,9 @@ external identities are checked before creating typed resource inventory.
 """
 import uuid
 from datetime import datetime,timezone
-from typing import Literal
 from fastapi import APIRouter,Depends,HTTPException
 from pydantic import BaseModel,ConfigDict,Field
-from sqlalchemy import select, text
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models import (
@@ -82,7 +80,6 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
             raise HTTPException(422,"Duplicate resource import ID")
         selected.append(candidates[identity])
     results=[]
-    actor=current_principal.get()
     for candidate in selected:
         external_id=candidate["external_id"]
         display_name=external_id[:200]
@@ -101,11 +98,8 @@ def import_candidates(source_id:uuid.UUID,payload:ImportRequest,db:Session=Depen
                 source_type=ctype,connection_config=config,status="UNKNOWN",discovery_external_id=external_id,
                 description="Approved read-only resource inventory; monitoring not yet activated")
             db.add(new_source);db.flush()
-            # EKS discovery does not imply a runnable host/Pod adapter. Avoid
-            # manufacturing an unsupported enabled or dormant collector.
-            if ctype != 'AWS_EKS':
-                db.add(Collector(data_source_id=new_source.id,name="provider-readonly",
-                    collector_type=ctype,configuration=config,enabled=False,status="STOPPED"))
+            db.add(Collector(data_source_id=new_source.id,name="provider-readonly",
+                collector_type=ctype,configuration=config,enabled=False,status="STOPPED"))
             existing=new_source
         results.append({"external_id":external_id,"action":"WOULD_IMPORT" if payload.dry_run and new else
                         "IMPORTED" if new else "ALREADY_IMPORTED",

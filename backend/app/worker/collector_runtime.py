@@ -611,18 +611,11 @@ def _extract_metric_value(metric, result):
             if payload.get("process_running") is True
             else 0 if payload.get("process_running") is False else None
         ),
-        "K8S_NODE_READY": (
-            1
-            if payload.get("node_ready") is True
-            else 0 if payload.get("node_ready") is False else None
-        ),
         "HOST_MEMORY_USED_PERCENT": payload.get("memory_used_percent"),
         "HOST_DISK_USED_PERCENT": payload.get("disk_used_percent"),
         "APACHE_BUSY_WORKERS": payload.get("busy_workers"),
         "TOMCAT_HEAP_USED_PERCENT": payload.get("jvm_heap_used_percent"),
         "EC2_CPU_PERCENT": payload.get("cpu_percent"),
-        "K8S_RESTARTS": payload.get("restarts"),
-        "K8S_AVAILABLE_REPLICAS": payload.get("available_replicas"),
         "PENTAHO_ERRORS": payload.get("nr_errors"),
         "PENTAHO_RUNNING": (
             1
