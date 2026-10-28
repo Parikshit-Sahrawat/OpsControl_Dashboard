@@ -524,7 +524,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
               </tbody>
             </table>
           </div>
-          {selected.data_source_id &&
+          {selected.domain !== "VM" && selected.data_source_id &&
             allowed("templates.view", selected.organization_id) &&
             allowed("collectors.view", selected.organization_id) && (
               <>
@@ -1165,20 +1165,28 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       focus={!openCollector}
       workspace
     >
-        <ol className="onboarding-steps" aria-label={`${domain === "VM" ? "VM" : domain === "ETL" ? "Data Pipeline" : "API Endpoint"} onboarding steps`}>
-          {guidedSteps.map((s, i) => (
-            <li key={s} className={visibleStep === i + 1 ? "onboarding-step active" : "onboarding-step"}>
-              <button
-                type="button"
-                aria-current={visibleStep === i + 1 ? "step" : undefined}
-                disabled={i + 1 > maxUnlockedStep || (domain === "VM" && !created && i > 0)}
-                onClick={() => setStep(i + 1)}
-              >
-                {i + 1}. {s}
-              </button>
-            </li>
-          ))}
-        </ol>
+        {domain === "VM" ? (
+          <div className="onboarding-identity-note">
+            <h3>Compute Instance identity</h3>
+            <p>Save the host and customer details first. Agent installation, secure registration, connection checks, and monitoring configuration are available from the saved Compute Instance.</p>
+            <p>Saving a resource does not install an agent or activate monitoring.</p>
+          </div>
+        ) : (
+          <ol className="onboarding-steps" aria-label={`${domain === "ETL" ? "Data Pipeline" : "API Endpoint"} onboarding steps`}>
+            {guidedSteps.map((label, i) => (
+              <li key={label} className={visibleStep === i + 1 ? "onboarding-step active" : "onboarding-step"}>
+                <button
+                  type="button"
+                  aria-current={visibleStep === i + 1 ? "step" : undefined}
+                  disabled={i + 1 > maxUnlockedStep}
+                  onClick={() => setStep(i + 1)}
+                >
+                  {i + 1}. {label}
+                </button>
+              </li>
+            ))}
+          </ol>
+        )
       <div className="resource-onboarding-content">
       {error && <p className="error-banner" role="alert">{error}</p>}
       {!item && <div className="heading-actions">
