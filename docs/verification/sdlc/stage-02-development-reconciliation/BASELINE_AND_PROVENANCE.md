@@ -9,4 +9,3 @@ PR65/67 merged; DEV05-001 recorded fixed at `77c9d8b15caf8304fe626f711c219a95fc4
 DEV05.2 evidence is read from immutable draft reference `8d3a3414bb17a30e4394de0a24aa6336b37146eb`, not merged. No current upstream refresh is claimed. Preserve unresolved issue16236 and N1–N4 BLOCKED/NOT RUN pending authoritative evidence.
 
 Exact-head source references are indexed by SHA-256 in EVIDENCE_REFERENCES.json. Original ENG-001 and detailed approved future roadmap are not recovered; derivative proposals are not approval authority.
-
