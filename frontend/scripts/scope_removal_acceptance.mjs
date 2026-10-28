@@ -76,6 +76,8 @@ try{
  await pipelineRow.getByRole('button',{name:'Edit',exact:true}).click();
  const pipelineForm=page.getByRole('region',{name:'Edit Data Pipeline',exact:true});
  await pipelineForm.getByLabel('Resource name',{exact:true}).fill('scope-pentaho reviewed');
+ await pipelineForm.getByRole('button',{name:'Continue',exact:true}).click();
+ await pipelineForm.getByRole('button',{name:'Continue',exact:true}).click();
  await pipelineForm.getByRole('button',{name:'Save resource',exact:true}).click();
  await pipelineForm.waitFor({state:'hidden'});
  await page.getByRole('row').filter({hasText:'scope-pentaho reviewed'}).waitFor();
