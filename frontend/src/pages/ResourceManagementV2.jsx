@@ -251,7 +251,7 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
   </Modal>;
 }
 
-export default function ResourceManagementV2({ user, section, embedded = false, onOrganizationSaved }) {
+export default function ResourceManagementV2({ user, section, embedded = false, collectorTarget = null, onCollectorTargetHandled, onOrganizationSaved }) {
   // Administrative filtering is deliberately independent of the global selector.
   const [customerFilter, setOrganizationFilter] = useState("");
   const organizationIds = customerFilter ? [customerFilter] : [];
@@ -292,6 +292,20 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
   };
   useEffect(() => { setDataSources([]); setCollectors([]); reload(); return () => { reloadGeneration.current++; }; }, [customerFilter, user?.authorization_revision]);
   useEffect(() => { if (section) { setTab(section); setQuery(""); setPage(0); if (section === "organizations") setOrganizationFilter(""); } }, [section]);
+  // Resolve a Compute Instance's collector against the authorized inventory.
+  // Never open a collector by ID alone without checking its source scope.
+  useEffect(() => {
+    if (!collectorTarget || loading || tab !== "collectors") return;
+    const found = collectors.find(c => c.id === collectorTarget.id);
+    const source = found && dataSources.find(d => d.id === found.data_source_id);
+    if (found && source?.organization_id === collectorTarget.organizationId &&
+        can("collectors.view", source.organization_id)) {
+      setCollectorEditor(found);
+    } else {
+      setError("Collector is unavailable in the authorized organization scope. Refresh inventory or review its resource association.");
+    }
+    onCollectorTargetHandled?.();
+  }, [collectorTarget, loading, tab, collectors, dataSources, user?.authorization_revision]);
   const orgMap = useMemo(() => new Map(organizations.map(x => [x.id, x])), [organizations]);
   const filteredSources = useMemo(() => {
     const q = query.toLowerCase().trim();
