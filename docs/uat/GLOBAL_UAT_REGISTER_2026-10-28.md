@@ -91,3 +91,12 @@ Design direction: dark-first high-density NOC interface, accessible high-contras
 ### Update protocol
 
 For each item, record: reproduction steps, screenshot/evidence reference, affected revision, actual outcome, expected outcome, implementation PR/commit, test case, independent UAT decision and date. Statuses: OPEN, IN PROGRESS, BLOCKED, READY FOR UAT, PASS, FAIL. No statuses are implied by a checkmark on a different substep.
+
+## RM-DEF-036 — P0 provisional: dashboard unresponsive during active metrics ingestion
+
+- **Observed 2026-10-28 (Ubuntu local UAT):** After the registered agent started sending native host metrics, the OpsControl Dashboard became severely slow/unresponsive. The operator manually stopped the agent and browser responsiveness returned. This is an operator observation, not yet a measured causal attribution.
+- **Severity:** P0 provisional; **status:** OPEN, release-blocking pending controlled reproduction and root-cause evidence.
+- **Affected path to investigate:** Agent 1.5.0 / OTel Contrib 0.123.0 → TLS OTLP HTTP ingestion → FastAPI workers → PostgreSQL writes/queries → polling/API responses → React rendering. Shared local CPU, memory, disk I/O, connection-pool pressure and telemetry cardinality are hypotheses, not findings.
+- **Preservation:** Do not reset enrollment, delete queued telemetry, alter the verified revision 2, wipe volumes, or weaken existing CI/release security gates. Stop/restart agent only as an explicitly controlled test with recorded timestamps; preserve evidence before any changes.
+- **Minimum evidence:** Clock-aligned agent and API logs; host CPU/RAM/swap/disk I/O; container CPU/memory; PostgreSQL active sessions/locks/query latency; OTLP ingest rate and queue depth; browser network request timing, 5-second refresh behavior, React render/profiler or performance trace. Compare agent OFF versus ON with same dashboard route and customer scope.
+- **Acceptance:** With agent continuously ingesting, dashboard remains responsive; ingestion is bounded/backpressured; queries are paginated/aggregated and appropriately indexed; UI does not render unbounded raw metrics or overlap refresh requests. Quantitative thresholds and test load to be approved after baseline measurements. Validate sustained operation and restart/recovery without data loss claims; CHK-001 and CHK-002 remain independent blockers.
