@@ -29,6 +29,8 @@ class RuleCreate(BaseModel):
     @field_validator("definition")
     @classmethod
     def safe_definition(cls,value):
+        from app.services.excluded_platforms import require_supported_configuration
+        require_supported_configuration(value)
         require_safe_config(value)
         if len(str(value))>16000: raise ValueError("Rule config exceeds 16 KiB")
         return value
@@ -39,6 +41,8 @@ class NewVersion(BaseModel):
     @field_validator("definition")
     @classmethod
     def safe_definition(cls,value):
+        from app.services.excluded_platforms import require_supported_configuration
+        require_supported_configuration(value)
         require_safe_config(value)
         if len(str(value))>16000: raise ValueError("Rule config exceeds 16 KiB")
         return value

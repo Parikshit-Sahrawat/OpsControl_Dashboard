@@ -18,3 +18,31 @@ class RemovedPlatformTests(unittest.TestCase):
     def test_supported_source_inputs_preserved(self):
         for provider in ['AWS_EC2','LINUX_HOST','WINDOWS_HOST','HTTP','PENTAHO']:
             self.assertEqual(DataSourceCreate(name='synthetic',organization_id=uuid4(),source_type=provider).source_type,provider)
+
+class OperationalConfigurationTests(unittest.TestCase):
+    def test_nested_operational_aliases_rejected_without_erasing_generic_labels(self):
+        from app.services.excluded_platforms import require_supported_configuration
+        for kind in ('EKS', 'AmazonElasticKubernetesService', 'AzureKubernetesService',
+                     'GoogleKubernetesEngine', 'microk8s', 'K3S', 'RedHatOpenShift'):
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                require_supported_configuration({'wrapper':[{'collector':{'type':kind}}]})
+        generic={'namespace':'payments','workload':'batch','cluster':'postgres-ha',
+                 'attributes':{'k8s.namespace.name':'historical-label'}}
+        self.assertEqual(require_supported_configuration(generic),generic)
+
+    def test_legacy_source_cannot_be_relabelled_by_collector(self):
+        from app.services.excluded_platforms import require_supported_collector
+        from fastapi import HTTPException
+        from types import SimpleNamespace
+        with self.assertRaises(HTTPException) as denied:
+            require_supported_collector(SimpleNamespace(collector_type='HTTP',configuration={}),
+                SimpleNamespace(source_type='AWS_EKS',connection_config={}))
+        self.assertEqual(denied.exception.status_code,422)
+
+    def test_nested_source_template_and_collector_configs_are_rejected(self):
+        from app.schemas.monitoring import MonitoringTemplateCreate, CollectorCreate, DataSourceUpdate
+        factories=(lambda:MonitoringTemplateCreate(name='nested',package_config={'collector':{'type':'GKE'}}),
+                   lambda:CollectorCreate(name='nested',collector_type='HTTP',data_source_id=uuid4(),configuration={'nested':{'provider':'AKS'}}),
+                   lambda:DataSourceUpdate(connection_config={'opscontrol':{'monitoring_overrides':{'collector':{'type':'K8S'}}}}))
+        for factory in factories:
+            with self.assertRaises(ValidationError):factory()

@@ -715,6 +715,16 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
     collector = db.get(Collector, collector_id)
     if not collector or not collector.enabled or collector.remote_worker_id is not None:
         return
+    from app.services.excluded_platforms import require_supported_collector
+    from fastapi import HTTPException
+    try:
+        require_supported_collector(collector, db.get(DataSource, collector.data_source_id))
+    except HTTPException:
+        collector.enabled = False
+        collector.status = "STOPPED"
+        collector.last_error = "Excluded platform; historical evidence retained"
+        db.commit()
+        return
     # Retire legacy Kubernetes-only collectors before any provider SDK call.
     # Never delete collector runs, metrics, evidence, or cluster associations.
     if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:

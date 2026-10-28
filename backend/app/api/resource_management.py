@@ -1,3 +1,4 @@
+from app.services.excluded_platforms import require_supported_source, require_supported_collector
 from uuid import UUID
 from typing import Literal
 
@@ -110,6 +111,8 @@ def update_scoped_data_source(
 ):
     item = _source(db, data_source_id)
     values = payload.model_dump(exclude_unset=True)
+    if values != {"enabled": False}:
+        require_supported_source(item)
     for key, value in values.items():
         setattr(item, key, value)
     try:
@@ -170,6 +173,7 @@ def list_scoped_collectors(
 @router.post("/collectors", response_model=CollectorOut, status_code=201)
 def create_scoped_collector(payload: CollectorCreate, db: Session = Depends(get_db)):
     source = _source(db, payload.data_source_id)
+    require_supported_source(source)
     if not source.enabled:
         raise HTTPException(
             status_code=409, detail="Cannot add a collector to a disabled data source"
@@ -197,6 +201,8 @@ def update_scoped_collector(
     if not item:
         raise HTTPException(status_code=404, detail="Collector not found")
     values = payload.model_dump(exclude_unset=True)
+    if values != {"enabled": False}:
+        require_supported_collector(item, _source(db, item.data_source_id))
     for key, value in values.items():
         setattr(item, key, value)
     try:

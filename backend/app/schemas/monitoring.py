@@ -1,3 +1,4 @@
+from app.services.excluded_platforms import require_supported_configuration
 from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator, field_serializer
@@ -39,7 +40,7 @@ class DataSourceCreate(DataSourceBase):
     @field_validator("connection_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
     @field_validator("endpoint")
     @classmethod
@@ -67,7 +68,7 @@ class DataSourceUpdate(BaseModel):
     @field_validator("connection_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
     @field_validator("endpoint")
     @classmethod
@@ -116,7 +117,7 @@ class CollectorCreate(CollectorBase):
     @field_validator("configuration")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class CollectorUpdate(BaseModel):
     @field_validator("source_type", "collector_type", check_fields=False)
@@ -137,7 +138,7 @@ class CollectorUpdate(BaseModel):
     @field_validator("configuration")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class CollectorOut(CollectorBase):
     model_config = ConfigDict(from_attributes=True)
@@ -181,7 +182,7 @@ class MetricDefinitionCreate(MetricDefinitionBase):
     @field_validator("query_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MetricDefinitionUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
@@ -202,7 +203,7 @@ class MetricDefinitionUpdate(BaseModel):
     @field_validator("query_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MetricDefinitionOut(MetricDefinitionBase):
     model_config = ConfigDict(from_attributes=True)
@@ -241,7 +242,7 @@ class LogSourceCreate(LogSourceBase):
     @field_validator("parser_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class LogSourceUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
@@ -262,7 +263,7 @@ class LogSourceUpdate(BaseModel):
     @field_validator("parser_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class LogSourceOut(LogSourceBase):
     model_config = ConfigDict(from_attributes=True)
@@ -460,7 +461,7 @@ class MonitoringTemplateCreate(BaseModel):
     @field_validator("package_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MonitoringTemplateUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=200)
@@ -473,7 +474,7 @@ class MonitoringTemplateUpdate(BaseModel):
     @field_validator("package_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MonitoringTemplateOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -504,7 +505,7 @@ class MonitoringTemplateAttachmentCreate(BaseModel):
     @field_validator("overrides")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MonitoringTemplateAttachmentUpdate(BaseModel):
     template_version: int | None = Field(default=None, ge=1)
@@ -516,7 +517,7 @@ class MonitoringTemplateAttachmentUpdate(BaseModel):
     @field_validator("overrides")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(value)
+        return require_safe_config(require_supported_configuration(value))
 
 class MonitoringTemplateAttachmentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

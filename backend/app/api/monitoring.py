@@ -1,3 +1,4 @@
+from app.services.excluded_platforms import require_supported_source, require_supported_collector
 from datetime import datetime
 from uuid import UUID
 
@@ -88,6 +89,8 @@ def create_data_source(payload: DataSourceCreate, db: Session = Depends(get_db))
 @router.patch("/data-sources/{item_id}", response_model=DataSourceOut)
 def update_data_source(item_id: UUID, payload: DataSourceUpdate, db: Session = Depends(get_db)):
     item = _get_or_404(DataSource, item_id, db, "Data source")
+    if payload.model_dump(exclude_unset=True) != {"enabled": False}:
+        require_supported_source(item)
     for key, value in payload.model_dump(exclude_unset=True).items():
         setattr(item, key, value)
     db.commit()
@@ -131,7 +134,7 @@ def update_data_source_template(
     payload: MonitoringTemplateAttachmentUpdate,
     db: Session = Depends(get_db),
 ):
-    _get_or_404(DataSource, item_id, db, "Data source")
+    require_supported_source(_get_or_404(DataSource, item_id, db, "Data source"))
     attachment = db.scalar(
         select(MonitoringTemplateAttachment).where(
             MonitoringTemplateAttachment.data_source_id == item_id,
@@ -153,6 +156,14 @@ def update_data_source_template(
         )
         if not version:
             raise HTTPException(status_code=409, detail=f"Template version {values['template_version']} is not available")
+    from app.services.excluded_platforms import require_supported_configuration
+    selected_version = db.scalar(select(MonitoringTemplateVersion).where(
+        MonitoringTemplateVersion.template_id == template_id,
+        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version)))
+    try:
+        require_supported_configuration(selected_version.package_config if selected_version else None)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
     for key, value in values.items():
         setattr(attachment, key, value)
     db.commit()
@@ -212,7 +223,7 @@ def list_collector_runs(
 
 @router.post("/collectors", response_model=CollectorOut, status_code=201)
 def create_collector(payload: CollectorCreate, db: Session = Depends(get_db)):
-    _get_or_404(DataSource, payload.data_source_id, db, "Data source")
+    require_supported_source(_get_or_404(DataSource, payload.data_source_id, db, "Data source"))
     item = Collector(**payload.model_dump())
     db.add(item)
     db.commit()
@@ -223,6 +234,8 @@ def create_collector(payload: CollectorCreate, db: Session = Depends(get_db)):
 @router.patch("/collectors/{item_id}", response_model=CollectorOut)
 def update_collector(item_id: UUID, payload: CollectorUpdate, db: Session = Depends(get_db)):
     item = _get_or_404(Collector, item_id, db, "Collector")
+    if payload.model_dump(exclude_unset=True) != {"enabled": False}:
+        require_supported_collector(item, _get_or_404(DataSource, item.data_source_id, db, "Data source"))
     for key, value in payload.model_dump(exclude_unset=True).items():
         setattr(item, key, value)
     db.commit()

@@ -26,6 +26,7 @@ private = Path(tempfile.mkdtemp(prefix='opscontrol-release-')); private.chmod(0o
 prefix = 'opscontrol-release-'+secrets.token_hex(4)
 database, ingress = prefix+'-pg', prefix+'-tls'
 processes = []; containers = []; checks = []; passed = False
+command_results = []
 environment = os.environ.copy()
 for name in ('AWS_PROFILE','AWS_DEFAULT_PROFILE','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY','AWS_SESSION_TOKEN'):
     environment.pop(name, None)
@@ -36,6 +37,9 @@ environment.update(ENVIRONMENT='demo', OPSCONTROL_RELEASE_ACCEPTANCE='1', RELEAS
 
 def run(args, *, env=None, input=None, expected=0):
     result = subprocess.run(args, cwd=ROOT, env=env or environment, input=input, capture_output=True, text=True, timeout=240)
+    command_results.append({"command": args[:3], "exit_code": result.returncode, "expected_exit": expected})
+    with (private/"commands.log").open("a") as command_log:
+        command_log.write(result.stdout+"\n"+result.stderr)
     if result.returncode != expected:
         (private/'failed-command.log').write_text(result.stdout+'\n'+result.stderr)
         if args == ['node','frontend/scripts/resource_crud_acceptance.mjs']:
@@ -49,6 +53,7 @@ def run(args, *, env=None, input=None, expected=0):
 def module(name, *args, env=None):
     result = subprocess.run([PYTHON, '-m', name, *args], cwd=ROOT/'backend', env=env or environment,
         capture_output=True, text=True, timeout=240)
+    command_results.append({'command':[PYTHON,'-m',name,*args], 'exit_code':result.returncode})
     with (private/'probes.log').open('a') as log:
         log.write(result.stdout+'\n'+result.stderr)
     if result.returncode:
@@ -115,6 +120,8 @@ try:
     record('Native alert recovery and independent in-app leased delivery; retired ITSM rejected')
     module('scripts.eks_acceptance_probe')
     record('Retired EKS discovery/import/activation denied; tenant boundaries and inventory preservation checked')
+    module('scripts.scope_removal_http_probe')
+    record('Excluded nested/aliased configurations, legacy source mutation, templates and local execution refused')
     module('scripts.kubernetes_retirement_acceptance_probe')
     record('Disposable PostgreSQL: Kubernetes remote collectors retired, queued/leased jobs cancelled, evidence retained')
     module('scripts.release_runtime_probe','seed')
@@ -125,6 +132,7 @@ try:
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/scope_removal_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
         record('Browser resource CRUD, logical OTEL configuration persistence and cross-tenant denial')
@@ -267,6 +275,22 @@ finally:
             except subprocess.TimeoutExpired: process.kill(); process.wait()
     for container in reversed(containers):
         subprocess.run(['docker','rm','-f',container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    # Publish only redacted text logs, never session files, keys or DB dumps.
+    import re
+    OUT.mkdir(parents=True,exist_ok=True)
+    (OUT/'commands.json').write_text(json.dumps(command_results,indent=2)+'\n')
+    for logfile in private.glob('*.log'):
+        text=logfile.read_text(errors='replace')
+        for key,value in environment.items():
+            if any(word in key for word in ('PASSWORD','TOKEN','SECRET')) and value:
+                text=text.replace(value,'[REDACTED]')
+        text=text.replace('testing-only-StrongPassword-123!','[REDACTED]')
+        text=re.sub(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+','[REDACTED JWT]',text)
+        text=re.sub(r'(?i)(Bearer )[A-Za-z0-9_.-]+',r'\1[REDACTED]',text)
+        (OUT/logfile.name).write_text(text)
+    (OUT/'cleanup.json').write_text(json.dumps({'container_names':containers,'processes_stopped':all(p.poll() is not None for p in processes),
+        'remaining_containers':[name for name in containers if subprocess.run(['docker','inspect',name],capture_output=True).returncode==0],
+        'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()},indent=2)+'\n')
     if passed:
         shutil.rmtree(private)
     else:
