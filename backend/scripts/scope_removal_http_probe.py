@@ -46,7 +46,7 @@ def main():
         check(422,'PATCH',prefix+'/data-sources/'+legacy_id,admin,{'enabled':True})
         check(422,'PATCH',prefix+'/data-sources/'+legacy_id,admin,{'source_type':'HTTP'})
         check(422,'POST',prefix+'/collectors',admin,{'data_source_id':legacy_id,'name':'legacy-http','collector_type':'HTTP'})
-    check(404,'GET',root+'/data-sources/'+legacy_id,south)
+    check(404,'GET','/api/v1/monitoring/data-sources/'+legacy_id,south)
     check(403,'POST',root+'/collectors',reader,{'data_source_id':source_id,'name':'denied','collector_type':'HTTP'})
     for suffix,payload in (('scan',{}),('import',{'approved_external_ids':['synthetic'],'dry_run':False})):
         check(422,'POST','/api/v1/resource-discovery/sources/'+legacy_id+'/'+suffix,admin,payload)
