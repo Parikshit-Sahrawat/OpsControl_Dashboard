@@ -30,7 +30,9 @@ def main():
         legacy=DataSource(organization_id=org.id,name='scope-legacy-do-not-operate',source_type='AWS_EKS')
         db.add(legacy);db.flush();legacy_id=str(legacy.id);db.commit()
     from tests.test_kubernetes_cluster_associations import KubernetesClusterAssociationTests
-    fixture=KubernetesClusterAssociationTests();fixture.setUp();fixture.db.commit();fixture.doCleanups()
+    fixture=KubernetesClusterAssociationTests();fixture.setUp()
+    legacy_cluster_id=str(fixture.cluster.id); legacy_customer_id=str(fixture.a.id)
+    fixture.db.commit();fixture.doCleanups()
     def legacy_hashes():
         with SessionLocal() as db:
             return {table:hashlib.sha256("\n".join(db.execute(text(f'SELECT row_to_json(t)::text FROM {table} t ORDER BY id')).scalars()).encode()).hexdigest()
@@ -69,6 +71,11 @@ def main():
         status,_=p.req('GET',root+'/kubernetes-clusters'+suffix,admin)
         assert status in (403,404,405),status
         checks.append({'method':'GET','path':root+'/kubernetes-clusters'+suffix,'actual':status,'expected':'403/404/405'})
+    retired_path=root+'/kubernetes-clusters/'+legacy_cluster_id+'/associations/'+legacy_customer_id
+    for method in ('POST','PUT','PATCH','DELETE'):
+        status,_=p.req(method,retired_path,admin,{'expected_revision':1,'active':False,'reason':'synthetic denied mutation'})
+        assert status in (403,404,405),(method,status)
+        checks.append({'method':method,'path':retired_path,'actual':status,'expected':'403/404/405'})
     # Prove direct persisted legacy collector cannot execute through the local loop.
     with SessionLocal() as db:
         c=Collector(data_source_id=legacy_id,name='scope-legacy-persisted-http',collector_type='HTTP',configuration={'url':'https://forbidden.example.test'},enabled=True)
