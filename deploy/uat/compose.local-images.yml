@@ -1,0 +1,11 @@
+# Local UAT application-only image overlay. No migration service.
+services:
+  api:
+    image: ${STAGE_B_BACKEND_IMAGE:?immutable backend digest required}
+    build: !reset null
+  worker:
+    image: ${STAGE_B_BACKEND_IMAGE:?immutable backend digest required}
+    build: !reset null
+  frontend:
+    image: ${STAGE_B_FRONTEND_IMAGE:?immutable frontend digest required}
+    build: !reset null
