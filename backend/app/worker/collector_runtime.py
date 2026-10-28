@@ -356,33 +356,6 @@ class AwsEC2Adapter(CollectorAdapter):
             )
 
 
-class KubernetesAdapter(CollectorAdapter):
-    collector_type = "KUBERNETES"
-
-    async def collect(self, collector):
-        from app.worker.provider_checks import kubernetes_health, ProviderCheckError
-
-        try:
-            payload = await asyncio.to_thread(
-                kubernetes_health, collector.configuration or {}
-            )
-            return CollectionResult(
-                payload["outcome"] == "SUCCESS",
-                "Read-only Kubernetes status collected",
-                payload,
-            )
-        except (ProviderCheckError, ImportError):
-            return CollectionResult(
-                False,
-                "Kubernetes RBAC/configuration/SDK unavailable",
-                {"outcome": "CONFIGURATION_ERROR"},
-            )
-        except Exception:
-            return CollectionResult(
-                False,
-                "Kubernetes read-only API unavailable",
-                {"outcome": "PROVIDER_ERROR"},
-            )
 
 
 class PentahoAdapter(CollectorAdapter):
@@ -533,8 +506,6 @@ ADAPTERS = {
     "PENTAHO": PentahoAdapter(),
     "AWS_EC2": AwsEC2Adapter(),
     "EC2": AwsEC2Adapter(),
-    "KUBERNETES": KubernetesAdapter(),
-    "K8S": KubernetesAdapter(),
     "LINUX_HOST": LinuxHostMetricsAdapter(),
     "WINDOWS_HOST": WindowsHostMetricsAdapter(),
     "APACHE": ApacheStatusAdapter(),
@@ -753,7 +724,7 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
         return
     # Retire legacy Kubernetes-only collectors before any provider SDK call.
     # Never delete collector runs, metrics, evidence, or cluster associations.
-    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
         collector.enabled = False
         collector.status = "STOPPED"
         collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
@@ -859,7 +830,7 @@ def _due_collector_ids(limit, excluded=()):
         retired = db.scalars(
             select(Collector).where(
                 Collector.enabled.is_(True),
-                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS")),
+                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")),
                 Collector.remote_worker_id.is_(None),
             )
         ).all()
@@ -879,7 +850,7 @@ def _due_collector_ids(limit, excluded=()):
                     Organization.active.is_(True),
                     Collector.enabled.is_(True),
                     func.upper(Collector.collector_type).not_in(
-                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS")
+                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")
                     ),
                     Collector.remote_worker_id.is_(None),
                     Collector.id.not_in(excluded),

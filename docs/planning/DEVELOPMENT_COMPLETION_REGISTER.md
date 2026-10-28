@@ -30,8 +30,8 @@ Status: **reconciled planning baseline**, 2026-10-22. Source snapshot: `origin/m
 | DP-01 | Read-only Pentaho outcome, health, identity and evidence | DEV-03 | PARTIALLY_IMPLEMENTED | Native child evidence and RT-001–020 remain open |
 | DP-02 | Nine platform-native classifications and version-aware profiles | DEV-03 | PARTIALLY_IMPLEMENTED | Exact build/method capability evidence, no invented support |
 | API-01 | HTTP/TLS/synthetic endpoint operational monitoring | DEV-03 | IMPLEMENTED_VERIFIED | Confirm actual target freshness/authorization; real-network acceptance later |
-| K8S-01 | Authorized multi-customer canonical Kubernetes clusters | DEV-04 | BLOCKED_ARCHITECTURE | Approve additive identity/association/attribution design |
-| K8S-02 | EKS discovery and node/pod/cluster health | DEV-04 | PARTIALLY_IMPLEMENTED | Verify provider-native data and private API in approved lab |
+| K8S-01 | Authorized multi-customer canonical Kubernetes clusters | DEV-04 | REMOVED_FROM_SCOPE | Approve additive identity/association/attribution design |
+| K8S-02 | EKS discovery and node/pod/cluster health | DEV-04 | REMOVED_FROM_SCOPE | Verify provider-native data and private API in approved lab |
 | TOP-01 | Customer-safe topology relationships, freshness/history | DEV-04 | PARTIALLY_IMPLEMENTED | Benchmark graph and specify version/expiry policy |
 | OPS-01 | Alerting, incident/service ownership and notifications | DEV-05 | PARTIALLY_IMPLEMENTED | Delivery and escalation contract/negative tests |
 | OPS-02 | Versioned SLO policy, denominator and reproducible evidence | DEV-05 | BLOCKED_ARCHITECTURE | Recover source or approve precise SLO contract |
@@ -47,3 +47,7 @@ UI-001–UI-023 are **individually approved** and mapped individually in [TRACEA
 ## Development Complete exit rule
 
 Phase 1 is Development Complete only when every approved development-scope item is implemented with frontend/backend integration, durable persistence/migration safety where relevant, RBAC and tenant-isolation negatives, meaningful automated tests and required CI at an exact immutable SHA; any remaining item must have explicit owner disposition. No unresolved critical development defect may remain. Measure/report actual coverage; **no fixed percentage gate** applies during active development. Phase 2 independent UAT, genuine Pentaho and other provider acceptance, representative capacity tests, Phase 4 recovery certification and deployment approval remain separate. Current state is **NOT Development Complete; production NOT READY**.
+
+## OC-SCOPE-REM-001 owner scope correction — 2026-10-28
+
+K8S-01 and K8S-02, Kubernetes portions of OC-IMP-017 and associated UI refinements are REMOVED_FROM_SCOPE. This supersedes shared-cluster product planning, not historical evidence. VM/EC2 exclusive customer ownership remains mandatory. REMOVED_FROM_SCOPE is a scope classification, not implementation completion. Schema retirement/data preservation remains separately tracked. Stage 2 PR #70 is historical planning context and is not modified.

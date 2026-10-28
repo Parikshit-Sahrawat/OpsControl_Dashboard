@@ -25,6 +25,14 @@ class DataSourceBase(BaseModel):
 
 
 class DataSourceCreate(DataSourceBase):
+    @field_validator("source_type", "collector_type", check_fields=False)
+    @classmethod
+    def reject_removed_platform(cls, value):
+        from app.services.excluded_platforms import is_excluded_platform
+        if is_excluded_platform(value):
+            raise ValueError("Container orchestration platforms are excluded from product scope")
+        return value
+
     organization_id: UUID
 
 
@@ -39,6 +47,14 @@ class DataSourceCreate(DataSourceBase):
         return require_safe_url(value)
 
 class DataSourceUpdate(BaseModel):
+    @field_validator("source_type", "collector_type", check_fields=False)
+    @classmethod
+    def reject_removed_platform(cls, value):
+        from app.services.excluded_platforms import is_excluded_platform
+        if is_excluded_platform(value):
+            raise ValueError("Container orchestration platforms are excluded from product scope")
+        return value
+
     name: str | None = Field(default=None, min_length=1, max_length=200)
     source_type: str | None = Field(default=None, min_length=1, max_length=100)
     description: str | None = None
@@ -86,6 +102,14 @@ class CollectorBase(BaseModel):
 
 
 class CollectorCreate(CollectorBase):
+    @field_validator("source_type", "collector_type", check_fields=False)
+    @classmethod
+    def reject_removed_platform(cls, value):
+        from app.services.excluded_platforms import is_excluded_platform
+        if is_excluded_platform(value):
+            raise ValueError("Container orchestration platforms are excluded from product scope")
+        return value
+
     data_source_id: UUID
 
 
@@ -95,6 +119,14 @@ class CollectorCreate(CollectorBase):
         return require_safe_config(value)
 
 class CollectorUpdate(BaseModel):
+    @field_validator("source_type", "collector_type", check_fields=False)
+    @classmethod
+    def reject_removed_platform(cls, value):
+        from app.services.excluded_platforms import is_excluded_platform
+        if is_excluded_platform(value):
+            raise ValueError("Container orchestration platforms are excluded from product scope")
+        return value
+
     name: str | None = Field(default=None, min_length=1, max_length=200)
     collector_type: str | None = Field(default=None, min_length=1, max_length=100)
     enabled: bool | None = None

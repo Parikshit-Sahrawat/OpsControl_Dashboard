@@ -126,7 +126,7 @@ function MonitoringSetupForm({
     // Keep deferred Kubernetes sources out of new monitoring activation flows.
     // Existing data and evidence remain accessible through other inventories.
     const activeMonitoringSources = sourceRows.filter(
-      (row) => !["AWS_EKS", "KUBERNETES", "K8S"].includes(row.source_type),
+      (row) => !/(^|[^a-z0-9])(kubernetes|k8s|eks|aks|gke|openshift)([^a-z0-9]|$)/i.test(row.source_type),
     );
     const scopedSources = lockedSourceId
       ? activeMonitoringSources.filter((row) => row.id === lockedSourceId)

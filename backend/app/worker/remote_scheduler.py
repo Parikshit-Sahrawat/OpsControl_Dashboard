@@ -37,7 +37,7 @@ def queue_due_once(limit=100):
         retired=db.scalars(select(Collector).where(
             Collector.remote_worker_id.is_not(None),
             Collector.enabled.is_(True),
-            Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS")),
+            Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")),
         ).with_for_update()).all()
         for collector in retired:
             collector.enabled=False
@@ -45,7 +45,7 @@ def queue_due_once(limit=100):
             collector.last_error="Kubernetes monitoring retired; historical evidence retained"
         db.execute(update(RemoteProbeJob).where(
             RemoteProbeJob.collector_id.in_(select(Collector.id).where(
-                Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS"))
+                Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"))
             )),
             RemoteProbeJob.state.in_(("QUEUED", "LEASED"))
         ).values(state="CANCELLED",lease_nonce_hash=None))
@@ -56,7 +56,7 @@ def queue_due_once(limit=100):
             ).order_by(Collector.next_run_at.nullsfirst()).with_for_update(skip_locked=True).limit(limit)
         ).all()
         for collector in collectors:
-            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
                 collector.enabled=False
                 collector.status="STOPPED"
                 collector.last_error="Kubernetes monitoring retired; historical evidence retained"

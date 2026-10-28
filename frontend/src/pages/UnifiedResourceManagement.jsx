@@ -6,7 +6,6 @@ import { canOpenSection } from "../navigation";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
 import DataPipelineIntegrations from "./DataPipelineIntegrations";
-import ImportedDiscoveryInventory from "../components/ImportedDiscoveryInventory";
 import MonitoringSetup from "./MonitoringSetup";
 import EventDelivery from "./EventDelivery";
 import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
@@ -784,18 +783,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
             </>
           )}
         </section>
-      )}
-      {area === "resources" && domain === "VM" && (
-        <details>
-          <summary>Imported discovery inventory</summary>
-          <ImportedDiscoveryInventory
-            organizationId={customer}
-            collectorOrganizations={customers
-              .filter((c) => allowed("collectors.view", c.id))
-              .map((c) => c.id)}
-            authorizationRevision={user.authorization_revision}
-          />
-        </details>
       )}
       <details>
         <summary>Legacy mapping reconciliation</summary>
