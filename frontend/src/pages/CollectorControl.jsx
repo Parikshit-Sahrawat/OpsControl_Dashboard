@@ -3,6 +3,7 @@ import {
   control,
   downloadText,
   downloadPackage,
+  packageAvailability,
   methodDefaults,
 } from "../controlPlane";
 import { createCollector, updateCollector } from "../resourceApi";
@@ -34,6 +35,8 @@ export default function CollectorControl({
     [busy, setBusy] = useState(false),
     [yaml, setYaml] = useState(""),
     [token, setToken] = useState(""),
+    [packages, setPackages] = useState(null),
+    [packageError, setPackageError] = useState(""),
     [osMetrics, setOsMetrics] = useState(false);
   const [approved, setApproved] = useState(false);
   const [templateDefaults, setTemplateDefaults] = useState(null);
@@ -61,6 +64,23 @@ export default function CollectorControl({
       live = false;
     };
   }, [collector?.id]);
+  const checkPackages = async () => {
+    try {
+      const availability = await packageAvailability();
+      setPackages(availability);
+      setPackageError("");
+    } catch (e) {
+      setPackageError(e.message);
+    }
+  };
+  useEffect(() => {
+    checkPackages();
+  }, []);
+  const downloadAgent = (platform) =>
+    action(async () => {
+      await downloadPackage(platform);
+      await checkPackages();
+    });
   const action = async (fn) => {
     setBusy(true);
     setError("");
@@ -645,26 +665,53 @@ export default function CollectorControl({
             </section>
             <section>
               <h3>Agent Installation</h3>
+              <p>
+                Install the approved OpsControl Agent on the target host before
+                generating a 15-minute enrollment token. Installation and
+                secure registration are separate steps.
+              </p>
+              {packageError && <p role="alert">{packageError}</p>}
               <div className="row-actions">
-                <button onClick={() => action(() => downloadPackage("linux"))}>
-                  Download Linux Agent
+                <button type="button" onClick={checkPackages} disabled={busy}>
+                  Check installer availability
                 </button>
                 <button
-                  onClick={() => action(() => downloadPackage("windows"))}
+                  type="button"
+                  disabled={busy || !packages?.linux?.available}
+                  onClick={() => downloadAgent("linux")}
                 >
-                  Download Windows Agent
+                  Download Linux Agent (.zip)
+                </button>
+                <button
+                  type="button"
+                  disabled={busy || !packages?.windows?.available}
+                  onClick={() => downloadAgent("windows")}
+                >
+                  Download Windows Installer (.exe)
                 </button>
               </div>
+              {packages && (
+                <div aria-live="polite">
+                  <p>Linux: {packages.linux?.available ? "Approved package available" : "Installer not provisioned"}</p>
+                  <p>Windows: {packages.windows?.available ? "Approved installer available" : "Installer not provisioned"}</p>
+                </div>
+              )}
               <p>
-                Manual installation only. A host IP does not provide a secure
-                remote management channel.
+                When an installer is unavailable, an administrator must publish
+                the verified package to the configured agent package directory.
+                Do not use the configuration YAML as an installer.
+              </p>
+              <p>
+                Copyable target-host download links require a separately authorized,
+                short-lived download credential. Your dashboard login token must
+                never be copied into a URL or shell command.
               </p>
               <a
-                href="https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/blob/feature/consolidated-manual-uat/agent/README.md"
+                href="https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/blob/main/docs/AGENT_INSTALL_OPERATOR.md"
                 target="_blank"
                 rel="noreferrer"
               >
-                Deploy Agent — Windows / Linux manual installation guide
+                Agent installation guide — Linux and Windows
               </a>
               <h3>Agent Registration</h3>
               <button

@@ -58,12 +58,7 @@ try {
   await modal
     .getByRole("button", { name: "Save resource identity", exact: true })
     .click();
-  await modal
-    .getByRole("heading", { name: "Collector Configuration", exact: true })
-    .waitFor();
-  await modal
-    .getByRole("button", { name: "Close resource form", exact: true })
-    .click();
+  await modal.waitFor({ state: "hidden" });
   phase = "locate created resource";
   await page
     .getByLabel("Search resources", { exact: true })

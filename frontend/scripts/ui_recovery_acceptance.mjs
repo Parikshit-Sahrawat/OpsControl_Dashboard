@@ -96,9 +96,8 @@ try {
   const onboarding=desktop.getByRole('region',{name:'Create Compute Instance'});
   await onboarding.waitFor();
   check(await desktop.getByRole('dialog',{name:'Create Compute Instance'}).count()===0,'compute onboarding uses a full-page workspace');
-  const computeStepCount=await onboarding.locator('.onboarding-step').count();
-  check(computeStepCount===10,`compute workspace retains ten sequential steps (found ${computeStepCount})`);
-  check(await onboarding.getByRole('button',{name:/2\. Configure Telemetry/}).isDisabled(),'future onboarding steps remain locked before resource identity');
+  check(await onboarding.locator('.onboarding-step').count()===0,'compute identity editor does not show inactive wizard steps');
+  check(await onboarding.getByText('Saving a resource does not install an agent or activate monitoring.').count()===1,'identity editor distinguishes saving from activation');
   check(await onboarding.getByRole('button',{name:'Save draft'}).count()===1,'workspace has one draft action');
   await onboarding.getByText('Loading attribute definitions…').waitFor({state:'hidden'});
   check(await onboarding.getByRole('alert').count()===0,'compute configuration definitions load without an API error');

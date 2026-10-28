@@ -343,7 +343,7 @@ def add_method(id: uuid.UUID, payload: MethodInput, db=Depends(get_db)):
         collector_id=id,
         organization_id=s.organization_id,
         **payload.model_dump(exclude={"expected_revision"}),
-        validation_status="SCHEMA_VALID"
+        validation_status="SCHEMA_VALID",
     )
     db.add(m)
     db.flush()
@@ -1051,19 +1051,50 @@ def revoke(id: uuid.UUID, db=Depends(get_db)):
     commit(db, s, "AGENT_REVOKE", a.id)
 
 
+@router.get("/packages/availability")
+def package_availability():
+    """Expose only artifact readiness, never private paths or credentials."""
+    from pathlib import Path
+
+    require_permission("collectors.view")
+    root = os.getenv("OPSCONTROL_AGENT_PACKAGE_DIR")
+    directory = Path(root) if root else None
+    files = {
+        "linux": "opscontrol-agent-linux.zip",
+        "windows": "opscontrol-agent-windows.exe",
+    }
+    return {
+        platform: {
+            "available": bool(directory and (directory / filename).is_file()),
+            "filename": filename,
+            "format": filename.rsplit(".", 1)[-1],
+        }
+        for platform, filename in files.items()
+    }
+
+
 @router.get("/packages/{platform}")
 def package(platform: str):
     from pathlib import Path
     from fastapi.responses import FileResponse
 
-    if platform not in ("linux", "windows"):
+    files = {
+        "linux": ("opscontrol-agent-linux.zip", "application/zip"),
+        "windows": ("opscontrol-agent-windows.exe", "application/octet-stream"),
+    }
+    if platform not in files:
         raise HTTPException(404, "Unsupported agent platform")
     require_permission("collectors.view")
     root = os.getenv("OPSCONTROL_AGENT_PACKAGE_DIR")
-    file = Path(root) / ("opscontrol-agent-" + platform + ".zip") if root else None
+    filename, media_type = files[platform]
+    file = Path(root) / filename if root else None
     if file is None or not file.is_file():
-        raise HTTPException(503, "Approved agent package has not been provisioned")
-    return FileResponse(file, media_type="application/zip", filename=file.name)
+        raise HTTPException(
+            503,
+            f"Approved {platform} agent installer is not provisioned. "
+            "Contact the OpsControl administrator to publish a verified package.",
+        )
+    return FileResponse(file, media_type=media_type, filename=filename)
 
 
 @router.get("/collectors/{id}/template-defaults")
