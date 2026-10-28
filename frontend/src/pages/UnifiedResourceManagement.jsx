@@ -1109,11 +1109,9 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         }, { customerIds: [r.organization_id] });
         setImported(null);
       }
-      if (domain === "VM" && !item) {
-        setStep(2);
-        setMaxUnlockedStep((current) => Math.max(current, 2));
-      }
-      else onClose();
+      // Compute identity creation is a standalone save. Resume the approved
+      // agent-first onboarding from the saved resource's collector workspace.
+      onClose();
     });
   const chooseVM = (id) => {
     const vm = vms.find((r) => r.id === id);
