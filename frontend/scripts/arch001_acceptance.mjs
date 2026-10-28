@@ -117,8 +117,7 @@ try {
   assert(registry.definitions.VM.fields.some((f) => f.key === "environment"));
   const dialog = page.getByRole("region", { name: "Create Compute Instance" });
   await dialog.getByLabel(/^Environment/).selectOption("DEV");
-  const steps = dialog.getByRole("list", { name: "VM onboarding steps" });
-  assert.equal(await steps.getByRole("button").count(), 10);
+  assert.equal(await dialog.locator(".onboarding-step").count(), 0, "Compute identity must not expose inactive wizard stages");
   const name = "Browser Compute " + Date.now();
   await dialog.getByLabel("Resource name", { exact: true }).fill(name);
   await dialog
@@ -138,31 +137,39 @@ try {
   const createdResponse = await createResponse;
   assert.equal(createdResponse.status(), 201);
   const created = await createdResponse.json();
-  for (let stage = 2; stage <= 10; stage++) {
-    if (stage > 2)
-      await dialog.getByRole("button", { name: "Continue", exact: true }).click();
-    await steps
-      .getByRole("button")
-      .nth(stage - 1)
-      .waitFor();
-    assert.equal(
-      await steps
-        .getByRole("button")
-        .nth(stage - 1)
-        .getAttribute("aria-current"),
-      "step",
-    );
-  }
-  await steps.getByRole("button").nth(5).click();
-  const draftResponse = response("/api/v1/resource-drafts", "POST");
-  await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
-  const saved = await draftResponse;
-  assert.equal(saved.status(), 201);
-  const draft = await saved.json();
-  assert.equal(draft.stage, 6);
+  await dialog.waitFor({ state: "hidden" });
+  await shot("arch001-compute-identity-saved.png");
+  // The independent identity editor now closes on save. Construct a
+  // legitimate resource-linked draft through the authenticated API to keep
+  // testing linked/unlinked draft isolation without relying on removed steps.
+  const bearer = await page.evaluate(() => sessionStorage.getItem("opscontrol.sessionToken"));
+  const linkedDraftResponse = await page.request.post(
+    process.env.ARCH001_API_URL + "/api/v1/resource-drafts",
+    {
+      headers: {
+        Authorization: "Bearer " + bearer,
+        "X-OpsControl-Customers": created.organization_id,
+      },
+      data: {
+        domain: "VM",
+        name: created.name,
+        organization_id: created.organization_id,
+        stage: 1,
+        configuration: {
+          ...created.configuration,
+          resource_id: created.id,
+          name: created.name,
+          organization_id: created.organization_id,
+          environment: created.environment,
+          active: created.active,
+        },
+      },
+    },
+  );
+  assert.equal(linkedDraftResponse.status(), 201);
+  const draft = await linkedDraftResponse.json();
+  assert.equal(draft.stage, 1);
   assert.equal(draft.configuration.resource_id, created.id);
-  await shot("arch001-compute-onboarding.png");
-  await close();
 
   // Switching from a resource-linked draft to an unlinked draft must create
   // the second resource, never edit the first resource kept in local state.
@@ -182,7 +189,7 @@ try {
 
   await page.getByRole("button", { name: "Create Compute Instance", exact: true }).click();
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
-  await dialog.getByRole("heading", { name: "Event Parameters (optional)", exact: true }).waitFor();
+  await dialog.getByLabel("Resource name", { exact: true }).waitFor();
   await dialog.getByLabel("Resume draft").selectOption(secondDraft.id);
   await page.waitForFunction((expected) =>
     [...document.querySelectorAll("input")].some((input) => input.value === expected), secondName);
@@ -208,7 +215,7 @@ try {
   assert.equal(switchSave.status(), 201);
   assert.equal(state.original_name, name);
   assert.equal(state.new_name_count, 1);
-  await close();
+  await dialog.waitFor({ state: "hidden" });
 
   await page.getByRole("button", { name: "Create Compute Instance", exact: true }).click();
   let releaseLinkedDetail;
@@ -245,7 +252,6 @@ try {
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
   await dialog.getByRole("heading", { name: "Event Parameters (optional)", exact: true }).waitFor();
   assert.equal(await dialog.getByRole("alert").count(), 0);
-  await steps.getByRole("button").first().click();
   const reverseSaveResponse = page.waitForResponse((r) => {
     const path = new URL(r.url()).pathname;
     return path.startsWith("/api/v1/unified/resources/") &&
@@ -267,23 +273,17 @@ try {
     reverse: { method: reverseSave.request().method(), path: new URL(reverseSave.url()).pathname, status: reverseSave.status() },
     database: reverseState,
   }, null, 2));
-  await close();
+  await dialog.waitFor({ state: "hidden" });
 
   await page
     .getByRole("button", { name: "Create Compute Instance", exact: true })
     .click();
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
-  await dialog
-    .getByRole("heading", { name: "Event Parameters (optional)", exact: true })
-    .waitFor();
-  for (let stage = 7; stage <= 10; stage++)
-    await dialog.getByRole("button", { name: "Continue", exact: true }).click();
-  await dialog.getByLabel("Approve verified monitoring activation").check();
-  assert.equal(
-    await dialog.getByRole("button", { name: "Activate monitoring", exact: true }).isDisabled(),
-    true,
-    "An unregistered/no-telemetry host must not activate",
-  );
+  await dialog.getByLabel("Resource name", { exact: true }).waitFor();
+  assert.equal(await dialog.locator(".onboarding-step").count(), 0);
+  // Activation safety is verified by the backend acceptance. A saved
+  // identity must not falsely show a connected agent in this editor.
+  await shot("arch001-compute-identity-draft.png");
   await close();
 
   // A new component starts at its own unfiltered inventory. A prior search
