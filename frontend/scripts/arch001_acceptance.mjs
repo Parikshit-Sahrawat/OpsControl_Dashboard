@@ -303,33 +303,20 @@ try {
   assert.equal(await page.getByLabel("Search resources", { exact: true }).inputValue(), "");
   await page.getByRole("button", { name: fixture.vm_resource.name, exact: true }).waitFor();
 
-  for (const [area, listName, names] of [
-    [
-      "Event Parameters",
-      "Event Parameter domains",
-      [
-        "Compute Health Parameters",
-        "Data Pipeline Parameters",
-        "API Endpoint Parameters",
-      ],
-    ],
-    [
-      "Alert Rules",
-      "Event Parameter domains",
-      [
-        "Compute Instances Alert Setup",
-        "Data Pipelines Alert Setup",
-        "API Endpoints Alert Setup",
-      ],
-    ],
+  // RM-DEF-034: Event Parameters is no longer a standalone Resource
+  // Management navigation option. Existing parameter APIs and history remain
+  // covered by the HTTP acceptance and resource-specific entry points.
+  const selector = page.getByLabel("Resource Management component");
+  assert.equal(await selector.locator('option[value="parameters"]').count(), 0);
+  await selector.selectOption("rules");
+  const ruleDomains = page.getByRole("tablist", { name: "Event Parameter domains" });
+  assert.equal(await ruleDomains.getByRole("tab").count(), 3);
+  for (const domainName of [
+    "Compute Instances Alert Setup",
+    "Data Pipelines Alert Setup",
+    "API Endpoints Alert Setup",
   ]) {
-    await page.getByLabel("Resource Management component").selectOption(
-      area === "Event Parameters" ? "parameters" : "rules",
-    );
-    const domains = page.getByRole("tablist", { name: listName });
-    assert.equal(await domains.getByRole("tab").count(), 3);
-    for (const domainName of names)
-      await domains.getByRole("tab", { name: domainName, exact: true }).click();
+    await ruleDomains.getByRole("tab", { name: domainName, exact: true }).click();
   }
   await page.getByLabel("Resource Management component").selectOption("delivery");
   await page
