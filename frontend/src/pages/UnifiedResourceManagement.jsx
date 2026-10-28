@@ -1184,7 +1184,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               </li>
             ))}
           </ol>
-        )
+        )}
       <div className="resource-onboarding-content">
       {error && <p className="error-banner" role="alert">{error}</p>}
       {!item && <div className="heading-actions">
