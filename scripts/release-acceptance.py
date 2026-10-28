@@ -66,10 +66,6 @@ def start_api(env, host, port, proxy='127.0.0.1'):
     log = (private/f'api-{len(processes)}.log').open('w')
     args = [PYTHON, '-m', 'uvicorn', 'app.main:app', '--host', host, '--port', str(port),
         '--forwarded-allow-ips', proxy, '--no-access-log']
-    if env.get('ENVIRONMENT')=='demo' and env.get('OPSCONTROL_RELEASE_ACCEPTANCE')=='1':
-        code = ('from scripts.eks_acceptance_fixture import configure;configure();import uvicorn;'
-                f'uvicorn.run("app.main:app",host={host!r},port={port!r},forwarded_allow_ips={proxy!r},access_log=False)')
-        args = [PYTHON,'-c',code]
     process = subprocess.Popen(args, cwd=ROOT/'backend', env=env, stdout=log, stderr=subprocess.STDOUT)
     processes.append(process); return process
 

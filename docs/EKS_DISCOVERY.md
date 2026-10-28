@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # Read-only EKS inventory discovery
 
 `AWS_EKS` discovery uses the existing optional boto3 SDK and workload identity. A platform administrator configures an enabled discovery Data Source with explicit `region`, 12-digit expected `account_id`, and optionally 1–50 exact `cluster_names`. Static credentials, role/profile switches, endpoint overrides and scanning arbitrary URLs are rejected.

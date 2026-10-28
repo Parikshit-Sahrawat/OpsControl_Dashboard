@@ -29,10 +29,9 @@ def browser(phase):
     run(['node','frontend/scripts/infrastructure_acceptance.mjs',phase])
 def target():return start([PYTHON,'-c','import time; time.sleep(3600)'],label='linux-target')
 try:
-    for name in ('admin-password','kube-token'):
+    for name in ('admin-password',):
         (private/name).write_text(secrets.token_urlsafe(36));(private/name).chmod(0o600)
     (private/'phase').write_text('healthy')
-    run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(private/'tls.key'),'-out',str(private/'tls.crt'),'-days','1','-subj','/CN=127.0.0.1','-addext','subjectAltName=IP:127.0.0.1'])
     run(['docker','run','-d','--name',container,'-p','127.0.0.1:15432:5432','-e','POSTGRES_USER=opscontrol','-e','POSTGRES_PASSWORD=infra-local-only','-e','POSTGRES_DB=opscontrol','postgres:17-alpine'])
     for _ in range(100):
         ready=subprocess.run(['docker','exec',container,'pg_isready','-U','opscontrol'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)

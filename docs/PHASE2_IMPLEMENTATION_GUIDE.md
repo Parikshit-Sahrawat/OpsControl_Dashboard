@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # OpsControl Phase 2 — Implementation and Verification Guide
 
 **Development branch:** `feat/phase2-activation-provider-integrations` · [Draft PR #21](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/21)
