@@ -88,6 +88,7 @@ jobs:
           set -euo pipefail
           test -f /etc/opscontrol/local-uat-runner-approved
           test -n "${LOCAL_UAT_BASE_COMPOSE:?}"
+          test -n "${LOCAL_UAT_OVERRIDE_COMPOSE:?}"
           test -n "${LOCAL_UAT_PROJECT:?}"
           test -n "${LOCAL_UAT_STATE_DIR:?}"
           test -n "${LOCAL_UAT_API_URL:?}"
