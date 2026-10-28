@@ -1,7 +1,9 @@
-# Bounded source removal
+# Source change report — 2026-10-28
 
-Implementation `274175850c8553ecbf27d8cb0e7a2d9f5136a9da` from main `09a578f70282c7889a515c332c948f1940ae6719`. No applied migration edited. Provider SDK dependency removed; no collector binary/version changes. Standalone EC2/VM, API/Pentaho and shared telemetry retained.
+Baseline `09a578f70282c7889a515c332c948f1940ae6719`. Initial removal `274175850c8553ecbf27d8cb0e7a2d9f5136a9da`; residual product/UI and regression correction `679ed2887a53eec4fe226876cd945fdd373fbe46`; synthetic preservation probe `c08be56909caee686eac5107846bdacea5d26346`; final fixture/guide removal `2e544d0f5cbfccaaebe7c71cf479813e464a17ab`.
 
-New removal contract tests check missing routes/capabilities/adapters, rejected excluded sources and supported-source schema acceptance. This is NOT full HTTP/DB certification. Full backend suite currently fails because two obsolete modules import removed functions; security assertions were not deleted to hide this failure. Remaining input paths, historical renderer branches, test contracts and complete deployment/documentation semantics require follow-up before owner acceptance.
+See [inventory](REMOVAL_INVENTORY.md) and [results](REGRESSION_TEST_RESULTS.md). Dedicated cluster operational routes, adapters, discovery imports, SDK dependency, UI drawer and rendering branches, metric extraction, fixtures and cluster-only provisioning CI are removed. Excluded DataSource/Collector type input is rejected. General VM/EC2, API, read-only Pentaho and telemetry infrastructure remain in scope.
+
+No schema migration or production collector change. Full PostgreSQL-backed regression: 538 passed, 2 skipped at `679ed2887a53eec4fe226876cd945fdd373fbe46`. Subsequent changes are test-only fixtures, a preservation probe and documentation; no later product behavior change. Historical test import failures were retained, then reconciled without removing retained-data security checks. This is a reviewable bounded removal, not completed browser/provider acceptance or release approval.
 
 CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO
