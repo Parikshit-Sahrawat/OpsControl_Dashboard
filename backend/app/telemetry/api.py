@@ -1096,6 +1096,7 @@ def package(platform: str):
         )
     return FileResponse(file, media_type=media_type, filename=filename)
 
+
 @router.get("/collectors/{id}/template-defaults")
 def template_defaults(id: uuid.UUID, db=Depends(get_db)):
     """Reuse attached immutable packages; offer explicit drafts, never deploy."""
