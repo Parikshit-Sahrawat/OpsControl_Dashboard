@@ -156,7 +156,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       setSelected(null);
       setCollector(null);
       setSource(null);
-      setCollectorTarget(null);
       setSearch("");
       setOffset(0);
     }
@@ -164,6 +163,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   const chooseArea = (next) => {
     if (!canOpenSection(user, "Resource Management", next)) return;
     setArea(next);
+    if (next !== "collectors") setCollectorTarget(null);
     setSelected(null);
     setSearch("");
     setOffset(0);
