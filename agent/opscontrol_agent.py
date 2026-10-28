@@ -166,13 +166,29 @@ class Agent:
                         with open(path, "rb") as stream:
                             stream.read(1)
             if method["method_type"] == "FILE_LOG" and c["source"] == "JOURNALD":
-                result = subprocess.run(
-                    ["journalctl", "--no-pager", "-n", "1"],
-                    capture_output=True,
-                    timeout=10,
-                )
-                if result.returncode:
+                # Probe using the actual service identity. journalctl may exit
+                # successfully while returning no entries because this user
+                # cannot read system journals; exit code alone is insufficient.
+                import shutil
+
+                if not shutil.which("journalctl"):
+                    raise RuntimeError("JOURNALCTL_NOT_FOUND")
+                try:
+                    result = subprocess.run(
+                        ["journalctl", "--no-pager", "--output=short-iso", "-n", "1"],
+                        capture_output=True,
+                        text=True,
+                        timeout=10,
+                        check=False,
+                    )
+                except subprocess.TimeoutExpired as exc:
+                    raise RuntimeError("JOURNAL_PREFLIGHT_TIMEOUT") from exc
+                stderr = result.stderr.lower()
+                if result.returncode or "permission denied" in stderr or "insufficient permissions" in stderr:
                     raise RuntimeError("JOURNAL_PERMISSION_DENIED")
+                # An empty result cannot prove access: a quiet journal is valid,
+                # so avoid falsely declaring a permission failure here.
+
             if method["method_type"] == "FILE_LOG" and c["source"] == "WINDOWS_EVENT":
                 result = subprocess.run(
                     [
