@@ -1,0 +1,126 @@
+[
+  {
+    "name": "0.163.2-before_enqueue",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0000",
+      "event-0001",
+      "event-0002",
+      "event-0003"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0000": 1,
+      "event-0001": 1,
+      "event-0002": 1,
+      "event-0003": 1
+    },
+    "api_counts_by_id": {
+      "event-0000": 1,
+      "event-0001": 1,
+      "event-0002": 1,
+      "event-0003": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-after_enqueue_before_checkpoint",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0004",
+      "event-0005",
+      "event-0006",
+      "event-0007"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 8,
+    "api_duplicate_attempts": 4,
+    "physical_rows": 8,
+    "physical_duplicate_rows": 4,
+    "db_counts_by_id": {
+      "event-0004": 2,
+      "event-0005": 2,
+      "event-0006": 2,
+      "event-0007": 2
+    },
+    "api_counts_by_id": {
+      "event-0004": 2,
+      "event-0005": 2,
+      "event-0006": 2,
+      "event-0007": 2
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-before_enqueue",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0008",
+      "event-0009",
+      "event-0010",
+      "event-0011"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0008": 1,
+      "event-0009": 1,
+      "event-0010": 1,
+      "event-0011": 1
+    },
+    "api_counts_by_id": {
+      "event-0008": 1,
+      "event-0009": 1,
+      "event-0010": 1,
+      "event-0011": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-after_enqueue_before_checkpoint",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0012",
+      "event-0013",
+      "event-0014",
+      "event-0015"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 8,
+    "api_duplicate_attempts": 4,
+    "physical_rows": 8,
+    "physical_duplicate_rows": 4,
+    "db_counts_by_id": {
+      "event-0012": 2,
+      "event-0013": 2,
+      "event-0014": 2,
+      "event-0015": 2
+    },
+    "api_counts_by_id": {
+      "event-0012": 2,
+      "event-0013": 2,
+      "event-0014": 2,
+      "event-0015": 2
+    },
+    "controller_status": "PASS",
+    "error": null
+  }
+]

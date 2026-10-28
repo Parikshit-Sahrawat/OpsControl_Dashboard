@@ -1,0 +1,328 @@
+[
+  {
+    "package": "black",
+    "installed_version": "25.1.0",
+    "advisory": "PYSEC-2026-2121",
+    "aliases": [
+      "GHSA-3936-cmfr-pm3m",
+      "CVE-2026-32274"
+    ],
+    "affected_surface": "development/CI formatter; not cataloged in candidates",
+    "runtime_present": false,
+    "reachable_path": "Black CLI cell-magic option is not passed by declared CI; no production Black cataloged. Untrusted option injection beyond declared workflows not ruled out.",
+    "severity": [
+      "UNKNOWN: original audit has no severity; no matching candidate finding"
+    ],
+    "applicability": "Black CLI cell-magic option is not passed by declared CI; no production Black cataloged. Untrusted option injection beyond declared workflows not ruled out.",
+    "mitigation_or_fix_versions": [
+      "26.3.1"
+    ],
+    "remediation": "Pinned Black 26.10.1; existing 57-file formatting check passes with one blank-line-only adjustment; isolated tooling audit reports zero vulnerabilities",
+    "test_evidence": [
+      "runtime-check.json",
+      "ci-audit.json",
+      "black-final.log",
+      "*.sbom.json",
+      "all-remaining-findings.json"
+    ],
+    "disposition": "FIXED",
+    "reviewer": "Codex automated technical review; owner signoff pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Declared patched CI/dev toolchain only; not owner security/license signoff",
+    "candidate_version": "26.10.1",
+    "current_evidence": "Prior remediation evidence unchanged; no new Black implementation change"
+  },
+  {
+    "package": "black",
+    "installed_version": "25.1.0",
+    "advisory": "PYSEC-2026-2120",
+    "aliases": [
+      "GHSA-v53h-f6m7-xcgm",
+      "CVE-2026-31900"
+    ],
+    "affected_surface": "development/CI formatter; not cataloged in candidates",
+    "runtime_present": false,
+    "reachable_path": "No psf/black Action or use_pyproject setting in declared workflows; Black CLI remains installed in CI.",
+    "severity": [
+      "UNKNOWN: original audit has no severity; no matching candidate finding"
+    ],
+    "applicability": "No psf/black Action or use_pyproject setting in declared workflows; Black CLI remains installed in CI.",
+    "mitigation_or_fix_versions": [
+      "26.3.0"
+    ],
+    "remediation": "Pinned Black 26.10.1; existing 57-file formatting check passes with one blank-line-only adjustment; isolated tooling audit reports zero vulnerabilities",
+    "test_evidence": [
+      "runtime-check.json",
+      "ci-audit.json",
+      "black-final.log",
+      "*.sbom.json",
+      "all-remaining-findings.json"
+    ],
+    "disposition": "FIXED",
+    "reviewer": "Codex automated technical review; owner signoff pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Declared patched CI/dev toolchain only; not owner security/license signoff",
+    "candidate_version": "26.10.1",
+    "current_evidence": "Prior remediation evidence unchanged; no new Black implementation change"
+  },
+  {
+    "package": "black",
+    "installed_version": "25.1.0",
+    "advisory": "GHSA-cg8m-r9f2-5wm2",
+    "aliases": [
+      "CVE-2026-114134"
+    ],
+    "affected_surface": "development/CI formatter; not cataloged in candidates",
+    "runtime_present": false,
+    "reachable_path": "No Black Action use_pyproject/required-version execution path declared; CI tool pin still vulnerable.",
+    "severity": [
+      "UNKNOWN: original audit has no severity; no matching candidate finding"
+    ],
+    "applicability": "No Black Action use_pyproject/required-version execution path declared; CI tool pin still vulnerable.",
+    "mitigation_or_fix_versions": [
+      "26.10.1"
+    ],
+    "remediation": "Pinned Black 26.10.1; existing 57-file formatting check passes with one blank-line-only adjustment; isolated tooling audit reports zero vulnerabilities",
+    "test_evidence": [
+      "runtime-check.json",
+      "ci-audit.json",
+      "black-final.log",
+      "*.sbom.json",
+      "all-remaining-findings.json"
+    ],
+    "disposition": "FIXED",
+    "reviewer": "Codex automated technical review; owner signoff pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Declared patched CI/dev toolchain only; not owner security/license signoff",
+    "candidate_version": "26.10.1",
+    "current_evidence": "Prior remediation evidence unchanged; no new Black implementation change"
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-196",
+    "aliases": [
+      "CVE-2026-8643",
+      "GHSA-wf93-45jw-7689"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Malicious entry-point paths during package installation; patched installer still requires trusted package inputs.",
+    "severity": [
+      "Medium"
+    ],
+    "applicability": "Malicious entry-point paths during package installation; patched installer still requires trusted package inputs.",
+    "mitigation_or_fix_versions": [
+      "26.1.2"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-1795",
+    "aliases": [
+      "CVE-2025-8869",
+      "GHSA-4xh5-x5gv-qwph"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Malicious tar symlinks on data-filter fallback paths; Python 3.12 supports data_filter, but that does not certify every operator platform.",
+    "severity": [
+      "Medium"
+    ],
+    "applicability": "Malicious tar symlinks on data-filter fallback paths; Python 3.12 supports data_filter, but that does not certify every operator platform.",
+    "mitigation_or_fix_versions": [
+      "25.3"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-1796",
+    "aliases": [
+      "GHSA-6vgw-5pg2-w6jp",
+      "CVE-2026-1703"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Wheel extraction of malicious paths; verified 26.2 wheel executes before any dependency install in patched paths.",
+    "severity": [
+      "Low"
+    ],
+    "applicability": "Wheel extraction of malicious paths; verified 26.2 wheel executes before any dependency install in patched paths.",
+    "mitigation_or_fix_versions": [
+      "26.0"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-2875",
+    "aliases": [
+      "GHSA-58qw-9mgm-455v",
+      "CVE-2026-3219"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Ambiguous archives during resolution/extraction; pinned wheel bootstrap uses no resolver/index; subsequent installs use 26.2.",
+    "severity": [
+      "Medium"
+    ],
+    "applicability": "Ambiguous archives during resolution/extraction; pinned wheel bootstrap uses no resolver/index; subsequent installs use 26.2.",
+    "mitigation_or_fix_versions": [
+      "26.1"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-2876",
+    "aliases": [
+      "CVE-2026-6357",
+      "GHSA-jp4c-xjxw-mgf9"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Self-update import path; old pip installer is not invoked, verified wheel runs under -I. Python site/OS startup remain trusted inputs.",
+    "severity": [
+      "Medium"
+    ],
+    "applicability": "Self-update import path; old pip installer is not invoked, verified wheel runs under -I. Python site/OS startup remain trusted inputs.",
+    "mitigation_or_fix_versions": [
+      "26.1"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  },
+  {
+    "package": "pip",
+    "installed_version": "25.0.1 originally observed; 26.2 in patched install paths; absent from final Python candidates",
+    "advisory": "PYSEC-2026-3721",
+    "aliases": [
+      "CVE-2026-13346",
+      "GHSA-qwm4-qh6w-59xr"
+    ],
+    "affected_surface": "CI/build and potentially operator installation",
+    "runtime_present": false,
+    "reachable_path": "Doubly encoded index URLs; bootstrap has a fixed HTTPS URL and hash; downstream dependency installs use patched 26.2.",
+    "severity": [
+      "Medium"
+    ],
+    "applicability": "Doubly encoded index URLs; bootstrap has a fixed HTTPS URL and hash; downstream dependency installs use patched 26.2.",
+    "mitigation_or_fix_versions": [
+      "26.2"
+    ],
+    "remediation": "stdlib HTTPS + SHA-256 pinned pip 26.2 wheel; execute verified wheel, not old installed pip; remove pip/ensurepip from final Python stages without running old uninstall code",
+    "test_evidence": [
+      "bootstrap.log",
+      "bootstrap-offline.log",
+      "targeted-tests.log",
+      "candidate-tests.log",
+      "backend-build.log",
+      "migration-build.log",
+      "pip-surface-inventory.txt"
+    ],
+    "disposition": "UNRESOLVED",
+    "reviewer": "Codex automated technical assessment; accountable owner pending",
+    "accountable_reviewer": "PENDING owner assignment",
+    "review_date": "2026-10-25",
+    "previous_disposition": "UNRESOLVED",
+    "scope": "Patched production builder, 13 declared CI workflows, demo/UAT/test Dockerfiles, generated golden-path build, Kubernetes installer and Windows packager. No blanket clearance of operator/historical/platform paths.",
+    "candidate_version": "26.2 in patched build/CI; absent in production Python runtime/migration",
+    "remaining": "Native Windows packaging, full legacy demo/UAT/browser harness and Kubernetes installer not executed here; manual operator instructions and archived historical scripts require accountable review. No owner exception."
+  }
+]

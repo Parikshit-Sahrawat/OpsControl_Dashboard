@@ -1,0 +1,14 @@
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements*.txt ./
+RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+COPY app/ app/
+COPY scripts/ scripts/
+# Checkouts created under umask 077 still need readable public application code.
+# Keep root ownership so the runtime user cannot modify its executable sources.
+RUN chmod -R a+rX /app/app /app/scripts
+USER 10001:10001
+EXPOSE 8000
+# Migrations run separately as schema owner; this runtime cannot perform DDL.
+CMD ["python", "-m", "scripts.run_api"]

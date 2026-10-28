@@ -1,0 +1,28 @@
+{
+  "syft": {
+    "version": "v1.55.0",
+    "archive_sha256": "bb65249542db5fedeeb4d3f9b018b75e7264dbfbbb10486f044581a92f90490d",
+    "checksums_source": "https://github.com/anchore/syft/releases/download/v1.55.0/syft_1.55.0_checksums.txt",
+    "binary_sha256": "64c9631c3560336c55c549df0de08cd577d02399c9de807ac390960a4ed5c351"
+  },
+  "grype": {
+    "version": "v0.121.0",
+    "archive_sha256": "64e07133d3486115de647a66581461dccf5c732748a0a3119077395565f15519",
+    "checksums_source": "https://github.com/anchore/grype/releases/download/v0.121.0/grype_0.121.0_checksums.txt",
+    "binary_sha256": "bd511334178bc3002eb9eb58880f89e01e35f7fed7cfbe671171127a8afa3596"
+  },
+  "timestamp_utc": "2026-10-25T09:47:22.761407+00:00",
+  "db_status_file": "db-status.json",
+  "db_auto_update": false,
+  "source_attestation": "See revision.json and image-inventory.json; no exact committed-source claim for dirty-tree candidates",
+  "commands": [
+    "docker image inspect (selected identity fields only)",
+    "docker save -o /tmp/dev052a2-<role>.tar <config digest>",
+    "verify Docker archive config SHA-256 == inspected image ID",
+    "syft docker-archive:<archive> -o cyclonedx-json",
+    "grype docker-archive:<same archive> -o json",
+    "assert Grype imageID and SBOM archive manifest digest match inventory",
+    "remove only exact task archive"
+  ],
+  "trusted_checksums": "Original upstream checksum manifests in ../2026-10-25/ and verified tool archives retained for review"
+}

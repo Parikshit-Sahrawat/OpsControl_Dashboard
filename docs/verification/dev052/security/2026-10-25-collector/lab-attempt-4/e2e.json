@@ -1,0 +1,55 @@
+{
+  "status": "PASS",
+  "scope": "synthetic isolated Linux fixture",
+  "checks": [
+    "non-root, no capabilities, no-new-privileges",
+    "five-method configuration validated by exact candidate",
+    "authenticated enrollment",
+    "supervisor applies approved checksum",
+    "all five methods have persisted, attributed API evidence",
+    "server verifies runtime revision and authenticated receipts",
+    "file rotation delivered",
+    "file truncation delivered",
+    "checkpoint restart delivered appended record",
+    "same identity preserved across restart",
+    "real supervisor envelope authenticated ingestion",
+    "invalid supervisor credential rejected",
+    "malformed and foreign-method envelopes rejected",
+    "untrusted CA and TLS hostname mismatch rejected",
+    "HTTPS-only management enforced",
+    "management redirects rejected before target contact",
+    "egress to owned disjoint fixture blocked",
+    "API outage acknowledged",
+    "same API endpoint restored",
+    "queued delivery after API interruption",
+    "no non-loopback TCP/UDP IPv4/IPv6 listeners in agent container",
+    "generated config accepted by guarded rollback binary",
+    "guarded rollback binary starts with generated config and existing storage",
+    "experimental contract rejects old runtime; full coordinated rollback not approved"
+  ],
+  "uid": 1000,
+  "collector_id": "958809a5-66dd-4399-83f4-0938b1fbaa9b",
+  "methods": {
+    "HOST_METRICS": "cc8af850-57f5-478d-8609-1ded0580230c",
+    "SERVICES": "8acd3719-9726-49b9-818a-b7a090556fbe",
+    "SYSLOG_RECEIVER": "8f90a33a-a92b-404f-b09e-77a31a62af0a",
+    "FILE_LOG": "1d0b0ea1-2bdb-489a-b90d-d32730c51aab",
+    "METRIC_SCRAPE": "491ecc70-0e67-4fe8-8b53-8be1bd70e445"
+  },
+  "config_sha256": "cdab3c911ebd0a3fbbfd4b4ed068ec2c31b54a52f68a5147eccd8bfc47c658cb",
+  "listeners": {
+    "tcp": [
+      "0B00007F:8877",
+      "0100007F:ACC3",
+      "0100007F:22B8",
+      "0100007F:3B60",
+      "0100007F:334D",
+      "0100007F:9943"
+    ],
+    "tcp6": [],
+    "udp": [
+      "0B00007F:DCA4"
+    ],
+    "udp6": []
+  }
+}

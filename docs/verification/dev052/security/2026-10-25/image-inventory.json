@@ -1,0 +1,197 @@
+[
+  {
+    "name": "backend-runtime",
+    "requested_reference": "dev052a-backend-runtime",
+    "role": "API/worker restricted runtime",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:32:52.277742+00:00",
+    "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "upstream_source_commit": "repository source archive",
+    "id": "sha256:39da37450ebb9c2ccec370813cb82ebdd038349bd59ff2f1a8f14e0dbc00cefe",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [],
+    "archive_sha256": "7c5c78e2ce8aac309d7792b256031d8cb402a6ddfb02ffcadfbfc747ae645fb9",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "backend-uat",
+    "requested_reference": "dev052a-backend-uat",
+    "role": "UAT API/worker/migration candidate",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:02.579979+00:00",
+    "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "upstream_source_commit": "repository source archive",
+    "id": "sha256:48f93c7d23c396b7102a782719957a2ef46d111038114e966a2d6fe62ffddfe1",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [],
+    "archive_sha256": "6624528272950d7e86d85cdc1d22e95b79158cd3534011d70020c32daeb5ff8b",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "frontend",
+    "requested_reference": "dev052a-frontend",
+    "role": "Static frontend candidate",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:12.029300+00:00",
+    "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "upstream_source_commit": "repository source archive",
+    "id": "sha256:3ba0a0710a426608d79be7ecba616cb855c6da32d03033d98d89c5003426cade",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [],
+    "archive_sha256": "fe44f4d11ddb5f7f60496b7ceb1fd5c6ecdb819e241801c5e5760bb0d532afdf",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "postgres",
+    "requested_reference": "postgres:17",
+    "role": "Database ancillary",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:19.035392+00:00",
+    "source_commit": null,
+    "upstream_source_commit": "NOT ATTESTED",
+    "id": "sha256:82903352d6faf8f8a318bc4353d1cb1db67d4a5ff968d2799b2718e2cb00afa2",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "postgres@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe",
+      "public.ecr.aws/docker/library/postgres@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe"
+    ],
+    "archive_sha256": "2440c6d2d8391368b9f93c3ef27a2af029f72a4f9a090b31a2d4e6126ecb13a2",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "postgres-alpine",
+    "requested_reference": "postgres:17-alpine",
+    "role": "UAT database ancillary",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:29.646433+00:00",
+    "source_commit": null,
+    "upstream_source_commit": "NOT ATTESTED",
+    "id": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "postgres@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb"
+    ],
+    "archive_sha256": "f94378f1350460591be50fa618c3ec25f383d314e5346c674591a3234ed7d055",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "postgres-ecr",
+    "requested_reference": "public.ecr.aws/docker/library/postgres:17",
+    "role": "Demo database mirror",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:35.818251+00:00",
+    "source_commit": null,
+    "upstream_source_commit": "NOT ATTESTED",
+    "id": "sha256:82903352d6faf8f8a318bc4353d1cb1db67d4a5ff968d2799b2718e2cb00afa2",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "postgres@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe",
+      "public.ecr.aws/docker/library/postgres@sha256:b8faeff7712663c2773a190181e1246e37e364b887611c04658c28b44e2408fe"
+    ],
+    "archive_sha256": "d7a71d93d7d04d3495782c146c3bf3d839b0b1c4d507d798b2119d0f3e22b135",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "gateway",
+    "requested_reference": "nginx:1.28-alpine",
+    "role": "Ingestion gateway",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:43.642968+00:00",
+    "source_commit": null,
+    "upstream_source_commit": "NOT ATTESTED",
+    "id": "sha256:dc73b49f5124cf2ee538dfbdfbd121f0b4ccdcb20fea30f3a81bd477c02e2bb5",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+    ],
+    "archive_sha256": "6f8bb307d966c3fb2e5f5ecb341881e1bb951ebee7a534e15c53261b8d004af0",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "name": "contrib",
+    "requested_reference": "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2",
+    "role": "Collector/embedded demo distribution",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:33:48.367153+00:00",
+    "source_commit": null,
+    "upstream_source_commit": "NOT ATTESTED",
+    "id": "sha256:f0eaa24275f0eac77186cf0c9b1d1c72c9edde884a7c6bf9e5332ca8b5939d97",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [
+      "otel/opentelemetry-collector-contrib@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+    ],
+    "archive_sha256": "f29123bae4db2683517d54811c08895345244466b7e6d57f8b82a2f9d2be61b8",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  },
+  {
+    "previous_attempts": [
+      {
+        "previous_attempts": [
+          {
+            "name": "backend-demo",
+            "requested_reference": "dev052a-backend-demo",
+            "role": "Demo only; not production approved",
+            "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+            "timestamp_utc": "2026-10-25T08:33:11.984502+00:00",
+            "status": "BLOCKED",
+            "error": "Command '['docker', 'image', 'inspect', '--format', '{\"id\":{{json .Id}},\"architecture\":{{json .Architecture}},\"os\":{{json .Os}},\"repoDigests\":{{json .RepoDigests}}}', 'dev052a-backend-demo']' returned non-zero exit status 1."
+          }
+        ],
+        "name": "backend-demo",
+        "requested_reference": "dev052a-backend-demo",
+        "role": "Demo only; not production approved",
+        "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+        "timestamp_utc": "2026-10-25T08:34:29.023431+00:00",
+        "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+        "upstream_source_commit": "repository source archive",
+        "id": "sha256:91d9cd2998f1d99d58291c16a306258dacd5938be6f33faedf4481ef30115a71",
+        "architecture": "amd64",
+        "os": "linux",
+        "repoDigests": [],
+        "archive_sha256": "db2eeafb965ee58117a4334ee2d3d0f28e6a972d915f44ac7b5631a9fcc94377",
+        "sbom_exit_code": 0,
+        "scan_exit_code": 0,
+        "status": "SCANNED"
+      }
+    ],
+    "name": "backend-demo",
+    "requested_reference": "dev052a-backend-demo",
+    "role": "Demo only; not production approved",
+    "repository_manifest_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "timestamp_utc": "2026-10-25T08:35:44.588529+00:00",
+    "source_commit": "a2cc63352e59945ee0de55781f97975ce0d56e90",
+    "upstream_source_commit": "repository source archive",
+    "id": "sha256:91d9cd2998f1d99d58291c16a306258dacd5938be6f33faedf4481ef30115a71",
+    "architecture": "amd64",
+    "os": "linux",
+    "repoDigests": [],
+    "archive_sha256": "0b1903eadd77b4ff0bdd6b3fc2a56b0db44b8654d0cae78d8d2f3ab4d50ac269",
+    "sbom_exit_code": 0,
+    "scan_exit_code": 0,
+    "status": "SCANNED"
+  }
+]

@@ -1,0 +1,106 @@
+{
+  "status": "PASS",
+  "scope": "owned disposable fixture, not provider certification",
+  "api_dependencies": "existing local backend/.venv; not a release image",
+  "runner_fixture_image": "sha256:f4b7b8044a873fcc0f348549a19b9075cd77bd56ead7177192cfec38d85bce4a",
+  "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "source": {
+    "version": "0.163.2",
+    "platform": "linux/amd64",
+    "image": "otel/opentelemetry-collector-contrib:0.163.2@sha256:7f22d2a6748110ffb6a59bc0df448bccbf501cdb667d610ede4c61d3863d5849",
+    "image_config_digest": "sha256:a64fa52ad3b55378bb62d8642439aaf0ec3abf45a8ddc1ac02bac31eea7a6565",
+    "binary_sha256": "dbd12d55073b70add777895457040f8ede59fc1ee7198d6ae179a37087eea8bb",
+    "promotion": "BLOCKED; verification overlay only; no production version transition approval",
+    "source_commit": "0d186819b40c9aa0046b5d5d4781731f832570f5",
+    "source_archive_sha256": "506bd0eaa906825d96a7267893816e92bd5b3386f927f1aed9a6cc4fa12f4013",
+    "experimental_patch_sha256": "f57b1efcd493449bc2f2ce53c26397d8173ecb32f538e8f67a2ca6d715b6536b",
+    "fixture_literal_updates": [
+      "backend/tests/test_agent_v15.py",
+      "backend/scripts/agent_v15_acceptance_probe.py"
+    ],
+    "stage": "/tmp/dev052a3-compatible-source",
+    "production_guard_modified": false
+  },
+  "constraints": {
+    "ReadonlyRootfs": true,
+    "Memory": 536870912,
+    "NanoCpus": 1000000000,
+    "PidsLimit": 128,
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges:true"
+    ]
+  },
+  "e2e": {
+    "status": "PASS",
+    "scope": "synthetic isolated Linux fixture",
+    "checks": [
+      "non-root, no capabilities, no-new-privileges",
+      "five-method configuration validated by exact candidate",
+      "authenticated enrollment",
+      "supervisor applies approved checksum",
+      "all five methods have persisted, attributed API evidence",
+      "server verifies runtime revision and authenticated receipts",
+      "file rotation delivered",
+      "file truncation delivered",
+      "checkpoint restart delivered appended record",
+      "same identity preserved across restart",
+      "real supervisor envelope authenticated ingestion",
+      "invalid supervisor credential rejected",
+      "malformed and foreign-method envelopes rejected",
+      "untrusted CA and TLS hostname mismatch rejected",
+      "HTTPS-only management enforced",
+      "management redirects rejected before target contact",
+      "egress to owned disjoint fixture blocked",
+      "API outage acknowledged",
+      "same API endpoint restored",
+      "queued delivery after API interruption",
+      "no non-loopback TCP/UDP IPv4/IPv6 listeners in agent container",
+      "generated config accepted by guarded rollback binary",
+      "guarded rollback binary starts with generated config and existing storage",
+      "experimental contract rejects old runtime; full coordinated rollback not approved"
+    ],
+    "uid": 1000,
+    "collector_id": "958809a5-66dd-4399-83f4-0938b1fbaa9b",
+    "methods": {
+      "HOST_METRICS": "cc8af850-57f5-478d-8609-1ded0580230c",
+      "SERVICES": "8acd3719-9726-49b9-818a-b7a090556fbe",
+      "SYSLOG_RECEIVER": "8f90a33a-a92b-404f-b09e-77a31a62af0a",
+      "FILE_LOG": "1d0b0ea1-2bdb-489a-b90d-d32730c51aab",
+      "METRIC_SCRAPE": "491ecc70-0e67-4fe8-8b53-8be1bd70e445"
+    },
+    "config_sha256": "cdab3c911ebd0a3fbbfd4b4ed068ec2c31b54a52f68a5147eccd8bfc47c658cb",
+    "listeners": {
+      "tcp": [
+        "0B00007F:8877",
+        "0100007F:ACC3",
+        "0100007F:22B8",
+        "0100007F:3B60",
+        "0100007F:334D",
+        "0100007F:9943"
+      ],
+      "tcp6": [],
+      "udp": [
+        "0B00007F:DCA4"
+      ],
+      "udp6": []
+    }
+  },
+  "cleanup": {
+    "status": "PASS",
+    "errors": [],
+    "owned_containers": [
+      "dev052a3-7672538c-pg",
+      "dev052a3-7672538c-denied-target",
+      "dev052a3-7672538c-agent"
+    ],
+    "owned_networks": [
+      "dev052a3-7672538c",
+      "dev052a3-7672538c-denied"
+    ],
+    "private_credentials_tls_and_database_volume_removed": true,
+    "broad_cleanup": false
+  }
+}

@@ -1,0 +1,2271 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "0.163.2-before_enqueue",
+      "scenario": "before_enqueue",
+      "runtime": "0.163.2",
+      "status": "PASS",
+      "expected_ids": [
+        "event-0000",
+        "event-0001",
+        "event-0002",
+        "event-0003"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792947762099027387,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947762099645480,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 7
+        },
+        {
+          "time_ns": 1792947762549951324,
+          "stage": "SIGTERM",
+          "pid": 7
+        },
+        {
+          "time_ns": 1792947762560166943,
+          "stage": "api_gate",
+          "mode": "hold_before_commit"
+        },
+        {
+          "time_ns": 1792947762560286354,
+          "stage": "syscall_fault",
+          "target": "/fixture/0.163.2-before_enqueue/otel-checkpoints/exporter_otlphttp_opscontrol_logs",
+          "delay_enter": "2s",
+          "syscall": "pwrite64"
+        },
+        {
+          "time_ns": 1792947762560786128,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 15
+        },
+        {
+          "time_ns": 1792947763011538136,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0000",
+            "event-0001",
+            "event-0002",
+            "event-0003"
+          ],
+          "bytes": 5156,
+          "sha256": "9cef8178bbc64267f1339ee4314024938abe27fd5d7291a23352b14f12ed9750"
+        },
+        {
+          "time_ns": 1792947763013524812,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763115584906,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763217360935,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763319142672,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763420865321,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763522571665,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763624337578,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763726142231,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763827892410,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947763929532605,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764031256997,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764132958677,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764234635936,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764336455433,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764438180414,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764540106132,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764641970787,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764744009302,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764846002057,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947764948002275,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765049733602,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765151402809,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765284126818,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765385853083,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765487550159,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765589428600,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765691127663,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765823132640,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947765924861578,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766026559562,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766128193476,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766229832307,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766361921791,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766463492720,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766565157191,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766666852929,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766768535056,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766870290594,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947766971954965,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767073813079,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767175618411,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767277415042,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767379299306,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767480999839,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767582614476,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767714537829,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767816393287,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947767918334244,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768020087549,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768122231784,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768224026340,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768325956391,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768427882116,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768529627990,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768631421066,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768733224414,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768835009125,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947768936883003,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769068950834,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769171157333,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769272882055,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769404835883,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769506674106,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769608546951,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769710323212,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769812012018,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947769913773436,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770046866292,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770148492335,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770280605664,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770383075231,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770484858143,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770586570849,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770688493711,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770790403975,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770892110980,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947770993800593,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771095467769,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771227486619,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771329237112,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771431031398,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771532918900,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771634609532,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771736374026,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771838324060,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947771940371228,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772043016492,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772145225166,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772247087227,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772348765531,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772450917128,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772553101154,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772685300626,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772787102688,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772888842433,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947772990531645,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773092322657,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773194336079,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773296783232,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773398491869,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773500555786,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773602893773,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773706959309,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773810759102,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947773912415694,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774014158606,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774115848448,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774217565418,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774319283142,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774421337533,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774525247965,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774627116092,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774728878583,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774830710359,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947774932517609,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775034582165,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775136341988,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775238012222,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775339658788,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775441402220,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775544235636,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775646365662,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775748045768,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775849889251,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947775951550006,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776053255163,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776155010802,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776256650889,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776358483455,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776460361951,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776562186444,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776663972180,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776765752188,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947776898433978,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947777000390101,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947777002039729,
+          "stage": "snapshot",
+          "label": "held-exact-kill-boundary"
+        },
+        {
+          "time_ns": 1792947777002245420,
+          "stage": "SIGKILL",
+          "pid": 15
+        },
+        {
+          "time_ns": 1792947777003594395,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947777004222402,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 27
+        },
+        {
+          "time_ns": 1792947777457706657,
+          "stage": "snapshot",
+          "label": "final"
+        },
+        {
+          "time_ns": 1792947777457786557,
+          "stage": "SIGTERM",
+          "pid": 27
+        },
+        {
+          "time_ns": 1792947777465517520,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792947777002031427,
+          "label": "held-exact-kill-boundary",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "d860dae8b39c5d2ec939d6921e588788ec806f634ed5d18e45df32373cc80363",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 0,
+                    "write_index": 0,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "56e4e0587e3f3e69bd86fe9cfc86139fc08726dbab21d6ed161d7c995e9f6f18",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792947777457671704,
+          "label": "final",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "063bb03ec5bfc3e6e1acbff9d1515abc69a74fa1fbc5e3f4c3c989052faf303a",
+              "committed_txid": 22,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 18,
+                  "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 1,
+                    "write_index": 1,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "4d15959b7f8bcfffd5e8efc2ea1f5cca832b8eeb20a1a739dd9223d864b0a8e5",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1100,
+                  "sha256": "cfc3938006c0efcfc114d267819e8551dd0a31ca2d44ab1dafd36b9cfec624f9",
+                  "event_ids": [
+                    "event-0000"
+                  ],
+                  "protobuf_checkpoint_offsets": [
+                    {
+                      "offset": 5156,
+                      "record_num": 4
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "86d954171cdadf3247bdc7203fc1b53bd51ab73f2a2f77d5874f2963ff1d08f5",
+      "traced": false,
+      "boundary_observed": "before_enqueue",
+      "accepted_attempt_counts": {
+        "event-0000": 1,
+        "event-0001": 1,
+        "event-0002": 1,
+        "event-0003": 1
+      },
+      "missing_ids": [],
+      "detected_loss": false
+    },
+    {
+      "name": "0.163.2-after_enqueue_before_checkpoint",
+      "scenario": "after_enqueue_before_checkpoint",
+      "runtime": "0.163.2",
+      "status": "PASS",
+      "expected_ids": [
+        "event-0004",
+        "event-0005",
+        "event-0006",
+        "event-0007"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792947777466888648,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947777467306598,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 35
+        },
+        {
+          "time_ns": 1792947777917586020,
+          "stage": "SIGTERM",
+          "pid": 35
+        },
+        {
+          "time_ns": 1792947777925646388,
+          "stage": "api_gate",
+          "mode": "hold_before_commit"
+        },
+        {
+          "time_ns": 1792947777925799108,
+          "stage": "syscall_fault",
+          "target": "/fixture/0.163.2-after_enqueue_before_checkpoint/otel-checkpoints/receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782",
+          "delay_enter": "2s",
+          "syscall": "pwrite64"
+        },
+        {
+          "time_ns": 1792947777926181726,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 43
+        },
+        {
+          "time_ns": 1792947778376939599,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0004",
+            "event-0005",
+            "event-0006",
+            "event-0007"
+          ],
+          "bytes": 5156,
+          "sha256": "3bd71163510f4f689c97b8657168a825974b4511bc47851cc636bdc66e164062"
+        },
+        {
+          "time_ns": 1792947778408259811,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947778509901270,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947778611394059,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947778743159790,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947778844738037,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947778946320141,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779078096106,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779209816249,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779341594850,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779445677695,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779577785542,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779679377210,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779811072315,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947779913391521,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780014864258,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780116296545,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780248054134,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780349759393,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780451346714,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780583303133,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780684923033,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780786516804,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780888076774,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947780990210218,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781092334121,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781193995481,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781295547429,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781427383316,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781529028073,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781660908989,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781792702256,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781894187158,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947781995501723,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947782096936700,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947782228924866,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947782330643475,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947782331758556,
+          "stage": "snapshot",
+          "label": "held-exact-kill-boundary"
+        },
+        {
+          "time_ns": 1792947782331834791,
+          "stage": "SIGKILL",
+          "pid": 43
+        },
+        {
+          "time_ns": 1792947782333142834,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947782333576749,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 56
+        },
+        {
+          "time_ns": 1792947782786992685,
+          "stage": "snapshot",
+          "label": "final"
+        },
+        {
+          "time_ns": 1792947782787064814,
+          "stage": "SIGTERM",
+          "pid": 56
+        },
+        {
+          "time_ns": 1792947782794787342,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792947782331749573,
+          "label": "held-exact-kill-boundary",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "8283d11135d7e4079afb1030dcb76555f0c34508dac7db3167d0e74ee213ddca",
+              "committed_txid": 15,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "0"
+                  ],
+                  "bytes": 11580,
+                  "sha256": "d54396f48066a1a0d9dbeece7b604d557556bbb2f866ff1400b92bdbf47e5858",
+                  "event_ids": [
+                    "event-0004",
+                    "event-0005",
+                    "event-0006",
+                    "event-0007"
+                  ]
+                },
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 46,
+                  "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 1,
+                    "write_index": 1,
+                    "dispatched": [
+                      0
+                    ]
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "56e4e0587e3f3e69bd86fe9cfc86139fc08726dbab21d6ed161d7c995e9f6f18",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792947782786981428,
+          "label": "final",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "8ce88a23f0a4d8b89416119c848381abc23e9f09e39800fc9d990842bc334bb1",
+              "committed_txid": 25,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 18,
+                  "sha256": "86b59fba78c9a53e3a2dc6ecc06a2fb368a299b455c9d5af7a48b3309c7c82e8",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 3,
+                    "write_index": 3,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "b1d909c0003e45922602027c6ce9c51a1c316e43be6cbbba3526826877248b72",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1100,
+                  "sha256": "6bcbffa21265f98f3d7adf00ac3a11ada11c1a7015c85c47470e725cd2bf6b8b",
+                  "event_ids": [
+                    "event-0004"
+                  ],
+                  "protobuf_checkpoint_offsets": [
+                    {
+                      "offset": 5156,
+                      "record_num": 4
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "86d954171cdadf3247bdc7203fc1b53bd51ab73f2a2f77d5874f2963ff1d08f5",
+      "traced": false,
+      "boundary_observed": "after_enqueue_before_checkpoint",
+      "accepted_attempt_counts": {
+        "event-0004": 2,
+        "event-0005": 2,
+        "event-0006": 2,
+        "event-0007": 2
+      },
+      "missing_ids": [],
+      "detected_loss": false
+    },
+    {
+      "name": "0.123.0-before_enqueue",
+      "scenario": "before_enqueue",
+      "runtime": "0.123.0",
+      "status": "PASS",
+      "expected_ids": [
+        "event-0008",
+        "event-0009",
+        "event-0010",
+        "event-0011"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792947782797020951,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947782797468286,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 64
+        },
+        {
+          "time_ns": 1792947783247752010,
+          "stage": "SIGTERM",
+          "pid": 64
+        },
+        {
+          "time_ns": 1792947783255577523,
+          "stage": "api_gate",
+          "mode": "hold_before_commit"
+        },
+        {
+          "time_ns": 1792947783255766829,
+          "stage": "syscall_fault",
+          "target": "/fixture/0.123.0-before_enqueue/otel-checkpoints/exporter_otlphttp_opscontrol_logs",
+          "delay_enter": "2s",
+          "syscall": "pwrite64"
+        },
+        {
+          "time_ns": 1792947783256180913,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 74
+        },
+        {
+          "time_ns": 1792947783706908626,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0008",
+            "event-0009",
+            "event-0010",
+            "event-0011"
+          ],
+          "bytes": 5156,
+          "sha256": "89d01754231af44576e38dfb4e482d6852cdb85be87d879a46a8ff9a8eefea85"
+        },
+        {
+          "time_ns": 1792947783707811618,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947783810025412,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947783911795774,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784013843500,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784115765038,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784217707872,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784319672282,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784424026797,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784525961858,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784627924464,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784729899531,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784832514392,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947784934320052,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785036071641,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785137717100,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785239360685,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785341068017,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785443108482,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785545063191,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785647058103,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785748985818,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785850787883,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947785952837761,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786054544925,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786156207248,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786257996565,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786359719329,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786461499037,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786563317674,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786664991072,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786766634258,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786868319833,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947786970108875,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787071840000,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787173422875,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787275149732,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787376792804,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787478491009,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787580327664,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787682024748,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787783590964,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787885389882,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947787987430585,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788089721665,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788191423826,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788293217019,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788395181865,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788496980476,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788598761787,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788700472116,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788802249602,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947788904001258,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789005723408,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789107423515,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789209160007,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789310930861,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789412601103,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789514355673,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789616102385,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947789617870092,
+          "stage": "snapshot",
+          "label": "held-exact-kill-boundary"
+        },
+        {
+          "time_ns": 1792947789618094971,
+          "stage": "SIGKILL",
+          "pid": 74
+        },
+        {
+          "time_ns": 1792947789619457566,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947789619930379,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 88
+        },
+        {
+          "time_ns": 1792947790075063897,
+          "stage": "snapshot",
+          "label": "final"
+        },
+        {
+          "time_ns": 1792947790075138049,
+          "stage": "SIGTERM",
+          "pid": 88
+        },
+        {
+          "time_ns": 1792947790082868639,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792947789617863271,
+          "label": "held-exact-kill-boundary",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "56d05da3a1ce66d479c4d1df5494d679a7f36c60fff1c3197d1a82c628cbf846",
+              "committed_txid": 7,
+              "entries": []
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "3bddb373b29a16f87ca86ce487c8ef584f8e9f4fcd39fb895ac8060673b269a8",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 2,
+                  "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+                  "event_ids": [],
+                  "json": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792947790075049966,
+          "label": "final",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "84bf7d4354a058cb25e230d8794e3aad6b2095ca57c7543f1550830b25bf8576",
+              "committed_txid": 22,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "di"
+                  ],
+                  "bytes": 4,
+                  "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "ri"
+                  ],
+                  "bytes": 8,
+                  "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "wi"
+                  ],
+                  "bytes": 8,
+                  "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                  "event_ids": []
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "7022def6e1856daa6ec3cc617ef6d2d55cba5bf893670a89c4ce77222180e0cc",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1633,
+                  "sha256": "b68cb8751652f327dd9a964fe9703bacb2bd934a3602c9f4cc70d9ab3e142228",
+                  "event_ids": [],
+                  "legacy_checkpoint_records": [
+                    {
+                      "Fingerprint": {
+                        "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDA4IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbnQtMDAwOGV2ZW50LTAwMDhldmVudC0wMDA4ZXZlbg=="
+                      },
+                      "Offset": 5156,
+                      "RecordNum": 0,
+                      "FileAttributes": {
+                        "log.file.name": "current.log",
+                        "log.file.path": "/fixture/current.log"
+                      },
+                      "HeaderFinalized": false,
+                      "FlushState": {
+                        "LastDataChange": "2026-10-25T17:03:09.880927403Z",
+                        "LastDataLength": 0
+                      },
+                      "TokenLenState": {
+                        "MinimumLength": 0
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "86d954171cdadf3247bdc7203fc1b53bd51ab73f2a2f77d5874f2963ff1d08f5",
+      "traced": false,
+      "boundary_observed": "before_enqueue",
+      "accepted_attempt_counts": {
+        "event-0008": 1,
+        "event-0009": 1,
+        "event-0010": 1,
+        "event-0011": 1
+      },
+      "missing_ids": [],
+      "detected_loss": false
+    },
+    {
+      "name": "0.123.0-after_enqueue_before_checkpoint",
+      "scenario": "after_enqueue_before_checkpoint",
+      "runtime": "0.123.0",
+      "status": "PASS",
+      "expected_ids": [
+        "event-0012",
+        "event-0013",
+        "event-0014",
+        "event-0015"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792947790085092073,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947790085518275,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 100
+        },
+        {
+          "time_ns": 1792947790535770236,
+          "stage": "SIGTERM",
+          "pid": 100
+        },
+        {
+          "time_ns": 1792947790543572665,
+          "stage": "api_gate",
+          "mode": "hold_before_commit"
+        },
+        {
+          "time_ns": 1792947790543802191,
+          "stage": "syscall_fault",
+          "target": "/fixture/0.123.0-after_enqueue_before_checkpoint/otel-checkpoints/receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782",
+          "delay_enter": "2s",
+          "syscall": "pwrite64"
+        },
+        {
+          "time_ns": 1792947790544161473,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 110
+        },
+        {
+          "time_ns": 1792947790994901392,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0012",
+            "event-0013",
+            "event-0014",
+            "event-0015"
+          ],
+          "bytes": 5156,
+          "sha256": "f7935a7cedb452e5c6949c6209b508abe7fd94762722bd9ddec5082c00d5cdd5"
+        },
+        {
+          "time_ns": 1792947790995882823,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791097238938,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791229132142,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791330527792,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791462294367,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791563856031,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791665303894,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791766793235,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791868224960,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947791969677894,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792071151528,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792172615108,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792274118490,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792375527602,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792477007017,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792578626693,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792680099053,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792781740558,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792883374560,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947792985028147,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793086738189,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793188266624,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793289710746,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793391090582,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793492463998,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793593968427,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793695431026,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793796790469,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793898200178,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947793999582016,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794101006900,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794202408147,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794303773123,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794405089252,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794506397244,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794607886459,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794709866134,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794811239367,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794913100941,
+          "stage": "snapshot",
+          "label": "delayed-write-boundary"
+        },
+        {
+          "time_ns": 1792947794914338608,
+          "stage": "snapshot",
+          "label": "held-exact-kill-boundary"
+        },
+        {
+          "time_ns": 1792947794914405609,
+          "stage": "SIGKILL",
+          "pid": 110
+        },
+        {
+          "time_ns": 1792947794915755375,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792947794916164903,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 124
+        },
+        {
+          "time_ns": 1792947795369817002,
+          "stage": "snapshot",
+          "label": "final"
+        },
+        {
+          "time_ns": 1792947795369887378,
+          "stage": "SIGTERM",
+          "pid": 124
+        },
+        {
+          "time_ns": 1792947795377627603,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792947794914331547,
+          "label": "held-exact-kill-boundary",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "6a5bb178d2d762dbd13d8792005c0fb84e9b9026b2daf48f1a95c76959b35687",
+              "committed_txid": 15,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "0"
+                  ],
+                  "bytes": 3008,
+                  "sha256": "7d698745537ac161b8eaa34388f3a8fd83e68b5ebc9a56e1be0fa12ac09b479e",
+                  "event_ids": [
+                    "event-0012"
+                  ]
+                },
+                {
+                  "key": [
+                    "default",
+                    "1"
+                  ],
+                  "bytes": 3008,
+                  "sha256": "05ffd76cee3a8ec5c2bc5944ea53c5ee22d74bb9c068469717da78abde70ca97",
+                  "event_ids": [
+                    "event-0013"
+                  ]
+                },
+                {
+                  "key": [
+                    "default",
+                    "2"
+                  ],
+                  "bytes": 3008,
+                  "sha256": "d7a4689dd0dbdeb5592decf3125340cb22721b2973ea7932a265dcafe4dd2f99",
+                  "event_ids": [
+                    "event-0014"
+                  ]
+                },
+                {
+                  "key": [
+                    "default",
+                    "3"
+                  ],
+                  "bytes": 3008,
+                  "sha256": "c83f5be49964ae10e44b5119478bb0caeb4f2846dea1d1a6946f9aa2265a3e3a",
+                  "event_ids": [
+                    "event-0015"
+                  ]
+                },
+                {
+                  "key": [
+                    "default",
+                    "di"
+                  ],
+                  "bytes": 36,
+                  "sha256": "dc21a2c318ad290c2ed4d84c8cd44ac8598432a8da6fa1cdb4badea00816a6bd",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "ri"
+                  ],
+                  "bytes": 8,
+                  "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "wi"
+                  ],
+                  "bytes": 8,
+                  "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                  "event_ids": []
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "3bddb373b29a16f87ca86ce487c8ef584f8e9f4fcd39fb895ac8060673b269a8",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 2,
+                  "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+                  "event_ids": [],
+                  "json": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792947795369803972,
+          "label": "final",
+          "source_bytes": 5156,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "189e0d87e90d854209b6f1c85e8bfd7095f3745f014347bc21abf19d22cf341d",
+              "committed_txid": 44,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "di"
+                  ],
+                  "bytes": 4,
+                  "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "ri"
+                  ],
+                  "bytes": 8,
+                  "sha256": "220dde27afee4d537cac96d85d6546f825153b90e828931b74e103807541bc42",
+                  "event_ids": []
+                },
+                {
+                  "key": [
+                    "default",
+                    "wi"
+                  ],
+                  "bytes": 8,
+                  "sha256": "220dde27afee4d537cac96d85d6546f825153b90e828931b74e103807541bc42",
+                  "event_ids": []
+                }
+              ]
+            },
+            "receiver_filelog_bcef537ece1148e38e967e4bfa383b09_700bddceffd69782": {
+              "file_sha256": "1e68ff319107634f39e16e590ecaabded3e44b0ce16e3dbdc56921b1111b0f97",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1633,
+                  "sha256": "dd4bd0421d05d3d3086ca80526d98e477c7bebc12c18ba46a491a188d8a4f8df",
+                  "event_ids": [],
+                  "legacy_checkpoint_records": [
+                    {
+                      "Fingerprint": {
+                        "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDEyIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbnQtMDAxMmV2ZW50LTAwMTJldmVudC0wMDEyZXZlbg=="
+                      },
+                      "Offset": 5156,
+                      "RecordNum": 0,
+                      "FileAttributes": {
+                        "log.file.name": "current.log",
+                        "log.file.path": "/fixture/current.log"
+                      },
+                      "HeaderFinalized": false,
+                      "FlushState": {
+                        "LastDataChange": "2026-10-25T17:03:15.207286918Z",
+                        "LastDataLength": 0
+                      },
+                      "TokenLenState": {
+                        "MinimumLength": 0
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "86d954171cdadf3247bdc7203fc1b53bd51ab73f2a2f77d5874f2963ff1d08f5",
+      "traced": false,
+      "boundary_observed": "after_enqueue_before_checkpoint",
+      "accepted_attempt_counts": {
+        "event-0012": 2,
+        "event-0013": 2,
+        "event-0014": 2,
+        "event-0015": 2
+      },
+      "missing_ids": [],
+      "detected_loss": false
+    }
+  ],
+  "scope": "finite synthetic filelog delivery; SIGKILL, not power failure; no exactly-once guarantee",
+  "collector_id": "4784a0c5-5b9c-475a-a48f-adee7d79cea6",
+  "agent_id": "f5cc247c-0b4f-4a65-9f56-48b9c59575c8",
+  "method_id": "bcef537e-ce11-48e3-8e96-7e4bfa383b09",
+  "generated_sha256": "86d954171cdadf3247bdc7203fc1b53bd51ab73f2a2f77d5874f2963ff1d08f5"
+}

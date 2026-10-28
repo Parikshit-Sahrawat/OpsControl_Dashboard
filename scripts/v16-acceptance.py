@@ -48,6 +48,7 @@ def run(args, cwd=root):
                     "RuntimeError:",
                     "ImportError:",
                     "ModuleNotFoundError:",
+                    "V16_BROWSER_DIAGNOSTIC ",
                 )
             ):
                 print(line[:300])

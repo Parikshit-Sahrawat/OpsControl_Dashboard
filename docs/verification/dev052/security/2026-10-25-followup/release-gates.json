@@ -1,0 +1,207 @@
+{
+  "baseline": "09a578f70282c7889a515c332c948f1940ae6719",
+  "implementation_commit": "edcb175cedcf6f2abb547b3a14ed3b4f13a90fe6",
+  "decision": "NO-GO",
+  "gates": [
+    {
+      "gate": "Pinned Contrib runtime",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 2 exact runtime tests passed, zero skips; image and binary hashes verified",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Targeted auth/tenant/worker/TLS/redaction/Pentaho contracts",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 57 unit/contract tests; not genuine provider certification",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Frontend regression/lint/build",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 36 tests; lint/build completed",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Provision mismatch rejection",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 1 negative test",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Historical RT-LAB integrity",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 5/5 hashes; offline historical integrity only",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Genuine Pentaho Carte/Pan/Kitchen",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "No approved reachable runtime/build/license, scoped credentials, CA or workload authority",
+      "historical_status": "BLOCKED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Cloud and native Windows live certification",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "No approved identities or hosts",
+      "historical_status": "BLOCKED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Kubernetes monitoring",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Deferred baseline; not approved for this release",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Required GitHub checks",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Branch protection API denied HTTP 403; PR checks captured separately after creation; main checks not substitutes",
+      "historical_status": "BLOCKED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Python environment vulnerability scan",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical failure, not rerun as the old environment audit. See fresh A.2 image/advisory gates: 9 observed advisories: black 25.1.0 (3), pip 25.0.1 (6); tooling/env scope, applicability triage required, no production exploit claim",
+      "historical_status": "FAIL",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "npm dependency audit",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: 0 reported vulnerabilities at observation time",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Python environment CycloneDX SBOM",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: Generated; not an image SBOM or license clearance",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Image provenance/SBOM/license/container security",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Contrib image digest verified; release images not pinned universally, complete image SBOM/scans and license review unavailable",
+      "historical_status": "BLOCKED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Fresh populated migration/backup/restore/rollback rehearsal",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Fresh alert/dashboard/recovery end-to-end",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Production control-plane TLS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Load testing",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Real external notification delivery",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Operational DR",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred",
+      "historical_status": "NOT TESTED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Observability",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: Actual collector acceptance and scrape/file restart test; full deployed observability remains untested",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Resource cleanup",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Not rerun in DEV-05.2A.2. Prior result remains historical: Only named artifact extraction containers used and removed; runtime tests own local processes/tempfiles; no product stack or synthetic secrets created",
+      "historical_status": "PASS",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "DEV-05.2A image security/license gate",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "9 candidate/reference image-level SBOM+scan pairs; High/Critical matches not waived; 9 prior advisories UNRESOLVED, final registry digests unset, accountable review and license/NOTICE signoff absent. See ../security/2026-10-25/SECURITY_DECISION.md",
+      "historical_status": "BLOCKED",
+      "historical_evidence": "docs/verification/dev052/2026-10-25/gates.json"
+    },
+    {
+      "gate": "Exact candidate image SBOM/scan coverage",
+      "status": "PASS",
+      "evidence_or_blocker": "8 images; subject-bindings.json; not final release identity approval"
+    },
+    {
+      "gate": "High/Critical vulnerability acceptance",
+      "status": "FAIL",
+      "evidence_or_blocker": "Unresolved scanner matches: Python 110 High; guarded collector 14 Critical/68 High; no exception or applicability signoff"
+    },
+    {
+      "gate": "Final registry/source identity",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "No approved registry publication/final manifests; dirty-tree candidates lack complete committed-source attestation"
+    },
+    {
+      "gate": "Collector 0.163.2 promotion",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "12 unchanged tests:11 pass1guardERROR; scoped functional probe passes; no explicit upgrade approval; .123guard unchanged"
+    },
+    {
+      "gate": "Guarded collector regression",
+      "status": "PASS",
+      "evidence_or_blocker": "12 unchanged tests pass with .123 verified binary; does not waive vulnerabilities"
+    },
+    {
+      "gate": "Patched bootstrap and targeted contracts",
+      "status": "PASS",
+      "evidence_or_blocker": "29 local +36 exact API +36 Bookworm tests; online/offline wheel install, checksum rejection; rejected Bookworm vulnerability profile"
+    },
+    {
+      "gate": "All nine advisory dispositions",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "3 prior Black scoped FIXED;6 pip UNRESOLVED globally, patched declared Linux paths; owner/native/legacy coverage pending"
+    },
+    {
+      "gate": "License NOTICE/source offer/application terms",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Per-component inventory+189 npm lock entries; no human signoff or application license decision"
+    },
+    {
+      "gate": "Scoped cleanup",
+      "status": "PASS",
+      "evidence_or_blocker": "cleanup.json; no task containers/networks/volumes/archives; only exact owned cache entries removed"
+    }
+  ],
+  "phase": "DEV-05.2A.2"
+}

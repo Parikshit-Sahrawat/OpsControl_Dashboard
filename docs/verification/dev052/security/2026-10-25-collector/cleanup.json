@@ -1,0 +1,79 @@
+{
+  "status": "PASS",
+  "timestamp_utc": "2026-10-25T12:31:01.320535+00:00",
+  "remaining_task_resources": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "saved_archives_remaining": [],
+  "attempt_cleanup": [
+    {
+      "attempt": 1,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3-f6753cc3-pg"
+      ],
+      "owned_networks": [
+        "dev052a3-f6753cc3",
+        "dev052a3-f6753cc3-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 2,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3-40d6b955-pg",
+        "dev052a3-40d6b955-denied-target",
+        "dev052a3-40d6b955-agent"
+      ],
+      "owned_networks": [
+        "dev052a3-40d6b955",
+        "dev052a3-40d6b955-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 3,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3-231a5dd8-pg",
+        "dev052a3-231a5dd8-denied-target",
+        "dev052a3-231a5dd8-agent"
+      ],
+      "owned_networks": [
+        "dev052a3-231a5dd8",
+        "dev052a3-231a5dd8-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 4,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3-7672538c-pg",
+        "dev052a3-7672538c-denied-target",
+        "dev052a3-7672538c-agent"
+      ],
+      "owned_networks": [
+        "dev052a3-7672538c",
+        "dev052a3-7672538c-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    }
+  ],
+  "provisioning_containers": "Removed individually in finally",
+  "temporary_online_offline_binary_copies": "Removed after provenance preservation",
+  "retained": "Verified pre-existing binaries/images/tools and staged non-secret experimental sources; no source code or binary replaces production defaults",
+  "no_broad_cleanup": true,
+  "no_publication_deployment_or_merge": true
+}

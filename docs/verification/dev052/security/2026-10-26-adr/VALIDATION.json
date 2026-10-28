@@ -1,0 +1,126 @@
+{
+  "task": "DEV-05.2A.3E",
+  "status": "design review complete; ADR Proposed / Pending accountable approval",
+  "baseline_commit": "a4886b894aaeb2aa2ed48d3abe1748afe41a05fa",
+  "date": "2026-10-26",
+  "timezone": "Asia/Calcutta",
+  "checks": {
+    "local_markdown_links": [
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "EVIDENCE_REFERENCES.json",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "../2026-10-26-queue/QUEUE_DECISION.md",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "../2026-10-26-queue/ROOT_CAUSE.md",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "../2026-10-25-durability/test-matrix.json",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "../2026-10-25-checkpoints/test-matrix.json",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "../2026-10-25-collector/COLLECTOR_DECISION.md",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "NATIVE_ACCEPTANCE_PLAN.md",
+        "result": "PASS"
+      },
+      {
+        "from": "ADR-CHK-001.md",
+        "target": "NATIVE_ACCEPTANCE_PLAN.md",
+        "result": "PASS"
+      },
+      {
+        "from": "NATIVE_ACCEPTANCE_PLAN.md",
+        "target": "ADR-CHK-001.md",
+        "result": "PASS"
+      },
+      {
+        "from": "REPLAY_CONTRACT.md",
+        "target": "ADR-CHK-001.md",
+        "result": "PASS"
+      },
+      {
+        "from": "REPLAY_CONTRACT.md",
+        "target": "NATIVE_ACCEPTANCE_PLAN.md",
+        "result": "PASS"
+      }
+    ],
+    "historical_reference_hashes_and_git_bytes": {
+      "result": "PASS",
+      "files": 64
+    },
+    "prior_manifest_integrity": [
+      {
+        "directory": "docs/verification/dev052/security/2026-10-25-checkpoints",
+        "artifact_hashes_verified": 85,
+        "result": "PASS"
+      },
+      {
+        "directory": "docs/verification/dev052/security/2026-10-25-durability",
+        "artifact_hashes_verified": 310,
+        "result": "PASS"
+      },
+      {
+        "directory": "docs/verification/dev052/security/2026-10-26-queue",
+        "artifact_hashes_verified": 193,
+        "result": "PASS"
+      }
+    ],
+    "selected_historical_API_PG_case_reconciliation": {
+      "result": "PASS",
+      "cases": 17,
+      "historical_native_outcomes": {
+        "PASS": 4,
+        "FAIL": 13
+      }
+    },
+    "historical_regression_log_review": {
+      "result": "PASS",
+      "historical_passing_tests": 91,
+      "runtime_tests_rerun": 0
+    },
+    "scope": {
+      "result": "PASS",
+      "only_new_markdown_and_JSON_under": "docs/verification/dev052/security/2026-10-26-adr",
+      "product_queue_guards_recovery_utility_and_previous_evidence_changed": false
+    },
+    "whitespace": {
+      "result": "PASS",
+      "command": "git diff --cached --check",
+      "exit_code": 0,
+      "initial_attempt": "Four Markdown hard-break trailing spaces reported; replaced with blank-line paragraphs before final check."
+    }
+  },
+  "new_native_acceptance_tests": "NOT TESTED; proposed plan only",
+  "new_production_replay_contract": "NOT IMPLEMENTED; proposed contract only",
+  "approval_record": "No accountable signoffs; named roles and decisions in ADR",
+  "resources": {
+    "containers_started": 0,
+    "services_started": 0,
+    "binaries_executed": 0,
+    "docker_cleanup": "NOT APPLICABLE; no resources created in design-only task"
+  },
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  }
+}

@@ -1,0 +1,4751 @@
+{
+  "status": "FAIL",
+  "scope": "owned disposable fixture, not provider certification",
+  "api_dependencies": "existing local backend/.venv; not a release image",
+  "runner_fixture_image": "sha256:f4b7b8044a873fcc0f348549a19b9075cd77bd56ead7177192cfec38d85bce4a",
+  "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "source": {
+    "source_commit": "76a97e3fcf6709533151fffb36b16138e4475aba",
+    "source_archive_sha256": "9c2ff7279cf6b7225004f3df145cc7b6a8be73584b9e6ef671ecfe8b0ad7f0cf",
+    "production_guard_modified": false,
+    "scope": "CHK001 baseline unchanged direct-runtime reproduction",
+    "durability_suite": "fixed",
+    "durability_versions": [
+      "0.163.2",
+      "0.123.0"
+    ],
+    "product_changes": {
+      "backend/app/telemetry/configuration.py": "f57a9581c947e67ed27f6f0a22c5b55aaa591466c08e9d73250cae04da272540",
+      "agent/opscontrol_agent.py": "c50340e05ee3ae0e7f74d4c1d9be36b3d234b40f1d338ba1cf5d2649e789a3ea",
+      "backend/tests/test_collection_v15.py": "1a3e270c81f748b52e96aec5622a5896907f63f797adf44ca18d4905c10aa7ba"
+    }
+  },
+  "constraints": {
+    "ReadonlyRootfs": true,
+    "Memory": 536870912,
+    "NanoCpus": 1000000000,
+    "PidsLimit": 128,
+    "CapDrop": [
+      "ALL"
+    ],
+    "SecurityOpt": [
+      "no-new-privileges:true"
+    ]
+  },
+  "fixture_exit_code": 1,
+  "e2e": {
+    "status": "FAIL",
+    "cases": [
+      {
+        "name": "0.163.2-before_read",
+        "scenario": "before_read",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947251798084206,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947251798861688,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 7
+          },
+          {
+            "time_ns": 1792947252249845954,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0000",
+              "event-0001",
+              "event-0002",
+              "event-0003"
+            ],
+            "bytes": 5156,
+            "sha256": "9cef8178bbc64267f1339ee4314024938abe27fd5d7291a23352b14f12ed9750"
+          },
+          {
+            "time_ns": 1792947252249906425,
+            "stage": "SIGKILL",
+            "pid": 7
+          },
+          {
+            "time_ns": 1792947252256146725,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 15
+          },
+          {
+            "time_ns": 1792947252740420541,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947252740528484,
+            "stage": "SIGTERM",
+            "pid": 15
+          },
+          {
+            "time_ns": 1792947252748276347,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947252740406810,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "9408ab6ab208a683c9d38da42463ef766d9bc06f52098d7a782558179040540c",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "5ff5f5c349f51bb7ff8e659e1ca7ab5a17f127bf6e3711f9847fbc3d0b0c25ad",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "536070bdc8afc2263324f1aba09a4663f61342151233403ad417ee8400aaafc2",
+                    "event_ids": [
+                      "event-0000"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0000": 1,
+          "event-0001": 1,
+          "event-0002": 1,
+          "event-0003": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-after_checkpoint_before_commit",
+        "scenario": "after_checkpoint_before_commit",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947252748921279,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947252749478900,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 23
+          },
+          {
+            "time_ns": 1792947253200102227,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947253200439716,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0004",
+              "event-0005",
+              "event-0006",
+              "event-0007"
+            ],
+            "bytes": 5156,
+            "sha256": "3bd71163510f4f689c97b8657168a825974b4511bc47851cc636bdc66e164062"
+          },
+          {
+            "time_ns": 1792947253593491711,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947253595278776,
+            "stage": "SIGKILL",
+            "pid": 23
+          },
+          {
+            "time_ns": 1792947253602812736,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947253603276595,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 31
+          },
+          {
+            "time_ns": 1792947254056507835,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947254056580845,
+            "stage": "SIGTERM",
+            "pid": 31
+          },
+          {
+            "time_ns": 1792947254064842513,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947253593469307,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "eb97f079de72a0ed3e590baebf03a2b970dcb69d7f1f0aaab2aacb61b9a18cb3",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "04f3c410408fe14d1eb72f336951df7235faeab14689cbfb80a3e46e614578a6",
+                    "event_ids": [
+                      "event-0004",
+                      "event-0005",
+                      "event-0006",
+                      "event-0007"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "a9d33a825a0dc1d0958a15d8122add6711f7b556f8a7f7c30de06e0b044b5b86",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "e25945880621a284f9f619cd28900f54b609f7522a26186afff451cc19a6fb8c",
+                    "event_ids": [
+                      "event-0004"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947254056490129,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "4d1b82227f220a8ab428b02e4f207708f722181bfa62e86ab7798f47045aef07",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "35a5007bf887bbb950fc580ca272847dd24cae0378517bc2b3f88127d3fce6c4",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 2,
+                      "write_index": 2,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "b4f4ac792b57ec8e26c97622ff3a24e6560c9f780d6e743576f705b1f9f23e9b",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "e25945880621a284f9f619cd28900f54b609f7522a26186afff451cc19a6fb8c",
+                    "event_ids": [
+                      "event-0004"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0004": 1,
+          "event-0005": 1,
+          "event-0006": 1,
+          "event-0007": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-after_commit_before_ack",
+        "scenario": "after_commit_before_ack",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0008",
+          "event-0009",
+          "event-0010",
+          "event-0011"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947254065797212,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947254066156865,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 40
+          },
+          {
+            "time_ns": 1792947254516660035,
+            "stage": "api_gate",
+            "mode": "hold_after_commit"
+          },
+          {
+            "time_ns": 1792947254516953438,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0008",
+              "event-0009",
+              "event-0010",
+              "event-0011"
+            ],
+            "bytes": 5156,
+            "sha256": "89d01754231af44576e38dfb4e482d6852cdb85be87d879a46a8ff9a8eefea85"
+          },
+          {
+            "time_ns": 1792947254909809034,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947254911405782,
+            "stage": "SIGKILL",
+            "pid": 40
+          },
+          {
+            "time_ns": 1792947254918871109,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947254919248878,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 48
+          },
+          {
+            "time_ns": 1792947255372315084,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947255372382686,
+            "stage": "SIGTERM",
+            "pid": 48
+          },
+          {
+            "time_ns": 1792947255380104810,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947254909795684,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "b417feba9b5e6fda4f017871f5bf46bce915b4207a084f4812116d598569d179",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "52e5ea9ed42a84be90e3bec04b27c2d144bafcc5b6be231b2a606c93e968574c",
+                    "event_ids": [
+                      "event-0008",
+                      "event-0009",
+                      "event-0010",
+                      "event-0011"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "4fa4774dbef227ddd0a68cb544777b64de9eb9da82720522775dfa33b4ccaa23",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "7df8fd346479111f0df59091b6293623f5d5c78ffb0d155f41c80fc5cbcb02af",
+                    "event_ids": [
+                      "event-0008"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947255372302815,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "d93905313cba3f22d972a2013b4c7c350b94711185b79cc3d94a820fcf2f390d",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "35a5007bf887bbb950fc580ca272847dd24cae0378517bc2b3f88127d3fce6c4",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 2,
+                      "write_index": 2,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "bf54a3319f89cd88442c1e9c556db5335cbbce2c257ee3db9b8290cb3c835784",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "7df8fd346479111f0df59091b6293623f5d5c78ffb0d155f41c80fc5cbcb02af",
+                    "event_ids": [
+                      "event-0008"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0008": 2,
+          "event-0009": 2,
+          "event-0010": 2,
+          "event-0011": 2
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-after_ack",
+        "scenario": "after_ack",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0012",
+          "event-0013",
+          "event-0014",
+          "event-0015"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947255381230467,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947255381715789,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 57
+          },
+          {
+            "time_ns": 1792947255832419224,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0012",
+              "event-0013",
+              "event-0014",
+              "event-0015"
+            ],
+            "bytes": 5156,
+            "sha256": "f7935a7cedb452e5c6949c6209b508abe7fd94762722bd9ddec5082c00d5cdd5"
+          },
+          {
+            "time_ns": 1792947256206219650,
+            "stage": "snapshot",
+            "label": "after-ack-queue-deletion"
+          },
+          {
+            "time_ns": 1792947256208321950,
+            "stage": "SIGKILL",
+            "pid": 57
+          },
+          {
+            "time_ns": 1792947256216179077,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 66
+          },
+          {
+            "time_ns": 1792947256671092743,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947256671166945,
+            "stage": "SIGTERM",
+            "pid": 66
+          },
+          {
+            "time_ns": 1792947256679484962,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947256206200150,
+            "label": "after-ack-queue-deletion",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "f881053dfa6d3a0e7719002535eccf6aed1aaebb406faac054e685774136d08c",
+                "committed_txid": 10,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "d8b0c5ee7f1ddee6949f9cb535b71a62ca9f76cbf5176689690936ee230e68a1",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "3d8d8dc7cadc2b5cf30b6b75bc8a3559564aca943bd1765e7da7415d71f39772",
+                    "event_ids": [
+                      "event-0012"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947256671079844,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "4b34503263f2e732bb5639e8fc176b32f9330e473c6bee29fcb4cb5b0fd871e9",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "3835548fd5aec3d743a3df1bb5c4e6bd56b3e8ead88f85c260ea6a3d3bc3cbdc",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "3d8d8dc7cadc2b5cf30b6b75bc8a3559564aca943bd1765e7da7415d71f39772",
+                    "event_ids": [
+                      "event-0012"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0012": 1,
+          "event-0013": 1,
+          "event-0014": 1,
+          "event-0015": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-unavailable_api",
+        "scenario": "unavailable_api",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0016",
+          "event-0017",
+          "event-0018",
+          "event-0019"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947256680840156,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947256681260810,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 74
+          },
+          {
+            "time_ns": 1792947257313607755,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0016",
+              "event-0017",
+              "event-0018",
+              "event-0019"
+            ],
+            "bytes": 5156,
+            "sha256": "faffff1bd504ffefffcf91dcf0c7f37dc76c25e0e3bcce76c9683cd0b2de501c"
+          },
+          {
+            "time_ns": 1792947258115118381,
+            "stage": "snapshot",
+            "label": "api-tcp-unavailable"
+          },
+          {
+            "time_ns": 1792947258115216138,
+            "stage": "SIGKILL",
+            "pid": 74
+          },
+          {
+            "time_ns": 1792947263595635724,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 91
+          },
+          {
+            "time_ns": 1792947264050007188,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947264050075971,
+            "stage": "SIGTERM",
+            "pid": 91
+          },
+          {
+            "time_ns": 1792947264060212336,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947258115100814,
+            "label": "api-tcp-unavailable",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "c11f373f68381216aab45a0a5034ee5781ffba59aa669a2f056be50f6132fc9e",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "0e5bb2f546ae14c5228ad885fe51911b6e62331576cc02e29c4f9e53f47084b0",
+                    "event_ids": [
+                      "event-0016",
+                      "event-0017",
+                      "event-0018",
+                      "event-0019"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "beae3e4fabeeb9a4e434d9da2b8c07a93bafced3e4e2ee42bea5b390d936aab4",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "6c9ef6ed89687b59c2cdc4d3ac3951731e51d81e1f84cb9d7e2f5c553d4d07ca",
+                    "event_ids": [
+                      "event-0016"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947264049994388,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "bee49c38beeb3bdaa92798e1372cf73b2cbcb465c8d2e898ff124e02749c938e",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "35a5007bf887bbb950fc580ca272847dd24cae0378517bc2b3f88127d3fce6c4",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 2,
+                      "write_index": 2,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "7a96fd46e12c9ee74dda68ab4e40e796b5633e488428225864a6b717d59b3d49",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "6c9ef6ed89687b59c2cdc4d3ac3951731e51d81e1f84cb9d7e2f5c553d4d07ca",
+                    "event_ids": [
+                      "event-0016"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "outage_mode": "API process stopped/TCP unavailable",
+        "accepted_attempt_counts": {
+          "event-0016": 1,
+          "event-0017": 1,
+          "event-0018": 1,
+          "event-0019": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-queue_saturation",
+        "scenario": "queue_saturation",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0020",
+          "event-0021",
+          "event-0022",
+          "event-0023",
+          "event-0024",
+          "event-0025",
+          "event-0026",
+          "event-0027",
+          "event-0028",
+          "event-0029"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947264061670604,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947264062126642,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 100
+          },
+          {
+            "time_ns": 1792947264512671068,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947264513015087,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0020",
+              "event-0021",
+              "event-0022",
+              "event-0023"
+            ],
+            "bytes": 5156,
+            "sha256": "ca80e3888a350948b0deffdf1c39cf073d058ff77d37d578313eed4a9378cf3e"
+          },
+          {
+            "time_ns": 1792947264908828050,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947264911077712,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0024"
+            ],
+            "bytes": 6445,
+            "sha256": "f47de5ae377e3ce738771ede2e8814d2e748481308dfd719d9aea0e92fbd6668"
+          },
+          {
+            "time_ns": 1792947265163084204,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0025"
+            ],
+            "bytes": 7734,
+            "sha256": "b3b01c1fb801672e143ad05133be9b5be4df32fda276fd4eca65f39da6a7f901"
+          },
+          {
+            "time_ns": 1792947265417881261,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0026"
+            ],
+            "bytes": 9023,
+            "sha256": "9a77b004d31554c6e7ec19cc86f849bd25ba1761ab0f8b3d34f58ce1579b2e4a"
+          },
+          {
+            "time_ns": 1792947265671101862,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0027"
+            ],
+            "bytes": 10312,
+            "sha256": "fbcf1436ff9046ca51d715769d3e9c7af9a7402986c54df1b4aa08bf374ea939"
+          },
+          {
+            "time_ns": 1792947265924254649,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0028"
+            ],
+            "bytes": 11601,
+            "sha256": "fefec4970bda012953b7a140c0988c0a2c98ea9d2a5a97e2f1d740f55d6525ca"
+          },
+          {
+            "time_ns": 1792947266174997816,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0029"
+            ],
+            "bytes": 12890,
+            "sha256": "30318d791d991d954ae358449dcae6b448642c78b161334c169ffc5e45cb5003"
+          },
+          {
+            "time_ns": 1792947266931479606,
+            "stage": "snapshot",
+            "label": "queue-saturation"
+          },
+          {
+            "time_ns": 1792947266931590453,
+            "stage": "SIGKILL",
+            "pid": 100
+          },
+          {
+            "time_ns": 1792947266939124405,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947266939796078,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 108
+          },
+          {
+            "time_ns": 1792947267423737514,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947267423816513,
+            "stage": "SIGTERM",
+            "pid": 108
+          },
+          {
+            "time_ns": 1792947267431623522,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947264908808109,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "04254a495ecd5939fb495b78b75103fd41eac6d8cb297df04c2d27ab4c1efdbe",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "e7d3ada440fe34eca449c7d5b4a12b173847a5a4198ccb99893cc18831f3e8ac",
+                    "event_ids": [
+                      "event-0020",
+                      "event-0021",
+                      "event-0022",
+                      "event-0023"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "1e0bcb6996edc3b9bbb0e66592859a16fd49d15ee4756cddcc68c2f8401cac18",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "85d28ba52a3f1d95e19521d19f2e69bd5b736374518c0da219219f36720a486b",
+                    "event_ids": [
+                      "event-0020"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947266931466546,
+            "label": "queue-saturation",
+            "source_bytes": 12890,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "fa5fc1c099872b997dc395987b81cebe40482b994e9666872ee3f486178e3ac4",
+                "committed_txid": 10,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "e7d3ada440fe34eca449c7d5b4a12b173847a5a4198ccb99893cc18831f3e8ac",
+                    "event_ids": [
+                      "event-0020",
+                      "event-0021",
+                      "event-0022",
+                      "event-0023"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 3111,
+                    "sha256": "93fcd1e56f7abcc8249ef87a06027d16391521de28c4a901803f38d61817450c",
+                    "event_ids": [
+                      "event-0024"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "06c1d03ef991cdc6c2112d8ce628439f0534f1ee5f852205d7899fe16a2e5f3b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 2,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "541ea6c6895a2ce1a3c53b20031f412ecf8ac622d31d6ebfaec4b0cd9331e920",
+                "committed_txid": 8,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "7dde3dbd05bd71bbf20670fe82ae9f1a686e539acaa82a11aaaf68081647311c",
+                    "event_ids": [
+                      "event-0020"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 6445,
+                        "record_num": 5
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947267423723713,
+            "label": "final",
+            "source_bytes": 12890,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "84b8151e5cee5088e349d0f5c40f3845fabd62c0041bf5a0e85f4a11a134e83c",
+                "committed_txid": 22,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "f073260b34285646ca43acc1acc778df56419e18fa56aa6a400dd3ac9496c0d7",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 4,
+                      "write_index": 4,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "50ab0ee9f5f681e7130e475f1559f1981084197c23b0213ab167e1f60377228f",
+                "committed_txid": 11,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "e451edc59db0f8048b58d47b124ac34b745d61d0001d725032a853f41272b9a7",
+                    "event_ids": [
+                      "event-0020"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 12890,
+                        "record_num": 10
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "test_overlay": "queue_size=2,num_consumers=1; production size remains256",
+        "config_sha256": "3970cbce1c4c10ce8bdd598a4ba28d50b631bbc18ca31252118118cda234aa8d",
+        "backpressure_observed": true,
+        "accepted_attempt_counts": {
+          "event-0020": 1,
+          "event-0021": 1,
+          "event-0022": 1,
+          "event-0023": 1,
+          "event-0024": 1,
+          "event-0025": 1,
+          "event-0026": 1,
+          "event-0027": 1,
+          "event-0028": 1,
+          "event-0029": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-repeated_crashes",
+        "scenario": "repeated_crashes",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0030",
+          "event-0031",
+          "event-0032",
+          "event-0033"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947267433383176,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947267433969260,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 117
+          },
+          {
+            "time_ns": 1792947267884491766,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947267885582661,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0030",
+              "event-0031",
+              "event-0032",
+              "event-0033"
+            ],
+            "bytes": 5156,
+            "sha256": "07310999487140bf196fdb7690eb18a6c65e3695d536a38c8568bade963be8b4"
+          },
+          {
+            "time_ns": 1792947268278614421,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947268280466704,
+            "stage": "SIGKILL",
+            "pid": 117
+          },
+          {
+            "time_ns": 1792947268287968648,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947268288376553,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 125
+          },
+          {
+            "time_ns": 1792947269039982986,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947269040067904,
+            "stage": "SIGKILL",
+            "pid": 125
+          },
+          {
+            "time_ns": 1792947269047601640,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947269048100382,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 133
+          },
+          {
+            "time_ns": 1792947269799649298,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947269799769669,
+            "stage": "SIGKILL",
+            "pid": 133
+          },
+          {
+            "time_ns": 1792947269807265332,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947269807716091,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 141
+          },
+          {
+            "time_ns": 1792947270559296432,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947270559396833,
+            "stage": "SIGKILL",
+            "pid": 141
+          },
+          {
+            "time_ns": 1792947270566864964,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947270567362975,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 149
+          },
+          {
+            "time_ns": 1792947271021039921,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947271021116687,
+            "stage": "SIGTERM",
+            "pid": 149
+          },
+          {
+            "time_ns": 1792947271029049228,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947268278602082,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "3fd392d3f3e88e72bbecaa95a9c00a82bedd8ebb74018a076093cfdf670be88e",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "b1ca927bd0d9794d31fce7515b7ac8e6d554c48aa9b46247e66c524e56a2826e",
+                    "event_ids": [
+                      "event-0030",
+                      "event-0031",
+                      "event-0032",
+                      "event-0033"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "e9f9bc78af6d67ca3c3f52faf97747deb76883bb9d5b293da4381fcb77d1537b",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": [
+                        0
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "4d51c70a420f7825e5a66e51ded30d2f45d9c9826a186cd3bcc01ec329f8cf8b",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "2763e3fe635d1bc37c6ee6bd7857a522ab8079f9e18db9a952c916f6d4fb9b39",
+                    "event_ids": [
+                      "event-0030"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947269039970026,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "f59249aa0cb2f870544f32c24fad9c9ffaa3b64fb4896a065e8dc7625a533e5e",
+                "committed_txid": 15,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "b1ca927bd0d9794d31fce7515b7ac8e6d554c48aa9b46247e66c524e56a2826e",
+                    "event_ids": [
+                      "event-0030",
+                      "event-0031",
+                      "event-0032",
+                      "event-0033"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "3aebb2be47f9592c95bc71c0c13f22159ce3ceafcb8f4ff64a8da14c0b5fd130",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 2,
+                      "write_index": 2,
+                      "dispatched": [
+                        1
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "96717e2031183f32f7236e037b97b9e2d89a911c1f542d5abde263dce950a877",
+                "committed_txid": 11,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "2763e3fe635d1bc37c6ee6bd7857a522ab8079f9e18db9a952c916f6d4fb9b39",
+                    "event_ids": [
+                      "event-0030"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947269799630760,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "8490070bbd756e9838b3889c9595fb6a0d7fc395e39fdd6c77cffae393c8abfb",
+                "committed_txid": 21,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "2"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "b1ca927bd0d9794d31fce7515b7ac8e6d554c48aa9b46247e66c524e56a2826e",
+                    "event_ids": [
+                      "event-0030",
+                      "event-0031",
+                      "event-0032",
+                      "event-0033"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "bcfb3b894155664f08e9aa2ab5945f1a9a1ce95d5a4859311717e233155919e3",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 3,
+                      "write_index": 3,
+                      "dispatched": [
+                        2
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "b93d55f74b0b3f7de8e8402e80ca416944fd63d67ae504d861a6b3f5f6c0191f",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "2763e3fe635d1bc37c6ee6bd7857a522ab8079f9e18db9a952c916f6d4fb9b39",
+                    "event_ids": [
+                      "event-0030"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947270559284203,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "a7ad2f22901af83432d54c9064da914a07f27c7559de31676a30e98c28d53bc7",
+                "committed_txid": 27,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "3"
+                    ],
+                    "bytes": 11580,
+                    "sha256": "b1ca927bd0d9794d31fce7515b7ac8e6d554c48aa9b46247e66c524e56a2826e",
+                    "event_ids": [
+                      "event-0030",
+                      "event-0031",
+                      "event-0032",
+                      "event-0033"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 46,
+                    "sha256": "74f900814b47c5682fb2f3bd60c65ac75cc3f76c2892bd38de20aa21cbc7a5df",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 4,
+                      "write_index": 4,
+                      "dispatched": [
+                        3
+                      ]
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "676cfa125181e2e90e835ed2d268d6b1a57e9a5049ce68141a8b2782cf2d5e41",
+                "committed_txid": 21,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "2763e3fe635d1bc37c6ee6bd7857a522ab8079f9e18db9a952c916f6d4fb9b39",
+                    "event_ids": [
+                      "event-0030"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947271021020852,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "d369cfcd8be392421560775eea400dd390e22c6442218ef85dfdd3de27ee7ed2",
+                "committed_txid": 34,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "a3dbaeef49f4098da2ad65092d912830ccb7e5f4afd5ac884f018d5673c1a475",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 5,
+                      "write_index": 5,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "ad2df0ee087f60fab26df8356d0358b0f70985ba67dbc7ff21c1cf253bee18d0",
+                "committed_txid": 24,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "2763e3fe635d1bc37c6ee6bd7857a522ab8079f9e18db9a952c916f6d4fb9b39",
+                    "event_ids": [
+                      "event-0030"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0030": 1,
+          "event-0031": 1,
+          "event-0032": 1,
+          "event-0033": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-retained_source_before_read",
+        "scenario": "retained_source_before_read",
+        "runtime": "0.163.2",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0034",
+          "event-0035",
+          "event-0036",
+          "event-0037"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947271032266109,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947271032806303,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 157
+          },
+          {
+            "time_ns": 1792947271483810180,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0034",
+              "event-0035",
+              "event-0036",
+              "event-0037"
+            ],
+            "bytes": 5156,
+            "sha256": "13503e8c334d4f0e9c2e99aa2633568af645af5b2807b262dce871f1206f0cc9"
+          },
+          {
+            "time_ns": 1792947271483884291,
+            "stage": "SIGKILL",
+            "pid": 157
+          },
+          {
+            "time_ns": 1792947271491777914,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 165
+          },
+          {
+            "time_ns": 1792947271975217191,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947271975290471,
+            "stage": "SIGTERM",
+            "pid": 165
+          },
+          {
+            "time_ns": 1792947271983015700,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947271975204421,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "8d743281b547f417aff7c24c8697fa5ec77cb4f0ae2f318d767cebff8c2920dd",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "9638a0f5189e4e8dff84d6bbb8c630fab7dfe8a2d378f983cba4dac52ed87546",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "502a0e946a290e8453765f745438fbc5e471015149c766850f7fb356ff2af3ea",
+                    "event_ids": [
+                      "event-0034"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0034": 1,
+          "event-0035": 1,
+          "event-0036": 1,
+          "event-0037": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.163.2-expired_source_before_read",
+        "scenario": "expired_source_before_read",
+        "runtime": "0.163.2",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0038",
+          "event-0039",
+          "event-0040",
+          "event-0041"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947271985376850,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947271985896023,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 173
+          },
+          {
+            "time_ns": 1792947272436719024,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0038",
+              "event-0039",
+              "event-0040",
+              "event-0041"
+            ],
+            "bytes": 5156,
+            "sha256": "c501d09c51ea7c1b12aa98cab4e5313062e07f74d106a62e412fd29d2e8061da"
+          },
+          {
+            "time_ns": 1792947272436793546,
+            "stage": "SIGKILL",
+            "pid": 173
+          },
+          {
+            "time_ns": 1792947272444193024,
+            "stage": "source_retention_expired",
+            "source_sha256": "c501d09c51ea7c1b12aa98cab4e5313062e07f74d106a62e412fd29d2e8061da"
+          },
+          {
+            "time_ns": 1792947272444749112,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 181
+          },
+          {
+            "time_ns": 1792947280950511753,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947280950588038,
+            "stage": "SIGTERM",
+            "pid": 181
+          },
+          {
+            "time_ns": 1792947280958459512,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947280950493074,
+            "label": "final",
+            "source_bytes": null,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "c6735ef44ac2830e42c8f90a19c79467991d917bfaf1325527f1d083371c87cb",
+                "committed_txid": 13,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 0,
+                      "write_index": 0,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "ea9a514401d15fe8b7ddb780efa2026b9b57c42029c7a3441fb35dbd3f3200d5",
+                "committed_txid": 47,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 0,
+                    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                    "event_ids": []
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0038": 0,
+          "event-0039": 0,
+          "event-0040": 0,
+          "event-0041": 0
+        },
+        "missing_ids": [
+          "event-0038",
+          "event-0039",
+          "event-0040",
+          "event-0041"
+        ],
+        "detected_loss": true
+      },
+      {
+        "name": "0.163.2-permanent_rejection",
+        "scenario": "permanent_rejection",
+        "runtime": "0.163.2",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0042",
+          "event-0043",
+          "event-0044",
+          "event-0045"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947280961013373,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947280961533958,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 189
+          },
+          {
+            "time_ns": 1792947281412127475,
+            "stage": "api_gate",
+            "mode": "permanent_rejection"
+          },
+          {
+            "time_ns": 1792947281412440638,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0042",
+              "event-0043",
+              "event-0044",
+              "event-0045"
+            ],
+            "bytes": 5156,
+            "sha256": "acc36668b8c79dd31170254309a4f2e26a6bec629c24df5503d13afc50440d0c"
+          },
+          {
+            "time_ns": 1792947281805611871,
+            "stage": "snapshot",
+            "label": "permanent-rejection"
+          },
+          {
+            "time_ns": 1792947281805717280,
+            "stage": "SIGKILL",
+            "pid": 189
+          },
+          {
+            "time_ns": 1792947281813214608,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947281813784798,
+            "stage": "collector_start",
+            "version": "0.163.2",
+            "pid": 197
+          },
+          {
+            "time_ns": 1792947290281153838,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947290281228261,
+            "stage": "SIGTERM",
+            "pid": 197
+          },
+          {
+            "time_ns": 1792947290289190703,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947281805598120,
+            "label": "permanent-rejection",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "3a2c98e2c52ce0ccf83fce0a6f881aaa56110003703c706b4eeb8c0928dd7301",
+                "committed_txid": 10,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "25d9f826ee11a26abfbc5c012f1ec2c6d40e50810d80a65c6bedf9161ffef362",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "3ef2c8872a37f3611fa694fab4a57561ee64b44dddfcdc6d9a1849392c21d5ba",
+                    "event_ids": [
+                      "event-0042"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947290281142061,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "50583f8a6d2d89aad1ca673d9af8b8317dda70cd2c7ad8f75d7e829f66588c66",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "qmv0"
+                    ],
+                    "bytes": 18,
+                    "sha256": "9f632dfd4014af6da4aee8c1594fdb3efa4f9892537c477df3972ef27c5c17d6",
+                    "event_ids": [],
+                    "queue_metadata": {
+                      "read_index": 1,
+                      "write_index": 1,
+                      "dispatched": []
+                    }
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "3c27e72f99ad8c7f9e7ebc64962236d0d1f33cbd4b4c49f272b0f00d39a622d0",
+                "committed_txid": 49,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1100,
+                    "sha256": "3ef2c8872a37f3611fa694fab4a57561ee64b44dddfcdc6d9a1849392c21d5ba",
+                    "event_ids": [
+                      "event-0042"
+                    ],
+                    "protobuf_checkpoint_offsets": [
+                      {
+                        "offset": 5156,
+                        "record_num": 4
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0042": 0,
+          "event-0043": 0,
+          "event-0044": 0,
+          "event-0045": 0
+        },
+        "missing_ids": [
+          "event-0042",
+          "event-0043",
+          "event-0044",
+          "event-0045"
+        ],
+        "detected_loss": true
+      },
+      {
+        "name": "0.123.0-before_read",
+        "scenario": "before_read",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0046",
+          "event-0047",
+          "event-0048",
+          "event-0049"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947290294111167,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947290294558913,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 206
+          },
+          {
+            "time_ns": 1792947290745406770,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0046",
+              "event-0047",
+              "event-0048",
+              "event-0049"
+            ],
+            "bytes": 5156,
+            "sha256": "4a1853a080bbdfd053c32a62ab0cc42c6f879aa45cdc765d588baf54c6c2bc75"
+          },
+          {
+            "time_ns": 1792947290745509826,
+            "stage": "SIGKILL",
+            "pid": 206
+          },
+          {
+            "time_ns": 1792947290753291555,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 216
+          },
+          {
+            "time_ns": 1792947291238783915,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947291238870165,
+            "stage": "SIGTERM",
+            "pid": 216
+          },
+          {
+            "time_ns": 1792947291246954482,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947291238767079,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "a95407e84dc86ce8158a9f90ae1b66b2c529bb446e84c2a17b5d6a8433e930a0",
+                "committed_txid": 19,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "8c75bccdd3af7aefbd1062457f18b51cdb474a4f301c3fa01c0914e1f8e08114",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "e6c992632cdb6fde74c3e8dbb47ec776fee6be6da153a6992b318f4993b5ae5c",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDQ2IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbnQtMDA0NmV2ZW50LTAwNDZldmVudC0wMDQ2ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:51.013952301Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0046": 1,
+          "event-0047": 1,
+          "event-0048": 1,
+          "event-0049": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-after_checkpoint_before_commit",
+        "scenario": "after_checkpoint_before_commit",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0050",
+          "event-0051",
+          "event-0052",
+          "event-0053"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947291249879855,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947291250354221,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 227
+          },
+          {
+            "time_ns": 1792947291700859339,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947291701164650,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0050",
+              "event-0051",
+              "event-0052",
+              "event-0053"
+            ],
+            "bytes": 5156,
+            "sha256": "e2cae3070fe02c5af0d1a2ff6b21c01bbf59051b36ffa5823db51fa8690d997b"
+          },
+          {
+            "time_ns": 1792947292064675774,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947292066624694,
+            "stage": "SIGKILL",
+            "pid": 227
+          },
+          {
+            "time_ns": 1792947292074206864,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947292074624834,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 238
+          },
+          {
+            "time_ns": 1792947292528061901,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947292528143584,
+            "stage": "SIGTERM",
+            "pid": 238
+          },
+          {
+            "time_ns": 1792947292535944197,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947292064655744,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "43bb0a82dc5c8fcae9d670beac95d08e2eb33001fc68f32359faae0d6865e2ea",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "9ce0a1ca7505d438d0d0d9ed3a2e5163467d18086e45cde4f4949e2309dd86f8",
+                    "event_ids": [
+                      "event-0050"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "64b70f7bf91212115f903505d65b3ed632ba6d84f596087a4cce201dfeb06a80",
+                    "event_ids": [
+                      "event-0051"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "2"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "2d3f98e748fe45024223f175240558e0b681effd2ee411a07894d14bfda54892",
+                    "event_ids": [
+                      "event-0052"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "3"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "876022f9de29e596f10f71e671285f0417210920fad7749454be70d4e58154cf",
+                    "event_ids": [
+                      "event-0053"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "dc21a2c318ad290c2ed4d84c8cd44ac8598432a8da6fa1cdb4badea00816a6bd",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "99fc02264e046a78087fcd55d48cef5e44bd8c1adc0621546687147be3021b7f",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "b41c44ebc285245dddbf42c0556492fd3dd64850a2dd89b7ae540a3097a622a8",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDUwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:51.718848018Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947292528045155,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "a0a2d4e0f6581466e3ce4dbe2f941cca521cdd4eb35be61c247d0a41137496f8",
+                "committed_txid": 29,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "09d95ea71d719469e4a5a6157ace2619b8600d4b9d2993e934263b839f98c5c7",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "b41c44ebc285245dddbf42c0556492fd3dd64850a2dd89b7ae540a3097a622a8",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDUwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbnQtMDA1MGV2ZW50LTAwNTBldmVudC0wMDUwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:51.718848018Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0050": 1,
+          "event-0051": 1,
+          "event-0052": 1,
+          "event-0053": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-after_commit_before_ack",
+        "scenario": "after_commit_before_ack",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0054",
+          "event-0055",
+          "event-0056",
+          "event-0057"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947292539258655,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947292539701734,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 249
+          },
+          {
+            "time_ns": 1792947292991306318,
+            "stage": "api_gate",
+            "mode": "hold_after_commit"
+          },
+          {
+            "time_ns": 1792947292992893151,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0054",
+              "event-0055",
+              "event-0056",
+              "event-0057"
+            ],
+            "bytes": 5156,
+            "sha256": "bb00b7203128bccbd24eae75f173b998b4c71e685a4973dc76da6a8dc894ac9d"
+          },
+          {
+            "time_ns": 1792947293386229596,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947293388057402,
+            "stage": "SIGKILL",
+            "pid": 249
+          },
+          {
+            "time_ns": 1792947293395541949,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947293395933930,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 260
+          },
+          {
+            "time_ns": 1792947293849122944,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947293849189945,
+            "stage": "SIGTERM",
+            "pid": 260
+          },
+          {
+            "time_ns": 1792947293856929726,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947293386217067,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "fdee8b55d7430a8b42c1a575ad1362e0e1a6bbd9bb68980b38596cb93cd8dc3a",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "d28b56a1257a9e3edb55ab3107f18c4cd0aa03c1fceb8017078cbc6b25d8932b",
+                    "event_ids": [
+                      "event-0054"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "543610c1faf0441b85bea34813967440812e3fca3cc53215fc6890342f35c39d",
+                    "event_ids": [
+                      "event-0055"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "2"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "83395b1972227ef231c0e22dd1bc9ebb70b146f18b0733ad858a2c385a6f4240",
+                    "event_ids": [
+                      "event-0056"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "3"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "a6ee51980417facb10218ec8474f44763e1a323e4b9540f3ffab9843c2afe270",
+                    "event_ids": [
+                      "event-0057"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "dc21a2c318ad290c2ed4d84c8cd44ac8598432a8da6fa1cdb4badea00816a6bd",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "ab7f5ebe15b142959d2415018f8a63494f20df5a15b6b04519a91cd1cddf553c",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "8b0b846f2556802053c57b3763c514613f91c82724470655697fc778cda33740",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDU0IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:52.999852085Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947293849109403,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "ecfff7539af0c25a02d1c1e82fd6fd7c43e6d4e671ea6dc1866073ad8cc3bafd",
+                "committed_txid": 29,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "e1e984830663e9a400704d6043bdc430a675d30ed5be7477b9c407ded15be6bc",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "8b0b846f2556802053c57b3763c514613f91c82724470655697fc778cda33740",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDU0IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbnQtMDA1NGV2ZW50LTAwNTRldmVudC0wMDU0ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:52.999852085Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0054": 2,
+          "event-0055": 2,
+          "event-0056": 2,
+          "event-0057": 2
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-after_ack",
+        "scenario": "after_ack",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0058",
+          "event-0059",
+          "event-0060",
+          "event-0061"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947293860255091,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947293860605790,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 272
+          },
+          {
+            "time_ns": 1792947294311326749,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0058",
+              "event-0059",
+              "event-0060",
+              "event-0061"
+            ],
+            "bytes": 5156,
+            "sha256": "775e44af89299d2db334af534a60dbf0b1952e5475ed5792f30fbefd86e88d65"
+          },
+          {
+            "time_ns": 1792947294654410693,
+            "stage": "snapshot",
+            "label": "after-ack-queue-deletion"
+          },
+          {
+            "time_ns": 1792947294656267443,
+            "stage": "SIGKILL",
+            "pid": 272
+          },
+          {
+            "time_ns": 1792947294664089664,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 283
+          },
+          {
+            "time_ns": 1792947295147837140,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947295147919665,
+            "stage": "SIGTERM",
+            "pid": 283
+          },
+          {
+            "time_ns": 1792947295155775311,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947294654391273,
+            "label": "after-ack-queue-deletion",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "12c3e2edc0fd76895f8d5c2d04d2d4cc32ae6a294ff7de7c621bc7502746d209",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "69eefc009cbee64fbd101e54ee809e10f61d901932cec85a4f4ee1b70e744009",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "2fc7141d128dd05e2ce84366b137b3d3d798de8b511b60332802554769a5bd44",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDU4IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:54.320307942Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947295147821697,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "b286009b1c4765ed8d0f284ef82026f2b64e7085628970b737d96a1a36428d78",
+                "committed_txid": 19,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "479685ab509122a414f6a9962f5d5bbd0357e2239bc83726f307b92d29d54b66",
+                "committed_txid": 9,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "2fc7141d128dd05e2ce84366b137b3d3d798de8b511b60332802554769a5bd44",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDU4IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbnQtMDA1OGV2ZW50LTAwNThldmVudC0wMDU4ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:54.320307942Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0058": 1,
+          "event-0059": 1,
+          "event-0060": 1,
+          "event-0061": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-unavailable_api",
+        "scenario": "unavailable_api",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0062",
+          "event-0063",
+          "event-0064",
+          "event-0065"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947295159425255,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947295159848333,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 293
+          },
+          {
+            "time_ns": 1792947295610389170,
+            "stage": "api_gate",
+            "mode": "unavailable"
+          },
+          {
+            "time_ns": 1792947295610713399,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0062",
+              "event-0063",
+              "event-0064",
+              "event-0065"
+            ],
+            "bytes": 5156,
+            "sha256": "4e93abc4f47700a0c0b20132189aae953424189a01dababf3d2282a812d44199"
+          },
+          {
+            "time_ns": 1792947296412064812,
+            "stage": "snapshot",
+            "label": "api-tcp-unavailable"
+          },
+          {
+            "time_ns": 1792947296412146045,
+            "stage": "SIGKILL",
+            "pid": 293
+          },
+          {
+            "time_ns": 1792947301419223169,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947301420013571,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 304
+          },
+          {
+            "time_ns": 1792947301875196766,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947301875276666,
+            "stage": "SIGTERM",
+            "pid": 304
+          },
+          {
+            "time_ns": 1792947301883087165,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947296412051562,
+            "label": "api-tcp-unavailable",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "5bac662db822947960d9e6077080ad7de3372b9753aafcb059f253e2054f97bf",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "b5da480a2ff3c55a862ee2feb5f98e7405b4088b5e07d8f463099af9abc1a218",
+                    "event_ids": [
+                      "event-0062"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "30197a24f68cceadd21dea415ec3991fb847c293d732a87516fd887447e8df30",
+                    "event_ids": [
+                      "event-0063"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "2"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "e0bc330100c67515e605a1e0cf7a7c8efcea3414db3df45152645a9c48a27353",
+                    "event_ids": [
+                      "event-0064"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "3"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "dbcf08d92c1d2f0816ea941cb2b9cab7f61a63fd4fd0331176eb31d3e76c75ab",
+                    "event_ids": [
+                      "event-0065"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "dc21a2c318ad290c2ed4d84c8cd44ac8598432a8da6fa1cdb4badea00816a6bd",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "fa9ccd5359329c799aab76b03a9f361a6e9bd77e318aa3a2cba6e691b5607fd4",
+                "committed_txid": 8,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "412702f3bd33fae5df93cd6ad1a17abf7d9bc2b7aab0877aff176c4d2de8b67e",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDYyIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:55.622840572Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947301875183896,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "791f0ba57fc7eb21b963c309bf2af26af57ebf8c03081d84c7c9e6e57fc896cf",
+                "committed_txid": 29,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "adb96a3d186abf16e6e5569ab3e827cf451d1acb1173b7c4e14545818a88151e",
+                "committed_txid": 11,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "412702f3bd33fae5df93cd6ad1a17abf7d9bc2b7aab0877aff176c4d2de8b67e",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDYyIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbnQtMDA2MmV2ZW50LTAwNjJldmVudC0wMDYyZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:54:55.622840572Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "outage_mode": "HTTP503",
+        "accepted_attempt_counts": {
+          "event-0062": 1,
+          "event-0063": 1,
+          "event-0064": 1,
+          "event-0065": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-queue_saturation",
+        "scenario": "queue_saturation",
+        "runtime": "0.123.0",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0066",
+          "event-0067",
+          "event-0068",
+          "event-0069"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947301887640522,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947301888094196,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 316
+          },
+          {
+            "time_ns": 1792947302338650319,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947302339017362,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0066",
+              "event-0067",
+              "event-0068",
+              "event-0069"
+            ],
+            "bytes": 5156,
+            "sha256": "aab6a6b5d30558499d44a7beee4d98be48da1beb70aba20ce9196e760fbf6c08"
+          },
+          {
+            "time_ns": 1792947317367237328,
+            "stage": "SIGKILL",
+            "pid": 316
+          },
+          {
+            "time_ns": 1792947317374863955,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [],
+        "test_overlay": "queue_size=2,num_consumers=1; production size remains256",
+        "config_sha256": "3970cbce1c4c10ce8bdd598a4ba28d50b631bbc18ca31252118118cda234aa8d",
+        "error": "AssertionError: Timed out waiting for observed boundary",
+        "missing_ids": [
+          "event-0066",
+          "event-0067",
+          "event-0068",
+          "event-0069"
+        ]
+      },
+      {
+        "name": "0.123.0-repeated_crashes",
+        "scenario": "repeated_crashes",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0070",
+          "event-0071",
+          "event-0072",
+          "event-0073"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947317379095630,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947317379570847,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 327
+          },
+          {
+            "time_ns": 1792947317830107271,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947317830428565,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0070",
+              "event-0071",
+              "event-0072",
+              "event-0073"
+            ],
+            "bytes": 5156,
+            "sha256": "dea99595d8999cec46aa25daa6140d36978ac3cf7162e722e737cd0fb5ff8459"
+          },
+          {
+            "time_ns": 1792947318162720334,
+            "stage": "snapshot",
+            "label": "queue-and-checkpoint-before-kill"
+          },
+          {
+            "time_ns": 1792947318164767362,
+            "stage": "SIGKILL",
+            "pid": 327
+          },
+          {
+            "time_ns": 1792947318173607655,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947318174018014,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 338
+          },
+          {
+            "time_ns": 1792947318925701402,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947318925790175,
+            "stage": "SIGKILL",
+            "pid": 338
+          },
+          {
+            "time_ns": 1792947318933312180,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947318933773225,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 349
+          },
+          {
+            "time_ns": 1792947319685604466,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947319685740701,
+            "stage": "SIGKILL",
+            "pid": 349
+          },
+          {
+            "time_ns": 1792947319693287563,
+            "stage": "api_gate",
+            "mode": "hold_before_commit"
+          },
+          {
+            "time_ns": 1792947319693743000,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 361
+          },
+          {
+            "time_ns": 1792947320445387861,
+            "stage": "snapshot",
+            "label": "repeated-crash"
+          },
+          {
+            "time_ns": 1792947320445538258,
+            "stage": "SIGKILL",
+            "pid": 361
+          },
+          {
+            "time_ns": 1792947320453102577,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947320453596582,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 372
+          },
+          {
+            "time_ns": 1792947320907357322,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947320907424403,
+            "stage": "SIGTERM",
+            "pid": 372
+          },
+          {
+            "time_ns": 1792947320915325589,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947318162706614,
+            "label": "queue-and-checkpoint-before-kill",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "0af875838ab3bfe264d6760953e8c0b0a873dead085e0e7fbd450497a069914a",
+                "committed_txid": 12,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "0"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "c789ba3b28e197981f82585d3f20eb6b75dae02a521330fd5c3197f1cf3cc9fb",
+                    "event_ids": [
+                      "event-0070"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "1"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "68c913e9376c342462348d9d6cb594df227604f889914def4b4ad3f9416584f9",
+                    "event_ids": [
+                      "event-0071"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "2"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "d2a3ac2a9ec7ca3e7670ca1576ee662ca8a7e6b71aa1bde0dbedac7c942e18d5",
+                    "event_ids": [
+                      "event-0072"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "3"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "9f2d18516b3f90c4a562bbe979604a3d2f5994b3aa8ddf7ce808cbd55d5e3b82",
+                    "event_ids": [
+                      "event-0073"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "dc21a2c318ad290c2ed4d84c8cd44ac8598432a8da6fa1cdb4badea00816a6bd",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "0448c79dc040d85bf80869e4930ddce58278eedcdc3650e858a80146fc84940c",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "5d23605546e5fbaa54824d131aa744b1fc0eb540464a0b8a3225503a546b720f",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDcwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:17.839470252Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947318925670415,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "ac90abf5ab8a0ce448ef7f483462f709c935be14b1eaebceb2eee5dcaacfeb80",
+                "committed_txid": 25,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "4"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "c789ba3b28e197981f82585d3f20eb6b75dae02a521330fd5c3197f1cf3cc9fb",
+                    "event_ids": [
+                      "event-0070"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "5"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "68c913e9376c342462348d9d6cb594df227604f889914def4b4ad3f9416584f9",
+                    "event_ids": [
+                      "event-0071"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "6"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "d2a3ac2a9ec7ca3e7670ca1576ee662ca8a7e6b71aa1bde0dbedac7c942e18d5",
+                    "event_ids": [
+                      "event-0072"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "7"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "9f2d18516b3f90c4a562bbe979604a3d2f5994b3aa8ddf7ce808cbd55d5e3b82",
+                    "event_ids": [
+                      "event-0073"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "f0c7ee7733f93297f8285d3dee0cd1c097f934522b34f88afe60df87b4e193c2",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "6cc16abd70eefb90dc0ba0d14fb088630873b2c6ad943f7442356735984c35a3",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "67272e3b239ebd911cd5796bfccdc6a82af87d6dc15dd9efc05b894a43603899",
+                "committed_txid": 11,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "5d23605546e5fbaa54824d131aa744b1fc0eb540464a0b8a3225503a546b720f",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDcwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:17.839470252Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947319685584135,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "51ff08bfa73bea1d6e4068b21b3b8f2bcb4dcd3417e6a78c21ef47f46f267425",
+                "committed_txid": 38,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "10"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "d2a3ac2a9ec7ca3e7670ca1576ee662ca8a7e6b71aa1bde0dbedac7c942e18d5",
+                    "event_ids": [
+                      "event-0072"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "11"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "9f2d18516b3f90c4a562bbe979604a3d2f5994b3aa8ddf7ce808cbd55d5e3b82",
+                    "event_ids": [
+                      "event-0073"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "8"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "c789ba3b28e197981f82585d3f20eb6b75dae02a521330fd5c3197f1cf3cc9fb",
+                    "event_ids": [
+                      "event-0070"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "9"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "68c913e9376c342462348d9d6cb594df227604f889914def4b4ad3f9416584f9",
+                    "event_ids": [
+                      "event-0071"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "2b9333a5f12996f5f40a0ba3e317291b0892059c76be98d9be6ea450f7d041a5",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "220dde27afee4d537cac96d85d6546f825153b90e828931b74e103807541bc42",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "220dde27afee4d537cac96d85d6546f825153b90e828931b74e103807541bc42",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "d0492836de57217206d63edbf4c8defe03c8ec2e9722876057e2f8633a7e745d",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "5d23605546e5fbaa54824d131aa744b1fc0eb540464a0b8a3225503a546b720f",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDcwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:17.839470252Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947320445352007,
+            "label": "repeated-crash",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "894928d17ea87bb4cc80b732aa9cd1dabf9af1d29402bea65fe5d8f5c84c1b58",
+                "committed_txid": 51,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "12"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "c789ba3b28e197981f82585d3f20eb6b75dae02a521330fd5c3197f1cf3cc9fb",
+                    "event_ids": [
+                      "event-0070"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "13"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "68c913e9376c342462348d9d6cb594df227604f889914def4b4ad3f9416584f9",
+                    "event_ids": [
+                      "event-0071"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "14"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "d2a3ac2a9ec7ca3e7670ca1576ee662ca8a7e6b71aa1bde0dbedac7c942e18d5",
+                    "event_ids": [
+                      "event-0072"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "15"
+                    ],
+                    "bytes": 3008,
+                    "sha256": "9f2d18516b3f90c4a562bbe979604a3d2f5994b3aa8ddf7ce808cbd55d5e3b82",
+                    "event_ids": [
+                      "event-0073"
+                    ]
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 36,
+                    "sha256": "ec800801b17a7ee89833163722d02c3c9abafd21b111729797c81e9fc1522c0e",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "5eb6da0e0e522104c6d50b0748e6893762f7f2c00a7163a46ccbb535bfd61a0d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "5eb6da0e0e522104c6d50b0748e6893762f7f2c00a7163a46ccbb535bfd61a0d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "02f16fd463b99081add5538c81a3e75574f7753f4a391136ff717ff317906e17",
+                "committed_txid": 21,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "5d23605546e5fbaa54824d131aa744b1fc0eb540464a0b8a3225503a546b720f",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDcwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:17.839470252Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947320907344743,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "6c7ac8c35993201a3094a27bdc5e04f44d7f14392c8beb2db2712016e55afb69",
+                "committed_txid": 68,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "0c27700c82d333aa295692f1814040a962d7bc530253af661d97635dd5ed7af9",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "0c27700c82d333aa295692f1814040a962d7bc530253af661d97635dd5ed7af9",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "57805171fbfb4ecce2aae7fa672344cde0c09092f39a05480dbd9fc160b000b4",
+                "committed_txid": 24,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "5d23605546e5fbaa54824d131aa744b1fc0eb540464a0b8a3225503a546b720f",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDcwIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbnQtMDA3MGV2ZW50LTAwNzBldmVudC0wMDcwZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:17.839470252Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0070": 1,
+          "event-0071": 1,
+          "event-0072": 1,
+          "event-0073": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-retained_source_before_read",
+        "scenario": "retained_source_before_read",
+        "runtime": "0.123.0",
+        "status": "PASS",
+        "expected_ids": [
+          "event-0074",
+          "event-0075",
+          "event-0076",
+          "event-0077"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947320920340923,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947320920773846,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 383
+          },
+          {
+            "time_ns": 1792947321371720022,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0074",
+              "event-0075",
+              "event-0076",
+              "event-0077"
+            ],
+            "bytes": 5156,
+            "sha256": "dd583e52b55eff9e6a0b1c3ab077b3c7c2d32e3da337c17eff6594107ff2fd0e"
+          },
+          {
+            "time_ns": 1792947321371785101,
+            "stage": "SIGKILL",
+            "pid": 383
+          },
+          {
+            "time_ns": 1792947321379572826,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 393
+          },
+          {
+            "time_ns": 1792947321832939759,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947321833004486,
+            "stage": "SIGTERM",
+            "pid": 393
+          },
+          {
+            "time_ns": 1792947321840767678,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947321832928211,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "155c9b53f8b7bda2d74a8f5485a692a83b7b4bf221618fe55e64fe56e4c7e802",
+                "committed_txid": 19,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "d4eeff65e6650828c9a95b6e737a212ccafa6aa8495b86bf0b222f30d22413e7",
+                "committed_txid": 7,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1632,
+                    "sha256": "4ffe36173ff79bd811ad1c03e78f4e8f37b36f6d471bd31edd4b06e762c70306",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDc0IiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbnQtMDA3NGV2ZW50LTAwNzRldmVudC0wMDc0ZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:21.64421771Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0074": 1,
+          "event-0075": 1,
+          "event-0076": 1,
+          "event-0077": 1
+        },
+        "missing_ids": [],
+        "detected_loss": false
+      },
+      {
+        "name": "0.123.0-expired_source_before_read",
+        "scenario": "expired_source_before_read",
+        "runtime": "0.123.0",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0078",
+          "event-0079",
+          "event-0080",
+          "event-0081"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947321845675712,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947321846171711,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 404
+          },
+          {
+            "time_ns": 1792947322297099704,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0078",
+              "event-0079",
+              "event-0080",
+              "event-0081"
+            ],
+            "bytes": 5156,
+            "sha256": "cec820bf2f82b8a575ef4afe63c345f546ea94a87826af4fb8e66710efdd50f7"
+          },
+          {
+            "time_ns": 1792947322297154066,
+            "stage": "SIGKILL",
+            "pid": 404
+          },
+          {
+            "time_ns": 1792947322304598537,
+            "stage": "source_retention_expired",
+            "source_sha256": "cec820bf2f82b8a575ef4afe63c345f546ea94a87826af4fb8e66710efdd50f7"
+          },
+          {
+            "time_ns": 1792947322305112132,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 415
+          },
+          {
+            "time_ns": 1792947330768943583,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947330769011485,
+            "stage": "SIGTERM",
+            "pid": 415
+          },
+          {
+            "time_ns": 1792947330776875430,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947330768927318,
+            "label": "final",
+            "source_bytes": null,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "56d05da3a1ce66d479c4d1df5494d679a7f36c60fff1c3197d1a82c628cbf846",
+                "committed_txid": 7,
+                "entries": []
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "fd0163ac4c1c011f17a071fa67f194be6fdb18083229f52582cc1c9b9eab0730",
+                "committed_txid": 47,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 2,
+                    "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+                    "event_ids": [],
+                    "json": 0
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0078": 0,
+          "event-0079": 0,
+          "event-0080": 0,
+          "event-0081": 0
+        },
+        "missing_ids": [
+          "event-0078",
+          "event-0079",
+          "event-0080",
+          "event-0081"
+        ],
+        "detected_loss": true
+      },
+      {
+        "name": "0.123.0-permanent_rejection",
+        "scenario": "permanent_rejection",
+        "runtime": "0.123.0",
+        "status": "FAIL",
+        "expected_ids": [
+          "event-0082",
+          "event-0083",
+          "event-0084",
+          "event-0085"
+        ],
+        "timeline": [
+          {
+            "time_ns": 1792947330782187265,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947330782589462,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 426
+          },
+          {
+            "time_ns": 1792947331233151597,
+            "stage": "api_gate",
+            "mode": "permanent_rejection"
+          },
+          {
+            "time_ns": 1792947331233646173,
+            "stage": "source_fsynced",
+            "ids": [
+              "event-0082",
+              "event-0083",
+              "event-0084",
+              "event-0085"
+            ],
+            "bytes": 5156,
+            "sha256": "72a3820b3d03da91ac5c2b57f115bcc416fe058f2488fa15b348ab0804adb3cf"
+          },
+          {
+            "time_ns": 1792947331596352239,
+            "stage": "snapshot",
+            "label": "permanent-rejection"
+          },
+          {
+            "time_ns": 1792947331596466031,
+            "stage": "SIGKILL",
+            "pid": 426
+          },
+          {
+            "time_ns": 1792947331603984495,
+            "stage": "api_gate",
+            "mode": "pass"
+          },
+          {
+            "time_ns": 1792947331604451900,
+            "stage": "collector_start",
+            "version": "0.123.0",
+            "pid": 437
+          },
+          {
+            "time_ns": 1792947340069662749,
+            "stage": "snapshot",
+            "label": "final"
+          },
+          {
+            "time_ns": 1792947340069731194,
+            "stage": "SIGTERM",
+            "pid": 437
+          },
+          {
+            "time_ns": 1792947340079403982,
+            "stage": "api_gate",
+            "mode": "pass"
+          }
+        ],
+        "snapshots": [
+          {
+            "time_ns": 1792947331596338358,
+            "label": "permanent-rejection",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "b6271a2661428ed625e3842487e079515e72a75593245ebceccfb64cb892564c",
+                "committed_txid": 16,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "a058e0737be13a76c15e9e50ec11863984f2a47a1d4b734b61eee0d01babbebc",
+                "committed_txid": 6,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "eee36fd8b48a26f65a4a072f1b7c0a06e754f28c85cbb4909edd2926533f8b6b",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDgyIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:31.245721558Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "time_ns": 1792947340069650440,
+            "label": "final",
+            "source_bytes": 5156,
+            "state": {
+              "exporter_otlphttp_opscontrol_logs": {
+                "file_sha256": "89f9adaa7a83b61c1132e1d4a5769d6576bfa82cb8975c31a7524b3e84fae7d7",
+                "committed_txid": 19,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "di"
+                    ],
+                    "bytes": 4,
+                    "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "ri"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  },
+                  {
+                    "key": [
+                      "default",
+                      "wi"
+                    ],
+                    "bytes": 8,
+                    "sha256": "f0a0278e4372459cca6159cd5e71cfee638302a7b9ca9b05c34181ac0a65ac5d",
+                    "event_ids": []
+                  }
+                ]
+              },
+              "receiver_filelog_430d940bb4d6412da11ddefe671958e4_700bddceffd69782": {
+                "file_sha256": "e365d683a1dee386023608fa1b64acd464706de699a29b88ddc68c1ffca8426e",
+                "committed_txid": 49,
+                "entries": [
+                  {
+                    "key": [
+                      "default",
+                      "file_input.knownFiles"
+                    ],
+                    "bytes": 1633,
+                    "sha256": "eee36fd8b48a26f65a4a072f1b7c0a06e754f28c85cbb4909edd2926533f8b6b",
+                    "event_ids": [],
+                    "legacy_checkpoint_records": [
+                      {
+                        "Fingerprint": {
+                          "first_bytes": "eyJldmVudF9pZCI6ICJldmVudC0wMDgyIiwgIm1lc3NhZ2UiOiAib3duZWQgc3ludGhldGljIGR1cmFiaWxpdHkgcHJvYmUiLCAicGFkZGluZyI6ICJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbnQtMDA4MmV2ZW50LTAwODJldmVudC0wMDgyZXZlbg=="
+                        },
+                        "Offset": 5156,
+                        "RecordNum": 0,
+                        "FileAttributes": {
+                          "log.file.name": "current.log",
+                          "log.file.path": "/fixture/current.log"
+                        },
+                        "HeaderFinalized": false,
+                        "FlushState": {
+                          "LastDataChange": "2026-10-25T16:55:31.245721558Z",
+                          "LastDataLength": 0
+                        },
+                        "TokenLenState": {
+                          "MinimumLength": 0
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "config_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a",
+        "accepted_attempt_counts": {
+          "event-0082": 0,
+          "event-0083": 0,
+          "event-0084": 0,
+          "event-0085": 0
+        },
+        "missing_ids": [
+          "event-0082",
+          "event-0083",
+          "event-0084",
+          "event-0085"
+        ],
+        "detected_loss": true
+      }
+    ],
+    "scope": "finite synthetic filelog delivery; SIGKILL, not power failure; no exactly-once guarantee",
+    "collector_id": "ff5d8758-44bf-4699-8022-70429325616e",
+    "agent_id": "88191298-6e9a-4469-8fac-f10f5e38e0cd",
+    "method_id": "430d940b-b4d6-412d-a11d-defe671958e4",
+    "generated_sha256": "13fa04c731859b1db6f2622f48d97ea3a040c395a4feffd9c90638ffa895810a"
+  },
+  "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS",
+  "cleanup": {
+    "status": "PASS",
+    "errors": [],
+    "owned_containers": [
+      "dev052a3c-9dd9a124-pg",
+      "dev052a3c-9dd9a124-denied-target",
+      "dev052a3c-9dd9a124-agent"
+    ],
+    "owned_networks": [
+      "dev052a3c-9dd9a124",
+      "dev052a3c-9dd9a124-denied"
+    ],
+    "private_credentials_tls_and_database_volume_removed": true,
+    "broad_cleanup": false
+  }
+}

@@ -1,0 +1,26 @@
+2026-10-25T11:58:18.216Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-25T11:58:18.217Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-25T11:58:18.218Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-25T11:58:18.218Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-25T11:58:18.218Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T11:58:18.218Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T11:58:18.218Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T11:58:18.218Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-25T11:58:18.218Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T11:58:18.218Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-25T11:58:18.218Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-25T11:58:18.218Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-25T11:58:18.218Z	info	otlpreceiver@v0.123.0/otlp.go:173	Starting HTTP server	{"endpoint": "127.0.0.1:0"}
+2026-10-25T11:58:18.220Z	info	prometheusreceiver@v0.123.0/metrics_receiver.go:154	Starting discovery manager
+2026-10-25T11:58:18.220Z	info	targetallocator/manager.go:184	Scrape job added	{"jobName": "opscontrol_9585f29e78be42ea994831f01ff908f3"}
+2026-10-25T11:58:18.220Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-25T11:58:18.220Z	info	prometheusreceiver@v0.123.0/metrics_receiver.go:224	Starting scrape manager
+2026-10-25T11:58:18.220Z	error	graph/graph.go:438	Failed to start component	{"error": "start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value", "type": "Receiver", "id": "filelog/b6750625ae8e4cffaabb029102514f9d_43bc152275723f55"}
+2026-10-25T11:58:18.220Z	info	service@v0.123.0/service.go:329	Starting shutdown...
+2026-10-25T11:58:18.220Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "unavailable"}
+2026-10-25T11:58:18.220Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-25T11:58:18.220Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-25T11:58:18.220Z	info	extensions/extensions.go:69	Stopping extensions...
+2026-10-25T11:58:18.220Z	info	service@v0.123.0/service.go:343	Shutdown complete.
+Error: cannot start pipelines: failed to start "filelog/b6750625ae8e4cffaabb029102514f9d_43bc152275723f55" receiver: start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value
+2026/10/25 11:58:18 collector server run finished with error: cannot start pipelines: failed to start "filelog/b6750625ae8e4cffaabb029102514f9d_43bc152275723f55" receiver: start stanza: read known files from database: decoding file count: invalid character 'Ç' looking for beginning of value

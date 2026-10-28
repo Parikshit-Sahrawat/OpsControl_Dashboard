@@ -9,6 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from app.security.secret_refs import require_safe_config
 
 RUNTIME_VERSION = "0.123.0"
+FILELOG_HANDOFF_MARKER = (
+    "# opscontrol-filelog-durable-handoff-v1: stanza.synchronousLogEmitter\n"
+)
 
 
 class Strict(BaseModel):
@@ -332,6 +335,7 @@ def generate(collector, source, methods, ingestion_url):
     ports = set()
     method_metric_pipelines = {}
     method_processors = {}
+    durable_file_logs = False
     methods = list(methods)
     for method in methods:
         if not method.enabled or getattr(method, "deleted_at", None):
@@ -359,6 +363,7 @@ def generate(collector, source, methods, ingestion_url):
             signals = ["metrics"]
         elif method.method_type == "FILE_LOG":
             if c["source"] == "FILE":
+                durable_file_logs = True
                 receiver = "filelog/" + suffix
                 cfg = {
                     "include": c["paths"],
@@ -368,6 +373,8 @@ def generate(collector, source, methods, ingestion_url):
                     + ["${env:OPSCONTROL_AGENT_STATE_DIR}/**"],
                     "start_at": c["start_at"],
                     "storage": "file_storage/opscontrol",
+                    # Pause reading on failed handoff (including a full queue).
+                    "retry_on_failure": {"enabled": True, "max_elapsed_time": "0s"},
                 }
                 if c["format"] == "JSON":
                     cfg["operators"] = [{"type": "json_parser"}]
@@ -551,10 +558,18 @@ def generate(collector, source, methods, ingestion_url):
             },
         }
         pipeline_receivers["metrics"].append("hostmetrics/native")
+    if durable_file_logs:
+        extensions["file_storage/opscontrol"]["fsync"] = True
     pipelines = {
         s: {
             "receivers": r,
-            "processors": ["memory_limiter", "batch"],
+            # An asynchronous batch acknowledges filelog before durable enqueue,
+            # allowing its checkpoint to advance past records lost on SIGKILL.
+            "processors": (
+                ["memory_limiter"]
+                if s == "logs" and durable_file_logs
+                else ["memory_limiter", "batch"]
+            ),
             "exporters": ["otlphttp/opscontrol"],
         }
         for s, r in pipeline_receivers.items()
@@ -579,7 +594,10 @@ def generate(collector, source, methods, ingestion_url):
                 "endpoint": ingestion_url.rstrip("/") + "/api/v1/agent/otlp",
                 "headers": {"Authorization": "Bearer ${env:OPSCONTROL_AGENT_TOKEN}"},
                 "tls": {"insecure": False},
-                "retry_on_failure": {"enabled": True},
+                "retry_on_failure": {
+                    "enabled": True,
+                    **({"max_elapsed_time": "0s"} if durable_file_logs else {}),
+                },
                 "sending_queue": {
                     "enabled": True,
                     "queue_size": 256,
@@ -617,7 +635,11 @@ def generate(collector, source, methods, ingestion_url):
         config["processors"]["resource/opscontrol"] = {"attributes": tags}
         for pipeline in pipelines.values():
             pipeline["processors"].insert(1, "resource/opscontrol")
-    return yaml.safe_dump(config, sort_keys=False)
+    # The marker is covered by the version checksum. The matching Agent enables
+    # only this fixed upstream gate; it never accepts arbitrary runtime flags.
+    return (FILELOG_HANDOFF_MARKER if durable_file_logs else "") + yaml.safe_dump(
+        config, sort_keys=False
+    )
 
 
 def validate_binary(text, binary=None):
@@ -649,7 +671,12 @@ def validate_binary(text, binary=None):
                     else "validation-only-not-a-credential"
                 )
             result = subprocess.run(
-                [binary, "validate", "--config", str(path)],
+                [binary, "validate", "--config", str(path)]
+                + (
+                    ["--feature-gates=stanza.synchronousLogEmitter"]
+                    if text.startswith(FILELOG_HANDOFF_MARKER)
+                    else []
+                ),
                 env=env,
                 capture_output=True,
                 text=True,

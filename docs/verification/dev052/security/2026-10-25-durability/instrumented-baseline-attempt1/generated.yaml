@@ -1,0 +1,70 @@
+receivers:
+  filelog/45f2ef5914764c808baed77ceeb312af_700bddceffd69782:
+    include:
+    - /fixture/current.log
+    include_file_path: true
+    include_file_name: true
+    exclude:
+    - ${env:OPSCONTROL_AGENT_STATE_DIR}/**
+    start_at: beginning
+    storage: file_storage/opscontrol
+    operators:
+    - type: json_parser
+    - type: add
+      field: attributes["opscontrol.method.id"]
+      value: 45f2ef59-1476-4c80-8bae-d77ceeb312af
+    - type: add
+      field: attributes["opscontrol.log.source.id"]
+      value: 45f2ef59-1476-4c80-8bae-d77ceeb312af:700bddceffd69782
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+  resource/opscontrol:
+    attributes:
+    - key: opscontrol.collector.id
+      value: c8111623-ba3f-4a5b-b54e-a6b0df282c2e
+      action: upsert
+    - key: opscontrol.organization.id
+      value: c4088e7f-7cca-4e84-8ca6-a1dc7e2269b0
+      action: upsert
+    - key: deployment.environment
+      value: SANDBOX
+      action: upsert
+exporters:
+  otlphttp/opscontrol:
+    endpoint: https://172.18.0.1:42987/api/v1/agent/otlp
+    headers:
+      Authorization: Bearer ${env:OPSCONTROL_AGENT_TOKEN}
+    tls:
+      insecure: false
+    retry_on_failure:
+      enabled: true
+    sending_queue:
+      enabled: true
+      queue_size: 256
+      storage: file_storage/opscontrol
+extensions:
+  health_check:
+    endpoint: 127.0.0.1:13133
+  file_storage/opscontrol:
+    directory: ${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints
+    create_directory: true
+service:
+  extensions:
+  - health_check
+  - file_storage/opscontrol
+  pipelines:
+    logs:
+      receivers:
+      - filelog/45f2ef5914764c808baed77ceeb312af_700bddceffd69782
+      processors:
+      - memory_limiter
+      - resource/opscontrol
+      - batch
+      exporters:
+      - otlphttp/opscontrol

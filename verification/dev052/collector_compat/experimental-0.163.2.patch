@@ -1,0 +1,78 @@
+--- a/backend/app/telemetry/configuration.py
++++ b/backend/app/telemetry/configuration.py
+@@ -8,7 +8,7 @@
+ from pydantic import BaseModel, ConfigDict, Field, model_validator
+ from app.security.secret_refs import require_safe_config
+ 
+-RUNTIME_VERSION = "0.123.0"
++RUNTIME_VERSION = "0.163.2"
+ 
+ 
+ class Strict(BaseModel):
+@@ -631,9 +631,7 @@
+         version = subprocess.run(
+             [binary, "--version"], capture_output=True, text=True, timeout=10
+         )
+-        if version.returncode or not re.search(
+-            r"(?<![\d.])" + re.escape(RUNTIME_VERSION) + r"(?![\d.])", version.stdout
+-        ):
++        if version.returncode or version.stdout.strip() != "otelcol-contrib version " + RUNTIME_VERSION:
+             raise ValueError(
+                 "Selected Collector binary version does not match " + RUNTIME_VERSION
+             )
+@@ -649,7 +647,7 @@
+                     else "validation-only-not-a-credential"
+                 )
+             result = subprocess.run(
+-                [binary, "validate", "--config", str(path)],
++                [binary, "validate", "--feature-gates=-filelog.protobufCheckpointEncoding", "--config", str(path)],
+                 env=env,
+                 capture_output=True,
+                 text=True,
+--- a/agent/opscontrol_agent.py
++++ b/agent/opscontrol_agent.py
+@@ -8,7 +8,7 @@
+ from urllib.parse import urlsplit
+ 
+ VERSION = "1.5.0"
+-RUNTIME_VERSION = "0.123.0"
++RUNTIME_VERSION = "0.163.2"
+ 
+ 
+ class NoRedirect(HTTPRedirectHandler):
+@@ -69,7 +69,7 @@
+         result = subprocess.run(
+             [self.runtime, "--version"], capture_output=True, text=True, timeout=10
+         )
+-        if result.returncode or RUNTIME_VERSION not in result.stdout:
++        if result.returncode or result.stdout.strip() != "otelcol-contrib version " + RUNTIME_VERSION:
+             raise RuntimeError("OTel runtime version mismatch")
+ 
+     def request(self, path, body=None):
+@@ -190,7 +190,7 @@
+             "OPSCONTROL_AGENT_STATE_DIR": str(self.home.resolve()),
+         }
+         result = subprocess.run(
+-            [self.runtime, "validate", "--config", str(candidate)],
++            [self.runtime, "validate", "--feature-gates=-filelog.protobufCheckpointEncoding", "--config", str(candidate)],
+             env=env,
+             capture_output=True,
+             timeout=30,
+@@ -234,7 +234,7 @@
+             os.chmod(self.home / "runtime.log", 0o600)
+         try:
+             self.process = subprocess.Popen(
+-                [self.runtime, "--config", str(self.config)],
++                [self.runtime, "--feature-gates=-filelog.protobufCheckpointEncoding", "--config", str(self.config)],
+                 env={
+                     **os.environ,
+                     "OPSCONTROL_AGENT_TOKEN": self.token,
+@@ -267,7 +267,7 @@
+             ):
+                 raise RuntimeError("CONFIG_CHECKSUM_MISMATCH")
+             result = subprocess.run(
+-                [self.runtime, "validate", "--config", str(self.config)],
++                [self.runtime, "validate", "--feature-gates=-filelog.protobufCheckpointEncoding", "--config", str(self.config)],
+                 env={
+                     **os.environ,
+                     "OPSCONTROL_AGENT_TOKEN": self.token,

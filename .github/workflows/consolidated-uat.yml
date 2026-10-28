@@ -1,6 +1,5 @@
 name: Consolidated manual UAT and managed telemetry
 on:
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,7 +18,7 @@ jobs:
       - name: Prepare dependencies and pinned upstream Collector
         run: |
           python -m venv backend/.venv
-          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
           npm ci --prefix frontend --no-audit --no-fund
           npm install --prefix "$RUNNER_TEMP/uat-browser" --no-audit --no-fund playwright@1.56.1
           "$RUNNER_TEMP/uat-browser/node_modules/.bin/playwright" install --with-deps chromium

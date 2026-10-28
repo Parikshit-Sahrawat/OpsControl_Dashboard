@@ -81,19 +81,39 @@ export const methodDefaults = {
     allow_remote: false,
   },
 };
+export async function packageAvailability() {
+  return control("/api/v1/agent-control/packages/availability");
+}
+
 export async function downloadPackage(platform) {
+  if (!["linux", "windows"].includes(platform)) {
+    throw new Error("Unsupported agent platform");
+  }
   const response = await fetch(
     base + "/api/v1/agent-control/packages/" + platform,
-    { headers: authHeaders() },
+    { headers: authHeaders(), cache: "no-store" },
   );
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.detail || "Package unavailable");
+    let detail = "Agent installer unavailable";
+    try {
+      const body = await response.json();
+      detail = typeof body.detail === "string" ? body.detail : detail;
+    } catch {
+      // Preserve an actionable message when the server did not return JSON.
+    }
+    throw new Error(`Agent download failed (HTTP ${response.status}): ${detail}`);
   }
-  const url = URL.createObjectURL(await response.blob());
+  const filename = platform === "windows"
+    ? "opscontrol-agent-windows.exe"
+    : "opscontrol-agent-linux.zip";
+  const blob = await response.blob();
+  if (blob.size === 0) throw new Error("Agent package is empty; contact the administrator");
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "opscontrol-agent-" + platform + ".zip";
+  a.download = filename;
+  document.body.appendChild(a);
   a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
 }

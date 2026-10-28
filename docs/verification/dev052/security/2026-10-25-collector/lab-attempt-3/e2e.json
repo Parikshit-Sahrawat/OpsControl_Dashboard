@@ -1,0 +1,48 @@
+{
+  "status": "PASS",
+  "scope": "synthetic isolated Linux fixture",
+  "checks": [
+    "non-root, no capabilities, no-new-privileges",
+    "five-method configuration validated by exact candidate",
+    "authenticated enrollment",
+    "supervisor applies approved checksum",
+    "all five methods have persisted, attributed API evidence",
+    "server verifies runtime revision and authenticated receipts",
+    "file rotation delivered",
+    "file truncation delivered",
+    "checkpoint restart delivered appended record",
+    "same identity preserved across restart",
+    "real supervisor envelope authenticated ingestion",
+    "invalid supervisor credential rejected",
+    "malformed and foreign-method envelopes rejected",
+    "untrusted CA and TLS hostname mismatch rejected",
+    "HTTPS-only management enforced",
+    "management redirects rejected before target contact",
+    "egress to owned disjoint fixture blocked",
+    "API outage acknowledged",
+    "same API endpoint restored",
+    "queued delivery after API interruption",
+    "no non-loopback TCP listeners in agent container",
+    "generated config accepted by guarded rollback binary",
+    "guarded rollback binary starts with generated config and existing storage",
+    "experimental contract rejects old runtime; full coordinated rollback not approved"
+  ],
+  "uid": 1000,
+  "collector_id": "f2e5499e-9a97-47c2-bae2-5355c811710f",
+  "methods": {
+    "HOST_METRICS": "6aa61302-a754-4585-ba87-f648a06b9db5",
+    "SERVICES": "fd247701-f181-4a84-a76f-d2b59822afa1",
+    "SYSLOG_RECEIVER": "eb25f23e-6b3b-4bbb-b5aa-8b61cd65d117",
+    "FILE_LOG": "c07cd51e-cf2c-4b3b-bbba-d860a806222b",
+    "METRIC_SCRAPE": "06b0f69f-d2d0-4516-81b7-a4e3636de478"
+  },
+  "config_sha256": "f6eabd0c4b8e90f46dd3dfd1847bb843e78315dbd0ad8f99013ccc5549bedad6",
+  "tcp_listeners": [
+    "0100007F:97F3",
+    "0100007F:AB51",
+    "0100007F:22B8",
+    "0100007F:3B60",
+    "0100007F:334D",
+    "0B00007F:8A47"
+  ]
+}

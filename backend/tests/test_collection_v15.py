@@ -91,6 +91,58 @@ class CollectionV15Tests(unittest.TestCase):
             str(method.id),
         )
 
+    def test_filelog_handoff_is_synchronous_persistent_and_backpressured(self):
+        config = yaml.safe_load(
+            self.compile(
+                [
+                    self.method("FILE_LOG", {"paths": ["/var/log/app.log"]}),
+                    self.method("SYSLOG_RECEIVER", {}),
+                    self.method("HOST_METRICS", {}),
+                ]
+            )
+        )
+        logs = config["service"]["pipelines"]["logs"]
+        self.assertEqual(logs["processors"], ["memory_limiter"])
+        for name, receiver in config["receivers"].items():
+            if name.startswith("filelog/"):
+                self.assertEqual(
+                    receiver["retry_on_failure"],
+                    {
+                        "enabled": True,
+                        "max_elapsed_time": "0s",
+                    },
+                )
+        self.assertTrue(config["extensions"]["file_storage/opscontrol"]["fsync"])
+        exporter = config["exporters"]["otlphttp/opscontrol"]
+        self.assertEqual(exporter["retry_on_failure"]["max_elapsed_time"], "0s")
+        self.assertEqual(
+            exporter["sending_queue"],
+            {
+                "enabled": True,
+                "queue_size": 256,
+                "storage": "file_storage/opscontrol",
+            },
+        )
+        self.assertFalse(exporter["tls"]["insecure"])
+        for name, pipeline in config["service"]["pipelines"].items():
+            if name.startswith("metrics"):
+                self.assertIn("batch", pipeline["processors"])
+
+    def test_absent_or_disabled_filelog_retains_nonfile_pipeline_behavior(self):
+        filelog = self.method("FILE_LOG", {"paths": ["/var/log/app.log"]})
+        filelog.enabled = False
+        for methods in (
+            [self.method("SYSLOG_RECEIVER", {})],
+            [filelog, self.method("SYSLOG_RECEIVER", {})],
+        ):
+            config = yaml.safe_load(self.compile(methods))
+            self.assertIn("batch", config["service"]["pipelines"]["logs"]["processors"])
+            self.assertNotIn("fsync", config["extensions"]["file_storage/opscontrol"])
+            self.assertEqual(
+                config["exporters"]["otlphttp/opscontrol"]["retry_on_failure"],
+                {"enabled": True},
+            )
+
     def test_concurrent_five_methods_reference_unique_receivers(self):
         methods = [
             self.method("HOST_METRICS", {}),

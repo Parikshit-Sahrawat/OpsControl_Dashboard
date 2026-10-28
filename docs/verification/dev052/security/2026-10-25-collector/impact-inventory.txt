@@ -1,0 +1,96 @@
+verification/dev052/provision_contrib.py:14:VERSION = "0.123.0"
+verification/dev052/provision_contrib.py:15:IMAGE = "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+verification/dev052/provision_contrib.py:92:        "upstream_license": "https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.123.0/LICENSE",
+.github/workflows/agent-packaging.yml:6:        description: Approved HTTPS Linux x64 runtime archive URL (Contrib 0.123.0)
+.github/workflows/agent-packaging.yml:9:        description: Approved HTTPS Windows x64 runtime archive URL (Contrib 0.123.0)
+agent/packaging/build-windows.ps1:5:if ((& $Runtime --version) -notmatch '0.123.0') { throw 'Unsupported Collector runtime' }
+agent/packaging/build-windows.ps1:9:python -m PyInstaller --noconfirm --onefile --name OpsControlService --hidden-import win32timezone --hidden-import service_health --paths "$Root\agent" --distpath "$PSScriptRoot\stage" --workpath "$env:TEMP\opscontrol-build" --specpath "$env:TEMP" "$Root\agent\windows_service.py"
+agent/packaging/build-windows.ps1:12:Copy-Item "$Root\agent\install-windows.ps1","$Root\agent\uninstall-windows.ps1","$Root\agent\opscontrol_agent.py","$Root\agent\service_health.py","$Root\agent\windows_service.py" "$PSScriptRoot\stage" -Force
+agent/opscontrol_agent.py:11:RUNTIME_VERSION = "0.123.0"
+agent/opscontrol_agent.py:64:            from service_health import configuration
+agent/opscontrol_agent.py:72:        if result.returncode or RUNTIME_VERSION not in result.stdout:
+agent/opscontrol_agent.py:117:                "runtime_version": RUNTIME_VERSION,
+agent/opscontrol_agent.py:176:        if version["runtime_version"] != RUNTIME_VERSION:
+agent/opscontrol_agent.py:177:            raise RuntimeError("RUNTIME_VERSION_MISMATCH")
+agent/opscontrol_agent.py:181:        from service_health import configuration
+agent/opscontrol_agent.py:337:                        from service_health import envelope
+agent/opscontrol_agent.py:361:                    from service_health import method_observations
+agent/opscontrol_agent.py:370:                            "runtime_version": RUNTIME_VERSION,
+agent/install-windows.ps1:12:if ((& $Binary --version) -notmatch '0.123.0') { throw 'Unsupported runtime version' }
+agent/install-windows.ps1:21:if ($PSScriptRoot -ne "$Root\bin") { Copy-Item "$PSScriptRoot\opscontrol_agent.py","$PSScriptRoot\windows_service.py","$PSScriptRoot\service_health.py" "$Root\bin" -Force }
+agent/install-linux.sh:13:"$agent_package/otelcol-contrib" --version | grep -q '0.123.0' || { echo 'Unsupported runtime version' >&2; exit 1; }
+agent/install-linux.sh:27:install -m 644 "$agent_package/service_health.py" /opt/opscontrol-agent/service_health.py
+agent/README.md:3:Collector is the logical Resource Management entity. OpsControl Agent is the installed host service; it supervises the pinned upstream OpenTelemetry Collector Contrib 0.123.0 runtime. It never accepts remote shell commands. One Collector binds one agent/host; each Collector can contain multiple independently identified Host Metrics, Services, Syslog, File Logs and OpsControl Scrape methods. Advanced OTLP Receiver configuration selects transport signals. Native OS Metrics uses hostmetrics. Journald and Windows Event Log are File Log source options.
+agent/README.md:55:For a loopback HTTP OTLP method, set `OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318` and `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf` in the application SDK. For gRPC use the configured endpoint and `grpc`. Enable only the configured Logs, Metrics and/or Traces SDK exporters. Remote application listeners require explicit binding approval, TLS certificate/key and authentication; loopback is the default. The host Collector exports to OpsControl's authenticated OTLP/HTTP ingestion endpoint over HTTPS.
+backend/app/telemetry/configuration.py:11:RUNTIME_VERSION = "0.123.0"
+backend/app/telemetry/configuration.py:111:    "SYSLOG_RECEIVER": SyslogReceiver,
+backend/app/telemetry/configuration.py:123:        "SYSLOG_RECEIVER",
+backend/app/telemetry/configuration.py:257:    elif method.method_type == "SYSLOG_RECEIVER":
+backend/app/telemetry/configuration.py:311:def generate(collector, source, methods, ingestion_url):
+backend/app/telemetry/configuration.py:312:    parsed = urlsplit(ingestion_url)
+backend/app/telemetry/configuration.py:362:                receiver = "filelog/" + suffix
+backend/app/telemetry/configuration.py:461:        elif method.method_type == "SYSLOG_RECEIVER":
+backend/app/telemetry/configuration.py:579:                "endpoint": ingestion_url.rstrip("/") + "/api/v1/agent/otlp",
+backend/app/telemetry/configuration.py:623:def validate_binary(text, binary=None):
+backend/app/telemetry/configuration.py:628:            + RUNTIME_VERSION
+backend/app/telemetry/configuration.py:635:            r"(?<![\d.])" + re.escape(RUNTIME_VERSION) + r"(?![\d.])", version.stdout
+backend/app/telemetry/configuration.py:638:                "Selected Collector binary version does not match " + RUNTIME_VERSION
+backend/app/telemetry/ingestion.py:1:"""Actual OTLP/HTTP protobuf ingestion into existing logs and metrics plus spans."""
+backend/app/telemetry/ingestion.py:89:async def ingest(signal: str, request: Request):
+backend/app/telemetry/ingestion.py:150:                    if kind in {"FILE_LOG", "SYSLOG_RECEIVER"}
+backend/app/telemetry/ingestion.py:282:            # unalerted point while holding the Collector's ingestion lock.
+backend/app/telemetry/api.py:30:    validate_binary,
+backend/app/telemetry/api.py:31:    RUNTIME_VERSION,
+backend/app/telemetry/api.py:330:        "runtime_version": RUNTIME_VERSION,
+backend/app/telemetry/api.py:417:        "runtime_version": RUNTIME_VERSION,
+backend/app/telemetry/api.py:470:            validate_binary(text)
+backend/app/telemetry/api.py:487:        runtime_version=RUNTIME_VERSION,
+backend/app/telemetry/api.py:597:        if payload.runtime_version != RUNTIME_VERSION:
+backend/app/telemetry/api.py:693:    # Keep the control plane and ingestion lock order identical: collector,
+backend/app/telemetry/api.py:760:        if payload.runtime_version != RUNTIME_VERSION:
+backend/tests/test_sprint12_shared_trust.py:27:from app.telemetry.ingestion import validate_method_identity
+backend/tests/test_registry_contracts.py:45:            "SYSLOG_RECEIVER",
+backend/tests/test_quiet_file_readiness.py:82:        self.method["method_type"] = "SYSLOG_RECEIVER"
+backend/tests/test_pipeline_ownership_v16.py:527:        from app.unified.reconstruction import ingest_connector
+backend/tests/test_pipeline_ownership_v16.py:531:        self.assertEqual(ingest_connector(self.db, resource, version), 1)
+backend/tests/test_pipeline_ownership_v16.py:533:        self.assertEqual(ingest_connector(self.db, resource, version), 0)
+backend/tests/test_pentaho_review_r1.py:608:        from app.unified.reconstruction import ingest_connector
+backend/tests/test_pentaho_review_r1.py:638:        ingest_connector(
+backend/tests/test_pentaho_execution_r1.py:36:from app.unified.reconstruction import ingest_connector
+backend/tests/test_pentaho_execution_r1.py:187:        ingest_connector(
+backend/tests/test_pentaho_carte_compat.py:18:from app.services.etl_monitoring import ingest_snapshot
+backend/tests/test_pentaho_carte_compat.py:507:    def test_partial_inventory_ingests_observed_runs_without_claiming_no_run(self):
+backend/tests/test_pentaho_carte_compat.py:598:            ingest_snapshot(
+backend/tests/test_managed_telemetry.py:35:                "https://ingest.example.test",
+backend/tests/test_managed_telemetry.py:49:                "https://ingest.example.test",
+backend/tests/test_managed_telemetry.py:86:                "https://ingest.example.test",
+backend/tests/test_managed_telemetry.py:93:                "http://ingest.example.test",
+backend/tests/test_managed_telemetry.py:229:        from app.telemetry.configuration import validate_binary
+backend/tests/test_managed_telemetry.py:232:            validate_binary("service: {}", "/nonexistent/opscontrol-validator")
+backend/tests/test_collection_v15.py:12:    validate_binary,
+backend/tests/test_collection_v15.py:31:            "https://ingest.example.test",
+backend/tests/test_collection_v15.py:40:                "SYSLOG_RECEIVER",
+backend/tests/test_collection_v15.py:98:            self.method("SYSLOG_RECEIVER", {}),
+backend/tests/test_collection_v15.py:160:            self.method("SYSLOG_RECEIVER", {}),
+backend/tests/test_collection_v15.py:167:        self.assertTrue(validate_binary(self.compile(methods)))
+backend/tests/test_collection_v15.py:230:                    helper.method("SYSLOG_RECEIVER", {"port": syslog_port}),
+backend/tests/test_collection_v15.py:431:            Path(__file__).resolve().parents[2] / "agent" / "service_health.py"
+backend/tests/test_collection_v15.py:531:        base = {"version": "test", "runtime_version": "0.123.0", "health": "RUNNING"}
+backend/tests/test_collection_v15.py:542:        from app.telemetry.ingestion import (
+backend/tests/test_audit_remediation.py:35:from app.services.etl_monitoring import ingest_snapshot
+backend/tests/test_audit_remediation.py:183:    def ingest(self, records, observed=None):
+backend/tests/test_audit_remediation.py:184:        ingest_snapshot(
+backend/tests/test_audit_remediation.py:215:        self.ingest(rows)
+backend/tests/test_audit_remediation.py:233:        self.ingest(rows)
+backend/tests/test_audit_remediation.py:234:        self.ingest([])
+backend/tests/test_audit_remediation.py:277:        self.ingest([native])
+backend/tests/test_audit_remediation.py:286:        self.ingest([conflict], self.now + timedelta(seconds=1))
+backend/tests/test_audit_remediation.py:298:        self.ingest([conflict], self.now + timedelta(seconds=2))
+backend/tests/test_audit_remediation.py:307:        self.ingest(
+backend/tests/test_audit_remediation.py:343:        self.ingest([native])
+backend/tests/test_audit_remediation.py:351:        self.ingest(
+backend/tests/test_audit_remediation.py:380:        self.ingest([failed])
+backend/tests/test_audit_remediation.py:390:        self.ingest(
+backend/tests/test_audit_remediation.py:624:        from app.unified.reconstruction import ingest_connector
+backend/tests/test_audit_remediation.py:641:        ingest_connector(
+backend/tests/test_agent_v15.py:37:            "runtime_version": "0.123.0",

@@ -1,0 +1,92 @@
+{
+  "task": "DEV-05.2A.3F",
+  "new_runtime_tests": 0,
+  "new_runtime_images_or_binaries": 0,
+  "new_configs": 0,
+  "product_or_utility_changes": false,
+  "scope": "only new evidence directory",
+  "source_files_verified_by_sha256_and_git_blob": 27,
+  "valid_local_document_links": [
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "../2026-10-26-queue/QUEUE_DECISION.md"
+    },
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "UPSTREAM_CANDIDATE_MATRIX.md"
+    },
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "SOURCE_INDEX.json"
+    },
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "N1_N4_TEST_MATRIX.json"
+    },
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "CANDIDATE_PROVENANCE.json"
+    },
+    {
+      "file": "NATIVE_FEASIBILITY_DECISION.md",
+      "target": "UPSTREAM_GAP_REPORT.md"
+    },
+    {
+      "file": "UPSTREAM_GAP_REPORT.md",
+      "target": "../2026-10-26-queue/QUEUE_DECISION.md"
+    },
+    {
+      "file": "UPSTREAM_GAP_REPORT.md",
+      "target": "FETCH_LOG.json"
+    },
+    {
+      "file": "UPSTREAM_GAP_REPORT.md",
+      "target": "SOURCE_INDEX.json"
+    },
+    {
+      "file": "UPSTREAM_GAP_REPORT.md",
+      "target": "../2026-10-26-adr/NATIVE_ACCEPTANCE_PLAN.md"
+    },
+    {
+      "file": "UPSTREAM_CANDIDATE_MATRIX.md",
+      "target": "CANDIDATE_PROVENANCE.json"
+    }
+  ],
+  "credential_pattern_review": "PASS; targeted patterns only, not a comprehensive secret scanner",
+  "governance": "Parikshit dual-role approval verified for isolated feasibility; not a blocker",
+  "candidate_verdict": "BLOCKED",
+  "cleanup": {
+    "containers_created": 0,
+    "networks_created": 0,
+    "volumes_created": 0,
+    "synthetic_credentials_created": 0,
+    "status": "NOT APPLICABLE: no runtime resources created",
+    "broad_cleanup": false
+  },
+  "scope_note": "No executable fork/backport/test fixture was created; upstream source is preserved as review-only .txt/API evidence.",
+  "mandatory_gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "checks": {
+    "authored_markdown_and_json_whitespace": {
+      "exit_code": 0,
+      "result": "PASS"
+    },
+    "all_files_whitespace": {
+      "exit_code": 2,
+      "result": "WARN: two upstream README trailing spaces preserved verbatim for Git blob/SHA integrity",
+      "log": "raw/whitespace-review.log"
+    },
+    "prior_evidence_hashes_verified": 593,
+    "historical_runtime_results": "reviewed only, not rerun",
+    "new_matrix_parent_counts": {
+      "PASS": 0,
+      "FAIL": 0,
+      "BLOCKED": 4
+    },
+    "new_matrix_execution": "all four NOT RUN"
+  }
+}

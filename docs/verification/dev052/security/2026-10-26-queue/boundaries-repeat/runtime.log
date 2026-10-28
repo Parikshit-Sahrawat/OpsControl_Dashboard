@@ -1,0 +1,987 @@
+2026-10-26T03:46:11.851Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:46:11.851Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:46:11.852Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:46:11.852Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:46:11.852Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:11.852Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:11.852Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:11.852Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:46:11.852Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:11.852Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-26T03:46:11.852Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:46:11.853Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:46:11.853Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:46:12.253Z	info	fileconsumer/file.go:265	Started watching file	{"component": "fileconsumer", "path": "/fixture/input/current.log"}
+2026-10-26T03:46:34.602Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:46:35.872Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:46:36.698Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:46:36.699Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:46:36.703Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:46:36.703Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:46:36.703Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:36.703Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:36.703Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:36.703Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:46:36.703Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:37.254Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:46:37.254Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:46:37.254Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:46:37.254Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:46:37.254Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:37.254Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:37.255Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:37.255Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:46:37.255Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:37.255Z	info	queuebatch/persistent_queue.go:411	Fetching items left for dispatch by consumers	{"numberOfItems": 10}
+2026-10-26T03:46:37.255Z	error	queuebatch/persistent_queue.go:450	Errors occurred while moving items for dispatching back to queue	{"numberOfItems": 10, "errorCount": 10}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).retrieveAndEnqueueNotDispatchedReqs
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:450
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).initClient
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:139
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:119
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*asyncQueue[...]).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/async_queue.go:32
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*QueueBatch).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/queue_batch.go:123
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:130
+go.opentelemetry.io/collector/service/internal/graph.(*Graph).StartAll
+	go.opentelemetry.io/collector/service@v0.123.0/internal/graph/graph.go:431
+go.opentelemetry.io/collector/service.(*Service).Start
+	go.opentelemetry.io/collector/service@v0.123.0/service.go:279
+go.opentelemetry.io/collector/otelcol.(*Collector).setupConfigurationComponents
+	go.opentelemetry.io/collector/otelcol@v0.123.0/collector.go:242
+go.opentelemetry.io/collector/otelcol.(*Collector).Run
+	go.opentelemetry.io/collector/otelcol@v0.123.0/collector.go:296
+go.opentelemetry.io/collector/otelcol.NewCommand.func1
+	go.opentelemetry.io/collector/otelcol@v0.123.0/command.go:39
+github.com/spf13/cobra.(*Command).execute
+	github.com/spf13/cobra@v1.9.1/command.go:1015
+github.com/spf13/cobra.(*Command).ExecuteC
+	github.com/spf13/cobra@v1.9.1/command.go:1148
+github.com/spf13/cobra.(*Command).Execute
+	github.com/spf13/cobra@v1.9.1/command.go:1071
+main.runInteractive
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main.go:67
+main.run
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main_others.go:10
+main.main
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main.go:60
+runtime.main
+	runtime/proc.go:283
+2026-10-26T03:46:37.255Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:46:37.256Z	info	fileconsumer/file.go:62	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"component": "fileconsumer"}
+2026-10-26T03:46:37.256Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:46:37.256Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:46:37.289Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:46:43.707Z	info	otelcol@v0.123.0/collector.go:342	Received signal from OS	{"signal": "terminated"}
+2026-10-26T03:46:43.708Z	info	service@v0.123.0/service.go:329	Starting shutdown...
+2026-10-26T03:46:43.708Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "unavailable"}
+2026-10-26T03:46:43.708Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-26T03:46:43.708Z	info	extensions/extensions.go:69	Stopping extensions...
+2026-10-26T03:46:43.708Z	info	service@v0.123.0/service.go:343	Shutdown complete.
+2026-10-26T03:46:44.061Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:46:44.061Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:46:44.062Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:46:44.062Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:46:44.062Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:44.062Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:44.062Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:46:44.062Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:46:44.062Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:46:44.062Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-26T03:46:44.062Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:46:44.062Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:46:44.062Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:46:44.463Z	info	fileconsumer/file.go:265	Started watching file	{"component": "fileconsumer", "path": "/fixture/input/current.log"}
+2026-10-26T03:47:04.707Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:47:05.961Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:47:06.845Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:47:06.846Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:06.849Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:47:06.850Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:47:06.850Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:06.850Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:06.850Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:06.850Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:47:06.850Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:07.863Z	info	queuebatch/persistent_queue.go:411	Fetching items left for dispatch by consumers	{"numberOfItems": 10}
+2026-10-26T03:47:12.760Z	error	queuebatch/persistent_queue.go:450	Errors occurred while moving items for dispatching back to queue	{"numberOfItems": 10, "errorCount": 10}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).retrieveAndEnqueueNotDispatchedReqs
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:450
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).initClient
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:139
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*persistentQueue[...]).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/persistent_queue.go:119
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*asyncQueue[...]).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/async_queue.go:32
+go.opentelemetry.io/collector/exporter/exporterhelper/internal/queuebatch.(*QueueBatch).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/queuebatch/queue_batch.go:123
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Start
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:130
+go.opentelemetry.io/collector/service/internal/graph.(*Graph).StartAll
+	go.opentelemetry.io/collector/service@v0.123.0/internal/graph/graph.go:431
+go.opentelemetry.io/collector/service.(*Service).Start
+	go.opentelemetry.io/collector/service@v0.123.0/service.go:279
+go.opentelemetry.io/collector/otelcol.(*Collector).setupConfigurationComponents
+	go.opentelemetry.io/collector/otelcol@v0.123.0/collector.go:242
+go.opentelemetry.io/collector/otelcol.(*Collector).Run
+	go.opentelemetry.io/collector/otelcol@v0.123.0/collector.go:296
+go.opentelemetry.io/collector/otelcol.NewCommand.func1
+	go.opentelemetry.io/collector/otelcol@v0.123.0/command.go:39
+github.com/spf13/cobra.(*Command).execute
+	github.com/spf13/cobra@v1.9.1/command.go:1015
+github.com/spf13/cobra.(*Command).ExecuteC
+	github.com/spf13/cobra@v1.9.1/command.go:1148
+github.com/spf13/cobra.(*Command).Execute
+	github.com/spf13/cobra@v1.9.1/command.go:1071
+main.runInteractive
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main.go:67
+main.run
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main_others.go:10
+main.main
+	github.com/open-telemetry/opentelemetry-collector-releases/contrib/main.go:60
+runtime.main
+	runtime/proc.go:283
+2026-10-26T03:47:12.761Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:47:12.762Z	info	fileconsumer/file.go:62	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"component": "fileconsumer"}
+2026-10-26T03:47:12.763Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:47:12.763Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:47:12.967Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:47:12.967Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:12.968Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:47:12.968Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:47:12.968Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:12.968Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:12.968Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:12.968Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:47:12.968Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:12.968Z	info	queuebatch/persistent_queue.go:411	Fetching items left for dispatch by consumers	{"numberOfItems": 10}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "0", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "1", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "2", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "3", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "4", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "5", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "6", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "7", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "8", "error": "value not set"}
+2026-10-26T03:47:12.969Z	warn	queuebatch/persistent_queue.go:435	Failed retrieving item	{"key": "9", "error": "value not set"}
+2026-10-26T03:47:12.969Z	info	queuebatch/persistent_queue.go:453	Moved items for dispatching back to queue	{"numberOfItems": 10}
+2026-10-26T03:47:12.969Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:47:12.969Z	info	fileconsumer/file.go:62	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"component": "fileconsumer"}
+2026-10-26T03:47:12.969Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:47:12.969Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:47:13.032Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:47:19.367Z	info	otelcol@v0.123.0/collector.go:342	Received signal from OS	{"signal": "terminated"}
+2026-10-26T03:47:19.368Z	info	service@v0.123.0/service.go:329	Starting shutdown...
+2026-10-26T03:47:19.368Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "unavailable"}
+2026-10-26T03:47:19.368Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-26T03:47:19.368Z	info	extensions/extensions.go:69	Stopping extensions...
+2026-10-26T03:47:19.368Z	info	service@v0.123.0/service.go:343	Shutdown complete.
+2026-10-26T03:47:19.728Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:47:19.728Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:19.729Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:47:19.729Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:47:19.729Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:19.729Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:19.729Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:19.729Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:47:19.729Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:19.729Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-26T03:47:19.729Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:47:19.730Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:47:19.730Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:47:20.131Z	info	fileconsumer/file.go:265	Started watching file	{"component": "fileconsumer", "path": "/fixture/input/current.log"}
+2026-10-26T03:47:41.483Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:47:42.904Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:47:43.652Z	info	otelconftelemetry/tracer.go:47	Internal trace telemetry disabled	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:43.652Z	warn	builders/builders.go:40	"otlphttp" alias is deprecated; use "otlp_http" instead	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:47:43.652Z	info	memorylimiter@v0.163.0/memorylimiter.go:109	Memory limiter configured	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.kind": "processor", "limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:43.652Z	warn	builders/builders.go:40	"filelog" alias is deprecated; use "file_log" instead	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:47:43.656Z	info	service@v0.163.0/service.go:233	Starting otelcol-contrib...	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "Version": "0.163.2", "NumCPU": 5}
+2026-10-26T03:47:43.656Z	info	extensions/extensions.go:43	Starting extensions...	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:43.656Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:43.656Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:43.656Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:43.656Z	info	healthcheckextension@v0.163.0/healthcheckextension.go:32	Starting health_check extension	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "config": {"Config":{"ServerConfig":{"NetAddr":{"DialerConfig":{"Timeout":0},"Endpoint":"127.0.0.1:13133","Transport":"tcp"},"Auth":{},"CompressionAlgorithms":null,"CORS":{},"IdleTimeout":0,"IncludeMetadata":false,"KeepAlivesEnabled":false,"Keepalive":{},"MaxRequestBodySize":0,"Middlewares":null,"ReadHeaderTimeout":60000000000,"ReadTimeout":0,"ResponseHeaders":null,"TLS":{},"WriteTimeout":30000000000},"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5},"UseV2":false,"GRPCConfig":null,"HTTPConfig":null,"ComponentHealthConfig":null}}}
+2026-10-26T03:47:43.657Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:44.258Z	info	queue/persistent_queue.go:166	New queue metadata key not found, attempting to load legacy format.	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:47:44.892Z	info	queue/persistent_queue.go:454	Fetching items left for dispatch by consumers	{"resource": {"service.instance.id": "b2fa6392-dc3c-4b23-9841-bc567a499f80", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "numberOfItems": 10}
+2026-10-26T03:47:51.860Z	info	otelconftelemetry/tracer.go:47	Internal trace telemetry disabled	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:51.861Z	warn	builders/builders.go:40	"otlphttp" alias is deprecated; use "otlp_http" instead	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:47:51.861Z	info	memorylimiter@v0.163.0/memorylimiter.go:109	Memory limiter configured	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.kind": "processor", "limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:51.861Z	warn	builders/builders.go:40	"filelog" alias is deprecated; use "file_log" instead	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:47:51.862Z	info	service@v0.163.0/service.go:233	Starting otelcol-contrib...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "Version": "0.163.2", "NumCPU": 5}
+2026-10-26T03:47:51.862Z	info	extensions/extensions.go:43	Starting extensions...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:51.862Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:51.862Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:51.862Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:51.862Z	info	healthcheckextension@v0.163.0/healthcheckextension.go:32	Starting health_check extension	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "config": {"Config":{"ServerConfig":{"NetAddr":{"DialerConfig":{"Timeout":0},"Endpoint":"127.0.0.1:13133","Transport":"tcp"},"Auth":{},"CompressionAlgorithms":null,"CORS":{},"IdleTimeout":0,"IncludeMetadata":false,"KeepAlivesEnabled":false,"Keepalive":{},"MaxRequestBodySize":0,"Middlewares":null,"ReadHeaderTimeout":60000000000,"ReadTimeout":0,"ResponseHeaders":null,"TLS":{},"WriteTimeout":30000000000},"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5},"UseV2":false,"GRPCConfig":null,"HTTPConfig":null,"ComponentHealthConfig":null}}}
+2026-10-26T03:47:51.862Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:47:51.862Z	info	queue/persistent_queue.go:186	Loaded queue metadata	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "readIndex": 10, "writeIndex": 267, "itemsSize": 0, "bytesSize": 0, "dispatchedItems": 0}
+2026-10-26T03:47:51.862Z	info	adapter/receiver.go:46	Starting stanza receiver	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:47:51.863Z	info	fileconsumer/file.go:77	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs", "component": "fileconsumer"}
+2026-10-26T03:47:51.863Z	info	healthcheck/handler.go:131	Health Check state change	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "status": "ready"}
+2026-10-26T03:47:51.863Z	info	service@v0.163.0/service.go:256	Everything is ready. Begin running and processing data.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:51.889Z	error	internal/base_exporter.go:119	Exporting failed. Rejecting data.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter/exporterhelper@v0.163.0/internal/base_exporter.go:119
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter/exporterhelper@v0.163.0/internal/new_request.go:70
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.163.0/logs.go:71
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.163.0/logs.go:71
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.163.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.163.0/consumerretry/logs.go:67
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/adapter/receiver.go:80
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/emitter.go:224
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWithTransform
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/transformer.go:117
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/transformer/add/transformer.go:28
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWithTransform
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/transformer.go:117
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/transformer/add/transformer.go:28
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessBatchWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/parser.go:141
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/parser.go:103
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/jsonparser.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/parser/jsonparser/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/input/file/input.go:50
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/internal/reader/reader.go:283
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/internal/reader/reader.go:140
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/file.go:192
+2026-10-26T03:47:58.314Z	info	otelcol@v0.163.0/collector.go:476	Received signal from OS	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "signal": "terminated"}
+2026-10-26T03:47:58.314Z	info	service@v0.163.0/service.go:294	Starting shutdown...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:58.314Z	info	healthcheck/handler.go:131	Health Check state change	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "status": "unavailable"}
+2026-10-26T03:47:58.314Z	info	adapter/receiver.go:89	Stopping stanza receiver	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:47:58.314Z	info	extensions/extensions.go:72	Stopping extensions...	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:58.315Z	info	service@v0.163.0/service.go:308	Shutdown complete.	{"resource": {"service.instance.id": "8d434096-dc02-4568-83fe-2100b3c92210", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:47:58.686Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-26T03:47:58.687Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:47:58.687Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-26T03:47:58.687Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-26T03:47:58.687Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:58.687Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:58.687Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-26T03:47:58.687Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-26T03:47:58.687Z	info	extensions/extensions.go:62	Extension started.
+2026-10-26T03:47:58.687Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-26T03:47:58.688Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-26T03:47:58.688Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-26T03:47:58.688Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-26T03:47:59.115Z	info	fileconsumer/file.go:265	Started watching file	{"component": "fileconsumer", "path": "/fixture/input/current.log"}
+2026-10-26T03:48:21.090Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:48:22.420Z	error	internal/base_exporter.go:116	Exporting failed. Rejecting data.	{"error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/internal/base_exporter.go:116
+go.opentelemetry.io/collector/exporter/exporterhelper.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter@v0.123.0/exporterhelper/logs.go:176
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.123.0/logs.go:66
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.29.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.123.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.123.0/consumerretry/logs.go:66
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/adapter/receiver.go:59
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/emitter.go:229
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:101
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/transformer/add/transformer.go:32
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).Write
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:73
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:125
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/parser.go:98
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).Process
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:30
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/transformer.go:82
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/json.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/parser/json/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/operator/input/file/input.go:48
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:209
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/internal/reader/reader.go:116
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.123.0/fileconsumer/file.go:169
+2026-10-26T03:48:23.274Z	info	otelconftelemetry/tracer.go:47	Internal trace telemetry disabled	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:23.275Z	warn	builders/builders.go:40	"otlphttp" alias is deprecated; use "otlp_http" instead	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:48:23.275Z	info	memorylimiter@v0.163.0/memorylimiter.go:109	Memory limiter configured	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.kind": "processor", "limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:48:23.275Z	warn	builders/builders.go:40	"filelog" alias is deprecated; use "file_log" instead	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:48:23.280Z	info	service@v0.163.0/service.go:233	Starting otelcol-contrib...	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "Version": "0.163.2", "NumCPU": 5}
+2026-10-26T03:48:23.280Z	info	extensions/extensions.go:43	Starting extensions...	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:23.280Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:23.280Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:23.280Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:23.280Z	info	healthcheckextension@v0.163.0/healthcheckextension.go:32	Starting health_check extension	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "config": {"Config":{"ServerConfig":{"NetAddr":{"DialerConfig":{"Timeout":0},"Endpoint":"127.0.0.1:13133","Transport":"tcp"},"Auth":{},"CompressionAlgorithms":null,"CORS":{},"IdleTimeout":0,"IncludeMetadata":false,"KeepAlivesEnabled":false,"Keepalive":{},"MaxRequestBodySize":0,"Middlewares":null,"ReadHeaderTimeout":60000000000,"ReadTimeout":0,"ResponseHeaders":null,"TLS":{},"WriteTimeout":30000000000},"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5},"UseV2":false,"GRPCConfig":null,"HTTPConfig":null,"ComponentHealthConfig":null}}}
+2026-10-26T03:48:23.281Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:23.917Z	info	queue/persistent_queue.go:166	New queue metadata key not found, attempting to load legacy format.	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:48:24.657Z	info	queue/persistent_queue.go:454	Fetching items left for dispatch by consumers	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "numberOfItems": 10}
+2026-10-26T03:48:47.443Z	info	queue/persistent_queue.go:496	Moved items for dispatching back to queue	{"resource": {"service.instance.id": "a156701a-419a-45db-bc5f-76b61714f961", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "numberOfItems": 10}
+2026-10-26T03:48:47.680Z	info	otelconftelemetry/tracer.go:47	Internal trace telemetry disabled	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:47.680Z	warn	builders/builders.go:40	"otlphttp" alias is deprecated; use "otlp_http" instead	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs"}
+2026-10-26T03:48:47.680Z	info	memorylimiter@v0.163.0/memorylimiter.go:109	Memory limiter configured	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.kind": "processor", "limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-26T03:48:47.680Z	warn	builders/builders.go:40	"filelog" alias is deprecated; use "file_log" instead	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:48:47.681Z	info	service@v0.163.0/service.go:233	Starting otelcol-contrib...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "Version": "0.163.2", "NumCPU": 5}
+2026-10-26T03:48:47.681Z	info	extensions/extensions.go:43	Starting extensions...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:47.681Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:47.681Z	info	healthcheckextension@v0.163.0/healthcheckextension.go:32	Starting health_check extension	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "config": {"Config":{"ServerConfig":{"NetAddr":{"DialerConfig":{"Timeout":0},"Endpoint":"127.0.0.1:13133","Transport":"tcp"},"Auth":{},"CompressionAlgorithms":null,"CORS":{},"IdleTimeout":0,"IncludeMetadata":false,"KeepAlivesEnabled":false,"Keepalive":{},"MaxRequestBodySize":0,"Middlewares":null,"ReadHeaderTimeout":60000000000,"ReadTimeout":0,"ResponseHeaders":null,"TLS":{},"WriteTimeout":30000000000},"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5},"UseV2":false,"GRPCConfig":null,"HTTPConfig":null,"ComponentHealthConfig":null}}}
+2026-10-26T03:48:47.681Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:47.681Z	info	extensions/extensions.go:47	Extension is starting...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:47.681Z	info	extensions/extensions.go:65	Extension started.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "file_storage/opscontrol", "otelcol.component.kind": "extension"}
+2026-10-26T03:48:47.682Z	info	queue/persistent_queue.go:186	Loaded queue metadata	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "readIndex": 10, "writeIndex": 276, "itemsSize": 0, "bytesSize": 0, "dispatchedItems": 0}
+2026-10-26T03:48:47.682Z	info	adapter/receiver.go:46	Starting stanza receiver	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:48:47.682Z	info	fileconsumer/file.go:77	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs", "component": "fileconsumer"}
+2026-10-26T03:48:47.682Z	info	healthcheck/handler.go:131	Health Check state change	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "status": "ready"}
+2026-10-26T03:48:47.682Z	info	service@v0.163.0/service.go:256	Everything is ready. Begin running and processing data.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:47.728Z	error	internal/base_exporter.go:119	Exporting failed. Rejecting data.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "otlphttp/opscontrol", "otelcol.component.kind": "exporter", "otelcol.signal": "logs", "error": "sending queue is full", "rejected_items": 1}
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.(*BaseExporter).Send
+	go.opentelemetry.io/collector/exporter/exporterhelper@v0.163.0/internal/base_exporter.go:119
+go.opentelemetry.io/collector/exporter/exporterhelper/internal.NewLogsRequest.newConsumeLogs.func1
+	go.opentelemetry.io/collector/exporter/exporterhelper@v0.163.0/internal/new_request.go:70
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.163.0/logs.go:71
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/processor/processorhelper.NewLogs.func1
+	go.opentelemetry.io/collector/processor/processorhelper@v0.163.0/logs.go:71
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/service/internal/refconsumer.refLogs.ConsumeLogs
+	go.opentelemetry.io/collector/service@v0.163.0/internal/refconsumer/logs.go:29
+go.opentelemetry.io/collector/consumer.ConsumeLogsFunc.ConsumeLogs
+	go.opentelemetry.io/collector/consumer@v1.69.0/logs.go:27
+go.opentelemetry.io/collector/internal/fanoutconsumer.(*logsConsumer).ConsumeLogs
+	go.opentelemetry.io/collector/internal/fanoutconsumer@v0.163.0/logs.go:62
+github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal/consumerretry.(*logsConsumer).ConsumeLogs
+	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal@v0.163.0/consumerretry/logs.go:67
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/adapter.(*receiver).consumeEntries
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/adapter/receiver.go:80
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*SynchronousLogEmitter).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/emitter.go:224
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWithTransform
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/transformer.go:117
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/transformer/add/transformer.go:28
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*TransformerOperator).ProcessBatchWithTransform
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/transformer.go:117
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/transformer/add.(*Transformer).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/transformer/add/transformer.go:28
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessBatchWithCallback
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/parser.go:141
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*ParserOperator).ProcessBatchWith
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/parser.go:103
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/parser/jsonparser.(*Parser).ProcessBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/parser/jsonparser/parser.go:25
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/helper.(*WriterOperator).WriteBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/helper/writer.go:55
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/operator/input/file.(*Input).emitBatch
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/operator/input/file/input.go:50
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).readContents
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/internal/reader/reader.go:283
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer/internal/reader.(*Reader).ReadToEnd
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/internal/reader/reader.go:140
+github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza/fileconsumer.(*Manager).consume.func1
+	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/stanza@v0.163.0/fileconsumer/file.go:192
+2026-10-26T03:48:51.142Z	info	otelcol@v0.163.0/collector.go:476	Received signal from OS	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "signal": "terminated"}
+2026-10-26T03:48:51.142Z	info	service@v0.163.0/service.go:294	Starting shutdown...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:51.142Z	info	healthcheck/handler.go:131	Health Check state change	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "status": "unavailable"}
+2026-10-26T03:48:51.142Z	info	adapter/receiver.go:89	Stopping stanza receiver	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}, "otelcol.component.id": "filelog/43847302172f4e1f94ece8170a9c5f4e_7f252a43adc14bcd", "otelcol.component.kind": "receiver", "otelcol.signal": "logs"}
+2026-10-26T03:48:51.142Z	info	extensions/extensions.go:72	Stopping extensions...	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}
+2026-10-26T03:48:51.142Z	info	service@v0.163.0/service.go:308	Shutdown complete.	{"resource": {"service.instance.id": "c2594ed1-446d-41f4-b179-6373b84e4eb6", "service.name": "otelcol-contrib", "service.version": "0.163.2"}}

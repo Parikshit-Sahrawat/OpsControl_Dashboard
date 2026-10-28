@@ -1,0 +1,665 @@
+command=docker exit=0
+sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085
+command=docker exit=0
+sha256:f4b7b8044a873fcc0f348549a19b9075cd77bd56ead7177192cfec38d85bce4a
+command=docker exit=0
+48dcb2cdc72df353e7b3fc0ad047a109d97db0def265a095e5959c6238470223
+command=docker exit=0
+f94cdb1485fa930625470891af3625f15801fe03c98d7485e59c2afdd874c7da
+command=docker exit=0
+[
+    {
+        "Name": "dev052a3b-20afaec6",
+        "Id": "48dcb2cdc72df353e7b3fc0ad047a109d97db0def265a095e5959c6238470223",
+        "Created": "2026-10-25T13:22:13.101317274Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": true,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {},
+        "Options": {},
+        "Labels": {}
+    }
+]
+command=docker exit=0
+db0a15be1cfc6da7db75b0f8e007d3fe23be799e2c5cb72dfadf486220f3090e
+command=docker exit=0
+172.18.0.2
+command=/workspace/OpsControl_Dashboard/backend/.venv/bin/python exit=0
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+Revision ID: 0015_remote_jobs
+Revises: 0014_audit_mutation_guard
+INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+Revision ID: 0015_remote_jobs
+Revises: 0014_audit_mutation_guard
+INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+Revision ID: 0016_remote_collector_assignment
+Revises: 0015_remote_jobs
+INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+Revision ID: 0016_remote_collector_assignment
+Revises: 0015_remote_jobs
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+command=/workspace/OpsControl_Dashboard/backend/.venv/bin/python exit=0
+Populated existing identities/history and one explicit legacy mapping exception seeded
+command=/workspace/OpsControl_Dashboard/backend/.venv/bin/python exit=0
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+command=openssl exit=0
+..+........+.......+...+......+...+..+......+...+.+...+......+.....+.........+++++++++++++++++++++++++++++++++++++++*...+....+.........+..+....+.........+...........+.+++++++++++++++++++++++++++++++++++++++*....+......+.+.........+.........+..+...+......+.+......+...+..+...+............+.........+...+.+.....+.+...........+...+.........+.+............+.........+........+......+....+...+........+......+.+..+................+..............+...+...+....+...+...............+...+..+...+................+...+.................+......+............+...+....+...+......+.....+....+..+...+.......+........+...............+............+.+.....+..........+...+..+....+.....+...+...+...+.......+............+..+.+..+............+.+..+.+..+....+...+..+.........+...............+.......+...+..+....+.....+.........+.........+...+....+...+...........+.+.....+.+....................+...+..........+.................+....+.....+...+.+..+....+........+.+.....+..........+............+.................+...+...+.+......+...+.....+......+...+.+...............+.....+....+.....+......+....+..+.+..+............+.....................+..........++++++
+.+........+.+.........+++++++++++++++++++++++++++++++++++++++*.......+...+...+++++++++++++++++++++++++++++++++++++++*...+.......+......+...............+..+.+............+..+......+....++++++
+-----
+command=docker exit=0
+a0cbaa895dfafc4c08cff144d5fbe68dd0cf1a0640f4a2ab5945a1b89e1a1fde
+command=docker exit=0
+172.19.0.2
+command=docker exit=0
+command=docker exit=0
+c4e08984df8fd7965441ed2f323894d19c3a19987a2b9ae7e879192b19cce943
+command=docker exit=0
+{"Binds":["/tmp/dev052a3-lab-160yh32t:/fixture:rw","/tmp/dev052a1-runtime/otelcol-contrib:/runtime/otelcol-contrib:ro","/tmp/dev052-online/otelcol-contrib:/runtime/otelcol-contrib-0.123.0:ro","/tmp/dev052a3b-source:/work:ro","/workspace/OpsControl_Dashboard/verification/dev052/checkpoints:/verification:ro"],"ContainerIDFile":"","LogConfig":{"Type":"json-file","Config":{}},"NetworkMode":"dev052a3b-20afaec6","PortBindings":{},"RestartPolicy":{"Name":"no","MaximumRetryCount":0},"AutoRemove":false,"VolumeDriver":"","VolumesFrom":null,"ConsoleSize":[0,0],"CapAdd":null,"CapDrop":["ALL"],"CgroupnsMode":"private","Dns":[],"DnsOptions":[],"DnsSearch":[],"ExtraHosts":null,"GroupAdd":null,"IpcMode":"private","Cgroup":"","Links":null,"OomScoreAdj":0,"PidMode":"","Privileged":false,"PublishAllPorts":false,"ReadonlyRootfs":true,"SecurityOpt":["no-new-privileges:true"],"Tmpfs":{"/tmp":"rw,nosuid,nodev,size=64m"},"UTSMode":"","UsernsMode":"","ShmSize":67108864,"Runtime":"runc","Isolation":"","CpuShares":0,"Memory":536870912,"NanoCpus":1000000000,"CgroupParent":"","BlkioWeight":0,"BlkioWeightDevice":[],"BlkioDeviceReadBps":[],"BlkioDeviceWriteBps":[],"BlkioDeviceReadIOps":[],"BlkioDeviceWriteIOps":[],"CpuPeriod":0,"CpuQuota":0,"CpuRealtimePeriod":0,"CpuRealtimeRuntime":0,"CpusetCpus":"","CpusetMems":"","Devices":[],"DeviceCgroupRules":null,"DeviceRequests":null,"MemoryReservation":0,"MemorySwap":1073741824,"MemorySwappiness":null,"OomKillDisable":null,"PidsLimit":128,"Ulimits":[],"CpuCount":0,"CpuPercent":0,"IOMaximumIOps":0,"IOMaximumBandwidth":0,"MaskedPaths":["/proc/asound","/proc/acpi","/proc/interrupts","/proc/kcore","/proc/keys","/proc/latency_stats","/proc/timer_list","/proc/timer_stats","/proc/sched_debug","/proc/scsi","/sys/firmware","/sys/devices/virtual/powercap"],"ReadonlyPaths":["/proc/bus","/proc/fs","/proc/irq","/proc/sys","/proc/sysrq-trigger"]}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"running","Running":true,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":75416,"ExitCode":0,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"0001-01-01T00:00:00Z"}
+command=docker exit=0
+{"Status":"exited","Running":false,"Paused":false,"Restarting":false,"OOMKilled":false,"Dead":false,"Pid":0,"ExitCode":1,"Error":"","StartedAt":"2026-10-25T13:22:21.605309532Z","FinishedAt":"2026-10-25T13:24:30.445278696Z"}
+command=/workspace/OpsControl_Dashboard/backend/.venv/bin/python exit=0
+{"status": "PASS", "scope": "finite synthetic ID set; no general exactly-once claim", "expected_distinct_ids": 44, "persisted_distinct_ids": 44, "lost_ids": [], "unexpected_ids": [], "api_accepted_record_attempts": 100, "api_duplicate_record_attempts": 56, "db_source_event_rows": 100, "db_duplicate_event_rows": 56, "api_counts_by_id": {"event-0000": 2, "event-0001": 2, "event-0002": 2, "event-0003": 2, "event-0004": 2, "event-0005": 2, "event-0006": 2, "event-0007": 2, "event-0008": 3, "event-0009": 3, "event-0010": 3, "event-0011": 3, "event-0012": 3, "event-0013": 3, "event-0014": 3, "event-0015": 3, "event-0016": 2, "event-0017": 2, "event-0018": 2, "event-0019": 2, "event-0020": 2, "event-0021": 2, "event-0022": 2, "event-0023": 2, "event-0024": 3, "event-0025": 3, "event-0026": 3, "event-0027": 3, "event-0028": 2, "event-0029": 2, "event-0030": 2, "event-0031": 2, "event-0032": 2, "event-0033": 2, "event-0034": 2, "event-0035": 2, "event-0036": 2, "event-0037": 2, "event-0038": 2, "event-0039": 2, "event-0040": 2, "event-0041": 2, "event-0042": 2, "event-0043": 2}, "db_counts_by_id": {"event-0000": 2, "event-0001": 2, "event-0002": 2, "event-0003": 2, "event-0004": 2, "event-0005": 2, "event-0006": 2, "event-0007": 2, "event-0008": 3, "event-0009": 3, "event-0010": 3, "event-0011": 3, "event-0012": 3, "event-0013": 3, "event-0014": 3, "event-0015": 3, "event-0016": 2, "event-0017": 2, "event-0018": 2, "event-0019": 2, "event-0020": 2, "event-0021": 2, "event-0022": 2, "event-0023": 2, "event-0024": 3, "event-0025": 3, "event-0026": 3, "event-0027": 3, "event-0028": 2, "event-0029": 2, "event-0030": 2, "event-0031": 2, "event-0032": 2, "event-0033": 2, "event-0034": 2, "event-0035": 2, "event-0036": 2, "event-0037": 2, "event-0038": 2, "event-0039": 2, "event-0040": 2, "event-0041": 2, "event-0042": 2, "event-0043": 2}, "db_control_marker_rows": 1, "db_batch_receipts": 5, "all_receipt_payload_hashes_reconciled": true, "repeated_restarts_checked": true}

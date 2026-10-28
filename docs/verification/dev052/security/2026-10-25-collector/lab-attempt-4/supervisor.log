@@ -1,0 +1,27 @@
+2026-10-25T12:26:39.658Z	info	service@v0.123.0/service.go:197	Setting up own telemetry...
+2026-10-25T12:26:39.659Z	info	memorylimiter@v0.123.0/memorylimiter.go:74	Memory limiter configured	{"limit_mib": 256, "spike_limit_mib": 64, "check_interval": 1}
+2026-10-25T12:26:39.659Z	info	service@v0.123.0/service.go:264	Starting otelcol-contrib...	{"Version": "0.123.0", "NumCPU": 5}
+2026-10-25T12:26:39.659Z	info	extensions/extensions.go:41	Starting extensions...
+2026-10-25T12:26:39.659Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T12:26:39.659Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T12:26:39.659Z	info	extensions/extensions.go:45	Extension is starting...
+2026-10-25T12:26:39.659Z	info	healthcheckextension@v0.123.0/healthcheckextension.go:32	Starting health_check extension	{"config": {"Endpoint":"127.0.0.1:13133","TLSSetting":null,"CORS":null,"Auth":null,"MaxRequestBodySize":0,"IncludeMetadata":false,"ResponseHeaders":null,"CompressionAlgorithms":null,"ReadTimeout":0,"ReadHeaderTimeout":0,"WriteTimeout":0,"IdleTimeout":0,"Path":"/","ResponseBody":null,"CheckCollectorPipeline":{"Enabled":false,"Interval":"5m","ExporterFailureThreshold":5}}}
+2026-10-25T12:26:39.660Z	info	extensions/extensions.go:62	Extension started.
+2026-10-25T12:26:39.660Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-25T12:26:39.660Z	info	queuebatch/persistent_queue.go:157	Initializing new persistent queue
+2026-10-25T12:26:39.660Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-25T12:26:39.660Z	info	fileconsumer/file.go:62	Resuming from previously known offset(s). 'start_at' setting is not applicable.	{"component": "fileconsumer"}
+2026-10-25T12:26:39.660Z	info	otlpreceiver@v0.123.0/otlp.go:173	Starting HTTP server	{"endpoint": "127.0.0.1:0"}
+2026-10-25T12:26:39.660Z	info	adapter/receiver.go:41	Starting stanza receiver
+2026-10-25T12:26:39.661Z	info	prometheusreceiver@v0.123.0/metrics_receiver.go:154	Starting discovery manager
+2026-10-25T12:26:39.661Z	info	targetallocator/manager.go:184	Scrape job added	{"jobName": "opscontrol_491ecc700e674fe88b538be1bd70e445"}
+2026-10-25T12:26:39.661Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "ready"}
+2026-10-25T12:26:39.661Z	info	service@v0.123.0/service.go:287	Everything is ready. Begin running and processing data.
+2026-10-25T12:26:39.662Z	info	prometheusreceiver@v0.123.0/metrics_receiver.go:224	Starting scrape manager
+2026-10-25T12:26:44.591Z	info	otelcol@v0.123.0/collector.go:342	Received signal from OS	{"signal": "terminated"}
+2026-10-25T12:26:44.591Z	info	service@v0.123.0/service.go:329	Starting shutdown...
+2026-10-25T12:26:44.591Z	info	healthcheck/handler.go:132	Health Check state change	{"status": "unavailable"}
+2026-10-25T12:26:44.591Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-25T12:26:44.591Z	info	adapter/receiver.go:68	Stopping stanza receiver
+2026-10-25T12:26:44.666Z	info	extensions/extensions.go:69	Stopping extensions...
+2026-10-25T12:26:44.666Z	info	service@v0.123.0/service.go:343	Shutdown complete.
