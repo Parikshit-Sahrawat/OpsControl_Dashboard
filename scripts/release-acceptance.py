@@ -90,7 +90,7 @@ def record(message):
     checks.append(message); print('PASS:', message, flush=True)
 
 try:
-    run(['docker','run','-d','--name',database,'-p','127.0.0.1::5432',
+    run(['docker','run','-d','--name',database,'--label','task=OC-SCOPE-REM-001-CLOSE','--tmpfs','/var/lib/postgresql/data','-p','127.0.0.1::5432',
         '-e','POSTGRES_USER','-e','POSTGRES_PASSWORD','-e','POSTGRES_DB',
         '-v',str(private)+':/fixture:ro','postgres:17-alpine']); containers.append(database)
     for _ in range(100):
@@ -273,8 +273,16 @@ finally:
             process.terminate()
             try: process.wait(timeout=10)
             except subprocess.TimeoutExpired: process.kill(); process.wait()
+    identities=[]
     for container in reversed(containers):
-        subprocess.run(['docker','rm','-f',container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        identity=subprocess.run(['docker','inspect',container],capture_output=True,text=True)
+        if identity.returncode==0:
+            row=json.loads(identity.stdout)[0]
+            identities.append({'name':container,'id':row['Id'],'image':row['Image'],
+                               'volumes':[m.get('Name') for m in row['Mounts'] if m['Type']=='volume']})
+        diagnostics=subprocess.run(['docker','logs',container],capture_output=True,text=True)
+        (private/(container+'.log')).write_text(diagnostics.stdout+'\n'+diagnostics.stderr)
+        subprocess.run(['docker','rm','-f','-v',container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,check=True)
     # Publish only redacted text logs, never session files, keys or DB dumps.
     import re
     OUT.mkdir(parents=True,exist_ok=True)
@@ -288,7 +296,7 @@ finally:
         text=re.sub(r'eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+','[REDACTED JWT]',text)
         text=re.sub(r'(?i)(Bearer )[A-Za-z0-9_.-]+',r'\1[REDACTED]',text)
         (OUT/logfile.name).write_text(text)
-    (OUT/'cleanup.json').write_text(json.dumps({'container_names':containers,'processes_stopped':all(p.poll() is not None for p in processes),
+    (OUT/'cleanup.json').write_text(json.dumps({'container_names':containers,'identities':identities,'processes_stopped':all(p.poll() is not None for p in processes),
         'remaining_containers':[name for name in containers if subprocess.run(['docker','inspect',name],capture_output=True).returncode==0],
         'source_sha':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()},indent=2)+'\n')
     if passed:
