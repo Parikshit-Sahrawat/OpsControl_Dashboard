@@ -30,8 +30,8 @@ Status: **reconciled planning baseline**, 2026-10-22. Source snapshot: `origin/m
 | DP-01 | Read-only Pentaho outcome, health, identity and evidence | DEV-03 | PARTIALLY_IMPLEMENTED | Native child evidence and RT-001–020 remain open |
 | DP-02 | Nine platform-native classifications and version-aware profiles | DEV-03 | PARTIALLY_IMPLEMENTED | Exact build/method capability evidence, no invented support |
 | API-01 | HTTP/TLS/synthetic endpoint operational monitoring | DEV-03 | IMPLEMENTED_VERIFIED | Confirm actual target freshness/authorization; real-network acceptance later |
-| K8S-01 | Authorized multi-customer canonical Kubernetes clusters | DEV-04 | REMOVED_FROM_SCOPE | Approve additive identity/association/attribution design |
-| K8S-02 | EKS discovery and node/pod/cluster health | DEV-04 | REMOVED_FROM_SCOPE | Verify provider-native data and private API in approved lab |
+| K8S-01 | Authorized multi-customer canonical Kubernetes clusters | DEV-04 | REMOVED_FROM_SCOPE | Preserve historical attribution; review legacy export/retention, not new cluster design |
+| K8S-02 | EKS discovery and node/pod/cluster health | DEV-04 | REMOVED_FROM_SCOPE | Verify removal and retain historical provider evidence; no new cluster certification |
 | TOP-01 | Customer-safe topology relationships, freshness/history | DEV-04 | PARTIALLY_IMPLEMENTED | Benchmark graph and specify version/expiry policy |
 | OPS-01 | Alerting, incident/service ownership and notifications | DEV-05 | PARTIALLY_IMPLEMENTED | Delivery and escalation contract/negative tests |
 | OPS-02 | Versioned SLO policy, denominator and reproducible evidence | DEV-05 | BLOCKED_ARCHITECTURE | Recover source or approve precise SLO contract |

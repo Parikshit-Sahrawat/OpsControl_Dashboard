@@ -19,3 +19,7 @@ Baseline `09a578f70282c7889a515c332c948f1940ae6719`; final source/fixture revisi
 Retained by design: entities.py cluster/association/decision ORM metadata and exports; scope.py/resource_scope.py customer fences; migration 0038 and all applied migrations; immutable records, historical evidence and Git history. Shared container infrastructure and generic cloud metric Namespace fields are not Kubernetes support. Exclusion strings and negative tests are intentional references. No AKS/GKE/OpenShift-specific adapter was found in the application search; these aliases are rejected as excluded source types.
 
 Old positive API tests have been replaced with removal/rejection contracts and direct legacy-data security tests, including tenant fences, DENY/LIMIT boundaries, foreign writes, immutable history, immutable identity and invalid revision/deletion. Prior failed import results remain in backend-full.log. Historical evidence outside this package is unchanged.
+
+## Latest-main integration
+
+PR 69 and PR 70 were merged externally during execution. Latest verified main `62a4eb4643c09594569aa61f0a60ae64035e6ede` is integrated at `5c0c5074f959bc47c3e2bb1591c2b421ad46b164`. The only conflict was the deleted dedicated Kubernetes verification script, resolved by keeping its removal. No changes relative to that main affect DEV-05.0/05.1/05.2 evidence, collector telemetry code or applied migrations. Final regression results below supersede initial baseline-only results for integration readiness; all earlier logs are retained.

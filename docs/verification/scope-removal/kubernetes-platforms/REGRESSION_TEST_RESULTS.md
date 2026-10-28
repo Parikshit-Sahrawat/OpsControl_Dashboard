@@ -15,3 +15,14 @@ Backend commands run from backend with the explicit task-owned DATABASE_URL; nev
 Full-suite names in the raw log cover tenant/RBAC/access boundaries, VM resource identity, collector activation/hydration, API/TLS/remote authorization, Pentaho/pipeline semantics, alerts/incidents and migrations. The two skips are `test_actual_contrib_accepts_five_methods` and `test_actual_scrape_and_log_rotation_truncation_restart`: pinned Contrib binary not configured. No collector qualification attempted. No passing test implies genuine-provider certification.
 
 NOT RUN: new browser end-to-end unavailable-UI acceptance; hosted CI workflows; genuine Windows/Linux/cloud/Pentaho provider tests; full live HTTP release-acceptance harness after fixture reconciliation. No UAT or production access. Backend global lint is not claimed; Python compileall and diff whitespace checks passed. Security/durability gates remain unchanged.
+
+## Final integrated revision
+
+At `5c0c5074f959bc47c3e2bb1591c2b421ad46b164` incorporating current main `62a4eb4643c09594569aa61f0a60ae64035e6ede`:
+
+- Full backend PostgreSQL suite, same command/environment: **545 total, 543 PASS, 2 SKIP, 0 FAIL/ERROR** (`final-backend-5c0c507.log`). The same two pinned-binary checks remain skipped.
+- Frontend: **36 PASS**, lint PASS, build PASS (`final-frontend-5c0c507.log`, `final-lint-5c0c507.log`, `final-build-5c0c507.log`). Bundle-size warning remains.
+- Fresh PostgreSQL migrations PASS (`final-migration-5c0c507.log`). Populated upgrade/restore PASS for all 100 tables (`final-preservation-5c0c507.json`); one synthetic cluster, two associations, one immutable decision retained. No new migration or destructive operation.
+- Second owned fixture container/network removed after validation. No named volume or unrelated Docker cleanup.
+
+No acceptance gaps above are silently closed by these reruns. Full browser/HTTP harness and genuine providers remain NOT TESTED.

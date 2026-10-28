@@ -7,3 +7,7 @@ See [inventory](REMOVAL_INVENTORY.md) and [results](REGRESSION_TEST_RESULTS.md).
 No schema migration or production collector change. Full PostgreSQL-backed regression: 538 passed, 2 skipped at `679ed2887a53eec4fe226876cd945fdd373fbe46`. Subsequent changes are test-only fixtures, a preservation probe and documentation; no later product behavior change. Historical test import failures were retained, then reconciled without removing retained-data security checks. This is a reviewable bounded removal, not completed browser/provider acceptance or release approval.
 
 CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO
+
+## Latest-main integration
+
+PR 69 and PR 70 were merged externally during execution. Latest verified main `62a4eb4643c09594569aa61f0a60ae64035e6ede` is integrated at `5c0c5074f959bc47c3e2bb1591c2b421ad46b164`. The only conflict was the deleted dedicated Kubernetes verification script, resolved by keeping its removal. No changes relative to that main affect DEV-05.0/05.1/05.2 evidence, collector telemetry code or applied migrations. Final regression results below supersede initial baseline-only results for integration readiness; all earlier logs are retained.
