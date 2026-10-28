@@ -1,0 +1,1522 @@
+[
+  {
+    "id": "RM-01",
+    "wording": "Customer Organizations are monitored customers, distinct from provider Departments",
+    "owner": "DEV-01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Retain negative cross-entity tests; independent UAT",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Customer organizations | RM-01; DEV-01 | `frontend/src/pages/UnifiedResourceManagement.jsx` \u2192 `backend/app/api/organizations.py` `/api/v1/organizations` \u2192 `backend/app/models/entities.py:Organization`; `backend/app/security/scope.py` | `scripts/access-acceptance.py`, `scripts/arch001-acceptance.py`; Issue #46 HTTP negatives | C |",
+      "| UI-010 | RM-01/AM-01 / 01 | `models/entities.py:Organization`, `security/access_models.py:Department` | `scripts/access-acceptance.py`; Issue #46 | IMPLEMENTED_VERIFIED | Preserve cross-entity negative UAT |"
+    ]
+  },
+  {
+    "id": "RM-02",
+    "wording": "Resource Management is sole onboarding/inventory/configuration plane",
+    "owner": "DEV-01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Recheck end-to-end draft/activation and avoid duplicate controls",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| VM and application ownership | CMP-02, RM-02; DEV-01/03 | `UnifiedResourceManagement.jsx` \u2192 `backend/app/unified/api.py` `/api/v1/unified/resources` \u2192 `backend/app/models/entities.py:VM,Application`, `backend/app/unified/models.py:MonitoringResource` | `scripts/arch001-acceptance.py`, `scripts/release-acceptance.py`; Issue #46 | C |",
+      "| Resource draft/configuration/activation | RM-02, UI-003/004/006/007/009/023; DEV-01 | `UnifiedResourceManagement.jsx`, `frontend/src/resourceApi.js` \u2192 `backend/app/registry/api.py` `/api/v1/resource-drafts`, `backend/app/unified/api.py` verification/activate \u2192 `registry/models.py:ResourceDraft`, `unified/models.py` | `scripts/arch001-acceptance.py`, `frontend/scripts/arch001_acceptance.mjs`; Issue #46 | P |",
+      "| Attribute registry/templates | RM-02; DEV-01 | `DynamicConfigurationForm.jsx` \u2192 `backend/app/registry/api.py` attribute registry; `backend/app/api/monitoring.py` templates \u2192 `models/entities.py:MonitoringTemplate*` | `backend/tests/test_registry_contracts.py` | C |",
+      "| Pipeline inventory/configuration | RM-02, DP-01, UI-013/018; DEV-01/03 | `UnifiedResourceManagement.jsx`, `DataPipelineIntegrations.jsx` \u2192 `backend/app/data_pipelines/api.py`, `unified/api.py` \u2192 `data_pipelines/models.py`, `MonitoringResource` | `scripts/v16-acceptance.py`, Sprint 07 browser | C |",
+      "| UI-002 | RM-02 / 01 | `pages/UnifiedResourceManagement.jsx` component selector | `frontend/scripts/ui_recovery_acceptance.mjs` | IMPLEMENTED_VERIFIED | Check refresh/deep-link |",
+      "| UI-003 | RM-02 / 01 | `UnifiedResourceManagement.jsx:ResourceForm`, `registry/api.py` drafts | `frontend/scripts/arch001_acceptance.mjs`; Issue #46 | IMPLEMENTED_VERIFIED | Full Compute UAT |",
+      "| UI-004 | RM-02 / 01 | `UnifiedResourceManagement.jsx` guidedSteps, `resource-v2.css` | `frontend/scripts/arch001_acceptance.mjs` | IMPLEMENTED_VERIFIED | Mobile/desktop focus checks |",
+      "| UI-006 | RM-02 / 01 | `UnifiedResourceManagement.jsx:ResourceForm` VM/API/ETL actions | `frontend/scripts/arch001_acceptance.mjs` | PARTIALLY_IMPLEMENTED | One primary action, validation per state |",
+      "| UI-007 | RM-02 / 01 | `registry/api.py`, `unified/api.py`, `resourceApi.js` | Issue #46 draft/activation HTTP | PARTIALLY_IMPLEMENTED | Reproduce historical Not Found with persisted draft |",
+      "| UI-009 | RM-02 / 01 | `unified/api.py` verification/activate | `scripts/arch001-acceptance.py`; Issue #46 | PARTIALLY_IMPLEMENTED | Prove backend-confirmed actual readiness per target |",
+      "| UI-011 | RM-02/CMP-01/DP-01/API-01 / 01 | `navigation.js`, Resource/Operations pages | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Check no duplicate create in Operations |",
+      "| UI-022 | RM-02 / 01 | `navigation.js`, `UnifiedResourceManagement.jsx` Event Parameters/Rules | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Deep-link/permissions UAT |",
+      "| UI-023 | RM-02/DP-01 / 01 | `UnifiedResourceManagement.jsx` VM/ETL stepper, `MonitoringSetup.jsx` | `frontend/scripts/arch001_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Step action/focus parity test |"
+    ]
+  },
+  {
+    "id": "RM-03",
+    "wording": "Compact lists, collapsible sidebar and responsive UX",
+    "owner": "DEV-01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Target reproduced 390/768/1366 issues",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| UI-001 | RM-03 / 01 | `frontend/src/components/TopNav.jsx`, `navigation.js`, `App.jsx` | `frontend/scripts/navigation.test.mjs`, `ui_recovery_acceptance.mjs` | IMPLEMENTED_VERIFIED | Candidate-SHA keyboard/mobile/persistence UAT |",
+      "| UI-005 | RM-03 / 01 | `frontend/src/visual-system.css`, `resource-v2.css` | Browser screenshots in prior sprint | PARTIALLY_IMPLEMENTED | Reproduce clipping at 390/768/1366 |",
+      "| UI-012 | RM-03 / 01 | `frontend/src/theme.js`, `TopNav.jsx`, `visual-system.css` | `frontend/scripts/ui_recovery_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Responsive/theme/reduced-motion independent pass |",
+      "| RM-03 | `frontend/src/components/TopNav.jsx`, `navigation.js`, `visual-system.css`; no new backend; no new DB | `frontend/scripts/navigation.test.mjs`, `ui_recovery_acceptance.mjs`; PARTIALLY_IMPLEMENTED | Reproduce visual/focus defects in supported viewports before changing CSS. |"
+    ]
+  },
+  {
+    "id": "RM-04",
+    "wording": "Collector configuration supports multiple independently added methods",
+    "owner": "DEV-02",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Verify method attribution and real agent separately",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Collector/method configuration | RM-04, UI-008; DEV-02 | `frontend/src/pages/CollectorControl.jsx` \u2192 `backend/app/telemetry/api.py` \u2192 `telemetry/models.py:CollectorMethod,CollectorConfigVersion` | `scripts/access-acceptance.py`, `backend/tests/test_unified_monitoring.py` | C |",
+      "| UI-008 | RM-04 / 02 | `pages/CollectorControl.jsx`, `telemetry/api.py:CollectorMethod` | `scripts/access-acceptance.py` | IMPLEMENTED_VERIFIED | Multi-method UAT, real agent separate |"
+    ]
+  },
+  {
+    "id": "RM-05",
+    "wording": "Method-specific canonical collection identity and one fenced active owner",
+    "owner": "DEV-02",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Retain generation/fencing regression under concurrency",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Source ownership/fencing | RM-05; DEV-02 | `backend/app/data_pipelines/service.py` acquire/check_ticket/accept/checkpoint \u2192 `data_pipelines/models.py:PipelineSource,PipelineMethod,PipelineEvidence`; `/api/v1/data-pipelines/sources/*` | `backend/tests/test_pipeline_ownership_v16.py`, `scripts/v16-acceptance.py` | C |"
+    ]
+  },
+  {
+    "id": "AM-01",
+    "wording": "Internal employees, departments, direct/inherited roles and customer-scoped RBAC",
+    "owner": "DEV-01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Independent UAT of all authorized actions",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Authentication and sessions | AM-01; DEV-01/06 | `frontend/src/auth.js`, `components/AuthGate.jsx` \u2192 `backend/app/security/http.py`, `models.py:User,AccessSession`; access migrations through `0037_access_boundaries` | `backend/tests/test_remote_auth.py`, `test_access_control.py`; Issue #46 | C |",
+      "| Access Management/RBAC | AM-01/02/03, UI-014/015; DEV-01 | `AccessManagement.jsx`, `AccessBoundaries.jsx` \u2192 `backend/app/api/access.py`, `access_boundaries.py`, `security/access_control.py`, `scope.py`, `delegation.py` \u2192 access models; `0037_access_boundaries` | `scripts/access-acceptance.py`, `backend/tests/test_access_control.py`; Issue #46 | C |",
+      "| UI-010 | RM-01/AM-01 / 01 | `models/entities.py:Organization`, `security/access_models.py:Department` | `scripts/access-acceptance.py`; Issue #46 | IMPLEMENTED_VERIFIED | Preserve cross-entity negative UAT |",
+      "| UI-014 | AM-01 / 01 | `pages/AccessBoundaries.jsx`, `access-management.css` | `scripts/access-acceptance.py` | IMPLEMENTED_VERIFIED | LIMIT/DENY form independent UAT |",
+      "| UI-015 | AM-01/03 / 01 | `pages/AccessManagement.jsx`, `api/access.py` effective projection | `scripts/access-acceptance.py` | PARTIALLY_IMPLEMENTED | Employee\u2192permission origin UX |"
+    ]
+  },
+  {
+    "id": "AM-02",
+    "wording": "Employee table Name/Username/Email and header actions",
+    "owner": "DEV-01",
+    "historical": "IMPLEMENTED_UNVERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Reproduce UAT Cycle 2 findings before UI correction",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| AM-02 | `frontend/src/pages/AccessManagement.jsx`; `backend/app/api/access.py` employee endpoints; `security/access_models.py`, migration `0037_access_boundaries` | `scripts/access-acceptance.py` covers API/RBAC but separate Name/Username/Email and header-action UAT has not been tied to an exact source revision; IMPLEMENTED_UNVERIFIED | Inspect rendered employee table and UAT Cycle 2 reproduction. |"
+    ]
+  },
+  {
+    "id": "AM-03",
+    "wording": "Departments Members & access navigation and assignment",
+    "owner": "DEV-01",
+    "historical": "IMPLEMENTED_UNVERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Confirm actionable route and write permissions",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| AM-03 | `frontend/src/pages/AccessManagement.jsx`; `backend/app/api/access.py` departments/memberships; `security/access_models.py:Department,DepartmentMembership` | `scripts/access-acceptance.py` covers grants; exact Members & access navigation/action remains IMPLEMENTED_UNVERIFIED | Browser authorized assignment and read-only negative check. |"
+    ]
+  },
+  {
+    "id": "SET-01",
+    "wording": "Profile/account security, display and notification preferences",
+    "owner": "DEV-01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Map existing profile contracts; implement only missing approved UI/API",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| SET-01 | `frontend/src/components/InAppNotifications.jsx` uses `/api/v1/notifications/preferences`; `backend/app/security/models.py:User.notification_preferences`; complete profile/account UI and API not established | Notification preference overlap only; PARTIALLY_IMPLEMENTED | Inventory profile/auth contracts and test self/other-user preference mutations. |"
+    ]
+  },
+  {
+    "id": "SET-02",
+    "wording": "Admin-authorized platform settings with safe persistence/audit",
+    "owner": "DEV-06",
+    "historical": "NOT_IMPLEMENTED",
+    "status": "NOT_ASSESSED",
+    "next": "Define safe editable keys; keep resource-specific settings in RM",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| SET-02 | No admin-editable global settings route/UI/model located in `frontend/src/navigation.js`, `frontend/src/App.jsx`, `backend/app/main.py`, `backend/app/api/` or `security/permission_catalog.py`; deployment `backend/app/core/config.py` is configuration, not an audited settings control plane | NOT_IMPLEMENTED for the approved UI+audited persistence behavior; no matching test established | Owner specifies safe keys and audit/secret contract before API, UI or DB change. |"
+    ]
+  },
+  {
+    "id": "HELP-01",
+    "wording": "Manual, technical docs, provider SOP/runbooks, FAQ",
+    "owner": "DEV-01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Inventory existing help content and scoped SOP presentation",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| HELP-01 | `frontend/src/pages/CollectorControl.jsx` links an Agent manual; repository docs exist; no integrated Help/Knowledge route in `frontend/src/navigation.js`/`App.jsx` located | PARTIALLY_IMPLEMENTED content overlap; no end-to-end Help UI/API test | Inventory eligible content and SOP audience before navigation/workspace implementation. |"
+    ]
+  },
+  {
+    "id": "TEL-01",
+    "wording": "Windows/Linux agent install/enrollment and authenticated bridge",
+    "owner": "DEV-02",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Bound installed-build fixture/packaging checks; real OS acceptance later",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Agent enrollment/runtime | TEL-01; DEV-02 | `agent/opscontrol_agent.py`, installers \u2192 `backend/app/telemetry/api.py` \u2192 `telemetry/models.py:ManagedAgent,AgentDeployment` | Agent/controlled owned-runtime scripts; actual installed Windows pending | P |"
+    ]
+  },
+  {
+    "id": "TEL-02",
+    "wording": "Logs, metrics, traces with explicit method identity",
+    "owner": "DEV-02",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Verify each signal path and attribution",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Remote probe/telemetry ingestion | TEL-02/03; DEV-02 | `backend/app/worker/remote_scheduler.py`, `backend/app/telemetry/ingestion.py` \u2192 `/api/v1/agent/*`, `telemetry/models.py:TelemetryReceipt,TraceSpan` | `backend/tests/test_unified_monitoring.py`, controlled probes | P |"
+    ]
+  },
+  {
+    "id": "TEL-03",
+    "wording": "Durable ingestion, backpressure, replay and loss accounting",
+    "owner": "DEV-02",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Define approved delivery contract before additions",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": []
+  },
+  {
+    "id": "TEL-04",
+    "wording": "Certificate lifecycle/private trust/clock uncertainty",
+    "owner": "DEV-06",
+    "historical": "BLOCKED_ARCHITECTURE",
+    "status": "BLOCKED_ARCHITECTURE",
+    "next": "Provider CA, network and clock policies; controlled implementation later",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| TEL-04 | `backend/app/security/deployment.py`, `worker/egress.py`, Agent enrollment; `telemetry/models.py`; no provider CA/private-route integration evidence | Controlled TLS/Agent tests only; BLOCKED_ARCHITECTURE for complete certificate/private trust policy | Approve provider CA, rotation/revocation and target-network rules; then test with disposable CA. |"
+    ]
+  },
+  {
+    "id": "CMP-01",
+    "wording": "Windows/Linux VM/EC2 native operational health",
+    "owner": "DEV-03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Preserve source/health distinction; real-provider acceptance later",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Compute operations | CMP-01, UI-017; DEV-03 | `frontend/src/pages/VMHealth.jsx`, `DomainMonitoring.jsx` \u2192 `backend/app/api/infrastructure.py`, `unified/reporting.py:domain_state` \u2192 `InfrastructureEvidence` | `scripts/infrastructure-acceptance.py`; Issue #46 | C |",
+      "| Cloud/provider monitoring | CMP-01, K8S-02; DEV-03/04 | `backend/app/worker/provider_checks.py`, `provider_discovery.py` \u2192 `api/discovery.py`; `InfrastructureEvidence` | `scripts/infrastructure-acceptance.py`; genuine AWS/EKS pending | P |",
+      "| UI-011 | RM-02/CMP-01/DP-01/API-01 / 01 | `navigation.js`, Resource/Operations pages | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Check no duplicate create in Operations |",
+      "| UI-017 | CMP-01 / 03 | `pages/VMHealth.jsx`, `DomainMonitoring.jsx` | `scripts/infrastructure-acceptance.py`; Issue #46 | IMPLEMENTED_VERIFIED | Real adapter acceptance separate |"
+    ]
+  },
+  {
+    "id": "CMP-02",
+    "wording": "One owning customer for each VM/EC2",
+    "owner": "DEV-03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Retain FK and forged-ID negatives",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| VM and application ownership | CMP-02, RM-02; DEV-01/03 | `UnifiedResourceManagement.jsx` \u2192 `backend/app/unified/api.py` `/api/v1/unified/resources` \u2192 `backend/app/models/entities.py:VM,Application`, `backend/app/unified/models.py:MonitoringResource` | `scripts/arch001-acceptance.py`, `scripts/release-acceptance.py`; Issue #46 | C |"
+    ]
+  },
+  {
+    "id": "DP-01",
+    "wording": "Read-only Pentaho outcome, health, identity and evidence",
+    "owner": "DEV-03",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Native child evidence and RT-001\u2013020 remain open",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Evidence replay/holds | DP-01, PLT-03; DEV-03/06 | `backend/app/unified/pentaho_replay.py`, `data_pipelines/service.py` \u2192 replay/hold routes; `data_pipelines/models.py:PipelineHold` | `backend/tests/test_pipeline_ownership_v16.py`, Sprint 09/Issue #46 controlled | C |",
+      "| Pipeline inventory/configuration | RM-02, DP-01, UI-013/018; DEV-01/03 | `UnifiedResourceManagement.jsx`, `DataPipelineIntegrations.jsx` \u2192 `backend/app/data_pipelines/api.py`, `unified/api.py` \u2192 `data_pipelines/models.py`, `MonitoringResource` | `scripts/v16-acceptance.py`, Sprint 07 browser | C |",
+      "| Pentaho read-only adapters | DP-01; DEV-03 | `PipelineWorkspace.jsx` \u2192 `backend/app/pipeline_adapters/pentaho_carte.py`, `pentaho_observations.py`, `worker/pentaho_status.py` \u2192 execution/evidence models | `backend/tests/test_pipeline_adapters.py`, native fixtures; RT-001\u2013020 NOT RUN | P |",
+      "| Attempts/evidence/reviews | DP-01; DEV-03 | `ExecutionViews.jsx`, `ReviewView.jsx` \u2192 `backend/app/unified/pentaho_execution.py`, `pentaho_review.py` \u2192 `pentaho_models.py`; `/api/v1/unified/resources/{id}/executions` | `scripts/v16-acceptance.py`; controlled database/HTTP | C |",
+      "| Schedule/recovery | DP-01, OPS-03; DEV-03/05 | `ScheduleView.jsx`, `RecoveryView.jsx` \u2192 `backend/app/unified/pentaho_schedule.py`, `pentaho_recovery.py` \u2192 `pentaho_models.py` | Sprint 05/06, `scripts/v16-acceptance.py`; actual scheduler pending | C |",
+      "| UI-011 | RM-02/CMP-01/DP-01/API-01 / 01 | `navigation.js`, Resource/Operations pages | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Check no duplicate create in Operations |",
+      "| UI-013 | DP-01 / 01 | `UnifiedResourceManagement.jsx` ETL workspace, `DataPipelineIntegrations.jsx` | `frontend/scripts/pipeline_v16_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Verify credentials remain references and layout |",
+      "| UI-018 | DP-01 / 03 | `pipelines/PipelineWorkspace.jsx`, `pipelines.css` | Sprint 07 CI run `39827607578` | IMPLEMENTED_VERIFIED | Readability/overflow independent UAT |",
+      "| UI-023 | RM-02/DP-01 / 01 | `UnifiedResourceManagement.jsx` VM/ETL stepper, `MonitoringSetup.jsx` | `frontend/scripts/arch001_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Step action/focus parity test |"
+    ]
+  },
+  {
+    "id": "DP-02",
+    "wording": "Nine platform-native classifications and version-aware profiles",
+    "owner": "DEV-03",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Exact build/method capability evidence, no invented support",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Other pipeline adapters | DP-02; DEV-03 | `backend/app/pipeline_adapters/core.py`, `http.py`, `native.py`, `unified/compatibility.py` \u2192 shared pipeline models | `backend/tests/test_pipeline_adapters.py`; eight installed platforms pending | P |"
+    ]
+  },
+  {
+    "id": "API-01",
+    "wording": "HTTP/TLS/synthetic endpoint operational monitoring",
+    "owner": "DEV-03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Confirm actual target freshness/authorization; real-network acceptance later",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| API service probes | API-01, UI-019; DEV-03 | `frontend/src/pages/APIs.jsx`, `DomainMonitoring.jsx` \u2192 `backend/app/api/operations.py`, `worker/collector_runtime.py:ApiAdapter` \u2192 `InfrastructureEvidence` | `scripts/release-acceptance.py`, controlled HTTP/TLS | C |",
+      "| UI-011 | RM-02/CMP-01/DP-01/API-01 / 01 | `navigation.js`, Resource/Operations pages | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Check no duplicate create in Operations |",
+      "| UI-019 | API-01 / 03 | `pages/APIs.jsx`, `DomainMonitoring.jsx` | `scripts/release-acceptance.py` | IMPLEMENTED_VERIFIED | Real probe acceptance separate |"
+    ]
+  },
+  {
+    "id": "K8S-01",
+    "wording": "Authorized multi-customer canonical Kubernetes clusters",
+    "owner": "DEV-04",
+    "historical": "BLOCKED_ARCHITECTURE",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Approve additive identity/association/attribution design",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Kubernetes/EKS discovery | K8S-01/02; DEV-04 | `backend/app/api/discovery.py`, `backend/app/worker/provider_discovery.py` \u2192 DataSource in `models/entities.py`; cluster association model **not located** | `scripts/infrastructure-acceptance.py`; controlled fixtures, real EKS pending | P |"
+    ]
+  },
+  {
+    "id": "K8S-02",
+    "wording": "EKS discovery and node/pod/cluster health",
+    "owner": "DEV-04",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Verify provider-native data and private API in approved lab",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Cloud/provider monitoring | CMP-01, K8S-02; DEV-03/04 | `backend/app/worker/provider_checks.py`, `provider_discovery.py` \u2192 `api/discovery.py`; `InfrastructureEvidence` | `scripts/infrastructure-acceptance.py`; genuine AWS/EKS pending | P |"
+    ]
+  },
+  {
+    "id": "TOP-01",
+    "wording": "Customer-safe topology relationships, freshness/history",
+    "owner": "DEV-04",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Benchmark graph and specify version/expiry policy",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Topology/dependency graph | TOP-01; DEV-04 | `backend/app/unified/api.py` details/dependency_history/add_dependency \u2192 `unified/models.py:ResourceDependency`; customer composite FKs | `backend/tests/test_unified_v15_contracts.py`; AUD-02 performance unmeasured | P |"
+    ]
+  },
+  {
+    "id": "OPS-01",
+    "wording": "Alerting, incident/service ownership and notifications",
+    "owner": "DEV-05",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Delivery and escalation contract/negative tests",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Native incidents/correlation | OPS-01/03, UI-021; DEV-05 | `NativeIncidents.jsx`, `IncidentView.jsx` \u2192 `backend/app/native_incidents/api.py`, `service.py`, `pentaho.py` \u2192 `native_incidents/models.py` | `backend/tests/test_native_incidents_v15.py`, `scripts/v16-acceptance.py` | C |",
+      "| Alerts/notifications | OPS-01, UI-020; DEV-05 | `frontend/src/pages/Alerts.jsx`, `EventDelivery.jsx` \u2192 `worker/alert_engine.py`, `worker/notifications.py`, `telemetry/delivery.py` \u2192 `models/entities.py:AlertState,AlertNotificationDelivery` | `backend/tests/test_unified_monitoring.py`; real destination pending | P |",
+      "| UI-020 | OPS-01 / 05 | `pages/Alerts.jsx` filter toolbar | Browser source/audit review | PARTIALLY_IMPLEMENTED | Labels only; no Alerts redesign |",
+      "| UI-021 | OPS-01 / 05 | `pages/NativeIncidents.jsx`, `native_incidents/api.py` pagination | `backend/tests/test_native_incidents_v15.py` | PARTIALLY_IMPLEMENTED | Filtered totals/duplicates browser test |"
+    ]
+  },
+  {
+    "id": "OPS-02",
+    "wording": "Versioned SLO policy, denominator and reproducible evidence",
+    "owner": "DEV-05",
+    "historical": "BLOCKED_ARCHITECTURE",
+    "status": "BLOCKED_ARCHITECTURE",
+    "next": "Recover source or approve precise SLO contract",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Reports/SLO governance | OPS-02/04; DEV-05 | `frontend/src/pages/Reports.jsx` \u2192 `backend/app/api/operations.py`, `unified/reporting.py` `/api/v1/unified/reports/{domain}`; **dedicated versioned SLO model not located** | `frontend/scripts/operations_acceptance.mjs`; controlled report count | P |"
+    ]
+  },
+  {
+    "id": "OPS-03",
+    "wording": "Recovery validation with health, workload, dependencies and observation",
+    "owner": "DEV-05",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Independent downstream/recovery UAT; no automatic certification",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Schedule/recovery | DP-01, OPS-03; DEV-03/05 | `ScheduleView.jsx`, `RecoveryView.jsx` \u2192 `backend/app/unified/pentaho_schedule.py`, `pentaho_recovery.py` \u2192 `pentaho_models.py` | Sprint 05/06, `scripts/v16-acceptance.py`; actual scheduler pending | C |"
+    ]
+  },
+  {
+    "id": "OPS-04",
+    "wording": "Coverage/blind spots, self-monitoring and scoped reporting",
+    "owner": "DEV-05",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Inject outages; define completeness projections",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| UI-016 | OPS-04 / 01 | `pages/UnifiedOverview.jsx`, `unified/reporting.py:overview` | `frontend/scripts/operations_acceptance.mjs` | IMPLEMENTED_VERIFIED | Actual outage vs valid zero state |"
+    ]
+  },
+  {
+    "id": "PLT-01",
+    "wording": "Populated migrations, backup, restore, legal holds and DR",
+    "owner": "DEV-06",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Controlled preservation recheck; real WAL/PITR/DR later",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Migration/backup/legal hold | PLT-01/03; DEV-06 | `backend/migrations/versions/0001*`\u2013`0037_access_boundaries.py`, `backend/scripts/database_backup.py`, `backend/app/services/retention.py`, pipeline holds | `scripts/release-acceptance.py`, Issue #46 disposable restore | P |"
+    ]
+  },
+  {
+    "id": "PLT-02",
+    "wording": "Stage B branch-aware Feature UAT and controlled deployment",
+    "owner": "DEV-06",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Isolated runner rehearsal subject to approval; no auto-deploy",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Deployment/CI | PLT-02/04; DEV-06 | `.github/workflows/`, `deploy/uat/`, `scripts/uat/`, `scripts/test-quality.sh` | `.github/workflows/v15-quality.yml`, Stage B state tests; actual UAT runner pilot disabled | P |"
+    ]
+  },
+  {
+    "id": "PLT-03",
+    "wording": "Security, residency, legal holds and retention",
+    "owner": "DEV-06",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Decide data policy before residency implementation",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": [
+      "| Evidence replay/holds | DP-01, PLT-03; DEV-03/06 | `backend/app/unified/pentaho_replay.py`, `data_pipelines/service.py` \u2192 replay/hold routes; `data_pipelines/models.py:PipelineHold` | `backend/tests/test_pipeline_ownership_v16.py`, Sprint 09/Issue #46 controlled | C |"
+    ]
+  },
+  {
+    "id": "PLT-04",
+    "wording": "Performance, fleet lifecycle, bounded inventory and storage cost",
+    "owner": "DEV-06",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Measure representative workload before optimization",
+    "authority": "Canonical register / ARCH-001 V1.6 / Issue42; ownership unchanged",
+    "trace": []
+  },
+  {
+    "id": "UI-001",
+    "wording": "`frontend/src/components/TopNav.jsx`, `navigation.js`, `App.jsx`",
+    "owner": "RM-03 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Candidate-SHA keyboard/mobile/persistence UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-001 | RM-03 / 01 | `frontend/src/components/TopNav.jsx`, `navigation.js`, `App.jsx` | `frontend/scripts/navigation.test.mjs`, `ui_recovery_acceptance.mjs` | IMPLEMENTED_VERIFIED | Candidate-SHA keyboard/mobile/persistence UAT |"
+    ]
+  },
+  {
+    "id": "UI-002",
+    "wording": "`pages/UnifiedResourceManagement.jsx` component selector",
+    "owner": "RM-02 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Check refresh/deep-link",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-002 | RM-02 / 01 | `pages/UnifiedResourceManagement.jsx` component selector | `frontend/scripts/ui_recovery_acceptance.mjs` | IMPLEMENTED_VERIFIED | Check refresh/deep-link |"
+    ]
+  },
+  {
+    "id": "UI-003",
+    "wording": "`UnifiedResourceManagement.jsx:ResourceForm`, `registry/api.py` drafts",
+    "owner": "RM-02 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Full Compute UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-003 | RM-02 / 01 | `UnifiedResourceManagement.jsx:ResourceForm`, `registry/api.py` drafts | `frontend/scripts/arch001_acceptance.mjs`; Issue #46 | IMPLEMENTED_VERIFIED | Full Compute UAT |"
+    ]
+  },
+  {
+    "id": "UI-004",
+    "wording": "`UnifiedResourceManagement.jsx` guidedSteps, `resource-v2.css`",
+    "owner": "RM-02 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Mobile/desktop focus checks",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-004 | RM-02 / 01 | `UnifiedResourceManagement.jsx` guidedSteps, `resource-v2.css` | `frontend/scripts/arch001_acceptance.mjs` | IMPLEMENTED_VERIFIED | Mobile/desktop focus checks |"
+    ]
+  },
+  {
+    "id": "UI-005",
+    "wording": "`frontend/src/visual-system.css`, `resource-v2.css`",
+    "owner": "RM-03 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Reproduce clipping at 390/768/1366",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-005 | RM-03 / 01 | `frontend/src/visual-system.css`, `resource-v2.css` | Browser screenshots in prior sprint | PARTIALLY_IMPLEMENTED | Reproduce clipping at 390/768/1366 |"
+    ]
+  },
+  {
+    "id": "UI-006",
+    "wording": "`UnifiedResourceManagement.jsx:ResourceForm` VM/API/ETL actions",
+    "owner": "RM-02 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "One primary action, validation per state",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-006 | RM-02 / 01 | `UnifiedResourceManagement.jsx:ResourceForm` VM/API/ETL actions | `frontend/scripts/arch001_acceptance.mjs` | PARTIALLY_IMPLEMENTED | One primary action, validation per state |"
+    ]
+  },
+  {
+    "id": "UI-007",
+    "wording": "`registry/api.py`, `unified/api.py`, `resourceApi.js`",
+    "owner": "RM-02 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Reproduce historical Not Found with persisted draft",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-007 | RM-02 / 01 | `registry/api.py`, `unified/api.py`, `resourceApi.js` | Issue #46 draft/activation HTTP | PARTIALLY_IMPLEMENTED | Reproduce historical Not Found with persisted draft |"
+    ]
+  },
+  {
+    "id": "UI-008",
+    "wording": "`pages/CollectorControl.jsx`, `telemetry/api.py:CollectorMethod`",
+    "owner": "RM-04 / 02",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Multi-method UAT, real agent separate",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-008 | RM-04 / 02 | `pages/CollectorControl.jsx`, `telemetry/api.py:CollectorMethod` | `scripts/access-acceptance.py` | IMPLEMENTED_VERIFIED | Multi-method UAT, real agent separate |"
+    ]
+  },
+  {
+    "id": "UI-009",
+    "wording": "`unified/api.py` verification/activate",
+    "owner": "RM-02 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Prove backend-confirmed actual readiness per target",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-009 | RM-02 / 01 | `unified/api.py` verification/activate | `scripts/arch001-acceptance.py`; Issue #46 | PARTIALLY_IMPLEMENTED | Prove backend-confirmed actual readiness per target |"
+    ]
+  },
+  {
+    "id": "UI-010",
+    "wording": "`models/entities.py:Organization`, `security/access_models.py:Department`",
+    "owner": "RM-01/AM-01 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Preserve cross-entity negative UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-010 | RM-01/AM-01 / 01 | `models/entities.py:Organization`, `security/access_models.py:Department` | `scripts/access-acceptance.py`; Issue #46 | IMPLEMENTED_VERIFIED | Preserve cross-entity negative UAT |"
+    ]
+  },
+  {
+    "id": "UI-011",
+    "wording": "`navigation.js`, Resource/Operations pages",
+    "owner": "RM-02/CMP-01/DP-01/API-01 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Check no duplicate create in Operations",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-011 | RM-02/CMP-01/DP-01/API-01 / 01 | `navigation.js`, Resource/Operations pages | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Check no duplicate create in Operations |"
+    ]
+  },
+  {
+    "id": "UI-012",
+    "wording": "`frontend/src/theme.js`, `TopNav.jsx`, `visual-system.css`",
+    "owner": "RM-03 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Responsive/theme/reduced-motion independent pass",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-012 | RM-03 / 01 | `frontend/src/theme.js`, `TopNav.jsx`, `visual-system.css` | `frontend/scripts/ui_recovery_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Responsive/theme/reduced-motion independent pass |"
+    ]
+  },
+  {
+    "id": "UI-013",
+    "wording": "`UnifiedResourceManagement.jsx` ETL workspace, `DataPipelineIntegrations.jsx`",
+    "owner": "DP-01 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Verify credentials remain references and layout",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-013 | DP-01 / 01 | `UnifiedResourceManagement.jsx` ETL workspace, `DataPipelineIntegrations.jsx` | `frontend/scripts/pipeline_v16_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Verify credentials remain references and layout |"
+    ]
+  },
+  {
+    "id": "UI-014",
+    "wording": "`pages/AccessBoundaries.jsx`, `access-management.css`",
+    "owner": "AM-01 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "LIMIT/DENY form independent UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-014 | AM-01 / 01 | `pages/AccessBoundaries.jsx`, `access-management.css` | `scripts/access-acceptance.py` | IMPLEMENTED_VERIFIED | LIMIT/DENY form independent UAT |"
+    ]
+  },
+  {
+    "id": "UI-015",
+    "wording": "`pages/AccessManagement.jsx`, `api/access.py` effective projection",
+    "owner": "AM-01/03 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Employee\u2192permission origin UX",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-015 | AM-01/03 / 01 | `pages/AccessManagement.jsx`, `api/access.py` effective projection | `scripts/access-acceptance.py` | PARTIALLY_IMPLEMENTED | Employee\u2192permission origin UX |"
+    ]
+  },
+  {
+    "id": "UI-016",
+    "wording": "`pages/UnifiedOverview.jsx`, `unified/reporting.py:overview`",
+    "owner": "OPS-04 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Actual outage vs valid zero state",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-016 | OPS-04 / 01 | `pages/UnifiedOverview.jsx`, `unified/reporting.py:overview` | `frontend/scripts/operations_acceptance.mjs` | IMPLEMENTED_VERIFIED | Actual outage vs valid zero state |"
+    ]
+  },
+  {
+    "id": "UI-017",
+    "wording": "`pages/VMHealth.jsx`, `DomainMonitoring.jsx`",
+    "owner": "CMP-01 / 03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Real adapter acceptance separate",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-017 | CMP-01 / 03 | `pages/VMHealth.jsx`, `DomainMonitoring.jsx` | `scripts/infrastructure-acceptance.py`; Issue #46 | IMPLEMENTED_VERIFIED | Real adapter acceptance separate |"
+    ]
+  },
+  {
+    "id": "UI-018",
+    "wording": "`pipelines/PipelineWorkspace.jsx`, `pipelines.css`",
+    "owner": "DP-01 / 03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Readability/overflow independent UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-018 | DP-01 / 03 | `pipelines/PipelineWorkspace.jsx`, `pipelines.css` | Sprint 07 CI run `39827607578` | IMPLEMENTED_VERIFIED | Readability/overflow independent UAT |"
+    ]
+  },
+  {
+    "id": "UI-019",
+    "wording": "`pages/APIs.jsx`, `DomainMonitoring.jsx`",
+    "owner": "API-01 / 03",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Real probe acceptance separate",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-019 | API-01 / 03 | `pages/APIs.jsx`, `DomainMonitoring.jsx` | `scripts/release-acceptance.py` | IMPLEMENTED_VERIFIED | Real probe acceptance separate |"
+    ]
+  },
+  {
+    "id": "UI-020",
+    "wording": "`pages/Alerts.jsx` filter toolbar",
+    "owner": "OPS-01 / 05",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Labels only; no Alerts redesign",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-020 | OPS-01 / 05 | `pages/Alerts.jsx` filter toolbar | Browser source/audit review | PARTIALLY_IMPLEMENTED | Labels only; no Alerts redesign |"
+    ]
+  },
+  {
+    "id": "UI-021",
+    "wording": "`pages/NativeIncidents.jsx`, `native_incidents/api.py` pagination",
+    "owner": "OPS-01 / 05",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Filtered totals/duplicates browser test",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-021 | OPS-01 / 05 | `pages/NativeIncidents.jsx`, `native_incidents/api.py` pagination | `backend/tests/test_native_incidents_v15.py` | PARTIALLY_IMPLEMENTED | Filtered totals/duplicates browser test |"
+    ]
+  },
+  {
+    "id": "UI-022",
+    "wording": "`navigation.js`, `UnifiedResourceManagement.jsx` Event Parameters/Rules",
+    "owner": "RM-02 / 01",
+    "historical": "IMPLEMENTED_VERIFIED",
+    "status": "IMPLEMENTED_UNVERIFIED",
+    "next": "Deep-link/permissions UAT",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-022 | RM-02 / 01 | `navigation.js`, `UnifiedResourceManagement.jsx` Event Parameters/Rules | `frontend/scripts/navigation.test.mjs` | IMPLEMENTED_VERIFIED | Deep-link/permissions UAT |"
+    ]
+  },
+  {
+    "id": "UI-023",
+    "wording": "`UnifiedResourceManagement.jsx` VM/ETL stepper, `MonitoringSetup.jsx`",
+    "owner": "RM-02/DP-01 / 01",
+    "historical": "PARTIALLY_IMPLEMENTED",
+    "status": "PARTIALLY_IMPLEMENTED",
+    "next": "Step action/focus parity test",
+    "authority": "Approved UI register; refinement not extra product",
+    "trace": [
+      "| UI-023 | RM-02/DP-01 / 01 | `UnifiedResourceManagement.jsx` VM/ETL stepper, `MonitoringSetup.jsx` | `frontend/scripts/arch001_acceptance.mjs` | PARTIALLY_IMPLEMENTED | Step action/focus parity test |"
+    ]
+  },
+  {
+    "id": "OC-IMP-001",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "## OC-IMP-001\u2013018: individually **PROPOSED_OWNER_REVIEW**, not additional approved scope",
+      "| OC-IMP-001 | 02/05; `ScheduleView.jsx`; `unified/pentaho_schedule.py`; pipeline evidence models | `scripts/v16-acceptance.py`; P | Approve per-service signal/freshness contract; missing/stale/complete scoped tests |",
+      "| OC-IMP-006 | 02/05; pipeline coverage views; `pentaho_schedule.py`; source-health evidence | `scripts/v16-acceptance.py`; P | OC-IMP-001 approval; missing-source inventory without false healthy/NO_RUN |"
+    ]
+  },
+  {
+    "id": "OC-IMP-002",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-002 | 02/06; `CollectorControl.jsx`; `telemetry/api.py`; `ManagedAgent`/credential controls | Agent tests; B | Provider CA policy/test CA; expiry, overlap, revocation negatives |"
+    ]
+  },
+  {
+    "id": "OC-IMP-003",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-003 | 06; `APIs.jsx`; `worker/egress.py`; no new schema asserted | TLS/probe acceptance; B | Approved private route/trust topology; isolated allow/deny tests |"
+    ]
+  },
+  {
+    "id": "OC-IMP-004",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-004 | 02; Collector UI; `telemetry/ingestion.py`; `TelemetryReceipt` | ingestion tests; P | Approved loss/storage contract; numbered disconnect/restart accounting |",
+      "| OC-IMP-010 | 05/06; operational health views; `api/health.py`, ingestion/worker diagnostics | controlled outage test lead; P | OC-IMP-004/006; distinct worker/queue/collector stale states |"
+    ]
+  },
+  {
+    "id": "OC-IMP-005",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-005 | 03; `APIs.jsx`; `collector_runtime.py:ApiAdapter`; InfrastructureEvidence | `scripts/release-acceptance.py`; P | Target consent and read-only synthetic journey boundaries |"
+    ]
+  },
+  {
+    "id": "OC-IMP-006",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-006 | 02/05; pipeline coverage views; `pentaho_schedule.py`; source-health evidence | `scripts/v16-acceptance.py`; P | OC-IMP-001 approval; missing-source inventory without false healthy/NO_RUN |"
+    ]
+  },
+  {
+    "id": "OC-IMP-007",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-007 | 02/06; pipeline evidence views; `telemetry/ingestion.py`; native timestamp fields | native fixture tests; B | Clock authority/bounds; record uncertainty without rewriting evidence |"
+    ]
+  },
+  {
+    "id": "OC-IMP-008",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-008 | 02; `CollectorControl.jsx`; `telemetry/api.py`; `CollectorConfigVersion` | Agent apply tests; B | CA and build matrix; canary/rollback without lost checkpoints |"
+    ]
+  },
+  {
+    "id": "OC-IMP-009",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-009 | 06; report views; `services/retention.py`; hold/evidence models | restore/hold tests; B | Data policy and cost model; measure customer cardinality, held-data survival |"
+    ]
+  },
+  {
+    "id": "OC-IMP-010",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-010 | 05/06; operational health views; `api/health.py`, ingestion/worker diagnostics | controlled outage test lead; P | OC-IMP-004/006; distinct worker/queue/collector stale states |"
+    ]
+  },
+  {
+    "id": "OC-IMP-011",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-011 | 06; no UI required; `backend/scripts/database_backup.py`; PostgreSQL/holds | `scripts/release-acceptance.py`; P | Recovery site/key custody; measured encrypted restore/DR later |"
+    ]
+  },
+  {
+    "id": "OC-IMP-012",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-012 | 05; incident views; `native_incidents/service.py`, `worker/notifications.py`; delivery models | `test_native_incidents_v15.py`; B | Scoped service owner/escalation policy; A/B recipient negatives |"
+    ]
+  },
+  {
+    "id": "OC-IMP-013",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-013 | 03; pipeline views; `unified/compatibility.py`, adapters; existing profiles | `test_pipeline_adapters.py`; P | Authorized exact builds; capability registry/witness evidence |"
+    ]
+  },
+  {
+    "id": "OC-IMP-014",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-014 | 05; incident views; native incident/audit services and models | incident tests; B | Versioned change-event authority; no inferred causality |"
+    ]
+  },
+  {
+    "id": "OC-IMP-015",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-015 | 06/release; CI/workflow evidence; no production sign-off model asserted | CI run evidence; P | Independent seven-gate owner approval; exact-revision sign-off |"
+    ]
+  },
+  {
+    "id": "OC-IMP-016",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-016 | 06; no feature UI presumed; `security/secret_refs.py`, `services/retention.py`; holds | security/restore tests; B | Residency/classification policy; deny unauthorized export |"
+    ]
+  },
+  {
+    "id": "OC-IMP-017",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-017 | 04; discovery views; `api/discovery.py`; canonical cluster association **not located** | customer-negative test lead; B | Shared-VM wording superseded; approve Kubernetes-only versioned association design |"
+    ]
+  },
+  {
+    "id": "OC-IMP-018",
+    "owner": "Preserve issue47 TRACEABILITY proposal mapping",
+    "status": "BLOCKED_ARCHITECTURE",
+    "historical": "PROPOSED_OWNER_REVIEW",
+    "wording": "Original proposal wording retained; no individual approval inferred",
+    "authority": "Sprint12 OC_IMP_V20_BASELINE",
+    "next": "Obtain item-level approval; shared VM example superseded by exclusive VM ownership",
+    "trace": [
+      "| OC-IMP-018 | 04/05; incident/topology/report views; `unified/models.py:ResourceDependency`, `unified/reporting.py` | `test_unified_v15_contracts.py`; B | Original IMP-055\u2013062 definitions missing; approve distinct graph/SLO/recovery contracts |"
+    ]
+  },
+  {
+    "id": "IMP-001",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-002",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-003",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-004",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-005",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-006",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-007",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-008",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-009",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-010",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-011",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-012",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-013",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-014",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-015",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-016",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-017",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-018",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-019",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-020",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-021",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-022",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-023",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-024",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-025",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-026",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-027",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-028",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-029",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-030",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-031",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-032",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-033",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-034",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-035",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-036",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-037",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-038",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-039",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-040",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-041",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-042",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-043",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-044",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-045",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-046",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-047",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-048",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-049",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-050",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-051",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-052",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-053",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-054",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-055",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-056",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-057",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-058",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-059",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-060",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-061",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  },
+  {
+    "id": "IMP-062",
+    "owner": "Unassigned: original source missing",
+    "status": "SOURCE_NOT_RECOVERED",
+    "historical": "SOURCE_NOT_RECOVERED",
+    "wording": "Original authoritative definition unavailable",
+    "authority": "Sprint11 SOURCE_RECOVERY.md",
+    "next": "Recover original wording/version/approval; do not infer scope from titles",
+    "trace": []
+  }
+]
