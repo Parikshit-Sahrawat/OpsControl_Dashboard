@@ -483,7 +483,7 @@ try {
 } catch (error) {
   // Emit only a source location and error class, without secrets or page state.
   const stack = String(error?.stack || "");
-  const match = stack.match(/pipeline_v16_acceptance\\.mjs:(\\d+):(\\d+)/);
+  const match = stack.match(/pipeline_v16_acceptance\.mjs:(\d+):(\d+)/);
   const diagnostic = {
     status: "FAIL",
     test: "pipeline_v16_acceptance",
