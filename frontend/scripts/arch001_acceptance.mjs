@@ -291,7 +291,14 @@ try {
   const resourceCustomer = await page.getByLabel("Resource customer filter").inputValue();
   await page.getByLabel("Search resources", { exact: true }).fill("no-resource-sentinel");
   await page.getByText("No resources match these authorized filters.").waitFor();
-  await page.getByLabel("Resource Management component").selectOption("parameters");
+  // Event Parameters is no longer a standalone navigation item.
+  // Verify switching to another authorized component clears the search and
+  // retains the explicit customer scope without bypassing access controls.
+  assert.equal(
+    await page.getByLabel("Resource Management component").locator('option[value="parameters"]').count(),
+    0,
+  );
+  await page.getByLabel("Resource Management component").selectOption("rules");
   assert.equal(await page.getByLabel("Search resources", { exact: true }).inputValue(), "");
   assert.equal(await page.getByLabel("Resource customer filter").inputValue(), resourceCustomer);
   await page.getByRole("button", { name: fixture.vm_resource.name, exact: true }).waitFor();
