@@ -212,7 +212,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       ])
         .then(([v, p]) => {
           if (live) {
-            setSelected((current) => (current?.id === v.id ? v : current));
+            setSelected((current) => (current?.id === v.id ? { ...v, verification: current.verification } : current));
             setParents(p.items);
           }
         })
@@ -297,7 +297,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           {canOpenSection(user, "Resource Management", "organizations") && <option value="organizations">Organizations</option>}
           {canOpenSection(user, "Resource Management", "resources") && <option value="resources">Data Sources / Resources</option>}
           {canOpenSection(user, "Resource Management", "collectors") && <option value="collectors">Collectors</option>}
-          {canOpenSection(user, "Resource Management", "parameters") && <option value="parameters">Event Parameters</option>}
           {canOpenSection(user, "Resource Management", "rules") && <option value="rules">Alert Rules</option>}
           {canOpenSection(user, "Resource Management", "delivery") && <option value="delivery">Notification Delivery</option>}
         </select>
@@ -577,20 +576,22 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                 allowed("collectors.manage", selected.organization_id) && (
                   <PipelineConnection resource={selected} />
                 )}
-              <button
-                onClick={() =>
-                  action(async () => {
-                    const v = await control(
-                      base + "/resources/" + selected.id + "/verification",
-                    );
-                    setSelected((r) => ({ ...r, verification: v }));
-                  })
-                }
-              >
-                Verify telemetry
-              </button>
-              {selected.verification && (
-                <Verification data={selected.verification} />
+              {selected.domain !== "VM" && (
+                <>
+                  <button
+                    disabled={busy}
+                    onClick={() =>
+                      action(async () => {
+                        const resourceId = selected.id;
+                        const v = await control(base + "/resources/" + resourceId + "/verification");
+                        setSelected((current) => current?.id === resourceId ? { ...current, verification: v } : current);
+                      })
+                    }
+                  >
+                    Verify telemetry
+                  </button>
+                  {selected.verification && <Verification data={selected.verification} />}
+                </>
               )}
               {["API", "ETL"].includes(selected.domain) &&
                 selected.primary_collector_id &&
@@ -614,14 +615,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                     Approve native probe / metadata collection
                   </button>
                 )}
-              <button
-                onClick={() => {
-                  setArea("parameters");
-                }}
-              >
-                Open {parameterNames[selected.domain]}
-              </button>
-              {allowed("resources.update", selected.organization_id) && (
+              {selected.domain !== "VM" && <button onClick={() => setArea("parameters")}>Open {parameterNames[selected.domain]}</button>}
+              {selected.domain !== "VM" && allowed("resources.update", selected.organization_id) && (
                 <button
                   disabled={busy}
                   onClick={() => {
@@ -1163,13 +1158,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       focus={!openCollector}
       workspace
     >
-        {domain === "VM" ? (
-          <div className="onboarding-identity-note">
-            <h3>Compute Instance identity</h3>
-            <p>Save the host and customer details first. Agent installation, secure registration, connection checks, and monitoring configuration are available from the saved Compute Instance.</p>
-            <p>Saving a resource does not install an agent or activate monitoring.</p>
-          </div>
-        ) : (
+        {domain !== "VM" && (
           <ol className="onboarding-steps" aria-label={`${domain === "ETL" ? "Data Pipeline" : "API Endpoint"} onboarding steps`}>
             {guidedSteps.map((label, i) => (
               <li key={label} className={visibleStep === i + 1 ? "onboarding-step active" : "onboarding-step"}>
