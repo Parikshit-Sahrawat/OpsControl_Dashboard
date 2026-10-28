@@ -1,10 +1,11 @@
 """Owned synthetic real-HTTP removal contracts; no provider network requests."""
+import hashlib
 import asyncio
 import json
 import os
 from pathlib import Path
 from uuid import uuid4
-from sqlalchemy import select,func
+from sqlalchemy import select,func,text
 from app.db.session import SessionLocal
 from app.models import Organization,DataSource,Collector,CollectorRun
 from scripts import remote_protocol_probe as p
@@ -28,8 +29,15 @@ def main():
         org_id=str(org.id)
         legacy=DataSource(organization_id=org.id,name='scope-legacy-do-not-operate',source_type='AWS_EKS')
         db.add(legacy);db.flush();legacy_id=str(legacy.id);db.commit()
+    from tests.test_kubernetes_cluster_associations import KubernetesClusterAssociationTests
+    fixture=KubernetesClusterAssociationTests();fixture.setUp();fixture.db.commit();fixture.doCleanups()
+    def legacy_hashes():
+        with SessionLocal() as db:
+            return {table:hashlib.sha256("\n".join(db.execute(text(f'SELECT row_to_json(t)::text FROM {table} t ORDER BY id')).scalars()).encode()).hexdigest()
+                    for table in ('kubernetes_clusters','kubernetes_cluster_associations','kubernetes_cluster_association_decisions')}
+    before=legacy_hashes()
     root='/api/v1/resource-management'
-    aliases=('KUBERNETES','K8S','AWS_EKS','AZURE_AKS','GOOGLE_GKE','OPENSHIFT','AmazonElasticKubernetesService','microk8s','k3s')
+    aliases=('KUBERNETES','K8S','AWS_EKS','AZURE_AKS','GOOGLE_GKE','OPENSHIFT','AmazonElasticKubernetesService','microk8s','k3s','awsEks','azureAks','gcpGke')
     for kind in aliases:
         payload={'organization_id':org_id,'name':'excluded-'+kind,'source_type':kind}
         check(422,'POST',root+'/data-sources',admin,payload)
@@ -55,6 +63,8 @@ def main():
     check(422,'POST','/api/v1/monitoring/data-sources/'+legacy_id+'/templates',admin,{'template_id':template['id']})
     check(201,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id']})
     check(422,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id'],'overrides':{'collector':{'type':'OpenShift'}}})
+    for domain in ('VM','ETL','API'):
+        check(422,'POST','/api/v1/unified/import/validate',north,{'domain':domain,'format':'JSON','content':json.dumps({'collector':{'type':'Kubernetes'}})})
     for suffix in ('','/'+str(uuid4()),'/'+str(uuid4())+'/associations/'+org_id):
         status,_=p.req('GET',root+'/kubernetes-clusters'+suffix,admin)
         assert status in (403,404,405),status
@@ -67,12 +77,10 @@ def main():
         asyncio.run(_execute_locked(cid,db))
         db.refresh(c);assert c.enabled is False
         assert db.scalar(select(func.count()).select_from(CollectorRun).where(CollectorRun.collector_id==cid))==0
-    # Direct fixture seed of all three immutable legacy tables; full harness
-    # subsequently fingerprints/dumps/restores every table and verifies hashes.
-    from tests.test_kubernetes_cluster_associations import KubernetesClusterAssociationTests
-    fixture=KubernetesClusterAssociationTests();fixture.setUp();fixture.db.commit();fixture.doCleanups()
+    after=legacy_hashes()
+    assert before==after, 'Retired interfaces mutated legacy history'
     result={'status':'PASS','http_checks':checks,'http_count':len(checks),'local_execution':'retired before provider call; zero runs',
-            'legacy_source_id':legacy_id,'supported_source_ids':[s['id'] for s in sources],
+            'legacy_hashes_before':before,'legacy_hashes_after':after,'legacy_source_id':legacy_id,'supported_source_ids':[s['id'] for s in sources],
             'limitations':['Synthetic endpoints only; not genuine provider certification']}
     out=Path(os.environ['RELEASE_EVIDENCE_DIR']);out.mkdir(parents=True,exist_ok=True)
     (out/'scope-http.json').write_text(json.dumps(result,indent=2)+'\n')

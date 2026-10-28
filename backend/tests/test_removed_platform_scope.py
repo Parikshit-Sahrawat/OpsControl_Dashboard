@@ -23,7 +23,7 @@ class OperationalConfigurationTests(unittest.TestCase):
     def test_nested_operational_aliases_rejected_without_erasing_generic_labels(self):
         from app.services.excluded_platforms import require_supported_configuration
         for kind in ('EKS', 'AmazonElasticKubernetesService', 'AzureKubernetesService',
-                     'GoogleKubernetesEngine', 'microk8s', 'K3S', 'RedHatOpenShift'):
+                     'GoogleKubernetesEngine', 'microk8s', 'K3S', 'RedHatOpenShift', 'awsEks', 'azureAks', 'gcpGke'):
             with self.subTest(kind=kind), self.assertRaises(ValueError):
                 require_supported_configuration({'wrapper':[{'collector':{'type':kind}}]})
         generic={'namespace':'payments','workload':'batch','cluster':'postgres-ha',
@@ -46,3 +46,9 @@ class OperationalConfigurationTests(unittest.TestCase):
                    lambda:DataSourceUpdate(connection_config={'opscontrol':{'monitoring_overrides':{'collector':{'type':'K8S'}}}}))
         for factory in factories:
             with self.assertRaises(ValidationError):factory()
+
+    def test_configuration_depth_is_bounded(self):
+        from app.services.excluded_platforms import require_supported_configuration
+        value={}
+        for _ in range(22):value={'nested':value}
+        with self.assertRaises(ValueError):require_supported_configuration(value)
