@@ -304,6 +304,15 @@ try {
   await page.getByRole("button", { name: fixture.vm_resource.name, exact: true }).waitFor();
   await page.getByLabel("Search resources", { exact: true }).fill("no-resource-sentinel");
   await page.getByText("No resources match these authorized filters.").waitFor();
+  // Switch to a DIFFERENT primary navigation target before returning to
+  // Alert Rules. Re-clicking the already-active Rules section cannot be
+  // expected to clear its own search state, so it is not a valid route-reset
+  // acceptance test.
+  await nav("Resource Management");
+  await page.getByRole("tab", { name: "Compute Instances", exact: true }).waitFor();
+  assert.equal(await page.getByLabel("Search resources", { exact: true }).inputValue(), "");
+  await page.getByLabel("Search resources", { exact: true }).fill("no-resource-sentinel");
+  await page.getByText("No resources match these authorized filters.").waitFor();
   await page.getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Alert Rules", exact: true }).click();
   await page.getByRole("tab", { name: "Compute Instances Alert Setup", exact: true }).waitFor();
