@@ -71,14 +71,15 @@ try{
  await page.screenshot({path:out+'/scope-api.png',fullPage:true});
  await page.getByRole('tab',{name:'Data Pipelines',exact:true}).click();
  await absentControls();
- await page.getByRole('button',{name:'Create Data Pipeline',exact:true}).click();
- const wizard=page.getByRole('region',{name:'Data Pipelines eight-step wizard',exact:true});
- await wizard.getByLabel('Integration name',{exact:true}).fill('scope-pentaho-browser');
- await wizard.getByLabel('Organization',{exact:true}).selectOption(org);
- await wizard.getByLabel('Environment',{exact:true}).selectOption('DEV');
- await wizard.getByRole('button',{name:'Save / resume draft',exact:true}).click();
- await page.getByText('Saved. Configuration saving does not certify deployment or data reception.',{exact:true}).waitFor();
- checks.push('Pentaho browser wizard saves persisted draft; no provider execution/certification');
+ await page.getByLabel('Search resources',{exact:true}).fill('scope-pentaho');
+ const pipelineRow=page.getByRole('row').filter({hasText:'scope-pentaho'});await pipelineRow.waitFor();
+ await pipelineRow.getByRole('button',{name:'Edit',exact:true}).click();
+ const pipelineForm=page.getByRole('region',{name:'Edit Data Pipeline',exact:true});
+ await pipelineForm.getByLabel('Resource name',{exact:true}).fill('scope-pentaho reviewed');
+ await pipelineForm.getByRole('button',{name:'Save resource',exact:true}).click();
+ await pipelineForm.waitFor({state:'hidden'});
+ await page.getByRole('row').filter({hasText:'scope-pentaho reviewed'}).waitFor();
+ checks.push('Persisted Pentaho resource edited/saved in real browser; no provider execution/certification');
  await page.screenshot({path:out+'/scope-pipelines.png',fullPage:true});
  for(const path of ['/#/resources/kubernetes-clusters','/#/kubernetes','/kubernetes','/clusters','/eks','/aks','/gke','/openshift']){
    await page.goto(ui+path);await page.waitForLoadState('networkidle');await absentControls();
@@ -86,7 +87,7 @@ try{
  }
  assert.deepEqual(errors,[]);
  await writeFile(out+'/scope-browser.json',JSON.stringify({status:'PASS',checks,assertion_groups:checks.length,page_errors:errors,
-   limitations:['Synthetic configured resources; no genuine provider execution','Pentaho browser draft is configuration acceptance, not genuine runtime certification']},null,2));
+   limitations:['Synthetic configured resources; no genuine provider execution','Pentaho browser edit/save is configuration acceptance, not genuine runtime certification']},null,2));
  console.log('SCOPE REMOVAL BROWSER PASS',checks.length);
 }catch(e){await page.screenshot({path:out+'/scope-browser-failed.png',fullPage:true});throw e;}
 finally{await browser.close();}
