@@ -62,7 +62,8 @@ try{
  await page.getByRole('button',{name:'scope-api',exact:true}).click();
  await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
  const include=page.getByLabel('Include attached Monitoring Template bundles',{exact:true});
- await include.waitFor();assert.equal(await include.isChecked(),true);
+ await include.waitFor();assert.equal(await include.isChecked(),false);
+ await include.check();assert.equal(await include.isChecked(),true);
  await include.uncheck();assert.equal(await include.isChecked(),false);await include.check();
  const persisted=await (await page.request.get(base+'/api/v1/monitoring/data-sources/'+apiResource.data_source_id+'/templates',{headers})).json();
  assert.ok(persisted.some(t=>t.template_id===template.id));
