@@ -250,7 +250,7 @@ try {
   await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
   await dialog.getByRole("alert").getByText("Hostname and DNS/IP address are required before saving a Compute Instance").waitFor();
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
-  await dialog.getByRole("heading", { name: "Event Parameters (optional)", exact: true }).waitFor();
+  await dialog.getByLabel("Resource name", { exact: true }).waitFor();
   assert.equal(await dialog.getByRole("alert").count(), 0);
   const reverseSaveResponse = page.waitForResponse((r) => {
     const path = new URL(r.url()).pathname;
