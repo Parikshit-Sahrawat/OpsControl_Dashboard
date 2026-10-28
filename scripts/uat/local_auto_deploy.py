@@ -42,7 +42,7 @@ def main():
         raise RuntimeError("Invalid source SHA")
     with (state / "deployment.lock").open("a+") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        overlay = Path(__file__).resolve().parents[2] / "deploy/uat/compose.images.yml"
+        overlay = Path(__file__).resolve().parents[2] / "deploy/uat/compose.local-images.yml"
         env = os.environ.copy()
         env.update(STAGE_B_BACKEND_IMAGE=images[0], STAGE_B_FRONTEND_IMAGE=images[1])
         compose = ("docker", "compose", "-p", project, "-f", str(base), "-f", str(override), "-f", str(overlay))
