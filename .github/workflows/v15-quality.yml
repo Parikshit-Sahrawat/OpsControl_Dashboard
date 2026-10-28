@@ -52,8 +52,6 @@ jobs:
           chmod 755 "$OPSCONTROL_OTEL_BINARY"
       - name: Build digest-pinned Linux Agent package
         run: bash scripts/build-demo-agent.sh
-      - name: Temporary formatter diff for UAT remediation
-        run: backend/.venv/bin/python -m black --diff backend/app/telemetry/api.py || true
       - name: Formatting, lint, frontend build
         run: make test-quality
       - name: Unit and Agent lifecycle checks
