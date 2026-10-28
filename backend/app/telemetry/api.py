@@ -343,7 +343,7 @@ def add_method(id: uuid.UUID, payload: MethodInput, db=Depends(get_db)):
         collector_id=id,
         organization_id=s.organization_id,
         **payload.model_dump(exclude={"expected_revision"}),
-        validation_status="SCHEMA_VALID"
+        validation_status="SCHEMA_VALID",
     )
     db.add(m)
     db.flush()
