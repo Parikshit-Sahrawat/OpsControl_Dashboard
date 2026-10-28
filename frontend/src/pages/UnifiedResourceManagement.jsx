@@ -128,6 +128,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     [form, setForm] = useState(null),
     [reload, setReload] = useState(0),
     [collector, setCollector] = useState(null),
+    [collectorTarget, setCollectorTarget] = useState(null),
     [source, setSource] = useState(null),
     [issues, setIssues] = useState([]),
     [link, setLink] = useState({
@@ -155,6 +156,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       setSelected(null);
       setCollector(null);
       setSource(null);
+      setCollectorTarget(null);
       setSearch("");
       setOffset(0);
     }
@@ -257,6 +259,16 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       setError(e.message);
     }
   };
+  // Existing collector associations are administered in the single central
+  // inventory. Do not create a second configuration editor in Compute details.
+  const manageCollector = (resource) => {
+    if (!resource.primary_collector_id) {
+      setError("No collector is associated with this Compute Instance. Complete agent onboarding before managing it.");
+      return;
+    }
+    setCollectorTarget({ id: resource.primary_collector_id, organizationId: resource.organization_id });
+    chooseArea("collectors");
+  };
   const formView = form && (
     <ResourceForm
       {...form}
@@ -302,7 +314,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
         </select>
       </label>
       {["organizations", "collectors"].includes(area) && (
-        <ResourceManagementV2 user={user} section={area} embedded onOrganizationSaved={onCustomerCreated} />
+        <ResourceManagementV2 user={user} section={area} embedded collectorTarget={area === "collectors" ? collectorTarget : null} onCollectorTargetHandled={() => setCollectorTarget(null)} onOrganizationSaved={onCustomerCreated} />
       )}
       {!["organizations", "collectors"].includes(area) && <>
       <div
