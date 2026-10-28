@@ -21,6 +21,7 @@ jobs:
       backend: ${{ steps.backend.outputs.digest }}
       frontend: ${{ steps.frontend.outputs.digest }}
       migration_hash: ${{ steps.migrations.outputs.hash }}
+      image_prefix: ${{ steps.names.outputs.prefix }}
     steps:
       - name: Verify merge SHA matches current main
         id: source
@@ -43,6 +44,9 @@ jobs:
         run: |
           set -euo pipefail
           echo "hash=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+      - name: Normalize GHCR repository name
+        id: names
+        run: echo "prefix=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -56,7 +60,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile.uat
           push: true
-          tags: ghcr.io/${{ github.repository }}-backend:${{ steps.source.outputs.sha }}
+          tags: ${{ steps.names.outputs.prefix }}-backend:${{ steps.source.outputs.sha }}
           provenance: true
       - name: Build frontend on hosted runner
         id: frontend
@@ -65,7 +69,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile.demo
           push: true
-          tags: ghcr.io/${{ github.repository }}-frontend:${{ steps.source.outputs.sha }}
+          tags: ${{ steps.names.outputs.prefix }}-frontend:${{ steps.source.outputs.sha }}
           build-args: |
             VITE_API_BASE_URL=${{ vars.LOCAL_UAT_PUBLIC_API_URL }}
           provenance: true
@@ -106,8 +110,8 @@ jobs:
           }
       - name: Deploy only application services (never database or agent)
         env:
-          BACKEND_IMAGE: ghcr.io/${{ github.repository }}-backend@${{ needs.build.outputs.backend }}
-          FRONTEND_IMAGE: ghcr.io/${{ github.repository }}-frontend@${{ needs.build.outputs.frontend }}
+          BACKEND_IMAGE: ${{ needs.build.outputs.image_prefix }}-backend@${{ needs.build.outputs.backend }}
+          FRONTEND_IMAGE: ${{ needs.build.outputs.image_prefix }}-frontend@${{ needs.build.outputs.frontend }}
           SOURCE_SHA: ${{ needs.build.outputs.sha }}
           GH_TOKEN: ${{ github.token }}
         run: |
