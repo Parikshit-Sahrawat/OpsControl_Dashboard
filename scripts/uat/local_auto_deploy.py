@@ -27,6 +27,7 @@ def check_url(url):
 
 def main():
     base = Path(required("LOCAL_UAT_BASE_COMPOSE")).resolve(strict=True)
+    override = Path(required("LOCAL_UAT_OVERRIDE_COMPOSE")).resolve(strict=True)
     state = Path(required("LOCAL_UAT_STATE_DIR")).resolve(strict=True)
     project = required("LOCAL_UAT_PROJECT")
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,62}", project):
@@ -44,10 +45,10 @@ def main():
         overlay = Path(__file__).resolve().parents[2] / "deploy/uat/compose.images.yml"
         env = os.environ.copy()
         env.update(STAGE_B_BACKEND_IMAGE=images[0], STAGE_B_FRONTEND_IMAGE=images[1])
-        compose = ("docker", "compose", "-p", project, "-f", str(base), "-f", str(overlay))
+        compose = ("docker", "compose", "-p", project, "-f", str(base), "-f", str(override), "-f", str(overlay))
         config = json.loads(run(*compose, "config", "--format", "json", env=env, capture=True))
         services = config["services"]
-        if not {"api", "worker", "frontend", "postgres", "migration"} <= services.keys():
+        if not {"api", "worker", "frontend", "postgres", "ingestion-gateway"} <= services.keys():
             raise RuntimeError("Existing Compose project lacks expected services")
         if any(services[s].get("build") for s in ("api", "worker", "frontend")):
             raise RuntimeError("Build on UAT host is prohibited")
@@ -56,7 +57,7 @@ def main():
                 raise RuntimeError(f"Unexpected image for {name}")
         if services["worker"].get("image", "").lower() != images[0]:
             raise RuntimeError("Unexpected worker image")
-        # This operation never runs migrations, postgres or the host agent.
+        # This operation never runs migrations, postgres, gateway or the host agent.
         run(*compose, "pull", "api", "worker", "frontend", env=env)
         run(*compose, "up", "-d", "--no-deps", "api", "worker", "frontend", env=env)
         time.sleep(5)
