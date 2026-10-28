@@ -1,3 +1,5 @@
+> Closure update: see [FINAL_ACCEPTANCE_MATRIX.md](FINAL_ACCEPTANCE_MATRIX.md). Earlier results/limitations below are historical snapshots, not the final closure verdict.
+
 # Regression results — 2026-10-28
 
 | SHA / check | Command and evidence | Result |

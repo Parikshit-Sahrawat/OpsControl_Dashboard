@@ -1,3 +1,5 @@
+> Closure update: see [FINAL_ACCEPTANCE_MATRIX.md](FINAL_ACCEPTANCE_MATRIX.md). Earlier results/limitations below are historical snapshots, not the final closure verdict.
+
 # Source change report — 2026-10-28
 
 Baseline `09a578f70282c7889a515c332c948f1940ae6719`. Initial removal `274175850c8553ecbf27d8cb0e7a2d9f5136a9da`; residual product/UI and regression correction `679ed2887a53eec4fe226876cd945fdd373fbe46`; synthetic preservation probe `c08be56909caee686eac5107846bdacea5d26346`; final fixture/guide removal `2e544d0f5cbfccaaebe7c71cf479813e464a17ab`.

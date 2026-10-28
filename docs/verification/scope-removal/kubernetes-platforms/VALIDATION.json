@@ -1,17 +1,17 @@
 {
   "baseline": "09a578f70282c7889a515c332c948f1940ae6719",
-  "final_source_sha": "5c0c5074f959bc47c3e2bb1591c2b421ad46b164",
-  "product_test_sha": "5c0c5074f959bc47c3e2bb1591c2b421ad46b164",
-  "status": "INCOMPLETE_ACCEPTANCE",
+  "final_source_sha": "46e6f0f585460795eec385bae6465929187a9c46",
+  "product_test_sha": "46e6f0f585460795eec385bae6465929187a9c46",
+  "status": "FOUR_REMOVAL_WORKSTREAMS_PASS_PENDING_OWNER_AND_FINAL_CI",
   "backend": {
-    "total": 545,
-    "passed": 543,
+    "total": 549,
+    "passed": 547,
     "skipped": 2,
-    "errors": 0,
-    "failed": 0
+    "failed": 0,
+    "errors": 0
   },
   "frontend": {
-    "passed": 36,
+    "passed": 38,
     "failed": 0,
     "lint": "PASS",
     "build": "PASS"
@@ -19,9 +19,16 @@
   "fresh_migrations": "PASS",
   "populated_no_op_upgrade_and_restore": "PASS_SYNTHETIC_100_TABLES",
   "destructive_schema_retirement": "BLOCKED",
-  "browser_acceptance": "NOT TESTED",
-  "live_http_harness": "NOT TESTED",
-  "global_backend_lint": "NOT TESTED",
+  "browser_acceptance": {
+    "status": "PASS",
+    "assertion_groups": 16
+  },
+  "live_http_harness": {
+    "status": "PASS",
+    "grouped_gates": 13,
+    "focused_http_assertions": 67
+  },
+  "global_backend_lint": "Python compilation PASS; no global style-cleanliness claim",
   "production_changes": false,
   "uat_access": false,
   "collector_version_changed": false,
@@ -29,16 +36,35 @@
   "remote_main_at_delivery": "62a4eb4643c09594569aa61f0a60ae64035e6ede",
   "baseline_drift": "Integrated remote main 62a4eb4643c09594569aa61f0a60ae64035e6ede; tests rerun",
   "documentation_checks": {
-    "json_validity": "PASS",
-    "required_manifest": "PASS",
-    "diff_whitespace": "PASS",
-    "historical_dev05_evidence_modified": false,
+    "json_validity": "PASS_FOR_STRUCTURED_JSON",
+    "raw_legacy_format_failures": 7,
     "local_markdown_links": "PASS",
-    "artifact_hashes": "PASS"
+    "artifact_inventory": "PASS",
+    "artifact_hashes": "PASS",
+    "historical_dev05_evidence_modified": false
   },
   "compressed_search_inventory": {
     "path": "inventory-after.txt.gz",
     "uncompressed_sha256": "63829a0b1dacb115fde8fdda3b3557adb8b420c0208527ee29b30d3b268fba7a",
     "lossless_roundtrip": "PASS"
+  },
+  "legacy_preservation": "PASS_FRESH_POPULATED_RESTORE_HASHES",
+  "semantic_configuration_audit": "PASS_AUDITED_PATHS",
+  "hosted_ci": {
+    "status": "PENDING_AT_EVIDENCE_COMMIT",
+    "final_verification": "PR73 closure comment after push"
+  },
+  "raw_legacy_json_serialization_failures": {
+    "files": [
+      "close-2026-10-28/http-browser/eks.json.raw.txt",
+      "close-attempts/run1-evidence/eks.json.raw.txt",
+      "close-attempts/run2-evidence/eks.json.raw.txt",
+      "close-attempts/run6-evidence/eks.json.raw.txt",
+      "close-attempts/run5-evidence/eks.json.raw.txt",
+      "close-attempts/run7-evidence/eks.json.raw.txt",
+      "close-attempts/run4-evidence/eks.json.raw.txt"
+    ],
+    "reason": "Existing EKS auxiliary ledger appends literal backslash-n; bytes preserved, not used as canonical machine-readable acceptance",
+    "primary_closure_ledgers_valid": true
   }
 }

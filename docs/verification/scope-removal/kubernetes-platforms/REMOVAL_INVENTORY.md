@@ -1,3 +1,5 @@
+> Closure update: see [FINAL_ACCEPTANCE_MATRIX.md](FINAL_ACCEPTANCE_MATRIX.md). Earlier results/limitations below are historical snapshots, not the final closure verdict.
+
 # Removal inventory — 2026-10-28
 
 Baseline `09a578f70282c7889a515c332c948f1940ae6719`; final source/fixture revision `2e544d0f5cbfccaaebe7c71cf479813e464a17ab`. Raw complete tracked searches: [before](inventory-before.txt), [after](inventory-after.txt.gz). [Per-file categories](inventory.json) classify locations; generic substring matches (deployment, namespace, pod, cluster) are not sufficient grounds for deletion. Semantic reconciliation of every historical planning match remains incomplete.
