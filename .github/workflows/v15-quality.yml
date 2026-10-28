@@ -38,18 +38,13 @@ jobs:
       - name: Install locked runtime and development tools
         run: |
           python -m venv backend/.venv
-          backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
           npm ci --prefix frontend --no-audit --no-fund
           npm install --prefix "$RUNNER_TEMP/v15-tools" --no-audit --no-fund prettier@3.5.3 playwright@1.56.1
           "$RUNNER_TEMP/v15-tools/node_modules/.bin/playwright" install --with-deps chromium
       - name: Extract digest-pinned actual OTel runtime
         run: |
-          image=otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
-          docker pull "$image"
-          container=$(docker create --network none "$image")
-          trap 'docker rm "$container" >/dev/null' EXIT
-          docker cp "$container:/otelcol-contrib" "$OPSCONTROL_OTEL_BINARY"
-          chmod 755 "$OPSCONTROL_OTEL_BINARY"
+          python verification/dev052/provision_contrib.py --output "$OPSCONTROL_OTEL_BINARY"
       - name: Build digest-pinned Linux Agent package
         run: bash scripts/build-demo-agent.sh
       - name: Formatting, lint, frontend build

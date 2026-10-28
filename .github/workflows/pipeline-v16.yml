@@ -27,7 +27,7 @@ jobs:
       - name: Install existing locked backend tools
         run: |
           python -m venv backend/.venv
-          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
       - name: Static and focused transport checks
         run: |
           backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py

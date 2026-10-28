@@ -1,0 +1,86 @@
+[
+  {
+    "case": "boundary_before_delete_2",
+    "label": "native-pg.json",
+    "time_ns": 1792986403985220124,
+    "expected_distinct": 267,
+    "persisted_distinct": 257,
+    "missing_ids": [
+      "event-0000",
+      "event-0001",
+      "event-0002",
+      "event-0003",
+      "event-0004",
+      "event-0005",
+      "event-0006",
+      "event-0007",
+      "event-0008",
+      "event-0009"
+    ],
+    "api_accepted_attempts": 257,
+    "physical_rows": 257,
+    "physical_duplicate_rows": 0,
+    "independent_pg_row_time_reconstruction": "PASS",
+    "delivery_status": "FAIL"
+  },
+  {
+    "case": "boundary_after_delete_2",
+    "label": "native-pg.json",
+    "time_ns": 1792986439643977786,
+    "expected_distinct": 267,
+    "persisted_distinct": 257,
+    "missing_ids": [
+      "event-0267",
+      "event-0268",
+      "event-0269",
+      "event-0270",
+      "event-0271",
+      "event-0272",
+      "event-0273",
+      "event-0274",
+      "event-0275",
+      "event-0276"
+    ],
+    "api_accepted_attempts": 257,
+    "physical_rows": 257,
+    "physical_duplicate_rows": 0,
+    "independent_pg_row_time_reconstruction": "PASS",
+    "delivery_status": "FAIL"
+  },
+  {
+    "case": "boundary_partial_replacement_2",
+    "label": "native-pg.json",
+    "time_ns": 1792986478595996716,
+    "expected_distinct": 267,
+    "persisted_distinct": 258,
+    "missing_ids": [
+      "event-0535",
+      "event-0536",
+      "event-0537",
+      "event-0538",
+      "event-0539",
+      "event-0540",
+      "event-0541",
+      "event-0542",
+      "event-0543"
+    ],
+    "api_accepted_attempts": 258,
+    "physical_rows": 258,
+    "physical_duplicate_rows": 0,
+    "independent_pg_row_time_reconstruction": "PASS",
+    "delivery_status": "FAIL"
+  },
+  {
+    "case": "boundary_after_reenqueue_replacement_1",
+    "label": "native-pg.json",
+    "time_ns": 1792986531432510461,
+    "expected_distinct": 267,
+    "persisted_distinct": 267,
+    "missing_ids": [],
+    "api_accepted_attempts": 267,
+    "physical_rows": 267,
+    "physical_duplicate_rows": 0,
+    "independent_pg_row_time_reconstruction": "PASS",
+    "delivery_status": "PASS"
+  }
+]

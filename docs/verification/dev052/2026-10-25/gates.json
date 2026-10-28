@@ -1,0 +1,117 @@
+{
+  "baseline": "09a578f70282c7889a515c332c948f1940ae6719",
+  "implementation_commit": "b8a517c",
+  "decision": "NO-GO",
+  "gates": [
+    {
+      "gate": "Pinned Contrib runtime",
+      "status": "PASS",
+      "evidence_or_blocker": "2 exact runtime tests passed, zero skips; image and binary hashes verified"
+    },
+    {
+      "gate": "Targeted auth/tenant/worker/TLS/redaction/Pentaho contracts",
+      "status": "PASS",
+      "evidence_or_blocker": "57 unit/contract tests; not genuine provider certification"
+    },
+    {
+      "gate": "Frontend regression/lint/build",
+      "status": "PASS",
+      "evidence_or_blocker": "36 tests; lint/build completed"
+    },
+    {
+      "gate": "Provision mismatch rejection",
+      "status": "PASS",
+      "evidence_or_blocker": "1 negative test"
+    },
+    {
+      "gate": "Historical RT-LAB integrity",
+      "status": "PASS",
+      "evidence_or_blocker": "5/5 hashes; offline historical integrity only"
+    },
+    {
+      "gate": "Genuine Pentaho Carte/Pan/Kitchen",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "No approved reachable runtime/build/license, scoped credentials, CA or workload authority"
+    },
+    {
+      "gate": "Cloud and native Windows live certification",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "No approved identities or hosts"
+    },
+    {
+      "gate": "Kubernetes monitoring",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Deferred baseline; not approved for this release"
+    },
+    {
+      "gate": "Required GitHub checks",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Branch protection API denied HTTP 403; PR checks captured separately after creation; main checks not substitutes"
+    },
+    {
+      "gate": "Python environment vulnerability scan",
+      "status": "FAIL",
+      "evidence_or_blocker": "9 observed advisories: black 25.1.0 (3), pip 25.0.1 (6); tooling/env scope, applicability triage required, no production exploit claim"
+    },
+    {
+      "gate": "npm dependency audit",
+      "status": "PASS",
+      "evidence_or_blocker": "0 reported vulnerabilities at observation time"
+    },
+    {
+      "gate": "Python environment CycloneDX SBOM",
+      "status": "PASS",
+      "evidence_or_blocker": "Generated; not an image SBOM or license clearance"
+    },
+    {
+      "gate": "Image provenance/SBOM/license/container security",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "Contrib image digest verified; release images not pinned universally, complete image SBOM/scans and license review unavailable"
+    },
+    {
+      "gate": "Fresh populated migration/backup/restore/rollback rehearsal",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Fresh alert/dashboard/recovery end-to-end",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Production control-plane TLS",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Load testing",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Real external notification delivery",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Operational DR",
+      "status": "NOT TESTED",
+      "evidence_or_blocker": "Historical runbooks/evidence exist where noted; no fresh approved environment/criteria; no certification inferred"
+    },
+    {
+      "gate": "Observability",
+      "status": "PASS",
+      "evidence_or_blocker": "Actual collector acceptance and scrape/file restart test; full deployed observability remains untested"
+    },
+    {
+      "gate": "Resource cleanup",
+      "status": "PASS",
+      "evidence_or_blocker": "Only named artifact extraction containers used and removed; runtime tests own local processes/tempfiles; no product stack or synthetic secrets created"
+    },
+    {
+      "gate": "DEV-05.2A image security/license gate",
+      "status": "BLOCKED",
+      "evidence_or_blocker": "9 candidate/reference image-level SBOM+scan pairs; High/Critical matches not waived; 9 prior advisories UNRESOLVED, final registry digests unset, accountable review and license/NOTICE signoff absent. See ../security/2026-10-25/SECURITY_DECISION.md"
+    }
+  ]
+}

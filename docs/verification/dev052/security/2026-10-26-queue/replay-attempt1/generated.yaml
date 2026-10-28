@@ -1,0 +1,75 @@
+# opscontrol-filelog-durable-handoff-v1: stanza.synchronousLogEmitter
+receivers:
+  filelog/79b2bb11895544cda824a6f7f1359ef5_7f252a43adc14bcd:
+    include:
+    - /fixture/input/*.log
+    include_file_path: true
+    include_file_name: true
+    exclude:
+    - ${env:OPSCONTROL_AGENT_STATE_DIR}/**
+    start_at: beginning
+    storage: file_storage/opscontrol
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 0s
+    operators:
+    - type: json_parser
+    - type: add
+      field: attributes["opscontrol.method.id"]
+      value: 79b2bb11-8955-44cd-a824-a6f7f1359ef5
+    - type: add
+      field: attributes["opscontrol.log.source.id"]
+      value: 79b2bb11-8955-44cd-a824-a6f7f1359ef5:7f252a43adc14bcd
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+  resource/opscontrol:
+    attributes:
+    - key: opscontrol.collector.id
+      value: 0d444e5f-b668-4063-930c-1bfe963fc6fd
+      action: upsert
+    - key: opscontrol.organization.id
+      value: 44c54de6-7129-410f-855b-fc4cfe2e4056
+      action: upsert
+    - key: deployment.environment
+      value: SANDBOX
+      action: upsert
+exporters:
+  otlphttp/opscontrol:
+    endpoint: https://172.18.0.1:42219/api/v1/agent/otlp
+    headers:
+      Authorization: Bearer ${env:OPSCONTROL_AGENT_TOKEN}
+    tls:
+      insecure: false
+    retry_on_failure:
+      enabled: true
+      max_elapsed_time: 0s
+    sending_queue:
+      enabled: true
+      queue_size: 256
+      storage: file_storage/opscontrol
+extensions:
+  health_check:
+    endpoint: 127.0.0.1:13133
+  file_storage/opscontrol:
+    directory: ${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints
+    create_directory: true
+    fsync: true
+service:
+  extensions:
+  - health_check
+  - file_storage/opscontrol
+  pipelines:
+    logs:
+      receivers:
+      - filelog/79b2bb11895544cda824a6f7f1359ef5_7f252a43adc14bcd
+      processors:
+      - memory_limiter
+      - resource/opscontrol
+      exporters:
+      - otlphttp/opscontrol

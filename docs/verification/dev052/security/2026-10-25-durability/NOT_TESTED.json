@@ -1,0 +1,37 @@
+[
+  {
+    "case": "CHK-002 protobuf downgrade/transition",
+    "status": "BLOCKED",
+    "reason": "Separate unresolved gate; guard/pin and recovery utility unchanged."
+  },
+  {
+    "case": "Accountable runtime feature-gate and operational acceptance",
+    "status": "BLOCKED",
+    "reason": "Alpha synchronous emitter needs owner review; full-queue loss prevents approval."
+  },
+  {
+    "case": "Storage failure, corruption or host/power loss",
+    "status": "NOT TESTED",
+    "reason": "SIGKILL on functioning storage only; fsync configuration is not hardware certification."
+  },
+  {
+    "case": "Outage beyond five minutes and production retention/load capacity",
+    "status": "NOT TESTED",
+    "reason": "Finite controlled outage/retry probes only; no sustained-load or retention sizing certification."
+  },
+  {
+    "case": "Fresh genuine provider/platform certification",
+    "status": "NOT TESTED",
+    "reason": "No genuine targets authorized; isolated Linux synthetic fixture only."
+  },
+  {
+    "case": "New full image SBOM/scan, licensing, pip, CI remediation",
+    "status": "NOT TESTED",
+    "reason": "Explicitly outside DEV-05.2A.3C scope; prior independent gates remain blocking."
+  },
+  {
+    "case": "Production missing-event monitoring / per-event acknowledgement protocol",
+    "status": "NOT TESTED",
+    "reason": "Independent ID inventory and ledger are test instrumentation, not a shipped detector."
+  }
+]

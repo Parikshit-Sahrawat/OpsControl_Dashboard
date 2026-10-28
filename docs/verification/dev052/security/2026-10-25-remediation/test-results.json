@@ -1,0 +1,41 @@
+{
+  "backend_tests": {
+    "run": 44,
+    "failures": 0,
+    "skips": 0
+  },
+  "frontend_tests": {
+    "run": 36,
+    "failures": 0
+  },
+  "lint_and_build": "PASS",
+  "patched_black_57_file_compatibility": "PASS",
+  "workflow_validation": "PASS",
+  "patched_ci_audit": "zero known vulnerabilities reported",
+  "gateway_exact_candidate_tls_auth_smoke": "PASS",
+  "frontend_readonly_config_with_tmpfs": "PASS",
+  "runtime_no_pip_ensurepip_black_uid10001": "PASS",
+  "legacy_contrib_tests": {
+    "tests": [
+      "tests.test_collection_v15.CollectionV15Tests.test_actual_contrib_accepts_five_methods",
+      "tests.test_collection_v15.RealCollectionRuntimeTests.test_actual_scrape_and_log_rotation_truncation_restart"
+    ],
+    "run": 2,
+    "skipped": 0,
+    "failures": 0,
+    "errors": 0,
+    "status": "PASS"
+  },
+  "new_collector_compatibility": {
+    "candidate": "0.163.2",
+    "application_contract": "0.123.0",
+    "application_version_guard": "BLOCKED",
+    "raw_schema_validation_exit": 0,
+    "production_promoted": false
+  },
+  "six_image_sbom_scan_pairs": "PASS",
+  "critical_high_triage_rows": 779,
+  "remaining_high_matches": 110,
+  "remaining_critical_matches": 0,
+  "exceptions": []
+}

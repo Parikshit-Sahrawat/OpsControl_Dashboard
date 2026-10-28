@@ -1,0 +1,26 @@
+non-root, no capabilities, no-new-privileges: PASS
+five-method configuration validated by exact candidate: PASS
+authenticated enrollment: PASS
+supervisor applies approved checksum: PASS
+all five methods have persisted, attributed API evidence: PASS
+server verifies runtime revision and authenticated receipts: PASS
+file rotation delivered: PASS
+file truncation delivered: PASS
+checkpoint restart delivered appended record: PASS
+same identity preserved across restart: PASS
+real supervisor envelope authenticated ingestion: PASS
+invalid supervisor credential rejected: PASS
+malformed and foreign-method envelopes rejected: PASS
+untrusted CA and TLS hostname mismatch rejected: PASS
+HTTPS-only management enforced: PASS
+egress to owned disjoint fixture blocked: PASS
+API outage acknowledged: PASS
+same API endpoint restored: PASS
+queued delivery after API interruption: PASS
+no non-loopback TCP listeners in agent container: PASS
+generated config accepted by guarded rollback binary: PASS
+Traceback (most recent call last):
+  File "/verification/e2e.py", line 353, in <module>
+    assert old.poll() is None, "Guarded rollback binary failed startup"
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: Guarded rollback binary failed startup

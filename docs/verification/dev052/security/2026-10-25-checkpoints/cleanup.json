@@ -1,0 +1,79 @@
+{
+  "status": "PASS",
+  "observed_utc": "2026-10-25T13:37:08.366659+00:00",
+  "remaining_project_resources": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3b-f5362160-pg",
+        "dev052a3b-f5362160-denied-target",
+        "dev052a3b-f5362160-agent"
+      ],
+      "owned_networks": [
+        "dev052a3b-f5362160",
+        "dev052a3b-f5362160-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 2,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3b-fa522aa9-pg",
+        "dev052a3b-fa522aa9-denied-target",
+        "dev052a3b-fa522aa9-agent"
+      ],
+      "owned_networks": [
+        "dev052a3b-fa522aa9",
+        "dev052a3b-fa522aa9-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 3,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3b-4f0eac60-pg",
+        "dev052a3b-4f0eac60-denied-target",
+        "dev052a3b-4f0eac60-agent"
+      ],
+      "owned_networks": [
+        "dev052a3b-4f0eac60",
+        "dev052a3b-4f0eac60-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    },
+    {
+      "attempt": 4,
+      "status": "PASS",
+      "errors": [],
+      "owned_containers": [
+        "dev052a3b-20afaec6-pg",
+        "dev052a3b-20afaec6-denied-target",
+        "dev052a3b-20afaec6-agent"
+      ],
+      "owned_networks": [
+        "dev052a3b-20afaec6",
+        "dev052a3b-20afaec6-denied"
+      ],
+      "private_credentials_tls_and_database_volume_removed": true,
+      "broad_cleanup": false
+    }
+  ],
+  "state_evidence": "Only synthetic checkpoint/log backups retained with hashes; credential-byte check before archive export; identity/TLS/password files excluded",
+  "retained": "Non-running existing images/tools/verified binaries and non-secret staged sources",
+  "no_broad_cleanup": true,
+  "no_publication_production_deployment_or_merge": true
+}

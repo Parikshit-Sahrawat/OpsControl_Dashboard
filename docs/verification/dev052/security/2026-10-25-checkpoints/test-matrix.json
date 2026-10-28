@@ -1,0 +1,128 @@
+{
+  "phase": "DEV-05.2A.3B",
+  "overall_native_acceptance": "FAIL",
+  "security_gate": "BLOCKED",
+  "release": "NO-GO",
+  "counts_are_per_run_not_additive": true,
+  "cases": [
+    {
+      "case": "Existing collection and security regressions",
+      "status": "PASS",
+      "tests_run": 53,
+      "log": "existing-regressions.log"
+    },
+    {
+      "case": "Recovery and security unit tests",
+      "status": "PASS",
+      "tests_run": 17,
+      "log": "unit-final.log"
+    },
+    {
+      "case": "Native lab attempt 1",
+      "status": "FAIL",
+      "exit_code": 1,
+      "error": "AssertionError: Agent E2E failed; retained redacted logs",
+      "cleanup": "PASS",
+      "evidence": "lab-attempt-1/lab-result.json"
+    },
+    {
+      "case": "Native lab attempt 2",
+      "status": "FAIL",
+      "exit_code": 1,
+      "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS",
+      "cleanup": "PASS",
+      "evidence": "lab-attempt-2/lab-result.json"
+    },
+    {
+      "case": "Native lab attempt 3",
+      "status": "FAIL",
+      "exit_code": 1,
+      "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS",
+      "cleanup": "PASS",
+      "evidence": "lab-attempt-3/lab-result.json"
+    },
+    {
+      "case": "Native lab attempt 4",
+      "status": "FAIL",
+      "exit_code": 1,
+      "error": "Fixture retained failed cases; independent postcheck completed, not a global PASS",
+      "cleanup": "PASS",
+      "evidence": "lab-attempt-4/lab-result.json"
+    },
+    {
+      "case": "Populated legacy JSON upgrade, rotation/truncation and compatible restart",
+      "status": "PASS",
+      "evidence": "lab-attempt-4/e2e.json"
+    },
+    {
+      "case": "Unclean default upgrade and restart delivery",
+      "status": "FAIL",
+      "missing_ids_before_recovery": [
+        "event-0028",
+        "event-0029",
+        "event-0030",
+        "event-0031",
+        "event-0032",
+        "event-0033",
+        "event-0034",
+        "event-0035",
+        "event-0036",
+        "event-0037",
+        "event-0038",
+        "event-0039",
+        "event-0040",
+        "event-0041",
+        "event-0042",
+        "event-0043"
+      ],
+      "validation_window_seconds": 65,
+      "evidence": "lab-attempt-4/phase-db-reconciliation.json"
+    },
+    {
+      "case": "Downgrade .123 against default protobuf checkpoints",
+      "status": "FAIL",
+      "reproduction_check": "PASS",
+      "exit_code": 1,
+      "evidence": "lab-attempt-4/downgrade-failure.log"
+    },
+    {
+      "case": "Bounded legacy-restore/archive-replay recovery",
+      "status": "PASS",
+      "scope": "finite synthetic fixture, not general exactly-once certification",
+      "expected_ids": 44,
+      "persisted_distinct_ids": 44,
+      "db_source_event_rows": 100,
+      "db_duplicate_rows": 56,
+      "missing_ids": [],
+      "evidence": "lab-attempt-4/event-accounting.json"
+    },
+    {
+      "case": "Partial staging, pending-start guard, atomic-exchange process death, idempotent resume and repeated rollback restart",
+      "status": "PASS",
+      "evidence": [
+        "unit-final.log",
+        "lab-attempt-4/e2e.json"
+      ]
+    },
+    {
+      "case": "Backup artifact restoration/hash/mode verification",
+      "status": "PASS",
+      "evidence": "lab-attempt-4/retained-backup-verification.json"
+    },
+    {
+      "case": "Direct protobuf-value converter",
+      "status": "NOT TESTED",
+      "reason": "Not implemented; explicitly bounded backup/archive recovery selected"
+    },
+    {
+      "case": "Other signals, production promotion, physical power loss, unsupported OS/filesystem and irreversible missing-source cases",
+      "status": "BLOCKED",
+      "reason": "Not qualified; operator runbook refusal boundaries apply"
+    },
+    {
+      "case": "Production guard",
+      "status": "PASS",
+      "value": "0.123.0 unchanged; no shipping application/pin changes"
+    }
+  ]
+}

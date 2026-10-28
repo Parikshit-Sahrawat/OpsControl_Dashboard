@@ -1,0 +1,46 @@
+{
+  "status": "FAIL",
+  "scope": "synthetic isolated Linux fixture",
+  "checks": [
+    "non-root, no capabilities, no-new-privileges",
+    "five-method configuration validated by exact candidate",
+    "authenticated enrollment",
+    "supervisor applies approved checksum",
+    "all five methods have persisted, attributed API evidence",
+    "server verifies runtime revision and authenticated receipts",
+    "file rotation delivered",
+    "file truncation delivered",
+    "checkpoint restart delivered appended record",
+    "same identity preserved across restart",
+    "real supervisor envelope authenticated ingestion",
+    "invalid supervisor credential rejected",
+    "malformed and foreign-method envelopes rejected",
+    "untrusted CA and TLS hostname mismatch rejected",
+    "HTTPS-only management enforced",
+    "egress to owned disjoint fixture blocked",
+    "API outage acknowledged",
+    "same API endpoint restored",
+    "queued delivery after API interruption",
+    "no non-loopback TCP listeners in agent container",
+    "generated config accepted by guarded rollback binary"
+  ],
+  "uid": 1000,
+  "collector_id": "65ff692c-f198-453f-b3d6-e06c8db4dd30",
+  "methods": {
+    "HOST_METRICS": "a26c699f-9b98-4059-aaa5-3cac3319800f",
+    "SERVICES": "895f76ae-f90c-4a3e-9440-583b5b0994dd",
+    "SYSLOG_RECEIVER": "ab9d293d-919c-493b-a2e1-ebc31e77295d",
+    "FILE_LOG": "b6750625-ae8e-4cff-aabb-029102514f9d",
+    "METRIC_SCRAPE": "9585f29e-78be-42ea-9948-31f01ff908f3"
+  },
+  "config_sha256": "533c8a6a8de62d4d5f046333c77ad69e3cb0ee5de6a12b74f45b298fb0e58f4f",
+  "tcp_listeners": [
+    "0100007F:951D",
+    "0100007F:884B",
+    "0100007F:334D",
+    "0100007F:3B60",
+    "0100007F:22B8",
+    "0B00007F:879D"
+  ],
+  "error": "AssertionError: Guarded rollback binary failed startup"
+}

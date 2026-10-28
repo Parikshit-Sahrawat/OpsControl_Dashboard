@@ -1,0 +1,133 @@
+receivers:
+  hostmetrics/cc8af85057f5478d86091ded0580230c:
+    collection_interval: 5s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.utilization:
+            enabled: true
+      memory: {}
+  otlp/services_8acd3719972649b9818ab7a090556fbe:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:0
+  syslog/8f90a33aa92b404fb09e77a31a62af0a:
+    tcp:
+      listen_address: 127.0.0.1:15200
+    protocol: rfc5424
+    operators:
+    - type: add
+      field: attributes["opscontrol.method.id"]
+      value: 8f90a33a-a92b-404f-b09e-77a31a62af0a
+  filelog/1d0b0ea12bdb489ab90dd32730c51aab_43bc152275723f55:
+    include:
+    - /fixture/events.log
+    include_file_path: true
+    include_file_name: true
+    exclude:
+    - ${env:OPSCONTROL_AGENT_STATE_DIR}/**
+    start_at: beginning
+    storage: file_storage/opscontrol
+    operators:
+    - type: add
+      field: attributes["opscontrol.method.id"]
+      value: 1d0b0ea1-2bdb-489a-b90d-d32730c51aab
+    - type: add
+      field: attributes["opscontrol.log.source.id"]
+      value: 1d0b0ea1-2bdb-489a-b90d-d32730c51aab:43bc152275723f55
+  prometheus/491ecc700e674fe88b538be1bd70e445:
+    config:
+      scrape_configs:
+      - job_name: opscontrol_491ecc700e674fe88b538be1bd70e445
+        scrape_timeout: 2s
+        scrape_interval: 5s
+        metrics_path: /metrics
+        scheme: http
+        static_configs:
+        - targets:
+          - 127.0.0.1:39235
+          labels:
+            opscontrol_method_id: 491ecc70-0e67-4fe8-8b53-8be1bd70e445
+        metric_relabel_configs:
+        - source_labels:
+          - __name__
+          regex: (?:up|scrape_duration_seconds|scrape_samples_scraped)|(?:dev052a3_.*)
+          action: keep
+processors:
+  resource/method_cc8af85057f5478d86091ded0580230c:
+    attributes:
+    - key: opscontrol.method.id
+      value: cc8af850-57f5-478d-8609-1ded0580230c
+      action: upsert
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 256
+    spike_limit_mib: 64
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+  resource/opscontrol:
+    attributes:
+    - key: opscontrol.collector.id
+      value: 958809a5-66dd-4399-83f4-0938b1fbaa9b
+      action: upsert
+    - key: opscontrol.organization.id
+      value: 7eb2b1b6-97a2-41d8-824a-45c82606a0cf
+      action: upsert
+    - key: deployment.environment
+      value: SANDBOX
+      action: upsert
+exporters:
+  otlphttp/opscontrol:
+    endpoint: https://172.18.0.1:34047/api/v1/agent/otlp
+    headers:
+      Authorization: Bearer ${env:OPSCONTROL_AGENT_TOKEN}
+    tls:
+      insecure: false
+    retry_on_failure:
+      enabled: true
+    sending_queue:
+      enabled: true
+      queue_size: 256
+      storage: file_storage/opscontrol
+extensions:
+  health_check:
+    endpoint: 127.0.0.1:13133
+  file_storage/opscontrol:
+    directory: ${env:OPSCONTROL_AGENT_STATE_DIR}/otel-checkpoints
+    create_directory: true
+service:
+  extensions:
+  - health_check
+  - file_storage/opscontrol
+  pipelines:
+    logs:
+      receivers:
+      - syslog/8f90a33aa92b404fb09e77a31a62af0a
+      - filelog/1d0b0ea12bdb489ab90dd32730c51aab_43bc152275723f55
+      processors:
+      - memory_limiter
+      - resource/opscontrol
+      - batch
+      exporters:
+      - otlphttp/opscontrol
+    metrics:
+      receivers:
+      - otlp/services_8acd3719972649b9818ab7a090556fbe
+      - prometheus/491ecc700e674fe88b538be1bd70e445
+      processors:
+      - memory_limiter
+      - resource/opscontrol
+      - batch
+      exporters:
+      - otlphttp/opscontrol
+    metrics/cc8af85057f5478d86091ded0580230c:
+      receivers:
+      - hostmetrics/cc8af85057f5478d86091ded0580230c
+      processors:
+      - memory_limiter
+      - resource/opscontrol
+      - resource/method_cc8af85057f5478d86091ded0580230c
+      - batch
+      exporters:
+      - otlphttp/opscontrol

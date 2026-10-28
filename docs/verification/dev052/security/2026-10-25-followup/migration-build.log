@@ -1,0 +1,65 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.runtime
+#1 transferring dockerfile: 1.56kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 101B done
+#3 DONE 0.0s
+
+#4 [dependencies 1/5] FROM docker.io/library/python:3.12-slim@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 745.65kB 0.0s done
+#5 DONE 0.0s
+
+#6 [dependencies 4/5] RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca     python bootstrap_pip.py
+#6 CACHED
+
+#7 [dependencies 5/5] RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca     python -m pip install --no-cache-dir --prefix=/install -r requirements-providers.txt -r requirements-hosts.txt
+#7 CACHED
+
+#8 [runtime_base 5/7] COPY app/ app/
+#8 CACHED
+
+#9 [runtime_base 3/7] COPY --from=dependencies /install/ /usr/local/
+#9 CACHED
+
+#10 [runtime_base 4/7] WORKDIR /app
+#10 CACHED
+
+#11 [runtime_base 2/7] RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*     && rm -rf /usr/local/lib/python3.12/site-packages/pip /usr/local/lib/python3.12/site-packages/pip-*.dist-info /usr/local/lib/python3.12/ensurepip /root/.cache/pip     && rm -f /usr/local/bin/pip /usr/local/bin/pip3 /usr/local/bin/pip3.12
+#11 CACHED
+
+#12 [dependencies 2/5] WORKDIR /build
+#12 CACHED
+
+#13 [dependencies 3/5] COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+#13 CACHED
+
+#14 [runtime_base 6/7] COPY scripts/ scripts/
+#14 CACHED
+
+#15 [runtime_base 7/7] RUN chmod -R a+rX /app/app /app/scripts
+#15 CACHED
+
+#16 [migration 1/3] COPY migrations/ /app/migrations/
+#16 DONE 3.6s
+
+#17 [migration 2/3] COPY alembic.ini /app/alembic.ini
+#17 DONE 2.4s
+
+#18 [migration 3/3] RUN chmod -R a+rX /app/migrations /app/alembic.ini
+#18 DONE 3.4s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 0.4s done
+#19 writing image sha256:bd8910833cae1071891ee926913fcab49d0dfba336a855e2d3336a9dc27d8801 done
+#19 naming to docker.io/library/dev052a2-migration done
+#19 DONE 0.4s

@@ -1,0 +1,18 @@
+{
+  "source_commit": "76a97e3fcf6709533151fffb36b16138e4475aba",
+  "source_archive_sha256": "9c2ff7279cf6b7225004f3df145cc7b6a8be73584b9e6ef671ecfe8b0ad7f0cf",
+  "production_guard_modified": false,
+  "scope": "CHK001 baseline unchanged direct-runtime reproduction",
+  "durability_suite": "fixed",
+  "durability_versions": [
+    "0.123.0"
+  ],
+  "product_changes": {
+    "backend/app/telemetry/configuration.py": "f57a9581c947e67ed27f6f0a22c5b55aaa591466c08e9d73250cae04da272540",
+    "agent/opscontrol_agent.py": "c50340e05ee3ae0e7f74d4c1d9be36b3d234b40f1d338ba1cf5d2649e789a3ea",
+    "backend/tests/test_collection_v15.py": "1a3e270c81f748b52e96aec5622a5896907f63f797adf44ca18d4905c10aa7ba"
+  },
+  "durability_cases": [
+    "staggered_production_saturation"
+  ]
+}

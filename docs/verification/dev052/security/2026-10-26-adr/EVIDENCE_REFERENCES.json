@@ -1,0 +1,1965 @@
+{
+  "adr_status": "Proposed / Pending accountable approval",
+  "historical_evidence_commit": "a4886b894aaeb2aa2ed48d3abe1748afe41a05fa",
+  "review_date": "2026-10-26",
+  "review_timezone": "Asia/Calcutta",
+  "runtime_tests_executed_for_this_ADR": false,
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "prior_manifest_integrity": [
+    {
+      "directory": "docs/verification/dev052/security/2026-10-25-checkpoints",
+      "artifact_hashes_verified": 85,
+      "result": "PASS"
+    },
+    {
+      "directory": "docs/verification/dev052/security/2026-10-25-durability",
+      "artifact_hashes_verified": 310,
+      "result": "PASS"
+    },
+    {
+      "directory": "docs/verification/dev052/security/2026-10-26-queue",
+      "artifact_hashes_verified": 193,
+      "result": "PASS"
+    }
+  ],
+  "observations": [
+    {
+      "id": "guarded-baseline/0.123.0-staggered_production_saturation",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/e2e.json",
+          "sha256": "3a1d1fb3bc7e9119795025b6db29ab52a35eb579f02c0f528a963fef7206c12b",
+          "selector": "cases[name=0.123.0-staggered_production_saturation]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/reconciliation.json",
+          "sha256": "70bfd90b6d74daae15e84ad875b8d4b28e1d3eacc0351c68940d6b11aaddb72c",
+          "selector": "name=0.123.0-staggered_production_saturation"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/db-events.json",
+          "sha256": "35a08ef1b3b093349432076286ec8af64daf7ee4c4d4f884821d2e4f45ab9587"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/api-timeline.json",
+          "sha256": "da1c87afc52391ad302e6bbcf20df802bc8976553cfc3644479948b1059dda5a"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/db-receipts.json",
+          "sha256": "e6f69578c56c1e1c965bb98d4228e8b0ec9e821c9899c03aa1fe3f8e68946226"
+        }
+      ]
+    },
+    {
+      "id": "replay-attempt1/replacement_full",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.163.2",
+      "native_status": "PASS",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/e2e.json",
+          "sha256": "75d367f135e647bf53e905d88e7dfbb555192a719051e5fd3041a5173378af28",
+          "selector": "cases[name=replacement_full]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/reconciliation.json",
+          "sha256": "438e4ddbab4d1bbc38ef018a5375a2ffe1d8dd8f0e376c4a20985f11edfb48a0",
+          "selector": "name=replacement_full"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/db-events.json",
+          "sha256": "29a2f2823ff744004cc18e0c8555452f685b2078dceb0451fc327a16266e93fd"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/api-timeline.json",
+          "sha256": "286b6ad3d1a75b44b82ddd669de0c0a60d05020233278739ef588686d127f02f"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/db-receipts.json",
+          "sha256": "453c17f868d39d0d8dfbdcb4fce632ff6fc79a9b0d62852a259abe2e93b183ab"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/phase-reconciliation.json",
+          "sha256": "b5b4529560bac5ba0e9460bd80c255c7965a390a59014bba39bbd72bca17eff3",
+          "selector": "case=replacement_full"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-attempt1/boundary_before_delete_1",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/e2e.json",
+          "sha256": "3ba627f13711a51965771b4ee9e75ea85ab2413f9621ef6a6fb6e8d34af7247f",
+          "selector": "cases[name=boundary_before_delete_1]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/reconciliation.json",
+          "sha256": "227e5c01af023415f6b153c1afd0c953a616bfa162f0229e4c24248edc267eff",
+          "selector": "name=boundary_before_delete_1"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-events.json",
+          "sha256": "9f595bb350240bbe58be640c90edca4e13830b90f8b5e985bd6d75161d2b6888"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/api-timeline.json",
+          "sha256": "ad2134e812cc38dce75683e66dd68e0533524f729f0cd5f1b459a0a8a5b36b01"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-receipts.json",
+          "sha256": "a0f0c0956caa2f45e5ff4021b39003cc4ab33201f6e4f773c05295538570fa21"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/phase-reconciliation.json",
+          "sha256": "9a0f252c4c5b027046d5d6919ad5d28309ed3d9e72e53a41760cabb74d167bf0",
+          "selector": "case=boundary_before_delete_1"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-attempt1/boundary_after_delete_1",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/e2e.json",
+          "sha256": "3ba627f13711a51965771b4ee9e75ea85ab2413f9621ef6a6fb6e8d34af7247f",
+          "selector": "cases[name=boundary_after_delete_1]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/reconciliation.json",
+          "sha256": "227e5c01af023415f6b153c1afd0c953a616bfa162f0229e4c24248edc267eff",
+          "selector": "name=boundary_after_delete_1"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-events.json",
+          "sha256": "9f595bb350240bbe58be640c90edca4e13830b90f8b5e985bd6d75161d2b6888"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/api-timeline.json",
+          "sha256": "ad2134e812cc38dce75683e66dd68e0533524f729f0cd5f1b459a0a8a5b36b01"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-receipts.json",
+          "sha256": "a0f0c0956caa2f45e5ff4021b39003cc4ab33201f6e4f773c05295538570fa21"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/phase-reconciliation.json",
+          "sha256": "9a0f252c4c5b027046d5d6919ad5d28309ed3d9e72e53a41760cabb74d167bf0",
+          "selector": "case=boundary_after_delete_1"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-attempt1/boundary_partial_replacement_1",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.163.2",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 258,
+        "missing_ids": [
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 258,
+        "physical_rows": 258,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 258,
+        "missing_ids": [
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 258,
+        "physical_rows": 258,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/e2e.json",
+          "sha256": "3ba627f13711a51965771b4ee9e75ea85ab2413f9621ef6a6fb6e8d34af7247f",
+          "selector": "cases[name=boundary_partial_replacement_1]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/reconciliation.json",
+          "sha256": "227e5c01af023415f6b153c1afd0c953a616bfa162f0229e4c24248edc267eff",
+          "selector": "name=boundary_partial_replacement_1"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-events.json",
+          "sha256": "9f595bb350240bbe58be640c90edca4e13830b90f8b5e985bd6d75161d2b6888"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/api-timeline.json",
+          "sha256": "ad2134e812cc38dce75683e66dd68e0533524f729f0cd5f1b459a0a8a5b36b01"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-receipts.json",
+          "sha256": "a0f0c0956caa2f45e5ff4021b39003cc4ab33201f6e4f773c05295538570fa21"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/phase-reconciliation.json",
+          "sha256": "9a0f252c4c5b027046d5d6919ad5d28309ed3d9e72e53a41760cabb74d167bf0",
+          "selector": "case=boundary_partial_replacement_1"
+        }
+      ]
+    },
+    {
+      "id": "replay-marker/legacy_full_replay",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "PASS",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/e2e.json",
+          "sha256": "efd5be0a6ed41430b1297d661226bb78835cd897a085687fcf87270b77dd5265",
+          "selector": "cases[name=legacy_full_replay]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/reconciliation.json",
+          "sha256": "66c950b960f062b6d36b667ec04d1742eef31dc067470ba2fdc7eea5e3cf13f8",
+          "selector": "name=legacy_full_replay"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-events.json",
+          "sha256": "83c78b63f1f650388c4edd4466241b3648bde7b13603db43f4cb8702229301e9"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/api-timeline.json",
+          "sha256": "01c151bf4b47229dfa1ec654edb201632b54f061b663f6da191b1d60f617fd97"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-receipts.json",
+          "sha256": "c74d67eeaa6d90a8069fdec4349e9c1a1622f2973af06c37feddf5c236ee3b6c"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/phase-reconciliation.json",
+          "sha256": "93b119a79dd46a21ea5cba086e5ff444a761df21953517743506e6f0c33133af",
+          "selector": "case=legacy_full_replay"
+        }
+      ]
+    },
+    {
+      "id": "replay-marker/repeated_crashes",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "PASS",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/e2e.json",
+          "sha256": "efd5be0a6ed41430b1297d661226bb78835cd897a085687fcf87270b77dd5265",
+          "selector": "cases[name=repeated_crashes]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/reconciliation.json",
+          "sha256": "66c950b960f062b6d36b667ec04d1742eef31dc067470ba2fdc7eea5e3cf13f8",
+          "selector": "name=repeated_crashes"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-events.json",
+          "sha256": "83c78b63f1f650388c4edd4466241b3648bde7b13603db43f4cb8702229301e9"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/api-timeline.json",
+          "sha256": "01c151bf4b47229dfa1ec654edb201632b54f061b663f6da191b1d60f617fd97"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-receipts.json",
+          "sha256": "c74d67eeaa6d90a8069fdec4349e9c1a1622f2973af06c37feddf5c236ee3b6c"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/phase-reconciliation.json",
+          "sha256": "93b119a79dd46a21ea5cba086e5ff444a761df21953517743506e6f0c33133af",
+          "selector": "case=repeated_crashes"
+        }
+      ]
+    },
+    {
+      "id": "replay-marker/retention_expiry",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0534",
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0534",
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "BLOCKED: Expired retention or invalid receipt time boundary",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/e2e.json",
+          "sha256": "efd5be0a6ed41430b1297d661226bb78835cd897a085687fcf87270b77dd5265",
+          "selector": "cases[name=retention_expiry]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/reconciliation.json",
+          "sha256": "66c950b960f062b6d36b667ec04d1742eef31dc067470ba2fdc7eea5e3cf13f8",
+          "selector": "name=retention_expiry"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-events.json",
+          "sha256": "83c78b63f1f650388c4edd4466241b3648bde7b13603db43f4cb8702229301e9"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/api-timeline.json",
+          "sha256": "01c151bf4b47229dfa1ec654edb201632b54f061b663f6da191b1d60f617fd97"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-receipts.json",
+          "sha256": "c74d67eeaa6d90a8069fdec4349e9c1a1622f2973af06c37feddf5c236ee3b6c"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/phase-reconciliation.json",
+          "sha256": "93b119a79dd46a21ea5cba086e5ff444a761df21953517743506e6f0c33133af",
+          "selector": "case=retention_expiry"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-repeat/boundary_before_delete_2",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0000",
+          "event-0001",
+          "event-0002",
+          "event-0003",
+          "event-0004",
+          "event-0005",
+          "event-0006",
+          "event-0007",
+          "event-0008",
+          "event-0009"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/e2e.json",
+          "sha256": "704e3f9cdc9d7b9b400a262fe6c6eb607247be00c26e4e369d4b21feec335a7f",
+          "selector": "cases[name=boundary_before_delete_2]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/reconciliation.json",
+          "sha256": "02dd25d3c0be99dac5215c73f0ac99019e8e98ec67e75c8118a2669303bc040d",
+          "selector": "name=boundary_before_delete_2"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-events.json",
+          "sha256": "e43f04697222fe3c14bd73198ded7287d1005ba396a77bb054f8b57d43957609"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/api-timeline.json",
+          "sha256": "6b94c954c66e8b2b4cb911140009b5d9a6f35f21f6bd465c0d5c05076dabc563"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-receipts.json",
+          "sha256": "fcd6fefe49dcb1a3e6221ee264a0a5d05fc2306e62d12db75135598a6eba3dcd"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/phase-reconciliation.json",
+          "sha256": "70c1a246aa7c5f864589f20c380bc8eed21f182e7529db96d1fb23a1dc2b1f39",
+          "selector": "case=boundary_before_delete_2"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-repeat/boundary_after_delete_2",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/e2e.json",
+          "sha256": "704e3f9cdc9d7b9b400a262fe6c6eb607247be00c26e4e369d4b21feec335a7f",
+          "selector": "cases[name=boundary_after_delete_2]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/reconciliation.json",
+          "sha256": "02dd25d3c0be99dac5215c73f0ac99019e8e98ec67e75c8118a2669303bc040d",
+          "selector": "name=boundary_after_delete_2"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-events.json",
+          "sha256": "e43f04697222fe3c14bd73198ded7287d1005ba396a77bb054f8b57d43957609"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/api-timeline.json",
+          "sha256": "6b94c954c66e8b2b4cb911140009b5d9a6f35f21f6bd465c0d5c05076dabc563"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-receipts.json",
+          "sha256": "fcd6fefe49dcb1a3e6221ee264a0a5d05fc2306e62d12db75135598a6eba3dcd"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/phase-reconciliation.json",
+          "sha256": "70c1a246aa7c5f864589f20c380bc8eed21f182e7529db96d1fb23a1dc2b1f39",
+          "selector": "case=boundary_after_delete_2"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-repeat/boundary_partial_replacement_2",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.163.2",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 258,
+        "missing_ids": [
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 258,
+        "physical_rows": 258,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 258,
+        "missing_ids": [
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543"
+        ],
+        "api_accepted_attempts": 258,
+        "physical_rows": 258,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/e2e.json",
+          "sha256": "704e3f9cdc9d7b9b400a262fe6c6eb607247be00c26e4e369d4b21feec335a7f",
+          "selector": "cases[name=boundary_partial_replacement_2]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/reconciliation.json",
+          "sha256": "02dd25d3c0be99dac5215c73f0ac99019e8e98ec67e75c8118a2669303bc040d",
+          "selector": "name=boundary_partial_replacement_2"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-events.json",
+          "sha256": "e43f04697222fe3c14bd73198ded7287d1005ba396a77bb054f8b57d43957609"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/api-timeline.json",
+          "sha256": "6b94c954c66e8b2b4cb911140009b5d9a6f35f21f6bd465c0d5c05076dabc563"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-receipts.json",
+          "sha256": "fcd6fefe49dcb1a3e6221ee264a0a5d05fc2306e62d12db75135598a6eba3dcd"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/phase-reconciliation.json",
+          "sha256": "70c1a246aa7c5f864589f20c380bc8eed21f182e7529db96d1fb23a1dc2b1f39",
+          "selector": "case=boundary_partial_replacement_2"
+        }
+      ]
+    },
+    {
+      "id": "boundaries-repeat/boundary_after_reenqueue_replacement_1",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.163.2",
+      "native_status": "PASS",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/e2e.json",
+          "sha256": "704e3f9cdc9d7b9b400a262fe6c6eb607247be00c26e4e369d4b21feec335a7f",
+          "selector": "cases[name=boundary_after_reenqueue_replacement_1]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/reconciliation.json",
+          "sha256": "02dd25d3c0be99dac5215c73f0ac99019e8e98ec67e75c8118a2669303bc040d",
+          "selector": "name=boundary_after_reenqueue_replacement_1"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-events.json",
+          "sha256": "e43f04697222fe3c14bd73198ded7287d1005ba396a77bb054f8b57d43957609"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/api-timeline.json",
+          "sha256": "6b94c954c66e8b2b4cb911140009b5d9a6f35f21f6bd465c0d5c05076dabc563"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-receipts.json",
+          "sha256": "fcd6fefe49dcb1a3e6221ee264a0a5d05fc2306e62d12db75135598a6eba3dcd"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/phase-reconciliation.json",
+          "sha256": "70c1a246aa7c5f864589f20c380bc8eed21f182e7529db96d1fb23a1dc2b1f39",
+          "selector": "case=boundary_after_reenqueue_replacement_1"
+        }
+      ]
+    },
+    {
+      "id": "faults-attempt1/boundary_after_reenqueue_replacement_2",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.163.2",
+      "native_status": "PASS",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+          "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878",
+          "selector": "cases[name=boundary_after_reenqueue_replacement_2]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+          "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4",
+          "selector": "name=boundary_after_reenqueue_replacement_2"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+          "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+          "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+          "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+          "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb",
+          "selector": "case=boundary_after_reenqueue_replacement_2"
+        }
+      ]
+    },
+    {
+      "id": "faults-attempt1/enospc",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 257,
+        "missing_ids": [
+          "event-0267",
+          "event-0268",
+          "event-0269",
+          "event-0270",
+          "event-0271",
+          "event-0272",
+          "event-0273",
+          "event-0274",
+          "event-0275",
+          "event-0276"
+        ],
+        "api_accepted_attempts": 257,
+        "physical_rows": 257,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 267,
+        "missing_ids": [],
+        "api_accepted_attempts": 267,
+        "physical_rows": 267,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "PASS",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+          "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878",
+          "selector": "cases[name=enospc]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+          "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4",
+          "selector": "name=enospc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+          "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+          "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+          "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+          "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb",
+          "selector": "case=enospc"
+        }
+      ]
+    },
+    {
+      "id": "faults-attempt1/corrupt",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 0,
+        "missing_ids": [
+          "event-0534",
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543",
+          "event-0544",
+          "event-0545",
+          "event-0546",
+          "event-0547",
+          "event-0548",
+          "event-0549",
+          "event-0550",
+          "event-0551",
+          "event-0552",
+          "event-0553",
+          "event-0554",
+          "event-0555",
+          "event-0556",
+          "event-0557",
+          "event-0558",
+          "event-0559",
+          "event-0560",
+          "event-0561",
+          "event-0562",
+          "event-0563",
+          "event-0564",
+          "event-0565",
+          "event-0566",
+          "event-0567",
+          "event-0568",
+          "event-0569",
+          "event-0570",
+          "event-0571",
+          "event-0572",
+          "event-0573",
+          "event-0574",
+          "event-0575",
+          "event-0576",
+          "event-0577",
+          "event-0578",
+          "event-0579",
+          "event-0580",
+          "event-0581",
+          "event-0582",
+          "event-0583",
+          "event-0584",
+          "event-0585",
+          "event-0586",
+          "event-0587",
+          "event-0588",
+          "event-0589",
+          "event-0590",
+          "event-0591",
+          "event-0592",
+          "event-0593",
+          "event-0594",
+          "event-0595",
+          "event-0596",
+          "event-0597",
+          "event-0598",
+          "event-0599",
+          "event-0600",
+          "event-0601",
+          "event-0602",
+          "event-0603",
+          "event-0604",
+          "event-0605",
+          "event-0606",
+          "event-0607",
+          "event-0608",
+          "event-0609",
+          "event-0610",
+          "event-0611",
+          "event-0612",
+          "event-0613",
+          "event-0614",
+          "event-0615",
+          "event-0616",
+          "event-0617",
+          "event-0618",
+          "event-0619",
+          "event-0620",
+          "event-0621",
+          "event-0622",
+          "event-0623",
+          "event-0624",
+          "event-0625",
+          "event-0626",
+          "event-0627",
+          "event-0628",
+          "event-0629",
+          "event-0630",
+          "event-0631",
+          "event-0632",
+          "event-0633",
+          "event-0634",
+          "event-0635",
+          "event-0636",
+          "event-0637",
+          "event-0638",
+          "event-0639",
+          "event-0640",
+          "event-0641",
+          "event-0642",
+          "event-0643",
+          "event-0644",
+          "event-0645",
+          "event-0646",
+          "event-0647",
+          "event-0648",
+          "event-0649",
+          "event-0650",
+          "event-0651",
+          "event-0652",
+          "event-0653",
+          "event-0654",
+          "event-0655",
+          "event-0656",
+          "event-0657",
+          "event-0658",
+          "event-0659",
+          "event-0660",
+          "event-0661",
+          "event-0662",
+          "event-0663",
+          "event-0664",
+          "event-0665",
+          "event-0666",
+          "event-0667",
+          "event-0668",
+          "event-0669",
+          "event-0670",
+          "event-0671",
+          "event-0672",
+          "event-0673",
+          "event-0674",
+          "event-0675",
+          "event-0676",
+          "event-0677",
+          "event-0678",
+          "event-0679",
+          "event-0680",
+          "event-0681",
+          "event-0682",
+          "event-0683",
+          "event-0684",
+          "event-0685",
+          "event-0686",
+          "event-0687",
+          "event-0688",
+          "event-0689",
+          "event-0690",
+          "event-0691",
+          "event-0692",
+          "event-0693",
+          "event-0694",
+          "event-0695",
+          "event-0696",
+          "event-0697",
+          "event-0698",
+          "event-0699",
+          "event-0700",
+          "event-0701",
+          "event-0702",
+          "event-0703",
+          "event-0704",
+          "event-0705",
+          "event-0706",
+          "event-0707",
+          "event-0708",
+          "event-0709",
+          "event-0710",
+          "event-0711",
+          "event-0712",
+          "event-0713",
+          "event-0714",
+          "event-0715",
+          "event-0716",
+          "event-0717",
+          "event-0718",
+          "event-0719",
+          "event-0720",
+          "event-0721",
+          "event-0722",
+          "event-0723",
+          "event-0724",
+          "event-0725",
+          "event-0726",
+          "event-0727",
+          "event-0728",
+          "event-0729",
+          "event-0730",
+          "event-0731",
+          "event-0732",
+          "event-0733",
+          "event-0734",
+          "event-0735",
+          "event-0736",
+          "event-0737",
+          "event-0738",
+          "event-0739",
+          "event-0740",
+          "event-0741",
+          "event-0742",
+          "event-0743",
+          "event-0744",
+          "event-0745",
+          "event-0746",
+          "event-0747",
+          "event-0748",
+          "event-0749",
+          "event-0750",
+          "event-0751",
+          "event-0752",
+          "event-0753",
+          "event-0754",
+          "event-0755",
+          "event-0756",
+          "event-0757",
+          "event-0758",
+          "event-0759",
+          "event-0760",
+          "event-0761",
+          "event-0762",
+          "event-0763",
+          "event-0764",
+          "event-0765",
+          "event-0766",
+          "event-0767",
+          "event-0768",
+          "event-0769",
+          "event-0770",
+          "event-0771",
+          "event-0772",
+          "event-0773",
+          "event-0774",
+          "event-0775",
+          "event-0776",
+          "event-0777",
+          "event-0778",
+          "event-0779",
+          "event-0780",
+          "event-0781",
+          "event-0782",
+          "event-0783",
+          "event-0784",
+          "event-0785",
+          "event-0786",
+          "event-0787",
+          "event-0788",
+          "event-0789",
+          "event-0790",
+          "event-0791",
+          "event-0792",
+          "event-0793",
+          "event-0794",
+          "event-0795",
+          "event-0796",
+          "event-0797",
+          "event-0798",
+          "event-0799",
+          "event-0800"
+        ],
+        "api_accepted_attempts": 0,
+        "physical_rows": 0,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 267,
+        "persisted_distinct": 0,
+        "missing_ids": [
+          "event-0534",
+          "event-0535",
+          "event-0536",
+          "event-0537",
+          "event-0538",
+          "event-0539",
+          "event-0540",
+          "event-0541",
+          "event-0542",
+          "event-0543",
+          "event-0544",
+          "event-0545",
+          "event-0546",
+          "event-0547",
+          "event-0548",
+          "event-0549",
+          "event-0550",
+          "event-0551",
+          "event-0552",
+          "event-0553",
+          "event-0554",
+          "event-0555",
+          "event-0556",
+          "event-0557",
+          "event-0558",
+          "event-0559",
+          "event-0560",
+          "event-0561",
+          "event-0562",
+          "event-0563",
+          "event-0564",
+          "event-0565",
+          "event-0566",
+          "event-0567",
+          "event-0568",
+          "event-0569",
+          "event-0570",
+          "event-0571",
+          "event-0572",
+          "event-0573",
+          "event-0574",
+          "event-0575",
+          "event-0576",
+          "event-0577",
+          "event-0578",
+          "event-0579",
+          "event-0580",
+          "event-0581",
+          "event-0582",
+          "event-0583",
+          "event-0584",
+          "event-0585",
+          "event-0586",
+          "event-0587",
+          "event-0588",
+          "event-0589",
+          "event-0590",
+          "event-0591",
+          "event-0592",
+          "event-0593",
+          "event-0594",
+          "event-0595",
+          "event-0596",
+          "event-0597",
+          "event-0598",
+          "event-0599",
+          "event-0600",
+          "event-0601",
+          "event-0602",
+          "event-0603",
+          "event-0604",
+          "event-0605",
+          "event-0606",
+          "event-0607",
+          "event-0608",
+          "event-0609",
+          "event-0610",
+          "event-0611",
+          "event-0612",
+          "event-0613",
+          "event-0614",
+          "event-0615",
+          "event-0616",
+          "event-0617",
+          "event-0618",
+          "event-0619",
+          "event-0620",
+          "event-0621",
+          "event-0622",
+          "event-0623",
+          "event-0624",
+          "event-0625",
+          "event-0626",
+          "event-0627",
+          "event-0628",
+          "event-0629",
+          "event-0630",
+          "event-0631",
+          "event-0632",
+          "event-0633",
+          "event-0634",
+          "event-0635",
+          "event-0636",
+          "event-0637",
+          "event-0638",
+          "event-0639",
+          "event-0640",
+          "event-0641",
+          "event-0642",
+          "event-0643",
+          "event-0644",
+          "event-0645",
+          "event-0646",
+          "event-0647",
+          "event-0648",
+          "event-0649",
+          "event-0650",
+          "event-0651",
+          "event-0652",
+          "event-0653",
+          "event-0654",
+          "event-0655",
+          "event-0656",
+          "event-0657",
+          "event-0658",
+          "event-0659",
+          "event-0660",
+          "event-0661",
+          "event-0662",
+          "event-0663",
+          "event-0664",
+          "event-0665",
+          "event-0666",
+          "event-0667",
+          "event-0668",
+          "event-0669",
+          "event-0670",
+          "event-0671",
+          "event-0672",
+          "event-0673",
+          "event-0674",
+          "event-0675",
+          "event-0676",
+          "event-0677",
+          "event-0678",
+          "event-0679",
+          "event-0680",
+          "event-0681",
+          "event-0682",
+          "event-0683",
+          "event-0684",
+          "event-0685",
+          "event-0686",
+          "event-0687",
+          "event-0688",
+          "event-0689",
+          "event-0690",
+          "event-0691",
+          "event-0692",
+          "event-0693",
+          "event-0694",
+          "event-0695",
+          "event-0696",
+          "event-0697",
+          "event-0698",
+          "event-0699",
+          "event-0700",
+          "event-0701",
+          "event-0702",
+          "event-0703",
+          "event-0704",
+          "event-0705",
+          "event-0706",
+          "event-0707",
+          "event-0708",
+          "event-0709",
+          "event-0710",
+          "event-0711",
+          "event-0712",
+          "event-0713",
+          "event-0714",
+          "event-0715",
+          "event-0716",
+          "event-0717",
+          "event-0718",
+          "event-0719",
+          "event-0720",
+          "event-0721",
+          "event-0722",
+          "event-0723",
+          "event-0724",
+          "event-0725",
+          "event-0726",
+          "event-0727",
+          "event-0728",
+          "event-0729",
+          "event-0730",
+          "event-0731",
+          "event-0732",
+          "event-0733",
+          "event-0734",
+          "event-0735",
+          "event-0736",
+          "event-0737",
+          "event-0738",
+          "event-0739",
+          "event-0740",
+          "event-0741",
+          "event-0742",
+          "event-0743",
+          "event-0744",
+          "event-0745",
+          "event-0746",
+          "event-0747",
+          "event-0748",
+          "event-0749",
+          "event-0750",
+          "event-0751",
+          "event-0752",
+          "event-0753",
+          "event-0754",
+          "event-0755",
+          "event-0756",
+          "event-0757",
+          "event-0758",
+          "event-0759",
+          "event-0760",
+          "event-0761",
+          "event-0762",
+          "event-0763",
+          "event-0764",
+          "event-0765",
+          "event-0766",
+          "event-0767",
+          "event-0768",
+          "event-0769",
+          "event-0770",
+          "event-0771",
+          "event-0772",
+          "event-0773",
+          "event-0774",
+          "event-0775",
+          "event-0776",
+          "event-0777",
+          "event-0778",
+          "event-0779",
+          "event-0780",
+          "event-0781",
+          "event-0782",
+          "event-0783",
+          "event-0784",
+          "event-0785",
+          "event-0786",
+          "event-0787",
+          "event-0788",
+          "event-0789",
+          "event-0790",
+          "event-0791",
+          "event-0792",
+          "event-0793",
+          "event-0794",
+          "event-0795",
+          "event-0796",
+          "event-0797",
+          "event-0798",
+          "event-0799",
+          "event-0800"
+        ],
+        "api_accepted_attempts": 0,
+        "physical_rows": 0,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "BLOCKED: queue corruption; no checkpoint/queue repair permitted",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+          "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878",
+          "selector": "cases[name=corrupt]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+          "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4",
+          "selector": "name=corrupt"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+          "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+          "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+          "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+          "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb",
+          "selector": "case=corrupt"
+        }
+      ]
+    },
+    {
+      "id": "faults-attempt1/api_outage",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "PASS",
+      "native_counts": {
+        "expected_distinct": 4,
+        "persisted_distinct": 4,
+        "missing_ids": [],
+        "api_accepted_attempts": 4,
+        "physical_rows": 4,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 4,
+        "persisted_distinct": 4,
+        "missing_ids": [],
+        "api_accepted_attempts": 4,
+        "physical_rows": 4,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "NOT TESTED",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+          "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878",
+          "selector": "cases[name=api_outage]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+          "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4",
+          "selector": "name=api_outage"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+          "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+          "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+          "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+          "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb",
+          "selector": "case=api_outage"
+        }
+      ]
+    },
+    {
+      "id": "faults-attempt1/permanent_rejection",
+      "classification": "OBSERVED_HISTORICAL_SYNTHETIC",
+      "runtime": "0.123.0",
+      "native_status": "FAIL",
+      "native_counts": {
+        "expected_distinct": 4,
+        "persisted_distinct": 0,
+        "missing_ids": [
+          "event-0805",
+          "event-0806",
+          "event-0807",
+          "event-0808"
+        ],
+        "api_accepted_attempts": 0,
+        "physical_rows": 0,
+        "physical_duplicate_rows": 0
+      },
+      "final_counts": {
+        "expected_distinct": 4,
+        "persisted_distinct": 0,
+        "missing_ids": [
+          "event-0805",
+          "event-0806",
+          "event-0807",
+          "event-0808"
+        ],
+        "api_accepted_attempts": 0,
+        "physical_rows": 0,
+        "physical_duplicate_rows": 0
+      },
+      "recovery_status": "FAIL",
+      "references": [
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+          "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878",
+          "selector": "cases[name=permanent_rejection]"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+          "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4",
+          "selector": "name=permanent_rejection"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+          "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+          "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+          "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+        },
+        {
+          "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+          "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb",
+          "selector": "case=permanent_rejection"
+        }
+      ]
+    }
+  ],
+  "native_selected_counts": {
+    "PASS": 4,
+    "FAIL": 13
+  },
+  "all_native_attempt_counts": {
+    "PASS": 4,
+    "FAIL": 14
+  },
+  "historical_regressions": [
+    {
+      "tests_passed": 17,
+      "classification": "HISTORICAL_NOT_RERUN_FOR_ADR",
+      "reference": {
+        "path": "docs/verification/dev052/security/2026-10-26-queue/unit-marker.log",
+        "sha256": "7cb17c1202ef068e9f383945e4f35483537570339089af62bc9d080a9e7765f1"
+      }
+    },
+    {
+      "tests_passed": 17,
+      "classification": "HISTORICAL_NOT_RERUN_FOR_ADR",
+      "reference": {
+        "path": "docs/verification/dev052/security/2026-10-26-queue/checkpoint-regressions.log",
+        "sha256": "6656d02263c7d700131a8202a7bd54ee6d7118aa51e5d050c746eac91a6ab33d"
+      }
+    },
+    {
+      "tests_passed": 57,
+      "classification": "HISTORICAL_NOT_RERUN_FOR_ADR",
+      "reference": {
+        "path": "docs/verification/dev052/security/2026-10-26-queue/collector-security-regressions.log",
+        "sha256": "04e786882093506e75f7f076562a83065319bfc27872c939e6101627f1aaa58b"
+      }
+    }
+  ],
+  "historical_regression_total": 91,
+  "previous_durability_counts": {
+    "PASS": 20,
+    "FAIL": 6
+  },
+  "previous_burst_duplicate_rows": 255,
+  "previous_checkpoint_recovery": {
+    "distinct_ids": 44,
+    "physical_rows": 100,
+    "duplicates": 56
+  },
+  "source_references": [
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-checkpoints/CHECKPOINT_DECISION.md",
+      "sha256": "58ab009a2aeb175c6edd494e91eae0f180bb0840ad29fd4d1c68f3418dabd815"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-checkpoints/artifact-sha256.json",
+      "sha256": "3e607bc991c15c675340ff3fbcf9dc608eff199a331d32fe302df9715e01d7ea"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-checkpoints/lab-attempt-4/phase-db-reconciliation.json",
+      "sha256": "bc1c98c291aa46abc58e59b46e659843087e74a14f31c58a6443eacf65f35fc9"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-checkpoints/test-matrix.json",
+      "sha256": "918170c3de1dd174f3133f293cafb8e859580c47d3d8a390eba9ffa698f90f0d"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-collector/COLLECTOR_DECISION.md",
+      "sha256": "4e91d931c8ac87587883a13c8551068e1a9a628b8a2250cbe387e87c244134d5"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-durability/DURABILITY_DECISION.md",
+      "sha256": "978d03b8956f5ef2c3ebe2d7b817a4d2f6ec4c43a18559cfa01e0d566ba0d221"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-durability/artifact-sha256.json",
+      "sha256": "fac94403bc3fcc0ed50a3db2c61d3e21da4ee8082389f283582ba538a94f0472"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-25-durability/test-matrix.json",
+      "sha256": "4df4f64073747cc7f8ce06f5248c17d33654cc100cbef5f4735d14510708dcce"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/MATRIX.md",
+      "sha256": "52c8ce10b75c94fbb5a10092cf924062d94e7a45c1d4b8b84d7dc5f2beac5d06"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/NOT_TESTED.json",
+      "sha256": "561155955dd9acd34b2282e280063bdc216bcb6a4d6b607e24514c882ae56449"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/QUEUE_DECISION.md",
+      "sha256": "388001ac03dd96e837defef0d3abcf43750de6bcbfdb365103d39ba89a68e575"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/ROOT_CAUSE.md",
+      "sha256": "586021a634aa9a2c33cd6982d21d0673d916d050a715273277a0a241b7554207"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/all-attempts.json",
+      "sha256": "253271c176eb9d2e918e5147258e43bd95bf3e81792471eaa6d8f6af375e38c5"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/artifact-sha256.json",
+      "sha256": "1f012cc08acbd358d2ba3c048210571dacdc8a3974ef53adbdcdc259cd4ed57b"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/binary-provenance.json",
+      "sha256": "472788e5777c869a8528012edb8ed051f43620dab6ce5fc2377f8bd9428e733a"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/api-timeline.json",
+      "sha256": "ad2134e812cc38dce75683e66dd68e0533524f729f0cd5f1b459a0a8a5b36b01"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-events.json",
+      "sha256": "9f595bb350240bbe58be640c90edca4e13830b90f8b5e985bd6d75161d2b6888"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/db-receipts.json",
+      "sha256": "a0f0c0956caa2f45e5ff4021b39003cc4ab33201f6e4f773c05295538570fa21"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/e2e.json",
+      "sha256": "3ba627f13711a51965771b4ee9e75ea85ab2413f9621ef6a6fb6e8d34af7247f"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/phase-reconciliation.json",
+      "sha256": "9a0f252c4c5b027046d5d6919ad5d28309ed3d9e72e53a41760cabb74d167bf0"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-attempt1/reconciliation.json",
+      "sha256": "227e5c01af023415f6b153c1afd0c953a616bfa162f0229e4c24248edc267eff"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/api-timeline.json",
+      "sha256": "6b94c954c66e8b2b4cb911140009b5d9a6f35f21f6bd465c0d5c05076dabc563"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-events.json",
+      "sha256": "e43f04697222fe3c14bd73198ded7287d1005ba396a77bb054f8b57d43957609"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/db-receipts.json",
+      "sha256": "fcd6fefe49dcb1a3e6221ee264a0a5d05fc2306e62d12db75135598a6eba3dcd"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/e2e.json",
+      "sha256": "704e3f9cdc9d7b9b400a262fe6c6eb607247be00c26e4e369d4b21feec335a7f"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/phase-reconciliation.json",
+      "sha256": "70c1a246aa7c5f864589f20c380bc8eed21f182e7529db96d1fb23a1dc2b1f39"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/boundaries-repeat/reconciliation.json",
+      "sha256": "02dd25d3c0be99dac5215c73f0ac99019e8e98ec67e75c8118a2669303bc040d"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/checkpoint-regressions.log",
+      "sha256": "6656d02263c7d700131a8202a7bd54ee6d7118aa51e5d050c746eac91a6ab33d"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/cleanup.json",
+      "sha256": "74dd623069ba5a65e24e4b832ec0a169217dda93debe8d92d3e1bacc36e951b1"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/collector-security-regressions.log",
+      "sha256": "04e786882093506e75f7f076562a83065319bfc27872c939e6101627f1aaa58b"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/api-timeline.json",
+      "sha256": "597266df3a753b8575a74e3fdb13e4d67e95237a4bae98db5d402079f274d5fc"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-events.json",
+      "sha256": "7029e9e11d2ce20567c4a10f7a0b54056e0dfc684fcdff5b3dbc79009cc81a48"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/db-receipts.json",
+      "sha256": "d32b176527e7cc496148ce3f7643c05114cd76733d7b0f58ae0b746946ec4253"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/e2e.json",
+      "sha256": "c5c94d132df1c1cca3decf07ba50f42f9b4833c56639b3316c6de09cec014878"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/phase-reconciliation.json",
+      "sha256": "5dd1db77e57c80a018393894157548a5cf2ed6f27d9406015e5846e0049f85cb"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/faults-attempt1/reconciliation.json",
+      "sha256": "28c1c7b9feb882792bbdaf14fce3bd38dc1554ea7fbed9a270d98ccd6c3640e4"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/api-timeline.json",
+      "sha256": "da1c87afc52391ad302e6bbcf20df802bc8976553cfc3644479948b1059dda5a"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/db-events.json",
+      "sha256": "35a08ef1b3b093349432076286ec8af64daf7ee4c4d4f884821d2e4f45ab9587"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/db-receipts.json",
+      "sha256": "e6f69578c56c1e1c965bb98d4228e8b0ec9e821c9899c03aa1fe3f8e68946226"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/e2e.json",
+      "sha256": "3a1d1fb3bc7e9119795025b6db29ab52a35eb579f02c0f528a963fef7206c12b"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/guarded-baseline/reconciliation.json",
+      "sha256": "70bfd90b6d74daae15e84ad875b8d4b28e1d3eacc0351c68940d6b11aaddb72c"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/api-timeline.json",
+      "sha256": "286b6ad3d1a75b44b82ddd669de0c0a60d05020233278739ef588686d127f02f"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/db-events.json",
+      "sha256": "29a2f2823ff744004cc18e0c8555452f685b2078dceb0451fc327a16266e93fd"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/db-receipts.json",
+      "sha256": "453c17f868d39d0d8dfbdcb4fce632ff6fc79a9b0d62852a259abe2e93b183ab"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/e2e.json",
+      "sha256": "75d367f135e647bf53e905d88e7dfbb555192a719051e5fd3041a5173378af28"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/phase-reconciliation.json",
+      "sha256": "b5b4529560bac5ba0e9460bd80c255c7965a390a59014bba39bbd72bca17eff3"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-attempt1/reconciliation.json",
+      "sha256": "438e4ddbab4d1bbc38ef018a5375a2ffe1d8dd8f0e376c4a20985f11edfb48a0"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/api-timeline.json",
+      "sha256": "01c151bf4b47229dfa1ec654edb201632b54f061b663f6da191b1d60f617fd97"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-events.json",
+      "sha256": "83c78b63f1f650388c4edd4466241b3648bde7b13603db43f4cb8702229301e9"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/db-receipts.json",
+      "sha256": "c74d67eeaa6d90a8069fdec4349e9c1a1622f2973af06c37feddf5c236ee3b6c"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/e2e.json",
+      "sha256": "efd5be0a6ed41430b1297d661226bb78835cd897a085687fcf87270b77dd5265"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/phase-reconciliation.json",
+      "sha256": "93b119a79dd46a21ea5cba086e5ff444a761df21953517743506e6f0c33133af"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/replay-marker/reconciliation.json",
+      "sha256": "66c950b960f062b6d36b667ec04d1742eef31dc067470ba2fdc7eea5e3cf13f8"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/source-sha256.json",
+      "sha256": "298264c62cadba35860f103cc663cf01a51c039e783b510c2cf1774c630b9b43"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/test-matrix.json",
+      "sha256": "45cfedecc95e17cbfa924f042da601e2afdb305064abdf48a514e39303f46a7f"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/unit-marker.log",
+      "sha256": "7cb17c1202ef068e9f383945e4f35483537570339089af62bc9d080a9e7765f1"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/upstream/compare129.json",
+      "sha256": "5688995c53ccb0fe9c488b5bf14db9664ec6455105d9a9e812a47507bfaecafb"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/upstream/compare130.json",
+      "sha256": "b2539cdb42ca34f0e6aa8f0c27049658d5ff8de28e0acdf73de84c7f766bd619"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/upstream/main-source.json",
+      "sha256": "57a53855c0a1deb3fa37c6dd491b0a43742bc2e9a1276030e0c95b0d812bf0f3"
+    },
+    {
+      "path": "docs/verification/dev052/security/2026-10-26-queue/upstream/pr13330.json",
+      "sha256": "c0870d09fbd83909a526c893d91da76dd5e6e6eb630b0110afffc76695674ffa"
+    },
+    {
+      "path": "docs/verification/dev052/security/COLLECTOR_COMPATIBILITY_PLAN.md",
+      "sha256": "163f3538acedeed8d3e9445358b2c0daf49f5f2bf48f4e08eae999f852e9c3c2"
+    },
+    {
+      "path": "verification/dev052/checkpoints/OPERATOR_RUNBOOK.md",
+      "sha256": "3345d8b50270e6f5245b13d81790baa92e498ee70380ea1b6a980895b5db2cb5"
+    },
+    {
+      "path": "verification/dev052/queue_restart/README.md",
+      "sha256": "7cfc2ede83ffecc08c4c845131aa350cbac88c31a74973d7f51d6771eb846925"
+    },
+    {
+      "path": "verification/dev052/queue_restart/replay.py",
+      "sha256": "e9feb6ed15944c5b64b68f40e5ec8b6bbb209d941fc5cf9413397b580b179f41"
+    }
+  ]
+}

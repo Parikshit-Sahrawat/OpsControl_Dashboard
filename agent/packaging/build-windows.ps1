@@ -3,6 +3,8 @@ $ErrorActionPreference='Stop'
 $Root = (Resolve-Path "$PSScriptRoot\..\..").Path
 if ((Get-FileHash $Runtime -Algorithm SHA256).Hash.ToLowerInvariant() -ne $RuntimeSha256.ToLowerInvariant()) { throw 'Approved runtime checksum mismatch' }
 if ((& $Runtime --version) -notmatch '0.123.0') { throw 'Unsupported Collector runtime' }
+python "$Root\backend\bootstrap_pip.py"
+if ($LASTEXITCODE) { throw 'Verified pip bootstrap failed' }
 python -m pip install pyinstaller==6.12.0 pywin32==311
 python -m PyInstaller --noconfirm --onefile --name OpsControlService --hidden-import win32timezone --hidden-import service_health --paths "$Root\agent" --distpath "$PSScriptRoot\stage" --workpath "$env:TEMP\opscontrol-build" --specpath "$env:TEMP" "$Root\agent\windows_service.py"
 if ($LASTEXITCODE) { throw 'Service executable build failed' }

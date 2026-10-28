@@ -41,7 +41,7 @@ jobs:
           APPROVED_REGION: ${{ inputs.aws_region }}
           APPROVED_INSTANCE: ${{ inputs.instance_id }}
         run: |
-          python -m pip install 'boto3>=1.35,<2'
+          python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && python -m pip install 'boto3>=1.35,<2'
           PYTHONPATH=. python scripts/aws_live_acceptance.py \
             --account "$APPROVED_ACCOUNT" \
             --region "$APPROVED_REGION" \

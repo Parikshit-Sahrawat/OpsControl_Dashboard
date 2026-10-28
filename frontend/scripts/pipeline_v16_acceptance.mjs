@@ -481,6 +481,19 @@ try {
     "V1.6 actual browser eight-step/draft/activation/mobile acceptance PASS",
   );
 } catch (error) {
+  // Emit only a source location and error class, without secrets or page state.
+  const stack = String(error?.stack || "");
+  const match = stack.match(/pipeline_v16_acceptance\.mjs:(\d+):(\d+)/);
+  const diagnostic = {
+    status: "FAIL",
+    test: "pipeline_v16_acceptance",
+    error_type: String(error?.name || "Error").slice(0, 60),
+    source: "pipeline_v16_acceptance.mjs",
+    line: match ? Number(match[1]) : null,
+    column: match ? Number(match[2]) : null,
+  };
+  console.error("V16_BROWSER_DIAGNOSTIC " + JSON.stringify(diagnostic));
+  await writeFile(join(out, "browser-failure-sanitized.json"), JSON.stringify(diagnostic, null, 2));
   await writeFile(
     join(process.env.V16_PRIVATE_DIR, "browser-failure.html"),
     await page.content(),

@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "agent"))
-from opscontrol_agent import Agent
+from opscontrol_agent import Agent, FILELOG_HANDOFF_MARKER, filelog_runtime_flags
 from app.telemetry.api import credential_matches, utc, verify_reception
 
 
@@ -190,6 +190,57 @@ class AgentLifecycleTests(unittest.TestCase):
         agent.previous_token_expires_at = utc() - timedelta(seconds=1)
         self.assertFalse(credential_matches(agent, worker, "old"))
         self.assertTrue(credential_matches(agent, worker, "new"))
+
+    def test_handoff_flag_follows_actual_config_for_validate_start_and_rollback(self):
+        from app.telemetry.configuration import FILELOG_HANDOFF_MARKER as server_marker
+
+        self.assertEqual(FILELOG_HANDOFF_MARKER, server_marker)
+        with tempfile.TemporaryDirectory() as directory:
+            agent = self.bare_agent(directory)
+            agent.config.write_text("previous config\n")
+            with patch.object(agent, "stop_runtime"), patch(
+                "opscontrol_agent.subprocess.run",
+                return_value=SimpleNamespace(returncode=0),
+            ) as validate, patch("opscontrol_agent.subprocess.Popen") as launch, patch(
+                "opscontrol_agent.time.sleep"
+            ):
+                launch.return_value.poll.return_value = None
+                agent.apply(self.version(FILELOG_HANDOFF_MARKER + "service: {}\n"))
+                flag = "--feature-gates=stanza.synchronousLogEmitter"
+                self.assertIn(flag, validate.call_args.args[0])
+                self.assertIn(flag, launch.call_args.args[0])
+                agent.config.write_text("previous config\n")
+                agent.start_runtime()
+                self.assertNotIn(flag, launch.call_args.args[0])
+                agent.config.write_text(
+                    FILELOG_HANDOFF_MARKER.replace(
+                        "stanza.synchronousLogEmitter", "arbitrary.gate"
+                    )
+                )
+                self.assertEqual(filelog_runtime_flags(agent.config), [])
+
+    def test_offline_handoff_restart_uses_same_checked_contract(self):
+        with tempfile.TemporaryDirectory() as directory:
+            agent = self.bare_agent(directory)
+            text = FILELOG_HANDOFF_MARKER + "service: {}\n"
+            agent.config.write_text(text)
+            agent.checksum = hashlib.sha256(text.encode()).hexdigest()
+            agent.stop = threading.Event()
+            agent.stop.set()
+            with patch.object(agent, "enroll"), patch.object(
+                agent, "stop_runtime"
+            ), patch(
+                "opscontrol_agent.subprocess.run",
+                return_value=SimpleNamespace(returncode=0),
+            ) as validate, patch(
+                "opscontrol_agent.subprocess.Popen"
+            ) as launch, patch(
+                "opscontrol_agent.time.sleep"
+            ):
+                agent.run("unused-enrollment")
+                flag = "--feature-gates=stanza.synchronousLogEmitter"
+                self.assertIn(flag, validate.call_args.args[0])
+                self.assertIn(flag, launch.call_args.args[0])
 
     def test_applied_is_not_verified_without_all_receipts(self):
         agent = SimpleNamespace(

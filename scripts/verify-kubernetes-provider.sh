@@ -56,6 +56,7 @@ assert_permission no get pods default
 # SDK requests below use the actual read-only service account, not admin identity.
 export OPSCONTROL_TEST_READER_TOKEN="$(kubectl -n "$ns" create token monitoring-reader --duration=10m)"
 export OPSCONTROL_K8S_ALLOWED_NODES="$node"
+python3 "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py"
 python3 -m pip install 'kubernetes>=32,<37' --quiet
 PYTHONPATH=backend OPSCONTROL_TEST_NAMESPACE="$ns" OPSCONTROL_TEST_POD="$pod" python3 - <<'PY'
 import os

@@ -1,0 +1,71 @@
+"""Read-only H evidence verification. No network or collector/runtime invocation."""
+from pathlib import Path
+import base64,hashlib,json,re,subprocess,sys
+repo=Path(subprocess.check_output(['git','rev-parse','--show-toplevel'],text=True).strip())
+out=repo/'docs/verification/dev052/security/2026-10-26-qualification-readiness'
+def read(p):return json.loads(p.read_text())
+def sha(b):return hashlib.sha256(b).hexdigest()
+def git(*args):return subprocess.check_output(['git',*args],cwd=repo)
+base='1ebea8869205b770348e5ce543dc901efd9e09f5';prefix=str(out.relative_to(repo))+'/'
+required=['README.md','UPSTREAM_RESPONSE_REGISTER.md','N1_N4_QUALIFICATION_READINESS.md','RECOVERY_INVARIANT_FAILURE_MATRIX.md','ROLLBACK_CHK002_DECISION_MATRIX.md','OPEN_DECISIONS.md','EVIDENCE_REFERENCES.json','ARTIFACT_SHA256.json','VALIDATION.json']
+assert all((out/n).is_file() for n in required)
+files=sorted(p for p in out.rglob('*') if p.is_file());assert not any(p.is_symlink() for p in files)
+json_files=[p for p in files if p.suffix=='.json']
+for p in json_files:read(p)
+refs=read(out/'EVIDENCE_REFERENCES.json');assert refs['baseline']==base
+for r in refs['references']:
+ b=(repo/r['path']).read_bytes();assert sha(b)==r['sha256'];assert sha(git('show',r['commit']+':'+r['path']))==r['sha256']
+assert refs['prior_manifest_artifacts']==sum(g['artifacts'] for g in refs['prior_groups'])==236
+fetch=read(out/'FETCH_LOG.json');assert len({x['name'] for x in fetch})==len(fetch)
+for f in fetch:assert sha((out/f['path']).read_bytes())==f['sha256'];assert f['endpoint'].startswith('repos/')
+failures=[x['name'] for x in fetch if x['exit_code']];assert failures==['dist164-release']
+assert read(out/'raw/dist164-release.json')['status']=='404'
+source=read(out/'SOURCE_IDENTITIES.json')
+for s in source['sources']:
+ b=(out/s['path']).read_bytes();d=read(out/s['api']);assert b==base64.b64decode(d['content']);assert sha(b)==s['sha256'];assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()==s['git_blob_sha1']==d['sha']
+assert sha((out/'source/queue164.txt').read_bytes())==sha((out/'source/queue-main.txt').read_bytes())=='a98bd9990c2405d0b24cdee951ccacec01b58b4dc347ceb6b7c256ceea789d98'
+assert source['core_release']['commit']==read(out/'raw/core164-tag.json')['sha']=='f532e15ef29b6ed7fefad2b23a0fefd27120ef9b'
+assert source['contrib_release']['commit']==read(out/'raw/contrib164-tag.json')['sha']=='18fcec7bd1f5b4702a40a1861e0b5eb95f9a3152'
+assert source['selected_candidate'] is None and source['candidate_binary_sha256'] is None and source['candidate_config_sha256'] is None
+for issue,comments in [('upstream-issue16236','upstream-comments'),('issue16236-final','comments-final')]:
+ d=read(out/'raw'/(issue+'.json'));assert d['state']=='open' and not d['assignees'] and not d['milestone'];assert d['comments']==len(read(out/'raw'/(comments+'.json')))==0
+assert read(out/'raw/timeline-page2.json')==[]
+timeline=read(out/'raw/upstream-timeline.json');assert len(timeline)==3 and all(v['event']=='cross-referenced' for v in timeline)
+for n in [13330,15993,16230]:
+ p=read(out/'raw'/f'pr{n}.json');assert p['comments']==len(read(out/'raw'/f'pr{n}-comments.json'));assert len(read(out/'raw'/f'pr{n}-reviews.json'))<100;assert p['merged']==(n==13330)
+assert read(out/'raw/pr15993.json')['draft']
+status=read(out/'READINESS_STATUS.json');gates={'CHK-001':'FAIL','CHK-002':'BLOCKED','SECURITY':'BLOCKED','RELEASE':'NO-GO'}
+assert status['mandatory_gates']==gates and not status['execution_authorized'] and status['candidate']=='BLOCKED'
+assert [t['id'] for t in status['tests']]==['N1','N2','N3','N4']
+for t in status['tests']:
+ assert t['execution']=='NOT RUN' and t['readiness']=='BLOCKED' and t['definition']=='PREPARED'
+ for k in ['runtime_result','expected','persisted_distinct','missing','accepted_attempts','physical_rows','physical_duplicates']:assert t[k] is None
+for h in refs['historical_reconciliation']:
+ d=next(v for v in read(repo/h['path']) if v['name']==h['selector']);counts=d['db_counts_by_id'];expected=set(d['expected_ids']);persisted={i for i,n in counts.items() if n>0}
+ assert len(expected)==h['expected']==267;assert len(persisted)==h['persisted_distinct'];assert sorted(expected-persisted)==h['missing'];assert sum(counts.values())==h['physical_rows'];assert sum(counts.values())-len(persisted)==h['physical_duplicates']==0;assert d['api_accepted_attempts']==h['accepted_attempts']
+links=[];external=[]
+for p in sorted(out.glob('*.md')):
+ text=p.read_text()
+ for url in re.findall(r'\[[^\]]*\]\(([^)]+)\)',text):
+  if url.startswith('https://'):
+   assert url.startswith('https://github.com/');external.append({'file':p.name,'url':url});continue
+  q=(p.parent/url.split('#')[0]).resolve();assert q.is_file(),(p.name,url);links.append({'file':p.name,'target':url})
+ for i,line in enumerate(text.splitlines(),1):assert line==line.rstrip(),(p.name,i)
+ for k,v in gates.items():
+  if k in text and p.name!='N1_N4_QUALIFICATION_READINESS.md':assert k+' '+v in text,(p.name,k)
+ assert not re.search(r'RELEASE\s+(?<!NO-)GO\b|CHK-00[12]\s+PASS|SECURITY\s+PASS',text)
+for p in files:
+ assert not re.search(rb'-----BEGIN [A-Z ]*PRIVATE KEY-----|\bgh[pousr]_[A-Za-z0-9]{20,}',p.read_bytes()),p
+changed=git('diff','--name-only',base).decode().splitlines()+git('ls-files','--others','--exclude-standard').decode().splitlines()
+assert all(n.startswith(prefix) for n in changed),changed
+assert git('branch','--show-current').decode().strip()=='release/dev-05-2-hardening'
+assert 'RUNTIME_VERSION = "0.123.0"' in (repo/'agent/opscontrol_agent.py').read_text()
+for p in [repo/'agent/opscontrol_agent.py',repo/'agent/install-linux.sh',repo/'verification/dev052/provision_contrib.py']:
+ assert p.read_bytes()==git('show',base+':'+str(p.relative_to(repo)))
+snapshot=read(out/'raw/repository-state.json');assert snapshot['task_start_head']==snapshot['verified_head']==snapshot['remote_branch_head']==snapshot['draft_pr_head']==base and snapshot['draft_pr']
+manifest_result='DEFERRED for generation; not runtime status'
+if '--without-manifest' not in sys.argv:
+ m=read(out/'ARTIFACT_SHA256.json');expected={str(p.relative_to(out)) for p in files if p.name!='ARTIFACT_SHA256.json'};assert set(m)==expected
+ for n,h in m.items():assert sha((out/n).read_bytes())==h,n
+ manifest_result='PASS'
+print(json.dumps({'result':'PASS','scope':'documentation validation only','required_deliverables':len(required),'json_files_parsed':len(json_files),'prior_artifacts_verified':236,'immutable_git_references_verified':len(refs['references']),'upstream_source_blobs_verified':len(source['sources']),'raw_get_hashes_verified':len(fetch),'retained_http_failures':failures,'local_links_verified':len(links),'local_links':links,'external_url_checks':'GitHub URL syntax and captured references; no assumption about unvisited/live availability','external_urls':external,'issue_comments_observed':0,'historical_results':'independent recomputation from retained ID/count exports; not rerun','upstream_classification':'UNRESOLVED QUESTION; no authoritative response observed','qualification_cases':'4 BLOCKED / 4 NOT RUN; all new receipt counts null','new_runtime_tests':0,'scope_check':'PASS: only new documentation directory','production_pin':'UNCHANGED 0.123.0','credential_pattern_check':'PASS: limited private-key/GitHub-token patterns; not a comprehensive scanner','manifest_check':manifest_result,'mandatory_gates':gates},indent=2))

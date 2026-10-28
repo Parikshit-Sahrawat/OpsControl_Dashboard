@@ -1,0 +1,30 @@
+scripts/verify-kubernetes-provider.sh:59:python3 "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py"
+scripts/verify-kubernetes-provider.sh:60:python3 -m pip install 'kubernetes>=32,<37' --quiet
+.github/workflows/validation.yml:19:      - run: python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && pip install -r requirements-providers.txt -r requirements-hosts.txt
+.github/workflows/v15-quality.yml:41:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+.github/workflows/security-validation.yml:19:        run: python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && python -m pip install "pip-audit>=2.9,<3"
+.github/workflows/security-validation.yml:21:        run: python -m pip_audit -r backend/requirements-providers.txt -r backend/requirements-hosts.txt --strict
+.github/workflows/release-reliability.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+scripts/http-golden-path.sh:45:cp backend/requirements.txt backend/alembic.ini backend/bootstrap_pip.py backend/pip-bootstrap.json "$run_dir/backend/"
+scripts/http-golden-path.sh:52:COPY requirements.txt bootstrap_pip.py pip-bootstrap.json ./
+scripts/http-golden-path.sh:53:RUN PIP_CERT=/build-ca.crt python bootstrap_pip.py && PIP_CERT=/build-ca.crt python -m pip install --no-cache-dir -r requirements.txt
+.github/workflows/pipeline-v16.yml:30:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+.github/workflows/phase1-staging.yml:44:        run: python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && python -m pip install -r backend/requirements.txt
+.github/workflows/operational-acceptance.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+backend/Dockerfile.uat:4:COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+backend/Dockerfile.uat:7:    python bootstrap_pip.py && python -m pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+backend/Dockerfile.runtime:3:COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+backend/Dockerfile.runtime:5:    python bootstrap_pip.py
+backend/Dockerfile.runtime:7:    python -m pip install --no-cache-dir --prefix=/install -r requirements-providers.txt -r requirements-hosts.txt
+.github/workflows/infrastructure-acceptance.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+backend/Dockerfile.demo:7:COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+backend/Dockerfile.demo:10:    python bootstrap_pip.py && python -m pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+.github/workflows/etl-acceptance.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+.github/workflows/consolidated-uat.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+.github/workflows/aws-ec2-live-acceptance.yml:44:          python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && python -m pip install 'boto3>=1.35,<2'
+.github/workflows/arch001-native-monitoring.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+.github/workflows/access-architecture.yml:22:          backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+verification/dev05/backend.Dockerfile:5:COPY verification/dev05/bootstrap_pip.py verification/dev05/pip-bootstrap.json ./
+verification/dev05/backend.Dockerfile:6:RUN --mount=type=secret,id=proxy_ca,required=true PIP_CERT=/run/secrets/proxy_ca python bootstrap_pip.py && PIP_CERT=/run/secrets/proxy_ca python -m pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+agent/packaging/build-windows.ps1:6:python "$Root\backend\bootstrap_pip.py"
+agent/packaging/build-windows.ps1:8:python -m pip install pyinstaller==6.12.0 pywin32==311

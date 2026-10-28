@@ -1,0 +1,2511 @@
+{
+  "status": "FAIL",
+  "cases": [
+    {
+      "name": "0.163.2-batch_checkpoint_gap",
+      "scenario": "batch_checkpoint_gap",
+      "runtime": "0.163.2",
+      "status": "FAIL",
+      "expected_ids": [
+        "event-0000",
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004",
+        "event-0005",
+        "event-0006",
+        "event-0007",
+        "event-0008",
+        "event-0009",
+        "event-0010",
+        "event-0011",
+        "event-0012",
+        "event-0013",
+        "event-0014",
+        "event-0015"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792937824276251811,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792937824276737554,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 7
+        },
+        {
+          "time_ns": 1792937824727568167,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0000",
+            "event-0001",
+            "event-0002",
+            "event-0003",
+            "event-0004",
+            "event-0005",
+            "event-0006",
+            "event-0007",
+            "event-0008",
+            "event-0009",
+            "event-0010",
+            "event-0011",
+            "event-0012",
+            "event-0013",
+            "event-0014",
+            "event-0015"
+          ],
+          "bytes": 20624,
+          "sha256": "ce03d5bd25d9352fc262326165c1617552420e16bd73e4d6e4d96a5286f024b8"
+        },
+        {
+          "time_ns": 1792937824728428734,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937824759197375,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937824790092576,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937824792290820,
+          "stage": "SIGKILL",
+          "pid": 7
+        },
+        {
+          "time_ns": 1792937824800053654,
+          "stage": "collector_start",
+          "version": "0.163.2",
+          "pid": 15
+        },
+        {
+          "time_ns": 1792937833253264629,
+          "stage": "snapshot",
+          "label": "final"
+        },
+        {
+          "time_ns": 1792937833253335536,
+          "stage": "SIGTERM",
+          "pid": 15
+        },
+        {
+          "time_ns": 1792937833261200606,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792937824728417998,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 0,
+                    "write_index": 0,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "258114f345043ccc098dffbeb6c1230b56c443306095c58313fadb5939b26e98",
+              "committed_txid": 4,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937824759186288,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 0,
+                    "write_index": 0,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "258114f345043ccc098dffbeb6c1230b56c443306095c58313fadb5939b26e98",
+              "committed_txid": 4,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937824790079726,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "7303cac5e2d584db0a9f8e1042bb50ba9fe8960b7ec33d2683100c4d313fd504",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 0,
+                    "write_index": 0,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "b7be02847135150cf0747a436dd26fff0a0fad5a07c7da00c91c8f85131ad053",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1101,
+                  "sha256": "4add61c2177dec491ae7a2d7a5b373351272871da1059d29df1525c7dd70b67f",
+                  "event_ids": [
+                    "event-0000"
+                  ],
+                  "protobuf_checkpoint_offsets": [
+                    {
+                      "offset": 20624,
+                      "record_num": 16
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833253252040,
+          "label": "final",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "c6735ef44ac2830e42c8f90a19c79467991d917bfaf1325527f1d083371c87cb",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "qmv0"
+                  ],
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "event_ids": [],
+                  "queue_metadata": {
+                    "read_index": 0,
+                    "write_index": 0,
+                    "dispatched": []
+                  }
+                }
+              ]
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "9ecedf9e0d86f3f474ac8b98c404f555a85f84758cde79e38f1e9a3676301416",
+              "committed_txid": 48,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1101,
+                  "sha256": "4add61c2177dec491ae7a2d7a5b373351272871da1059d29df1525c7dd70b67f",
+                  "event_ids": [
+                    "event-0000"
+                  ],
+                  "protobuf_checkpoint_offsets": [
+                    {
+                      "offset": 20624,
+                      "record_num": 16
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "8417c52cbc3495042ce7e7bdf62623f595964658d250ffb9096e1241281f2bc0",
+      "confirmed_window": "checkpoint EOF; queue has no IDs; API received none; before 5s batch flush",
+      "accepted_attempt_counts": {
+        "event-0000": 0,
+        "event-0001": 0,
+        "event-0002": 0,
+        "event-0003": 0,
+        "event-0004": 0,
+        "event-0005": 0,
+        "event-0006": 0,
+        "event-0007": 0,
+        "event-0008": 0,
+        "event-0009": 0,
+        "event-0010": 0,
+        "event-0011": 0,
+        "event-0012": 0,
+        "event-0013": 0,
+        "event-0014": 0,
+        "event-0015": 0
+      },
+      "missing_ids": [
+        "event-0000",
+        "event-0001",
+        "event-0002",
+        "event-0003",
+        "event-0004",
+        "event-0005",
+        "event-0006",
+        "event-0007",
+        "event-0008",
+        "event-0009",
+        "event-0010",
+        "event-0011",
+        "event-0012",
+        "event-0013",
+        "event-0014",
+        "event-0015"
+      ],
+      "detected_loss": true
+    },
+    {
+      "name": "0.123.0-batch_checkpoint_gap",
+      "scenario": "batch_checkpoint_gap",
+      "runtime": "0.123.0",
+      "status": "FAIL",
+      "expected_ids": [
+        "event-0016",
+        "event-0017",
+        "event-0018",
+        "event-0019",
+        "event-0020",
+        "event-0021",
+        "event-0022",
+        "event-0023",
+        "event-0024",
+        "event-0025",
+        "event-0026",
+        "event-0027",
+        "event-0028",
+        "event-0029",
+        "event-0030",
+        "event-0031"
+      ],
+      "timeline": [
+        {
+          "time_ns": 1792937833262168997,
+          "stage": "api_gate",
+          "mode": "pass"
+        },
+        {
+          "time_ns": 1792937833264352229,
+          "stage": "collector_start",
+          "version": "0.123.0",
+          "pid": 23
+        },
+        {
+          "time_ns": 1792937833715195240,
+          "stage": "source_fsynced",
+          "ids": [
+            "event-0016",
+            "event-0017",
+            "event-0018",
+            "event-0019",
+            "event-0020",
+            "event-0021",
+            "event-0022",
+            "event-0023",
+            "event-0024",
+            "event-0025",
+            "event-0026",
+            "event-0027",
+            "event-0028",
+            "event-0029",
+            "event-0030",
+            "event-0031"
+          ],
+          "bytes": 20624,
+          "sha256": "28055fbefdefcec796d38cf26a87451da9001a6a6d9e24f35646d17bd0a48b82"
+        },
+        {
+          "time_ns": 1792937833746195860,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833780420210,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833811149678,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833841888783,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833872595426,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833903618900,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833934381649,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833965144578,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937833996293270,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834027103392,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834057895696,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834088866838,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834119564510,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834150342231,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834181145082,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834211985067,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834243078766,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834274020355,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834304864877,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834335654587,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834366834180,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834397824027,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834428825917,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834459804783,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834490791400,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834521592056,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834552356078,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834583112968,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834613898973,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834645138430,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834676293021,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834707007317,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834737850292,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834768658621,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834799384133,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834830076887,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834860809482,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834891660254,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834922582809,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834953481608,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937834984324659,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835015163780,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835045881443,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835076610804,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835107288593,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835137988860,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835168639458,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835199441869,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835230156045,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835261038165,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835291744638,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835322467218,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835353223497,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835384003644,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835414688630,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835445403938,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835476198576,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835506968344,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835538130768,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835568854759,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835599510065,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835630144572,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835660795432,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835691471011,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835722164084,
+          "stage": "snapshot",
+          "label": "batch-window"
+        },
+        {
+          "time_ns": 1792937835722481353,
+          "stage": "SIGKILL",
+          "pid": 23
+        },
+        {
+          "time_ns": 1792937835729974222,
+          "stage": "api_gate",
+          "mode": "pass"
+        }
+      ],
+      "snapshots": [
+        {
+          "time_ns": 1792937833746177592,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "0b1c820864e2db1fe3beeeb60af13eba786fe079eb6939da3e9c48a1b2525b5d",
+              "committed_txid": 4,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 2,
+                  "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+                  "event_ids": [],
+                  "json": 0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833780408362,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "f0bb9405d515ce3d467b1d1944859085a36798bb3e25b620d4215b97d8bf5860",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833811139172,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "f0bb9405d515ce3d467b1d1944859085a36798bb3e25b620d4215b97d8bf5860",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833841876825,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "f0bb9405d515ce3d467b1d1944859085a36798bb3e25b620d4215b97d8bf5860",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833872584780,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "f0bb9405d515ce3d467b1d1944859085a36798bb3e25b620d4215b97d8bf5860",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833903581393,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "f0bb9405d515ce3d467b1d1944859085a36798bb3e25b620d4215b97d8bf5860",
+              "committed_txid": 5,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833934370673,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833965134032,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937833996280811,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834027092515,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834057884659,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834088854730,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834119555036,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "49995a724ac9c52ef015010c14c5ce9e0427cd88f892afab296eb28acf4f6e72",
+              "committed_txid": 6,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834150331635,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834181133966,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834211973339,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834243066868,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834274009068,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834304852879,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "eb2c5ffdb56faf24d9e56228803a1e06f76c86e9942e588614b154ecd837351f",
+              "committed_txid": 7,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834335643491,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834366819899,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834397810106,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834428807710,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834459791322,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834490776498,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834521580008,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "ecf5972803d6bec27a444e7ae19ebfeaccfa2e71c3839dee01f9dae08bb9127e",
+              "committed_txid": 8,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834552343609,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834583102261,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834613887236,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834645125691,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834676279311,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834706996490,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "394135392c0177cf6619989f911b4927b7fdaa99cadd3105862cdc4e208b6fbe",
+              "committed_txid": 9,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834737836862,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834768646072,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834799373387,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834830066882,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834860797995,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834891649187,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834922569138,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "6b68ce1dd5b2ea9acfc78b4d148a1de4e0b404b6921c6c08033a7b65608f182b",
+              "committed_txid": 10,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834953467777,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937834984310678,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835015151291,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835045870707,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835076600198,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835107278738,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "c1d702c00b1a8cf9682f4370fe4df2f20e87ac9330caaf7380b6d8270bd21419",
+              "committed_txid": 11,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835137979035,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835168629844,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835199430842,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835230145759,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835261027449,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835291732379,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835322456642,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "72511aa9ee644a1bdb80feae077f0f327c0921cc206a992df5c69127703a3e7b",
+              "committed_txid": 12,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835353212771,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835383993249,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835414677623,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835445393402,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835476188401,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835506958619,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "1b9388e29146a7cf4562890eff529ae1413f3309f8905df65fc81da16b307857",
+              "committed_txid": 13,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835538116967,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835568844343,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835599500190,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835630135579,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835660785437,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835691460435,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        },
+        {
+          "time_ns": 1792937835722153348,
+          "label": "batch-window",
+          "source_bytes": 20624,
+          "state": {
+            "exporter_otlphttp_opscontrol_logs": {
+              "file_sha256": "e1608576d3ad3de050aa2bab577e27966ba2935501f51c1a1f9ecc0c1831d749",
+              "committed_txid": 4,
+              "entries": []
+            },
+            "receiver_filelog_45f2ef5914764c808baed77ceeb312af_700bddceffd69782": {
+              "file_sha256": "7e013aceaf5c917119c9916c1a7b16c51d9d495cdd21c9a1ff9ffc1f8e9c67d1",
+              "committed_txid": 14,
+              "entries": [
+                {
+                  "key": [
+                    "default",
+                    "file_input.knownFiles"
+                  ],
+                  "bytes": 1634,
+                  "sha256": "2a03db70cc95e2153c77f6ef6bc46571775863bfa99329c958a0f839f6b09fd5",
+                  "event_ids": []
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "config_sha256": "8417c52cbc3495042ce7e7bdf62623f595964658d250ffb9096e1241281f2bc0",
+      "error": "AssertionError: Checkpoint window not reached",
+      "missing_ids": [
+        "event-0016",
+        "event-0017",
+        "event-0018",
+        "event-0019",
+        "event-0020",
+        "event-0021",
+        "event-0022",
+        "event-0023",
+        "event-0024",
+        "event-0025",
+        "event-0026",
+        "event-0027",
+        "event-0028",
+        "event-0029",
+        "event-0030",
+        "event-0031"
+      ]
+    }
+  ],
+  "scope": "finite synthetic filelog delivery; SIGKILL, not power failure; no exactly-once guarantee",
+  "collector_id": "c8111623-ba3f-4a5b-b54e-a6b0df282c2e",
+  "agent_id": "96a11a50-bad7-4c28-9f95-9c081568b3a4",
+  "method_id": "45f2ef59-1476-4c80-8bae-d77ceeb312af",
+  "generated_sha256": "8417c52cbc3495042ce7e7bdf62623f595964658d250ffb9096e1241281f2bc0"
+}

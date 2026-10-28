@@ -1,0 +1,14 @@
+legacy IDs persisted before backup: PASS
+populated JSON state upgrades to compatible candidate: PASS
+repeated candidate restarts preserve consumed offsets: PASS
+rotated input IDs persisted: PASS
+copy-truncate with retained archive persists IDs: PASS
+unclean default upgrade delivery: FAIL (preserved; testing independent archive recovery)
+default protobuf downgrade failure reproduced on disposable clone: PASS
+incomplete source archive blocked: PASS
+live collector state lock blocks recovery: PASS
+partial recovery refuses service restart: PASS
+interrupted atomic exchange resumes idempotently and preserves failed state: PASS
+bounded replay of every stable ID acknowledged by actual API: PASS
+repeated rollback restarts do not replay already-consumed recovery file: PASS
+completed recovery refuses a second rewind after state advances: PASS

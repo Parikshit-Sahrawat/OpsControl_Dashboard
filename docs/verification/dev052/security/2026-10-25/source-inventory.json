@@ -1,0 +1,689 @@
+[
+  {
+    "file": ".github/actionlint.yaml",
+    "sha256": "e5de63c4e081bbcb1524c8864cbc583aa24fdeec88a1514e4a8b34c153768183",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/access-architecture.yml",
+    "sha256": "004a63a56ee1422b650e2761039acb084ca64a84f72fabccc327267be306e182",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/agent-packaging.yml",
+    "sha256": "5fcb3209baa45e2a7f2c48e2131cf86bac8175d7f72cd01047f1905c42c628e9",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/arch001-native-monitoring.yml",
+    "sha256": "342a40e0d0d12f109e2be7be912c319b1ed9dad3e9677d0b3d119eb746b813a9",
+    "references": [
+      {
+        "line": 26,
+        "reference": "docker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/aws-ec2-live-acceptance.yml",
+    "sha256": "01799950091467d2be6513b4acf5e0d3e1561cb5004c264b35931e1eab74e57a",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/consolidated-uat.yml",
+    "sha256": "b6cc32c3e85a596128962263ec0e6db5b00897546821e9de5d14209849bfb92a",
+    "references": [
+      {
+        "line": 26,
+        "reference": "docker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/demo-smoke.yml",
+    "sha256": "2383a72d15bf59283f6dc7c4827307dcbba064f884c3f8fbe5644eb7a9a51024",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/egress-firewall-smoke.yml",
+    "sha256": "a5496ee6759315271cea358a05c2c265f25f1ebaf7637900df32ccf7e581a0a3",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/etl-acceptance.yml",
+    "sha256": "2e5973adb24c18ace4428a04becc3bcadfc4982bbaf4d08cfbefbf146927d93b",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/http-golden-path.yml",
+    "sha256": "8b4b24c05554020050d8752edc42598c723af9d2fe76c5ff099e8fe46eda5b0e",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/infrastructure-acceptance.yml",
+    "sha256": "0ba764e745537e2b6fd485ab28efd4c5c7cc18cdc2516b3833a80ea5499b1b31",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/kubernetes-cni-acceptance.yml",
+    "sha256": "a7bfcf1073c009bc91397246082e6dbdb980fe1ffad219292e9446d03325a892",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/live-http-alert-recovery.yml",
+    "sha256": "1f82f0829588b5829db8d56be1bab36583a79e132412a592bd1eb18f47139f71",
+    "references": [
+      {
+        "line": 25,
+        "reference": "if ! docker pull public.ecr.aws/docker/library/postgres:17; then"
+      },
+      {
+        "line": 28,
+        "reference": "docker pull postgres:17"
+      },
+      {
+        "line": 50,
+        "reference": "docker run -d --name opscontrol-private-fixture --network opscontrol-fixture-target-net \\"
+      },
+      {
+        "line": 55,
+        "reference": "docker run -d --name opscontrol-private-agent --network opscontrol-fixture-target-net \\"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/operational-acceptance.yml",
+    "sha256": "975274c81aa892aa8365948733a024d659bb503e4258b212e38cb0834c97c9f2",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/phase1-staging.yml",
+    "sha256": "a7907e034bbad9c4b6e0172b60942381276d2e1fa2944cd76272d0c00e8b4480",
+    "references": [
+      {
+        "line": 15,
+        "reference": "image: postgres:17"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/pipeline-v16.yml",
+    "sha256": "010dc36552c0971fb8dd5590a560e454346cda4563180051a888d5c51515091a",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/private-https-acceptance.yml",
+    "sha256": "1caf99bfa5ac4e0cc62414b0ac6503696f1d297f10d788624e1b30d425a7d10f",
+    "references": [
+      {
+        "line": 23,
+        "reference": "docker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\"             python:3.12-alpine python /app.py"
+      },
+      {
+        "line": 31,
+        "reference": "docker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS"
+      },
+      {
+        "line": 33,
+        "reference": "docker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED"
+      },
+      {
+        "line": 35,
+        "reference": "docker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS"
+      },
+      {
+        "line": 40,
+        "reference": "docker run --rm --network opscontrol-private-fixture \\"
+      },
+      {
+        "line": 46,
+        "reference": "docker run --rm --network opscontrol-private-fixture \\"
+      },
+      {
+        "line": 52,
+        "reference": "docker run --rm --network opscontrol-private-fixture \\"
+      },
+      {
+        "line": 61,
+        "reference": "docker run --rm --network opscontrol-private-fixture python:3.12-alpine             python -c 'import socket"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/release-reliability.yml",
+    "sha256": "27433ac2f2069f4c3414c2460e5f2bde6947b81de44cdab138f5a8901f4ac0ef",
+    "references": [
+      {
+        "line": 31,
+        "reference": "docker build -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend"
+      },
+      {
+        "line": 32,
+        "reference": "docker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print(\"Non-root read-only runtime imports PASS\")'"
+      }
+    ]
+  },
+  {
+    "file": ".github/workflows/security-validation.yml",
+    "sha256": "2975c52b4e9ff53ea102192844aed9afa7c33e55255559d751ed62b1c2a0a9e1",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/stage-b-uat.yml",
+    "sha256": "175b5daa53774cf4d1bcdb8dd456542aa8cc5c371a796ca5b044e34a95154173",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/stage-b-validation.yml",
+    "sha256": "f589608066501e7cc3b73c469ae340c83ddebb574b7a1545563438feb5eeabf7",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/v15-quality.yml",
+    "sha256": "d8e0a0b5205415fca199521848f9b60ffbee195bb21c3c27925340c0e9715feb",
+    "references": []
+  },
+  {
+    "file": ".github/workflows/validation.yml",
+    "sha256": "15a207c11a4eea23cf7c6c9d26e37449a3d9fae48c864a15ee3f253f7d6b7b84",
+    "references": []
+  },
+  {
+    "file": "agent/packaging/build-windows.ps1",
+    "sha256": "ec33bfc520caca2a26a9e7dafafdc088b1e72e57bcffc0da54da2e034d54e7b2",
+    "references": []
+  },
+  {
+    "file": "backend/Dockerfile.demo",
+    "sha256": "ce5982bd2d931cb23367ffe389a1ac2e80887a4b7a4d30adb19adbc4eacd62c0",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2 AS telemetryruntime"
+      },
+      {
+        "line": 2,
+        "reference": "FROM python:3.12-slim"
+      }
+    ]
+  },
+  {
+    "file": "backend/Dockerfile.runtime",
+    "sha256": "e833403661f7f7d4ba0207119c0047ecee25d4712902ac1ac2888885263b72d4",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM python:3.12-slim"
+      }
+    ]
+  },
+  {
+    "file": "backend/Dockerfile.uat",
+    "sha256": "c347c1d0104242b6f650290a68161639ea221bcd552f3996cc847250e76acc52",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM python:3.12-slim"
+      }
+    ]
+  },
+  {
+    "file": "deploy/examples/remote-agent-networkpolicy.yaml",
+    "sha256": "539a8e1a8f30b3b227e8ecf33062a5831d34168d3c3e7a246fd70101ff56004c",
+    "references": []
+  },
+  {
+    "file": "deploy/fixtures/kind-calico.yaml",
+    "sha256": "046de1c050f3cdace28d9577a60cdddb05f34fd138a84072394d7e87561a3268",
+    "references": []
+  },
+  {
+    "file": "deploy/uat/compose.images.yml",
+    "sha256": "be57dc2d3adb2435cb290663720e4ac6815f61dd1d3a51d75eca062aac875749",
+    "references": [
+      {
+        "line": 5,
+        "reference": "image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}"
+      },
+      {
+        "line": 8,
+        "reference": "image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}"
+      },
+      {
+        "line": 10,
+        "reference": "image: ${STAGE_B_BACKEND_IMAGE:?digest-pinned backend image required}"
+      },
+      {
+        "line": 13,
+        "reference": "image: ${STAGE_B_FRONTEND_IMAGE:?digest-pinned frontend image required}"
+      }
+    ]
+  },
+  {
+    "file": "docker-compose.demo.yml",
+    "sha256": "51ea25538aaac98dc0c8e64f19fdf2351b1ddf92fb6b413525386aeb5bf857d7",
+    "references": [
+      {
+        "line": 4,
+        "reference": "image: public.ecr.aws/docker/library/postgres:17"
+      },
+      {
+        "line": 20,
+        "reference": "dockerfile: Dockerfile.demo"
+      },
+      {
+        "line": 60,
+        "reference": "image: nginx:1.28-alpine"
+      },
+      {
+        "line": 86,
+        "reference": "dockerfile: Dockerfile.demo"
+      }
+    ]
+  },
+  {
+    "file": "docker-compose.yml",
+    "sha256": "af9b2855d6ed9899c9db0c5516a3c7259a501f7ca084899684ca524e0d99e35d",
+    "references": [
+      {
+        "line": 3,
+        "reference": "image: postgres:17"
+      }
+    ]
+  },
+  {
+    "file": "docs/acceptance/operational-sequence/sprint5-compose.json",
+    "sha256": "c4a2d370a509ae405311b4e06ae8fdadb8566adfc8dd8405d7df74201344af84",
+    "references": []
+  },
+  {
+    "file": "frontend/Dockerfile.demo",
+    "sha256": "5aeb4071244713be747ab0770f554acf26248522ed05751f3a5fdd76ccc70960",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM node:20-alpine AS build"
+      },
+      {
+        "line": 9,
+        "reference": "FROM nginx:1.27-alpine"
+      }
+    ]
+  },
+  {
+    "file": "scripts/access-acceptance.py",
+    "sha256": "462240503b511f9b46ba07691894d870b58094e27138bb4e64697a810db8f888",
+    "references": [
+      {
+        "line": 139,
+        "reference": "before={table:[list(map(str,r)) for r in c.execute(text('SELECT '+columns+' FROM '+table+' ORDER BY id'))] for table,columns in [('users','id,username,password_hash,active,platform_admin,created_at'),('organizations','id,name,code,active,created_at'),('vms','id,organization_id,hostname'),('access_sessions','id,user_id,token_hash,expires_at,created_at'),('organization_memberships','id,user_id,organization_id,role')]}"
+      },
+      {
+        "line": 197,
+        "reference": "\"from sqlalchemy import create_engine,text;from app.core.config import settings; c=create_engine(settings.database_url).connect();assert c.scalar(text('SELECT version_num FROM alembic_version'))=='0024_notification_leases';assert c.scalar(text(\\\"SELECT to_regclass('public.service_providers')\\\")) is None;assert c.scalar(text('SELECT count(*) FROM users'))==1;c.close()\","
+      }
+    ]
+  },
+  {
+    "file": "scripts/access-docker-demo.py",
+    "sha256": "a49a12a4808042eec6ba93ac0fa895475da12df23b26df13c1da0339bba59de3",
+    "references": [
+      {
+        "line": 83,
+        "reference": "image: postgres:17-alpine"
+      }
+    ]
+  },
+  {
+    "file": "scripts/arch001-acceptance.py",
+    "sha256": "87598c62d660435724bdce0d5a34ffe966cac7b4ab610f8ab89ac4f08ada7c8b",
+    "references": []
+  },
+  {
+    "file": "scripts/backup-local-demo.py",
+    "sha256": "97667ae9af8c936a7cbe0f6e298c234549bd62fc8fed31804606801e5ad0fbd3",
+    "references": [
+      {
+        "line": 115,
+        "reference": "sql = \"SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename\""
+      },
+      {
+        "line": 137,
+        "reference": "query = 'SELECT count(*) FROM \"' + table + '\"'"
+      }
+    ]
+  },
+  {
+    "file": "scripts/build-agent-package.py",
+    "sha256": "5a34ca790513b8666837c90af24d70f7f043bf62e88f8f64e247938df1161522",
+    "references": []
+  },
+  {
+    "file": "scripts/build-demo-agent.sh",
+    "sha256": "943d62c872c9072878cc527fff9ea0345759681dfef5389f7bd50a06bcdece94",
+    "references": [
+      {
+        "line": 12,
+        "reference": "image='otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2'"
+      }
+    ]
+  },
+  {
+    "file": "scripts/check-workflows.sh",
+    "sha256": "945f7a09398a60bfcb721502a579643aa034dec7681937887b74a4644490ec0a",
+    "references": []
+  },
+  {
+    "file": "scripts/demo-down.sh",
+    "sha256": "ac0f76275bc03e4efee79ee44876dc45f1d99abb9bae262b011a7c353acd7833",
+    "references": []
+  },
+  {
+    "file": "scripts/demo-up.sh",
+    "sha256": "aeda0ff27c122dcb12dc19a42109107a8d7cfc3a044c2cb34c92ed5d622770cc",
+    "references": [
+      {
+        "line": 29,
+        "reference": "if docker pull postgres:17; then"
+      }
+    ]
+  },
+  {
+    "file": "scripts/etl-acceptance.py",
+    "sha256": "a6c954e09b781060f9b0a5a48665ae51852e7ef888f13231e9c301c585e1c454",
+    "references": []
+  },
+  {
+    "file": "scripts/gateway-smoke.py",
+    "sha256": "109b1e59d2969d617494d8610984095d4f1c921b4b909bcbdc20e8a67980cd2b",
+    "references": []
+  },
+  {
+    "file": "scripts/http-golden-path.sh",
+    "sha256": "79cb5ca3a5659d49ba39b586dda64fdcc10cd7b789dbde0a577f39d4d775c03f",
+    "references": [
+      {
+        "line": 48,
+        "reference": "FROM python:3.12-slim"
+      },
+      {
+        "line": 60,
+        "reference": "image: postgres:17"
+      },
+      {
+        "line": 74,
+        "reference": "dockerfile: Dockerfile"
+      },
+      {
+        "line": 104,
+        "reference": "docker run -d --name \"$project-target\" --network \"$project-target-net\" \\"
+      },
+      {
+        "line": 108,
+        "reference": "docker run -d --name \"$project-agent\" --network \"$project-target-net\" \\"
+      }
+    ]
+  },
+  {
+    "file": "scripts/infrastructure-acceptance.py",
+    "sha256": "15f8a004d5f0e642de486423ed124f6aca3bc79d5afe5bb713514552d9b6bcc8",
+    "references": []
+  },
+  {
+    "file": "scripts/init-demo-gateway.py",
+    "sha256": "28539b67af749ae1bf96a32f2d3a03a5cfe92b0385cf50cd4f9122cb29ebcd96",
+    "references": []
+  },
+  {
+    "file": "scripts/operational-acceptance.py",
+    "sha256": "e285ffc9d5307636ee050a65a0aff8d2ba9569ab103ff2e7d4647b5eed5b8ca3",
+    "references": []
+  },
+  {
+    "file": "scripts/release-acceptance.py",
+    "sha256": "6a817eab62aa8148e5584b4432bb6b1d79ed3a647e8ec8576b6ca747b1eab385",
+    "references": []
+  },
+  {
+    "file": "scripts/test-performance.py",
+    "sha256": "909f96f2b926990ef6610324b9c3a8c677e12703a73e18c3df6e6ea268c3bb2c",
+    "references": []
+  },
+  {
+    "file": "scripts/test-quality.sh",
+    "sha256": "50322b3da2d3ac8b68a3a9a31b0838ea735270c6f7991e8ee8e602d9411310f2",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/acceptance.py",
+    "sha256": "04493a84ac02c0598022d3ad71bac5cdcb61991bd792d34c6e08f16dc5dc6ee0",
+    "references": [
+      {
+        "line": 142,
+        "reference": "c.execute(text(\"INSERT INTO users(id,service_provider_id,username,full_name,password_hash,active,platform_admin,created_at) VALUES (:id,(SELECT id FROM service_providers LIMIT 1),'uat-admin','UAT Administrator',:h,true,true,now())\"),{'id':f['admin'],'h':hash_password(f['password'])})"
+      }
+    ]
+  },
+  {
+    "file": "scripts/uat/local_environment.py",
+    "sha256": "fbefee83ed0d1a8c1fd170d90288e717d0958909c6d1be0a5851995a9b99e6f9",
+    "references": [
+      {
+        "line": 178,
+        "reference": "image: postgres:17-alpine"
+      }
+    ]
+  },
+  {
+    "file": "scripts/uat/native-target.py",
+    "sha256": "df045ea901b8ad279b3668b36d1870a750e6a59648d8be0318eb4d77a141f8dc",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/seed_readiness.py",
+    "sha256": "20bb28049896f43f4f37b9cb4b1057ccacfef6ed436663e36359962cd8e5f150",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/stage_b_deploy.py",
+    "sha256": "9fc109dabfd7f3daa21f8e45145b1983c90f345ee15e7b0064dd7084808876bd",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/stage_b_smoke.py",
+    "sha256": "58e891de6b7888a02780add3fddc666514b1b86ce3cf2634b0610354e2a4f553",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/stage_b_state.py",
+    "sha256": "d9672bb37bb60ed8c8061bf903d33db90faf5223fd0e44cebbc250d0d150b8a0",
+    "references": []
+  },
+  {
+    "file": "scripts/uat/test_stage_b.py",
+    "sha256": "6cd5c558615cebdc9868a03f25ffd4eaf2173cd1a157c68451bbe7bb78b448a5",
+    "references": []
+  },
+  {
+    "file": "scripts/ui-acceptance.py",
+    "sha256": "f8c3fa120380748f35b1a04cb0d6cb32c71c78769bd254f2730be30ef34ff3c6",
+    "references": []
+  },
+  {
+    "file": "scripts/v16-acceptance.py",
+    "sha256": "75887c45c2af68dac3523e610b04f2254a05d27202771db0b7a0c23b756b0ae6",
+    "references": []
+  },
+  {
+    "file": "scripts/verify-cni-egress.sh",
+    "sha256": "017bf6d081e3edeb4c09549d9a15c55d4aa74bbd7f809f9607dff6fcd662114d",
+    "references": [
+      {
+        "line": 10,
+        "reference": "kubectl -n \"$ns\" run allowed --image=python:3.12-alpine --restart=Never \\"
+      },
+      {
+        "line": 12,
+        "reference": "kubectl -n \"$ns\" run denied --image=python:3.12-alpine --restart=Never \\"
+      },
+      {
+        "line": 14,
+        "reference": "kubectl -n \"$ns\" run agent --image=python:3.12-alpine --restart=Never \\"
+      }
+    ]
+  },
+  {
+    "file": "scripts/verify-firewall-docker.sh",
+    "sha256": "f5839a465b0f9b85b7f11f0b3cdd0c65c45da031760715072e21e4636744c401",
+    "references": [
+      {
+        "line": 7,
+        "reference": "image=\"public.ecr.aws/docker/library/python:3.12-alpine\""
+      },
+      {
+        "line": 8,
+        "reference": "if ! docker image inspect \"$image\" >/dev/null 2>&1 && ! docker pull \"$image\"; then"
+      },
+      {
+        "line": 9,
+        "reference": "image=\"python:3.12-alpine\""
+      },
+      {
+        "line": 10,
+        "reference": "docker pull \"$image\""
+      },
+      {
+        "line": 19,
+        "reference": "docker run -d --rm --name \"$name-ok\" --network \"$allowed\" \"$image\" \\"
+      },
+      {
+        "line": 21,
+        "reference": "docker run -d --rm --name \"$name-blocked\" --network \"$denied\" \"$image\" \\"
+      },
+      {
+        "line": 24,
+        "reference": "docker run --rm --network \"$allowed\" \"$image\" python -c '"
+      }
+    ]
+  },
+  {
+    "file": "scripts/verify-kubernetes-provider.sh",
+    "sha256": "05825a153e143ecb00638640549a1929daf542c0587ecc597deace53b68ed064",
+    "references": [
+      {
+        "line": 38,
+        "reference": "kubectl -n \"$ns\" create deployment demo-web --image=python:3.12-alpine -- python -m http.server 8080"
+      }
+    ]
+  },
+  {
+    "file": "verification/dev05/backend.Dockerfile",
+    "sha256": "147f45e1cf93221030f3edef3bd7b8531431aad46917dedfbf8613d3dd96646d",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM python:3.12-slim"
+      }
+    ]
+  },
+  {
+    "file": "verification/dev05/browser.Dockerfile",
+    "sha256": "3d19fc261b6e4e97dbfd90e8859824c98757c4670eecf2295adf3bdadf3a037a",
+    "references": [
+      {
+        "line": 2,
+        "reference": "FROM node:24-bookworm-slim"
+      }
+    ]
+  },
+  {
+    "file": "verification/dev05/compose.yml",
+    "sha256": "3b566d3a2deda61ff187a08a5419eea7199895f032d545a3ae1cec5c789a3953",
+    "references": [
+      {
+        "line": 3,
+        "reference": "image: ${DEV05_IMAGE}"
+      },
+      {
+        "line": 6,
+        "reference": "dockerfile: verification/dev05/backend.Dockerfile"
+      },
+      {
+        "line": 33,
+        "reference": "image: postgres:17-alpine"
+      },
+      {
+        "line": 62,
+        "reference": "dockerfile: verification/dev05/frontend.Dockerfile"
+      },
+      {
+        "line": 82,
+        "reference": "image: ${DEV05_IMAGE}"
+      },
+      {
+        "line": 106,
+        "reference": "dockerfile: verification/dev05/browser.Dockerfile"
+      }
+    ]
+  },
+  {
+    "file": "verification/dev05/fixture.py",
+    "sha256": "fec85a5187562de9dff2cd52d4d26a30c5a306727f98e2c8070a9f183c3a7f96",
+    "references": []
+  },
+  {
+    "file": "verification/dev05/frontend.Dockerfile",
+    "sha256": "9f63f20eedbcda88137cb710b493a1d902dcddc3de3d5ca4317cba8c126109e3",
+    "references": [
+      {
+        "line": 1,
+        "reference": "FROM node:24-bookworm-slim"
+      }
+    ]
+  },
+  {
+    "file": "verification/dev05/infrastructure.py",
+    "sha256": "ccf3383c73445ae19383a27cca51e51ad03920a5d0d3b826c092df1ee365671b",
+    "references": []
+  },
+  {
+    "file": "verification/dev05/probe.py",
+    "sha256": "adc93051f4e5046b7c5265156eebe37cf1e57eb13b85d9824a3631c284226c9e",
+    "references": []
+  },
+  {
+    "file": "verification/dev05/regressions.py",
+    "sha256": "f58d811d3b013ed9ecd1540cde9696a6c8115cc59a8021a13c1a21aad37293e0",
+    "references": []
+  },
+  {
+    "file": "verification/dev05/run.py",
+    "sha256": "e65fad2767bd10c35c955674807c9376c57543708993054def98fc595da56fea",
+    "references": []
+  },
+  {
+    "file": "verification/dev05/worker_checks.py",
+    "sha256": "245938972fa4e12e44c044043d2263e87cf73baba7ea05ca73b1dfd008eb39af",
+    "references": []
+  },
+  {
+    "file": "verification/dev051/run.py",
+    "sha256": "24100f8bf1bc0311ecc02abf5c652f732e4c738217be71d1af7caf27e5fa18e8",
+    "references": []
+  },
+  {
+    "file": "verification/dev052/provision_contrib.py",
+    "sha256": "61818cb80bdd4ac7611af3439c1a270b99c8c20c2e87e0e987c0bf5b0f008544",
+    "references": []
+  },
+  {
+    "file": "verification/dev052/run_contrib_tests.py",
+    "sha256": "0f4c2ee8f49f38d0b6253476c7db62c9c369fc960c105acb6b25882df90c6ef1",
+    "references": []
+  },
+  {
+    "file": "verification/dev052/test_provision.py",
+    "sha256": "ec7143cbe559f31c5175febb7f95c50702cd4a59c49242e129534c5b2ae0fbe4",
+    "references": []
+  }
+]

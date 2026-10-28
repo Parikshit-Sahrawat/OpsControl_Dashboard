@@ -1,0 +1,665 @@
+[
+  {
+    "name": "0.163.2-before_read",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0000",
+      "event-0001",
+      "event-0002",
+      "event-0003"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0000": 1,
+      "event-0001": 1,
+      "event-0002": 1,
+      "event-0003": 1
+    },
+    "api_counts_by_id": {
+      "event-0000": 1,
+      "event-0001": 1,
+      "event-0002": 1,
+      "event-0003": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-after_checkpoint_before_commit",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0004",
+      "event-0005",
+      "event-0006",
+      "event-0007"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0004": 1,
+      "event-0005": 1,
+      "event-0006": 1,
+      "event-0007": 1
+    },
+    "api_counts_by_id": {
+      "event-0004": 1,
+      "event-0005": 1,
+      "event-0006": 1,
+      "event-0007": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-after_commit_before_ack",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0008",
+      "event-0009",
+      "event-0010",
+      "event-0011"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 8,
+    "api_duplicate_attempts": 4,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0008": 1,
+      "event-0009": 1,
+      "event-0010": 1,
+      "event-0011": 1
+    },
+    "api_counts_by_id": {
+      "event-0008": 2,
+      "event-0009": 2,
+      "event-0010": 2,
+      "event-0011": 2
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-after_ack",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0012",
+      "event-0013",
+      "event-0014",
+      "event-0015"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0012": 1,
+      "event-0013": 1,
+      "event-0014": 1,
+      "event-0015": 1
+    },
+    "api_counts_by_id": {
+      "event-0012": 1,
+      "event-0013": 1,
+      "event-0014": 1,
+      "event-0015": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-unavailable_api",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0016",
+      "event-0017",
+      "event-0018",
+      "event-0019"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0016": 1,
+      "event-0017": 1,
+      "event-0018": 1,
+      "event-0019": 1
+    },
+    "api_counts_by_id": {
+      "event-0016": 1,
+      "event-0017": 1,
+      "event-0018": 1,
+      "event-0019": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-queue_saturation",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0020",
+      "event-0021",
+      "event-0022",
+      "event-0023",
+      "event-0024",
+      "event-0025",
+      "event-0026",
+      "event-0027",
+      "event-0028",
+      "event-0029"
+    ],
+    "expected_distinct": 10,
+    "persisted_distinct": 10,
+    "missing_ids": [],
+    "api_accepted_attempts": 10,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 10,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0020": 1,
+      "event-0021": 1,
+      "event-0022": 1,
+      "event-0023": 1,
+      "event-0024": 1,
+      "event-0025": 1,
+      "event-0026": 1,
+      "event-0027": 1,
+      "event-0028": 1,
+      "event-0029": 1
+    },
+    "api_counts_by_id": {
+      "event-0020": 1,
+      "event-0021": 1,
+      "event-0022": 1,
+      "event-0023": 1,
+      "event-0024": 1,
+      "event-0025": 1,
+      "event-0026": 1,
+      "event-0027": 1,
+      "event-0028": 1,
+      "event-0029": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-repeated_crashes",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0030",
+      "event-0031",
+      "event-0032",
+      "event-0033"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0030": 1,
+      "event-0031": 1,
+      "event-0032": 1,
+      "event-0033": 1
+    },
+    "api_counts_by_id": {
+      "event-0030": 1,
+      "event-0031": 1,
+      "event-0032": 1,
+      "event-0033": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-retained_source_before_read",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0034",
+      "event-0035",
+      "event-0036",
+      "event-0037"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0034": 1,
+      "event-0035": 1,
+      "event-0036": 1,
+      "event-0037": 1
+    },
+    "api_counts_by_id": {
+      "event-0034": 1,
+      "event-0035": 1,
+      "event-0036": 1,
+      "event-0037": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.163.2-expired_source_before_read",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0038",
+      "event-0039",
+      "event-0040",
+      "event-0041"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0038",
+      "event-0039",
+      "event-0040",
+      "event-0041"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0038": 0,
+      "event-0039": 0,
+      "event-0040": 0,
+      "event-0041": 0
+    },
+    "api_counts_by_id": {
+      "event-0038": 0,
+      "event-0039": 0,
+      "event-0040": 0,
+      "event-0041": 0
+    },
+    "controller_status": "FAIL",
+    "error": null
+  },
+  {
+    "name": "0.163.2-permanent_rejection",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0042",
+      "event-0043",
+      "event-0044",
+      "event-0045"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0042",
+      "event-0043",
+      "event-0044",
+      "event-0045"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0042": 0,
+      "event-0043": 0,
+      "event-0044": 0,
+      "event-0045": 0
+    },
+    "api_counts_by_id": {
+      "event-0042": 0,
+      "event-0043": 0,
+      "event-0044": 0,
+      "event-0045": 0
+    },
+    "controller_status": "FAIL",
+    "error": null
+  },
+  {
+    "name": "0.123.0-before_read",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0046",
+      "event-0047",
+      "event-0048",
+      "event-0049"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0046": 1,
+      "event-0047": 1,
+      "event-0048": 1,
+      "event-0049": 1
+    },
+    "api_counts_by_id": {
+      "event-0046": 1,
+      "event-0047": 1,
+      "event-0048": 1,
+      "event-0049": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-after_checkpoint_before_commit",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0050",
+      "event-0051",
+      "event-0052",
+      "event-0053"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0050": 1,
+      "event-0051": 1,
+      "event-0052": 1,
+      "event-0053": 1
+    },
+    "api_counts_by_id": {
+      "event-0050": 1,
+      "event-0051": 1,
+      "event-0052": 1,
+      "event-0053": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-after_commit_before_ack",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0054",
+      "event-0055",
+      "event-0056",
+      "event-0057"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 8,
+    "api_duplicate_attempts": 4,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0054": 1,
+      "event-0055": 1,
+      "event-0056": 1,
+      "event-0057": 1
+    },
+    "api_counts_by_id": {
+      "event-0054": 2,
+      "event-0055": 2,
+      "event-0056": 2,
+      "event-0057": 2
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-after_ack",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0058",
+      "event-0059",
+      "event-0060",
+      "event-0061"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0058": 1,
+      "event-0059": 1,
+      "event-0060": 1,
+      "event-0061": 1
+    },
+    "api_counts_by_id": {
+      "event-0058": 1,
+      "event-0059": 1,
+      "event-0060": 1,
+      "event-0061": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-unavailable_api",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0062",
+      "event-0063",
+      "event-0064",
+      "event-0065"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0062": 1,
+      "event-0063": 1,
+      "event-0064": 1,
+      "event-0065": 1
+    },
+    "api_counts_by_id": {
+      "event-0062": 1,
+      "event-0063": 1,
+      "event-0064": 1,
+      "event-0065": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-queue_saturation",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0066",
+      "event-0067",
+      "event-0068",
+      "event-0069"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0066",
+      "event-0067",
+      "event-0068",
+      "event-0069"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0066": 0,
+      "event-0067": 0,
+      "event-0068": 0,
+      "event-0069": 0
+    },
+    "api_counts_by_id": {
+      "event-0066": 0,
+      "event-0067": 0,
+      "event-0068": 0,
+      "event-0069": 0
+    },
+    "controller_status": "FAIL",
+    "error": "AssertionError: Timed out waiting for observed boundary"
+  },
+  {
+    "name": "0.123.0-repeated_crashes",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0070",
+      "event-0071",
+      "event-0072",
+      "event-0073"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0070": 1,
+      "event-0071": 1,
+      "event-0072": 1,
+      "event-0073": 1
+    },
+    "api_counts_by_id": {
+      "event-0070": 1,
+      "event-0071": 1,
+      "event-0072": 1,
+      "event-0073": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-retained_source_before_read",
+    "status": "PASS",
+    "expected_ids": [
+      "event-0074",
+      "event-0075",
+      "event-0076",
+      "event-0077"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 4,
+    "missing_ids": [],
+    "api_accepted_attempts": 4,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 4,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0074": 1,
+      "event-0075": 1,
+      "event-0076": 1,
+      "event-0077": 1
+    },
+    "api_counts_by_id": {
+      "event-0074": 1,
+      "event-0075": 1,
+      "event-0076": 1,
+      "event-0077": 1
+    },
+    "controller_status": "PASS",
+    "error": null
+  },
+  {
+    "name": "0.123.0-expired_source_before_read",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0078",
+      "event-0079",
+      "event-0080",
+      "event-0081"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0078",
+      "event-0079",
+      "event-0080",
+      "event-0081"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0078": 0,
+      "event-0079": 0,
+      "event-0080": 0,
+      "event-0081": 0
+    },
+    "api_counts_by_id": {
+      "event-0078": 0,
+      "event-0079": 0,
+      "event-0080": 0,
+      "event-0081": 0
+    },
+    "controller_status": "FAIL",
+    "error": null
+  },
+  {
+    "name": "0.123.0-permanent_rejection",
+    "status": "FAIL",
+    "expected_ids": [
+      "event-0082",
+      "event-0083",
+      "event-0084",
+      "event-0085"
+    ],
+    "expected_distinct": 4,
+    "persisted_distinct": 0,
+    "missing_ids": [
+      "event-0082",
+      "event-0083",
+      "event-0084",
+      "event-0085"
+    ],
+    "api_accepted_attempts": 0,
+    "api_duplicate_attempts": 0,
+    "physical_rows": 0,
+    "physical_duplicate_rows": 0,
+    "db_counts_by_id": {
+      "event-0082": 0,
+      "event-0083": 0,
+      "event-0084": 0,
+      "event-0085": 0
+    },
+    "api_counts_by_id": {
+      "event-0082": 0,
+      "event-0083": 0,
+      "event-0084": 0,
+      "event-0085": 0
+    },
+    "controller_status": "FAIL",
+    "error": null
+  }
+]

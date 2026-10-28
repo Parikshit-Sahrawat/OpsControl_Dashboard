@@ -125,6 +125,12 @@ def main():
             context / "verification/dev05",
             dirs_exist_ok=True,
         )
+        # Build tooling is an explicit overlay; application files remain pinned.
+        # The historical baseline predates the verified pip bootstrap inputs.
+        for name in ("bootstrap_pip.py", "pip-bootstrap.json"):
+            shutil.copy2(
+                ROOT / "backend" / name, context / "verification/dev05" / name
+            )
         compose = [
             "docker",
             "compose",
