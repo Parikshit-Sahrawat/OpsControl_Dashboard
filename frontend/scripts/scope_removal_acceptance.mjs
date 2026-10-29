@@ -83,9 +83,17 @@ try{
  await page.getByRole('row').filter({hasText:'scope-pentaho reviewed'}).waitFor();
  checks.push('Persisted Pentaho resource edited/saved in real browser; no provider execution/certification');
  await page.screenshot({path:out+'/scope-pipelines.png',fullPage:true});
+ const supportedCollector=await page.request.post(base+'/api/v1/resource-management/collectors',{headers,data:{data_source_id:apiResource.data_source_id,name:'scope-supported-browser-collector',collector_type:'HTTP'}});
+ assert.equal(supportedCollector.status(),201,await supportedCollector.text());
+ await page.getByRole('button',{name:'Sign out',exact:true}).click();
+ await page.getByLabel('Username').fill('test-admin');
+ await page.getByLabel('Password').fill('testing-only-StrongPassword-123!');
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();
+ await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
  await page.goto(ui+'/#/resources/collectors');
  await page.getByRole('heading',{name:'Collectors',exact:true}).waitFor();
  await page.waitForLoadState('networkidle');
+ await page.getByRole('row').filter({hasText:'scope-supported-browser-collector'}).waitFor();
  assert.equal(await page.getByRole('row').filter({hasText:'scope-legacy-persisted-http'}).count(),0);
  await page.getByRole('button',{name:'Create Collector',exact:true}).click();
  assert.equal(await page.locator('select option').filter({hasText:'scope-legacy-do-not-operate'}).count(),0);
