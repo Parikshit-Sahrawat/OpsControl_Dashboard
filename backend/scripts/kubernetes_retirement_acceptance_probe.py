@@ -10,7 +10,7 @@ from app.worker.remote_models import RemoteProbeJob, RemoteProbeEvidence
 from app.worker.remote_scheduler import queue_due_once
 from scripts import remote_protocol_probe as api
 
-KINDS=("KUBERNETES","K8S","AWS_EKS")
+KINDS=("KUBERNETES","K8S","AWS_EKS","AZURE_AKS","GKE","OPENSHIFT","AmazonElasticKubernetesService","k3s")
 
 def main():
     if os.getenv("OPSCONTROL_RELEASE_ACCEPTANCE")!="1" or os.getenv("ENVIRONMENT")!="demo":
@@ -35,7 +35,7 @@ def main():
             db.add(source);db.flush()
             for state in ("QUEUED","LEASED"):
                 collector=Collector(data_source_id=source.id,name="retired-"+state,
-                                    collector_type=kind,configuration={},enabled=True,status="ACTIVE",
+                                    collector_type="HTTP",configuration={},enabled=True,status="ACTIVE",
                                     remote_worker_id=worker_id,
                                     next_run_at=datetime.now(timezone.utc)+timedelta(hours=2))
                 db.add(collector);db.flush()

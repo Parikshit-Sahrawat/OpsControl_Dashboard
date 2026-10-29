@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # Operational telemetry, alert and notification lifecycle
 
 The implementation keeps the existing FastAPI/SQLAlchemy/PostgreSQL/React architecture. The requested sequence verifies it and closes gaps, rather than replacing state management or data contracts. Appearance remains the approved dark/light UI; Resource Management uses bounded batches of the same collector endpoint to respect ingress URL limits.

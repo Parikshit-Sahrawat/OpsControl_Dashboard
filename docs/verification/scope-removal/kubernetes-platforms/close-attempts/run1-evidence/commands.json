@@ -1,0 +1,70 @@
+[
+  {
+    "command": [
+      "docker",
+      "run",
+      "-d"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "--format"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.auth_tenant_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.remote_telemetry_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.alert_notification_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.eks_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.scope_removal_http_probe"
+    ],
+    "exit_code": 1
+  }
+]

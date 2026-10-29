@@ -1,0 +1,7 @@
+# Requirement scope reconciliation
+
+Owner task OC-SCOPE-REM-001 removes all Kubernetes distributions including EKS/AKS/GKE/OpenShift. K8S-01/K8S-02 canonical register rows now use REMOVED_FROM_SCOPE; Kubernetes portions of OC-IMP-017 and derived UI proposals are excluded. This is scope classification, not an implementation-completion claim; other requirement ownership is unchanged.
+
+README and current provider, infrastructure, architecture, quickstart, roadmap and user guides explicitly supersede their former Kubernetes instructions. Historical descriptions, reports and source approvals remain for audit; they confer no current operational support. Retained database models/migrations are preservation dependencies, not supported product capabilities. Destructive retirement remains blocked pending accountable export/ownership review.
+
+Stage 2 PR [70](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/70) was not modified by this task. It must consume this scope decision in its next authorized reconciliation rather than treating Kubernetes requirements as outstanding implementation. PR 69 and DEV-05 evidence were not modified by this task. Final remote verification found PR 70 externally merged at 2026-10-28T13:21:23Z and PR 69 externally merged at 2026-10-28T14:14:24Z; origin/main advanced to 62a4eb4643c09594569aa61f0a60ae64035e6ede. Complete semantic cross-reference cleanup of historical planning documents remains pending; do not infer acceptance from a superseding banner.

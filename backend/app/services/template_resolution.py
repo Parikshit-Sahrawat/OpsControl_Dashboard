@@ -1,3 +1,4 @@
+from app.services.excluded_platforms import require_supported_source, require_supported_configuration
 from copy import deepcopy
 from uuid import UUID
 
@@ -156,6 +157,7 @@ def attach_template(
     source = db.get(DataSource, data_source_id)
     if not source:
         raise HTTPException(status_code=404, detail="Data source not found")
+    require_supported_source(source)
     template = db.get(MonitoringTemplate, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Monitoring template not found")
@@ -172,6 +174,12 @@ def attach_template(
     )
     if not version:
         raise HTTPException(status_code=409, detail=f"Template version {version_number} is not available")
+
+    try:
+        require_supported_configuration(version.package_config)
+        require_supported_configuration(overrides)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
 
     existing = db.scalar(
         select(MonitoringTemplateAttachment).where(
