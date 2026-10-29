@@ -1,0 +1,90 @@
+{
+  "baseline": "a2f7460904fbab2a99c258616516054f21689687",
+  "classification_counts": {
+    "VERIFIED_PENDING_OWNER": 9,
+    "PARTIALLY_IMPLEMENTED": 24,
+    "IMPLEMENTED_UNVERIFIED": 14,
+    "NOT_IMPLEMENTED": 1,
+    "BLOCKED_RELIABILITY": 1,
+    "BLOCKED_ARCHITECTURE": 19,
+    "REMOVED_FROM_SCOPE": 2,
+    "BLOCKED_SECURITY": 1,
+    "SUPERSEDED": 1,
+    "SOURCE_NOT_RECOVERED": 62
+  },
+  "unique_ids": 134,
+  "groups": {
+    "product": 31,
+    "ui_refinements": 23,
+    "proposals": 18,
+    "historical_unrecovered": 62
+  },
+  "accepted_active_requirements": 0,
+  "owner_accepted_removal_ids": [
+    "K8S-01",
+    "K8S-02"
+  ],
+  "backend": {
+    "total": 549,
+    "pass": 547,
+    "skip": 2,
+    "fail": 0,
+    "errors": 0
+  },
+  "frontend": {
+    "pass": 38,
+    "fail": 0,
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "workflow_validation": "PASS",
+  "database": "PASS_FRESH_POPULATED_RESTORE_100_TABLES",
+  "http_browser": {
+    "execution": "REUSED_IDENTICAL_TREE_NOT_RERUN",
+    "groups": 13,
+    "http_assertions": 67,
+    "browser_groups": 17,
+    "source_sha": "402834e351d816d48760974e4566185631600995",
+    "evidence_tree": "ec9c712a22db9bc46e101edafcc2f5e09b165025"
+  },
+  "main_ci": {
+    "success": 6,
+    "skipped_deployment_jobs": 3,
+    "source": "raw/main-checks.json"
+  },
+  "review_pr_ci": "NOT_YET_OBSERVED",
+  "stage2a": "STAGE_2A_BLOCKED",
+  "stage3": "STAGE_3_NOT_READY",
+  "stage3_authorized": false,
+  "release": "NO-GO",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED"
+  },
+  "historical_evidence_modified": false,
+  "production_or_live_uat_access": false,
+  "collector_pin_changed": false,
+  "documentation_validation": "PASS",
+  "historical_removal_manifest": {
+    "files": 408,
+    "status": "PASS"
+  },
+  "limitations": [
+    "Two pinned-collector binary cases skipped; no qualification rerun",
+    "HTTP/browser evidence reused from hash-equivalent baseline, not freshly rerun",
+    "Main deployment jobs intentionally skipped; not PASS",
+    "No genuine-provider/owner UAT or fresh image security certification",
+    "Review-PR CI will be observed after push; baseline results are separate"
+  ],
+  "stage_b_contracts": {
+    "pass": 12,
+    "fail": 0,
+    "skipped": 0,
+    "deployment": false
+  },
+  "documentation_attempts": {
+    "initial": "FAIL_MANIFEST_NOT_YET_GENERATED",
+    "final": "PASS"
+  }
+}

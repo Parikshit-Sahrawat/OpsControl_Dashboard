@@ -1,0 +1,9 @@
+# Owner-accepted removal
+
+OC-SCOPE-REM-001 is COMPLETED, OWNER-ACCEPTED and MERGED via PR73 at `a2f7460904fbab2a99c258616516054f21689687`. K8S-01 and K8S-02 are REMOVED_FROM_SCOPE, not failed, missing or unverified features. Scope includes Kubernetes/EKS/AKS/GKE/OpenShift and related cluster monitoring/discovery. Removal acceptance is explicitly owner-approved in this task; scope classification remains separate from implementation acceptance counts.
+
+Current ARCH-001 V1.6, ARCH-ETL-001 V1.6, Product Alignment Addendum, implementation roadmap and operational architecture already carry supersession banners. Historical bodies are audit evidence only. Two still-prescriptive phrases in the canonical register (shared-cluster authority and proposed OC-IMP-017 redrafting around Kubernetes) are corrected in this review with original baseline preserved in raw/canonical-register-before.md. The SDLC roadmap's unqualified Kubernetes/EKS/Helm workstream is also corrected, with raw/sdlc-roadmap-before.md preserved. No old report is rewritten.
+
+OC-IMP-017's same-VM multi-customer proposal is SUPERSEDED by exclusive VM ownership; its later Kubernetes alternative is removed. This does not approve a general shared-resource replacement. No UI-001–023 row is wholly Kubernetes-specific; retained active refinements are not removed wholesale. Mixed/historical roadmap sprint16/23 cluster scope is removed while separately approved VM portions remain.
+
+Applied Alembic history, three legacy cluster/association/decision tables, customer fences and immutable audit data remain preserved. Existing removal evidence verifies retired operations denied, rows non-actionable and hashes unchanged. New baseline preservation rerun confirms restore equivalence. No schema retirement, table drop or customer-data deletion occurs. Any later retirement requires accountable owner, export inventory, retention approval, relationship analysis, verified recovery and separate authorization.
