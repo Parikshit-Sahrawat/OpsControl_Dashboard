@@ -10,3 +10,13 @@
 - Run 7 (732e44d): PASS; retained under run7-evidence. Final run 8 (46e6f0f): PASS with additional retired association mutation verbs; kept under close-2026-10-28/http-browser.
 
 A focused unit invocation from repository root initially failed to import app; rerunning from backend passed. An npm setup attempt failed because its default cache was unavailable; the task-owned /tmp cache succeeded. Neither failure was treated as a product PASS.
+
+Run 9 at 0a7f669ddb02f820749ee40d9cf91452fd062492: FAIL in the new collector selector test: tenant fixture had no Create Collector control. Screenshot and raw failure retained. Subsequent test uses the authorized synthetic administrator and requires a supported collector row, preventing an empty-table false positive.
+
+Run 10 at cfb3d18ed876db0394dd80250a0c106bbed6f289: FAIL: new administrator login assertion expected Dashboard despite preserved resource navigation. Retained screenshot/log. Corrected test waits for authenticated Sign out control.
+
+Run 11 at 6b3756f: FAIL: direct collector navigation initially returned an empty scoped snapshot even for administrator. Next run explicitly exercises the existing Refresh control before positive/negative collector assertions. Initial timing hypothesis was disproven by later source review: the fixture omitted explicit customer selection required by the canonical list (App.jsx/auth.js).
+
+Run 12 at 6af205b: FAIL: Refresh does not grant missing customer selection. Final fixture correction selects only the authorized LAB-N UUID, following existing scope browser probes. No implicit ALL, authorization bypass or empty-view PASS.
+
+Final run 13 at 402834e351d816d48760974e4566185631600995: PASS, 17 browser groups including collector positive/negative control, 67 focused HTTP checks and all original harness gates. Retained in close-2026-10-29/http-browser.

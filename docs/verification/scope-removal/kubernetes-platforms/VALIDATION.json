@@ -1,7 +1,7 @@
 {
   "baseline": "09a578f70282c7889a515c332c948f1940ae6719",
-  "final_source_sha": "46e6f0f585460795eec385bae6465929187a9c46",
-  "product_test_sha": "46e6f0f585460795eec385bae6465929187a9c46",
+  "final_source_sha": "402834e351d816d48760974e4566185631600995",
+  "product_test_sha": "402834e351d816d48760974e4566185631600995",
   "status": "FOUR_REMOVAL_WORKSTREAMS_PASS_PENDING_OWNER_AND_FINAL_CI",
   "backend": {
     "total": 549,
@@ -21,7 +21,7 @@
   "destructive_schema_retirement": "BLOCKED",
   "browser_acceptance": {
     "status": "PASS",
-    "assertion_groups": 16
+    "assertion_groups": 17
   },
   "live_http_harness": {
     "status": "PASS",
@@ -37,7 +37,7 @@
   "baseline_drift": "Integrated remote main 62a4eb4643c09594569aa61f0a60ae64035e6ede; tests rerun",
   "documentation_checks": {
     "json_validity": "PASS_FOR_STRUCTURED_JSON",
-    "raw_legacy_format_failures": 7,
+    "raw_legacy_format_failures": 12,
     "local_markdown_links": "PASS",
     "artifact_inventory": "PASS",
     "artifact_hashes": "PASS",
@@ -57,12 +57,17 @@
   "raw_legacy_json_serialization_failures": {
     "files": [
       "close-2026-10-28/http-browser/eks.json.raw.txt",
+      "close-2026-10-29/http-browser/eks.json.raw.txt",
       "close-attempts/run1-evidence/eks.json.raw.txt",
+      "close-attempts/run10-evidence/eks.json.raw.txt",
+      "close-attempts/run11-evidence/eks.json.raw.txt",
+      "close-attempts/run12-evidence/eks.json.raw.txt",
       "close-attempts/run2-evidence/eks.json.raw.txt",
-      "close-attempts/run6-evidence/eks.json.raw.txt",
+      "close-attempts/run4-evidence/eks.json.raw.txt",
       "close-attempts/run5-evidence/eks.json.raw.txt",
+      "close-attempts/run6-evidence/eks.json.raw.txt",
       "close-attempts/run7-evidence/eks.json.raw.txt",
-      "close-attempts/run4-evidence/eks.json.raw.txt"
+      "close-attempts/run9-evidence/eks.json.raw.txt"
     ],
     "reason": "Existing EKS auxiliary ledger appends literal backslash-n; bytes preserved, not used as canonical machine-readable acceptance",
     "primary_closure_ledgers_valid": true

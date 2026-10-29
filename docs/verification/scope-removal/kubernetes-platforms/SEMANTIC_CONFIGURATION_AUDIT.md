@@ -22,3 +22,7 @@ Scope: active operational entry points at 46e6f0f585460795eec385bae6465929187a9c
 `attributes`, `custom_attributes` and `tags` are intentionally retained as inert label containers. They cannot select the collector adapter, replace the typed receiver list, or change source ownership. Their secret/depth checks remain in force; no historical telemetry values are rewritten. Generic HTTP monitoring is not a substrate detector: it does not identify the hosting orchestrator of an otherwise approved application endpoint. No claim is made that a string search could classify every remote application's hosting infrastructure.
 
 Confirmed operational bypasses identified in this review are closed by the shared input, persisted-state, attachment, activation and execution fences. No open confirmed activation bypass remains in the audited paths. Unknown distribution strings have no provider adapter or operational routes; this is not a promise to recognize every invented alias as a type at input. Historical terminology remains audit evidence, not supported product scope.
+
+## Final collector UI review — 2026-10-29
+
+At `402834e351d816d48760974e4566185631600995`, ResourceManagementV2 filters excluded source identities and collectors before publishing the operational snapshot, including source selectors. Backend authorization/retirement checks remain in place. An administrator browser positive control confirms a supported collector is visible alongside absence of retained legacy controls. Final source hashes and raw results: `close-2026-10-29/`.

@@ -1,0 +1,111 @@
+{
+  "source_sha": "402834e351d816d48760974e4566185631600995",
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "network",
+        "create",
+        "--internal",
+        "--label",
+        "task=OC-SCOPE-REM-001",
+        "oc-scope-rem-001-close"
+      ],
+      "exit_code": 0,
+      "log": "network.log"
+    },
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "run",
+        "-d",
+        "--name",
+        "oc-scope-rem-001-pg",
+        "--label",
+        "task=OC-SCOPE-REM-001",
+        "--network",
+        "oc-scope-rem-001-close",
+        "--tmpfs",
+        "/var/lib/postgresql/data",
+        "-e",
+        "POSTGRES_PASSWORD",
+        "-e",
+        "POSTGRES_DB=scope_removal",
+        "postgres:17-alpine"
+      ],
+      "exit_code": 0,
+      "log": "container.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "head"
+      ],
+      "exit_code": 0,
+      "log": "fresh-migration.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "backend-full.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "scripts.scope_removal_preservation_probe"
+      ],
+      "exit_code": 0,
+      "log": "preservation.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "scripts.provider_unit_probe"
+      ],
+      "exit_code": 0,
+      "log": "provider-unit.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "scripts.infrastructure_unit_probe"
+      ],
+      "exit_code": 0,
+      "log": "infrastructure-unit.log"
+    },
+    {
+      "command": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "compileall",
+        "-q",
+        "app",
+        "scripts",
+        "tests"
+      ],
+      "exit_code": 0,
+      "log": "python-compile.log"
+    }
+  ],
+  "container": "oc-scope-rem-001-pg",
+  "network": "oc-scope-rem-001-close",
+  "remaining_container": false,
+  "image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "cleanup": "owned container and network only; tmpfs; no named volume"
+}
