@@ -76,7 +76,8 @@ try {
  assert.equal(new Set(ids).size,ids.length);assert.deepEqual([...ids].sort(),expected.items.map(x=>x.id).sort());
  assert.equal(await page.getByRole('button',{name:'Next',exact:true}).isDisabled(),true);
  await page.screenshot({path:out+'/incident-pagination-last-page.png',fullPage:true});
- const hidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:southHeaders});assert.equal(hidden.status(),404);
+ const hidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:southHeaders});assert.equal(hidden.status(),403);
+ const scopedHidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:{...adminHeaders,'X-OpsControl-Customers':southHeaders['X-OpsControl-Customers']}});assert.equal(scopedHidden.status(),404);
  await page.getByLabel('Incident status',{exact:true}).selectOption('OPEN');await page.getByRole('button',{name:'Previous',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Previous',exact:true}).isDisabled(),true);
  checks.push('UI-021 real multi-page filtered incident totals, distinct IDs, last-page bounds, filter reset and cross-tenant denial');
  assert.deepEqual(errors,[]);
