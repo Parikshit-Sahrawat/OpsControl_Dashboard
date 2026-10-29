@@ -6,7 +6,7 @@ from sqlalchemy import select,func
 from app.db.session import SessionLocal
 from app.models import Organization,DataSource,Collector
 from scripts import remote_protocol_probe as p
-from scripts.eks_acceptance_fixture import ACCOUNT,REGION
+ACCOUNT,REGION="123456789012","ap-south-1"
 
 def main():
     if os.getenv('OPSCONTROL_RELEASE_ACCEPTANCE')!='1' or os.getenv('ENVIRONMENT')!='demo':
@@ -15,12 +15,16 @@ def main():
     def login(name):return p.check(200,'POST','/api/v1/auth/login',body={'username':name,'password':p.PASSWORD})['access_token']
     admin,north,south=login('test-admin'),login('test-north'),login('test-south')
     with SessionLocal() as db: org_id=str(db.scalar(select(Organization.id).where(Organization.code=='LAB-N')))
-    source=p.check(201,'POST','/api/v1/resource-management/data-sources',admin,
-        {'organization_id':org_id,'name':'AWS EKS discovery fixture','source_type':'AWS_EKS',
-         'connection_config':{'region':REGION,'account_id':ACCOUNT}})
+    payload={'organization_id':org_id,'name':'AWS EKS legacy fixture','source_type':'AWS_EKS',
+             'connection_config':{'region':REGION,'account_id':ACCOUNT}}
+    p.check(422,'POST','/api/v1/resource-management/data-sources',admin,payload)
+    # Only direct synthetic fixture insertion may create retired historical rows.
+    with SessionLocal() as db:
+        legacy=DataSource(**payload)
+        db.add(legacy);db.commit();source={'id':str(legacy.id)}
     path='/api/v1/resource-discovery/sources/'+source['id']
     caps=p.check(200,'GET','/api/v1/resource-discovery/capabilities',admin)
-    assert next(c for c in caps if c['provider']=='AWS_EKS')['monitoring'] is False
+    assert all(c['provider']!='AWS_EKS' for c in caps)
     p.check(403,'POST',path+'/scan',north,{})
     p.check(404,'POST',path+'/scan',south,{})
     # Kubernetes/EKS discovery is retired: preserve authorization and verify

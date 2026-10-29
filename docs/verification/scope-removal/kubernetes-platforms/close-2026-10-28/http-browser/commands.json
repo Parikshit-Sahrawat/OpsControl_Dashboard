@@ -1,0 +1,262 @@
+[
+  {
+    "command": [
+      "docker",
+      "run",
+      "-d"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "--format"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.auth_tenant_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.remote_telemetry_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.alert_notification_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.eks_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.scope_removal_http_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.kubernetes_retirement_acceptance_probe"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "seed"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "node",
+      "frontend/scripts/release_pagination_acceptance.mjs"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "frontend/scripts/resource_crud_acceptance.mjs"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "frontend/scripts/scope_removal_acceptance.mjs"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "exercise"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "snapshot"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "indexes-roundtrip"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "verify"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.database_backup",
+      "backup",
+      "/tmp/opscontrol-release-l4o_58fj/backup/populated.dump",
+      "--container",
+      "opscontrol-release-4389cbcf-pg"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "docker",
+      "exec",
+      "opscontrol-release-4389cbcf-pg"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.database_backup",
+      "restore",
+      "/tmp/opscontrol-release-l4o_58fj/backup/populated.dump",
+      "--container",
+      "opscontrol-release-4389cbcf-pg"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "verify"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "scripts.release_runtime_probe",
+      "verify"
+    ],
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "openssl",
+      "req",
+      "-x509"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "frontend/scripts/render-production-nginx.mjs",
+      "frontend/dist/index.html"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "docker",
+      "create",
+      "--name"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "docker",
+      "start",
+      "opscontrol-release-4389cbcf-tls"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  },
+  {
+    "command": [
+      "docker",
+      "inspect",
+      "--format"
+    ],
+    "exit_code": 0,
+    "expected_exit": 0
+  }
+]

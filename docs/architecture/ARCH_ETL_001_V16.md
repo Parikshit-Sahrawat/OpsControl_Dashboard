@@ -1,3 +1,5 @@
+> OC-SCOPE-REM-001 (2026-10-28): Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. This owner decision supersedes earlier supported-cluster descriptions below. Historical text is retained for audit; VM/EC2 exclusive customer ownership is unchanged.
+
 ARCH-ETL-001 V1.6 — Consolidated Approved Pentaho Monitoring Architecture
 Status: OWNER-APPROVED CONSOLIDATED BASELINE — 2026-10-16 (reconstructed from approved discussions; not a verbatim archival transcript)
 Scope: Pentaho Data Integration (PDI) monitoring in OpsControl Dashboard

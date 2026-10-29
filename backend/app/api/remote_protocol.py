@@ -166,6 +166,8 @@ def update_network_policy(worker_id:uuid.UUID,payload:NetworkPolicy):
         return {"worker_id":str(worker.id),"approved_hosts":hosts,"approved_cidrs":worker.allowed_cidrs}
 
 def _snapshot(collector:Collector,source:DataSource,worker:WorkerIdentity):
+    from app.services.excluded_platforms import require_supported_collector
+    require_supported_collector(collector,source)
     cfg=collector.configuration or {}
     if collector.collector_type.upper() not in {"HTTP","API"} or not isinstance(cfg,dict):
         raise HTTPException(422,"Only configured HTTP probes supported by this worker protocol")

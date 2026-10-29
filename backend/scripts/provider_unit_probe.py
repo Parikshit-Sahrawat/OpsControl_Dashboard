@@ -1,9 +1,9 @@
-"""Offline unit tests: no credentials, AWS calls or Kubernetes cluster needed."""
+"""Offline unit tests: no credentials, AWS calls or live provider needed."""
 import os
 from datetime import datetime,timezone
 from types import SimpleNamespace as NS
 from unittest.mock import Mock
-from app.worker.provider_checks import ec2_health,kubernetes_health,ProviderCheckError
+from app.worker.provider_checks import ec2_health,ProviderCheckError
 from app.worker.pentaho_status import get_job_status,parse_carte_status,PentahoStatusError
 
 def denied(fn,exception=ValueError):
@@ -36,20 +36,6 @@ def test_aws():
     denied(lambda:ec2_health({**config,"access_key_id":"secret"},aws_session),ProviderCheckError)
     denied(lambda:ec2_health({**config,"account_id":"111111111111"},aws_session),ProviderCheckError)
 
-def test_k8s():
-    pod=NS(status=NS(phase="Running",conditions=[NS(type="Ready",status="True")],
-                     container_statuses=[NS(restart_count=3,state=NS(waiting=None))]))
-    dep=NS(spec=NS(replicas=3),status=NS(ready_replicas=2,available_replicas=2))
-    api=NS(CoreV1Api=lambda:NS(read_namespaced_pod=lambda **kwargs:pod),
-           AppsV1Api=lambda:NS(read_namespaced_deployment=lambda **kwargs:dep))
-    result=kubernetes_health({"namespace":"demo","pod_name":"web-0"},api)
-    assert result["outcome"]=="SUCCESS" and result["restarts"]==3
-    degraded=kubernetes_health({"namespace":"demo","deployment_name":"frontend"},api)
-    assert degraded["outcome"]=="DEGRADED" and degraded["available_replicas"]==2
-    denied(lambda:kubernetes_health({"namespace":"../secrets","pod_name":"web-0"},api),ProviderCheckError)
-    denied(lambda:kubernetes_health({"namespace":"demo","pod_name":"web-0","server":"https://elsewhere"},api),ProviderCheckError)
-    denied(lambda:kubernetes_health({"namespace":"demo","pod_name":"web-0","deployment_name":"frontend"},api),ProviderCheckError)
-
 def test_pentaho():
     sample=b"<job_status><id>execution-0001</id><status_desc>Finished</status_desc><result><result>Y</result><nr_errors>0</nr_errors></result></job_status>"
     parsed=parse_carte_status(sample)
@@ -80,5 +66,5 @@ def test_pentaho():
         transport=fake_transport,resolver=fake_dns),ValueError)
 
 if __name__=="__main__":
-    test_aws();test_k8s();test_pentaho()
-    print("EC2 / KUBERNETES / PENTAHO READ-ONLY PROVIDER UNIT TESTS PASS")
+    test_aws();test_pentaho()
+    print("EC2 / PENTAHO READ-ONLY PROVIDER UNIT TESTS PASS")

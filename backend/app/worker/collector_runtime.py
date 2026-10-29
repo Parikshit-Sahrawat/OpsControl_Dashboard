@@ -356,33 +356,6 @@ class AwsEC2Adapter(CollectorAdapter):
             )
 
 
-class KubernetesAdapter(CollectorAdapter):
-    collector_type = "KUBERNETES"
-
-    async def collect(self, collector):
-        from app.worker.provider_checks import kubernetes_health, ProviderCheckError
-
-        try:
-            payload = await asyncio.to_thread(
-                kubernetes_health, collector.configuration or {}
-            )
-            return CollectionResult(
-                payload["outcome"] == "SUCCESS",
-                "Read-only Kubernetes status collected",
-                payload,
-            )
-        except (ProviderCheckError, ImportError):
-            return CollectionResult(
-                False,
-                "Kubernetes RBAC/configuration/SDK unavailable",
-                {"outcome": "CONFIGURATION_ERROR"},
-            )
-        except Exception:
-            return CollectionResult(
-                False,
-                "Kubernetes read-only API unavailable",
-                {"outcome": "PROVIDER_ERROR"},
-            )
 
 
 class PentahoAdapter(CollectorAdapter):
@@ -533,8 +506,6 @@ ADAPTERS = {
     "PENTAHO": PentahoAdapter(),
     "AWS_EC2": AwsEC2Adapter(),
     "EC2": AwsEC2Adapter(),
-    "KUBERNETES": KubernetesAdapter(),
-    "K8S": KubernetesAdapter(),
     "LINUX_HOST": LinuxHostMetricsAdapter(),
     "WINDOWS_HOST": WindowsHostMetricsAdapter(),
     "APACHE": ApacheStatusAdapter(),
@@ -640,18 +611,11 @@ def _extract_metric_value(metric, result):
             if payload.get("process_running") is True
             else 0 if payload.get("process_running") is False else None
         ),
-        "K8S_NODE_READY": (
-            1
-            if payload.get("node_ready") is True
-            else 0 if payload.get("node_ready") is False else None
-        ),
         "HOST_MEMORY_USED_PERCENT": payload.get("memory_used_percent"),
         "HOST_DISK_USED_PERCENT": payload.get("disk_used_percent"),
         "APACHE_BUSY_WORKERS": payload.get("busy_workers"),
         "TOMCAT_HEAP_USED_PERCENT": payload.get("jvm_heap_used_percent"),
         "EC2_CPU_PERCENT": payload.get("cpu_percent"),
-        "K8S_RESTARTS": payload.get("restarts"),
-        "K8S_AVAILABLE_REPLICAS": payload.get("available_replicas"),
         "PENTAHO_ERRORS": payload.get("nr_errors"),
         "PENTAHO_RUNNING": (
             1
@@ -751,9 +715,19 @@ async def _execute_locked(collector_id, db, *, scheduled=False):
     collector = db.get(Collector, collector_id)
     if not collector or not collector.enabled or collector.remote_worker_id is not None:
         return
+    from app.services.excluded_platforms import require_supported_collector
+    from fastapi import HTTPException
+    try:
+        require_supported_collector(collector, db.get(DataSource, collector.data_source_id))
+    except HTTPException:
+        collector.enabled = False
+        collector.status = "STOPPED"
+        collector.last_error = "Excluded platform; historical evidence retained"
+        db.commit()
+        return
     # Retire legacy Kubernetes-only collectors before any provider SDK call.
     # Never delete collector runs, metrics, evidence, or cluster associations.
-    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
         collector.enabled = False
         collector.status = "STOPPED"
         collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
@@ -859,7 +833,7 @@ def _due_collector_ids(limit, excluded=()):
         retired = db.scalars(
             select(Collector).where(
                 Collector.enabled.is_(True),
-                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS")),
+                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")),
                 Collector.remote_worker_id.is_(None),
             )
         ).all()
@@ -879,7 +853,7 @@ def _due_collector_ids(limit, excluded=()):
                     Organization.active.is_(True),
                     Collector.enabled.is_(True),
                     func.upper(Collector.collector_type).not_in(
-                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS")
+                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")
                     ),
                     Collector.remote_worker_id.is_(None),
                     Collector.id.not_in(excluded),

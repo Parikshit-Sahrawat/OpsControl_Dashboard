@@ -1,3 +1,4 @@
+import { isExcludedPlatform } from "../excludedPlatforms.js";
 import { hasPermission } from "../permissions";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { authHeaders } from "../auth";
@@ -97,8 +98,6 @@ function MonitoringSetupForm({
   const infrastructure = [
     "AWS_EC2",
     "EC2",
-    "KUBERNETES",
-    "K8S",
     "LINUX_HOST",
     "WINDOWS_HOST",
   ].includes(sourceType);
@@ -123,10 +122,10 @@ function MonitoringSetupForm({
         : Promise.resolve([]),
     ]);
     if (generation !== reloadGeneration.current) return;
-    // Keep deferred Kubernetes sources out of new monitoring activation flows.
+    // Keep excluded orchestration sources out of new monitoring activation flows.
     // Existing data and evidence remain accessible through other inventories.
     const activeMonitoringSources = sourceRows.filter(
-      (row) => !["AWS_EKS", "KUBERNETES", "K8S"].includes(row.source_type),
+      (row) => !isExcludedPlatform(row.source_type),
     );
     const scopedSources = lockedSourceId
       ? activeMonitoringSources.filter((row) => row.id === lockedSourceId)
@@ -470,10 +469,8 @@ function MonitoringSetupForm({
                 <option
                   key={s.id}
                   value={s.id}
-                  disabled={s.source_type === "AWS_EKS"}
                 >
                   {s.name} · {s.source_type}
-                  {s.source_type === "AWS_EKS" ? " (discovery only)" : ""}
                 </option>
               ))}
             </select>

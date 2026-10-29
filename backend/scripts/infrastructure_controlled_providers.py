@@ -1,4 +1,4 @@
-"""Explicit acceptance-only adapters: SDK stub EC2, TLS fixture K8s, Windows fake.
+"""Explicit acceptance-only adapters: SDK stub EC2, Windows fake.
 
 Application code never enables these automatically. Installed only in the
 controlled sprint acceptance process, with evidence origin clearly recorded.
@@ -9,8 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace as NS
 import boto3
 from botocore.stub import Stubber,ANY
-from kubernetes import client
-from app.worker.provider_checks import ec2_health,kubernetes_health
+from app.worker.provider_checks import ec2_health
 from app.worker.deep_checks import windows_host_health
 from app.worker.collector_runtime import CollectorAdapter,CollectionResult
 
@@ -31,23 +30,10 @@ def aws_session(region_name):
     return NS(client=lambda name:clients[name])
 
 
-def kube_client():
-    root=Path(os.environ['INFRA_PRIVATE_DIR'])
-    configuration=client.Configuration();configuration.host='https://127.0.0.1:18443'
-    configuration.ssl_ca_cert=str(root/'tls.crt');configuration.verify_ssl=True
-    configuration.api_key={'authorization':'Bearer '+(root/'kube-token').read_text().strip()}
-    configuration.proxy=None
-    api=client.ApiClient(configuration)
-    return NS(CoreV1Api=lambda:client.CoreV1Api(api),AppsV1Api=lambda:client.AppsV1Api(api))
-
 class EC2Controlled(CollectorAdapter):
     async def collect(self,collector):
         payload=ec2_health(collector.configuration,aws_session)
         return CollectionResult(payload['outcome']=='SUCCESS','Controlled EC2 SDK evidence',payload)
-class K8sControlled(CollectorAdapter):
-    async def collect(self,collector):
-        payload=kubernetes_health(collector.configuration,kube_client())
-        return CollectionResult(payload['outcome']=='SUCCESS','Controlled TLS Kubernetes evidence',payload)
 class WindowsControlled(CollectorAdapter):
     async def collect(self,collector):
         failed=Path(os.environ['INFRA_PRIVATE_DIR'],'phase').read_text().strip()=='failed'

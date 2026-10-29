@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # Secure Remote Monitoring — Agent Quickstart (HTTP Probe MVP)
 
 **Status:** Feature branch `feat/secure-remote-collector-protocol`, [draft PR #20](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/20). This is an independently deployable HTTP(S) protocol prototype, **not approved for Internet-facing production use**. It does not implement privileged network discovery, a credential vault, browser synthetics, remote shell or arbitrary scripts.
