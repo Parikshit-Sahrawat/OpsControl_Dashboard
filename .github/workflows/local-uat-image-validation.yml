@@ -13,6 +13,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Controller security and recovery regressions
+        run: python3 -m unittest discover -s tests -v
       - uses: docker/setup-buildx-action@v3
       - name: Build backend locally on hosted runner (no push)
         uses: docker/build-push-action@v6
@@ -46,6 +48,10 @@ jobs:
           print("PASS: API and worker entrypoint modules import")
           '
           docker run --rm --entrypoint nginx opscontrol-uat-frontend:validation -t
+      - name: Disposable worker readiness and recovery acceptance
+        run: |
+          docker tag opscontrol-uat-backend:validation opscontrol-uat-api:latest
+          python3 scripts/uat/disposable_worker_acceptance.py
       - name: Confirm images were not published or deployed
         run: |
           echo "PASS: hosted runner only; build push=false; no deployment job or self-hosted runner."

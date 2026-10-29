@@ -4,6 +4,8 @@ services:
     image: ${STAGE_B_BACKEND_IMAGE:?immutable backend digest required}
     build: !reset null
   worker:
+    environment:
+      OPSCONTROL_WORKER_HEARTBEAT: /tmp/opscontrol-worker-heartbeat
     image: ${STAGE_B_BACKEND_IMAGE:?immutable backend digest required}
     build: !reset null
   frontend:

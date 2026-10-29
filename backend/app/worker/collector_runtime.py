@@ -1026,6 +1026,13 @@ async def scheduler_loop(poll_seconds=5):
                             pending[cid] = asyncio.create_task(
                                 execute_collector(cid, scheduled=True)
                             )
+                # Written only after a successful scheduler/database poll.
+                import os
+                heartbeat = os.environ.get('OPSCONTROL_WORKER_HEARTBEAT')
+                if heartbeat:
+                    from pathlib import Path
+                    import time
+                    Path(heartbeat).write_text(str(time.time()))
             except Exception:
                 logger.error("Collector scheduling unavailable; next poll will retry")
             await asyncio.sleep(poll_seconds)

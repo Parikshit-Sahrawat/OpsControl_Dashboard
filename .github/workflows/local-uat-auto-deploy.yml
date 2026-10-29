@@ -1,127 +1,81 @@
-name: Auto-deploy local Ubuntu UAT after PR merge
+name: Publish verified UAT release (hosted only)
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: opscontrol-local-uat-deploy
+  group: opscontrol-uat-publisher
   cancel-in-progress: false
 jobs:
-  build:
-    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
+  publish:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     permissions:
-      contents: read
+      contents: write
       packages: write
-    outputs:
-      sha: ${{ steps.source.outputs.sha }}
-      backend: ${{ steps.backend.outputs.digest }}
-      frontend: ${{ steps.frontend.outputs.digest }}
-      migration_hash: ${{ steps.migrations.outputs.hash }}
-      image_prefix: ${{ steps.names.outputs.prefix }}
+      id-token: write
+      attestations: write
+      checks: read
+      pull-requests: read
     steps:
-      - name: Verify merge SHA matches current main
-        id: source
-        env:
-          GH_TOKEN: ${{ github.token }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-        run: |
-          set -euo pipefail
-          current=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq .commit.sha)
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            test "$current" = "$MERGE_SHA" || { echo "Superseded main commit; skip deployment"; exit 1; }
-          fi
-          echo "sha=$current" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.source.outputs.sha }}
           persist-credentials: false
-      - name: Record migration tree digest
-        id: migrations
+      - name: Verify exact current main and approved PR
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          echo "hash=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-      - name: Normalize GHCR repository name
-        id: names
-        run: echo "prefix=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+          current=$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')
+          test "$current" = "$GITHUB_SHA"
+          python3 scripts/uat/verify_publish.py "$GITHUB_SHA"
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: docker/setup-buildx-action@v3
-      - name: Build backend on hosted runner
+      - name: Normalize image prefix
+        id: names
+        run: echo "prefix=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+      - name: Build and publish backend
         id: backend
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           file: ./backend/Dockerfile.uat
           push: true
-          tags: ${{ steps.names.outputs.prefix }}-backend:${{ steps.source.outputs.sha }}
+          tags: ${{ steps.names.outputs.prefix }}-backend:${{ github.sha }}
           provenance: true
-      - name: Build frontend on hosted runner
+      - name: Build and publish frontend
         id: frontend
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           file: ./frontend/Dockerfile.demo
           push: true
-          tags: ${{ steps.names.outputs.prefix }}-frontend:${{ steps.source.outputs.sha }}
+          tags: ${{ steps.names.outputs.prefix }}-frontend:${{ github.sha }}
           build-args: |
             VITE_API_BASE_URL=${{ vars.LOCAL_UAT_PUBLIC_API_URL }}
           provenance: true
-  deploy:
-    needs: build
-    if: vars.LOCAL_UAT_AUTO_DEPLOY_ENABLED == 'true'
-    runs-on: [self-hosted, Linux, X64, opscontrol-local-uat]
-    environment: local-uat
-    timeout-minutes: 30
-    permissions:
-      contents: read
-      packages: read
-    steps:
-      - name: Verify approved dedicated UAT runner
-        run: |
-          set -euo pipefail
-          test -f /etc/opscontrol/local-uat-runner-approved
-          test "$(stat -c %u /etc/opscontrol/local-uat-runner-approved)" = 0
-          test -n "${LOCAL_UAT_BASE_COMPOSE:?}"
-          test -n "${LOCAL_UAT_OVERRIDE_COMPOSE:?}"
-          test -n "${LOCAL_UAT_PROJECT:?}"
-          test -n "${LOCAL_UAT_STATE_DIR:?}"
-          test -n "${LOCAL_UAT_API_URL:?}"
-          test -n "${LOCAL_UAT_FRONTEND_URL:?}"
-      - uses: actions/checkout@v4
+      - name: Create release manifest
+        env:
+          BACKEND_DIGEST: ${{ steps.backend.outputs.digest }}
+          FRONTEND_DIGEST: ${{ steps.frontend.outputs.digest }}
+          IMAGE_PREFIX: ${{ steps.names.outputs.prefix }}
+        run: python3 scripts/uat/create_release.py
+      - name: Attest exact manifest bytes
+        uses: actions/attest@v4
         with:
-          ref: ${{ needs.build.outputs.sha }}
-          persist-credentials: false
-      - name: Authenticate to GHCR for digest-pinned pulls
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ github.token }}
-      - name: Confirm current main and migration baseline
+          subject-path: release.json
+      - name: Publish release asset
         env:
           GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ needs.build.outputs.sha }}
-          MIGRATION_HASH: ${{ needs.build.outputs.migration_hash }}
         run: |
           set -euo pipefail
-          test "$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq .commit.sha)" = "$SOURCE_SHA"
-          test -f "$LOCAL_UAT_STATE_DIR/approved-migration-hash"
-          test "$(cat "$LOCAL_UAT_STATE_DIR/approved-migration-hash")" = "$MIGRATION_HASH" || {
-            echo "Migration tree changed: independent backup and migration review required"; exit 1;
-          }
-      - name: Deploy only application services (never database or agent)
-        env:
-          BACKEND_IMAGE: ${{ needs.build.outputs.image_prefix }}-backend@${{ needs.build.outputs.backend }}
-          FRONTEND_IMAGE: ${{ needs.build.outputs.image_prefix }}-frontend@${{ needs.build.outputs.frontend }}
-          SOURCE_SHA: ${{ needs.build.outputs.sha }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          python3 scripts/uat/local_auto_deploy.py
+          test "$(gh api "repos/$GITHUB_REPOSITORY/branches/main" --jq '.commit.sha')" = "$GITHUB_SHA"
+          gh release create "uat-$GITHUB_SHA" release.json --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --title "UAT release $GITHUB_SHA" --notes 'Signed UAT release manifest; deployment controlled by local policy.'
