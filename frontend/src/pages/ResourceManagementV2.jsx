@@ -285,8 +285,10 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
       // newer scope or expose rows before their registration settings arrive.
       if (generation !== reloadGeneration.current) return;
       setOrganizations(orgs);
-      setDataSources(sources);
-      setCollectors(registrations);
+      const supportedSources = sources.filter(s => !isExcludedPlatform(s.source_type));
+      const supportedIds = new Set(supportedSources.map(s => s.id));
+      setDataSources(supportedSources);
+      setCollectors(registrations.filter(c => supportedIds.has(c.data_source_id) && !isExcludedPlatform(c.collector_type)));
       setTemplates(remote.map(normalizeTemplate));
     } catch (e) { if (generation === reloadGeneration.current) setError(e.message || "Unable to load Resource Management"); }
     finally { if (generation === reloadGeneration.current) setLoading(false); }

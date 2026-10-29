@@ -83,6 +83,15 @@ try{
  await page.getByRole('row').filter({hasText:'scope-pentaho reviewed'}).waitFor();
  checks.push('Persisted Pentaho resource edited/saved in real browser; no provider execution/certification');
  await page.screenshot({path:out+'/scope-pipelines.png',fullPage:true});
+ await page.goto(ui+'/#/resources/collectors');
+ await page.getByRole('heading',{name:'Collectors',exact:true}).waitFor();
+ await page.waitForLoadState('networkidle');
+ assert.equal(await page.getByRole('row').filter({hasText:'scope-legacy-persisted-http'}).count(),0);
+ await page.getByRole('button',{name:'Create Collector',exact:true}).click();
+ assert.equal(await page.locator('select option').filter({hasText:'scope-legacy-do-not-operate'}).count(),0);
+ await absentControls();
+ checks.push('Retained legacy collector absent from controls and source selector');
+ await page.screenshot({path:out+'/scope-collectors.png',fullPage:true});
  for(const path of ['/#/resources/kubernetes-clusters','/#/kubernetes','/kubernetes','/clusters','/eks','/aks','/gke','/openshift']){
    await page.goto(ui+path);await page.waitForLoadState('networkidle');await absentControls();
    checks.push('No operational cluster controls after direct navigation '+path);
