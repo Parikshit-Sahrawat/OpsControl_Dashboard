@@ -76,3 +76,21 @@ recorded in backend.log; no application changes were needed to correct that setu
 Host pytest was unavailable; the repository uses unittest and the cached backend
 image supplied its dependencies. The cached image test does not prove a fresh
 image build, DB integration, full acceptance, or backup restoration.
+
+## Main synchronization and follow-up checks
+
+Merged current main a2f7460 into the development branch without conflicts.
+After synchronization, controller (67), Stage B (12), and frontend (6) checks
+passed. The backend run discovered 549 tests, with one collector validation
+binary timeout and 218 skips. The retained retry passed: 331 passed, 218 skipped.
+The final worker heartbeat adds an explicit SELECT 1 on the worker's connection,
+including when all collector slots are busy; DB failure cannot refresh readiness.
+Three backend tests cover database success, failure, and disabled heartbeat.
+
+Formatting of new standalone files and their Ruff checks passed. A broader Ruff
+check on collector_runtime.py reported pre-existing unused registration/import
+and import-placement findings; no unrelated lint cleanup was applied. The unit
+remains not installed (`not-found`) and inactive according to host systemd.
+
+Final backend validation: 552 discovered, 334 passed, 218 explicitly skipped,
+zero failures (final-backend.log). This includes all three worker DB tests.

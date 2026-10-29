@@ -907,6 +907,18 @@ async def _native_engine_loop(poll_seconds):
         await asyncio.sleep(poll_seconds)
 
 
+def _write_worker_heartbeat():
+    import os
+    from pathlib import Path
+
+    heartbeat = os.environ.get("OPSCONTROL_WORKER_HEARTBEAT")
+    if heartbeat:
+        # Check the worker's own DB connection even when all collector slots are busy.
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        Path(heartbeat).write_text(str(time.time()))
+
+
 async def scheduler_loop(poll_seconds=5):
     logger.info("OpsControl collector runtime started")
     last_retention_cleanup = datetime.now(timezone.utc)
@@ -1002,15 +1014,7 @@ async def scheduler_loop(poll_seconds=5):
                             pending[cid] = asyncio.create_task(
                                 execute_collector(cid, scheduled=True)
                             )
-                # Written only after a successful scheduler/database poll.
-                import os
-
-                heartbeat = os.environ.get("OPSCONTROL_WORKER_HEARTBEAT")
-                if heartbeat:
-                    from pathlib import Path
-                    import time
-
-                    Path(heartbeat).write_text(str(time.time()))
+                await asyncio.to_thread(_write_worker_heartbeat)
             except Exception:
                 logger.error("Collector scheduling unavailable; next poll will retry")
             await asyncio.sleep(poll_seconds)
