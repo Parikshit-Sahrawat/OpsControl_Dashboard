@@ -50,5 +50,5 @@ try {
   // CI logs are public: emit only the stage and error category, never page text,
   // request URLs, credentials, selectors from exception messages, or fixture data.
   console.error(`RELEASE_PAGINATION_FAILURE phase=${phase} type=${error?.name || 'Error'}`);
-  throw error;
+  process.exitCode = 1;
 } finally { await browser.close(); }
