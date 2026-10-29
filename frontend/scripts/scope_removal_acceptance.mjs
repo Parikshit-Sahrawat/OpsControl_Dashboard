@@ -93,6 +93,7 @@ try{
  await page.goto(ui+'/#/resources/collectors');
  await page.getByRole('heading',{name:'Collectors',exact:true}).waitFor();
  await page.waitForLoadState('networkidle');
+ await page.getByRole('button',{name:'Refresh',exact:true}).click();
  await page.getByRole('row').filter({hasText:'scope-supported-browser-collector'}).waitFor();
  assert.equal(await page.getByRole('row').filter({hasText:'scope-legacy-persisted-http'}).count(),0);
  await page.getByRole('button',{name:'Create Collector',exact:true}).click();
