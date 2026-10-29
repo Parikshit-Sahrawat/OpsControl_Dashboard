@@ -7,6 +7,7 @@ const browser = await chromium.launch({headless:true, executablePath:process.env
 const page = await browser.newPage({viewport:{width:1600,height:1100}});
 const errors=[]; page.on('pageerror', error=>errors.push(error.message));
 let phase='initial-navigation';
+function at(stage) { phase = stage; }
 try {
   at('navigate');
   await page.goto(process.env.RELEASE_UI_BASE);
@@ -53,6 +54,6 @@ try {
 } catch (error) {
   // CI logs are public: emit only the stage and error category, never page text,
   // request URLs, credentials, selectors from exception messages, or fixture data.
-  console.error(`RELEASE_PAGINATION_FAILURE phase=${phase} type=${error?.name || 'Error'}`);
+  console.error('RELEASE_PAGINATION_FAILURE '+JSON.stringify({stage:phase,category:error?.name || 'Error'}));
   process.exitCode = 1;
 } finally { await browser.close(); }
