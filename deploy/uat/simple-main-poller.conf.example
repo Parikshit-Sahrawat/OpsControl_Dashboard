@@ -1,0 +1,10 @@
+# Set this to true only after verifying checkout, compose files and URLs.
+OPSCONTROL_UAT_ENABLED=false
+# Dedicated CLEAN checkout of main; never use an active development checkout.
+OPSCONTROL_UAT_CHECKOUT=/home/opsremote/opscontrol-uat-main
+# Absolute paths, colon-separated; use the EXISTING UAT override to preserve binds and settings.
+OPSCONTROL_UAT_COMPOSE_FILES=/home/opsremote/opscontrol-uat-main/docker-compose.demo.yml:/home/opsremote/infrastructure/opscontrol/compose.override.yml
+OPSCONTROL_UAT_PROJECT=opscontrol-uat
+OPSCONTROL_UAT_API_HEALTH=http://127.0.0.1:8000/health
+OPSCONTROL_UAT_FRONTEND_HEALTH=http://127.0.0.1:5173/
+OPSCONTROL_UAT_STATE=/home/opsremote/infrastructure/opscontrol/main-poller-state
