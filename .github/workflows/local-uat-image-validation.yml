@@ -1,0 +1,57 @@
+name: Validate UAT application images (no deploy)
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  image-validation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Controller security and recovery regressions
+        run: python3 -m unittest discover -s tests -v
+      - uses: docker/setup-buildx-action@v3
+      - name: Build backend locally on hosted runner (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile.uat
+          load: true
+          push: false
+          tags: opscontrol-uat-backend:validation
+      - name: Build frontend locally on hosted runner (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.demo
+          load: true
+          push: false
+          tags: opscontrol-uat-frontend:validation
+          build-args: |
+            VITE_API_BASE_URL=http://127.0.0.1:8000
+      - name: Verify collector binary, API and worker module entrypoints
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint /usr/local/bin/otelcol-contrib opscontrol-uat-backend:validation --version | tee /tmp/collector-version.txt
+          grep -F '0.123.0' /tmp/collector-version.txt
+          docker run --rm --entrypoint python opscontrol-uat-backend:validation -c '
+          import os, importlib, pathlib
+          assert os.environ["OPSCONTROL_OTEL_BINARY"] == "/usr/local/bin/otelcol-contrib"
+          assert pathlib.Path(os.environ["OPSCONTROL_OTEL_BINARY"]).is_file()
+          importlib.import_module("scripts.run_api")
+          importlib.import_module("scripts.run_collector_worker")
+          print("PASS: API and worker entrypoint modules import")
+          '
+          docker run --rm --entrypoint nginx opscontrol-uat-frontend:validation -t
+      - name: Disposable worker readiness and recovery acceptance
+        run: |
+          docker tag opscontrol-uat-backend:validation opscontrol-uat-api:latest
+          python3 scripts/uat/disposable_worker_acceptance.py
+      - name: Confirm images were not published or deployed
+        run: |
+          echo "PASS: hosted runner only; build push=false; no deployment job or self-hosted runner."
