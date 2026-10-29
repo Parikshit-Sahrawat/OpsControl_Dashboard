@@ -1,8 +1,10 @@
 # Example for the verified parikshit Ubuntu UAT host. Disabled until approved.
 OPSCONTROL_UAT_ENABLED=false
 OPSCONTROL_UAT_CHECKOUT=/home/parikshit/opscontrol-uat-main
-OPSCONTROL_UAT_COMPOSE_FILES=/home/parikshit/opscontrol-uat-main/docker-compose.demo.yml:/home/parikshit/.local/state/opscontrol/uat/config/compose.override.yml
+OPSCONTROL_UAT_COMPOSE_FILES=/home/parikshit/opscontrol-uat-main/docker-compose.demo.yml:/home/parikshit/.local/state/opscontrol/uat/config/compose.override.yml:/home/parikshit/.local/state/opscontrol/uat/config/compose.autodeploy.yml
 OPSCONTROL_UAT_PROJECT=opscontrol-uat
+OPSCONTROL_UAT_APPROVED_MIGRATIONS_TREE=8e53851a5472df716c747e197e9a2d83d2ac0031
+OPSCONTROL_UAT_APPROVED_ALEMBIC_HEAD=0038_k8s_cluster_associations
 OPSCONTROL_UAT_HOME=/home/parikshit/.local/state/opscontrol/uat
 OPSCONTROL_UAT_API_HEALTH=http://127.0.0.1:8000/health
 OPSCONTROL_UAT_FRONTEND_HEALTH=http://127.0.0.1:5173/
