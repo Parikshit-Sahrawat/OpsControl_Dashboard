@@ -89,7 +89,7 @@ try{
  await page.getByLabel('Username').fill('test-admin');
  await page.getByLabel('Password').fill('testing-only-StrongPassword-123!');
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
- await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
+ await page.getByRole('button',{name:'Sign out',exact:true}).waitFor();
  await page.goto(ui+'/#/resources/collectors');
  await page.getByRole('heading',{name:'Collectors',exact:true}).waitFor();
  await page.waitForLoadState('networkidle');
