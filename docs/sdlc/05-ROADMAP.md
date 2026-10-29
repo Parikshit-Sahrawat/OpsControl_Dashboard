@@ -22,7 +22,7 @@ Workstreams: cross-tenant negative tests, performance/load, reliability, accessi
 **Exit:** documented test evidence and approved residual risks.
 
 ## Phase 6 — Delivery automation
-Workstreams: Docker, CI, image registry, Kubernetes/EKS, Helm, GitOps, IaC and observability as justified.
+Workstreams: Docker, CI, image registry, approved VM deployment infrastructure and observability as justified. Kubernetes/EKS and cluster-targeted Helm/GitOps/IaC work are REMOVED_FROM_SCOPE (OC-SCOPE-REM-001, owner-accepted PR73). Generic deployment terms do not authorize cluster support.
 **Exit:** reproducible staging deployment, rollback and secret handling verified.
 
 ## Phase 7 — Release and operations
