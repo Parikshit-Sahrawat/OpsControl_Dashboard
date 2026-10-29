@@ -1,13 +1,8 @@
 name: Validate UAT application images (no deploy)
 on:
   pull_request:
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - '.github/workflows/local-uat-image-validation.yml'
-      - '.github/workflows/local-uat-auto-deploy.yml'
-      - 'deploy/uat/**'
-      - 'scripts/uat/**'
+    branches: [main]
+  workflow_dispatch:
   workflow_dispatch:
 permissions:
   contents: read
