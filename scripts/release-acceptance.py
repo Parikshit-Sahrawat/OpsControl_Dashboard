@@ -133,6 +133,7 @@ try:
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/scope_removal_acceptance.mjs'],env=ui_environment)
+        run(['node','frontend/scripts/full_closure_acceptance.mjs'],env=ui_environment)
         ui.terminate(); ui.wait(timeout=10)
         record('Actual authenticated Playwright pagination across 205-resource inventory in both themes')
         record('Browser resource CRUD, logical OTEL configuration persistence and cross-tenant denial')

@@ -4,6 +4,7 @@ import { canOpenSection } from "../navigation";
 import ThemeToggle from "./ThemeToggle";
 import InAppNotifications from "./InAppNotifications";
 import NavIcon from "./NavIcon";
+import PersonalWorkspace from "./PersonalWorkspace";
 
 // Labels describe the UI; keys remain the existing page identities and guards.
 const sections = [
@@ -47,6 +48,7 @@ export default function TopNav({
   environment = "",
   onEnvironmentChange,
 }) {
+  const [personal, setPersonal] = useState(null);
   const [open, setOpen] = useState(false);
   const [envOpen, setEnvOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -319,6 +321,9 @@ export default function TopNav({
           )}
         </div>
       )}
+      <button type="button" onClick={() => setPersonal("profile")}>My profile</button>
+      <button type="button" onClick={() => setPersonal("help")}>Help</button>
+      {personal && <PersonalWorkspace key={`${user?.id}:${user?.authorization_revision}:${personal}`} kind={personal} user={user} onClose={() => setPersonal(null)} />}
       <InAppNotifications user={user} />
       <ThemeToggle />
     </header>
