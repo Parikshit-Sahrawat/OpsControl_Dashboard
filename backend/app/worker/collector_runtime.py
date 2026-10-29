@@ -866,7 +866,9 @@ def _due_collector_ids(limit, excluded=()):
         for collector in retired:
             collector.enabled = False
             collector.status = "STOPPED"
-            collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
+            collector.last_error = (
+                "Kubernetes monitoring retired; historical evidence retained"
+            )
         if retired:
             db.commit()
         return list(
@@ -1028,10 +1030,12 @@ async def scheduler_loop(poll_seconds=5):
                             )
                 # Written only after a successful scheduler/database poll.
                 import os
-                heartbeat = os.environ.get('OPSCONTROL_WORKER_HEARTBEAT')
+
+                heartbeat = os.environ.get("OPSCONTROL_WORKER_HEARTBEAT")
                 if heartbeat:
                     from pathlib import Path
                     import time
+
                     Path(heartbeat).write_text(str(time.time()))
             except Exception:
                 logger.error("Collector scheduling unavailable; next poll will retry")
