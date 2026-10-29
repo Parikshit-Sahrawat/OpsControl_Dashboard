@@ -1,0 +1,38 @@
+{
+  "tested_sha": "402834e351d816d48760974e4566185631600995",
+  "starting_sha": "a53a2e23f49f661be73bfce853163893fbcd8f99",
+  "files": {
+    "backend/app/api/monitoring.py": "29c32ac118f7cb37167d37562cc538910019cadc14f0c5a808c4d1fb629272dd",
+    "backend/app/api/remote_protocol.py": "0e72aa5eb89ceb4c6b4c284ded03e2d4afce65f9c47db8b8842fbcfb999b61fd",
+    "backend/app/api/resource_management.py": "1247c4e368226cef11e82d4576b165f8e0e62c7f886cbf3307017d62cc5fedfa",
+    "backend/app/api/rule_catalogs.py": "c40d5aeb2f53093093c6cdc52ff4c193e7dd2753dabddcc2858b908b26552baa",
+    "backend/app/schemas/monitoring.py": "c22c2b25e666cb9d5b16ebafce55bae1d96f039acc60f2f00dd308fa6084462a",
+    "backend/app/services/activation_engine.py": "a4cde5b9571c1ae0b9e18275d50d07da472ad82d68e80bdcda9fc055d4355485",
+    "backend/app/services/excluded_platforms.py": "1d4b4f5cfb29052db00b492e9b2a2ca4c5429dd0107723197e971388b3e7fd3a",
+    "backend/app/services/template_resolution.py": "b916b632f4255d48434cd14dab8f39e614a5704565b5561bc45d218d0ed59142",
+    "backend/app/worker/collector_runtime.py": "718f6ebe245e09027ec635dc5f23388f267195822108003e75cff9f57b96bfd3",
+    "backend/app/worker/remote_scheduler.py": "d4184b36d6d96a989b583437e31d4e7aa1ca3265b7aaea4ad12300534ad0142e",
+    "backend/scripts/kubernetes_retirement_acceptance_probe.py": "0808ac67ead9488089d4727ba2d89d00e92b02a6effbd0b1f92d4d706bbb5808",
+    "backend/scripts/scope_removal_http_probe.py": "fc2d60dd3099a002e4da518ba45c77125e13db70aab7cc862d1cb764b260a141",
+    "backend/tests/test_removed_platform_scope.py": "fdc1c0f8573b7d4dccb1b3bd1951da90e8505a81bd0156f6d856cee2ec81651f",
+    "frontend/scripts/monitoring_settings.test.mjs": "c7604db3cf63af01bc4bec5fdaaaf1ce10f6d4f63a10640322ff9cdf74c32f13",
+    "frontend/scripts/scope_removal_acceptance.mjs": "fd730ae92cc7368e1e012b0cc42da0978dfd5644a4908abbd42f25d3f1928a02",
+    "frontend/src/excludedPlatforms.js": "c2854303aaaca89669c1fe55881efb058ab2b6368c7e001a9836e4d0ac6c326a",
+    "frontend/src/pages/MonitoringSetup.jsx": "1b1c3da5a042f1ac5cad7cd2ba8478bdd04c1861eb937d9aea08b1f19f0f179c",
+    "frontend/src/pages/ResourceManagementV2.jsx": "5100279c65c39bbc178031952f7082507d60ca87d68167add6d9492274c85f7d",
+    "scripts/release-acceptance.py": "e7db70c0d48390149faed92258167f471396da06c16103367596b13eb21f6146",
+    "scripts/scope-removal-regressions.py": "a020f79309cb3112cd13cfce8087e08720b358473186cb4940f8065fd7b6e090"
+  },
+  "environment": {
+    "postgres_image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+    "browser": "/usr/bin/chromium with Playwright 1.56.1",
+    "python": "backend/.venv",
+    "scope": "task-owned synthetic fixtures, local Unix Docker socket"
+  },
+  "forbidden_changes": {
+    "applied_migrations": false,
+    "collector_pin": false,
+    "historical_dev05_evidence": false,
+    "production_or_uat": false
+  }
+}

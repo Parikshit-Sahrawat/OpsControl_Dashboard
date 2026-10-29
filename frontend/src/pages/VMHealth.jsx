@@ -119,7 +119,7 @@ export default function VMHealth({
             <h1>VM Health</h1>
           )}
           <p>
-            Infrastructure evidence · AWS, Kubernetes and host workers · refresh
+            Infrastructure evidence · AWS EC2 and host workers · refresh
             every 5 seconds
           </p>
         </div>

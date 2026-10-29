@@ -1,0 +1,233 @@
+
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+Revision ID: 0015_remote_jobs
+Revises: 0014_audit_mutation_guard
+INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+Revision ID: 0015_remote_jobs
+Revises: 0014_audit_mutation_guard
+INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+Revision ID: 0016_remote_collector_assignment
+Revises: 0015_remote_jobs
+INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+Revision ID: 0016_remote_collector_assignment
+Revises: 0015_remote_jobs
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+Revision ID: 0018_pentaho_execution_identity
+Revises: 0017_rule_catalogs_activation
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+PASS 401 GET /api/v1/organizations
+PASS 401 GET /api/v1/resource-management/data-sources
+PASS 401 GET /api/v1/monitoring/data-sources/597a7118-5022-4aca-bb71-af64ee978e8e
+PASS 401 PATCH /api/v1/resource-management/data-sources/ec9341be-02f0-4ac1-9ea0-c565c6e2b2e0
+PASS 401 GET /api/v1/etl/executions
+PASS 401 GET /api/v1/monitoring/templates
+PASS 200 GET /api/v1/auth/me
+PASS 200 GET /api/v1/organizations
+PASS 200 GET /api/v1/resource-management/data-sources
+PASS 200 GET /api/v1/monitoring/data-sources
+PASS 200 GET /api/v1/resource-management/data-sources?organization_id=dbda2544-04a8-4543-ab12-d63dfbc523da
+PASS 404 GET /api/v1/monitoring/data-sources/597a7118-5022-4aca-bb71-af64ee978e8e
+PASS 404 PATCH /api/v1/resource-management/data-sources/597a7118-5022-4aca-bb71-af64ee978e8e
+PASS 404 PATCH /api/v1/monitoring/data-sources/597a7118-5022-4aca-bb71-af64ee978e8e
+PASS 404 GET /api/v1/monitoring/collectors/8cad8e63-63c1-4521-bad8-366b78b214de
+PASS 404 GET /api/v1/monitoring/collectors/8cad8e63-63c1-4521-bad8-366b78b214de/runs
+PASS 200 GET /api/v1/etl/executions
+PASS 404 GET /api/v1/etl/executions/804ddb8a-8ee9-4f45-9baf-c13b412f9aae
+PASS 404 GET /api/v1/etl/executions/804ddb8a-8ee9-4f45-9baf-c13b412f9aae/investigation
+PASS 404 POST /api/v1/etl/executions/804ddb8a-8ee9-4f45-9baf-c13b412f9aae/correlation
+PASS 200 GET /api/v1/etl/executions
+PASS 404 POST /api/v1/resource-management/data-sources
+PASS 403 POST /api/v1/organizations
+PASS 403 POST /api/v1/resource-management/data-sources
+PASS 200 GET /api/v1/organizations
+PASS 404 PATCH /api/v1/resource-management/data-sources/597a7118-5022-4aca-bb71-af64ee978e8e
+PASS 404 POST /api/v1/resource-management/data-sources
+PASS 200 GET /api/v1/organizations
+PASS 200 GET /api/v1/organizations
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 204 POST /api/v1/auth/logout
+PASS 401 GET /api/v1/organizations
+ALL TENANT NEGATIVE TESTS PASS
+
+PASS 200 POST /api/v1/auth/login
+PASS 201 POST /api/v1/auth/workers
+PASS 401 POST /api/v1/worker/heartbeat
+PASS 422 POST /api/v1/worker/heartbeat
+PASS 200 POST /api/v1/worker/heartbeat
+PASS 200 POST /api/v1/worker/heartbeat
+PASS 200 PUT /api/v1/remote-probes/workers/7fb2234a-a8aa-41f7-89ab-e2477fc3b8d3/network-policy
+PASS 200 PUT /api/v1/remote-probes/collectors/4338ce0c-8297-4ff6-944f-a5485823d162/assignment
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 200 POST /api/v1/worker/claim
+PASS 422 POST /api/v1/worker/results
+PASS 422 POST /api/v1/worker/results
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 201 POST /api/v1/remote-probes/jobs
+PASS 204 DELETE /api/v1/auth/workers/7fb2234a-a8aa-41f7-89ab-e2477fc3b8d3
+PASS 401 POST /api/v1/worker/heartbeat
+ACTUAL BASIC TLS / HEARTBEAT / NATIVE TELEMETRY / ALERT CORRELATION PASS
+
+Independent native alert OPEN/RESOLVED, idempotent in-app delivery and retired ITSM refusal PASS
+
+PASS 200 POST /api/v1/auth/login
+PASS 200 POST /api/v1/auth/login
+PASS 200 POST /api/v1/auth/login
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 200 GET /api/v1/resource-discovery/capabilities
+PASS 403 POST /api/v1/resource-discovery/sources/c1820d95-358b-4ba8-9300-7b5773727185/scan
+PASS 404 POST /api/v1/resource-discovery/sources/c1820d95-358b-4ba8-9300-7b5773727185/scan
+PASS 422 POST /api/v1/resource-discovery/sources/c1820d95-358b-4ba8-9300-7b5773727185/scan
+PASS 422 POST /api/v1/resource-discovery/sources/c1820d95-358b-4ba8-9300-7b5773727185/import
+PASS 422 POST /api/v1/resource-discovery/sources/c1820d95-358b-4ba8-9300-7b5773727185/import
+PASS 422 POST /api/v1/data-sources/c1820d95-358b-4ba8-9300-7b5773727185/activations
+PASS 200 GET /api/v1/resource-management/collectors?data_source_id=c1820d95-358b-4ba8-9300-7b5773727185
+EKS RETIREMENT / API / TENANT ACCEPTANCE PASS
+
+PASS 200 POST /api/v1/auth/login
+PASS 200 POST /api/v1/auth/login
+PASS 200 POST /api/v1/auth/login
+PASS 200 POST /api/v1/auth/login
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 422 POST /api/v1/resource-management/data-sources
+PASS 422 POST /api/v1/monitoring/data-sources
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 201 POST /api/v1/resource-management/data-sources
+PASS 422 PATCH /api/v1/resource-management/data-sources/10f5e1f2-6b9f-4d4e-abba-8fb494cfcff3
+PASS 422 POST /api/v1/resource-management/collectors
+PASS 422 POST /api/v1/monitoring/templates
+PASS 422 PATCH /api/v1/resource-management/data-sources/10f5e1f2-6b9f-4d4e-abba-8fb494cfcff3
+PASS 422 POST /api/v1/resource-management/collectors
+PASS 422 POST /api/v1/monitoring/templates
+PASS 422 PATCH /api/v1/resource-management/data-sources/10f5e1f2-6b9f-4d4e-abba-8fb494cfcff3
+PASS 422 POST /api/v1/resource-management/collectors
+PASS 422 POST /api/v1/monitoring/templates
+PASS 422 PATCH /api/v1/resource-management/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588
+PASS 422 PATCH /api/v1/resource-management/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588
+PASS 422 POST /api/v1/resource-management/collectors
+PASS 422 PATCH /api/v1/monitoring/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588
+PASS 422 PATCH /api/v1/monitoring/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588
+PASS 422 POST /api/v1/monitoring/collectors
+PASS 404 GET /api/v1/monitoring/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588
+PASS 403 POST /api/v1/resource-management/collectors
+PASS 422 POST /api/v1/resource-discovery/sources/17799d9b-1d6a-41a1-b6ee-4e4175086588/scan
+PASS 422 POST /api/v1/resource-discovery/sources/17799d9b-1d6a-41a1-b6ee-4e4175086588/import
+PASS 422 POST /api/v1/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588/activations
+PASS 201 POST /api/v1/monitoring/templates
+PASS 422 POST /api/v1/monitoring/data-sources/17799d9b-1d6a-41a1-b6ee-4e4175086588/templates
+PASS 201 POST /api/v1/monitoring/data-sources/10f5e1f2-6b9f-4d4e-abba-8fb494cfcff3/templates
+PASS 422 POST /api/v1/monitoring/data-sources/10f5e1f2-6b9f-4d4e-abba-8fb494cfcff3/templates
+PASS 422 POST /api/v1/unified/import/validate
+PASS 422 POST /api/v1/unified/import/validate
+PASS 422 POST /api/v1/unified/import/validate
+SCOPE REMOVAL HTTP PASS 67
+
+PASS 200 POST /api/v1/auth/login
+PASS 201 POST /api/v1/auth/workers
+PASS 200 POST /api/v1/worker/claim
+KUBERNETES REMOTE RETIREMENT / POSTGRESQL PASS
+
+Populated synthetic evidence and retention fixtures created
+

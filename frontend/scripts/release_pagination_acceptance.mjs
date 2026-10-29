@@ -8,6 +8,7 @@ const page = await browser.newPage({viewport:{width:1600,height:1100}});
 const errors=[]; page.on('pageerror', error=>errors.push(error.message));
 let phase='initial-navigation';
 try {
+  at('navigate');
   await page.goto(process.env.RELEASE_UI_BASE);
   phase='authenticated-login';
   await page.getByLabel('Username').fill('test-north');
@@ -16,6 +17,7 @@ try {
   await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
   phase='organization-scope';
   // Scope selection is explicit and is only a filter over this user's grants.
+  at('organization-selector');
   await page.locator('.org-context-button').click();
   await page.locator('.org-menu').getByRole('checkbox').first().check();
   await page.locator('.org-context-button').click();
@@ -35,11 +37,13 @@ try {
       const pager = page.getByRole('navigation',{name:'Inventory pagination'});
       await pager.getByRole('button',{name:'Next page',exact:true}).waitFor();
       assert.equal(await pager.getByRole('button',{name:'Previous page'}).isDisabled(),true);
+      at('next-page-'+theme.toLowerCase()+'-'+(tab==='Compute Health'?'compute':'api'));
       await pager.getByRole('button',{name:'Next page',exact:true}).click();
       await page.waitForFunction(()=>document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent.startsWith('201–'));
       assert.equal(await pager.getByRole('button',{name:'Next page'}).isDisabled(),true);
       await mkdir(process.env.RELEASE_EVIDENCE_DIR,{recursive:true});
       await page.screenshot({path:`${process.env.RELEASE_EVIDENCE_DIR}/${theme.toLowerCase()}-${tab==='API Endpoint Monitoring'?'services':'infrastructure'}-page2.png`,fullPage:true});
+      at('previous-page-'+theme.toLowerCase()+'-'+(tab==='Compute Health'?'compute':'api'));
       await pager.getByRole('button',{name:'Previous page',exact:true}).click();
       await page.waitForFunction(()=>document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent.startsWith('1–'));
     }

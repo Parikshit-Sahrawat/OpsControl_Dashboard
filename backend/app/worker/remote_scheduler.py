@@ -34,21 +34,29 @@ def queue_due_once(limit=100):
         ).values(state="EXPIRED",lease_nonce_hash=None))
         # Retire all remote Kubernetes collectors, including those not yet due,
         # and invalidate queued/leased jobs without deleting their history.
-        retired=db.scalars(select(Collector).where(
+        from app.services.excluded_platforms import require_supported_collector
+        from fastapi import HTTPException
+        retired_ids=[]
+        # Include not-yet-due collectors and admitted jobs; source identity and
+        # nested persisted configuration cannot bypass retirement by using HTTP.
+        candidates=db.execute(select(Collector,DataSource).join(DataSource,Collector.data_source_id==DataSource.id).where(
             Collector.remote_worker_id.is_not(None),
-            Collector.enabled.is_(True),
-            Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS")),
-        ).with_for_update()).all()
-        for collector in retired:
-            collector.enabled=False
-            collector.status="STOPPED"
-            collector.last_error="Kubernetes monitoring retired; historical evidence retained"
-        db.execute(update(RemoteProbeJob).where(
-            RemoteProbeJob.collector_id.in_(select(Collector.id).where(
-                Collector.collector_type.in_(("KUBERNETES", "K8S", "AWS_EKS"))
-            )),
-            RemoteProbeJob.state.in_(("QUEUED", "LEASED"))
-        ).values(state="CANCELLED",lease_nonce_hash=None))
+            (Collector.enabled.is_(True) | Collector.id.in_(select(RemoteProbeJob.collector_id).where(
+                RemoteProbeJob.state.in_(("QUEUED","LEASED")))))
+        ).with_for_update(of=Collector)).all()
+        for collector,source in candidates:
+            try:
+                require_supported_collector(collector,source)
+            except HTTPException:
+                collector.enabled=False
+                collector.status="STOPPED"
+                collector.last_error="Kubernetes monitoring retired; historical evidence retained"
+                retired_ids.append(collector.id)
+        if retired_ids:
+            db.execute(update(RemoteProbeJob).where(
+                RemoteProbeJob.collector_id.in_(retired_ids),
+                RemoteProbeJob.state.in_(("QUEUED", "LEASED"))
+            ).values(state="CANCELLED",lease_nonce_hash=None))
         collectors=db.scalars(
             select(Collector).where(
                 Collector.enabled.is_(True),Collector.remote_worker_id.is_not(None),
@@ -56,7 +64,7 @@ def queue_due_once(limit=100):
             ).order_by(Collector.next_run_at.nullsfirst()).with_for_update(skip_locked=True).limit(limit)
         ).all()
         for collector in collectors:
-            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS"}:
+            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
                 collector.enabled=False
                 collector.status="STOPPED"
                 collector.last_error="Kubernetes monitoring retired; historical evidence retained"

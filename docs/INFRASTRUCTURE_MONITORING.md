@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # Sprint 2 infrastructure monitoring
 
 Branch: `feature/sprint2-infrastructure-monitoring`, based on the verified Sprint 1 HTTP reference. This development slice reuses organization-scoped sources, immutable rule versions, preview/apply activation, native metric samples and stable alert recovery. Production acceptance remains separate.

@@ -64,3 +64,15 @@ test('saved selections are applied before controls become ready',async()=>{
   assert.equal(ready,false);
   await new Promise(resolve=>setImmediate(resolve));assert.equal(ready,true);
 });
+
+import { isExcludedPlatform } from '../src/excludedPlatforms.js';
+test('excluded source aliases cannot become monitoring selections', () => {
+  for (const kind of ['KUBERNETES','K8S','AWS_EKS','azureAks','gcpGke','OpenShift','k3s','microk8s','AmazonElasticKubernetesService']) {
+    assert.equal(isExcludedPlatform(kind), true, kind);
+  }
+});
+test('VM and application types and generic telemetry terms stay supported', () => {
+  for (const kind of ['Linux_HOST','Windows_HOST','AWS_EC2','API','HTTP','PENTAHO','namespace','workload','cluster']) {
+    assert.equal(isExcludedPlatform(kind), false, kind);
+  }
+});

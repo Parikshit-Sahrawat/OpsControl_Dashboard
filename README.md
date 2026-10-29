@@ -135,3 +135,7 @@ REC	Required Main-side disposition
 5. Production/runtime acceptance: zero Pentaho P0 runtime tests are evidenced as executed here; no merge/deploy authority.
 15. Approval and publication gate
 The owner approved this consolidated architecture for implementation on 2026-10-16, including the reconstructed RT-001–RT-020 coverage index and exactly one department for new employees while retaining legacy multi-department memberships. Publish this owner-approved consolidated baseline on the R1 development branch and use it as the Pentaho-specific source of truth. Do not modify its objectives or approved decisions. Do not merge or deploy without separate approval.
+
+## Excluded platforms
+
+Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE by OC-SCOPE-REM-001. Legacy database records and historical audit evidence are retained; this is not release acceptance. Standalone VM/EC2, applications, ETL/Pentaho and API monitoring remain in scope.

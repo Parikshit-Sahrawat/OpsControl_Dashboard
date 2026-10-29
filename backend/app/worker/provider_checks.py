@@ -1,4 +1,4 @@
-"""Read-only, provider-neutral cloud/K8s/ETL health collectors.
+"""Read-only, provider-neutral cloud/ETL health collectors.
 
 No static cloud credentials, AssumeRole, arbitrary kubeconfig, arbitrary HTTP
 methods or private endpoint overrides. SDK credentials come from workload
@@ -68,61 +68,3 @@ def ec2_health(config,session_factory=None):
             "state":state,"system_checks":check_value,"cpu_percent":cpu,
             "outcome":"SUCCESS" if state=="running" and check_value=="ok" else
                       "DEGRADED" if state=="running" else "UNAVAILABLE"}
-
-def kubernetes_health(config,client_factory=None):
-    if not isinstance(config,dict): raise ProviderCheckError("Kubernetes config must be JSON")
-    if set(config)-{"namespace","pod_name","deployment_name","node_name"}:
-        raise ProviderCheckError("Unapproved Kubernetes configuration key")
-    namespace=config.get("namespace","")
-    pod=config.get("pod_name")
-    deployment=config.get("deployment_name")
-    node=config.get("node_name")
-    if not isinstance(namespace,str) or not _DNS_LABEL.fullmatch(namespace):
-        raise ProviderCheckError("Namespace must be explicit")
-    if sum(bool(x) for x in (pod,deployment,node))!=1:
-        raise ProviderCheckError("Choose exactly one Pod, Deployment or Node")
-    name=pod or deployment or node
-    if not isinstance(name,str) or len(name)>253 or not all(_DNS_LABEL.fullmatch(part) for part in name.split(".")):
-        raise ProviderCheckError("Invalid Pod/Deployment name")
-    if node:
-        import os
-        if node not in os.getenv('OPSCONTROL_K8S_ALLOWED_NODES','').split(','):
-            raise ProviderCheckError('Node is not explicitly approved for this worker')
-    if client_factory is None:
-        try:
-            from kubernetes import client
-        except ImportError as exc:
-            raise ProviderCheckError("Install optional Kubernetes client") from exc
-        from kubernetes import config as kconfig
-        kconfig.load_incluster_config()  # service-account only; no arbitrary kubeconfig
-        client_factory=client
-    if node:
-        obj=client_factory.CoreV1Api().read_node(name=name, _request_timeout=(5, 15))
-        conditions={c.type:c.status for c in (obj.status.conditions or [])}
-        ready=conditions.get('Ready')=='True'
-        pressures={key: conditions.get(value)=='True' for key,value in (
-            ('memory_pressure','MemoryPressure'),('disk_pressure','DiskPressure'),('pid_pressure','PIDPressure'))}
-        return {'provider':'KUBERNETES','resource':'NODE','namespace':namespace,'name':name,
-            'node_ready':ready,'unschedulable':bool(obj.spec.unschedulable),**pressures,
-            'outcome':'SUCCESS' if ready and not any(pressures.values()) else 'DEGRADED'}
-    if pod:
-        obj=client_factory.CoreV1Api().read_namespaced_pod(name=name,namespace=namespace, _request_timeout=(5, 15))
-        status=obj.status
-        phase=status.phase or "Unknown"
-        ready=any(c.type=="Ready" and c.status=="True" for c in (status.conditions or []))
-        restarts=sum(c.restart_count or 0 for c in (status.container_statuses or []))
-        waiting=[c.state.waiting.reason for c in (status.container_statuses or [])
-                 if c.state and c.state.waiting and c.state.waiting.reason]
-        outcome="SUCCESS" if phase=="Running" and ready else "DEGRADED"
-        return {"provider":"KUBERNETES","resource":"POD","namespace":namespace,
-                "name":name,"phase":phase,"ready":ready,"restarts":restarts,
-                "waiting_reasons":waiting[:10],"outcome":outcome}
-    obj=client_factory.AppsV1Api().read_namespaced_deployment(name=name,namespace=namespace, _request_timeout=(5, 15))
-    status=obj.status
-    desired=int(obj.spec.replicas or 0)
-    ready=int(status.ready_replicas or 0)
-    available=int(status.available_replicas or 0)
-    return {"provider":"KUBERNETES","resource":"DEPLOYMENT","namespace":namespace,
-            "name":name,"desired_replicas":desired,"ready_replicas":ready,
-            "available_replicas":available,
-            "outcome":"SUCCESS" if desired>0 and available>=desired else "DEGRADED"}

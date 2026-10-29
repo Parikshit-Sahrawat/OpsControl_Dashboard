@@ -4,8 +4,8 @@ import ntpath
 import os
 import re
 
-INFRA_TYPES={'AWS_EC2','EC2','KUBERNETES','K8S','LINUX_HOST','WINDOWS_HOST'}
-ALIASES={'EC2':'AWS_EC2','K8S':'KUBERNETES'}
+INFRA_TYPES={'AWS_EC2','EC2','LINUX_HOST','WINDOWS_HOST'}
+ALIASES={'EC2':'AWS_EC2'}
 METRICS={
     'infrastructure_up':('AVAILABILITY',None),
     'cpu_percent':('HOST_CPU_PERCENT','percent'),
@@ -13,13 +13,9 @@ METRICS={
     'disk_used_percent':('HOST_DISK_USED_PERCENT','percent'),
     'process_running':('HOST_PROCESS_RUNNING',None),
     'ec2_cpu_percent':('EC2_CPU_PERCENT','percent'),
-    'k8s_restarts':('K8S_RESTARTS','count'),
-    'k8s_available_replicas':('K8S_AVAILABLE_REPLICAS','count'),
-    'k8s_node_ready':('K8S_NODE_READY',None),
 }
 PROVIDER_METRICS={
     'AWS_EC2':{'infrastructure_up','ec2_cpu_percent'},
-    'KUBERNETES':{'infrastructure_up','k8s_restarts','k8s_available_replicas','k8s_node_ready'},
     'LINUX_HOST':{'infrastructure_up','cpu_percent','memory_used_percent','disk_used_percent','process_running'},
     'WINDOWS_HOST':{'infrastructure_up','cpu_percent','memory_used_percent','disk_used_percent','process_running'},
 }
@@ -41,17 +37,6 @@ def validate_config(kind,cfg):
         if not re.fullmatch(r'[a-z]{2}(?:-gov)?-[a-z]+-\d',str(cfg.get('region',''))): raise ValueError('Explicit AWS region required')
         if not re.fullmatch(r'\d{12}',str(cfg.get('account_id',''))): raise ValueError('Expected AWS account required')
         if not re.fullmatch(r'i-[0-9a-f]{8,17}',str(cfg.get('instance_id',''))): raise ValueError('Explicit EC2 instance required')
-    elif kind=='KUBERNETES':
-        if set(cfg)-{'namespace','pod_name','deployment_name','node_name'}: raise ValueError('Unapproved Kubernetes config key')
-        names=[cfg.get(key) for key in ('pod_name','deployment_name','node_name') if cfg.get(key)]
-        if len(names)!=1: raise ValueError('Choose exactly one Pod, Deployment or Node')
-        label=r'[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?'
-        namespace=cfg.get('namespace','')
-        if not isinstance(namespace,str) or not re.fullmatch(label,namespace): raise ValueError('Invalid Kubernetes namespace')
-        for name in names:
-            if not isinstance(name,str) or len(name)>253 or not all(re.fullmatch(label,part) for part in name.split('.')): raise ValueError('Invalid Kubernetes selector')
-        if cfg.get('node_name') and cfg['node_name'] not in os.getenv('OPSCONTROL_K8S_ALLOWED_NODES','').split(','):
-            raise ValueError('Node is not explicitly approved for this worker')
     elif kind in {'LINUX_HOST','WINDOWS_HOST'}:
         if set(cfg)-{'disk_path','process_pid'}: raise ValueError('Only local disk and numeric process selectors allowed')
         path=cfg.get('disk_path','C:\\' if kind=='WINDOWS_HOST' else '/')

@@ -1,0 +1,75 @@
+{
+  "baseline": "09a578f70282c7889a515c332c948f1940ae6719",
+  "final_source_sha": "402834e351d816d48760974e4566185631600995",
+  "product_test_sha": "402834e351d816d48760974e4566185631600995",
+  "status": "FOUR_REMOVAL_WORKSTREAMS_PASS_PENDING_OWNER_AND_FINAL_CI",
+  "backend": {
+    "total": 549,
+    "passed": 547,
+    "skipped": 2,
+    "failed": 0,
+    "errors": 0
+  },
+  "frontend": {
+    "passed": 38,
+    "failed": 0,
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "fresh_migrations": "PASS",
+  "populated_no_op_upgrade_and_restore": "PASS_SYNTHETIC_100_TABLES",
+  "destructive_schema_retirement": "BLOCKED",
+  "browser_acceptance": {
+    "status": "PASS",
+    "assertion_groups": 17
+  },
+  "live_http_harness": {
+    "status": "PASS",
+    "grouped_gates": 13,
+    "focused_http_assertions": 67
+  },
+  "global_backend_lint": "Python compilation PASS; no global style-cleanliness claim",
+  "production_changes": false,
+  "uat_access": false,
+  "collector_version_changed": false,
+  "gates": "CHK-001 FAIL \u00b7 CHK-002 BLOCKED \u00b7 SECURITY BLOCKED \u00b7 RELEASE NO-GO",
+  "remote_main_at_delivery": "62a4eb4643c09594569aa61f0a60ae64035e6ede",
+  "baseline_drift": "Integrated remote main 62a4eb4643c09594569aa61f0a60ae64035e6ede; tests rerun",
+  "documentation_checks": {
+    "json_validity": "PASS_FOR_STRUCTURED_JSON",
+    "raw_legacy_format_failures": 12,
+    "local_markdown_links": "PASS",
+    "artifact_inventory": "PASS",
+    "artifact_hashes": "PASS",
+    "historical_dev05_evidence_modified": false
+  },
+  "compressed_search_inventory": {
+    "path": "inventory-after.txt.gz",
+    "uncompressed_sha256": "63829a0b1dacb115fde8fdda3b3557adb8b420c0208527ee29b30d3b268fba7a",
+    "lossless_roundtrip": "PASS"
+  },
+  "legacy_preservation": "PASS_FRESH_POPULATED_RESTORE_HASHES",
+  "semantic_configuration_audit": "PASS_AUDITED_PATHS",
+  "hosted_ci": {
+    "status": "PENDING_AT_EVIDENCE_COMMIT",
+    "final_verification": "PR73 closure comment after push"
+  },
+  "raw_legacy_json_serialization_failures": {
+    "files": [
+      "close-2026-10-28/http-browser/eks.json.raw.txt",
+      "close-2026-10-29/http-browser/eks.json.raw.txt",
+      "close-attempts/run1-evidence/eks.json.raw.txt",
+      "close-attempts/run10-evidence/eks.json.raw.txt",
+      "close-attempts/run11-evidence/eks.json.raw.txt",
+      "close-attempts/run12-evidence/eks.json.raw.txt",
+      "close-attempts/run2-evidence/eks.json.raw.txt",
+      "close-attempts/run4-evidence/eks.json.raw.txt",
+      "close-attempts/run5-evidence/eks.json.raw.txt",
+      "close-attempts/run6-evidence/eks.json.raw.txt",
+      "close-attempts/run7-evidence/eks.json.raw.txt",
+      "close-attempts/run9-evidence/eks.json.raw.txt"
+    ],
+    "reason": "Existing EKS auxiliary ledger appends literal backslash-n; bytes preserved, not used as canonical machine-readable acceptance",
+    "primary_closure_ledgers_valid": true
+  }
+}

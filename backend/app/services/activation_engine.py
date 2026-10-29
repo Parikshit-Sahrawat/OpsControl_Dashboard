@@ -66,14 +66,12 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
     source=db.get(DataSource,source_id)
     if source is None: raise HTTPException(404,"Data source not found")
     if not source.enabled: raise HTTPException(409,"Data source disabled")
+    from app.services.excluded_platforms import require_supported_source
+    require_supported_source(source)
     provider=normalize(source.source_type)
-    # Kubernetes cluster/workload monitoring is deferred. Preserve existing
-    # collectors, evidence, associations, and their audit history; only block
-    # new monitoring activations for these provider types.
-    if provider == 'KUBERNETES':
-        raise HTTPException(422, 'Kubernetes monitoring is deferred; existing monitoring history is preserved')
-    if provider == 'AWS_EKS':
-        raise HTTPException(422,'EKS inventory is discovery-only; use an approved in-cluster Kubernetes source for workload monitoring')
+    from app.services.excluded_platforms import is_excluded_platform
+    if is_excluded_platform(source.source_type):
+        raise HTTPException(422, "Container orchestration platforms are excluded from product scope")
     infrastructure=provider in INFRA_TYPES
     if api_config is not None:
         if infrastructure or not isinstance(api_config,dict):
@@ -94,6 +92,11 @@ def build_plan(db:Session,source_id,version_ids,worker_id,include_templates=True
         if r["kind"]=="ALERT" and r["definition"]["metric_name"] not in metric_names:
             raise HTTPException(422,"Alert rule references a missing metric rule")
     effective=resolve_data_source_configuration(db,source.id) if include_templates else {"collector":{}}
+    from app.services.excluded_platforms import require_supported_configuration
+    try:
+        require_supported_configuration(effective)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from None
     cc=effective.get("collector") or {}
     if infrastructure:
         principal=current_principal.get()

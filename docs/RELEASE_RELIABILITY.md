@@ -1,3 +1,5 @@
+> **Scope correction — OC-SCOPE-REM-001 (2026-10-28):** Kubernetes, EKS, AKS, GKE, OpenShift and other Kubernetes distributions are REMOVED_FROM_SCOPE. Any cluster setup, monitoring, discovery or customer-association instructions below are superseded historical context and must not be used. VM/EC2, application, API and read-only Pentaho support remains in scope. See `docs/verification/scope-removal/kubernetes-platforms/REQUIREMENT_SCOPE_RECONCILIATION.md`.
+
 # Release reliability: priorities, fixes and acceptance
 
 Reconciled 2026-10-11. Development baseline is main `fbe83badb47ee61b81fe60f23dde48c37b1ee1d0`: PR #23 (ETL), #24 (operational dashboards) and #25 (approved dual-theme UI) are merged. PR #25 had sixteen successful checks at `b37b6ecc1a58bfdada8574a587705d5134a84895`; post-merge [OpsControl Validation](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/38165657701) also passed. Earlier Forbidden/PR-creation/merge blockers are resolved. Independent human security review and production acceptance have not been established.
