@@ -1,0 +1,27 @@
+[Unit]
+Description=OpsControl verified pull-based UAT deployment
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=oneshot
+User=opscontrol-deploy
+Group=opscontrol-deploy
+Environment=LOCAL_UAT_PULL_ENABLED=false
+ExecStart=/usr/bin/python3 /opt/opscontrol/scripts/uat/service_entry.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+UMask=0077
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+LoadCredential=github-token:/etc/opscontrol-uat/github-token
+Environment=GH_CONFIG_DIR=/var/lib/opscontrol-uat-deploy/gh
+Environment=DOCKER_CONFIG=/var/lib/opscontrol-uat-deploy/docker
+ProtectSystem=strict
+ReadWritePaths=/var/lib/opscontrol-uat-deploy
+TimeoutStartSec=1200

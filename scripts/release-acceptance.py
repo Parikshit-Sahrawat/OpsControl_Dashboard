@@ -42,6 +42,14 @@ def run(args, *, env=None, input=None, expected=0):
         command_log.write(result.stdout+"\n"+result.stderr)
     if result.returncode != expected:
         (private/'failed-command.log').write_text(result.stdout+'\n'+result.stderr)
+        if args == ['node','frontend/scripts/release_pagination_acceptance.mjs']:
+            for line in result.stderr.splitlines():
+                if line.startswith('RELEASE_PAGINATION_FAILURE '):
+                    try:
+                        diagnostic = json.loads(line.removeprefix('RELEASE_PAGINATION_FAILURE '))
+                        print('Pagination browser failure:', diagnostic.get('stage', 'unknown'), diagnostic.get('category', 'Error'), flush=True)
+                    except (ValueError, TypeError):
+                        print('Pagination browser failure: invalid sanitized diagnostic', flush=True)
         if args == ['node','frontend/scripts/resource_crud_acceptance.mjs']:
             for line in result.stderr.splitlines():
                 if line.startswith('RESOURCE_CRUD_FAILURE '):
