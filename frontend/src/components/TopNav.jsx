@@ -321,8 +321,10 @@ export default function TopNav({
           )}
         </div>
       )}
+      <div className="personal-workspace-actions">
       <button className="filter-button" type="button" onClick={() => setPersonal("profile")}>My profile</button>
       <button className="filter-button" type="button" onClick={() => setPersonal("help")}>Help</button>
+      </div>
       {personal && <PersonalWorkspace key={`${user?.id}:${user?.authorization_revision}:${personal}`} kind={personal} user={user} onClose={() => setPersonal(null)} />}
       <InAppNotifications user={user} />
       <ThemeToggle />

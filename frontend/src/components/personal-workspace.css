@@ -8,3 +8,9 @@
 .personal-workspace h3 { margin-top: 1.5rem; }
 .personal-workspace li { margin-block: .5rem; }
 @media (max-width: 480px) { .personal-heading { flex-wrap: wrap; } }
+
+.personal-workspace-actions { display: flex; gap: 8px; flex-shrink: 0; }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .personal-workspace-actions { flex-direction: column; gap: 2px; }
+  .personal-workspace-actions .filter-button { padding: 4px 8px; }
+}
