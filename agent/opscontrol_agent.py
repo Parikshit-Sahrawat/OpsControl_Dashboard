@@ -184,7 +184,11 @@ class Agent:
                 except subprocess.TimeoutExpired as exc:
                     raise RuntimeError("JOURNAL_PREFLIGHT_TIMEOUT") from exc
                 stderr = result.stderr.lower()
-                if result.returncode or "permission denied" in stderr or "insufficient permissions" in stderr:
+                if (
+                    result.returncode
+                    or "permission denied" in stderr
+                    or "insufficient permissions" in stderr
+                ):
                     raise RuntimeError("JOURNAL_PERMISSION_DENIED")
                 # An empty result cannot prove access: a quiet journal is valid,
                 # so avoid falsely declaring a permission failure here.
