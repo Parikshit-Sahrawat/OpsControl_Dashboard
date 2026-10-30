@@ -1,0 +1,11 @@
+[Unit]
+Description=Poll OpsControl remote main every two minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=2min
+Unit=opscontrol-uat-main-poller.service
+Persistent=false
+
+[Install]
+WantedBy=timers.target
