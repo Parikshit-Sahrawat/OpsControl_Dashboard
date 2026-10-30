@@ -41,12 +41,13 @@ try {
       at('next-page-'+theme.toLowerCase()+'-'+(tab==='Compute Health'?'compute':'api'));
       await pager.getByRole('button',{name:'Next page',exact:true}).click();
       await page.waitForFunction(()=>{ const text=document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent || ''; return /^\s*51\s*[–-]/.test(text); });
-      assert.equal(await pager.getByRole('button',{name:'Next page'}).isDisabled(),true);
+      assert.equal(await pager.getByRole('button',{name:'Previous page'}).isDisabled(),false);
+      assert.equal(await pager.getByRole('button',{name:'Next page'}).isDisabled(),false);
       await mkdir(process.env.RELEASE_EVIDENCE_DIR,{recursive:true});
       await page.screenshot({path:`${process.env.RELEASE_EVIDENCE_DIR}/${theme.toLowerCase()}-${tab==='API Endpoint Monitoring'?'services':'infrastructure'}-page2.png`,fullPage:true});
       at('previous-page-'+theme.toLowerCase()+'-'+(tab==='Compute Health'?'compute':'api'));
       await pager.getByRole('button',{name:'Previous page',exact:true}).click();
-      await page.waitForFunction(()=>document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent.startsWith('1–'));
+      await page.waitForFunction(()=>/^\s*1\s*[–-]/.test(document.querySelector('nav[aria-label="Inventory pagination"]')?.textContent || ''));
     }
   }
   assert.deepEqual(errors,[]);
