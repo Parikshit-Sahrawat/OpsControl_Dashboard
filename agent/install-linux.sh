@@ -12,6 +12,7 @@ python3 --version
 (cd "$agent_package" && sha256sum -c runtime.sha256)
 "$agent_package/otelcol-contrib" --version | grep -q '0.123.0' || { echo 'Unsupported runtime version' >&2; exit 1; }
 [[ -f /var/lib/opscontrol-agent/identity.json || -r "$agent_enrollment" ]] || { echo 'Enrollment file required for new installation' >&2; exit 1; }
+getent group systemd-journal >/dev/null || { echo 'systemd-journal group required for journal collection' >&2; exit 1; }
 command -v systemctl >/dev/null || { echo 'systemd is required' >&2; exit 1; }
 if systemctl is-active --quiet opscontrol-agent; then systemctl stop opscontrol-agent; fi
 if [[ -d /opt/opscontrol-agent ]]; then
@@ -37,6 +38,8 @@ Wants=network-online.target
 Type=simple
 User=opscontrol-agent
 Group=opscontrol-agent
+# Read-only access to system journals; never run the agent as root.
+SupplementaryGroups=systemd-journal
 ExecStart=/usr/bin/python3 /opt/opscontrol-agent/opscontrol_agent.py --home /var/lib/opscontrol-agent --backend ${agent_backend} --runtime /opt/opscontrol-agent/otelcol-contrib --enrollment-file /var/lib/opscontrol-agent/enrollment
 Restart=on-failure
 RestartSec=10
