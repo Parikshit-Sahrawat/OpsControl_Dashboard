@@ -1,15 +1,17 @@
 from uuid import UUID
+import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db.session import get_db
 from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution, CorrelationRecord, Organization, DataSource, Collector, AlertIncidentEvent
-from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate
+from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate, WorkflowCreate, WorkflowJobCreate, WorkflowDependencyCreate
 from sqlalchemy.exc import IntegrityError
 from app.schemas.monitoring import CorrelationRecordOut
 from app.services.correlation import correlate_execution
 from app.unified.schemas import Environment
+from app.models.entities import ETLWorkflow, ETLWorkflowDependency
 router = APIRouter(prefix="/api/v1/etl", tags=["ETL"])
 def _item(h, db=None):
     monitor='UNKNOWN'
@@ -148,3 +150,152 @@ def analyze_execution_correlation(
     db.commit()
     db.refresh(record)
     return record
+
+
+def _workflow_out(workflow):
+    return {
+        "id": str(workflow.id), "organization_id": str(workflow.organization_id),
+        "name": workflow.name, "environment": workflow.environment,
+        "schedule": workflow.schedule,
+        "expected_window_start": workflow.expected_window_start,
+        "expected_window_end": workflow.expected_window_end,
+        "expected_duration_seconds": workflow.expected_duration_seconds,
+        "sla_seconds": workflow.sla_seconds,
+    }
+
+
+@router.post("/workflows", status_code=201)
+def create_workflow(payload: WorkflowCreate, db: Session = Depends(get_db)):
+    org = db.get(Organization, payload.organization_id)
+    if not org:
+        raise HTTPException(404, "Organization not found")
+    if not org.active:
+        raise HTTPException(409, "Organization is inactive")
+    workflow = ETLWorkflow(
+        organization_id=payload.organization_id, name=payload.name,
+        environment=payload.environment,
+        schedule={"timezone": payload.timezone, "weekdays": payload.weekdays},
+        expected_window_start=payload.expected_window_start,
+        expected_window_end=payload.expected_window_end,
+        expected_duration_seconds=payload.expected_duration_seconds,
+        sla_seconds=payload.sla_seconds,
+    )
+    db.add(workflow)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Workflow already exists")
+    return _workflow_out(workflow)
+
+
+@router.get("/workflows")
+def list_workflows(organization_id: UUID, db: Session = Depends(get_db)):
+    workflows = db.scalars(select(ETLWorkflow).where(
+        ETLWorkflow.organization_id == organization_id
+    ).order_by(ETLWorkflow.name)).all()
+    return [_workflow_out(workflow) for workflow in workflows]
+
+
+@router.post("/workflows/{workflow_id}/jobs", status_code=201)
+def create_workflow_job(workflow_id: UUID, payload: WorkflowJobCreate, db: Session = Depends(get_db)):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    if not workflow.active:
+        raise HTTPException(409, "Workflow is inactive")
+    if payload.host_data_source_id:
+        host = db.get(DataSource, payload.host_data_source_id)
+        if not host or host.organization_id != workflow.organization_id:
+            raise HTTPException(409, "Host source unavailable in this organization")
+    vm = db.scalar(select(VM).where(
+        VM.organization_id == workflow.organization_id, VM.hostname == payload.hostname
+    ))
+    if not vm:
+        vm = VM(organization_id=workflow.organization_id, hostname=payload.hostname,
+                environment=workflow.environment)
+        vm._unified_initial_source_id = payload.host_data_source_id
+        db.add(vm)
+        db.flush()
+    elif vm.environment != workflow.environment:
+        raise HTTPException(409, "Host environment differs from workflow")
+    job = JobOrder(
+        workflow_id=workflow.id, organization_id=workflow.organization_id,
+        vm_id=vm.id, host_data_source_id=payload.host_data_source_id,
+        name=payload.name, environment=workflow.environment,
+        expected_runtime_seconds=payload.expected_duration_seconds,
+        monitoring_enabled=True,
+    )
+    db.add(job)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Job already exists")
+    return {"id": str(job.id), "workflow_id": str(workflow.id), "name": job.name,
+            "expected_duration_seconds": job.expected_runtime_seconds}
+
+
+@router.get("/workflows/{workflow_id}/jobs")
+def list_workflow_jobs(workflow_id: UUID, db: Session = Depends(get_db)):
+    if not db.get(ETLWorkflow, workflow_id):
+        raise HTTPException(404, "Workflow not found")
+    jobs = db.scalars(select(JobOrder).where(JobOrder.workflow_id == workflow_id).order_by(JobOrder.name)).all()
+    return [{"id": str(job.id), "name": job.name,
+             "expected_duration_seconds": job.expected_runtime_seconds} for job in jobs]
+
+
+@router.post("/workflows/{workflow_id}/dependencies", status_code=201)
+def create_workflow_dependency(workflow_id: UUID, payload: WorkflowDependencyCreate, db: Session = Depends(get_db)):
+    if not db.get(ETLWorkflow, workflow_id):
+        raise HTTPException(404, "Workflow not found")
+    if payload.predecessor_job_id == payload.successor_job_id:
+        raise HTTPException(422, "A job cannot depend on itself")
+    jobs = db.scalars(select(JobOrder).where(
+        JobOrder.id.in_([payload.predecessor_job_id, payload.successor_job_id]),
+        JobOrder.workflow_id == workflow_id,
+    )).all()
+    if len(jobs) != 2:
+        raise HTTPException(409, "Both jobs must belong to this workflow")
+    edges = db.scalars(select(ETLWorkflowDependency).where(
+        ETLWorkflowDependency.workflow_id == workflow_id
+    )).all()
+    adjacency = {}
+    for edge in edges:
+        adjacency.setdefault(edge.predecessor_job_id, set()).add(edge.successor_job_id)
+    # Adding predecessor -> successor is illegal when successor already reaches predecessor.
+    pending = [payload.successor_job_id]
+    visited = set()
+    while pending:
+        current = pending.pop()
+        if current == payload.predecessor_job_id:
+            raise HTTPException(409, "Workflow dependency cycle")
+        if current in visited:
+            continue
+        visited.add(current)
+        pending.extend(adjacency.get(current, ()))
+    edge = ETLWorkflowDependency(
+        id=uuid.uuid4(), workflow_id=workflow_id,
+        predecessor_job_id=payload.predecessor_job_id,
+        successor_job_id=payload.successor_job_id,
+    )
+    db.add(edge)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Dependency already exists")
+    return {"id": str(edge.id), "workflow_id": str(workflow_id),
+            "predecessor_job_id": str(edge.predecessor_job_id),
+            "successor_job_id": str(edge.successor_job_id)}
+
+
+@router.get("/workflows/{workflow_id}/dependencies")
+def list_workflow_dependencies(workflow_id: UUID, db: Session = Depends(get_db)):
+    if not db.get(ETLWorkflow, workflow_id):
+        raise HTTPException(404, "Workflow not found")
+    edges = db.scalars(select(ETLWorkflowDependency).where(
+        ETLWorkflowDependency.workflow_id == workflow_id
+    )).all()
+    return [{"id": str(edge.id), "predecessor_job_id": str(edge.predecessor_job_id),
+             "successor_job_id": str(edge.successor_job_id)} for edge in edges]
