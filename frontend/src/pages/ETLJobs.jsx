@@ -152,7 +152,7 @@ export default function ETLJobs({
               className="filter-button"
               onClick={() => {
                 setFilter("All");
-                setEnvironment("PROD");
+                setEnvironment("All");
                 setExecutionType("All");
                 setQuery("");
               }}
