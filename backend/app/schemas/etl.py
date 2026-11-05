@@ -125,6 +125,35 @@ class WorkflowCreate(BaseModel):
         return self
 
 
+
+class WorkflowUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    environment: str | None = Field(default=None, min_length=1, max_length=50)
+    timezone: str | None = None
+    weekdays: list[int] | None = Field(default=None, min_length=1, max_length=7)
+    expected_window_start: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
+    expected_window_end: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
+    expected_duration_seconds: int | None = Field(default=None, ge=1, le=604800)
+    sla_seconds: int | None = Field(default=None, ge=1, le=604800)
+    active: bool | None = None
+
+    @model_validator(mode="after")
+    def validate_fields(self):
+        from datetime import time
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+        if self.timezone is not None:
+            try:
+                ZoneInfo(self.timezone)
+            except (ZoneInfoNotFoundError, ValueError):
+                raise ValueError("Valid schedule timezone required")
+        if self.weekdays is not None and any(type(day) is not int or day not in range(7) for day in self.weekdays):
+            raise ValueError("Invalid weekdays")
+        for value in (self.expected_window_start, self.expected_window_end):
+            if value is not None:
+                time.fromisoformat(value)
+        return self
+
+
 class WorkflowJobCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     hostname: str = Field(min_length=1, max_length=200)
