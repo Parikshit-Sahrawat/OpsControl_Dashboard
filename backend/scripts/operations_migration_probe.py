@@ -12,7 +12,16 @@ def seed():
     with SessionLocal() as db:
         org=Organization(name='Controlled migration archive',code='NOC-MIGRATION');db.add(org);db.flush()
         vm=VM(organization_id=org.id,hostname='archive.example.test',environment='TEST');db.add(vm);db.flush()
-        job=JobOrder(organization_id=org.id,vm_id=vm.id,name='Historical ETL failure');db.add(job);db.flush()
+        # The probe intentionally seeds a historical 0020 database. Avoid the
+        # current ORM mapper: it now contains workflow_id introduced in 0039.
+        import uuid
+        job_id = uuid.uuid4()
+        db.execute(text("""INSERT INTO job_orders
+            (id, organization_id, vm_id, name, environment, active, monitoring_enabled, created_at)
+            VALUES (:id, :org, :vm, :name, :environment, true, true, :created_at)"""),
+            {'id': job_id, 'org': org.id, 'vm': vm.id,
+             'name': 'Historical ETL failure', 'environment': 'TEST',
+             'created_at': now})
         # Seed the historical 0020 schema with its own column contract, not the
         # current JobOrderHistory ORM mapping (which includes 0033+ Pentaho fields).
         import uuid
@@ -20,7 +29,7 @@ def seed():
         db.execute(text("""INSERT INTO job_order_histories
             (id,job_order_id,execution_type,status,detected_at,created_at)
             VALUES (:id,:job,:execution_type,:status,:detected_at,:created_at)"""),
-            {'id':history_id,'job':job.id,'execution_type':ExecutionType.SCHEDULED.value,
+            {'id':history_id,'job':job_id,'execution_type':ExecutionType.SCHEDULED.value,
              'status':ExecutionStatus.FAILED.value,'detected_at':now-timedelta(days=2),'created_at':now})
         source=DataSource(organization_id=org.id,name='Historical HTTP source',source_type='API');db.add(source);db.flush()
         metric=MetricDefinition(organization_id=org.id,data_source_id=source.id,name='archive-up',resource_type='APPLICATION',metric_type='GAUGE');db.add(metric);db.flush()
