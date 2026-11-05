@@ -162,7 +162,11 @@ class ETLWorkflow(Base):
     sla_seconds: Mapped[int | None] = mapped_column(Integer)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    __table_args__ = (UniqueConstraint("organization_id", "environment", "name", name="uq_etl_workflow_scope"),)
+    __table_args__ = (
+        UniqueConstraint("organization_id", "environment", "name", name="uq_etl_workflow_scope"),
+        CheckConstraint("expected_duration_seconds IS NULL OR expected_duration_seconds > 0", name="ck_etl_workflow_duration"),
+        CheckConstraint("sla_seconds IS NULL OR sla_seconds > 0", name="ck_etl_workflow_sla"),
+    )
 
 
 class ETLWorkflowDependency(Base):
