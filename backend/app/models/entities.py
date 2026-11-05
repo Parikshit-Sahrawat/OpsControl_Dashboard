@@ -151,6 +151,7 @@ class ETLWorkflow(Base):
     """Monitoring expectation only; never dispatches scheduler jobs."""
 
     __tablename__ = "etl_workflows"
+    organization: Mapped["Organization"] = relationship(viewonly=True)
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
@@ -173,6 +174,7 @@ class ETLWorkflowDependency(Base):
     """Directed predecessor -> successor dependency within a workflow."""
 
     __tablename__ = "etl_workflow_dependencies"
+    workflow: Mapped["ETLWorkflow"] = relationship(viewonly=True)
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     workflow_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("etl_workflows.id", ondelete="RESTRICT"), nullable=False, index=True)
     predecessor_job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_orders.id", ondelete="RESTRICT"), nullable=False)

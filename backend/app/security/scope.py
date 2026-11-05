@@ -108,6 +108,8 @@ _PATHS = {
     "Application": ("vm", "organization"),
     "PentahoInstance": ("vm", "organization"),
     "JobOrder": ("organization",),
+    "ETLWorkflow": ("organization",),
+    "ETLWorkflowDependency": ("workflow", "organization"),
     "JobOrderHistory": ("job_order", "organization"),
     "JobStepExecution": ("history", "job_order", "organization"),
     "Investigation": ("history", "job_order", "organization"),
@@ -453,6 +455,9 @@ def enforce_writes(db, flush_context, instances):
                 "data_source_id",
                 "collector_id",
                 "job_order_id",
+                "workflow_id",
+                "predecessor_job_id",
+                "successor_job_id",
                 "vm_id",
                 "history_id",
                 "metric_definition_id",
@@ -496,6 +501,44 @@ def enforce_writes(db, flush_context, instances):
                     raise HTTPException(
                         403, "Changing resource ownership is not supported"
                     )
+        # ETL ownership is checked in the shared write path, not only routes.
+        # View-only parent relationships cannot rewrite these immutable FK IDs.
+        if model.__name__ in {"JobOrder", "ETLWorkflowDependency"} and getattr(
+            obj, "workflow_id", None
+        ):
+            from app.models.entities import ETLWorkflow, JobOrder
+
+            workflow = db.get(ETLWorkflow, obj.workflow_id)
+            if workflow is None or workflow.organization_id != org_id:
+                raise HTTPException(409, "Workflow unavailable in this organization")
+            if model.__name__ == "JobOrder" and obj.environment != workflow.environment:
+                raise HTTPException(409, "Job environment differs from workflow")
+            if model.__name__ == "ETLWorkflowDependency":
+                if obj.predecessor_job_id == obj.successor_job_id:
+                    raise HTTPException(409, "A job cannot depend on itself")
+                for job_id in (obj.predecessor_job_id, obj.successor_job_id):
+                    job = db.get(JobOrder, job_id)
+                    if (
+                        job is None
+                        or job.organization_id != org_id
+                        or job.workflow_id != workflow.id
+                    ):
+                        raise HTTPException(
+                            409, "Dependency jobs must belong to this workflow"
+                        )
+        if (
+            model.__name__ == "ETLWorkflow"
+            and state.persistent
+            and state.attrs.environment.history.has_changes()
+        ):
+            from app.models.entities import JobOrder
+
+            if db.scalar(
+                select(JobOrder.id).where(JobOrder.workflow_id == obj.id).limit(1)
+            ):
+                raise HTTPException(
+                    409, "Cannot change environment while workflow has jobs"
+                )
         # All tenant-owned foreign keys must point to resources in the SAME org.
         for attr, parent_type in (
             ("data_source_id", "DataSource"),
@@ -508,6 +551,9 @@ def enforce_writes(db, flush_context, instances):
             ("rule_version_id", "MonitoringRuleVersion"),
             ("vm_id", "VM"),
             ("job_order_id", "JobOrder"),
+            ("workflow_id", "ETLWorkflow"),
+            ("predecessor_job_id", "JobOrder"),
+            ("successor_job_id", "JobOrder"),
             ("history_id", "JobOrderHistory"),
             ("host_data_source_id", "DataSource"),
             ("incident_id", "OperationalIncident"),
