@@ -12,6 +12,7 @@ from app.schemas.monitoring import CorrelationRecordOut
 from app.services.correlation import correlate_execution
 from app.unified.schemas import Environment
 from app.models.entities import ETLWorkflow, ETLWorkflowDependency
+from app.security.access_control import require_permission
 router = APIRouter(prefix="/api/v1/etl", tags=["ETL"])
 def _item(h, db=None):
     monitor='UNKNOWN'
@@ -166,6 +167,7 @@ def _workflow_out(workflow):
 
 @router.post("/workflows", status_code=201)
 def create_workflow(payload: WorkflowCreate, db: Session = Depends(get_db)):
+    require_permission("etl.configure", payload.organization_id)
     org = db.get(Organization, payload.organization_id)
     if not org:
         raise HTTPException(404, "Organization not found")
@@ -191,6 +193,7 @@ def create_workflow(payload: WorkflowCreate, db: Session = Depends(get_db)):
 
 @router.get("/workflows")
 def list_workflows(organization_id: UUID, db: Session = Depends(get_db)):
+    require_permission("etl.view", organization_id)
     workflows = db.scalars(select(ETLWorkflow).where(
         ETLWorkflow.organization_id == organization_id
     ).order_by(ETLWorkflow.name)).all()
@@ -202,6 +205,7 @@ def create_workflow_job(workflow_id: UUID, payload: WorkflowJobCreate, db: Sessi
     workflow = db.get(ETLWorkflow, workflow_id)
     if not workflow:
         raise HTTPException(404, "Workflow not found")
+    require_permission("etl.configure", workflow.organization_id)
     if not workflow.active:
         raise HTTPException(409, "Workflow is inactive")
     if payload.host_data_source_id:
@@ -238,8 +242,10 @@ def create_workflow_job(workflow_id: UUID, payload: WorkflowJobCreate, db: Sessi
 
 @router.get("/workflows/{workflow_id}/jobs")
 def list_workflow_jobs(workflow_id: UUID, db: Session = Depends(get_db)):
-    if not db.get(ETLWorkflow, workflow_id):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
         raise HTTPException(404, "Workflow not found")
+    require_permission("etl.view", workflow.organization_id)
     jobs = db.scalars(select(JobOrder).where(JobOrder.workflow_id == workflow_id).order_by(JobOrder.name)).all()
     return [{"id": str(job.id), "name": job.name,
              "expected_duration_seconds": job.expected_runtime_seconds} for job in jobs]
@@ -247,8 +253,10 @@ def list_workflow_jobs(workflow_id: UUID, db: Session = Depends(get_db)):
 
 @router.post("/workflows/{workflow_id}/dependencies", status_code=201)
 def create_workflow_dependency(workflow_id: UUID, payload: WorkflowDependencyCreate, db: Session = Depends(get_db)):
-    if not db.get(ETLWorkflow, workflow_id):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
         raise HTTPException(404, "Workflow not found")
+    require_permission("etl.configure", workflow.organization_id)
     if payload.predecessor_job_id == payload.successor_job_id:
         raise HTTPException(422, "A job cannot depend on itself")
     jobs = db.scalars(select(JobOrder).where(
@@ -292,8 +300,10 @@ def create_workflow_dependency(workflow_id: UUID, payload: WorkflowDependencyCre
 
 @router.get("/workflows/{workflow_id}/dependencies")
 def list_workflow_dependencies(workflow_id: UUID, db: Session = Depends(get_db)):
-    if not db.get(ETLWorkflow, workflow_id):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
         raise HTTPException(404, "Workflow not found")
+    require_permission("etl.view", workflow.organization_id)
     edges = db.scalars(select(ETLWorkflowDependency).where(
         ETLWorkflowDependency.workflow_id == workflow_id
     )).all()
