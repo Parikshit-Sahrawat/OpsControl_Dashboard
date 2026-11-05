@@ -5,9 +5,9 @@ from uuid import uuid4
 
 from pydantic import ValidationError
 
-from app.schemas.etl import WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowDependencyCreate
+from app.schemas.etl import WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowJobUpdate, WorkflowDependencyCreate
 from app.models.entities import ETLWorkflow, ETLWorkflowDependency, JobOrder
-from app.api.etl import create_workflow, list_workflows, get_workflow, update_workflow, create_workflow_job, list_workflow_jobs, create_workflow_dependency, list_workflow_dependencies
+from app.api.etl import create_workflow, list_workflows, get_workflow, update_workflow, get_workflow_monitoring, update_workflow_job, create_workflow_job, list_workflow_jobs, create_workflow_dependency, list_workflow_dependencies
 from fastapi import HTTPException
 
 
@@ -125,6 +125,52 @@ class ETLWorkflowFoundationTests(unittest.TestCase):
                 get_workflow(wid, db=db)
             self.assertEqual(result.exception.status_code, 403)
             guard.assert_called_once_with("etl.view", org)
+
+    def test_workflow_job_update_validation(self):
+        for changes in ({"name": ""}, {"expected_duration_seconds": 0}):
+            with self.subTest(changes=changes), self.assertRaises(ValidationError):
+                WorkflowJobUpdate(**changes)
+
+    def test_workflow_job_update_requires_tenant_permission(self):
+        org, wid, jid = uuid4(), uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                update_workflow_job(wid, jid, WorkflowJobUpdate(active=False), db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.configure", org)
+
+    def test_workflow_monitoring_requires_tenant_view(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                get_workflow_monitoring(wid, db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.view", org)
+
+    def test_job_activation_blocked_when_workflow_inactive(self):
+        org, wid, jid = uuid4(), uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+            active=False,
+        )
+        db.scalar.return_value = JobOrder(
+            id=jid, workflow_id=wid, organization_id=org,
+            name="extract", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission"):
+            with self.assertRaises(HTTPException) as result:
+                update_workflow_job(wid, jid, WorkflowJobUpdate(active=True), db=db)
+        self.assertEqual(result.exception.status_code, 409)
+        db.commit.assert_not_called()
 
     def test_dependency_contract_rejects_bad_uuid(self):
         with self.assertRaises(ValidationError):
