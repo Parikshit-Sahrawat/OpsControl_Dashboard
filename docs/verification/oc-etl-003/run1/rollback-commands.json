@@ -1,0 +1,28 @@
+[
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0038_k8s_cluster_associations"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "empty-downgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "database": "etl_scope",
+    "exit_code": 1,
+    "expected": 0,
+    "log": "empty-upgrade.log"
+  }
+]

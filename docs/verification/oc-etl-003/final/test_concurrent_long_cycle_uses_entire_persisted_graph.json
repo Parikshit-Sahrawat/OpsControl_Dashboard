@@ -1,0 +1,37 @@
+{
+  "blocked_postgresql_sessions": [
+    {
+      "pid": 132,
+      "wait_event": "transactionid"
+    },
+    {
+      "pid": 133,
+      "wait_event": "tuple"
+    }
+  ],
+  "http_results": [
+    {
+      "status": 409,
+      "detail": "Workflow dependency cycle"
+    },
+    {
+      "status": 201,
+      "detail": null
+    }
+  ],
+  "persisted_edges": [
+    [
+      "ea70c1e0-3c43-44ed-a719-8771683c4dad",
+      "c08e5222-0c52-43d6-adea-7c8c06fd709c"
+    ],
+    [
+      "5878d740-0dec-458f-bf6d-5fef348feba1",
+      "e2f5cf1e-85c6-439f-8f9d-f9c1de201ee8"
+    ],
+    [
+      "e2f5cf1e-85c6-439f-8f9d-f9c1de201ee8",
+      "ea70c1e0-3c43-44ed-a719-8771683c4dad"
+    ]
+  ],
+  "acyclic": true
+}

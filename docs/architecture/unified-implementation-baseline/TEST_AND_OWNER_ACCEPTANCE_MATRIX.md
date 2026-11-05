@@ -31,3 +31,8 @@ Each acceptance record requires immutable source SHA, schema revision, method/bu
 
 PR78 historical tests at fa3a9a24107f465dac6692b2a9ea69b910ff06ee: 552 backend, 38 frontend, controlled HTTP/browser and restoration results are retained in docs/verification/stage-2a-full-development-closure. They predate PR80 migration 0039 and do not certify it. No full backend, browser, PostgreSQL migration, provider, load or collector reliability suite was executed in this documentation-only baseline task. Existing nine owner cases remain linked there, not replaced by CI.
 
+
+
+## Follow-on disposition: OC-ETL-003 (2026-11-05)
+
+Source `f57153836615fb07d748ede6b49af6a11dba96fe` closes the bounded CF-02 populated-foundation rollback and CF-03 supported HTTP concurrent graph risks with controlled PostgreSQL evidence: [report](../../verification/oc-etl-003/REPORT.md), [rollback contract](../../verification/oc-etl-003/ROLLBACK_COMPATIBILITY.md), [concurrency acceptance](../../verification/oc-etl-003/CONCURRENCY.md). ETL-01 workflow/job foundation and dependency integrity, inherited §10 evidence preservation, and backlog B01/B02 now have 84 passing regression tests plus six migration/recovery groups. Per-workflow serialization and shared authorization-reader locking preserve exclusive revocation protection. Applied migrations are unchanged. Prior rows remain historical baseline observations. This does not complete the remaining workflow UI, policy evaluation or provider work, certify every historical downgrade, or recover missing numbered journey authority. Owner acceptance remains pending; all release gates remain unchanged.

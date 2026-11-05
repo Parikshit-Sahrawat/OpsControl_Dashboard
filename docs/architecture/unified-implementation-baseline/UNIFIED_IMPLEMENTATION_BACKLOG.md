@@ -25,3 +25,8 @@ ETL-01/04/16 → B01/B02; ETL-02/03/15 → B02/B04/B05; ETL-05/06/07/14 → B03/
 
 Historical IMP-001–062 stay SOURCE_NOT_RECOVERED and OC-IMP proposals are not silently approved. Newly merged RM-DEF observations require their own reproduction and acceptance; they are not additional numbered journey definitions.
 
+
+
+## Follow-on disposition: OC-ETL-003 (2026-11-05)
+
+Source `f57153836615fb07d748ede6b49af6a11dba96fe` closes the bounded CF-02 populated-foundation rollback and CF-03 supported HTTP concurrent graph risks with controlled PostgreSQL evidence: [report](../../verification/oc-etl-003/REPORT.md), [rollback contract](../../verification/oc-etl-003/ROLLBACK_COMPATIBILITY.md), [concurrency acceptance](../../verification/oc-etl-003/CONCURRENCY.md). ETL-01 workflow/job foundation and dependency integrity, inherited §10 evidence preservation, and backlog B01/B02 now have 84 passing regression tests plus six migration/recovery groups. Per-workflow serialization and shared authorization-reader locking preserve exclusive revocation protection. Applied migrations are unchanged. Prior rows remain historical baseline observations. This does not complete the remaining workflow UI, policy evaluation or provider work, certify every historical downgrade, or recover missing numbered journey authority. Owner acceptance remains pending; all release gates remain unchanged.

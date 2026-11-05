@@ -54,3 +54,8 @@ The following are obligations in addition to ETL-01–16, not newly approved req
 
 REC-01–12 from V1.6 are covered by these rows: wizard, shared engine, adapter contracts, conflict projection, historical outbox, incident reuse, RBAC, customer selection, legacy membership preservation, retention/holds, genuine builds and non-causal correlation. No inherited contract is waived.
 
+
+
+## Follow-on disposition: OC-ETL-003 (2026-11-05)
+
+Source `f57153836615fb07d748ede6b49af6a11dba96fe` closes the bounded CF-02 populated-foundation rollback and CF-03 supported HTTP concurrent graph risks with controlled PostgreSQL evidence: [report](../../verification/oc-etl-003/REPORT.md), [rollback contract](../../verification/oc-etl-003/ROLLBACK_COMPATIBILITY.md), [concurrency acceptance](../../verification/oc-etl-003/CONCURRENCY.md). ETL-01 workflow/job foundation and dependency integrity, inherited §10 evidence preservation, and backlog B01/B02 now have 84 passing regression tests plus six migration/recovery groups. Per-workflow serialization and shared authorization-reader locking preserve exclusive revocation protection. Applied migrations are unchanged. Prior rows remain historical baseline observations. This does not complete the remaining workflow UI, policy evaluation or provider work, certify every historical downgrade, or recover missing numbered journey authority. Owner acceptance remains pending; all release gates remain unchanged.
