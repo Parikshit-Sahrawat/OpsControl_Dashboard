@@ -6,7 +6,7 @@ from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db.session import get_db
 from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution, CorrelationRecord, Organization, DataSource, Collector, AlertIncidentEvent
-from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate, WorkflowCreate, WorkflowJobCreate, WorkflowDependencyCreate
+from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate, WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowDependencyCreate
 from sqlalchemy.exc import IntegrityError
 from app.schemas.monitoring import CorrelationRecordOut
 from app.services.correlation import correlate_execution
@@ -161,7 +161,7 @@ def _workflow_out(workflow):
         "expected_window_start": workflow.expected_window_start,
         "expected_window_end": workflow.expected_window_end,
         "expected_duration_seconds": workflow.expected_duration_seconds,
-        "sla_seconds": workflow.sla_seconds,
+        "sla_seconds": workflow.sla_seconds, "active": workflow.active,
     }
 
 
@@ -198,6 +198,53 @@ def list_workflows(organization_id: UUID, db: Session = Depends(get_db)):
         ETLWorkflow.organization_id == organization_id
     ).order_by(ETLWorkflow.name)).all()
     return [_workflow_out(workflow) for workflow in workflows]
+
+
+
+@router.get("/workflows/{workflow_id}")
+def get_workflow(workflow_id: UUID, db: Session = Depends(get_db)):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    require_permission("etl.view", workflow.organization_id)
+    return _workflow_out(workflow)
+
+
+@router.patch("/workflows/{workflow_id}")
+def update_workflow(workflow_id: UUID, payload: WorkflowUpdate, db: Session = Depends(get_db)):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    require_permission("etl.configure", workflow.organization_id)
+    changes = payload.model_dump(exclude_unset=True)
+    if not changes:
+        return _workflow_out(workflow)
+    if any(value is None for key, value in changes.items() if key not in (
+        "expected_window_start", "expected_window_end",
+        "expected_duration_seconds", "sla_seconds",
+    )):
+        raise HTTPException(422, "Required workflow fields cannot be null")
+    if "environment" in changes and changes["environment"] != workflow.environment:
+        assigned = db.scalar(select(JobOrder.id).where(JobOrder.workflow_id == workflow_id).limit(1))
+        if assigned:
+            raise HTTPException(409, "Cannot change environment while workflow has jobs")
+    schedule = dict(workflow.schedule or {})
+    for field in ("timezone", "weekdays"):
+        if field in changes:
+            schedule[field] = changes.pop(field)
+    start = changes.get("expected_window_start", workflow.expected_window_start)
+    end = changes.get("expected_window_end", workflow.expected_window_end)
+    if bool(start) != bool(end):
+        raise HTTPException(422, "Both window endpoints required")
+    for field, value in changes.items():
+        setattr(workflow, field, value)
+    workflow.schedule = schedule
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Workflow configuration conflicts with an existing workflow")
+    return _workflow_out(workflow)
 
 
 @router.post("/workflows/{workflow_id}/jobs", status_code=201)
