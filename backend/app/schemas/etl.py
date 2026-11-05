@@ -102,8 +102,8 @@ class WorkflowCreate(BaseModel):
     environment: str = Field(default="PROD", min_length=1, max_length=50)
     timezone: str = "UTC"
     weekdays: list[int] = Field(default_factory=lambda: list(range(7)), min_length=1, max_length=7)
-    expected_window_start: str | None = Field(default=None, pattern=r"^\\d{2}:\\d{2}$")
-    expected_window_end: str | None = Field(default=None, pattern=r"^\\d{2}:\\d{2}$")
+    expected_window_start: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
+    expected_window_end: str | None = Field(default=None, pattern=r"^\d{2}:\d{2}$")
     expected_duration_seconds: int | None = Field(default=None, ge=1, le=604800)
     sla_seconds: int | None = Field(default=None, ge=1, le=604800)
 
