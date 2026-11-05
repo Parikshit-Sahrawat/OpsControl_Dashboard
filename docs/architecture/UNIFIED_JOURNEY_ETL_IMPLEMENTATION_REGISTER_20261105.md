@@ -148,3 +148,9 @@ For the **nine individual owner acceptance cases**, use [OWNER_ACCEPTANCE_CASES.
 3. Validate migration 0039 and scoped ETL endpoints with disposable PostgreSQL; current focused tests were committed but not executed in this reconciliation.
 4. Preserve excluded Journey 20 and skipped Journey 32, plus Kubernetes scope removal.
 5. No full acceptance or release qualification is inferred from this document.
+
+## OC-ARCH-001 implementation baseline — 2026-11-05
+
+The [numbered journey matrix](unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md), [complete inherited ETL trace](unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md), [dependency backlog](unified-implementation-baseline/UNIFIED_IMPLEMENTATION_BACKLOG.md), [conflicts](unified-implementation-baseline/ARCHITECTURE_CONFLICT_REGISTER.md), [tests/acceptance](unified-implementation-baseline/TEST_AND_OWNER_ACCEPTANCE_MATRIX.md) and [execution plan](unified-implementation-baseline/IMPLEMENTATION_EXECUTION_PLAN.md) refine this register at source e69528ad2b826398474382f34126feeca740f6a6 without inventing 30 missing numbered definitions. Journey 20 remains excluded and Journey 32 skipped.
+
+Existing foundation tests actually executed: 16 backend PASS and two frontend source checks PASS. A separate real before_flush-handler probe reproduced 403 rejection for both new ETL models absent from the shared scope registry (CF-01); this is an integration defect, not missing architecture approval. Migration rollback, DAG concurrency, retired notification channel authority and genuine-provider evidence remain separate gaps. No product changes in the OC-ARCH-001 documentation checkpoint; OC-ETL-002 is the explicitly authorized follow-on scope repair.
