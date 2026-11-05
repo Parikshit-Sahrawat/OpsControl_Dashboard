@@ -6,7 +6,7 @@ from sqlalchemy import select, or_
 from sqlalchemy.orm import Session, joinedload, selectinload
 from app.db.session import get_db
 from app.models import JobOrderHistory, JobOrder, VM, ExecutionStatus, ExecutionType, JobStepExecution, CorrelationRecord, Organization, DataSource, Collector, AlertIncidentEvent
-from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate, WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowDependencyCreate
+from app.schemas.etl import ExecutionCreate, ExecutionListItem, ExecutionOut, StepOut, JobOrderCreate, WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowJobUpdate, WorkflowDependencyCreate
 from sqlalchemy.exc import IntegrityError
 from app.schemas.monitoring import CorrelationRecordOut
 from app.services.correlation import correlate_execution
@@ -295,7 +295,92 @@ def list_workflow_jobs(workflow_id: UUID, db: Session = Depends(get_db)):
     require_permission("etl.view", workflow.organization_id)
     jobs = db.scalars(select(JobOrder).where(JobOrder.workflow_id == workflow_id).order_by(JobOrder.name)).all()
     return [{"id": str(job.id), "name": job.name,
-             "expected_duration_seconds": job.expected_runtime_seconds} for job in jobs]
+             "expected_duration_seconds": job.expected_runtime_seconds,
+             "active": job.active, "monitoring_enabled": job.monitoring_enabled} for job in jobs]
+
+
+
+@router.patch("/workflows/{workflow_id}/jobs/{job_id}")
+def update_workflow_job(workflow_id: UUID, job_id: UUID, payload: WorkflowJobUpdate,
+                        db: Session = Depends(get_db)):
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    require_permission("etl.configure", workflow.organization_id)
+    job = db.scalar(select(JobOrder).where(
+        JobOrder.id == job_id,
+        JobOrder.workflow_id == workflow_id,
+        JobOrder.organization_id == workflow.organization_id,
+    ))
+    if not job:
+        raise HTTPException(404, "Workflow job not found")
+    changes = payload.model_dump(exclude_unset=True)
+    if any(value is None for value in changes.values()):
+        raise HTTPException(422, "Job configuration fields cannot be null")
+    if changes.get("monitoring_enabled") is True and not workflow.active:
+        raise HTTPException(409, "Cannot enable monitoring on an inactive workflow")
+    if changes.get("active") is True and not workflow.active:
+        raise HTTPException(409, "Cannot activate a job in an inactive workflow")
+    if "expected_duration_seconds" in changes:
+        job.expected_runtime_seconds = changes.pop("expected_duration_seconds")
+    for field, value in changes.items():
+        setattr(job, field, value)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Workflow job configuration conflicts with an existing job")
+    return {
+        "id": str(job.id), "workflow_id": str(workflow.id), "name": job.name,
+        "expected_duration_seconds": job.expected_runtime_seconds,
+        "active": job.active, "monitoring_enabled": job.monitoring_enabled,
+    }
+
+
+@router.get("/workflows/{workflow_id}/monitoring")
+def get_workflow_monitoring(workflow_id: UUID, db: Session = Depends(get_db)):
+    """Read-only projection of persisted native observations; never schedules jobs."""
+    workflow = db.get(ETLWorkflow, workflow_id)
+    if not workflow:
+        raise HTTPException(404, "Workflow not found")
+    require_permission("etl.view", workflow.organization_id)
+    jobs = db.scalars(select(JobOrder).where(
+        JobOrder.workflow_id == workflow_id,
+        JobOrder.organization_id == workflow.organization_id,
+    ).order_by(JobOrder.name)).all()
+    results = []
+    for job in jobs:
+        history = db.scalar(select(JobOrderHistory).where(
+            JobOrderHistory.job_order_id == job.id
+        ).order_by(
+            JobOrderHistory.detected_at.desc().nullslast(),
+            JobOrderHistory.created_at.desc(),
+            JobOrderHistory.id.desc(),
+        ).limit(1))
+        results.append({
+            "id": str(job.id), "name": job.name, "active": job.active,
+            "monitoring_enabled": job.monitoring_enabled,
+            "expected_duration_seconds": job.expected_runtime_seconds,
+            "latest_execution": None if history is None else {
+                "id": str(history.id),
+                "status": history.status.value,
+                "execution_type": history.execution_type.value,
+                "provider_execution_id": history.provider_execution_id,
+                "started_at": history.started_at.isoformat() if history.started_at else None,
+                "ended_at": history.ended_at.isoformat() if history.ended_at else None,
+                "detected_at": history.detected_at.isoformat() if history.detected_at else None,
+                "sla_status": history.sla_status,
+                "monitoring_conditions": history.monitoring_conditions,
+            },
+        })
+    return {
+        "workflow": _workflow_out(workflow),
+        "jobs": results,
+        "observed_job_count": sum(job["latest_execution"] is not None for job in results),
+        "total_job_count": len(results),
+        "source": "persisted_observations",
+        "scheduler_control": False,
+    }
 
 
 @router.post("/workflows/{workflow_id}/dependencies", status_code=201)
