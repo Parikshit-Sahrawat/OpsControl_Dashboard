@@ -38,6 +38,14 @@ def run(args, cwd=root):
     )
     if result.returncode:
         (private / "failure.log").write_text(result.stdout + "\n" + result.stderr)
+        # Print only the failing probe module, not arguments or connection URLs.
+        safe_probe = next(
+            (str(args[i + 1]) for i, arg in enumerate(args[:-1])
+             if str(arg) == "-m" and str(args[i + 1]).startswith("scripts.")),
+            None,
+        )
+        if safe_probe:
+            print("V16_FAILED_PROBE " + safe_probe, flush=True)
         for line in (result.stdout + "\n" + result.stderr).splitlines():
             if line.startswith(
                 (
