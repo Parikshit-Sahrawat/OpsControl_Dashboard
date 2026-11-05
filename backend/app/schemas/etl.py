@@ -161,6 +161,15 @@ class WorkflowJobCreate(BaseModel):
     expected_duration_seconds: int = Field(ge=1, le=604800)
 
 
+
+class WorkflowJobUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=200)
+    expected_duration_seconds: int | None = Field(default=None, ge=1, le=604800)
+    active: bool | None = None
+    monitoring_enabled: bool | None = None
+
+
+
 class WorkflowDependencyCreate(BaseModel):
     predecessor_job_id: UUID
     successor_job_id: UUID
