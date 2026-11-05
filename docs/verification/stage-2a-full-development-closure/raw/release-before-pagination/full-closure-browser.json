@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "checks": [
+    "SET-01 real authenticated preference save and full reload persistence",
+    "SET-01 self-only persistence; foreign-ID/anonymous rejection; other account unchanged",
+    "SET-01 browser appearance reload persistence",
+    "HELP-01 guides/FAQ; 390/768/1366 viewport containment; Escape and focus restoration",
+    "SET-01 explicitly injected failed read cannot save defaults; real API retry restores persisted value",
+    "UI-020 real Alerts accessible status/domain/search controls work without redesign"
+  ],
+  "groups": 6,
+  "page_errors": [],
+  "limitations": [
+    "Preference read failure is explicitly injected for UI recovery only",
+    "Appearance is browser-local, not cross-device profile synchronization",
+    "No provider certification or new account/password policy"
+  ]
+}
