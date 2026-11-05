@@ -18,6 +18,8 @@ export default function VMHealth({
     scope = organizationIds.join(",") + ":" + environment.join(",");
   useEffect(() => setOffset(0), [scope]);
   const generation = useRef(0);
+  const requestController = useRef(null);
+  const requestInFlight = useRef(false);
   const initialOpened = useRef(false);
   useEffect(() => {
     if (data && initialSourceId && !initialOpened.current) {
@@ -29,15 +31,20 @@ export default function VMHealth({
     [provider, setProvider] = useState("ALL"),
     [health, setHealth] = useState("ALL");
   const refresh = useCallback(async () => {
+    if (requestInFlight.current || document.hidden) return;
+    requestInFlight.current = true;
+    const controller = new AbortController();
+    requestController.current = controller;
     const requestGeneration = generation.current;
     try {
       const query = new URLSearchParams();
       organizationIds.forEach((id) => query.append("organization_id", id));
       environment.forEach((value) => query.append("environments", value));
       query.set("offset", offset);
+      query.set("limit", "50");
       const response = await fetch(
         `${BASE}/api/v1/infrastructure/resources?${query}`,
-        { headers: authHeaders() },
+        { headers: authHeaders(), signal: controller.signal },
       );
       if (!response.ok)
         throw new Error("Infrastructure health could not be loaded.");
@@ -55,17 +62,23 @@ export default function VMHealth({
       setError(e.message);
       setData(null);
       setSelected(null);
+    } finally {
+      requestInFlight.current = false;
+      if (requestController.current === controller) requestController.current = null;
     }
   }, [organizationIds, environment, offset]);
   useEffect(() => {
     generation.current++;
+    requestController.current?.abort();
+    requestInFlight.current = false;
     setSelected(null);
     setHistory([]);
     setData(null);
     refresh();
-    const timer = setInterval(refresh, 5000);
+    const timer = setInterval(refresh, 15000);
     return () => {
       generation.current++;
+      requestController.current?.abort();
       clearInterval(timer);
     };
   }, [refresh]);

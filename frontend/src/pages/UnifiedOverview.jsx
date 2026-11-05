@@ -17,7 +17,9 @@ export function useNativeFeed(path) {
     let live = true,
       inFlight = false;
     const controller = new AbortController();
+    let timer;
     const request = async () => {
+      if (!live || document.hidden) { if (live) timer = setTimeout(request, 15000); return; }
       if (inFlight) return;
       inFlight = true;
       try {
@@ -32,15 +34,15 @@ export function useNativeFeed(path) {
         if (live && e.name !== "AbortError") setError(e.message);
       } finally {
         inFlight = false;
+        if (live) timer = setTimeout(request, 15000);
       }
     };
     setData(null);
     request();
-    const timer = setInterval(request, 5000);
     return () => {
       live = false;
       controller.abort();
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, [path, tick]);
   return { data, error, refresh: () => setTick((v) => v + 1) };

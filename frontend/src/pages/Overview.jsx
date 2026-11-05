@@ -22,20 +22,44 @@ export default function Overview({ jobs, onSelect, onNavigate, onOpenAlert, orga
   const alerts=useOperationalFeed(hasPermission(user,"alerts.view")?"/alerts?"+scopeQuery(organizationIds):null);
   const activeAlerts=alerts.data?.summary.OPEN??null;
   const [infrastructure,setInfrastructure]=useState(null);
-  useEffect(()=>{
-    let active=true;
-    const refresh=async()=>{
-      try{
-        const params=new URLSearchParams();organizationIds.forEach(id=>params.append('organization_id',id));
-        const response=await fetch((import.meta.env.VITE_API_BASE_URL||'http://localhost:8000')+'/api/v1/infrastructure/resources?'+params,{headers:authHeaders()});
-        if(!response.ok)throw new Error('Infrastructure unavailable');
-        const value=await response.json();if(active)setInfrastructure(value);
-      }catch{if(active)setInfrastructure(null);}
+  useEffect(() => {
+    if (!hasPermission(user, "resources.view")) return;
+    let active = true;
+    let inFlight = false;
+    let controller = null;
+    let timer = null;
+    const refresh = async () => {
+      if (!active || inFlight || document.hidden) return;
+      inFlight = true;
+      controller = new AbortController();
+      try {
+        const params = new URLSearchParams();
+        organizationIds.forEach((id) => params.append("organization_id", id));
+        // Overview needs counts, not an unbounded infrastructure inventory.
+        params.set("limit", "1");
+        const response = await fetch(
+          (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000") +
+            "/api/v1/infrastructure/resources?" + params,
+          { headers: authHeaders(), signal: controller.signal },
+        );
+        if (!response.ok) throw new Error("Infrastructure unavailable");
+        const value = await response.json();
+        if (active) setInfrastructure(value);
+      } catch (error) {
+        if (active && error.name !== "AbortError") setInfrastructure(null);
+      } finally {
+        inFlight = false;
+        if (active) timer = setTimeout(refresh, 15000);
+      }
     };
-    if(!hasPermission(user,"resources.view"))return;
-    setInfrastructure(null);refresh();const timer=setInterval(refresh,5000);
-    return()=>{active=false;clearInterval(timer);};
-  },[organizationIds,user?.authorization_revision]);
+    setInfrastructure(null);
+    refresh();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      controller?.abort();
+    };
+  }, [organizationIds.join(","), user?.authorization_revision]);
   const failed = jobs.filter(job => job.status === "FAILED").length;
   const running = jobs.filter(job => job.status === "RUNNING").length;
   const atRisk = jobs.filter(job => job.status === "LONG_RUNNING").length;

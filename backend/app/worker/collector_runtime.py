@@ -840,7 +840,9 @@ def _due_collector_ids(limit, excluded=()):
         for collector in retired:
             collector.enabled = False
             collector.status = "STOPPED"
-            collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
+            collector.last_error = (
+                "Kubernetes monitoring retired; historical evidence retained"
+            )
         if retired:
             db.commit()
         return list(
@@ -903,6 +905,18 @@ async def _native_engine_loop(poll_seconds):
                 "Native engine evaluation unavailable; durable state will retry"
             )
         await asyncio.sleep(poll_seconds)
+
+
+def _write_worker_heartbeat():
+    import os
+    from pathlib import Path
+
+    heartbeat = os.environ.get("OPSCONTROL_WORKER_HEARTBEAT")
+    if heartbeat:
+        # Check the worker's own DB connection even when all collector slots are busy.
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        Path(heartbeat).write_text(str(time.time()))
 
 
 async def scheduler_loop(poll_seconds=5):
@@ -1000,6 +1014,7 @@ async def scheduler_loop(poll_seconds=5):
                             pending[cid] = asyncio.create_task(
                                 execute_collector(cid, scheduled=True)
                             )
+                await asyncio.to_thread(_write_worker_heartbeat)
             except Exception:
                 logger.error("Collector scheduling unavailable; next poll will retry")
             await asyncio.sleep(poll_seconds)

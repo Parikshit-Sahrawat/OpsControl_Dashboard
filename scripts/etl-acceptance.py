@@ -7,13 +7,22 @@ OUT=Path(os.getenv('ETL_EVIDENCE_DIR',str(ROOT/'docs/screenshots/etl')))
 private=Path(tempfile.mkdtemp(prefix='opscontrol-etl-'));private.chmod(0o700)
 container='opscontrol-etl-'+secrets.token_hex(4);fixture=container+'-carte';processes=[];passed=False
 host=socket.gethostbyname(socket.gethostname())
+current_phase='initialization'
 env=os.environ.copy()
 for key in ('AWS_PROFILE','AWS_DEFAULT_PROFILE','AWS_ACCESS_KEY_ID','AWS_SECRET_ACCESS_KEY','AWS_SESSION_TOKEN'):env.pop(key,None)
 env.update(DATABASE_URL='postgresql+psycopg://opscontrol:etl-local-only@127.0.0.1:11432/opscontrol',ENVIRONMENT='demo',SEED_DEMO='false',OPSCONTROL_ETL_ACCEPTANCE='1',ETL_PRIVATE_DIR=str(private),ETL_FIXTURE_IP=host,
     OPSCONTROL_LOCAL_ALLOWED_HOSTS=host,OPSCONTROL_LOCAL_ALLOWED_CIDRS=host+'/32',SSL_CERT_FILE=str(private/'tls.crt'),
     OPSCONTROL_CREDENTIAL_ETL_FIXTURE_USERNAME='fixture-reader',OPSCONTROL_DEMO_PASSWORD_FILE=str(private/'admin-password'),CORS_ORIGINS='http://127.0.0.1:15174',AWS_EC2_METADATA_DISABLED='true',VITE_API_BASE_URL='http://127.0.0.1:18800')
 
-def run(args,cwd=ROOT):subprocess.run(args,cwd=cwd,env=env,check=True,timeout=180)
+def run(args,cwd=ROOT):
+    # CI receives only a bounded command identifier; sensitive subprocess output stays private.
+    try:
+        subprocess.run(args,cwd=cwd,env=env,check=True,timeout=180)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        command = Path(args[0]).name
+        target = next((Path(str(arg)).name for arg in args[1:] if str(arg).endswith(('.mjs', '.py'))), '')
+        print(f'ETL_ACCEPTANCE_FAILURE phase={current_phase} command={command} target={target} category={type(exc).__name__}',file=sys.stderr,flush=True)
+        raise
 def start(args,cwd=ROOT,label='service'):
     log=open(private/(label+'.log'),'w');process=subprocess.Popen(args,cwd=cwd,env=env,stdout=log,stderr=subprocess.STDOUT);processes.append(process);return process
 def wait_url(url):
@@ -72,12 +81,14 @@ try:
     run([PYTHON,'-m','scripts.auth_tenant_probe'],ROOT/'backend')
     run([PYTHON,'-c',"from scripts import security_release_probe as p;p.URL='http://127.0.0.1:18800';p.main()"],ROOT/'backend')
     run([PYTHON,'-m','scripts.bootstrap_public_demo'],ROOT/'backend')
-    probe('setup');operations('setup');browser('configured');noc_browser('configured')
+    current_phase='setup';probe('setup');operations('setup');browser('configured');noc_browser('configured')
     for phase in ('no-run','running','long-running','sla-breach','failed','poll-failed','recovered'):
+        current_phase=phase
         if phase=='failed':linux.terminate();linux.wait(timeout=5)
         if phase=='recovered':linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
         probe('collect-'+phase);probe(phase);browser(phase)
         if phase in ('failed','recovered'):operations(phase);noc_browser(phase)
+    current_phase='isolation'
     probe('isolation')
     operations('isolation')
     OUT.mkdir(parents=True,exist_ok=True);shutil.copyfile(private/'report.json',OUT/'report.json')

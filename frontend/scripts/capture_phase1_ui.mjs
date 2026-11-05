@@ -106,14 +106,6 @@ try {
       ["Compute Instances", "Data Pipelines", "API Endpoints"],
     ],
     [
-      "Event Parameters",
-      [
-        "Compute Health Parameters",
-        "Data Pipeline Parameters",
-        "API Endpoint Parameters",
-      ],
-    ],
-    [
       "Alert Rules",
       [
         "Compute Instances Alert Setup",
@@ -123,7 +115,15 @@ try {
     ],
     ["Notification Delivery", []],
   ]) {
-    await page.getByLabel("Resource Management component").selectOption({ label: section === "Data Resources" ? "Data Sources / Resources" : section });
+    // RM-DEF-034 removes the standalone Event Parameters entry; retain
+    // all remaining Resource Management visual/smoke coverage.
+    const selector = page.getByLabel("Resource Management component");
+    if (section === "Data Resources") {
+      if ((await selector.locator('option[value="parameters"]').count()) !== 0) {
+        throw new Error("Standalone Event Parameters option unexpectedly present");
+      }
+    }
+    await selector.selectOption({ label: section === "Data Resources" ? "Data Sources / Resources" : section });
     if (!domains.length)
       await capture(
         "Resource Management / " + section,
