@@ -1,0 +1,71 @@
+{
+  "source_sha": "fa3a9a24107f465dac6692b2a9ea69b910ff06ee",
+  "executions": [
+    {
+      "name": "PostgreSQL full regression and preservation",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/regressions.log"
+    },
+    {
+      "name": "Frontend unit tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/frontend.log"
+    },
+    {
+      "name": "Frontend lint",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/lint.log"
+    },
+    {
+      "name": "Initial relocated dependency build",
+      "status": "FAIL",
+      "exit_code": 1,
+      "log": "raw/resumed/build.log"
+    },
+    {
+      "name": "Production build after package layout correction",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/build-retry.log"
+    },
+    {
+      "name": "Pinned actionlint six configured workflows",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/workflows.log"
+    },
+    {
+      "name": "Stage B unit tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/stageb.log"
+    },
+    {
+      "name": "Resumed release attempt",
+      "status": "FAIL",
+      "exit_code": 1,
+      "log": "raw/resumed/release.log"
+    },
+    {
+      "name": "Current-baseline release/browser retry",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/release-retry.log"
+    },
+    {
+      "name": "Resumed V1.6 attempt",
+      "status": "FAIL",
+      "exit_code": 1,
+      "log": "raw/resumed/v16.log"
+    },
+    {
+      "name": "Current-baseline V1.6 retry",
+      "status": "PASS",
+      "exit_code": 0,
+      "log": "raw/resumed/v16-retry.log"
+    }
+  ]
+}

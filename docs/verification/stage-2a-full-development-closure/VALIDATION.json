@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "requirements": 134,
+  "counts": {
+    "VERIFIED_PENDING_OWNER": 12,
+    "PARTIALLY_IMPLEMENTED": 21,
+    "IMPLEMENTED_UNVERIFIED": 13,
+    "NOT_IMPLEMENTED": 1,
+    "BLOCKED_RELIABILITY": 1,
+    "BLOCKED_ARCHITECTURE": 19,
+    "REMOVED_FROM_SCOPE": 2,
+    "BLOCKED_SECURITY": 1,
+    "SUPERSEDED": 2,
+    "SOURCE_NOT_RECOVERED": 62
+  },
+  "checks": [
+    "JSON parsing",
+    "canonical ID uniqueness",
+    "classification allowlist",
+    "no unsupported ACCEPTED promotion",
+    "source/test file existence",
+    "local Markdown links",
+    "SHA-256 inventory generation"
+  ],
+  "limitations": [
+    "Remote document URLs not fetched by this validator",
+    "Human authority/acceptance is not established by syntax checks",
+    "Raw .json.raw.txt preserves invalid historical probe serialization"
+  ],
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  }
+}

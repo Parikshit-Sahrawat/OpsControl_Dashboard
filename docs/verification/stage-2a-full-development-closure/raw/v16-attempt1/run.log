@@ -1,0 +1,18 @@
+Sprint 08 existing authorization/history/holds preservation PASS
+{"status": "PASS", "scenario_status": {"REC-01": "PASS", "REC-02": "PASS", "REC-03": "PASS", "REC-04": "PASS", "REC-05": "PASS", "REC-06": "PASS"}, "source_bytes": 21903027, "restored_bytes": 20477619, "backup_bytes": 1068068, "backup_sha256": "ba59f6f2a062013e2bcb962186054e170b2affa51ccfe9764c81d1b63d72fa84", "backup_seconds": 0.266, "restore_seconds": 0.632, "migration_head": "0038_k8s_cluster_associations", "restored_alembic_drift": false, "restored_populated_downgrade_refused": true, "table_counts": {"organizations": 154, "users": 243, "roles": 19, "customer_access_grants": 14, "data_sources": 103, "collectors": 98, "collector_methods": 1, "pipeline_sources": 150, "pipeline_evidence": 289, "pipeline_holds": 19, "job_order_histories": 101, "operational_incidents": 30, "incident_activities": 67, "security_audit_events": 705}, "critical_projection_equal": true, "corrupt_artifact_rejected": true, "production_rpo_rto_certified": false}
+V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 9 groups
+Pentaho Sprint 03 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 04 actual HTTP acceptance PASS: 5 groups
+Pentaho Sprint 05 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 06 actual HTTP acceptance PASS: 5 groups
+Sprint 08 real authenticated HTTP authorization PASS: 14 groups
+Sprint 09 authenticated archive, compatibility and resilience PASS: 6 groups
+Sprint 09 measured PostgreSQL ownership/duplicate/restart resilience PASS: 9 scenarios
+Sprint 07 controlled fixtures ready; no vendor runtime accessed
+V1.6 actual browser eight-step/draft/activation/mobile acceptance PASS
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/scripts/v16-acceptance.py", line 431, in <module>
+    run(
+  File "/workspace/OpsControl_Dashboard/scripts/v16-acceptance.py", line 55, in run
+    raise RuntimeError(
+RuntimeError: Owned V1.6 check failed; private diagnostics: /tmp/opscontrol-v16-afjg1aiy

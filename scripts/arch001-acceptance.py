@@ -61,6 +61,8 @@ try:
             "-d",
             "--name",
             name,
+            "--tmpfs",
+            "/var/lib/postgresql/data",
             "-p",
             "127.0.0.1::5432",
             "-e",

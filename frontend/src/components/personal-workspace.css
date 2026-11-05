@@ -1,0 +1,16 @@
+.personal-backdrop { z-index: 1000; padding: 1rem; }
+.personal-workspace { width: min(48rem, 100%); max-height: calc(100dvh - 2rem); overflow: auto; overscroll-behavior: contain; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--border); border-radius: 1rem; background: var(--surface, #182234); color: var(--text); overflow-wrap: anywhere; }
+.personal-heading { display: flex; gap: 1rem; align-items: start; justify-content: space-between; }
+.personal-workspace dd { margin-inline-start: 0; margin-bottom: 1rem; }
+.personal-workspace dt { font-weight: bold; }
+.personal-workspace details { padding-block: .75rem; }
+.personal-workspace summary { cursor: pointer; font-weight: bold; }
+.personal-workspace h3 { margin-top: 1.5rem; }
+.personal-workspace li { margin-block: .5rem; }
+@media (max-width: 480px) { .personal-heading { flex-wrap: wrap; } }
+
+.personal-workspace-actions { display: flex; gap: 8px; flex-shrink: 0; }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .personal-workspace-actions { flex-direction: column; gap: 2px; }
+  .personal-workspace-actions .filter-button { padding: 4px 8px; }
+}

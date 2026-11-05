@@ -66,6 +66,8 @@ try:
             "--detach",
             "--name",
             name,
+            "--tmpfs",
+            "/var/lib/postgresql/data",
             "--publish",
             "127.0.0.1::5432",
             "--env",

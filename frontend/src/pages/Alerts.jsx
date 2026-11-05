@@ -87,11 +87,11 @@ export default function Alerts({
       {!correlations && (
         <>
           <div className="resource-toolbar">
-            <label>Search alerts<input
+            <label>Search alerts<input aria-label="Search alerts"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             /></label>
-            <label>Alert status<select
+            <label>Alert status<select aria-label="Alert status"
               value={filter}
               onChange={(e) => {
                 setFilter(e.target.value);
@@ -102,7 +102,7 @@ export default function Alerts({
               <option>OPEN</option>
               <option>RESOLVED</option>
             </select></label>
-            <label>Monitoring domain<select
+            <label>Monitoring domain<select aria-label="Monitoring domain"
               value={domain}
               onChange={(e) => {
                 setDomain(e.target.value);
