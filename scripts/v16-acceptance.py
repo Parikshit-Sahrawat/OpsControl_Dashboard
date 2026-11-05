@@ -36,6 +36,14 @@ def run(args, cwd=root):
         text=True,
         timeout=180,
     )
+    if "unittest" in [str(arg) for arg in args]:
+        # Preserve executed counts and skips from the actual owned-DB suite.
+        # Never print command arguments, connection URLs or fixture credentials.
+        test_log = (result.stdout + "\n" + result.stderr).replace(password, "[REDACTED]")
+        (out / "unittest.log").write_text(test_log)
+        for line in result.stderr.splitlines():
+            if line.startswith(("Ran ", "OK", "FAILED")):
+                print(line, flush=True)
     if result.returncode:
         (private / "failure.log").write_text(result.stdout + "\n" + result.stderr)
         # Print only the failing probe module, not arguments or connection URLs.
