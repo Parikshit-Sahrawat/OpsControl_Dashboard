@@ -21,3 +21,7 @@ Baseline: PR #80 source `e69528ad2b826398474382f34126feeca740f6a6`; main/merge-b
 
 Current architecture task changes documentation/evidence only. Source-inspected risks are not reported as reproduced runtime defects. CF-01 is a real in-memory hook reproduction, not an HTTP/DB test. Existing successful 16 mock/schema tests remain valid within their stated boundary.
 
+
+## Follow-on disposition: OC-ETL-002
+
+The above rows preserve baseline e69528a observations. CF-01 is repaired and verified for scoped request persistence at a590f426ff6ed679968688ea9486c70456cf6cc2: [PostgreSQL/HTTP evidence](../../verification/oc-etl-002/REPORT.md). B01's scope integration portion passed; CF-03 concurrent DAG safety and CF-02 populated rollback remain open. No broad ETL completion or release clearance follows.

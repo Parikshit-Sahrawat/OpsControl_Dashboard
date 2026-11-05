@@ -1,0 +1,1492 @@
+
+test_authenticated_http_workflow_job_dependency_updates_and_negatives (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ERROR
+test_authorized_workflow_and_dependency_commit_with_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authorized_workflow_and_dependency_commit_with_audit) ... ERROR
+test_cross_customer_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_dependency_rejected) ... ERROR
+test_cross_customer_job_workflow_reference_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_job_workflow_reference_rejected) ... ERROR
+test_dependency_endpoints_are_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_endpoints_are_immutable) ... ERROR
+test_dependency_self_edge_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_self_edge_rejected) ... ERROR
+test_existing_job_parent_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_existing_job_parent_is_immutable) ... ERROR
+test_failed_reference_preserves_existing_resources_and_no_success_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_failed_reference_preserves_existing_resources_and_no_success_audit) ... ERROR
+test_invalid_organization_cannot_persist (tests.test_etl_workflow_scope.WorkflowScopeTests.test_invalid_organization_cannot_persist) ... ERROR
+test_job_environment_must_match_parent (tests.test_etl_workflow_scope.WorkflowScopeTests.test_job_environment_must_match_parent) ... ERROR
+test_missing_dependency_parent_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_missing_dependency_parent_rejected) ... ERROR
+test_read_scope_and_empty_selection (tests.test_etl_workflow_scope.WorkflowScopeTests.test_read_scope_and_empty_selection) ... ERROR
+test_resource_restricted_unknown_workflow_fails_closed (tests.test_etl_workflow_scope.WorkflowScopeTests.test_resource_restricted_unknown_workflow_fails_closed) ... ERROR
+test_same_customer_wrong_workflow_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_same_customer_wrong_workflow_dependency_rejected) ... ERROR
+test_selected_scope_limits_even_admin (tests.test_etl_workflow_scope.WorkflowScopeTests.test_selected_scope_limits_even_admin) ... ERROR
+test_viewer_cannot_write (tests.test_etl_workflow_scope.WorkflowScopeTests.test_viewer_cannot_write) ... ERROR
+test_workflow_environment_cannot_invalidate_existing_jobs (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_environment_cannot_invalidate_existing_jobs) ... ERROR
+test_workflow_owner_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_owner_is_immutable) ... ERROR
+test_child_workflow_routes_enforce_customer_permissions (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_child_workflow_routes_enforce_customer_permissions) ... ok
+test_dependency_contract_rejects_bad_uuid (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_dependency_contract_rejects_bad_uuid) ... ok
+test_invalid_workflow_schedule_rejected (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_invalid_workflow_schedule_rejected) ... ok
+test_job_activation_blocked_when_workflow_inactive (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_activation_blocked_when_workflow_inactive) ... ok
+test_job_contract_excludes_workflow_timing (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_contract_excludes_workflow_timing) ... ok
+test_workflow_create_requires_customer_configure_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_create_requires_customer_configure_permission) ... ok
+test_workflow_detail_enforces_customer_view_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_detail_enforces_customer_view_permission) ... ok
+test_workflow_job_and_dependency_models_are_registered (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_and_dependency_models_are_registered) ... ok
+test_workflow_job_update_requires_tenant_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_requires_tenant_permission) ... ok
+test_workflow_job_update_validation (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_validation) ... ok
+test_workflow_list_requires_customer_view_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_list_requires_customer_view_permission) ... ok
+test_workflow_monitoring_requires_tenant_view (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_monitoring_requires_tenant_view) ... ok
+test_workflow_owns_schedule_and_sla (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_owns_schedule_and_sla) ... ok
+test_workflow_update_contract_rejects_invalid_schedule (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_contract_rejects_invalid_schedule) ... ok
+test_workflow_update_enforces_customer_configure_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_enforces_customer_configure_permission) ... ok
+test_workflow_update_rejects_incomplete_window (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_rejects_incomplete_window) ... ok
+test_common_root_groups_distinct_failures_and_preserves_evidence (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_common_root_groups_distinct_failures_and_preserves_evidence) ... ok
+test_concurrent_assessments_serialize_revision (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_assessments_serialize_revision) ... ok
+test_concurrent_correlation_preserves_single_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_correlation_preserves_single_incident) ... ok
+test_conflicted_failure_cannot_create_authoritative_association (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicted_failure_cannot_create_authoritative_association) ... ok
+test_conflicting_recovery_evidence_blocks_validation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicting_recovery_evidence_blocks_validation) ... ok
+test_current_source_requires_complete_receipt (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_current_source_requires_complete_receipt) ... ok
+test_distinct_failure_observations_are_all_preserved (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_distinct_failure_observations_are_all_preserved) ... ok
+test_failure_and_assessment_evidence_is_immutable (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_failure_and_assessment_evidence_is_immutable) ... ok
+test_gap_in_observation_restarts_period (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_gap_in_observation_restarts_period) ... ok
+test_historical_root_never_reopens_resolved_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_historical_root_never_reopens_resolved_incident) ... ok
+test_incomplete_recovery_is_not_restoration (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_incomplete_recovery_is_not_restoration) ... ok
+test_live_failure_after_closed_root_creates_new_episode (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_live_failure_after_closed_root_creates_new_episode) ... ok
+test_manual_recovery_preserves_failed_original_and_requires_observation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_manual_recovery_preserves_failed_original_and_requires_observation) ... ok
+test_missing_schedule_compliance_blocks_validation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_missing_schedule_compliance_blocks_validation) ... ok
+test_stale_idempotent_and_unauthorized_assessments (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_stale_idempotent_and_unauthorized_assessments) ... ok
+test_unhealthy_downstream_dependency_blocks_recovery (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_downstream_dependency_blocks_recovery) ... ok
+test_unhealthy_monitoring_blocks_and_resets_window (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_monitoring_blocks_and_resets_window) ... ok
+test_unrelated_same_job_and_time_stay_separate (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unrelated_same_job_and_time_stay_separate) ... ok
+test_verified_failure_creates_native_incident_and_replay_is_idempotent (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_verified_failure_creates_native_incident_and_replay_is_idempotent) ... ok
+test_waiting_for_retry_creates_no_terminal_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_waiting_for_retry_creates_no_terminal_incident) ... ok
+test_all_future_and_snapshot_semantics (tests.test_sprint08_rbac.Sprint08RBAC.test_all_future_and_snapshot_semantics) ... ok
+test_all_requires_separate_authority (tests.test_sprint08_rbac.Sprint08RBAC.test_all_requires_separate_authority) ... ok
+test_boundary_decision_history_cannot_be_rewritten_or_deleted (tests.test_sprint08_rbac.Sprint08RBAC.test_boundary_decision_history_cannot_be_rewritten_or_deleted) ... ok
+test_delegation_budget_prevents_role_escalation (tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_budget_prevents_role_escalation) ... ok
+test_delegation_is_not_inferred_from_access_role (tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_is_not_inferred_from_access_role) ... ok
+test_deny_overrides_limit_and_inherited_allow (tests.test_sprint08_rbac.Sprint08RBAC.test_deny_overrides_limit_and_inherited_allow) ... ok
+test_direct_and_legacy_multi_department_inheritance_preserved (tests.test_sprint08_rbac.Sprint08RBAC.test_direct_and_legacy_multi_department_inheritance_preserved) ... ok
+test_environment_limit_filters_before_pagination (tests.test_sprint08_rbac.Sprint08RBAC.test_environment_limit_filters_before_pagination) ... ok
+test_global_employee_deny_survives_other_grants (tests.test_sprint08_rbac.Sprint08RBAC.test_global_employee_deny_survives_other_grants) ... ok
+test_invalid_persisted_policy_fails_closed (tests.test_sprint08_rbac.Sprint08RBAC.test_invalid_persisted_policy_fails_closed) ... ok
+test_inventory_query_count_is_not_per_row (tests.test_sprint08_rbac.Sprint08RBAC.test_inventory_query_count_is_not_per_row) ... ok
+test_large_customer_selection_keeps_restriction_sql_bounded (tests.test_sprint08_rbac.Sprint08RBAC.test_large_customer_selection_keeps_restriction_sql_bounded) ... ok
+test_multiple_limits_intersect_instead_of_bypassing_a_restriction (tests.test_sprint08_rbac.Sprint08RBAC.test_multiple_limits_intersect_instead_of_bypassing_a_restriction) ... ok
+test_no_selection_is_empty (tests.test_sprint08_rbac.Sprint08RBAC.test_no_selection_is_empty) ... ok
+test_omitted_selection_and_wildcard_fail_closed (tests.test_sprint08_rbac.Sprint08RBAC.test_omitted_selection_and_wildcard_fail_closed) ... ok
+test_one_customer_sql_scope (tests.test_sprint08_rbac.Sprint08RBAC.test_one_customer_sql_scope) ... ok
+test_resource_limit_allows_exact_id (tests.test_sprint08_rbac.Sprint08RBAC.test_resource_limit_allows_exact_id) ... ok
+test_revocation_changes_existing_session_projection (tests.test_sprint08_rbac.Sprint08RBAC.test_revocation_changes_existing_session_projection) ... ok
+test_scope_revision_explains_restrictions (tests.test_sprint08_rbac.Sprint08RBAC.test_scope_revision_explains_restrictions) ... ok
+test_separate_delegations_cannot_form_permission_customer_cross_product (tests.test_sprint08_rbac.Sprint08RBAC.test_separate_delegations_cannot_form_permission_customer_cross_product) ... ok
+test_unassigned_all_role_never_grants (tests.test_sprint08_rbac.Sprint08RBAC.test_unassigned_all_role_never_grants) ... ok
+test_worker_replay_rechecks_resource_restrictions (tests.test_sprint08_rbac.Sprint08RBAC.test_worker_replay_rechecks_resource_restrictions) ... ok
+
+======================================================================
+ERROR: test_authenticated_http_workflow_job_dependency_updates_and_negatives (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "uq_role_name_ci"
+DETAIL:  Key (service_provider_id, lower(name::text))=(45c4acb0-64fe-532b-ae18-678c1324902d, etl scope test) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 181, in test_authenticated_http_workflow_job_dependency_updates_and_negatives
+    role=Role(code='role-'+uuid4().hex,name='ETL scope test');db.add(role);db.flush()
+                                                                           ^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "uq_role_name_ci"
+DETAIL:  Key (service_provider_id, lower(name::text))=(45c4acb0-64fe-532b-ae18-678c1324902d, etl scope test) already exists.
+[SQL: INSERT INTO roles (id, service_provider_id, name, code, description, active, system) VALUES (%(id)s::UUID, %(service_provider_id)s::UUID, %(name)s::VARCHAR, %(code)s::VARCHAR, %(description)s::VARCHAR, %(active)s, %(system)s)]
+[parameters: {'id': UUID('6e9af2c5-7430-4eee-8e2f-e8f7aeb0ad4c'), 'service_provider_id': UUID('45c4acb0-64fe-532b-ae18-678c1324902d'), 'name': 'ETL scope test', 'code': 'role-be701734d4cc43c2b11c4a6ba807c1ff', 'description': None, 'active': True, 'system': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_authorized_workflow_and_dependency_commit_with_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authorized_workflow_and_dependency_commit_with_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-036fff60d94f498da9793cea9836d0bc', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 480157), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 480154), 'id__0': UUID('00abace8-9597-4217-9b69-3f514990f446'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-1bd04c27e63442f0ba27e5a91e931bc5', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 480162), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 480161), 'id__1': UUID('a85304d1-3510-446d-b987-797766fa24ea')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_cross_customer_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_dependency_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-088df89bcabc4373a077483de41d3ef5', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 562327), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 562323), 'id__0': UUID('ce6b78a6-b88c-40e2-a217-9f2f28ed4970'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-7102ed634f7c41a499db6681a7533f96', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 562331), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 562330), 'id__1': UUID('39b4b536-f8ed-44c7-b182-9e964a9f8012')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_cross_customer_job_workflow_reference_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_job_workflow_reference_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-d5027d3ffbf848c3a0de5f7679cb5265', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 644279), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 644276), 'id__0': UUID('cafbc486-3160-449f-b159-5d42085df91a'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-96d3c614f20d4b2f9729fb495d25db78', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 644284), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 644283), 'id__1': UUID('81319250-51e1-41d6-84aa-1a6abca890ad')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_dependency_endpoints_are_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_endpoints_are_immutable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-fdf53f6771ba45b88489e5de13bfab12', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 725749), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 725746), 'id__0': UUID('8da3d242-23ca-4f01-bdf2-c680661042d5'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-525d536fc79f48739e33ab67e0170bb6', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 725753), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 725753), 'id__1': UUID('3e65360f-0189-48ab-8fb6-a6b2dbdf3547')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_dependency_self_edge_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_self_edge_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-951a2e0eecc54a1083a3bb773a1fdf1a', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 807378), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 807375), 'id__0': UUID('005af6b4-3cf3-4dda-a6f6-95df1603b3f9'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-830ce8a8fd4047b883c754968ca869e2', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 807383), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 807382), 'id__1': UUID('24fbdd7b-1133-4210-ae2e-eee1d99f4110')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_existing_job_parent_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_existing_job_parent_is_immutable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-57f0e12287ad4608b67650df64a47799', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 891214), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 891210), 'id__0': UUID('cfe9e7c5-521b-4a9a-b6d0-ec5924e0a873'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-3046bcd2720b45f9a2c19e6103449bd3', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 891218), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 891218), 'id__1': UUID('242c2f73-41c4-4b4a-8912-ba09cb5bc75f')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_failed_reference_preserves_existing_resources_and_no_success_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_failed_reference_preserves_existing_resources_and_no_success_audit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-abd8d3a7734245589c5ae7972fb3013b', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 972832), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 55, 972828), 'id__0': UUID('b607f314-bc19-4519-845b-fc291319b255'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-2476415ece8e4768997d546464b68e66', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 972836), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 55, 972835), 'id__1': UUID('78091b64-b8d5-457a-b8ed-3b6013a3cbd8')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_invalid_organization_cannot_persist (tests.test_etl_workflow_scope.WorkflowScopeTests.test_invalid_organization_cannot_persist)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-abc5a7ea223c489a8fffa57a3fbc65ac', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 54709), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 54705), 'id__0': UUID('94a300ce-70b9-480f-a543-72fe3bceb0d0'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-e22464f4d27f4c27b88899427525467d', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 54713), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 54713), 'id__1': UUID('f1872784-b692-4c1d-85cb-e4ac005f7d88')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_job_environment_must_match_parent (tests.test_etl_workflow_scope.WorkflowScopeTests.test_job_environment_must_match_parent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-770676200b694443af837f249d8d3b8b', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 140544), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 140540), 'id__0': UUID('1b23e161-37b0-4dc9-90ed-804923836096'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-b6b7f5efdc8e4237866c1f5cde3aaee6', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 140548), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 140548), 'id__1': UUID('a179b9e3-7d4c-426b-93e0-4c5e16718c40')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_missing_dependency_parent_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_missing_dependency_parent_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-250eea3fab984ec7847278416450cbbb', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 224423), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 224420), 'id__0': UUID('704c7fd7-b964-423e-b743-0c334c6558a3'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-b9a92f7980634ee2b996c858768efbf5', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 224428), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 224427), 'id__1': UUID('a7ca988c-4fc7-4c20-bd61-7927ee56fc0c')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_read_scope_and_empty_selection (tests.test_etl_workflow_scope.WorkflowScopeTests.test_read_scope_and_empty_selection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-f899e33a0329482296d17a50e7e31408', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 309509), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 309506), 'id__0': UUID('1ffd8978-8942-45db-bdf2-cc2894d8474f'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-1218cb4727544437baf2a70ffc0c0195', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 309514), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 309513), 'id__1': UUID('05053555-8703-4654-bda8-d2e1e9b061bf')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_resource_restricted_unknown_workflow_fails_closed (tests.test_etl_workflow_scope.WorkflowScopeTests.test_resource_restricted_unknown_workflow_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-ec063b22d7a644568ccedc22e2a023de', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 395088), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 395084), 'id__0': UUID('34eb4fa2-eaea-40f4-824c-8f7f4cce6bac'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-1bd192d64e654a9e9853a4f31049efb5', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 395092), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 395092), 'id__1': UUID('aa8e80e1-2030-4c2d-82d7-3c9f8cbe83a1')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_same_customer_wrong_workflow_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_same_customer_wrong_workflow_dependency_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-2dd4f68966ea489abb620034468ee750', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 479122), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 479118), 'id__0': UUID('c76871c7-723e-4838-a47c-ab1b161304c4'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-679ca352ed6d48deaf38cfcc9fa54da8', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 479126), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 479126), 'id__1': UUID('89e45d10-81ac-490b-9006-df70e7e7710a')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_selected_scope_limits_even_admin (tests.test_etl_workflow_scope.WorkflowScopeTests.test_selected_scope_limits_even_admin)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-ffb072d51de24361a679a4aa5e4b25e8', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 564060), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 564057), 'id__0': UUID('35c5345b-ce7f-49d0-9e25-878860d385e3'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-7b4064fea3124e7ba6f5adee9dc84cd2', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 564065), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 564064), 'id__1': UUID('a6f08f9d-321d-4606-87df-72681a64295b')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_viewer_cannot_write (tests.test_etl_workflow_scope.WorkflowScopeTests.test_viewer_cannot_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-8a940fa0a9fe480281df273c9d623205', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 650179), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 650177), 'id__0': UUID('990b4a5e-54dd-46ac-9cbe-5692674681c0'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-054cce0baefe42a6aac24b7fca2e60fd', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 650184), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 650183), 'id__1': UUID('ee4501ca-dc67-44a4-9b8d-dc1a3b8fdb51')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_workflow_environment_cannot_invalidate_existing_jobs (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_environment_cannot_invalidate_existing_jobs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-b9a83521ecbd4163a279624555453d8c', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 734662), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 734659), 'id__0': UUID('395bbb71-08e4-47e2-bfd4-cac3566a44b0'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-a0482b4392a6462e80c46b2a95743e93', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 734667), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 734666), 'id__1': UUID('7b684e99-3d78-4a9f-a624-942787c2c2fc')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+======================================================================
+ERROR: test_workflow_owner_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_owner_is_immutable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UniqueViolation: duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_scope.py", line 35, in setUp
+    db.add_all([a,b,user]); db.commit()
+                            ^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1143, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1844, in _execute_context
+    return self._exec_insertmany_context(dialect, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2126, in _exec_insertmany_context
+    self._handle_dbapi_exception(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2118, in _exec_insertmany_context
+    dialect.do_execute(
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.IntegrityError: (psycopg.errors.UniqueViolation) duplicate key value violates unique constraint "organizations_name_key"
+DETAIL:  Key (name)=(Scope A) already exists.
+[SQL: INSERT INTO organizations (id, name, code, active, created_at, updated_at) VALUES (%(id__0)s::UUID, %(name__0)s::VARCHAR, %(code__0)s::VARCHAR, %(active__0)s, %(created_at__0)s::TIMESTAMP WITH TIME ZONE, %(updated_at__0)s::TIMESTAMP WITH TIME ZONE), (%(id__1)s::UUID, %(name__1)s::VARCHAR, %(code__1)s::VARCHAR, %(active__1)s, %(created_at__1)s::TIMESTAMP WITH TIME ZONE, %(updated_at__1)s::TIMESTAMP WITH TIME ZONE)]
+[parameters: {'active__0': True, 'name__0': 'Scope A', 'code__0': 'A-7f6c8b4e624c42be9bb7baf291293871', 'updated_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 820899), 'created_at__0': datetime.datetime(2026, 11, 5, 18, 49, 56, 820896), 'id__0': UUID('9eaf4980-075f-48b4-8626-c09eee893dde'), 'active__1': True, 'name__1': 'Scope B', 'code__1': 'B-37d5ec67c5de41e298e7dc2d791cdcfb', 'updated_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 820903), 'created_at__1': datetime.datetime(2026, 11, 5, 18, 49, 56, 820903), 'id__1': UUID('63abf482-46be-4253-9929-a4f4821f49ca')}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+----------------------------------------------------------------------
+Ran 76 tests in 13.725s
+
+FAILED (errors=18)

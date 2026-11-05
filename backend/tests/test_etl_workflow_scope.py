@@ -11,7 +11,7 @@ from uuid import uuid4
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 
-import app.main  # register actual scope/audit/ownership hooks
+import app.main  # noqa: F401 - register actual scope/audit/ownership hooks
 from fastapi import HTTPException
 from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError

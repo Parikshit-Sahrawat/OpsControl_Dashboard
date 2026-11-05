@@ -33,6 +33,10 @@ jobs:
           backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py
           backend/.venv/bin/ruff check backend/app/data_pipelines
           make test-pipeline-v16
+      - name: ETL Workflow authenticated scope and migrated PostgreSQL regressions
+        env:
+          ETL_SCOPE_EVIDENCE_DIR: /tmp/opscontrol-etl-scope-evidence
+        run: backend/.venv/bin/python scripts/etl-scope-acceptance.py
       - name: Protected V1.5 monitoring regressions
         working-directory: backend
         run: |
@@ -41,5 +45,7 @@ jobs:
         if: always()
         with:
           name: arch001-v16-pipeline-evidence
-          path: /tmp/opscontrol-v16-evidence
+          path: |
+            /tmp/opscontrol-v16-evidence
+            /tmp/opscontrol-etl-scope-evidence
           if-no-files-found: warn

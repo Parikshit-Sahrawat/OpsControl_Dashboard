@@ -1,0 +1,132 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/jobs/1be1491b-08f5-419a-ba8f-6b3ac9ece2af",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/dependencies",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/dependencies",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/monitoring",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/c528b7fb-dbe1-4fb1-8163-f63bbf14eb5a",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/dependencies",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/dependencies",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/jobs/ace03f55-88bd-4dff-9eae-d879a7e53c17",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/dependencies",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b/jobs/1be1491b-08f5-419a-ba8f-6b3ac9ece2af",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/e4ad737b-1cbd-4d35-b0d0-0598a478f57b",
+      "expected": 401,
+      "actual": 401
+    }
+  ],
+  "provider_certification": false
+}
