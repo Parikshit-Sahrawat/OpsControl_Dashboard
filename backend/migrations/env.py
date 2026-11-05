@@ -23,6 +23,19 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline():
+    # Offline SQL cannot inspect/lock protected rows. Do not emit an unsafe
+    # rollback script that would bypass the online populated-data guard.
+    from app.db.etl_rollback import downgrade_plan
+
+    try:
+        start = context.get_starting_revision_argument()
+        target = context.get_revision_argument()
+    except KeyError:
+        start = target = None
+    if start and downgrade_plan(config, start, target):
+        raise RuntimeError(
+            "Offline ETL downgrade SQL is unsupported; run guarded online preflight against an isolated restored database"
+        )
     context.configure(
         url=config.get_main_option("sqlalchemy.url"),
         target_metadata=target_metadata,
@@ -44,6 +57,19 @@ def run_migrations_online():
             connection=connection, target_metadata=target_metadata, compare_type=True
         )
         with context.begin_transaction():
+            from app.db.etl_rollback import protect_downgrade
+
+            try:
+                target = context.get_revision_argument()
+            except KeyError:
+                pass  # schema checks/autogeneration have no migration destination
+            else:
+                protect_downgrade(
+                    connection,
+                    config,
+                    context.get_context().get_current_heads(),
+                    target,
+                )
             context.run_migrations()
 
 

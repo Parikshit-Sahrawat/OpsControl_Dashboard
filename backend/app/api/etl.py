@@ -389,6 +389,21 @@ def create_workflow_dependency(workflow_id: UUID, payload: WorkflowDependencyCre
     if not workflow:
         raise HTTPException(404, "Workflow not found")
     require_permission("etl.configure", workflow.organization_id)
+    # Serialize configuration graph edits only for this already-authorized
+    # workflow. READ COMMITTED gives the graph query below a fresh snapshot
+    # after a waiting transaction acquires the row lock.
+    from sqlalchemy import text
+    from sqlalchemy.exc import DBAPIError
+    try:
+        db.execute(text("SET LOCAL lock_timeout = '5s'"))
+        locked = db.scalar(select(ETLWorkflow).where(ETLWorkflow.id == workflow_id).with_for_update())
+    except DBAPIError as exc:
+        db.rollback()
+        if getattr(exc.orig, "sqlstate", None) == "55P03":
+            raise HTTPException(409, "Workflow configuration is busy; retry the configuration update") from exc
+        raise
+    if locked is None:
+        raise HTTPException(404, "Workflow not found")
     if payload.predecessor_job_id == payload.successor_job_id:
         raise HTTPException(422, "A job cannot depend on itself")
     jobs = db.scalars(select(JobOrder).where(
@@ -397,8 +412,11 @@ def create_workflow_dependency(workflow_id: UUID, payload: WorkflowDependencyCre
     )).all()
     if len(jobs) != 2:
         raise HTTPException(409, "Both jobs must belong to this workflow")
-    edges = db.scalars(select(ETLWorkflowDependency).where(
-        ETLWorkflowDependency.workflow_id == workflow_id
+    # Internal complete graph for the authorized, locked workflow; projection
+    # filters must not hide paths during cycle detection. Never returned to UI.
+    graph = ETLWorkflowDependency.__table__
+    edges = db.execute(select(graph.c.predecessor_job_id, graph.c.successor_job_id).where(
+        graph.c.workflow_id == workflow_id
     )).all()
     adjacency = {}
     for edge in edges:

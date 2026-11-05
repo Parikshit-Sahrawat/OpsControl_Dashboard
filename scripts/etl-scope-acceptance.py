@@ -120,6 +120,12 @@ try:
         root / "backend",
     )
     run([python, "-m", "alembic", "check"], "migration-model-check", root / "backend")
+    env["ETL_SCOPE_CONTAINER"] = name
+    run(
+        [python, "-m", "scripts.etl_rollback_probe"],
+        "rollback-preservation",
+        root / "backend",
+    )
     with socket.socket() as s:
         s.bind(("127.0.0.1", 0))
         apiport = s.getsockname()[1]
@@ -158,6 +164,7 @@ try:
             "unittest",
             "tests.test_etl_workflow_scope",
             "tests.test_etl_workflow_foundation",
+            "tests.test_etl_dag_concurrency",
             "tests.test_sprint08_rbac",
             "-v",
         ],
