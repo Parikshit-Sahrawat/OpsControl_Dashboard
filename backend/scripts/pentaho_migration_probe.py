@@ -135,7 +135,8 @@ with SessionLocal() as db:
             == before["password_hash_sha256"]
         )
         assert db.get(Organization, uuid.UUID(before["organization_id"]))
-        assert db.get(JobOrder, uuid.UUID(before["job_id"]))
+        # Verification runs at 0036, before workflow_id exists in 0039.
+        assert db.scalar(text("SELECT id FROM job_orders WHERE id=:id"), {"id": uuid.UUID(before["job_id"])})
         assert (
             db.get(PipelineEvidence, uuid.UUID(before["evidence_id"])).payload[
                 "preserve"
