@@ -31,7 +31,8 @@ def upgrade():
         sa.CheckConstraint("sla_seconds IS NULL OR sla_seconds > 0", name="ck_etl_workflow_sla"),
     )
     op.create_index("ix_etl_workflows_organization_id", "etl_workflows", ["organization_id"])
-    op.add_column("job_orders", sa.Column("workflow_id", UUID(as_uuid=True), sa.ForeignKey("etl_workflows.id", ondelete="RESTRICT"), nullable=True))
+    op.add_column("job_orders", sa.Column("workflow_id", UUID(as_uuid=True), nullable=True))
+    op.create_foreign_key("fk_job_orders_workflow_id", "job_orders", "etl_workflows", ["workflow_id"], ["id"], ondelete="RESTRICT")
     op.create_index("ix_job_orders_workflow_id", "job_orders", ["workflow_id"])
     op.create_table(
         "etl_workflow_dependencies",
@@ -49,6 +50,7 @@ def downgrade():
     op.drop_index("ix_etl_workflow_dependencies_workflow_id", table_name="etl_workflow_dependencies")
     op.drop_table("etl_workflow_dependencies")
     op.drop_index("ix_job_orders_workflow_id", table_name="job_orders")
+    op.drop_constraint("fk_job_orders_workflow_id", "job_orders", type_="foreignkey")
     op.drop_column("job_orders", "workflow_id")
     op.drop_index("ix_etl_workflows_organization_id", table_name="etl_workflows")
     op.drop_table("etl_workflows")
