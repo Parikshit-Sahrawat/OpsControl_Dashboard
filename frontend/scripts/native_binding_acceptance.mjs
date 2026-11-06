@@ -146,8 +146,16 @@ try {
     async (route) => {
       const response = await route.fetch();
       await new Promise((resolve) => setTimeout(resolve, 800));
-      await route.fulfill({ response });
-      delayedResponse();
+      try {
+        await route.fulfill({ response });
+      } catch (error) {
+        // The real client aborts old-tenant reads on unmount. Accept only the
+        // independently observed browser cancellation, never an arbitrary error.
+        assert.match(route.request().failure()?.errorText || "", /ERR_ABORTED/);
+        assert.match(String(error), /already handled|Target.*closed|canceled/i);
+      } finally {
+        delayedResponse();
+      }
     },
   );
   await page.getByRole("button", { name: "View wa", exact: true }).click();
@@ -162,7 +170,7 @@ try {
     0,
   );
   checks.push(
-    "Delayed actual history responses cannot reappear after tenant switch",
+    "Old-tenant actual history read is delivered safely or explicitly aborted; it cannot reappear after tenant switch",
   );
   await page.unroute(`**/api/v1/etl/workflows/${f.wa}/jobs/*/native-bindings`);
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
