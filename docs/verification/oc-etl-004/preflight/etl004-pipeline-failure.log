@@ -1,0 +1,48 @@
+pipeline-contracts	Static and focused transport checks	﻿2026-11-05T19:36:03.0171682Z ##[group]Run backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0172426Z [36;1mbackend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py[0m
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0172913Z [36;1mbackend/.venv/bin/ruff check backend/app/data_pipelines[0m
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0173204Z [36;1mmake test-pipeline-v16[0m
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0191850Z shell: /usr/bin/bash -e {0}
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0192069Z env:
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0192249Z   ENV: test
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0192420Z   V16_API_ACCEPTANCE: 1
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0192641Z   V16_EVIDENCE_DIR: /tmp/opscontrol-v16-evidence
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0192964Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0193309Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0193647Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0193956Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0194318Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0194869Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.0212454Z ##[endgroup]
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.8636613Z All done! ✨ 🍰 ✨
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.8637038Z 9 files would be left unchanged.
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.8990363Z All checks passed!
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:03.9234387Z cd backend && ENV=test .venv/bin/python -m unittest discover -s tests -p 'test_pipeline_transport_v16.py' -v
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:04.7588404Z test_adf_native_authority_is_qualified_not_display_name (test_pipeline_transport_v16.TransportTests.test_adf_native_authority_is_qualified_not_display_name) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:04.7590569Z test_checkpoint_outside_pattern_or_negative_position_is_rejected (test_pipeline_transport_v16.TransportTests.test_checkpoint_outside_pattern_or_negative_position_is_rejected) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:04.7600115Z test_equal_message_timestamp_records_have_distinct_source_offsets (test_pipeline_transport_v16.TransportTests.test_equal_message_timestamp_records_have_distinct_source_offsets) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:04.7604567Z test_failed_backend_ack_never_advances_local_checkpoint (test_pipeline_transport_v16.TransportTests.test_failed_backend_ack_never_advances_local_checkpoint) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.0154896Z test_glue_uses_verified_account_and_partition_before_job_collection (test_pipeline_transport_v16.TransportTests.test_glue_uses_verified_account_and_partition_before_job_collection) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.0155818Z test_name_is_never_a_native_identity (test_pipeline_transport_v16.TransportTests.test_name_is_never_a_native_identity) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.0156553Z test_nested_fixture_labels_cannot_certify_runtime (test_pipeline_transport_v16.TransportTests.test_nested_fixture_labels_cannot_certify_runtime) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.0195003Z test_override_cannot_change_destination_without_canonical_handoff (test_pipeline_transport_v16.TransportTests.test_override_cannot_change_destination_without_canonical_handoff) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.0200839Z test_partial_line_keeps_offset_and_reports_incomplete_coverage (test_pipeline_transport_v16.TransportTests.test_partial_line_keeps_offset_and_reports_incomplete_coverage) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9745553Z test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization (test_pipeline_transport_v16.TransportTests.test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9749908Z test_recovery_claim_uses_recovery_operation_identity (test_pipeline_transport_v16.TransportTests.test_recovery_claim_uses_recovery_operation_identity) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9753054Z test_secret_references_cannot_export_backend_or_other_customer_secrets (test_pipeline_transport_v16.TransportTests.test_secret_references_cannot_export_backend_or_other_customer_secrets) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9757285Z test_truncation_fails_closed_before_acceptance (test_pipeline_transport_v16.TransportTests.test_truncation_fails_closed_before_acceptance) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9759607Z test_windows_paths_canonicalize_but_distinct_patterns_remain_separate (test_pipeline_transport_v16.TransportTests.test_windows_paths_canonicalize_but_distinct_patterns_remain_separate) ... ok
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9760496Z 
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9760697Z ----------------------------------------------------------------------
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9761155Z Ran 14 tests in 1.217s
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9761318Z 
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:05.9761424Z OK
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:06.4074492Z V16_API_ACCEPTANCE=1 backend/.venv/bin/python scripts/v16-acceptance.py
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8679147Z Traceback (most recent call last):
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8685067Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/v16-acceptance.py", line 464, in <module>
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8685766Z V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 9 groups
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8686241Z     assert result.returncode != 0 and any(
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8686536Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8686755Z AssertionError
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8786431Z make: *** [Makefile:46: test-pipeline-v16] Error 1
+pipeline-contracts	Static and focused transport checks	2026-11-05T19:36:49.8801601Z ##[error]Process completed with exit code 2.

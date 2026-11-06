@@ -1,0 +1,1613 @@
+{
+  "origin": "CONTROLLED_AUTHENTICATED_PINNED_HTTPS_CARTE_SHAPED_API",
+  "genuine_carte_acceptance": "PENDING_SEPARATE_READ_ONLY_GATE",
+  "host_origin": "LIVE_LOCAL_LINUX",
+  "phases": [
+    {
+      "phase": "running",
+      "execution": {
+        "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "RUNNING",
+        "started_at": "2026-11-05T20:00:56.158905Z",
+        "ended_at": null,
+        "detected_at": "2026-11-05T20:01:01.160360Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "ON_TRACK",
+        "failed_step": null,
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 6,
+        "provider_execution_id": "controlled-running",
+        "monitoring_status": "CURRENT",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": null,
+        "source_error_message": null,
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "5098575e-380b-4e2d-83bb-acd13af354a7"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": "Read-only fixture execution status",
+            "id": "0ad5d7a1-2d5b-4590-80bd-79de9baf0df0"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:01.160360+00:00",
+          "source_status": "RUNNING",
+          "nr_errors": 0,
+          "native_status_desc": "Running",
+          "native_result": null,
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T20:00:56.158905+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:01.160360+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:01.160360+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:01.160360+00:00",
+            "event": "Load warehouse \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          }
+        ],
+        "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 6,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": []
+      }
+    },
+    {
+      "phase": "long-running",
+      "execution": {
+        "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "LONG_RUNNING",
+        "started_at": "2026-11-05T19:59:36.025443Z",
+        "ended_at": null,
+        "detected_at": "2026-11-05T20:01:06.026761Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "ON_TRACK",
+        "failed_step": null,
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 90,
+        "provider_execution_id": "controlled-long-running",
+        "monitoring_status": "CURRENT",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": null,
+        "source_error_message": null,
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "3406cd39-fbb2-4f53-a779-6d02b0ec3da4"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": "Read-only fixture execution status",
+            "id": "51d1cc7d-6204-4e90-adcd-af26389984eb"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:06.026761+00:00",
+          "source_status": "RUNNING",
+          "nr_errors": 0,
+          "native_status_desc": "Running",
+          "native_result": null,
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T19:59:36.025443+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:06.026761+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:06.026761+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:06.026761+00:00",
+            "event": "Load warehouse \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:06.026761+00:00",
+            "event": "LONG_RUNNING_OPEN",
+            "source": "ETL_MONITOR"
+          }
+        ],
+        "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:59:36.025443Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:06.026761Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 91,
+            "provider_execution_id": "controlled-long-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 11,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": [
+          {
+            "id": "b87b8f5d-0cee-490e-af20-d268c5550168",
+            "event_type": "LONG_RUNNING_OPEN",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:06.026761+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "sla-breach",
+      "execution": {
+        "id": "5be7d366-5caa-4f23-a95d-9582d71ddfee",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "LONG_RUNNING",
+        "started_at": "2026-11-05T19:58:41.469370Z",
+        "ended_at": null,
+        "detected_at": "2026-11-05T20:01:11.470645Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "BREACHED",
+        "failed_step": null,
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 150,
+        "provider_execution_id": "controlled-sla-breach",
+        "monitoring_status": "CURRENT",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": null,
+        "source_error_message": null,
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "ff186bd1-cba9-4a85-8e38-01f3c76332fb"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": "Read-only fixture execution status",
+            "id": "96478820-b8db-45cc-95b4-797f2dd3161b"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:11.470645+00:00",
+          "source_status": "RUNNING",
+          "nr_errors": 0,
+          "native_status_desc": "Running",
+          "native_result": null,
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T19:58:41.469370+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:11.470645+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:11.470645+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:11.470645+00:00",
+            "event": "Load warehouse \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:11.470645+00:00",
+            "event": "SLA_BREACH_OPEN",
+            "source": "ETL_MONITOR"
+          }
+        ],
+        "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "5be7d366-5caa-4f23-a95d-9582d71ddfee",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:58:41.469370Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:11.470645Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "BREACHED",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 151,
+            "provider_execution_id": "controlled-sla-breach",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:59:36.025443Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:06.026761Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 96,
+            "provider_execution_id": "controlled-long-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 16,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": [
+          {
+            "id": "b16f3dc5-8ea6-43b3-92a2-e0de44394433",
+            "event_type": "SLA_BREACH_OPEN",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:11.470645+00:00"
+          },
+          {
+            "id": "b87b8f5d-0cee-490e-af20-d268c5550168",
+            "event_type": "LONG_RUNNING_OPEN",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:06.026761+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "failed",
+      "execution": {
+        "id": "d9f21361-d8ff-417c-ba3f-87686641e18b",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "FAILED",
+        "started_at": "2026-11-05T20:00:31.529481Z",
+        "ended_at": "2026-11-05T20:01:15.529481Z",
+        "detected_at": "2026-11-05T20:01:16.530766Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "MET",
+        "failed_step": "Load warehouse",
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 44,
+        "provider_execution_id": "controlled-failed",
+        "monitoring_status": "CURRENT",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": "CARTE_REPORTED_ERRORS",
+        "source_error_message": "Warehouse connection refused",
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "935bec8f-eaac-48b9-98f7-b8c2526bc921"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 2,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "FAILED",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": "CARTE_REPORTED_ERRORS",
+            "error_message": "Warehouse connection refused",
+            "id": "4538bf09-e5c0-4933-a366-ec6a18037aa5"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:16.530766+00:00",
+          "source_status": "FAILED",
+          "nr_errors": 2,
+          "native_status_desc": "Finished",
+          "native_result": null,
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Warehouse connection refused password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T20:00:31.529481+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:15.529481+00:00",
+            "event": "Job failed",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Load warehouse \u00b7 FAILED",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "JOB_FAILED_OPEN",
+            "source": "ETL_MONITOR"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "LONG_RUNNING_RESOLVED",
+            "source": "ETL_MONITOR"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "SLA_BREACH_RESOLVED",
+            "source": "ETL_MONITOR"
+          }
+        ],
+        "logs": "Warehouse connection refused password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "d9f21361-d8ff-417c-ba3f-87686641e18b",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "FAILED",
+            "started_at": "2026-11-05T20:00:31.529481Z",
+            "ended_at": "2026-11-05T20:01:15.529481Z",
+            "detected_at": "2026-11-05T20:01:16.530766Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "MET",
+            "failed_step": "Load warehouse",
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 44,
+            "provider_execution_id": "controlled-failed",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "5be7d366-5caa-4f23-a95d-9582d71ddfee",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:58:41.469370Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:11.470645Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "BREACHED",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 156,
+            "provider_execution_id": "controlled-sla-breach",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:59:36.025443Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:06.026761Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 101,
+            "provider_execution_id": "controlled-long-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 21,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": [
+          {
+            "id": "9af47e56-9b59-48db-a659-9d9ad1ded0ff",
+            "event_type": "JOB_FAILED_OPEN",
+            "reference": "fe3d9d5e-7233-515e-8fc8-b5ce3bf19f1e",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "de3ad98a-59eb-4859-8e10-2d90e8d8a611",
+            "event_type": "LONG_RUNNING_RESOLVED",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "5e73a3ba-6f5d-4067-936d-bc25d9d6751a",
+            "event_type": "SLA_BREACH_RESOLVED",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "b16f3dc5-8ea6-43b3-92a2-e0de44394433",
+            "event_type": "SLA_BREACH_OPEN",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:11.470645+00:00"
+          },
+          {
+            "id": "b87b8f5d-0cee-490e-af20-d268c5550168",
+            "event_type": "LONG_RUNNING_OPEN",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:06.026761+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "poll-failed",
+      "execution": {
+        "id": "d9f21361-d8ff-417c-ba3f-87686641e18b",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "FAILED",
+        "started_at": "2026-11-05T20:00:31.529481Z",
+        "ended_at": "2026-11-05T20:01:15.529481Z",
+        "detected_at": "2026-11-05T20:01:16.530766Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "MET",
+        "failed_step": "Load warehouse",
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 44,
+        "provider_execution_id": "controlled-failed",
+        "monitoring_status": "ERROR",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": "CARTE_REPORTED_ERRORS",
+        "source_error_message": "Warehouse connection refused",
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "935bec8f-eaac-48b9-98f7-b8c2526bc921"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 2,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "FAILED",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": "CARTE_REPORTED_ERRORS",
+            "error_message": "Warehouse connection refused",
+            "id": "4538bf09-e5c0-4933-a366-ec6a18037aa5"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:16.530766+00:00",
+          "source_status": "FAILED",
+          "nr_errors": 2,
+          "native_status_desc": "Finished",
+          "native_result": null,
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Warehouse connection refused password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T20:00:31.529481+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:15.529481+00:00",
+            "event": "Job failed",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "Load warehouse \u00b7 FAILED",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "JOB_FAILED_OPEN",
+            "source": "ETL_MONITOR"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "LONG_RUNNING_RESOLVED",
+            "source": "ETL_MONITOR"
+          },
+          {
+            "time": "2026-11-05T20:01:16.530766+00:00",
+            "event": "SLA_BREACH_RESOLVED",
+            "source": "ETL_MONITOR"
+          }
+        ],
+        "logs": "Warehouse connection refused password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "d9f21361-d8ff-417c-ba3f-87686641e18b",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "FAILED",
+            "started_at": "2026-11-05T20:00:31.529481Z",
+            "ended_at": "2026-11-05T20:01:15.529481Z",
+            "detected_at": "2026-11-05T20:01:16.530766Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "MET",
+            "failed_step": "Load warehouse",
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 44,
+            "provider_execution_id": "controlled-failed",
+            "monitoring_status": "ERROR",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "5be7d366-5caa-4f23-a95d-9582d71ddfee",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:58:41.469370Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:11.470645Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "BREACHED",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 168,
+            "provider_execution_id": "controlled-sla-breach",
+            "monitoring_status": "ERROR",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:59:36.025443Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:06.026761Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 114,
+            "provider_execution_id": "controlled-long-running",
+            "monitoring_status": "ERROR",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 34,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "ERROR",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": [
+          {
+            "id": "9af47e56-9b59-48db-a659-9d9ad1ded0ff",
+            "event_type": "JOB_FAILED_OPEN",
+            "reference": "fe3d9d5e-7233-515e-8fc8-b5ce3bf19f1e",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "de3ad98a-59eb-4859-8e10-2d90e8d8a611",
+            "event_type": "LONG_RUNNING_RESOLVED",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "5e73a3ba-6f5d-4067-936d-bc25d9d6751a",
+            "event_type": "SLA_BREACH_RESOLVED",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "b16f3dc5-8ea6-43b3-92a2-e0de44394433",
+            "event_type": "SLA_BREACH_OPEN",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:11.470645+00:00"
+          },
+          {
+            "id": "b87b8f5d-0cee-490e-af20-d268c5550168",
+            "event_type": "LONG_RUNNING_OPEN",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:06.026761+00:00"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "recovered",
+      "execution": {
+        "id": "534cd9a6-cd49-4207-9c21-852b8b144110",
+        "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+        "execution_type": "SCHEDULED",
+        "status": "SUCCESS",
+        "started_at": "2026-11-05T20:01:04.975667Z",
+        "ended_at": "2026-11-05T20:01:33.975667Z",
+        "detected_at": "2026-11-05T20:01:34.977136Z",
+        "expected_runtime_seconds": 60,
+        "sla_seconds": 120,
+        "sla_status": "MET",
+        "failed_step": null,
+        "incident_number": null,
+        "job_name": "Fictional Daily Warehouse",
+        "server": "etl-controlled-worker",
+        "environment": "PROD",
+        "organization": "Controlled ETL Lab",
+        "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+        "duration_seconds": 29,
+        "provider_execution_id": "controlled-recovered",
+        "monitoring_status": "CURRENT",
+        "monitoring_conditions": {
+          "CONFLICTING_TERMINAL_EVIDENCE": true
+        },
+        "source_error_code": null,
+        "source_error_message": null,
+        "source_exception": null,
+        "source_log_location": null,
+        "source_result": "CARTE_READ_ONLY",
+        "steps": [
+          {
+            "name": "Extract customers",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Extract customers\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 0,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": null,
+            "id": "787f0b8c-94f9-442c-a6a8-274778012444"
+          },
+          {
+            "name": "Load warehouse",
+            "attempt": 1,
+            "external_step_id": null,
+            "source_evidence": {
+              "nr_errors": 0,
+              "native_copy": null,
+              "native_metrics": null,
+              "observed_step_key": "[\"Load warehouse\",null,0]",
+              "identity_provenance": "OBSERVED_ORDER_ONLY",
+              "observed_entry_position": 1,
+              "native_status_description": null
+            },
+            "step_type": "CARTE_JOB_ENTRY",
+            "status": "UNKNOWN",
+            "started_at": null,
+            "ended_at": null,
+            "duration_seconds": null,
+            "records_read": null,
+            "records_written": null,
+            "records_rejected": null,
+            "error_code": null,
+            "error_message": "Read-only fixture execution status",
+            "id": "85595c0b-d774-4f97-bf01-6a877f4f8392"
+          }
+        ],
+        "source_evidence": {
+          "collector_id": "9ec2fba4-1df8-43bf-886d-d366791caa98",
+          "observed_at": "2026-11-05T20:01:34.977136+00:00",
+          "source_status": "SUCCESS",
+          "nr_errors": 0,
+          "native_status_desc": "Finished",
+          "native_result": "Y",
+          "native_exit_status": null,
+          "native_log_channel_id": null,
+          "native_log_date_raw": null,
+          "evidence_warnings": [],
+          "log_evidence_status": "AVAILABLE",
+          "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+          "policy": {
+            "expected_window_start": "19:40",
+            "expected_window_end": "19:50",
+            "grace_seconds": 60,
+            "timezone": "UTC"
+          }
+        }
+      },
+      "evidence": {
+        "timeline": [
+          {
+            "time": "2026-11-05T20:01:04.975667+00:00",
+            "event": "Job started",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:33.975667+00:00",
+            "event": "Job success",
+            "source": "Carte"
+          },
+          {
+            "time": "2026-11-05T20:01:34.977136+00:00",
+            "event": "Execution detected",
+            "source": "OpsControl"
+          },
+          {
+            "time": "2026-11-05T20:01:34.977136+00:00",
+            "event": "Extract customers \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:34.977136+00:00",
+            "event": "Load warehouse \u00b7 UNKNOWN",
+            "source": "Carte entry result (observed)"
+          },
+          {
+            "time": "2026-11-05T20:01:34.977136+00:00",
+            "event": "JOB_FAILED_RESOLVED",
+            "source": "ETL_MONITOR"
+          }
+        ],
+        "logs": "Read-only fixture execution status password=[REDACTED] token=[REDACTED]",
+        "history": [
+          {
+            "id": "534cd9a6-cd49-4207-9c21-852b8b144110",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "SUCCESS",
+            "started_at": "2026-11-05T20:01:04.975667Z",
+            "ended_at": "2026-11-05T20:01:33.975667Z",
+            "detected_at": "2026-11-05T20:01:34.977136Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "MET",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 29,
+            "provider_execution_id": "controlled-recovered",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "d9f21361-d8ff-417c-ba3f-87686641e18b",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "FAILED",
+            "started_at": "2026-11-05T20:00:31.529481Z",
+            "ended_at": "2026-11-05T20:01:15.529481Z",
+            "detected_at": "2026-11-05T20:01:16.530766Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "MET",
+            "failed_step": "Load warehouse",
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 44,
+            "provider_execution_id": "controlled-failed",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "5be7d366-5caa-4f23-a95d-9582d71ddfee",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:58:41.469370Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:11.470645Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "BREACHED",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 174,
+            "provider_execution_id": "controlled-sla-breach",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "d2f7fe25-db04-407a-82f7-8315c51a309d",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "LONG_RUNNING",
+            "started_at": "2026-11-05T19:59:36.025443Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:06.026761Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 119,
+            "provider_execution_id": "controlled-long-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          },
+          {
+            "id": "77ff1943-597e-44b3-a667-f4af9a950af6",
+            "job_order_id": "cb6aebeb-c376-4e17-912e-0728810bd638",
+            "execution_type": "SCHEDULED",
+            "status": "RUNNING",
+            "started_at": "2026-11-05T20:00:56.158905Z",
+            "ended_at": null,
+            "detected_at": "2026-11-05T20:01:01.160360Z",
+            "expected_runtime_seconds": 60,
+            "sla_seconds": 120,
+            "sla_status": "ON_TRACK",
+            "failed_step": null,
+            "incident_number": null,
+            "job_name": "Fictional Daily Warehouse",
+            "server": "etl-controlled-worker",
+            "environment": "PROD",
+            "organization": "Controlled ETL Lab",
+            "organization_id": "0eb87f1c-e25b-46a0-91c4-d7e7971364ce",
+            "duration_seconds": 39,
+            "provider_execution_id": "controlled-running",
+            "monitoring_status": "CURRENT",
+            "monitoring_conditions": {
+              "CONFLICTING_TERMINAL_EVIDENCE": true
+            }
+          }
+        ],
+        "alert_events": [
+          {
+            "id": "2c6bb96c-2eea-4d5c-a506-98cabfe87db3",
+            "event_type": "JOB_FAILED_RESOLVED",
+            "reference": "fe3d9d5e-7233-515e-8fc8-b5ce3bf19f1e",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:34.977136+00:00"
+          },
+          {
+            "id": "9af47e56-9b59-48db-a659-9d9ad1ded0ff",
+            "event_type": "JOB_FAILED_OPEN",
+            "reference": "fe3d9d5e-7233-515e-8fc8-b5ce3bf19f1e",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "de3ad98a-59eb-4859-8e10-2d90e8d8a611",
+            "event_type": "LONG_RUNNING_RESOLVED",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "5e73a3ba-6f5d-4067-936d-bc25d9d6751a",
+            "event_type": "SLA_BREACH_RESOLVED",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:16.530766+00:00"
+          },
+          {
+            "id": "b16f3dc5-8ea6-43b3-92a2-e0de44394433",
+            "event_type": "SLA_BREACH_OPEN",
+            "reference": "33aff57f-2bff-548b-b51c-52562351fcc0",
+            "severity": "CRITICAL",
+            "timestamp": "2026-11-05T20:01:11.470645+00:00"
+          },
+          {
+            "id": "b87b8f5d-0cee-490e-af20-d268c5550168",
+            "event_type": "LONG_RUNNING_OPEN",
+            "reference": "4177abeb-434e-5030-bab0-dc374d62773e",
+            "severity": "WARNING",
+            "timestamp": "2026-11-05T20:01:06.026761+00:00"
+          }
+        ]
+      }
+    }
+  ],
+  "security": "PASS",
+  "audit_event_count": 215,
+  "read_only_https_requests": 22,
+  "fixture_requests": [
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/jobStatus/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/kettle/status/",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/kettle/startJob/",
+      "status": 403
+    }
+  ]
+}
