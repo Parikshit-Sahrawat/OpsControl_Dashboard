@@ -109,6 +109,28 @@ app = FastAPI(
     redoc_url=None if production else "/redoc",
     openapi_url=None if production else "/openapi.json",
 )
+from sqlalchemy.exc import DBAPIError
+
+
+@app.exception_handler(DBAPIError)
+async def etl_writer_fence_error(request: Request, error: DBAPIError):
+    if (
+        getattr(error.orig, "sqlstate", None) == "P0001"
+        and getattr(getattr(error.orig, "diag", None), "message_primary", None)
+        == "OC_ETL_WRITER_VERSION_REQUIRED"
+    ):
+        return JSONResponse(
+            status_code=409,
+            content={
+                "detail": "Authority-aware writer required for opted-in ETL Job; retain schema/history"
+            },
+        )
+    # Preserve unrelated failures; never turn database errors into successful responses.
+    return JSONResponse(
+        status_code=500, content={"detail": "Database operation failed"}
+    )
+
+
 app.add_middleware(IdentityMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
@@ -150,7 +172,11 @@ app.include_router(
     monitoring_diagnostics.router, dependencies=[Depends(authorize_route)]
 )
 app.include_router(discovery.router, dependencies=[Depends(authorize_route)])
+from app.etl_bindings import authority_api
+
+app.include_router(authority_api.router, dependencies=[Depends(authorize_route)])
 from app.etl_bindings import api as etl_bindings_api
+
 app.include_router(etl_bindings_api.router, dependencies=[Depends(authorize_route)])
 app.include_router(etl.router, dependencies=[Depends(authorize_route)])
 app.include_router(investigations.router, dependencies=[Depends(authorize_route)])

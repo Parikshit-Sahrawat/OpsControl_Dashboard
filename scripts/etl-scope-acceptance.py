@@ -7,6 +7,8 @@ import secrets
 import socket
 import subprocess
 import time
+import tempfile
+import re
 from urllib.request import urlopen
 
 root = Path(__file__).resolve().parents[1]
@@ -45,6 +47,11 @@ ui = None
 started = False
 success = False
 identity = None
+authority_private = tempfile.TemporaryDirectory(prefix="etl-authority-contract-")
+authority_store = Path(authority_private.name) / "public-trust.json"
+authority_store.write_text(json.dumps({"version": 1, "issuers": {}}))
+authority_store.chmod(0o600)
+env["OPSCONTROL_ETL_AUTHORITY_TRUST_STORE"] = str(authority_store)
 
 
 def run(args, label, cwd=root):
@@ -201,6 +208,7 @@ try:
             "tests.test_etl_dag_concurrency",
             "tests.test_etl_native_binding_contract",
             "tests.test_etl_binding_lifecycle",
+            "tests.test_etl_authority_writer",
             *(
                 ["tests.test_etl_workflow_ui"]
                 if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1"
@@ -228,6 +236,7 @@ finally:
         except subprocess.TimeoutExpired:
             api.kill()
             api.wait(timeout=5)
+    authority_private.cleanup()
     # Even failed docker run may leave the exact task-created name allocated.
     exists = (
         subprocess.run([*docker, "inspect", name], capture_output=True).returncode == 0
@@ -241,6 +250,20 @@ finally:
     )
     remaining = (
         subprocess.run([*docker, "inspect", name], capture_output=True).returncode == 0
+    )
+    # Playwright failure call logs can include transient synthetic bearer headers.
+    # Preserve redacted failures, never exported credentials.
+    redacted = 0
+    for artifact in [*out.rglob("*.log"), *out.rglob("*.json")]:
+        content = artifact.read_text()
+        content, count = re.subn(
+            r"(?i)(Bearer\s+)[A-Za-z0-9._~+/-]+=*", r"\1[REDACTED]", content
+        )
+        if count:
+            artifact.write_text(content)
+            redacted += count
+    (out / "LOG_REDACTION.json").write_text(
+        json.dumps({"synthetic_bearer_occurrences_redacted": redacted})
     )
     (out / "RESULTS.json").write_text(
         json.dumps(

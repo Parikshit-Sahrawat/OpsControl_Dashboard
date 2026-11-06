@@ -46,6 +46,14 @@ def get_db(request: Request):
                 else transaction_authority(db)
             )
         configure_request_session(db)
+        if request.method not in {
+            "GET",
+            "HEAD",
+            "OPTIONS",
+        } and request.url.path.startswith("/api/v1/data-pipelines/"):
+            from app.etl_bindings.writer import mark
+
+            mark(db)
         db.info["opscontrol_route"] = request.url.path[:120]
         yield db
     finally:

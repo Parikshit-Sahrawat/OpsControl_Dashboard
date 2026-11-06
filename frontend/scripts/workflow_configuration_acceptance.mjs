@@ -186,7 +186,20 @@ try {
   await region()
     .getByLabel("Expected runtime seconds", { exact: true })
     .fill("150");
+  const savedRuntime = page.waitForResponse(
+    (response) =>
+      response.request().method() === "PATCH" &&
+      /\/etl\/workflows\/[^/]+\/jobs\/[^/]+$/.test(
+        new URL(response.url()).pathname,
+      ),
+  );
   await region().getByRole("button", { name: "Save Job", exact: true }).click();
+  const savedRuntimeResponse = await savedRuntime;
+  assert.equal(savedRuntimeResponse.status(), 200);
+  assert.equal(
+    (await savedRuntimeResponse.json()).expected_duration_seconds,
+    150,
+  );
   await page.reload();
   await configuration(fixture.a);
   await open("UI workflow edited");

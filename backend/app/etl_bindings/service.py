@@ -107,6 +107,13 @@ def stale_reasons(db, binding):
             or pipeline.reader_definition(db, method) != snap["reader_definition_hash"]
         ):
             reasons.append("SOURCE_GENERATION_OR_READER_CHANGED")
+    if binding.state == "CONFIRMED":
+        from app.etl_bindings.authority import qualified_binding
+
+        try:
+            qualified_binding(db, binding)
+        except HTTPException as error:
+            reasons.append(str(error.detail))
     return sorted(set(reasons))
 
 
@@ -151,6 +158,7 @@ def routing_binding(db, job, source, method):
 
 
 def record_receipt(db, binding, evidence):
+    db.info.setdefault("etl_admitted_bindings", set()).add(binding.id)
     db.add(
         ETLBindingReceipt(
             organization_id=binding.organization_id,
@@ -214,8 +222,17 @@ def readiness(db, workflow, jobs):
             fresh = receipt_freshness(
                 now, receipt.observed_at, receipt.created_at, min(thresholds)
             )
+        authority_state = (
+            "QUALIFIED"
+            if binding_state == "CONFIRMED" and not reasons
+            else "UNVERIFIED"
+        )
         reasons += [
-            "PROVIDER_NATIVE_AUTHORITY_NOT_CERTIFIED",
+            *(
+                []
+                if authority_state == "QUALIFIED"
+                else ["PROVIDER_NATIVE_AUTHORITY_NOT_CERTIFIED"]
+            ),
             "WORKFLOW_ACTIVATION_NOT_QUALIFIED",
         ]
         results.append(
@@ -226,7 +243,10 @@ def readiness(db, workflow, jobs):
                     "state": "VALID" if config_ok else "INCOMPLETE",
                     "scope": "SUPPORTED_CHILD_RUNTIME_FIELDS_ONLY",
                 },
-                "binding_validity": {"state": binding_state, "authority": "UNVERIFIED"},
+                "binding_validity": {
+                    "state": binding_state,
+                    "authority": authority_state,
+                },
                 "monitoring_activation": {
                     "state": "BLOCKED",
                     "reason": "PROVIDER_QUALIFICATION_REQUIRED",

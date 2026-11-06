@@ -314,6 +314,8 @@ def update_workflow_job(workflow_id: UUID, job_id: UUID, payload: WorkflowJobUpd
     ))
     if not job:
         raise HTTPException(404, "Workflow job not found")
+    from app.etl_bindings.writer import mark
+    mark(db)
     changes = payload.model_dump(exclude_unset=True)
     if any(value is None for value in changes.values()):
         raise HTTPException(422, "Job configuration fields cannot be null")

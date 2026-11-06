@@ -564,6 +564,9 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
     """Caller commits once. Any exception rolls back evidence, projection and cursor."""
     source = locked_source(db, uuid.UUID(ticket["source_id"]))
     check_ticket(db, source, ticket)
+    from app.etl_bindings.writer import mark
+
+    mark(db)
     validate_checkpoint(
         source,
         checkpoint,

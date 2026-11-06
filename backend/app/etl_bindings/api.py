@@ -29,6 +29,7 @@ class BindingCommand(Mutation):
     command: Literal["STAGE", "CONFIRM", "REPLACE", "RETIRE"]
     current_binding_id: UUID | None = None
     native_job_id: UUID
+    attestation_id: UUID | None = None
     authority_claim: str = Field(
         min_length=3, max_length=200, pattern=r"^[A-Za-z0-9._:/@-]+$"
     )
@@ -58,9 +59,42 @@ def bindings(workflow_id: UUID, job_id: UUID, db=Depends(get_db)):
         .where(ETLNativeBinding.job_order_id == job_id)
         .order_by(ETLNativeBinding.valid_from, ETLNativeBinding.id)
     ).all()
+    from app.etl_bindings.models import ETLNativeAttestation, ETLAuthorityRevocation
+
+    proofs = db.scalars(
+        select(ETLNativeAttestation).where(
+            ETLNativeAttestation.binding_id.in_([b.id for b in rows])
+        )
+    ).all()
+    revoked = set(
+        db.scalars(
+            select(ETLAuthorityRevocation.attestation_id).where(
+                ETLAuthorityRevocation.attestation_id.in_([p.id for p in proofs])
+            )
+        ).all()
+    )
     return {
         "versions": [doc(b) for b in rows],
-        "authority_status": "UNVERIFIED_UNTIL_PROVIDER_QUALIFICATION",
+        "authority_proofs": [
+            {
+                "id": str(p.id),
+                "binding_id": str(p.binding_id),
+                "issuer_key_id": p.issuer_key_id,
+                "expires_at": p.expires_at.isoformat(),
+                "revoked": p.id in revoked,
+            }
+            for p in proofs
+        ],
+        "authority_status": (
+            "QUALIFIED"
+            if any(
+                b.state == "CONFIRMED"
+                and b.valid_until is None
+                and not service.stale_reasons(db, b)
+                for b in rows
+            )
+            else "UNVERIFIED_UNTIL_PROVIDER_QUALIFICATION"
+        ),
     }
 
 
@@ -148,6 +182,9 @@ def command(
 
 def _command(workflow_id, job_id, payload, db):
     workflow, job = ownership(db, workflow_id, job_id, True)
+    from app.etl_bindings.writer import mark
+
+    mark(db)
     if not payload.confirmed:
         raise HTTPException(
             422, "Explicit monitoring-configuration confirmation required"
@@ -248,16 +285,30 @@ def _command(workflow_id, job_id, payload, db):
             for m in payload.method_ids
         ):
             raise HTTPException(409, "CURRENT_AUTHENTICATED_RUNTIME_PROOF_REQUIRED")
-        # Current provider attestations certify reader capability, not the new
-        # cross-method native authority namespace. No user-supplied proof flag.
-        raise HTTPException(409, "NATIVE_AUTHORITY_CERTIFICATION_REQUIRED_D09")
-    if old and old.state == "CONFIRMED":
+        from app.etl_bindings.authority import usable
+        from app.etl_bindings.models import ETLNativeAttestation
+
+        if not payload.attestation_id:
+            raise HTTPException(409, "NATIVE_AUTHORITY_CERTIFICATION_REQUIRED_D09")
+        proof = checked(db, ETLNativeAttestation, payload.attestation_id)
+        usable(db, proof, old, snapshots)
+    if old and old.state == "CONFIRMED" and payload.command != "RETIRE":
         # Qualified active readers require the existing independently reviewed
         # handoff protocol. No live per-binding shortcut is authorized here.
         raise HTTPException(409, "ACTIVE_BINDING_REQUIRES_REVIEWED_SOURCE_HANDOFF")
     instant = datetime.now(timezone.utc)
     if old:
         old.valid_until = instant
+        from app.etl_bindings.models import ETLBindingQualification
+
+        qualification = db.scalar(
+            select(ETLBindingQualification).where(
+                ETLBindingQualification.binding_id == old.id,
+                ETLBindingQualification.valid_until.is_(None),
+            )
+        )
+        if qualification:
+            qualification.valid_until = instant
         db.flush()  # release partial uniqueness in the same transaction
     row = ETLNativeBinding(
         organization_id=job.organization_id,
@@ -272,7 +323,11 @@ def _command(workflow_id, job_id, payload, db):
         method_snapshot=(
             old.method_snapshot if payload.command == "RETIRE" else snapshots
         ),
-        state="RETIRED" if payload.command == "RETIRE" else "STAGED",
+        state=(
+            "RETIRED"
+            if payload.command == "RETIRE"
+            else ("CONFIRMED" if payload.command == "CONFIRM" else "STAGED")
+        ),
         valid_from=instant,
         actor_id=actor().user_id,
         reason=payload.reason,
@@ -280,6 +335,18 @@ def _command(workflow_id, job_id, payload, db):
     )
     db.add(row)
     db.flush()
+    if payload.command == "CONFIRM":
+        from app.etl_bindings.models import ETLBindingQualification
+
+        db.add(
+            ETLBindingQualification(
+                organization_id=row.organization_id,
+                binding_id=row.id,
+                attestation_id=proof.id,
+                job_order_id=row.job_order_id,
+                target_key=proof.target_key,
+            )
+        )
     from app.security.audit import log_event
 
     log_event(

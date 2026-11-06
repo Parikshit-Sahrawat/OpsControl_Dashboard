@@ -327,6 +327,9 @@ class BindingLifecycleTests(unittest.TestCase):
         self.req(self.base, "POST", self.payload("RETIRE", old), 409)
         with SessionLocal() as db:
             db.get(PipelineHold, holdid).released_at = datetime.now(timezone.utc)
+            from app.etl_bindings.writer import mark
+
+            mark(db)
             db.get(PipelineSource, UUID(self.methods[0]["source_id"])).generation = (
                 uuid4()
             )
@@ -663,6 +666,9 @@ class BindingLifecycleTests(unittest.TestCase):
 
         first = self.stage()
         with SessionLocal() as db:
+            from app.etl_bindings.writer import mark
+
+            mark(db)
             evidence = PipelineEvidence(
                 organization_id=self.a,
                 source_id=UUID(self.methods[0]["source_id"]),

@@ -18,6 +18,8 @@ export default function ETLNativeBindings({
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [loaded, setLoaded] = useState(false);
+  const [proofs, setProofs] = useState([]),
+    [attestation, setAttestation] = useState("");
   const guard = useRef(selectionGuard());
   const base = `/api/v1/etl/workflows/${workflowId}/jobs/${jobId}`;
   const request = (path, method, body, signal) =>
@@ -29,6 +31,8 @@ export default function ETLNativeBindings({
     const generation = guard.current.next(),
       abort = new AbortController();
     setVersions([]);
+    setProofs([]);
+    setAttestation("");
     setCandidates([]);
     setCandidate("");
     setAuthority("");
@@ -50,6 +54,7 @@ export default function ETLNativeBindings({
       .then(([history, options]) => {
         if (!guard.current.current(generation)) return;
         setVersions(history.versions);
+        setProofs(history.authority_proofs || []);
         setCandidates(options.candidates);
         setLoaded(true);
         const current = history.versions.find((v) => !v.valid_until);
@@ -100,6 +105,7 @@ export default function ETLNativeBindings({
     try {
       await request("/native-bindings", "POST", {
         command,
+        attestation_id: command === "CONFIRM" ? attestation || null : null,
         idempotency_key: window.crypto.randomUUID(),
         current_binding_id: current?.id || null,
         expected_revision: current?.revision || null,
@@ -113,6 +119,8 @@ export default function ETLNativeBindings({
       const data = await request("/native-bindings", "GET");
       if (!guard.current.current(ticket)) return;
       setVersions(data.versions);
+      setProofs(data.authority_proofs || []);
+      setAttestation("");
       setReason("");
       try {
         await onChange?.();
@@ -202,6 +210,28 @@ export default function ETLNativeBindings({
               </label>
             ))}
           </fieldset>
+          <label htmlFor={`authority-proof-${jobId}`}>
+            Authority attestation
+          </label>
+          <select
+            id={`authority-proof-${jobId}`}
+            value={attestation}
+            onChange={(e) => setAttestation(e.target.value)}
+          >
+            <option value="">
+              No proof selected — confirmation remains gated
+            </option>
+            {proofs
+              .filter((p) => p.binding_id === current?.id && !p.revoked)
+              .map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.issuer_key_id} · expires {p.expires_at}
+                </option>
+              ))}
+          </select>
+          {!proofs.length && (
+            <p>No qualified native-authority attestation is available.</p>
+          )}
           <label>
             Configuration change reason
             <input
