@@ -33,14 +33,13 @@ def get_db(request: Request):
         }:
             from app.security.boundaries import transaction_authority
 
-            # Only this non-authority mutation opts into concurrent readers of
+            # Only these graph/binding configuration mutations opt into readers of
             # authorization state. All access/session mutations remain exclusive.
             route = request.scope.get("route")
-            graph_write = (
-                request.method == "POST"
-                and getattr(route, "path", None)
-                == "/api/v1/etl/workflows/{workflow_id}/dependencies"
-            )
+            graph_write = request.method == "POST" and getattr(route, "path", None) in {
+                "/api/v1/etl/workflows/{workflow_id}/dependencies",
+                "/api/v1/etl/workflows/{workflow_id}/jobs/{job_id}/native-bindings",
+            }
             (
                 transaction_authority(db, shared=True)
                 if graph_write

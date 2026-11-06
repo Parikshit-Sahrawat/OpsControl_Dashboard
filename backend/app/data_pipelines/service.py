@@ -650,6 +650,17 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
             if native
             else []
         )
+        from app.etl_bindings.service import routing_binding, record_receipt
+
+        bindings = {}
+        permitted = []
+        for candidate, method in links:
+            allowed, binding = routing_binding(db, candidate, source, method)
+            if allowed:
+                permitted.append((candidate, method))
+                if binding is not None:
+                    bindings[candidate.resource_id] = binding
+        links = permitted
         resources = {
             job.resource_id: job for job, method in links if job.resource_id is not None
         }
@@ -681,6 +692,8 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         if not resources:
             quarantined += 1
         for resource_id, job in resources.items():
+            if resource_id in bindings:
+                record_receipt(db, bindings[resource_id], evidence)
             resource = db.get(MonitoringResource, resource_id)
             if (
                 not resource
@@ -739,6 +752,12 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         )
         for rid in quiet:
             if rid:
+                from app.etl_bindings.service import current as current_binding
+                resource = db.get(MonitoringResource, rid)
+                binding = current_binding(db, resource.job_order_id) if resource else None
+                if binding is not None:
+                    # Quiet/inventory evidence cannot certify a new native binding.
+                    continue
                 projections.setdefault(rid, [])
     for rid, facts in projections.items():
         resource = db.get(MonitoringResource, rid)
@@ -959,6 +978,13 @@ def blockers(db, integration):
         if not source.last_received_at:
             issues.append("NO_DURABLE_TELEMETRY:" + str(source.id))
     for job in jobs:
+        if job.resource_id:
+            from app.unified.models import MonitoringResource
+            from app.etl_bindings.service import current as current_binding, stale_reasons
+            resource = db.get(MonitoringResource, job.resource_id)
+            binding = current_binding(db, resource.job_order_id) if resource else None
+            if binding is not None and (binding.state != "CONFIRMED" or stale_reasons(db, binding)):
+                issues.append("NATIVE_BINDING_NOT_CONFIRMED_OR_STALE:" + str(job.id))
         if job.quarantined or not job.resource_id:
             issues.append("JOB_IDENTITY_OR_RESOURCE_UNVERIFIED:" + str(job.id))
         if not db.scalar(

@@ -1,5 +1,7 @@
 # OC-ETL-005 — Native Job binding contract
 
+> OC-ETL-006 follow-on: D01–D06 product-owner authorization is recorded in the [decision register](OC_ETL_005_DECISION_REGISTER.md). The original current/proposed inventory below describes the immutable OC-ETL-005 baseline. [Current implemented subset and blockers](../../verification/oc-etl-006/APPROVAL_AND_SCOPE.md), [migration contract](../../verification/oc-etl-006/MIGRATION_AND_RECOVERY.md), and [served readiness transitions](../../verification/oc-etl-006/READINESS_TRANSITIONS.md) supersede implementation availability only. No provider or release certification is inferred.
+
 Status: **CURRENT CONTRACT INVENTORY + PROPOSED EXTENSION / PENDING ACCOUNTABLE APPROVAL**. Date: 2026-11-06 UTC. Immutable inspected product baseline: `9c021bbb94de3017bdc9f41b6a774d7b378ae9a7`, branch `dev/post-pr78-architecture-closure-20261105`, draft PR80.
 
 This document distinguishes implemented behavior from approval-dependent design. It creates no endpoint, permission, migration, provider certification or activation authority. [Decisions D01–D10](OC_ETL_005_DECISION_REGISTER.md) are not signed off. [Verification](../../verification/oc-etl-005/REPORT.md) identifies actual executions separately from proposed acceptance cases.

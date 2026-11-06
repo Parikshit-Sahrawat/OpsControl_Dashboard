@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import ETLNativeBindings from "../ETLNativeBindings";
 import { control } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import {
@@ -126,13 +127,18 @@ export default function ETLWorkflowConfiguration({
     }
   }
   async function reloadDetails(id) {
+    const ticket = guard.current.capture();
     const [data, dependencies] = await Promise.all([
       request(root + "/" + id + "/monitoring"),
       request(root + "/" + id + "/dependencies"),
     ]);
     // The enclosing save generation is checked before invoking this callback;
     // also reject tenant switches while these follow-up reads are outstanding.
-    if (scope.current !== data.workflow.organization_id) return;
+    if (
+      !guard.current.current(ticket) ||
+      scope.current !== data.workflow.organization_id
+    )
+      return;
     setDetail(data);
     setEdges(dependencies);
     setSelected(id);
@@ -436,6 +442,34 @@ export default function ETLWorkflowConfiguration({
             Saved enabled flags are configuration settings. They do not prove
             active monitoring or healthy workloads.
           </p>
+          <section aria-label="Authoritative readiness dimensions">
+            <h4>Authoritative monitoring readiness</h4>
+            <p>
+              Evaluated {detail.readiness_dimensions?.evaluated_at} · Policy{" "}
+              {detail.readiness_dimensions?.freshness_policy}
+            </p>
+            {detail.readiness_dimensions?.jobs.map((item) => (
+              <dl key={item.job_id}>
+                <dt>Job</dt>
+                <dd>{detail.jobs.find((j) => j.id === item.job_id)?.name}</dd>
+                {[
+                  "configuration_completeness",
+                  "binding_validity",
+                  "monitoring_activation",
+                  "source_connectivity",
+                  "evidence_freshness",
+                  "operational_health",
+                ].map((dimension) => (
+                  <div key={dimension}>
+                    <dt>{dimension.replaceAll("_", " ")}</dt>
+                    <dd>{item[dimension]?.state}</dd>
+                  </div>
+                ))}
+                <dt>Blocking reasons</dt>
+                <dd>{item.reasons.join(" · ")}</dd>
+              </dl>
+            ))}
+          </section>
           <h4>Child Jobs</h4>
           {allowed && !job && (
             <button
@@ -491,6 +525,19 @@ export default function ETLWorkflowConfiguration({
               </tbody>
             </table>
           </div>
+          {detail.jobs.map((item) => (
+            <details key={item.id}>
+              <summary>Native binding for {item.name}</summary>
+              <ETLNativeBindings
+                key={`${organizationId}:${detail.workflow.id}:${item.id}`}
+                organizationId={organizationId}
+                workflowId={detail.workflow.id}
+                jobId={item.id}
+                allowed={allowed}
+                onChange={() => reloadDetails(detail.workflow.id)}
+              />
+            </details>
+          ))}
           {job && (
             <form
               aria-label="Job editor"

@@ -1,5 +1,7 @@
 # OC-ETL-005 — Authoritative monitoring activation and readiness
 
+> OC-ETL-006 follow-on: D01–D06 product-owner authorization is recorded in the [decision register](OC_ETL_005_DECISION_REGISTER.md). The original current/proposed inventory below describes the immutable OC-ETL-005 baseline. [Current implemented subset and blockers](../../verification/oc-etl-006/APPROVAL_AND_SCOPE.md), [migration contract](../../verification/oc-etl-006/MIGRATION_AND_RECOVERY.md), and [served readiness transitions](../../verification/oc-etl-006/READINESS_TRANSITIONS.md) supersede implementation availability only. No provider or release certification is inferred.
+
 Status: **CURRENT AUTHORITY INVENTORY + PROPOSED WORKFLOW CONTRACT / PENDING D03–D10**. Inspected product source `9c021bbb94de3017bdc9f41b6a774d7b378ae9a7`; 2026-11-06 UTC. No new readiness API, activation action, provider behavior or state migration is implemented by this document. See [native binding](OC_ETL_005_NATIVE_BINDING_CONTRACT.md), [decisions](OC_ETL_005_DECISION_REGISTER.md), and [executed verification](../../verification/oc-etl-005/REPORT.md).
 
 A saved configuration, selected Job, recent HTTP response, enabled flag, confirmed association or successful prior execution is insufficient on its own to establish active, healthy, complete or certified monitoring. Each dimension below has a separate backend authority and provenance.

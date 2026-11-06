@@ -7,6 +7,10 @@ from sqlalchemy import inspect, text
 # A whole-table check is deliberately conservative for old shared projections.
 # A column check permits legacy rows only when the removed field is NULL.
 PROTECTED = {
+    "0040_etl_native_bindings": [
+        ("etl_native_bindings", None),
+        ("etl_binding_receipts", None),
+    ],
     "0039_etl_workflow_foundation": [
         ("etl_workflows", None),
         ("etl_workflow_dependencies", None),

@@ -150,6 +150,8 @@ app.include_router(
     monitoring_diagnostics.router, dependencies=[Depends(authorize_route)]
 )
 app.include_router(discovery.router, dependencies=[Depends(authorize_route)])
+from app.etl_bindings import api as etl_bindings_api
+app.include_router(etl_bindings_api.router, dependencies=[Depends(authorize_route)])
 app.include_router(etl.router, dependencies=[Depends(authorize_route)])
 app.include_router(investigations.router, dependencies=[Depends(authorize_route)])
 app.include_router(monitoring.router, dependencies=[Depends(authorize_route)])

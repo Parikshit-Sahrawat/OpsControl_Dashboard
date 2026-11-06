@@ -340,6 +340,7 @@ def update_workflow_job(workflow_id: UUID, job_id: UUID, payload: WorkflowJobUpd
 @router.get("/workflows/{workflow_id}/monitoring")
 def get_workflow_monitoring(workflow_id: UUID, db: Session = Depends(get_db)):
     """Read-only projection of persisted native observations; never schedules jobs."""
+    from app.etl_bindings.service import readiness as binding_readiness
     workflow = db.get(ETLWorkflow, workflow_id)
     if not workflow:
         raise HTTPException(404, "Workflow not found")
@@ -381,6 +382,7 @@ def get_workflow_monitoring(workflow_id: UUID, db: Session = Depends(get_db)):
         "observed_job_count": sum(job["latest_execution"] is not None for job in results),
         "total_job_count": len(results),
         "source": "persisted_observations",
+        "readiness_dimensions": binding_readiness(db, workflow, jobs),
         "readiness": {
             "configuration_status": "INCOMPLETE" if not jobs or any(
                 job.expected_runtime_seconds is None

@@ -181,6 +181,8 @@ _PATHS.update(
             "PipelineHold",
             "PipelineEvidence",
             "PipelineOperation",
+            "ETLNativeBinding",
+            "ETLBindingReceipt",
             "PentahoAttempt",
             "PentahoAlias",
             "PentahoRevision",

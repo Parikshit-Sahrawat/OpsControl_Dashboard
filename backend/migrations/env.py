@@ -11,6 +11,7 @@ import app.unified.models
 import app.unified.pentaho_models
 import app.registry.models
 import app.data_pipelines.models
+import app.etl_bindings.models
 import app.native_incidents.models
 import app.services.rule_models
 

@@ -55,6 +55,9 @@ export function selectionGuard() {
     current(ticket) {
       return ticket === version;
     },
+    capture() {
+      return version;
+    },
   };
 }
 export function dependencyError(edges, predecessor, successor) {

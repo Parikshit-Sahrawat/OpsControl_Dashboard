@@ -88,3 +88,21 @@ test("timezone validation identifies the field without relaxing backend redactio
     /Timezone/,
   );
 });
+
+test("a post-save refresh retains its selection ticket and cannot overwrite a newer Workflow", async () => {
+  const guard = selectionGuard();
+  guard.next();
+  const refreshTicket = guard.capture();
+  assert.equal(guard.current(refreshTicket), true);
+  let release;
+  let displayed = "new Workflow";
+  const refresh = new Promise((resolve) => {
+    release = resolve;
+  }).then(() => {
+    if (guard.current(refreshTicket)) displayed = "old Workflow";
+  });
+  guard.next();
+  release();
+  await refresh;
+  assert.equal(displayed, "new Workflow");
+});

@@ -80,6 +80,12 @@ def source_readiness(db, r, observed=None):
             "reason": "CUSTOMER_INACTIVE",
         }
     checks = []
+    if r.domain == "ETL" and r.job_order_id:
+        from app.etl_bindings.service import current as current_binding, stale_reasons
+        binding = current_binding(db, r.job_order_id)
+        if binding is not None and (binding.state != "CONFIRMED" or stale_reasons(db, binding)):
+            return {"ready": False, "checks": [{"name": "Native binding confirmed and current", "passed": False}],
+                    "reason": "NATIVE_BINDING_NOT_CONFIRMED_OR_STALE"}
     if r.domain == "ETL" and r.linked_vm_id and not r.primary_collector_id:
         parent = db.scalar(
             select(MonitoringResource).where(MonitoringResource.vm_id == r.linked_vm_id)
