@@ -446,6 +446,9 @@ try {
       .count(),
     0,
   );
+  await expectText("900 seconds");
+  await expectText("500 seconds");
+  await expectText("08:00–10:00");
   checks.push(
     "Authenticated read-only role sees evidence without configuration controls",
   );

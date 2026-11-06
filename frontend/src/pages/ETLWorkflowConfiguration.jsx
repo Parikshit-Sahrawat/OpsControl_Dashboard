@@ -370,6 +370,46 @@ export default function ETLWorkflowConfiguration({
             Customer {detail.workflow.organization_id} ·{" "}
             {detail.workflow.environment}
           </p>
+          <dl aria-label="Saved Workflow expectations">
+            <dt>Timezone</dt>
+            <dd>{detail.workflow.schedule?.timezone || "Not configured"}</dd>
+            <dt>Applicable weekdays</dt>
+            <dd>
+              {(detail.workflow.schedule?.weekdays || [])
+                .map(
+                  (day) =>
+                    [
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                      "Sunday",
+                    ][day],
+                )
+                .join(", ") || "Not configured"}
+            </dd>
+            <dt>Expected window</dt>
+            <dd>
+              {detail.workflow.expected_window_start &&
+              detail.workflow.expected_window_end
+                ? `${detail.workflow.expected_window_start}–${detail.workflow.expected_window_end}`
+                : "Not configured"}
+            </dd>
+            <dt>Workflow expected duration</dt>
+            <dd>
+              {detail.workflow.expected_duration_seconds
+                ? `${detail.workflow.expected_duration_seconds} seconds`
+                : "Not configured"}
+            </dd>
+            <dt>Workflow SLA</dt>
+            <dd>
+              {detail.workflow.sla_seconds
+                ? `${detail.workflow.sla_seconds} seconds`
+                : "Not configured"}
+            </dd>
+          </dl>
           {allowed && !form && (
             <button
               disabled={busy || loading}
