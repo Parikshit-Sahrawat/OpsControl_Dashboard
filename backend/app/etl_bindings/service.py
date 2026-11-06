@@ -57,6 +57,15 @@ def snapshots(db, native, ids):
             raise HTTPException(409, "METHOD_INTEGRATION_MISMATCH")
         connection = db.get(PipelineConnection, m.connection_id)
         capability = db.get(PipelineCapability, m.capability_id)
+        if (
+            not connection
+            or not capability
+            or connection.integration_id != native.integration_id
+            or capability.integration_id != native.integration_id
+            or connection.organization_id != native.organization_id
+            or capability.organization_id != native.organization_id
+        ):
+            raise HTTPException(409, "READER_VERSION_OWNERSHIP_MISMATCH")
         result.append(
             {
                 "method_id": str(m.id),

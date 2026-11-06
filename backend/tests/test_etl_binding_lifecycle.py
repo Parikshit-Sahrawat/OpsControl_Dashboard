@@ -861,6 +861,18 @@ class BindingLifecycleTests(unittest.TestCase):
                         process.wait(timeout=10)
         self.assertIsNotNone(process.returncode)
 
+    def test_reader_versions_from_another_integration_cannot_be_snapshotted(self):
+        _, refs = self.seed(self.j2, "other-reader-" + uuid4().hex)
+        with SessionLocal() as db:
+            other = db.get(PipelineMethod, UUID(refs[0]["id"]))
+            method = db.get(PipelineMethod, UUID(self.methods[0]["id"]))
+            # Valid same-tenant FKs alone are insufficient integration ownership.
+            method.connection_id = other.connection_id
+            method.capability_id = other.capability_id
+            db.commit()
+        self.req(self.base, "POST", self.payload(), 409)
+        self.assertEqual(self.req(self.base)["versions"], [])
+
 
 class FreshnessPolicyTests(unittest.TestCase):
     def test_observed_and_committed_clocks_and_boundary(self):

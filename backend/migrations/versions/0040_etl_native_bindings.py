@@ -97,6 +97,8 @@ BEGIN
      FOR m IN SELECT * FROM jsonb_array_elements(NEW.method_snapshot) LOOP
        IF NOT EXISTS (
          SELECT 1 FROM pipeline_methods pm JOIN pipeline_sources s ON s.id=pm.source_id
+         JOIN pipeline_connections pc ON pc.id=pm.connection_id AND pc.integration_id=NEW.integration_id
+         JOIN pipeline_capabilities cap ON cap.id=pm.capability_id AND cap.integration_id=NEW.integration_id
          WHERE pm.id=(m->>'method_id')::uuid AND pm.integration_id=NEW.integration_id
           AND pm.organization_id=NEW.organization_id AND s.organization_id=NEW.organization_id
           AND pm.source_id=(m->>'source_id')::uuid AND s.generation=(m->>'generation')::uuid
