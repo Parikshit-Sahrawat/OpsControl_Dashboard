@@ -1,0 +1,211 @@
+[
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0038_k8s_cluster_associations"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "empty-downgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "empty-upgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0038_k8s_cluster_associations"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "legacy-prepare.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "populated-forward-upgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0038_k8s_cluster_associations"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "legacy-safe-downgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "head"
+    ],
+    "database": "etl_scope",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "legacy-final-upgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0038_k8s_cluster_associations"
+    ],
+    "database": "etl_scope",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "populated-downgrade-refused.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "-1"
+    ],
+    "database": "etl_scope",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "relative-downgrade-refused.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0039_etl_workflow_foundation:0038_k8s_cluster_associations",
+      "--sql"
+    ],
+    "database": "etl_scope",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "offline-downgrade-refused.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "0017_rule_catalogs_activation"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "old-identity-base.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "0018_pentaho_execution_identity"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "identity-additive-upgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0017_rule_catalogs_activation"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "null-identity-safe-downgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "0018_pentaho_execution_identity"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "identity-upgrade-again.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0017_rule_catalogs_activation"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "populated-identity-refused.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "upgrade",
+      "0020_etl_monitoring_evidence"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 0,
+    "expected": 0,
+    "log": "evidence-upgrade.log"
+  },
+  {
+    "command": [
+      "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+      "-m",
+      "alembic",
+      "downgrade",
+      "0019_infrastructure_evidence"
+    ],
+    "database": "etl_legacy_be5fe8cc64",
+    "exit_code": 1,
+    "expected": "nonzero",
+    "log": "populated-evidence-refused.log"
+  }
+]

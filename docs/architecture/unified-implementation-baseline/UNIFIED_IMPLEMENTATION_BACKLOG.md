@@ -35,3 +35,17 @@ Source `f57153836615fb07d748ede6b49af6a11dba96fe` closes the bounded CF-02 popul
 ## OC-ETL-003A.1 CI compatibility and owner-decision alignment (2026-11-06)
 
 [CI matrix](../../verification/ci-roadmap-alignment/CI_REQUIREMENTS_MATRIX.md) and [remediation evidence](../../verification/oc-etl-003a/REPORT.md) reconcile the four migration-contract CI regressions. Local controlled tests preserve populated state, explicit empty rollback paths, authorization and per-workflow transaction safeguards. Nine owner decisions supplied in OC-ETL-003A.1 use OWNER_APPROVED_CONTROLLED_SCOPE — INDEPENDENT_UAT_PENDING; historical pending-acceptance records are retained as snapshots. These decisions are not CI, independent UAT or genuine-provider certification. B00 still requires 30 numbered journey definitions; Journey20 excluded and Journey32 skipped. B04 / OC-ETL-004 remains the subsequent implementation task after hosted CI closure. CHK-001 FAIL, CHK-002 BLOCKED, SECURITY BLOCKED, RELEASE NO-GO.
+
+
+## OC-ETL-004 — supported Workflow/Job UI verification (2026-11-06)
+
+Implementation `1d3004d`, exact accepted technical source `6a9c7a2cc2eafbac76b6e7b48a54d35c9d115f19`: [evidence](../../verification/oc-etl-004/2026-11-06/REPORT.md), [open contracts](../../verification/oc-etl-004/2026-11-06/OPEN_GAPS.md). This is controlled verification, not owner acceptance. Historical baseline observations above remain unchanged.
+
+| Requirement | Implemented and verified | Unimplemented/blocked | Acceptance |
+|---|---|---|---|
+| ETL-02 | Workflow list/create/edit/details, timezone/weekdays/windows/duration/SLA, persisted reload | Frequency/recurrence, detailed calendar and authoritative activation/occurrence semantics G1/G4/G5 | PARTIALLY_IMPLEMENTED; verified supported scope; owner pending |
+| ETL-03 | Child name/host/runtime create/edit/reload; immutable parent/customer/environment; legacy unassigned rows preserved | Distinct long-running threshold and native PipelineJob binding G2/G3 | PARTIALLY_IMPLEMENTED; verified supported scope; owner pending |
+| ETL-15 | Configuration workspace under Resource Management, directed dependencies, read-only receipt/freshness/readiness projection, tenant guards and failed-save preservation | Full operational Workflow readiness/outcomes and provider connectivity G4/G5/G6 | PARTIALLY_IMPLEMENTED; 19 authenticated browser groups; owner pending |
+| ETL-16 | Actual secured APIs and UI role/tenant negatives; retained request hooks/audit/DAG locks; seven concurrency/security regressions | Broader security/release/provider gates remain independent | IMPLEMENTED_VERIFIED for this bounded configuration path; not full ETL acceptance |
+
+85 PostgreSQL/HTTP regression cases pass, 45 frontend cases pass, six migration preservation/recovery groups pass. Exact raw outcomes and cleanup are in the evidence package. Backend configuration validity is explicitly supported-child-runtime-only; BLOCKED activation and UNVERIFIED provider states are not inferred healthy from persistence. All 31 included journeys, 30 SOURCE_NOT_RECOVERED numbered definitions, excluded Journey20 and skipped Journey32 are preserved. Nine prior owner decisions remain OWNER_APPROVED_CONTROLLED_SCOPE — INDEPENDENT_UAT_PENDING; no new ETL approval. CHK-001 FAIL, CHK-002 BLOCKED, SECURITY BLOCKED, RELEASE NO-GO.

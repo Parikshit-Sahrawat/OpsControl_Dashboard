@@ -160,3 +160,17 @@ Existing foundation tests actually executed: 16 backend PASS and two frontend so
 At product commit `a590f426ff6ed679968688ea9486c70456cf6cc2`, ETLWorkflow and ETLWorkflowDependency are integrated into the existing shared request scope and write hooks, with immutable parent/endpoint IDs, same-workflow/customer/environment validation, full-child resource visibility and transactional audit. [Actual PostgreSQL/HTTP report](../verification/oc-etl-002/REPORT.md): 77 tests passed, including 19 new scope tests and 21 real authenticated HTTP assertions; real fresh migration through 0039 and ORM compatibility passed. Failed fixture attempts are preserved. CF-01's reproduced write-hook defect is repaired, not waived; no global allowlist bypass.
 
 ETL-01/04/16 advance only for scoped persistence, reads and existing updates; their broader lifecycle/UI/concurrency/provider requirements remain PARTIAL. CF-02 populated rollback and CF-03 concurrent DAG race remain open. Resource-limited unbound workflow creation deliberately remains denied. CI runs the new disposable harness, with evidence retained. No owner/provider acceptance or release gate changes.
+
+
+## OC-ETL-004 — supported Workflow/Job UI verification (2026-11-06)
+
+Implementation `1d3004d`, exact accepted technical source `6a9c7a2cc2eafbac76b6e7b48a54d35c9d115f19`: [evidence](../verification/oc-etl-004/2026-11-06/REPORT.md), [open contracts](../verification/oc-etl-004/2026-11-06/OPEN_GAPS.md). This is controlled verification, not owner acceptance. Historical baseline observations above remain unchanged.
+
+| Requirement | Implemented and verified | Unimplemented/blocked | Acceptance |
+|---|---|---|---|
+| ETL-02 | Workflow list/create/edit/details, timezone/weekdays/windows/duration/SLA, persisted reload | Frequency/recurrence, detailed calendar and authoritative activation/occurrence semantics G1/G4/G5 | PARTIALLY_IMPLEMENTED; verified supported scope; owner pending |
+| ETL-03 | Child name/host/runtime create/edit/reload; immutable parent/customer/environment; legacy unassigned rows preserved | Distinct long-running threshold and native PipelineJob binding G2/G3 | PARTIALLY_IMPLEMENTED; verified supported scope; owner pending |
+| ETL-15 | Configuration workspace under Resource Management, directed dependencies, read-only receipt/freshness/readiness projection, tenant guards and failed-save preservation | Full operational Workflow readiness/outcomes and provider connectivity G4/G5/G6 | PARTIALLY_IMPLEMENTED; 19 authenticated browser groups; owner pending |
+| ETL-16 | Actual secured APIs and UI role/tenant negatives; retained request hooks/audit/DAG locks; seven concurrency/security regressions | Broader security/release/provider gates remain independent | IMPLEMENTED_VERIFIED for this bounded configuration path; not full ETL acceptance |
+
+85 PostgreSQL/HTTP regression cases pass, 45 frontend cases pass, six migration preservation/recovery groups pass. Exact raw outcomes and cleanup are in the evidence package. Backend configuration validity is explicitly supported-child-runtime-only; BLOCKED activation and UNVERIFIED provider states are not inferred healthy from persistence. All 31 included journeys, 30 SOURCE_NOT_RECOVERED numbered definitions, excluded Journey20 and skipped Journey32 are preserved. Nine prior owner decisions remain OWNER_APPROVED_CONTROLLED_SCOPE — INDEPENDENT_UAT_PENDING; no new ETL approval. CHK-001 FAIL, CHK-002 BLOCKED, SECURITY BLOCKED, RELEASE NO-GO.
