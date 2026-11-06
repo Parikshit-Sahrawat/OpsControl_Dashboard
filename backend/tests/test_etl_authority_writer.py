@@ -744,15 +744,27 @@ class AuthorityWriterTests(unittest.TestCase):
                     MonitoringResource.job_order_id == self.j1
                 )
             )
-            source = DataSource(
-                organization_id=self.a,
-                name="Synthetic disabled collector",
-                source_type="API",
+            # Seed the source before attaching its disabled collector, preserving
+            # the real Resource/Collector source-identity guard. Core fixture
+            # insertion avoids creating a second automatic API inventory owner.
+            source_id = uuid4()
+            now = datetime.now(timezone.utc)
+            db.execute(
+                DataSource.__table__.insert().values(
+                    id=source_id,
+                    organization_id=self.a,
+                    name="Synthetic disabled collector",
+                    source_type="API",
+                    enabled=False,
+                    status="UNKNOWN",
+                    created_at=now,
+                    updated_at=now,
+                )
             )
-            db.add(source)
+            resource.data_source_id = source_id
             db.flush()
             collector = Collector(
-                data_source_id=source.id,
+                data_source_id=source_id,
                 name="No runtime execution",
                 collector_type="HTTP",
                 enabled=False,
