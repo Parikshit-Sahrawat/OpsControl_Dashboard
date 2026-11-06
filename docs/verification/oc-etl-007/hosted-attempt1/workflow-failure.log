@@ -1,0 +1,24 @@
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	﻿2026-11-06T18:16:04.0145818Z ##[group]Run backend/.venv/bin/python scripts/etl-scope-acceptance.py
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0146141Z [36;1mbackend/.venv/bin/python scripts/etl-scope-acceptance.py[0m
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163009Z shell: /usr/bin/bash -e {0}
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163155Z env:
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163269Z   ENV: test
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163390Z   V16_API_ACCEPTANCE: 1
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163548Z   V16_EVIDENCE_DIR: /tmp/opscontrol-v16-evidence
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0163763Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0164015Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0164258Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0164482Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0164702Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0164926Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0165308Z   ETL_SCOPE_EVIDENCE_DIR: /tmp/opscontrol-etl-scope-evidence
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0165528Z   ETL_WORKFLOW_UI_ACCEPTANCE: 1
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0165764Z   PLAYWRIGHT_MODULE: /home/runner/work/_temp/etl004-tools/node_modules/playwright/index.mjs
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:16:04.0166013Z ##[endgroup]
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4110058Z Traceback (most recent call last):
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4111858Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/etl-scope-acceptance.py", line 201, in <module>
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4112567Z     run(
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4113065Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/etl-scope-acceptance.py", line 78, in run
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4113688Z     raise RuntimeError(label + " failed; sanitized log retained")
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4114098Z RuntimeError: regressions failed; sanitized log retained
+pipeline-contracts	ETL Workflow authenticated scope and migrated PostgreSQL regressions	2026-11-06T18:17:48.4217247Z ##[error]Process completed with exit code 1.

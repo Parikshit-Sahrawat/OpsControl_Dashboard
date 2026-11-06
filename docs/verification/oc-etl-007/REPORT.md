@@ -79,3 +79,9 @@ ETL_WORKFLOW_UI_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_module
 ```
 
 Requires the documented test virtual environment, Chromium, local Docker and PostgreSQL image. The harness creates its own synthetic trust fixture and disposable database. No provider credentials are required or supplied.
+
+## Hosted checkout correction
+
+First evidence HEAD `dbdc7b32c4857e8d39e34aece4469e5ee30545a6` failed pipeline-contracts run42268856494:117 cases,115 passed and2 errors, no skips. Both errors occurred at `git archive` because actions/checkout's default shallow history omitted pinned a915322/a061bdb sources. [Raw regression log](hosted-attempt1/regressions.log), [workflow failure](hosted-attempt1/workflow-failure.log), [cleanup and exact commands](hosted-attempt1/RESULTS.json).
+
+Only pipeline-v16 checkout now requests complete history and verifies both exact historical `backend/app/main.py` objects before tests. No assertion, product behavior or safety guard changed. Local YAML parse and both `git cat-file -e` checks pass. Full final-HEAD hosted results are recorded in the PR closure comment after completion.

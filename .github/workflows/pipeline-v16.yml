@@ -19,6 +19,13 @@ jobs:
       V16_EVIDENCE_DIR: /tmp/opscontrol-v16-evidence
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Mixed-version acceptance archives these exact historical writers.
+          fetch-depth: 0
+      - name: Verify pinned older-writer source availability
+        run: |
+          git cat-file -e a915322b5c5c80b0d37dea71f6b7f70237082340:backend/app/main.py
+          git cat-file -e a061bdbabe7e250fe7141861c193ca837ef14dbe:backend/app/main.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

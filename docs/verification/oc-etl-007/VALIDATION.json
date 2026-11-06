@@ -61,5 +61,14 @@
     "source_application_matches_tested_commit": "PASS",
     "historical_migrations_and_agent_unchanged": "PASS",
     "hosted_ci": "PENDING until final evidence commit; see PR80 closure comment"
+  },
+  "hosted_attempt1": {
+    "sha": "dbdc7b32c4857e8d39e34aece4469e5ee30545a6",
+    "pipeline": "FAIL \u2014 missing pinned historical Git objects in shallow checkout",
+    "passed_cases": 115,
+    "errors": 2,
+    "skips": 0,
+    "correction": "pipeline checkout full history; explicit exact object verification; no assertions removed",
+    "workflow_yaml_and_local_objects": "PASS"
   }
 }
