@@ -1,0 +1,181 @@
+"""Focused ETL Phase A contracts, compatible with unittest CI discovery."""
+import unittest
+from unittest.mock import patch, MagicMock
+from uuid import uuid4
+
+from pydantic import ValidationError
+
+from app.schemas.etl import WorkflowCreate, WorkflowUpdate, WorkflowJobCreate, WorkflowJobUpdate, WorkflowDependencyCreate
+from app.models.entities import ETLWorkflow, ETLWorkflowDependency, JobOrder
+from app.api.etl import create_workflow, list_workflows, get_workflow, update_workflow, get_workflow_monitoring, update_workflow_job, create_workflow_job, list_workflow_jobs, create_workflow_dependency, list_workflow_dependencies
+from fastapi import HTTPException
+
+
+class ETLWorkflowFoundationTests(unittest.TestCase):
+    def test_workflow_owns_schedule_and_sla(self):
+        data = WorkflowCreate(
+            organization_id=uuid4(), name="nightly", timezone="Asia/Kolkata",
+            weekdays=[0, 2, 4], expected_window_start="01:00",
+            expected_window_end="03:00", expected_duration_seconds=1800, sla_seconds=3600,
+        )
+        self.assertEqual(data.expected_window_start, "01:00")
+        self.assertEqual(data.sla_seconds, 3600)
+
+    def test_invalid_workflow_schedule_rejected(self):
+        for values in (
+            {"timezone": "Invalid/Zone"},
+            {"weekdays": [8]},
+            {"expected_window_start": "01:00"},
+            {"expected_duration_seconds": 0},
+        ):
+            with self.subTest(values=values), self.assertRaises(ValidationError):
+                WorkflowCreate(organization_id=uuid4(), name="bad", **values)
+
+    def test_job_contract_excludes_workflow_timing(self):
+        self.assertNotIn("expected_window_start", WorkflowJobCreate.model_fields)
+        self.assertNotIn("sla_seconds", WorkflowJobCreate.model_fields)
+        job = WorkflowJobCreate(name="extract", hostname="etl-01", expected_duration_seconds=120)
+        self.assertEqual(job.expected_duration_seconds, 120)
+
+    def test_workflow_job_and_dependency_models_are_registered(self):
+        self.assertTrue(JobOrder.__table__.c.workflow_id.nullable)
+        self.assertEqual("etl_workflows", ETLWorkflow.__tablename__)
+        self.assertEqual("etl_workflow_dependencies", ETLWorkflowDependency.__tablename__)
+
+    def test_workflow_create_requires_customer_configure_permission(self):
+        org = uuid4()
+        payload = WorkflowCreate(organization_id=org, name="nightly")
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                create_workflow(payload, db=MagicMock())
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.configure", org)
+
+    def test_workflow_list_requires_customer_view_permission(self):
+        org = uuid4()
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                list_workflows(org, db=MagicMock())
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.view", org)
+
+    def test_child_workflow_routes_enforce_customer_permissions(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(id=wid, organization_id=org, name="nightly", environment="PROD")
+        cases = [
+            (create_workflow_job, (wid, WorkflowJobCreate(name="extract", hostname="etl-01", expected_duration_seconds=120)), "etl.configure"),
+            (list_workflow_jobs, (wid,), "etl.view"),
+            (create_workflow_dependency, (wid, WorkflowDependencyCreate(predecessor_job_id=uuid4(), successor_job_id=uuid4())), "etl.configure"),
+            (list_workflow_dependencies, (wid,), "etl.view"),
+        ]
+        for func, args, permission in cases:
+            with self.subTest(route=func.__name__), patch(
+                "app.api.etl.require_permission",
+                side_effect=HTTPException(403, "Permission required"),
+            ) as guard:
+                with self.assertRaises(HTTPException) as result:
+                    func(*args, db=db)
+                self.assertEqual(result.exception.status_code, 403)
+                guard.assert_called_once_with(permission, org)
+
+    def test_workflow_update_contract_rejects_invalid_schedule(self):
+        for changes in (
+            {"timezone": "Invalid/Zone"},
+            {"weekdays": [8]},
+            {"expected_window_start": "25:99"},
+            {"expected_duration_seconds": 0},
+        ):
+            with self.subTest(changes=changes), self.assertRaises(ValidationError):
+                WorkflowUpdate(**changes)
+
+    def test_workflow_update_enforces_customer_configure_permission(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                update_workflow(wid, WorkflowUpdate(name="new name"), db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.configure", org)
+
+    def test_workflow_update_rejects_incomplete_window(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+            schedule={"timezone": "UTC", "weekdays": [0]},
+        )
+        with patch("app.api.etl.require_permission"):
+            with self.assertRaises(HTTPException) as result:
+                update_workflow(wid, WorkflowUpdate(expected_window_start="01:00"), db=db)
+        self.assertEqual(result.exception.status_code, 422)
+        db.commit.assert_not_called()
+
+    def test_workflow_detail_enforces_customer_view_permission(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                get_workflow(wid, db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.view", org)
+
+    def test_workflow_job_update_validation(self):
+        for changes in ({"name": ""}, {"expected_duration_seconds": 0}):
+            with self.subTest(changes=changes), self.assertRaises(ValidationError):
+                WorkflowJobUpdate(**changes)
+
+    def test_workflow_job_update_requires_tenant_permission(self):
+        org, wid, jid = uuid4(), uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                update_workflow_job(wid, jid, WorkflowJobUpdate(active=False), db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.configure", org)
+
+    def test_workflow_monitoring_requires_tenant_view(self):
+        org, wid = uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission", side_effect=HTTPException(403, "Permission required")) as guard:
+            with self.assertRaises(HTTPException) as result:
+                get_workflow_monitoring(wid, db=db)
+            self.assertEqual(result.exception.status_code, 403)
+            guard.assert_called_once_with("etl.view", org)
+
+    def test_job_activation_blocked_when_workflow_inactive(self):
+        org, wid, jid = uuid4(), uuid4(), uuid4()
+        db = MagicMock()
+        db.get.return_value = ETLWorkflow(
+            id=wid, organization_id=org, name="nightly", environment="PROD",
+            active=False,
+        )
+        db.scalar.return_value = JobOrder(
+            id=jid, workflow_id=wid, organization_id=org,
+            name="extract", environment="PROD",
+        )
+        with patch("app.api.etl.require_permission"):
+            with self.assertRaises(HTTPException) as result:
+                update_workflow_job(wid, jid, WorkflowJobUpdate(active=True), db=db)
+        self.assertEqual(result.exception.status_code, 409)
+        db.commit.assert_not_called()
+
+    def test_dependency_contract_rejects_bad_uuid(self):
+        with self.assertRaises(ValidationError):
+            WorkflowDependencyCreate(predecessor_job_id="invalid", successor_job_id=uuid4())
+
+
+if __name__ == "__main__":
+    unittest.main()

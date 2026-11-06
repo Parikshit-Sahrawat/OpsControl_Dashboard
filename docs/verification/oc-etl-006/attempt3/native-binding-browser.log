@@ -1,0 +1,16 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Error: strict mode violation: getByText('Current binding: MISSING', { exact: true }).or(getByText('Current binding: STAGED', { exact: true })).or(getByText('Current binding: RETIRED', { exact: true })) resolved to 2 elements:
+    1) <p>Current binding: MISSING</p> aka getByRole('paragraph').filter({ hasText: 'Current binding: MISSING' })
+    2) <p>Current binding: MISSING</p> aka getByText('Current binding: MISSING').nth(1)
+
+Call log:
+[2m  - waiting for getByText('Current binding: MISSING', { exact: true }).or(getByText('Current binding: STAGED', { exact: true })).or(getByText('Current binding: RETIRED', { exact: true })) to be visible[22m
+
+    at config (/workspace/OpsControl_Dashboard/frontend/scripts/native_binding_acceptance.mjs:22:183)
+    at async open (/workspace/OpsControl_Dashboard/frontend/scripts/native_binding_acceptance.mjs:14:2)
+    at async file:///workspace/OpsControl_Dashboard/frontend/scripts/native_binding_acceptance.mjs:25:2
+
+Node.js v24.19.0

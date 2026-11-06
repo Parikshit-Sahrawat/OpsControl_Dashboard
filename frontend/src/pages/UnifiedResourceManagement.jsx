@@ -5,6 +5,7 @@ import { hasPermission } from "../permissions";
 import { canOpenSection } from "../navigation";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
+import ETLWorkflowConfiguration from "./ETLWorkflowConfiguration";
 import DataPipelineIntegrations from "./DataPipelineIntegrations";
 import MonitoringSetup from "./MonitoringSetup";
 import EventDelivery from "./EventDelivery";
@@ -494,6 +495,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           </button>
         </div>
       )}
+      {area === "resources" && domain === "ETL" && <ETLWorkflowConfiguration key={`${customer}:${environment}`} user={user} organizationId={customer} environment={environment} />}
       {area === "resources" && domain === "ETL" && (
         <DataPipelineIntegrations
           existingOnly

@@ -1,0 +1,160 @@
+
+test_authenticated_http_workflow_job_dependency_updates_and_negatives (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_authorized_workflow_and_dependency_commit_with_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authorized_workflow_and_dependency_commit_with_audit) ... ok
+test_cross_customer_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_dependency_rejected) ... ok
+test_cross_customer_job_workflow_reference_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_job_workflow_reference_rejected) ... ok
+test_dependency_endpoints_are_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_endpoints_are_immutable) ... ok
+test_dependency_self_edge_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_self_edge_rejected) ... ok
+test_existing_job_parent_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_existing_job_parent_is_immutable) ... ok
+test_failed_reference_preserves_existing_resources_and_no_success_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_failed_reference_preserves_existing_resources_and_no_success_audit) ... ok
+test_invalid_organization_cannot_persist (tests.test_etl_workflow_scope.WorkflowScopeTests.test_invalid_organization_cannot_persist) ... ok
+test_job_environment_must_match_parent (tests.test_etl_workflow_scope.WorkflowScopeTests.test_job_environment_must_match_parent) ... ok
+test_missing_dependency_parent_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_missing_dependency_parent_rejected) ... ok
+test_read_scope_and_empty_selection (tests.test_etl_workflow_scope.WorkflowScopeTests.test_read_scope_and_empty_selection) ... ok
+test_resource_restricted_unknown_workflow_fails_closed (tests.test_etl_workflow_scope.WorkflowScopeTests.test_resource_restricted_unknown_workflow_fails_closed) ... ok
+test_same_customer_wrong_workflow_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_same_customer_wrong_workflow_dependency_rejected) ... ok
+test_selected_scope_limits_even_admin (tests.test_etl_workflow_scope.WorkflowScopeTests.test_selected_scope_limits_even_admin) ... ok
+test_viewer_cannot_write (tests.test_etl_workflow_scope.WorkflowScopeTests.test_viewer_cannot_write) ... ok
+test_workflow_environment_cannot_invalidate_existing_jobs (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_environment_cannot_invalidate_existing_jobs) ... ok
+test_workflow_owner_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_owner_is_immutable) ... ok
+test_workflow_requires_visibility_of_every_child_resource (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_requires_visibility_of_every_child_resource) ... ok
+test_child_workflow_routes_enforce_customer_permissions (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_child_workflow_routes_enforce_customer_permissions) ... ok
+test_dependency_contract_rejects_bad_uuid (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_dependency_contract_rejects_bad_uuid) ... ok
+test_invalid_workflow_schedule_rejected (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_invalid_workflow_schedule_rejected) ... ok
+test_job_activation_blocked_when_workflow_inactive (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_activation_blocked_when_workflow_inactive) ... ok
+test_job_contract_excludes_workflow_timing (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_contract_excludes_workflow_timing) ... ok
+test_workflow_create_requires_customer_configure_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_create_requires_customer_configure_permission) ... ok
+test_workflow_detail_enforces_customer_view_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_detail_enforces_customer_view_permission) ... ok
+test_workflow_job_and_dependency_models_are_registered (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_and_dependency_models_are_registered) ... ok
+test_workflow_job_update_requires_tenant_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_requires_tenant_permission) ... ok
+test_workflow_job_update_validation (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_validation) ... ok
+test_workflow_list_requires_customer_view_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_list_requires_customer_view_permission) ... ok
+test_workflow_monitoring_requires_tenant_view (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_monitoring_requires_tenant_view) ... ok
+test_workflow_owns_schedule_and_sla (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_owns_schedule_and_sla) ... ok
+test_workflow_update_contract_rejects_invalid_schedule (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_contract_rejects_invalid_schedule) ... ok
+test_workflow_update_enforces_customer_configure_permission (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_enforces_customer_configure_permission) ... ok
+test_workflow_update_rejects_incomplete_window (tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_rejects_incomplete_window) ... ok
+test_authorization_mutation_excludes_dependency_writes (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_authorization_mutation_excludes_dependency_writes) ... ok
+test_busy_workflow_returns_actionable_error_without_mutation (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_busy_workflow_returns_actionable_error_without_mutation) ... ok
+test_concurrent_duplicate_has_one_commit_and_clean_rollback (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_duplicate_has_one_commit_and_clean_rollback) ... ok
+test_concurrent_long_cycle_uses_entire_persisted_graph (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_long_cycle_uses_entire_persisted_graph) ... ok
+test_concurrent_nonconflicting_edges_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_nonconflicting_edges_both_commit) ... ok
+test_concurrent_opposite_edges_cannot_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_opposite_edges_cannot_both_commit) ... ok
+test_workflow_lock_does_not_serialize_other_workflows (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_workflow_lock_does_not_serialize_other_workflows) ... ok
+test_existing_staged_bridge_authorization_and_generation (tests.test_etl_native_binding_contract.NativeBindingContractTests.test_existing_staged_bridge_authorization_and_generation) ... ok
+test_committed_binding_survives_owned_api_sigkill_and_restart (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_committed_binding_survives_owned_api_sigkill_and_restart) ... ok
+test_concurrent_same_job_one_commit_and_other_refresh (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_concurrent_same_job_one_commit_and_other_refresh) ... ok
+test_concurrent_target_ownership_and_nonconflicting_targets (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_concurrent_target_ownership_and_nonconflicting_targets) ... ok
+test_confirmation_requires_independent_reviewer_and_real_native_authority (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_confirmation_requires_independent_reviewer_and_real_native_authority) ... ok
+test_database_immutability_and_interrupted_closure_rollback (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_database_immutability_and_interrupted_closure_rollback) ... ok
+test_duplicate_conflict_and_failed_transaction_leave_no_operation (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_duplicate_conflict_and_failed_transaction_leave_no_operation) ... ok
+test_fence_advance_without_generation_change_is_not_a_rebind (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_fence_advance_without_generation_change_is_not_a_rebind) ... ok
+test_native_binding_authenticated_browser (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_native_binding_authenticated_browser) ... ok
+test_populated_binding_downgrade_refused_and_full_restore_preserves_history (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_populated_binding_downgrade_refused_and_full_restore_preserves_history) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_reader_versions_from_another_integration_cannot_be_snapshotted (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_reader_versions_from_another_integration_cannot_be_snapshotted) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_readiness_version_evaluation_and_legacy_history_not_inferred (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_readiness_version_evaluation_and_legacy_history_not_inferred) ... ok
+test_receipt_cannot_claim_unconfirmed_historical_binding (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_receipt_cannot_claim_unconfirmed_historical_binding) ... ok
+test_role_revocation_and_view_only_denial (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_role_revocation_and_view_only_denial) ... ok
+test_same_qualified_claim_cannot_get_two_job_owners (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_same_qualified_claim_cannot_get_two_job_owners) ... ok
+test_stage_replace_retire_idempotency_and_immutable_history (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_stage_replace_retire_idempotency_and_immutable_history) ... ok
+test_stale_generation_inflight_and_retention_holds (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_stale_generation_inflight_and_retention_holds) ... ok
+test_tenant_environment_invalid_payload_and_unauthenticated_denials (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_tenant_environment_invalid_payload_and_unauthenticated_denials) ... ok
+test_observed_and_committed_clocks_and_boundary (tests.test_etl_binding_lifecycle.FreshnessPolicyTests.test_observed_and_committed_clocks_and_boundary) ... ok
+test_aliases_have_one_canonical_key_but_operator_changes_cannot_claim_authority (tests.test_etl_authority_writer.AuthorityWriterTests.test_aliases_have_one_canonical_key_but_operator_changes_cannot_claim_authority) ... ok
+test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart (tests.test_etl_authority_writer.AuthorityWriterTests.test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart) ... ERROR
+test_expiry_signature_and_live_issuer_revocation_are_rejected (tests.test_etl_authority_writer.AuthorityWriterTests.test_expiry_signature_and_live_issuer_revocation_are_rejected) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_legacy_write_before_optin_commits_before_the_binding (tests.test_etl_authority_writer.AuthorityWriterTests.test_legacy_write_before_optin_commits_before_the_binding) ... ok
+test_old_sql_bypasses_and_checkpoint_batch_are_rolled_back (tests.test_etl_authority_writer.AuthorityWriterTests.test_old_sql_bypasses_and_checkpoint_batch_are_rolled_back) ... ok
+test_signed_contract_preview_cannot_persist_or_confirm_provider_authority (tests.test_etl_authority_writer.AuthorityWriterTests.test_signed_contract_preview_cannot_persist_or_confirm_provider_authority) ... ok
+test_transaction_local_writer_marker_cannot_leak_to_old_requests (tests.test_etl_authority_writer.AuthorityWriterTests.test_transaction_local_writer_marker_cannot_leak_to_old_requests) ... ok
+test_writer_fence_survives_restore_and_unsafe_downgrade_refuses (tests.test_etl_authority_writer.AuthorityWriterTests.test_writer_fence_survives_restore_and_unsafe_downgrade_refuses) ... ok
+test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+FAIL
+test_common_root_groups_distinct_failures_and_preserves_evidence (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_common_root_groups_distinct_failures_and_preserves_evidence) ... /workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_concurrent_assessments_serialize_revision (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_assessments_serialize_revision) ... ok
+test_concurrent_correlation_preserves_single_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_correlation_preserves_single_incident) ... ok
+test_conflicted_failure_cannot_create_authoritative_association (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicted_failure_cannot_create_authoritative_association) ... ok
+test_conflicting_recovery_evidence_blocks_validation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicting_recovery_evidence_blocks_validation) ... ok
+test_current_source_requires_complete_receipt (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_current_source_requires_complete_receipt) ... ok
+test_distinct_failure_observations_are_all_preserved (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_distinct_failure_observations_are_all_preserved) ... ok
+test_failure_and_assessment_evidence_is_immutable (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_failure_and_assessment_evidence_is_immutable) ... ok
+test_gap_in_observation_restarts_period (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_gap_in_observation_restarts_period) ... ok
+test_historical_root_never_reopens_resolved_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_historical_root_never_reopens_resolved_incident) ... ok
+test_incomplete_recovery_is_not_restoration (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_incomplete_recovery_is_not_restoration) ... ok
+test_live_failure_after_closed_root_creates_new_episode (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_live_failure_after_closed_root_creates_new_episode) ... ok
+test_manual_recovery_preserves_failed_original_and_requires_observation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_manual_recovery_preserves_failed_original_and_requires_observation) ... ok
+test_missing_schedule_compliance_blocks_validation (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_missing_schedule_compliance_blocks_validation) ... ok
+test_stale_idempotent_and_unauthorized_assessments (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_stale_idempotent_and_unauthorized_assessments) ... ok
+test_unhealthy_downstream_dependency_blocks_recovery (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_downstream_dependency_blocks_recovery) ... ok
+test_unhealthy_monitoring_blocks_and_resets_window (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_monitoring_blocks_and_resets_window) ... ok
+test_unrelated_same_job_and_time_stay_separate (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unrelated_same_job_and_time_stay_separate) ... ok
+test_verified_failure_creates_native_incident_and_replay_is_idempotent (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_verified_failure_creates_native_incident_and_replay_is_idempotent) ... ok
+test_waiting_for_retry_creates_no_terminal_incident (tests.test_pentaho_incident_r1.PentahoIncidentTests.test_waiting_for_retry_creates_no_terminal_incident) ... ok
+test_all_future_and_snapshot_semantics (tests.test_sprint08_rbac.Sprint08RBAC.test_all_future_and_snapshot_semantics) ... ok
+test_all_requires_separate_authority (tests.test_sprint08_rbac.Sprint08RBAC.test_all_requires_separate_authority) ... ok
+test_boundary_decision_history_cannot_be_rewritten_or_deleted (tests.test_sprint08_rbac.Sprint08RBAC.test_boundary_decision_history_cannot_be_rewritten_or_deleted) ... ok
+test_delegation_budget_prevents_role_escalation (tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_budget_prevents_role_escalation) ... ok
+test_delegation_is_not_inferred_from_access_role (tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_is_not_inferred_from_access_role) ... ok
+test_deny_overrides_limit_and_inherited_allow (tests.test_sprint08_rbac.Sprint08RBAC.test_deny_overrides_limit_and_inherited_allow) ... ok
+test_direct_and_legacy_multi_department_inheritance_preserved (tests.test_sprint08_rbac.Sprint08RBAC.test_direct_and_legacy_multi_department_inheritance_preserved) ... ok
+test_environment_limit_filters_before_pagination (tests.test_sprint08_rbac.Sprint08RBAC.test_environment_limit_filters_before_pagination) ... ok
+test_global_employee_deny_survives_other_grants (tests.test_sprint08_rbac.Sprint08RBAC.test_global_employee_deny_survives_other_grants) ... ok
+test_invalid_persisted_policy_fails_closed (tests.test_sprint08_rbac.Sprint08RBAC.test_invalid_persisted_policy_fails_closed) ... ok
+test_inventory_query_count_is_not_per_row (tests.test_sprint08_rbac.Sprint08RBAC.test_inventory_query_count_is_not_per_row) ... ok
+test_large_customer_selection_keeps_restriction_sql_bounded (tests.test_sprint08_rbac.Sprint08RBAC.test_large_customer_selection_keeps_restriction_sql_bounded) ... ok
+test_multiple_limits_intersect_instead_of_bypassing_a_restriction (tests.test_sprint08_rbac.Sprint08RBAC.test_multiple_limits_intersect_instead_of_bypassing_a_restriction) ... ok
+test_no_selection_is_empty (tests.test_sprint08_rbac.Sprint08RBAC.test_no_selection_is_empty) ... ok
+test_omitted_selection_and_wildcard_fail_closed (tests.test_sprint08_rbac.Sprint08RBAC.test_omitted_selection_and_wildcard_fail_closed) ... ok
+test_one_customer_sql_scope (tests.test_sprint08_rbac.Sprint08RBAC.test_one_customer_sql_scope) ... ok
+test_resource_limit_allows_exact_id (tests.test_sprint08_rbac.Sprint08RBAC.test_resource_limit_allows_exact_id) ... ok
+test_revocation_changes_existing_session_projection (tests.test_sprint08_rbac.Sprint08RBAC.test_revocation_changes_existing_session_projection) ... ok
+test_scope_revision_explains_restrictions (tests.test_sprint08_rbac.Sprint08RBAC.test_scope_revision_explains_restrictions) ... ok
+test_separate_delegations_cannot_form_permission_customer_cross_product (tests.test_sprint08_rbac.Sprint08RBAC.test_separate_delegations_cannot_form_permission_customer_cross_product) ... ok
+test_unassigned_all_role_never_grants (tests.test_sprint08_rbac.Sprint08RBAC.test_unassigned_all_role_never_grants) ... ok
+test_worker_replay_rechecks_resource_restrictions (tests.test_sprint08_rbac.Sprint08RBAC.test_worker_replay_rechecks_resource_restrictions) ... ok
+
+======================================================================
+ERROR: test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart (tests.test_etl_authority_writer.AuthorityWriterTests.test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_authority_writer.py", line 457, in test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart
+    self.req(
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_binding_lifecycle.py", line 187, in req
+    data = json.load(e)
+           ^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+           ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+FAIL: test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_etl_workflow_ui.py", line 139, in test_real_configuration_browser_and_receipts
+    self.assertEqual(result.returncode, 0, "See redacted workflow-browser.log")
+AssertionError: 1 != 0 : See redacted workflow-browser.log
+
+----------------------------------------------------------------------
+Ran 112 tests in 71.660s
+
+FAILED (failures=1, errors=1)

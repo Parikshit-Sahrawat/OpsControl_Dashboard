@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "errors": [],
+  "tests": {
+    "passed": 77,
+    "failed": 0,
+    "skipped": 0,
+    "new_scope": 19,
+    "existing_foundation": 16,
+    "existing_rbac": 22,
+    "existing_incident": 20,
+    "http_assertions_within_tests": 21
+  },
+  "schema_upgrade_and_check": "PASS",
+  "cleanup": "PASS",
+  "workflow_validation": "PASS",
+  "compile": "PASS",
+  "final_focused_lint": "PASS",
+  "earlier_attempts": [
+    {
+      "attempt": 1,
+      "passed": 58,
+      "errors": 18
+    },
+    {
+      "attempt": 2,
+      "passed": 75,
+      "failed": 1
+    },
+    {
+      "attempt": 3,
+      "passed": 77
+    }
+  ],
+  "limitations": [
+    "No populated downgrade, concurrent DAG race, genuine provider, or release qualification",
+    "Hosted CI pending final pushed head; local workflow validation is not hosted CI"
+  ]
+}

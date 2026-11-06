@@ -1,0 +1,120 @@
+backend/migrations/versions/0003_alert_rules.py:38:def downgrade():
+backend/migrations/versions/0003_alert_rules.py:39:    op.drop_table("alert_rules")
+backend/migrations/versions/0007_log_events.py:41:def downgrade():
+backend/migrations/versions/0007_log_events.py:48:    op.drop_table("log_events")
+backend/migrations/versions/0011_phase1_resource_management.py:20:def downgrade():
+backend/migrations/versions/0002_monitoring_configuration.py:105:def downgrade():
+backend/migrations/versions/0002_monitoring_configuration.py:106:    op.drop_table("log_sources")
+backend/migrations/versions/0002_monitoring_configuration.py:107:    op.drop_table("metric_definitions")
+backend/migrations/versions/0002_monitoring_configuration.py:108:    op.drop_table("collectors")
+backend/migrations/versions/0002_monitoring_configuration.py:109:    op.drop_table("data_sources")
+backend/migrations/versions/0015_remote_jobs.py:47:def downgrade():
+backend/migrations/versions/0015_remote_jobs.py:48:    op.drop_table("remote_probe_evidence")
+backend/migrations/versions/0015_remote_jobs.py:49:    op.drop_table("remote_probe_jobs")
+backend/migrations/versions/0015_remote_jobs.py:50:    op.drop_column("worker_identities","allowed_cidrs")
+backend/migrations/versions/0015_remote_jobs.py:51:    op.drop_column("worker_identities","allowed_hosts")
+backend/migrations/versions/0006_alert_state.py:72:def downgrade():
+backend/migrations/versions/0006_alert_state.py:73:    op.drop_table("alert_notification_deliveries")
+backend/migrations/versions/0006_alert_state.py:75:    op.drop_table("alert_states")
+backend/migrations/versions/0006_alert_state.py:76:    op.drop_column("alert_rules", "notification_channels")
+backend/migrations/versions/0019_infrastructure_evidence.py:31:def downgrade():
+backend/migrations/versions/0019_infrastructure_evidence.py:32:    op.drop_table('infrastructure_evidence')
+backend/migrations/versions/0019_infrastructure_evidence.py:34:    op.drop_column('data_sources','discovery_external_id')
+backend/migrations/versions/0010_template_attachments.py:32:def downgrade():
+backend/migrations/versions/0010_template_attachments.py:35:    op.drop_table("monitoring_template_attachments")
+backend/migrations/versions/0004_collector_runs.py:35:def downgrade():
+backend/migrations/versions/0004_collector_runs.py:36:    op.drop_table("collector_runs")
+backend/migrations/versions/0023_worker_heartbeat.py:16:def downgrade():
+backend/migrations/versions/0023_worker_heartbeat.py:17:    op.drop_column('worker_identities', 'last_seen_at')
+backend/migrations/versions/0014_audit_mutation_guard.py:32:def downgrade():
+backend/migrations/versions/0001_initial.py:184:def downgrade():
+backend/migrations/versions/0001_initial.py:190:        op.drop_table(table)
+backend/migrations/versions/0008_correlation_engine.py:59:def downgrade():
+backend/migrations/versions/0008_correlation_engine.py:65:    op.drop_table("correlation_evidence")
+backend/migrations/versions/0008_correlation_engine.py:68:    op.drop_table("correlation_records")
+backend/migrations/versions/0018_pentaho_execution_identity.py:15:def downgrade():
+backend/migrations/versions/0018_pentaho_execution_identity.py:17:    op.drop_column("job_order_histories","provider_execution_id")
+backend/migrations/versions/0022_runtime_query_indexes.py:21:def downgrade():
+backend/migrations/versions/0012_identity_and_memberships.py:39:def downgrade():
+backend/migrations/versions/0012_identity_and_memberships.py:40:    op.drop_table("access_sessions")
+backend/migrations/versions/0012_identity_and_memberships.py:41:    op.drop_table("organization_memberships")
+backend/migrations/versions/0012_identity_and_memberships.py:42:    op.drop_table("users")
+backend/migrations/versions/0005_metric_samples.py:38:def downgrade():
+backend/migrations/versions/0005_metric_samples.py:39:    op.drop_table("metric_samples")
+backend/migrations/versions/0016_remote_collector_assignment.py:18:def downgrade():
+backend/migrations/versions/0016_remote_collector_assignment.py:20:    op.drop_column("collectors","remote_worker_id")
+backend/migrations/versions/0020_etl_monitoring_evidence.py:14:def downgrade():
+backend/migrations/versions/0020_etl_monitoring_evidence.py:15:    op.drop_column('job_order_histories', 'source_evidence')
+backend/migrations/versions/0020_etl_monitoring_evidence.py:17:    op.drop_column('job_orders', 'host_data_source_id')
+backend/migrations/versions/0009_monitoring_templates.py:46:def downgrade():
+backend/migrations/versions/0009_monitoring_templates.py:48:    op.drop_table("monitoring_template_versions")
+backend/migrations/versions/0009_monitoring_templates.py:49:    op.drop_table("monitoring_templates")
+backend/migrations/versions/0026_managed_telemetry_uat.py:92:def downgrade():
+backend/migrations/versions/0026_managed_telemetry_uat.py:120:    op.drop_column("alert_states", "acknowledged_by")
+backend/migrations/versions/0026_managed_telemetry_uat.py:121:    op.drop_column("alert_states", "acknowledged_at")
+backend/migrations/versions/0026_managed_telemetry_uat.py:122:    op.drop_column("alert_rules", "evaluation_config")
+backend/migrations/versions/0026_managed_telemetry_uat.py:124:        op.drop_table(name)
+backend/migrations/versions/0027_unified_monitoring.py:58:TABLES = (
+backend/migrations/versions/0027_unified_monitoring.py:223:def downgrade():
+backend/migrations/versions/0027_unified_monitoring.py:251:        op.drop_table(table)
+backend/migrations/versions/0027_unified_monitoring.py:254:        op.drop_column("job_step_executions", column)
+backend/migrations/versions/0027_unified_monitoring.py:255:    op.drop_column("job_order_histories", "monitoring_conditions")
+backend/migrations/versions/0027_unified_monitoring.py:256:    op.drop_column("collector_runs", "source_metadata")
+backend/migrations/versions/0027_unified_monitoring.py:257:    op.drop_column("collector_config_versions", "agent_configuration")
+backend/migrations/versions/0024_notification_leases.py:18:def downgrade():
+backend/migrations/versions/0024_notification_leases.py:19:    op.drop_column('alert_notification_deliveries','lease_expires_at')
+backend/migrations/versions/0024_notification_leases.py:20:    op.drop_column('alert_notification_deliveries','lease_token')
+backend/migrations/versions/0030_native_incidents_v15.py:133:def downgrade():
+backend/migrations/versions/0030_native_incidents_v15.py:144:    op.drop_table("native_incident_alerts")
+backend/migrations/versions/0030_native_incidents_v15.py:145:    op.drop_table("native_incident_details")
+backend/migrations/versions/0030_native_incidents_v15.py:156:    op.drop_column("role_permissions", "active")
+backend/migrations/versions/0034_pentaho_evidence_review.py:56:def downgrade():
+backend/migrations/versions/0034_pentaho_evidence_review.py:76:    op.drop_table("pentaho_evidence_decisions")
+backend/migrations/versions/0034_pentaho_evidence_review.py:77:    op.drop_table("pentaho_evidence_reviews")
+backend/migrations/versions/0034_pentaho_evidence_review.py:80:    op.drop_column("job_order_histories", "pentaho_review_state")
+backend/migrations/versions/0013_security_controls.py:44:def downgrade():
+backend/migrations/versions/0013_security_controls.py:45:    op.drop_table("worker_identities")
+backend/migrations/versions/0013_security_controls.py:46:    op.drop_table("security_audit_events")
+backend/migrations/versions/0013_security_controls.py:47:    op.drop_table("auth_throttle_buckets")
+backend/migrations/versions/0031_in_app_notifications.py:57:def downgrade():
+backend/migrations/versions/0031_in_app_notifications.py:67:    op.drop_table("in_app_notifications")
+backend/migrations/versions/0031_in_app_notifications.py:68:    op.drop_column("users", "notification_preferences")
+backend/migrations/versions/0035_pentaho_schedule_history.py:115:def downgrade():
+backend/migrations/versions/0035_pentaho_schedule_history.py:135:    op.drop_column("in_app_notifications", "historical_notice_id")
+backend/migrations/versions/0035_pentaho_schedule_history.py:142:    op.drop_table("pentaho_historical_notices")
+backend/migrations/versions/0035_pentaho_schedule_history.py:144:    op.drop_column("expected_execution_windows", "pentaho_authority")
+backend/migrations/versions/0017_rule_catalogs_activation.py:60:def downgrade():
+backend/migrations/versions/0017_rule_catalogs_activation.py:61:    op.drop_table("monitoring_rule_bindings")
+backend/migrations/versions/0017_rule_catalogs_activation.py:62:    op.drop_table("monitoring_activations")
+backend/migrations/versions/0017_rule_catalogs_activation.py:63:    op.drop_table("monitoring_rule_versions")
+backend/migrations/versions/0017_rule_catalogs_activation.py:64:    op.drop_table("monitoring_rule_catalogs")
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:115:def downgrade():
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:126:    op.drop_table("kubernetes_cluster_association_decisions")
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:127:    op.drop_table("kubernetes_cluster_associations")
+backend/migrations/versions/0038_kubernetes_cluster_associations.py:128:    op.drop_table("kubernetes_clusters")
+backend/migrations/versions/0039_etl_workflow_foundation.py:49:def downgrade():
+backend/migrations/versions/0039_etl_workflow_foundation.py:51:    op.drop_table("etl_workflow_dependencies")
+backend/migrations/versions/0039_etl_workflow_foundation.py:54:    op.drop_column("job_orders", "workflow_id")
+backend/migrations/versions/0039_etl_workflow_foundation.py:56:    op.drop_table("etl_workflows")
+backend/migrations/versions/0021_operational_incidents.py:70:def downgrade():
+backend/migrations/versions/0021_operational_incidents.py:71:    op.drop_table("incident_activities")
+backend/migrations/versions/0021_operational_incidents.py:73:    op.drop_table("operational_incidents")
+backend/migrations/versions/0033_pentaho_attempts.py:12:TABLES = [
+backend/migrations/versions/0033_pentaho_attempts.py:156:def downgrade():
+backend/migrations/versions/0033_pentaho_attempts.py:172:        op.drop_table(table)
+backend/migrations/versions/0033_pentaho_attempts.py:201:        op.drop_column("job_order_histories", name)
+backend/migrations/versions/0037_access_boundaries.py:91:def downgrade():
+backend/migrations/versions/0037_access_boundaries.py:100:    op.drop_table("access_boundary_decisions")
+backend/migrations/versions/0037_access_boundaries.py:101:    op.drop_table("access_boundaries")
+backend/migrations/versions/0025_provider_department_rbac.py:405:def downgrade():
+backend/migrations/versions/0036_native_incident_recovery.py:37:def downgrade():
+backend/migrations/versions/0036_native_incident_recovery.py:46:    op.drop_table("native_recovery_assessments")
+backend/migrations/versions/0036_native_incident_recovery.py:47:    op.drop_table("native_incident_failures")
+backend/migrations/versions/0029_agent_v15.py:48:def downgrade():
+backend/migrations/versions/0029_agent_v15.py:49:    op.drop_column("managed_agents", "method_health")
+backend/migrations/versions/0029_agent_v15.py:61:        op.drop_column("managed_agents", name)
+backend/migrations/versions/0032_pipeline_ownership.py:41:TABLES = [
+backend/migrations/versions/0032_pipeline_ownership.py:60:def downgrade():
+backend/migrations/versions/0032_pipeline_ownership.py:68:        op.drop_table(table)
+backend/migrations/versions/0028_attribute_registry.py:5792:def downgrade():
+backend/migrations/versions/0028_attribute_registry.py:5813:        op.drop_table(name)

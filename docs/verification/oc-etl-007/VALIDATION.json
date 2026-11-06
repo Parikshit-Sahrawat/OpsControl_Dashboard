@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-11-06T18:13:20.516293+00:00",
+  "baseline": "a061bdbabe7e250fe7141861c193ca837ef14dbe",
+  "implementation_sha": "882e7b7cf354666ae5dfa3d7213efb193ff855b9",
+  "tested_sha": "2b8eada577d0a56358d599c2f3a5e02d687b30a1",
+  "tests": {
+    "passed": 117,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "retained_cases": 104,
+  "new_cases": 13,
+  "new_browser_groups": 4,
+  "retained_browser_groups": 28,
+  "frontend": {
+    "passed": 46,
+    "failed": 0,
+    "skipped": 0,
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "full_quality_exit": 0,
+  "pipeline_regression": {
+    "transport_passed": 14,
+    "postgresql_passed": 56,
+    "http_groups": 9,
+    "counts_overlap": true
+  },
+  "fenced_tables_exercised": 23,
+  "restore_tables_compared": 107,
+  "old_versions_tested": [
+    "a915322b5c5c80b0d37dea71f6b7f70237082340",
+    "a061bdbabe7e250fe7141861c193ca837ef14dbe"
+  ],
+  "genuine_provider_attestations": 0,
+  "qualified_binding_receipts": 0,
+  "provider_positive_paths": "BLOCKED / NOT RUN",
+  "older_writer_result": "FENCE VERIFIED; full rollback BLOCKED",
+  "deployment": "BLOCKED / NOT PERFORMED",
+  "cleanup": {
+    "container_remaining": false,
+    "api_stopped": true,
+    "ui_stopped": true,
+    "private_trust_and_browser_fixtures": "removed"
+  },
+  "overall": "PARTIAL/BLOCKED",
+  "hosted_ci": "Final evidence-HEAD conclusions recorded in PR80 closure comment",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "owned_lifecycle_http_assertions_new_and_retained": 116,
+  "new_authority_writer_http_assertions": 50,
+  "documentation_checks": {
+    "json_validity": "PASS",
+    "local_report_links": "PASS",
+    "bearer_redaction": "PASS",
+    "source_application_matches_tested_commit": "PASS",
+    "historical_migrations_and_agent_unchanged": "PASS",
+    "hosted_ci": "PENDING until final evidence commit; see PR80 closure comment"
+  },
+  "hosted_attempt1": {
+    "sha": "dbdc7b32c4857e8d39e34aece4469e5ee30545a6",
+    "pipeline": "FAIL \u2014 missing pinned historical Git objects in shallow checkout",
+    "passed_cases": 115,
+    "errors": 2,
+    "skips": 0,
+    "correction": "pipeline checkout full history; explicit exact object verification; no assertions removed",
+    "workflow_yaml_and_local_objects": "PASS"
+  }
+}

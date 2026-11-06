@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/8c02a2a6-a011-4577-9309-06f1dc7212bc/jobs/2ffb4e08-ee91-471d-9249-3151d412adf4/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "READER_VERSION_OWNERSHIP_MISMATCH"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/8c02a2a6-a011-4577-9309-06f1dc7212bc/jobs/2ffb4e08-ee91-471d-9249-3151d412adf4/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	﻿2026-11-05T19:41:16.9777108Z ##[group]Run make test-pentaho
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9777383Z [36;1mmake test-pentaho[0m
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9789008Z shell: /usr/bin/bash -e {0}
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9789239Z env:
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9789482Z   OPSCONTROL_TEST_EVIDENCE_DIR: /home/runner/work/_temp/v15-quality
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9789849Z   PRETTIER_BIN: /home/runner/work/_temp/v15-tools/node_modules/.bin/prettier
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9790244Z   PLAYWRIGHT_MODULE: /home/runner/work/_temp/v15-tools/node_modules/playwright/index.mjs
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9790619Z   OPSCONTROL_OTEL_BINARY: /home/runner/work/_temp/otelcol-contrib
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9790933Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9791248Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9791574Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9791859Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9792167Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9792494Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9792744Z ##[endgroup]
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:41:16.9834573Z bash scripts/test-quality.sh pentaho
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.2560860Z Sprint 08 existing authorization/history/holds preservation PASS
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.2561463Z V16_FAILED_PROBE scripts.sprint13_recovery_probe
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4039973Z Traceback (most recent call last):
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4040904Z AssertionError: Populated restored downgrade did not refuse with preservation guard
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4041760Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/v16-acceptance.py", line 301, in <module>
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4042454Z     print(run([python, "-m", "scripts.sprint13_recovery_probe"], root / "backend"))
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4043000Z           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4043748Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/v16-acceptance.py", line 63, in run
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4044372Z     raise RuntimeError(
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4044915Z RuntimeError: Owned V1.6 check failed; private diagnostics: /tmp/opscontrol-v16-i4mg546b
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4232909Z make: *** [Makefile:42: test-pentaho] Error 1
+verification	Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression	2026-11-05T19:44:13.4248443Z ##[error]Process completed with exit code 2.

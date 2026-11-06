@@ -1,0 +1,30 @@
+{
+  "status": "PASS_FENCE_ENFORCEMENT_ONLY",
+  "older_full_writer_compatibility": "BLOCKED",
+  "binaries": [
+    {
+      "source_sha": "a915322b5c5c80b0d37dea71f6b7f70237082340",
+      "archive_sha256": "dce3acc5812ac7a7db06acaf77c1dfeb02650f694828c3edc85869907cd856bb",
+      "legacy_unaffected_http": 201,
+      "opted_in_http": [
+        500,
+        500,
+        500
+      ],
+      "meaning": "DB refusal under unchanged older handler; old health/read200 is not safe writer readiness"
+    },
+    {
+      "source_sha": "a061bdbabe7e250fe7141861c193ca837ef14dbe",
+      "archive_sha256": "3f6d8b377074d957d91bd659b334a5bedc87d5c7c9cfce1dd641658c7028f361",
+      "legacy_unaffected_http": 201,
+      "opted_in_http": [
+        500,
+        500,
+        500
+      ],
+      "meaning": "DB refusal under unchanged older handler; old health/read200 is not safe writer readiness"
+    }
+  ],
+  "opted_in_persisted": 0,
+  "unaffected_legacy_persisted": 2
+}

@@ -1,0 +1,1452 @@
+{
+  "baseline": "a420dbc12e66196e00832f450d46a739b7cd0e99",
+  "authority": "Owner conversation task OC-ETL-003A.1, 2026-11-05; nine explicit bounded functional approvals. CI did not grant them.",
+  "journeys": [
+    {
+      "journey": 1,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 2,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 3,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 4,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 5,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 6,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 7,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 8,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 9,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 10,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 11,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 12,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 13,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 14,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 15,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 16,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 17,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 18,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 19,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 20,
+      "scope": "EXCLUDED",
+      "source": "EXCLUDED",
+      "mapping": null
+    },
+    {
+      "journey": 21,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 22,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 23,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 24,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 25,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 26,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 27,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 28,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 29,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 30,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 31,
+      "scope": "INCLUDED",
+      "source": "SOURCE_NOT_RECOVERED",
+      "mapping": null
+    },
+    {
+      "journey": 32,
+      "scope": "SKIPPED",
+      "source": "SKIPPED",
+      "mapping": null
+    },
+    {
+      "journey": 33,
+      "scope": "INCLUDED",
+      "source": "PARTIAL_SOURCE",
+      "mapping": null
+    }
+  ],
+  "requirements": [
+    {
+      "id": "RM-01",
+      "scope": "Customer Organizations are monitored customers, distinct from provider Departments",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_sprint08_rbac.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; missing referenced paths: backend/app/api/collectors.py"
+    },
+    {
+      "id": "RM-02",
+      "scope": "Resource Management is sole onboarding/inventory/configuration plane",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_sprint08_rbac.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; missing referenced paths: backend/app/api/collectors.py"
+    },
+    {
+      "id": "RM-03",
+      "scope": "Compact lists, collapsible sidebar and responsive UX",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_sprint08_rbac.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; missing referenced paths: backend/app/api/collectors.py"
+    },
+    {
+      "id": "RM-04",
+      "scope": "Collector configuration supports multiple independently added methods",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_sprint08_rbac.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; missing referenced paths: backend/app/api/collectors.py"
+    },
+    {
+      "id": "RM-05",
+      "scope": "Method-specific canonical collection identity and one fenced active owner",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_sprint08_rbac.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; missing referenced paths: backend/app/api/collectors.py"
+    },
+    {
+      "id": "AM-01",
+      "scope": "Internal employees, departments, direct/inherited roles and customer-scoped RBAC",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/security/scope.py",
+        "backend/app/api/access.py"
+      ],
+      "tests": [
+        "backend/tests/test_access_control.py",
+        "backend/tests/test_sprint08_rbac.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "AM-02",
+      "scope": "Employee table Name/Username/Email and header actions",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/security/scope.py",
+        "backend/app/api/access.py"
+      ],
+      "tests": [
+        "backend/tests/test_access_control.py",
+        "backend/tests/test_sprint08_rbac.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_UNVERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "AM-03",
+      "scope": "Departments Members & access navigation and assignment",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/security/scope.py",
+        "backend/app/api/access.py"
+      ],
+      "tests": [
+        "backend/tests/test_access_control.py",
+        "backend/tests/test_sprint08_rbac.py"
+      ],
+      "workflow": ".github/workflows/access-architecture.yml",
+      "job": "access-rbac",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_UNVERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "SET-01",
+      "scope": "Profile/account security, display and notification preferences",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "SET-02",
+      "scope": "Admin-authorized platform settings with safe persistence/audit",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "NOT_IMPLEMENTED; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "HELP-01",
+      "scope": "Manual, technical docs, provider SOP/runbooks, FAQ",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "TEL-01",
+      "scope": "Windows/Linux agent install/enrollment and authenticated bridge",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/telemetry/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "TEL-02",
+      "scope": "Logs, metrics, traces with explicit method identity",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/telemetry/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "TEL-03",
+      "scope": "Durable ingestion, backpressure, replay and loss accounting",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/telemetry/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "TEL-04",
+      "scope": "Certificate lifecycle/private trust/clock uncertainty",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/telemetry/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "BLOCKED_ARCHITECTURE; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "CMP-01",
+      "scope": "Windows/Linux VM/EC2 native operational health",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/unified/engines.py"
+      ],
+      "tests": [
+        "backend/tests/test_unified_monitoring.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/arch001-native-monitoring.yml",
+      "job": "native-monitoring",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "CMP-02",
+      "scope": "One owning customer for each VM/EC2",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/unified/engines.py"
+      ],
+      "tests": [
+        "backend/tests/test_unified_monitoring.py",
+        "backend/tests/test_managed_telemetry.py"
+      ],
+      "workflow": ".github/workflows/arch001-native-monitoring.yml",
+      "job": "native-monitoring",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "DP-01",
+      "scope": "Read-only Pentaho outcome, health, identity and evidence",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/data_pipelines/service.py"
+      ],
+      "tests": [
+        "backend/tests/test_pipeline_ownership_v16.py",
+        "backend/tests/test_pipeline_transport_v16.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "DP-02",
+      "scope": "Nine platform-native classifications and version-aware profiles",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/data_pipelines/service.py"
+      ],
+      "tests": [
+        "backend/tests/test_pipeline_ownership_v16.py",
+        "backend/tests/test_pipeline_transport_v16.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "API-01",
+      "scope": "HTTP/TLS/synthetic endpoint operational monitoring",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/activation.py",
+        "frontend/src/pages/MonitoringSetup.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_activation_hydration.py",
+        "frontend/scripts/test_monitoring_setup.mjs"
+      ],
+      "workflow": ".github/workflows/phase1-staging.yml",
+      "job": "staging-smoke",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "K8S-01",
+      "scope": "Authorized multi-customer canonical Kubernetes clusters",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "32 \u2014 SKIPPED (historical scope only)",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER-ACCEPTED REMOVAL \u2014 historical decision retained",
+      "uat": "N/A \u2014 excluded functionality; historical removal evidence retained",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "REMOVED_FROM_SCOPE \u2014 historical preservation/removal regressions only; no operational coverage required"
+    },
+    {
+      "id": "K8S-02",
+      "scope": "EKS discovery and node/pod/cluster health",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "32 \u2014 SKIPPED (historical scope only)",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER-ACCEPTED REMOVAL \u2014 historical decision retained",
+      "uat": "N/A \u2014 excluded functionality; historical removal evidence retained",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "REMOVED_FROM_SCOPE \u2014 historical preservation/removal regressions only; no operational coverage required"
+    },
+    {
+      "id": "TOP-01",
+      "scope": "Customer-safe topology relationships, freshness/history",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "OPS-01",
+      "scope": "Alerting, incident/service ownership and notifications",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/native_incidents/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_native_incidents_v15.py",
+        "backend/tests/test_pentaho_incident_r1.py"
+      ],
+      "workflow": ".github/workflows/operational-acceptance.yml",
+      "job": "noc",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "OPS-02",
+      "scope": "Versioned SLO policy, denominator and reproducible evidence",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/native_incidents/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_native_incidents_v15.py",
+        "backend/tests/test_pentaho_incident_r1.py"
+      ],
+      "workflow": ".github/workflows/operational-acceptance.yml",
+      "job": "noc",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "BLOCKED_ARCHITECTURE; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "OPS-03",
+      "scope": "Recovery validation with health, workload, dependencies and observation",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/native_incidents/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_native_incidents_v15.py",
+        "backend/tests/test_pentaho_incident_r1.py"
+      ],
+      "workflow": ".github/workflows/operational-acceptance.yml",
+      "job": "noc",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "IMPLEMENTED_VERIFIED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "OPS-04",
+      "scope": "Coverage/blind spots, self-monitoring and scoped reporting",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/native_incidents/api.py"
+      ],
+      "tests": [
+        "backend/tests/test_native_incidents_v15.py",
+        "backend/tests/test_pentaho_incident_r1.py"
+      ],
+      "workflow": ".github/workflows/operational-acceptance.yml",
+      "job": "noc",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "PLT-01",
+      "scope": "Populated migrations, backup, restore, legal holds and DR",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/db/etl_rollback.py",
+        "backend/migrations/env.py"
+      ],
+      "tests": [
+        "backend/scripts/etl_rollback_probe.py",
+        "backend/scripts/sprint13_recovery_probe.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "PLT-02",
+      "scope": "Stage B branch-aware Feature UAT and controlled deployment",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/db/etl_rollback.py",
+        "backend/migrations/env.py"
+      ],
+      "tests": [
+        "backend/scripts/etl_rollback_probe.py",
+        "backend/scripts/sprint13_recovery_probe.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "PLT-03",
+      "scope": "Security, residency, legal holds and retention",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/db/etl_rollback.py",
+        "backend/migrations/env.py"
+      ],
+      "tests": [
+        "backend/scripts/etl_rollback_probe.py",
+        "backend/scripts/sprint13_recovery_probe.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "PLT-04",
+      "scope": "Performance, fleet lifecycle, bounded inventory and storage cost",
+      "authority": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/db/etl_rollback.py",
+        "backend/migrations/env.py"
+      ],
+      "tests": [
+        "backend/scripts/etl_rollback_probe.py",
+        "backend/scripts/sprint13_recovery_probe.py"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIALLY_IMPLEMENTED; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "UI-010",
+      "scope": "Preserve monitored customer Organizations versus workforce Departments",
+      "authority": "docs/verification/stage-2a-full-development-closure/OWNER_ACCEPTANCE_CASES.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "frontend/src/App.jsx",
+        "frontend/src/pages/UnifiedResourceManagement.jsx"
+      ],
+      "tests": [
+        "frontend/scripts/scope_removal_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/v15-quality.yml",
+      "job": "verification",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "OWNER_APPROVED_CONTROLLED_SCOPE \u2014 INDEPENDENT_UAT_PENDING",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "Controlled owner decision supplied in OC-ETL-003A.1 conversation; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-01",
+      "scope": "Workflow \u2192 Job; no independent Task configuration",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL / DEFECT; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-02",
+      "scope": "Workflow owns monitoring calendar, windows, frequency, duration and SLA",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "frontend/src/pages/ETLWorkflowConfiguration.jsx",
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_workflow_ui.py",
+        "frontend/scripts/workflow_configuration_acceptance.mjs",
+        "frontend/scripts/workflow_configuration.test.mjs",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
+    },
+    {
+      "id": "ETL-03",
+      "scope": "Job owns expected duration and optional long-running threshold, not workflow timing",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "frontend/src/pages/ETLWorkflowConfiguration.jsx",
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx",
+        "backend/app/etl_bindings/authority.py",
+        "backend/app/etl_bindings/authority_api.py",
+        "backend/app/etl_bindings/writer.py",
+        "backend/migrations/versions/0041_etl_authority_writer.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_workflow_ui.py",
+        "frontend/scripts/workflow_configuration_acceptance.mjs",
+        "frontend/scripts/workflow_configuration.test.mjs",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs",
+        "backend/tests/test_etl_authority_writer.py",
+        "frontend/scripts/native_authority_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md; docs/verification/oc-etl-007/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 signed contract/denial and 23-table old-writer fence verified; provider-qualified positives/live cutover/operational rollback BLOCKED; no UAT/certification inferred"
+    },
+    {
+      "id": "ETL-04",
+      "scope": "Workflow dependency DAG and violation evidence",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-05",
+      "scope": "Native execution identity, logical executions and attempts",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx",
+        "backend/app/etl_bindings/authority.py",
+        "backend/app/etl_bindings/authority_api.py",
+        "backend/app/etl_bindings/writer.py",
+        "backend/migrations/versions/0041_etl_authority_writer.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs",
+        "backend/tests/test_etl_authority_writer.py",
+        "frontend/scripts/native_authority_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md; docs/verification/oc-etl-007/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 signed contract/denial and 23-table old-writer fence verified; provider-qualified positives/live cutover/operational rollback BLOCKED; no UAT/certification inferred"
+    },
+    {
+      "id": "ETL-06",
+      "scope": "Read-only Oracle/MSSQL or approved logs; retain eligible Pentaho methods",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL / EXTERNAL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-07",
+      "scope": "Same-row RUNNING \u2192 terminal updates; overlapping scans/checkpoints",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "UNVERIFIED; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-08",
+      "scope": "Long-running event uses actual elapsed time and fresh evidence",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-09",
+      "scope": "ETL event rules distinct from alert rules",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "NOT_ESTABLISHED; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-10",
+      "scope": "Monitoring Template \u2192 Workflow \u2192 Job effective policy",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "NOT_ESTABLISHED; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-11",
+      "scope": "Workflow/job event catalog and lifecycle",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL / SOURCE_DETAIL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-12",
+      "scope": "Normal/Pending/Firing/Recovered; stale/unknown orthogonal",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-13",
+      "scope": "Idempotent event notification/correlation; channel authority unresolved",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL / AUTHORITY_CONFLICT; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately"
+    },
+    {
+      "id": "ETL-14",
+      "scope": "Durable atomic acceptance, replay and loss accounting",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx",
+        "backend/app/etl_bindings/authority.py",
+        "backend/app/etl_bindings/authority_api.py",
+        "backend/app/etl_bindings/writer.py",
+        "backend/migrations/versions/0041_etl_authority_writer.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs",
+        "backend/tests/test_etl_authority_writer.py",
+        "frontend/scripts/native_authority_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md; docs/verification/oc-etl-007/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 signed contract/denial and 23-table old-writer fence verified; provider-qualified positives/live cutover/operational rollback BLOCKED; no UAT/certification inferred"
+    },
+    {
+      "id": "ETL-15",
+      "scope": "Workflow/job configuration and operational UI",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "frontend/src/pages/ETLWorkflowConfiguration.jsx",
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx",
+        "backend/app/etl_bindings/authority.py",
+        "backend/app/etl_bindings/authority_api.py",
+        "backend/app/etl_bindings/writer.py",
+        "backend/migrations/versions/0041_etl_authority_writer.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_workflow_ui.py",
+        "frontend/scripts/workflow_configuration_acceptance.mjs",
+        "frontend/scripts/workflow_configuration.test.mjs",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs",
+        "backend/tests/test_etl_authority_writer.py",
+        "frontend/scripts/native_authority_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md; docs/verification/oc-etl-007/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 signed contract/denial and 23-table old-writer fence verified; provider-qualified positives/live cutover/operational rollback BLOCKED; no UAT/certification inferred"
+    },
+    {
+      "id": "ETL-16",
+      "scope": "Tenant isolation, RBAC, audit; monitoring only",
+      "authority": "docs/architecture/unified-implementation-baseline/ETL_ARCHITECTURE_IMPLEMENTATION_MATRIX.md",
+      "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
+      "code": [
+        "backend/app/api/etl.py",
+        "backend/app/schemas/etl.py",
+        "frontend/src/pages/ETLWorkflowConfiguration.jsx",
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx",
+        "backend/app/etl_bindings/authority.py",
+        "backend/app/etl_bindings/authority_api.py",
+        "backend/app/etl_bindings/writer.py",
+        "backend/migrations/versions/0041_etl_authority_writer.py"
+      ],
+      "tests": [
+        "backend/tests/test_etl_workflow_scope.py",
+        "backend/tests/test_etl_dag_concurrency.py",
+        "backend/tests/test_etl_workflow_foundation.py",
+        "backend/tests/test_etl_workflow_ui.py",
+        "frontend/scripts/workflow_configuration_acceptance.mjs",
+        "frontend/scripts/workflow_configuration.test.mjs",
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs",
+        "backend/tests/test_etl_authority_writer.py",
+        "frontend/scripts/native_authority_acceptance.mjs"
+      ],
+      "workflow": ".github/workflows/pipeline-v16.yml",
+      "job": "pipeline-contracts",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md; docs/verification/oc-etl-007/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 signed contract/denial and 23-table old-writer fence verified; provider-qualified positives/live cutover/operational rollback BLOCKED; no UAT/certification inferred"
+    },
+    {
+      "id": "LIC-001",
+      "scope": "Versioned editions/entitlements",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-002",
+      "scope": "Signed deployment entitlement",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-003",
+      "scope": "Offline verification",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-004",
+      "scope": "Grace and restrictions",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-005",
+      "scope": "Certified releases",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-006",
+      "scope": "Governed upgrade/recovery",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-007",
+      "scope": "Onboarding/verified telemetry",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    },
+    {
+      "id": "LIC-008",
+      "scope": "Licensing RBAC/tenant/audit",
+      "authority": "docs/architecture/unified-implementation-baseline/JOURNEY_01_33_REQUIREMENTS_MATRIX.md",
+      "journey": "33",
+      "code": [],
+      "tests": [],
+      "workflow": ".github/workflows/validation.yml",
+      "job": "backend-validation",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately)",
+      "owner": "Pending / not newly approved",
+      "uat": "PENDING \u2014 no independent UAT inferred",
+      "provider": "NOT CERTIFIED by these synthetic checks",
+      "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
+      "coverage": "PARTIAL_SOURCE / architecture and implementation gaps; shared tests do not qualify licensing; COVERAGE_GAP \u2014 no specific test mapping established"
+    }
+  ],
+  "oc_etl_004_source": "6a9c7a2cc2eafbac76b6e7b48a54d35c9d115f19",
+  "oc_etl_005_test_source": "3852c8d81f6fad4628c30f3cd0f8adaea6dc52f7",
+  "oc_etl_006_source": "8e7cdf91d70f19a19c1cdf8d763818446b1c179f",
+  "oc_etl_006_authority": "Owner conversation OC-ETL-006: D01\u2013D06 design, implementation, additive migrations and controlled non-production deployment approved. Independent signoffs/UAT/provider certification not inferred.",
+  "oc_etl_007_source": "2b8eada577d0a56358d599c2f3a5e02d687b30a1",
+  "oc_etl_007_scope": "Owner task authorizes provider-independent authority/writer work only; genuine exact-build target/issuer qualification and operational older-writer rollback remain BLOCKED."
+}

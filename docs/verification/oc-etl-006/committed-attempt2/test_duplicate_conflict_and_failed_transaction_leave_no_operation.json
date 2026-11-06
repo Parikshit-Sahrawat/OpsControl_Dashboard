@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/88356020-2ec6-4e59-a4e3-58889447b245/jobs/a94ecb45-4113-4658-877c-8a302362b9f7/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/88356020-2ec6-4e59-a4e3-58889447b245/jobs/a94ecb45-4113-4658-877c-8a302362b9f7/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "CURRENT_BINDING_CHANGED_REFRESH"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/88356020-2ec6-4e59-a4e3-58889447b245/jobs/a94ecb45-4113-4658-877c-8a302362b9f7/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_IDENTITY_RETARGET_FORBIDDEN_CREATE_DISTINCT_JOB"
+    }
+  ]
+}

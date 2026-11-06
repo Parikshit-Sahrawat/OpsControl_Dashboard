@@ -1,0 +1,140 @@
+staging-smoke	Apply migrations against disposable PostgreSQL	﻿2026-11-05T19:35:07.2978756Z ##[group]Run # Exercise reversible revisions before the protected access upgrade.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2979421Z [36;1m# Exercise reversible revisions before the protected access upgrade.[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2979965Z [36;1m# The populated preservation probe in the next step applies HEAD.[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2980396Z [36;1malembic upgrade 0024_notification_leases[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2980702Z [36;1malembic current[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2980945Z [36;1malembic downgrade -1[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2981237Z [36;1malembic upgrade 0024_notification_leases[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2981544Z [36;1malembic current[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2981772Z [36;1mpython - <<'PY'[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2982013Z [36;1mfrom sqlalchemy import inspect[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2982314Z [36;1mfrom app.db.session import engine[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2982650Z [36;1mtables = set(inspect(engine).get_table_names())[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2983380Z [36;1mrequired = {"organizations", "data_sources", "collectors", "metric_definitions", "monitoring_templates", "monitoring_template_attachments", "metric_samples"}[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2985241Z [36;1mrequired |= {"users", "access_sessions", "organization_memberships", "auth_throttle_buckets", "security_audit_events", "worker_identities", "remote_probe_jobs", "remote_probe_evidence", "monitoring_rule_catalogs", "monitoring_rule_versions", "monitoring_activations", "monitoring_rule_bindings"}[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2986502Z [36;1massert required <= tables, f"Missing tables: {required - tables}"[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2986964Z [36;1mprint(f"Migration smoke OK; {len(tables)} tables")[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.2987289Z [36;1mPY[0m
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3008598Z shell: /usr/bin/bash -e {0}
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3008864Z env:
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3009099Z   OPSCONTROL_CREDENTIAL_STAGING_USERNAME: staging
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3009484Z   OPSCONTROL_CREDENTIAL_STAGING_PASSWORD: ci-example-only
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3009810Z   PYTHONPATH: .
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3010350Z   DATABASE_URL: ***localhost:5432/opscontrol
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3010670Z   SEED_DEMO_DATA: false
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3010901Z   ENVIRONMENT: test
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3011194Z   CORS_ORIGINS: http://127.0.0.1:5173,http://localhost:5173
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3011573Z   VITE_API_BASE_URL: http://127.0.0.1:8000
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3011928Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3012362Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3012796Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3013189Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3013581Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3013977Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:07.3014448Z ##[endgroup]
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2483295Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2504132Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2505345Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2506221Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2716915Z INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.2718291Z INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3137474Z INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3138631Z INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3367182Z INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3368165Z INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3419330Z INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3420372Z INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3459289Z INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3460322Z INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3538972Z INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3540102Z INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3672287Z INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3673890Z INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3760473Z INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3762266Z INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3888719Z INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3890950Z INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3963885Z INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.3966437Z INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4023094Z INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4024580Z INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4030369Z INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4031679Z INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4131057Z INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4132876Z INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4221688Z INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4223268Z INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4245851Z INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4247240Z Revision ID: 0015_remote_jobs
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4247585Z Revises: 0014_audit_mutation_guard
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4248512Z INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4249789Z Revision ID: 0015_remote_jobs
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4250167Z Revises: 0014_audit_mutation_guard
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4387860Z INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4388790Z Revision ID: 0016_remote_collector_assignment
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4389111Z Revises: 0015_remote_jobs
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4389829Z INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4390628Z Revision ID: 0016_remote_collector_assignment
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4390991Z Revises: 0015_remote_jobs
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4421014Z INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4422386Z INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4563208Z INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4564680Z Revision ID: 0018_pentaho_execution_identity
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4565538Z Revises: 0017_rule_catalogs_activation
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4566944Z INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4570760Z Revision ID: 0018_pentaho_execution_identity
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4571215Z Revises: 0017_rule_catalogs_activation
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4593014Z INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4594947Z INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4688764Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4690370Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4716985Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4718906Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4878330Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4880721Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4969164Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4970716Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4982659Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:08.4985069Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:09.5695114Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:09.5695770Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:09.5696424Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:09.5697273Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:09.5869044Z 0024_notification_leases
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6608612Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6609535Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6610315Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6611083Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6775036Z Traceback (most recent call last):
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6783356Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/bin/alembic", line 6, in <module>
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6784555Z     sys.exit(main())
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6785031Z              ^^^^^^
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6786058Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/config.py", line 1022, in main
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6787097Z     CommandLine(prog=prog).main(argv=argv)
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6788199Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/config.py", line 1012, in main
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6789281Z     self.run_cmd(cfg, options)
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6790310Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/config.py", line 946, in run_cmd
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6791315Z     fn(
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6792179Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/command.py", line 530, in downgrade
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6793117Z     script.run_env()
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6794065Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/script/base.py", line 549, in run_env
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6795227Z     util.load_python_file(self.dir, "env.py")
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6796304Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 116, in load_python_file
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6797349Z     module = load_module_py(module_id, path)
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6797847Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6798883Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 136, in load_module_py
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6799879Z     spec.loader.exec_module(module)  # type: ignore
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6800201Z     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6800612Z   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6801152Z   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6801833Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/migrations/env.py", line 79, in <module>
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6802374Z     run_migrations_online()
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6802946Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/migrations/env.py", line 67, in run_migrations_online
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6803545Z     protect_downgrade(
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6804115Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/app/db/etl_rollback.py", line 119, in protect_downgrade
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6805651Z     plan = downgrade_plan(config, current_heads[0] if current_heads else None, target)
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6806132Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6806814Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/app/db/etl_rollback.py", line 100, in downgrade_plan
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6807422Z     raise RuntimeError(
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.6807974Z RuntimeError: Use an explicit Alembic revision for data-preserving migration preflight; relative/range targets are unsupported
+staging-smoke	Apply migrations against disposable PostgreSQL	2026-11-05T19:35:10.8183258Z ##[error]Process completed with exit code 1.

@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "concurrent_statuses": [
+        201,
+        409
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/d5d76c5f-118b-4467-9af7-e4889fef42c7/jobs/b32eaf34-6f32-4811-9a8d-287ec8b97ac1/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}

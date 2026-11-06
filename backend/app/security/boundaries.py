@@ -153,7 +153,7 @@ def choose(principal, request):
     return frozenset(chosen & set(principal.customer_directory_ids))
 
 
-def transaction_authority(db):
+def transaction_authority(db, *, shared=False):
     """Same lock as access mutations: revocation cannot race a decision commit."""
     from app.security.scope import current_principal
     from app.security.http import actor
@@ -162,7 +162,10 @@ def transaction_authority(db):
     from app.db.session import SessionLocal
 
     p = actor()
-    db.execute(text("SELECT pg_advisory_xact_lock(782104, 8)"))
+    # Dependency graph writes do not mutate authority; shared holders still
+    # exclude every authorization/revocation mutation using the default lock.
+    lock = "pg_advisory_xact_lock_shared" if shared else "pg_advisory_xact_lock"
+    db.execute(text(f"SELECT {lock}(782104, 8)"))
     with SessionLocal() as auth:
         u = auth.get(User, p.user_id)
         fresh = resolve_access(auth, u) if u and u.active else None

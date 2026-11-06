@@ -54,7 +54,7 @@ jobs:
           # The populated preservation probe in the next step applies HEAD.
           alembic upgrade 0024_notification_leases
           alembic current
-          alembic downgrade -1
+          alembic downgrade 0023_worker_heartbeat
           alembic upgrade 0024_notification_leases
           alembic current
           python - <<'PY'

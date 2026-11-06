@@ -1,0 +1,14 @@
+F401 [*] `app.main` imported but unused
+  --> backend/tests/test_etl_workflow_scope.py:14:8
+   |
+12 | from urllib.error import HTTPError
+13 |
+14 | import app.main  # register actual scope/audit/ownership hooks
+   |        ^^^^^^^^
+15 | from fastapi import HTTPException
+16 | from sqlalchemy import select, func
+   |
+help: Remove unused import: `app.main`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
