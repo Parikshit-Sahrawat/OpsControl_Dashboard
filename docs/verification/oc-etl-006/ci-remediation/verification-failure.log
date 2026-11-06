@@ -1,0 +1,41 @@
+verification	Formatting, lint, frontend build	﻿2026-11-06T14:41:24.6264856Z ##[group]Run make test-quality
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6265137Z [36;1mmake test-quality[0m
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6283613Z shell: /usr/bin/bash -e {0}
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6283835Z env:
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6284088Z   OPSCONTROL_TEST_EVIDENCE_DIR: /home/runner/work/_temp/v15-quality
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6284490Z   PRETTIER_BIN: /home/runner/work/_temp/v15-tools/node_modules/.bin/prettier
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6284917Z   PLAYWRIGHT_MODULE: /home/runner/work/_temp/v15-tools/node_modules/playwright/index.mjs
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6285346Z   OPSCONTROL_OTEL_BINARY: /home/runner/work/_temp/otelcol-contrib
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6285679Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6286188Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6286534Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6286837Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6287155Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6287503Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+verification	Formatting, lint, frontend build	2026-11-06T14:41:24.6287765Z ##[endgroup]
+verification	Formatting, lint, frontend build	2026-11-06T14:41:25.0129848Z bash scripts/test-quality.sh quality
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.2744369Z would reformat /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/app/unified/engines.py
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.2844874Z 
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.2845398Z Oh no! 💥 💔 💥
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.2845924Z 1 file would be reformatted, 47 files would be left unchanged.
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.3095754Z make: *** [Makefile:22: test-quality] Error 1
+verification	Formatting, lint, frontend build	2026-11-06T14:41:28.3110542Z ##[error]Process completed with exit code 2.
+verification	Measure and report critical-module coverage	﻿2026-11-06T14:41:28.3200864Z ##[group]Run make test-coverage
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3201133Z [36;1mmake test-coverage[0m
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3219328Z shell: /usr/bin/bash -e {0}
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3219551Z env:
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3219808Z   OPSCONTROL_TEST_EVIDENCE_DIR: /home/runner/work/_temp/v15-quality
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3220200Z   PRETTIER_BIN: /home/runner/work/_temp/v15-tools/node_modules/.bin/prettier
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3220636Z   PLAYWRIGHT_MODULE: /home/runner/work/_temp/v15-tools/node_modules/playwright/index.mjs
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3221043Z   OPSCONTROL_OTEL_BINARY: /home/runner/work/_temp/otelcol-contrib
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3221379Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3221716Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3222058Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3222516Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3222864Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3223208Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3223477Z ##[endgroup]
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.3273944Z bash scripts/test-quality.sh coverage
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.7946241Z No data to combine
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.8059783Z make: *** [Makefile:25: test-coverage] Error 1
+verification	Measure and report critical-module coverage	2026-11-06T14:41:28.8066847Z ##[error]Process completed with exit code 2.

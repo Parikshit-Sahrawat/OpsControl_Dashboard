@@ -753,8 +753,11 @@ def accept(db, ticket, records, checkpoint, complete, recovery_operation=None):
         for rid in quiet:
             if rid:
                 from app.etl_bindings.service import current as current_binding
+
                 resource = db.get(MonitoringResource, rid)
-                binding = current_binding(db, resource.job_order_id) if resource else None
+                binding = (
+                    current_binding(db, resource.job_order_id) if resource else None
+                )
                 if binding is not None:
                     # Quiet/inventory evidence cannot certify a new native binding.
                     continue
@@ -980,10 +983,16 @@ def blockers(db, integration):
     for job in jobs:
         if job.resource_id:
             from app.unified.models import MonitoringResource
-            from app.etl_bindings.service import current as current_binding, stale_reasons
+            from app.etl_bindings.service import (
+                current as current_binding,
+                stale_reasons,
+            )
+
             resource = db.get(MonitoringResource, job.resource_id)
             binding = current_binding(db, resource.job_order_id) if resource else None
-            if binding is not None and (binding.state != "CONFIRMED" or stale_reasons(db, binding)):
+            if binding is not None and (
+                binding.state != "CONFIRMED" or stale_reasons(db, binding)
+            ):
                 issues.append("NATIVE_BINDING_NOT_CONFIRMED_OR_STALE:" + str(job.id))
         if job.quarantined or not job.resource_id:
             issues.append("JOB_IDENTITY_OR_RESOURCE_UNVERIFIED:" + str(job.id))
