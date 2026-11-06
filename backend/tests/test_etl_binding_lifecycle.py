@@ -164,7 +164,7 @@ class BindingLifecycleTests(unittest.TestCase):
         try:
             with urlopen(
                 Request(
-                    os.environ["ETL_SCOPE_API_URL"] + "/api/v1/" + path,
+                    (base_url or os.environ["ETL_SCOPE_API_URL"]) + "/api/v1/" + path,
                     method=method,
                     headers=headers,
                     data=json.dumps(body).encode() if body is not None else None,
@@ -766,6 +766,91 @@ class BindingLifecycleTests(unittest.TestCase):
         outcome = race(pairs)
         self.assertEqual(outcome, [201, 201])
         self.checks.append({"independent_targets": outcome})
+
+    def test_committed_binding_survives_owned_api_sigkill_and_restart(self):
+        import socket
+        import subprocess
+        import sys
+        import time
+        from urllib.request import urlopen
+
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            port = sock.getsockname()[1]
+        base = f"http://127.0.0.1:{port}"
+        out = Path(os.environ["ETL_SCOPE_EVIDENCE_DIR"])
+        process = None
+        with (out / "binding-api-restart.log").open("w") as log:
+
+            def start():
+                process = subprocess.Popen(
+                    [
+                        sys.executable,
+                        "-m",
+                        "uvicorn",
+                        "app.main:app",
+                        "--host",
+                        "127.0.0.1",
+                        "--port",
+                        str(port),
+                        "--no-access-log",
+                    ],
+                    cwd=Path(__file__).resolve().parents[1],
+                    env=os.environ.copy(),
+                    stdout=log,
+                    stderr=subprocess.STDOUT,
+                )
+                for _ in range(100):
+                    if process.poll() is not None:
+                        raise AssertionError(
+                            "Owned restart API exited before readiness"
+                        )
+                    try:
+                        with urlopen(base + "/health", timeout=1) as r:
+                            if r.status == 200:
+                                return process
+                    except OSError:
+                        time.sleep(0.1)
+                process.kill()
+                process.wait(timeout=10)
+                raise AssertionError("Owned restart API readiness timeout")
+
+            try:
+                process = start()
+                first = self.req(self.base, "POST", self.payload(), 201, base_url=base)
+                killed = process.pid
+                process.kill()
+                process.wait(timeout=10)
+                self.assertEqual(process.returncode, -9)
+                process = start()
+                versions = self.req(self.base, base_url=base)["versions"]
+                self.assertEqual([row["id"] for row in versions], [first["id"]])
+                self.assertEqual(
+                    versions[0]["identity_snapshot"], first["identity_snapshot"]
+                )
+                self.assertEqual(versions[0]["state"], "STAGED")
+                (out / "binding-api-restart-results.json").write_text(
+                    json.dumps(
+                        {
+                            "status": "PASS",
+                            "killed_owned_api_pid": killed,
+                            "replacement_owned_api_pid": process.pid,
+                            "binding_id": first["id"],
+                            "version_count": len(versions),
+                            "boundary": "after acknowledged commit; same-version API restart; not collector durability or old-binary rollback",
+                        },
+                        indent=2,
+                    )
+                )
+            finally:
+                if process is not None and process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=10)
+        self.assertIsNotNone(process.returncode)
 
 
 class FreshnessPolicyTests(unittest.TestCase):
