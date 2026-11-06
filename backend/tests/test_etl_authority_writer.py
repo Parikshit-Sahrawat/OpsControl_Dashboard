@@ -350,6 +350,61 @@ class AuthorityWriterTests(unittest.TestCase):
             )
             db.commit()
 
+        with SessionLocal() as db:
+            mark(db)
+            source = db.get(PipelineSource, source_id)
+            db.add(
+                PipelineEvidence(
+                    organization_id=self.a,
+                    source_id=source_id,
+                    generation=source.generation,
+                    external_key="current-quarantine",
+                    native_job_id=self.native,
+                    payload={"fixture": True},
+                    outcome="QUARANTINED_IDENTITY",
+                    observed_at=datetime.now(timezone.utc),
+                )
+            )
+            with self.assertRaises(DBAPIError) as duplicate:
+                db.commit()
+            self.assertEqual(duplicate.exception.orig.sqlstate, "23505")
+            db.rollback()
+        with SessionLocal() as db:
+            rows = db.scalars(
+                select(PipelineEvidence).where(PipelineEvidence.source_id == source_id)
+            ).all()
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0].external_key, "current-quarantine")
+            self.assertEqual(rows[0].payload, {"fixture": True})
+            from app.etl_bindings.models import ETLBindingReceipt
+
+            self.assertIsNone(
+                db.scalar(
+                    select(ETLBindingReceipt.id).where(
+                        ETLBindingReceipt.evidence_id == rows[0].id
+                    )
+                )
+            )
+            (
+                Path(os.environ["ETL_SCOPE_EVIDENCE_DIR"])
+                / "raw-receipt-reconciliation.json"
+            ).write_text(
+                json.dumps(
+                    {
+                        "scope": "quarantined raw DB receipt only; not a qualified provider admission",
+                        "attempts": 2,
+                        "persisted_distinct": 1,
+                        "physical_rows": 1,
+                        "duplicates": 0,
+                        "missing_expected_keys": [],
+                        "expected_keys": ["current-quarantine"],
+                        "persisted_keys": [row.external_key for row in rows],
+                        "qualified_binding_receipts": 0,
+                    },
+                    indent=2,
+                )
+            )
+
     def test_legacy_write_before_optin_commits_before_the_binding(self):
         event_id = uuid4()
         with SessionLocal() as old:
@@ -550,6 +605,15 @@ class AuthorityWriterTests(unittest.TestCase):
             self.assertEqual(
                 db.get(ETLNativeBinding, UUID(binding["id"])).state, "STAGED"
             )
+            expected_ids = {"legacy-safe-" + sha for sha in OLD_SHAS}
+            persisted_ids = db.scalars(
+                select(JobOrderHistory.source_result).where(
+                    JobOrderHistory.job_order_id == self.j2
+                )
+            ).all()
+            self.assertEqual(set(persisted_ids), expected_ids)
+            self.assertEqual(len(persisted_ids), len(expected_ids))
+
         for sha in OLD_SHAS:
             self.assertGreaterEqual(
                 (out / ("old-api-" + sha[:7] + ".log"))
@@ -565,6 +629,11 @@ class AuthorityWriterTests(unittest.TestCase):
                     "binaries": results,
                     "opted_in_persisted": 0,
                     "unaffected_legacy_persisted": 2,
+                    "expected_legacy_ids": sorted(expected_ids),
+                    "persisted_legacy_ids": sorted(persisted_ids),
+                    "legacy_missing_ids": [],
+                    "legacy_physical_duplicates": 0,
+                    "old_opted_in_attempts_refused": 6,
                 },
                 indent=2,
             )
