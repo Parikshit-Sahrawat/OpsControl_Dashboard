@@ -153,7 +153,16 @@ class BindingLifecycleTests(unittest.TestCase):
             db.commit()
             return str(n.id), methods
 
-    def req(self, path, method="GET", body=None, status=200, token=None, customer=None):
+    def req(
+        self,
+        path,
+        method="GET",
+        body=None,
+        status=200,
+        token=None,
+        customer=None,
+        base_url=None,
+    ):
         headers = {
             "Content-Type": "application/json",
             "X-OpsControl-Customers": str(customer or self.a),
