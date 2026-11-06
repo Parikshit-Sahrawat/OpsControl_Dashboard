@@ -1,0 +1,102 @@
+[
+  {
+    "case": "test_signed_contract_preview_cannot_persist_or_confirm_provider_authority",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_aliases_have_one_canonical_key_but_operator_changes_cannot_claim_authority",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_expiry_signature_and_live_issuer_revocation_are_rejected",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_transaction_local_writer_marker_cannot_leak_to_old_requests",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_old_sql_bypasses_and_checkpoint_batch_are_rolled_back",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_legacy_write_before_optin_commits_before_the_binding",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_writer_fence_survives_restore_and_unsafe_downgrade_refuses",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_browser_contract_preview_never_qualifies_or_activates",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_every_legacy_fence_table_refuses_its_bound_old_writer",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_initial_optin_refuses_another_enabled_source_consumer",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_valid_signature_is_not_provider_qualification",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "test_expired_future_unbounded_duplicate_and_tampered_contracts_refuse",
+    "status": "PASS_CONTRACT_OR_FENCE_ONLY",
+    "evidence": "final/regressions.log"
+  },
+  {
+    "case": "genuine_provider_qualification",
+    "status": "BLOCKED",
+    "reason": "No exact-build read-only target/verifier has been authorized or tested"
+  },
+  {
+    "case": "qualified_confirmation_and_alias_owner_conflict",
+    "status": "BLOCKED",
+    "reason": "No genuine qualified attestation was created; conditional code is not positive integration certification"
+  },
+  {
+    "case": "qualified_receipt_routing_and_expiry_revocation",
+    "status": "BLOCKED",
+    "reason": "No genuine admitted qualified receipts; raw quarantine/dedup and negative gates only"
+  },
+  {
+    "case": "active_or_stale_generation_cutover",
+    "status": "BLOCKED",
+    "reason": "No demonstrated active transaction-boundary proof; remains refused"
+  },
+  {
+    "case": "operational_old_binary_rollback",
+    "status": "BLOCKED",
+    "reason": "Unchanged old writers are fenced (500), not compatible opted-in writers"
+  },
+  {
+    "case": "immutable_candidate_and_deployment",
+    "status": "BLOCKED",
+    "reason": "Qualified rollback/capacity/security prerequisites unmet"
+  },
+  {
+    "case": "independent_uat",
+    "status": "NOT TESTED",
+    "reason": "Not supplied or run"
+  }
+]

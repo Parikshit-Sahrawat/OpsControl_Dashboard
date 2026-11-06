@@ -59,3 +59,12 @@ No new application behavior was implemented. The only code increment is test-onl
 2. If B is approved, produce the narrow forward-additive schema/typed command/routing design; rehearse populated upgrade/refused downgrade/restore and old-reader compatibility before deployment.
 3. Implement stage/confirm/retire and same-target reviewed reader replacement with authenticated PostgreSQL concurrent-owner/role/tenant/rollback tests, immutable history snapshots and no provider control.
 4. Only after D03/D09 prerequisites, run a separately authorized genuine-source active-positive qualification and versioned Workflow readiness evaluation. Recover D07/D08 before recurrence/threshold behavior. No release or production activation follows automatically.
+
+
+## OC-ETL-007 — authority verification and database writer fence (2026-11-06)
+
+Exact tested source `2b8eada577d0a56358d599c2f3a5e02d687b30a1`; [report](../../verification/oc-etl-007/REPORT.md). Implemented provider-independent signed/native-source envelopes, conditional genuine-attestation confirmation/receipt ownership and a PostgreSQL protocol1 fence. Actual117-case suite PASS, including104 retained +13 new, 23 table-specific refusal branches, two exact older source versions, 107-table restore comparison, four new browser contract/denial groups. Counts overlap. No genuine provider attestation/qualified receipt is seeded; test issuers cannot qualify. Old writers are fenced, not operationally rollback-certified.
+
+ETL-03/05/14 native authority and provenance remain PARTIAL: structural/negative gates verified; qualified positive admission, canonical alias owner conflicts and live/stale-generation handoff BLOCKED. ETL-15/16 current UI/readiness support remains VERIFIED_BOUNDED_SUBSET, activation BLOCKED/health UNVERIFIED without evidence. D01–D06 approval is preserved; user OC-ETL-007 authorizes generic attestation design only, not an exact provider target. No new functional owner acceptance inferred. D07/D08 and independent UAT pending.
+
+Next executable prerequisites: explicit exact-build read-only target + accountable verifier/issuer evidence; qualify confirmation/receipt/expiry/cutover; authority-aware rollback image or tested safe degraded mode before isolated candidate/deployment. 31 included journeys/30 SOURCE_NOT_RECOVERED numbered definitions retained; Journey20 excluded/32 skipped, nine controlled owner decisions unchanged. CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.

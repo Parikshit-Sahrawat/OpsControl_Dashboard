@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/8855ef91-1072-42c6-9159-e1277818676b/jobs/69cb02f4-cda1-4b16-84b6-a0ae913fc6f6/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "ACTIVE_SHARED_SOURCE_REQUIRES_REVIEWED_HANDOFF"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/8855ef91-1072-42c6-9159-e1277818676b/jobs/69cb02f4-cda1-4b16-84b6-a0ae913fc6f6/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}
