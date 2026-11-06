@@ -28,6 +28,16 @@ jobs:
         run: |
           python -m venv backend/.venv
           backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked frontend and isolated Chromium tools
+        run: |
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/etl004-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/etl004-tools/node_modules/.bin/playwright" install --with-deps chromium
       - name: Static and focused transport checks
         run: |
           backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py
@@ -36,6 +46,8 @@ jobs:
       - name: ETL Workflow authenticated scope and migrated PostgreSQL regressions
         env:
           ETL_SCOPE_EVIDENCE_DIR: /tmp/opscontrol-etl-scope-evidence
+          ETL_WORKFLOW_UI_ACCEPTANCE: '1'
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/etl004-tools/node_modules/playwright/index.mjs
         run: backend/.venv/bin/python scripts/etl-scope-acceptance.py
       - name: Protected V1.5 monitoring regressions
         working-directory: backend

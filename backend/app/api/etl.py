@@ -361,6 +361,8 @@ def get_workflow_monitoring(workflow_id: UUID, db: Session = Depends(get_db)):
             "id": str(job.id), "name": job.name, "active": job.active,
             "monitoring_enabled": job.monitoring_enabled,
             "expected_duration_seconds": job.expected_runtime_seconds,
+            "hostname": job.vm.hostname if job.vm else None,
+            "telemetry_status": "MISSING" if history is None else _item(history, db).monitoring_status,
             "latest_execution": None if history is None else {
                 "id": str(history.id),
                 "status": history.status.value,
@@ -379,6 +381,16 @@ def get_workflow_monitoring(workflow_id: UUID, db: Session = Depends(get_db)):
         "observed_job_count": sum(job["latest_execution"] is not None for job in results),
         "total_job_count": len(results),
         "source": "persisted_observations",
+        "readiness": {
+            "configuration_status": "INCOMPLETE" if not jobs or any(
+                job.expected_runtime_seconds is None
+                or not 1 <= job.expected_runtime_seconds <= 604800 for job in jobs
+            ) else "VALID",
+            "configuration_scope": "SUPPORTED_CHILD_RUNTIME_FIELDS_ONLY",
+            "activation_status": "BLOCKED",
+            "provider_status": "UNVERIFIED",
+            "reasons": ["Workflow activation and native source certification are not established by configuration persistence", "Frequency/recurrence and separate Job long-running threshold contracts remain unavailable"],
+        },
         "scheduler_control": False,
     }
 

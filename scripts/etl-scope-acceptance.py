@@ -41,6 +41,7 @@ env.update(
 )
 commands = []
 api = None
+ui = None
 started = False
 success = False
 identity = None
@@ -130,6 +131,13 @@ try:
         s.bind(("127.0.0.1", 0))
         apiport = s.getsockname()[1]
     env["ETL_SCOPE_API_URL"] = f"http://127.0.0.1:{apiport}"
+    if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1":
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            uiport = sock.getsockname()[1]
+        env["ETL_WORKFLOW_UI_URL"] = f"http://127.0.0.1:{uiport}"
+        env["VITE_API_BASE_URL"] = env["ETL_SCOPE_API_URL"]
+        env["CORS_ORIGINS"] = env["ETL_WORKFLOW_UI_URL"]
     with (out / "api.log").open("w") as log:
         api = subprocess.Popen(
             [
@@ -157,6 +165,32 @@ try:
             time.sleep(0.2)
     else:
         raise RuntimeError("Owned API readiness timeout")
+    if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1":
+        with (out / "ui.log").open("w") as log:
+            ui = subprocess.Popen(
+                [
+                    "node",
+                    "node_modules/vite/bin/vite.js",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    str(uiport),
+                    "--strictPort",
+                ],
+                cwd=root / "frontend",
+                env=env,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+            )
+        for _ in range(100):
+            try:
+                with urlopen(env["ETL_WORKFLOW_UI_URL"], timeout=1) as response:
+                    if response.status == 200:
+                        break
+            except OSError:
+                time.sleep(0.2)
+        else:
+            raise RuntimeError("Owned UI readiness timeout")
     run(
         [
             python,
@@ -165,6 +199,11 @@ try:
             "tests.test_etl_workflow_scope",
             "tests.test_etl_workflow_foundation",
             "tests.test_etl_dag_concurrency",
+            *(
+                ["tests.test_etl_workflow_ui"]
+                if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1"
+                else []
+            ),
             "tests.test_sprint08_rbac",
             "-v",
         ],
@@ -173,6 +212,13 @@ try:
     )
     success = True
 finally:
+    if ui:
+        ui.terminate()
+        try:
+            ui.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            ui.kill()
+            ui.wait(timeout=5)
     if api:
         api.terminate()
         try:
@@ -210,6 +256,7 @@ finally:
                 "remaining_container": remaining,
                 "cleanup_exit": None if cleanup is None else cleanup.returncode,
                 "api_stopped": api is None or api.poll() is not None,
+                "ui_stopped": ui is None or ui.poll() is not None,
                 "volumes": "tmpfs only; rm -v scoped to owned container",
                 "production_or_uat_access": False,
             },
