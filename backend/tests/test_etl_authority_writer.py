@@ -732,6 +732,175 @@ class AuthorityWriterTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, "See redacted authority-browser.log")
 
+    def test_every_legacy_fence_table_refuses_its_bound_old_writer(self):
+        from app.models import DataSource, Collector
+        from app.unified.models import MonitoringResource
+        from app.data_pipelines.models import PipelineMethod, PipelineAssociation
+        from app.unified.pentaho_models import PentahoRecoveryLink
+
+        with SessionLocal() as db:
+            resource = db.scalar(
+                select(MonitoringResource).where(
+                    MonitoringResource.job_order_id == self.j1
+                )
+            )
+            source = DataSource(
+                organization_id=self.a,
+                name="Synthetic disabled collector",
+                source_type="API",
+            )
+            db.add(source)
+            db.flush()
+            collector = Collector(
+                data_source_id=source.id,
+                name="No runtime execution",
+                collector_type="HTTP",
+                enabled=False,
+            )
+            db.add(collector)
+            db.flush()
+            resource.primary_collector_id = collector.id
+            histories = [
+                JobOrderHistory(
+                    job_order_id=self.j1,
+                    execution_type=ExecutionType.SCHEDULED,
+                    status=ExecutionStatus.FAILED,
+                    pentaho_customer_id=self.a,
+                    pentaho_resource_id=resource.id,
+                    pentaho_lifecycle="TERMINAL",
+                )
+                for _ in range(2)
+            ]
+            db.add_all(histories)
+            db.flush()
+            link = PentahoRecoveryLink(
+                organization_id=self.a,
+                failed_history_id=histories[0].id,
+                recovery_history_id=histories[1].id,
+                proposed_by=self.uid,
+            )
+            method = db.get(PipelineMethod, UUID(self.methods[0]["id"]))
+            association = PipelineAssociation(
+                organization_id=self.a,
+                method_id=method.id,
+                job_id=UUID(self.n),
+                generation=UUID(self.methods[0]["generation"]),
+                confirmed_by=self.uid,
+            )
+            db.add_all([link, association])
+            db.commit()
+            rid, hid, lid, cid, aid = (
+                resource.id,
+                histories[0].id,
+                link.id,
+                collector.id,
+                association.id,
+            )
+            mid, connection, capability, integration = (
+                method.id,
+                method.connection_id,
+                method.capability_id,
+                method.integration_id,
+            )
+        self.stage()
+        tests = {
+            "job_orders": ("UPDATE job_orders SET name='old' WHERE id=:value", self.j1),
+            "job_order_histories": (
+                "UPDATE job_order_histories SET source_result='old' WHERE id=:value",
+                hid,
+            ),
+            "monitoring_resources": (
+                "UPDATE monitoring_resources SET activation_status='ACTIVE' WHERE id=:value",
+                rid,
+            ),
+            "pipeline_jobs": (
+                "UPDATE pipeline_jobs SET selected=true WHERE id=:value",
+                self.n,
+            ),
+            "pipeline_integrations": (
+                "UPDATE pipeline_integrations SET revision=revision+1 WHERE id=:value",
+                integration,
+            ),
+            "pipeline_methods": (
+                "UPDATE pipeline_methods SET revision=revision+1 WHERE id=:value",
+                mid,
+            ),
+            "pipeline_connections": (
+                "UPDATE pipeline_connections SET revision=revision+1 WHERE id=:value",
+                connection,
+            ),
+            "pipeline_capabilities": (
+                "UPDATE pipeline_capabilities SET revision=revision+1 WHERE id=:value",
+                capability,
+            ),
+            "pipeline_associations": (
+                "UPDATE pipeline_associations SET revision=revision+1 WHERE id=:value",
+                aid,
+            ),
+            "pipeline_sources": (
+                "UPDATE pipeline_sources SET generation='00000000-0000-0000-0000-000000000001' WHERE id=:value",
+                self.methods[0]["source_id"],
+            ),
+            "collectors": ("UPDATE collectors SET enabled=true WHERE id=:value", cid),
+        }
+        for table in [
+            "normalized_telemetry_events",
+            "pentaho_execution_attempts",
+            "pentaho_native_aliases",
+            "pentaho_attempt_revisions",
+            "pentaho_evidence_reviews",
+            "pentaho_evidence_decisions",
+            "pentaho_historical_notices",
+        ]:
+            tests[table] = (
+                f"INSERT INTO {table}(id,resource_id) VALUES (:id,:value)",
+                rid,
+            )
+        tests["job_step_executions"] = (
+            "INSERT INTO job_step_executions(id,history_id) VALUES (:id,:value)",
+            hid,
+        )
+        tests["collector_runs"] = (
+            "INSERT INTO collector_runs(id,collector_id) VALUES (:id,:value)",
+            cid,
+        )
+        tests["pipeline_evidence"] = (
+            "INSERT INTO pipeline_evidence(id,source_id) VALUES (:id,:value)",
+            self.methods[0]["source_id"],
+        )
+        tests["pentaho_recovery_links"] = (
+            "UPDATE pentaho_recovery_links SET revision=revision+1 WHERE id=:value",
+            lid,
+        )
+        tests["pentaho_recovery_decisions"] = (
+            "INSERT INTO pentaho_recovery_decisions(id,link_id) VALUES (:id,:value)",
+            lid,
+        )
+        result = []
+        for table, (sql, value) in tests.items():
+            with SessionLocal() as db:
+                with self.assertRaises(DBAPIError) as error:
+                    db.execute(text(sql), {"value": value, "id": uuid4()})
+                    db.commit()
+                self.assertEqual(
+                    error.exception.orig.diag.message_primary,
+                    "OC_ETL_WRITER_VERSION_REQUIRED",
+                    table,
+                )
+                db.rollback()
+            result.append(
+                {
+                    "table": table,
+                    "status": "PASS_REFUSAL",
+                    "diagnostic": "OC_ETL_WRITER_VERSION_REQUIRED",
+                }
+            )
+        self.assertEqual(len(result), 23)
+        (
+            Path(os.environ["ETL_SCOPE_EVIDENCE_DIR"])
+            / "writer-table-fence-results.json"
+        ).write_text(json.dumps(result, indent=2))
+
 
 class AuthorityEnvelopePolicyTests(unittest.TestCase):
     def fixture(self):
