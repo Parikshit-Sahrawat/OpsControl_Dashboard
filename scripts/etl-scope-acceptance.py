@@ -199,6 +199,7 @@ try:
             "tests.test_etl_workflow_scope",
             "tests.test_etl_workflow_foundation",
             "tests.test_etl_dag_concurrency",
+            "tests.test_etl_native_binding_contract",
             *(
                 ["tests.test_etl_workflow_ui"]
                 if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1"
