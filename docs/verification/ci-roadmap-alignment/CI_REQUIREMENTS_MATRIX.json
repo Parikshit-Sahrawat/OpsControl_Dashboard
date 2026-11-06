@@ -880,7 +880,12 @@
         "backend/app/api/etl.py",
         "backend/app/schemas/etl.py",
         "frontend/src/pages/ETLWorkflowConfiguration.jsx",
-        "frontend/src/workflowConfiguration.js"
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
@@ -889,16 +894,18 @@
         "backend/tests/test_etl_workflow_ui.py",
         "frontend/scripts/workflow_configuration_acceptance.mjs",
         "frontend/scripts/workflow_configuration.test.mjs",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "VERIFIED_SUPPORTED_CONFIGURATION / PARTIAL \u2014 OC-ETL-004; unsupported recurrence, native binding, threshold and Workflow activation remain BLOCKED; owner pending; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "ETL-03",
@@ -909,7 +916,12 @@
         "backend/app/api/etl.py",
         "backend/app/schemas/etl.py",
         "frontend/src/pages/ETLWorkflowConfiguration.jsx",
-        "frontend/src/workflowConfiguration.js"
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
@@ -918,16 +930,18 @@
         "backend/tests/test_etl_workflow_ui.py",
         "frontend/scripts/workflow_configuration_acceptance.mjs",
         "frontend/scripts/workflow_configuration.test.mjs",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "VERIFIED_SUPPORTED_CONFIGURATION / PARTIAL \u2014 OC-ETL-004; unsupported recurrence, native binding, threshold and Workflow activation remain BLOCKED; owner pending; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "ETL-04",
@@ -959,22 +973,29 @@
       "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
       "code": [
         "backend/app/api/etl.py",
-        "backend/app/schemas/etl.py"
+        "backend/app/schemas/etl.py",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
         "backend/tests/test_etl_dag_concurrency.py",
         "backend/tests/test_etl_workflow_foundation.py",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "PARTIAL; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "ETL-06",
@@ -1167,22 +1188,29 @@
       "journey": "NOT_ASSIGNED \u2014 numbered source unavailable",
       "code": [
         "backend/app/api/etl.py",
-        "backend/app/schemas/etl.py"
+        "backend/app/schemas/etl.py",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
         "backend/tests/test_etl_dag_concurrency.py",
         "backend/tests/test_etl_workflow_foundation.py",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-003a/REPORT.md; workflow upload-artifact outputs (execution statuses reported separately); docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "BLOCKED_RELIABILITY; follow-on OC-ETL-002/003 bounded foundation evidence applies; MAPPED_REGRESSION_DEFINITIONS \u2014 execution must be checked separately; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "ETL-15",
@@ -1193,7 +1221,12 @@
         "backend/app/api/etl.py",
         "backend/app/schemas/etl.py",
         "frontend/src/pages/ETLWorkflowConfiguration.jsx",
-        "frontend/src/workflowConfiguration.js"
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
@@ -1202,16 +1235,18 @@
         "backend/tests/test_etl_workflow_ui.py",
         "frontend/scripts/workflow_configuration_acceptance.mjs",
         "frontend/scripts/workflow_configuration.test.mjs",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "VERIFIED_SUPPORTED_CONFIGURATION / PARTIAL \u2014 OC-ETL-004; unsupported recurrence, native binding, threshold and Workflow activation remain BLOCKED; owner pending; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "ETL-16",
@@ -1222,7 +1257,12 @@
         "backend/app/api/etl.py",
         "backend/app/schemas/etl.py",
         "frontend/src/pages/ETLWorkflowConfiguration.jsx",
-        "frontend/src/workflowConfiguration.js"
+        "frontend/src/workflowConfiguration.js",
+        "backend/app/etl_bindings/models.py",
+        "backend/app/etl_bindings/api.py",
+        "backend/app/etl_bindings/service.py",
+        "backend/migrations/versions/0040_etl_native_bindings.py",
+        "frontend/src/ETLNativeBindings.jsx"
       ],
       "tests": [
         "backend/tests/test_etl_workflow_scope.py",
@@ -1231,16 +1271,18 @@
         "backend/tests/test_etl_workflow_ui.py",
         "frontend/scripts/workflow_configuration_acceptance.mjs",
         "frontend/scripts/workflow_configuration.test.mjs",
-        "backend/tests/test_etl_native_binding_contract.py"
+        "backend/tests/test_etl_native_binding_contract.py",
+        "backend/tests/test_etl_binding_lifecycle.py",
+        "frontend/scripts/native_binding_acceptance.mjs"
       ],
       "workflow": ".github/workflows/pipeline-v16.yml",
       "job": "pipeline-contracts",
-      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md",
-      "owner": "Pending / not newly approved",
+      "evidence": "docs/verification/oc-etl-004/2026-11-06/REPORT.md; pipeline-v16 owned browser/PG artifacts; docs/verification/oc-etl-005/REPORT.md; docs/verification/oc-etl-006/REPORT.md",
+      "owner": "D01\u2013D06 design/implementation OWNER_APPROVED; new functional acceptance/independent UAT pending",
       "uat": "PENDING \u2014 no independent UAT inferred",
       "provider": "NOT CERTIFIED by these synthetic checks",
       "gate": "CHK-001 FAIL; CHK-002 BLOCKED; SECURITY BLOCKED; RELEASE NO-GO",
-      "coverage": "VERIFIED_SUPPORTED_CONFIGURATION / PARTIAL \u2014 OC-ETL-004; unsupported recurrence, native binding, threshold and Workflow activation remain BLOCKED; owner pending; OC-ETL-005 current staged/source gates verified, new temporal/aggregate contracts PROPOSED_PENDING_APPROVAL"
+      "coverage": "VERIFIED_BOUNDED_SUBSET / PARTIAL \u2014 temporal native claims, concurrency, preservation, negative activation, UI and six readiness dimensions; qualified identity/positive activation/live cutover BLOCKED D09; no new acceptance or provider certification"
     },
     {
       "id": "LIC-001",
@@ -1372,5 +1414,7 @@
     }
   ],
   "oc_etl_004_source": "6a9c7a2cc2eafbac76b6e7b48a54d35c9d115f19",
-  "oc_etl_005_test_source": "3852c8d81f6fad4628c30f3cd0f8adaea6dc52f7"
+  "oc_etl_005_test_source": "3852c8d81f6fad4628c30f3cd0f8adaea6dc52f7",
+  "oc_etl_006_source": "8e7cdf91d70f19a19c1cdf8d763818446b1c179f",
+  "oc_etl_006_authority": "Owner conversation OC-ETL-006: D01\u2013D06 design, implementation, additive migrations and controlled non-production deployment approved. Independent signoffs/UAT/provider certification not inferred."
 }

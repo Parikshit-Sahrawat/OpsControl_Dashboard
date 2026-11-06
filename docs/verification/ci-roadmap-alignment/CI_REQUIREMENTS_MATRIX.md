@@ -112,3 +112,12 @@ Machine-readable companion CI_REQUIREMENTS_MATRIX.json is validated by scripts/c
 OC-ETL-004 follow-on source `6a9c7a2cc2eafbac76b6e7b48a54d35c9d115f19` updates only ETL-02/03/15/16 supported configuration traceability. Remaining contract gaps and new owner acceptance remain explicit. Nine existing owner decisions and all journey source statuses are unchanged.
 
 OC-ETL-005 adds current staged-contract negative coverage only. Proposed native binding/readiness design has no accountable approval; genuine-provider and new active-positive qualification remain BLOCKED/NOT TESTED.
+
+
+## OC-ETL-006 — owner-approved temporal claim registry and six-dimension readiness (2026-11-06)
+
+Owner approval D01–D06 is recorded in `docs/verification/oc-etl-006/APPROVAL_AND_SCOPE.md`; it supersedes prior owner-pending design requests, not independent signoffs. Exact tested source `8e7cdf91d70f19a19c1cdf8d763818446b1c179f`. Additive0040, immutable scoped claim versions/method snapshots and terminal retirement, transactional ownership/authorization, receipt constraints, fail-closed opted-in routing, six backend dimensions and existing Resource Management UI are implemented. 104 PostgreSQL/API regression cases PASS, 9 new +19 retained browser groups, 46 frontend tests, six retained migration groups and actual104-table temporal restore comparison. Counts overlap.
+
+ETL-02 remains PARTIAL (frequency/calendar authority D07). ETL-03 native claim/version/configuration is VERIFIED; qualified authority, positive confirmation and live cutover remain BLOCKED D09. ETL-05/14 receipt constraints/negative attribution verified; new qualified positive receipt routing NOT TESTED. ETL-15/16 supported configuration, saved/reloaded claims/history and six blocked/unverified readiness dimensions VERIFIED; full aggregate ACTIVE/HEALTHY and complete occurrence semantics remain BLOCKED. No acceptance or provider certification inferred.
+
+Next implementation prerequisites: exact D09 authority attestation and qualification; active source handoff/receipt reconciliation; old-writer version fencing/rollback before container deployment. No repeat D01–D06 owner approval is required. D07/D08 and independent UAT remain open. All31 included journeys/30 SOURCE_NOT_RECOVERED numbered definitions, Journey20 excluded and32 skipped, nine previous owner controlled-scope approvals remain unchanged. [Execution, failures, cleanup and limits](../oc-etl-006/REPORT.md) (repository-relative path; see PR80 for exact links). CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.

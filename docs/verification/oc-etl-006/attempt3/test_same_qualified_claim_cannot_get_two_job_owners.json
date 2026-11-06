@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/1c786e89-59ed-4fc4-adfe-6b811454cdc0/jobs/86468b74-c14c-470a-aac6-40cfbefe8ad4/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/1c786e89-59ed-4fc4-adfe-6b811454cdc0/jobs/40c44bf8-c303-4b64-abbe-d991afef3ebc/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "Duplicate identity or invalid relationship"
+    }
+  ]
+}

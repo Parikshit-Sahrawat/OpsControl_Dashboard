@@ -20,7 +20,7 @@ A source fence in a binding snapshot is its cutover lower bound. Source generati
 4. For an entirely empty new binding schema, guarded downgrade to explicit `0039_etl_workflow_foundation` is supported; older supported empty/unassigned paths remain in the inherited probe.
 5. If either new table is populated, downgrade refuses **before destructive DDL**, retaining schema, revision and content. No force flag. Retain revision0040; recover through the rehearsed backup/restore process with accountable review. Never delete binding rows to make downgrade green.
 
-The tests terminate a PostgreSQL backend after validity closure but before successor commit, then independently verify the original version remains current. They test deferred closure refusal, immutable tuple/delete refusal, populated rollback refusal and actual backup/restore comparisons. This is one supported crash boundary, not every power-loss/storage-failure boundary. Post-commit API-process restart qualification and old-application writer compatibility remain NOT TESTED.
+The tests terminate a PostgreSQL backend after validity closure but before successor commit, then independently verify the original version remains current. They test deferred closure refusal, immutable tuple/delete refusal, populated rollback refusal and actual backup/restore comparisons. This is one supported crash boundary, not every power-loss/storage-failure boundary. A separate task-owned same-version API is SIGKILLed after acknowledged commit and restarted; exact binding history survives. Old-application writer compatibility remains BLOCKED/NOT TESTED.
 
 ## Deployment/recovery limits
 

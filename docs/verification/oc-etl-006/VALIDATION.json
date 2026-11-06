@@ -1,0 +1,60 @@
+{
+  "baseline": "a915322b5c5c80b0d37dea71f6b7f70237082340",
+  "tested_source": "8e7cdf91d70f19a19c1cdf8d763818446b1c179f",
+  "application_source": "8e7cdf91d70f19a19c1cdf8d763818446b1c179f",
+  "migration": "0040_etl_native_bindings",
+  "migration_parent": "0039_etl_workflow_foundation",
+  "tests": {
+    "passed": 104,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_cases": 18,
+  "new_http_status_assertions": 66,
+  "new_browser_groups": 9,
+  "retained_browser_groups": 19,
+  "retained_migration_groups": 6,
+  "temporal_backup_restore_tables_compared": 104,
+  "post_commit_api_restart": "PASS \u2014 task-owned API SIGKILL after acknowledged commit and same-version restart",
+  "frontend": {
+    "source": "b94f7ed45209d7bd856193ee4da45da64097b241",
+    "passed": 46,
+    "failed": 0,
+    "skipped": 0,
+    "lint": "PASS",
+    "build": "PASS",
+    "frontend_runtime_source_unchanged_since_that_run": true
+  },
+  "static": {
+    "black": "PASS",
+    "ruff": "PASS",
+    "compile": "PASS"
+  },
+  "owner_D01_D06_design_implementation_authorization": "APPROVED \u2014 owner conversation OC-ETL-006; independent signoffs not inferred",
+  "full_task_definition_of_done": "INCOMPLETE / BLOCKED",
+  "cleanup": {
+    "remaining_container": false,
+    "api_stopped": true,
+    "ui_stopped": true,
+    "private_browser_credentials": "removed by TemporaryDirectory",
+    "restart_api_pids_remaining": []
+  },
+  "deployment": "BLOCKED \u2014 immutable app candidates/old-writer rollback not qualified",
+  "provider_certification": "NOT TESTED",
+  "hosted_ci": "Final evidence-commit HEAD conclusions to be recorded in PR80 closure comment",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "documentation": {
+    "markdown_links_checked": 36,
+    "link_integrity": "PASS",
+    "json_validity": "PASS",
+    "requirement_matrix": "PASS \u2014 56 IDs, 31 included journeys, nine owner approvals unchanged",
+    "old_migrations_and_safeguards_unchanged": 53,
+    "source_tested_after_final_product_change": true
+  }
+}

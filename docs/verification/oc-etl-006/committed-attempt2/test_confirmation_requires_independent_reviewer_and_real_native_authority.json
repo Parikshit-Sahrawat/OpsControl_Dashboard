@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/0532a60a-eb81-4675-93c8-1eb4a7869ad5/jobs/2256fe3c-542f-4a69-b9b8-7ae755f5799c/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/0532a60a-eb81-4675-93c8-1eb4a7869ad5/jobs/2256fe3c-542f-4a69-b9b8-7ae755f5799c/native-bindings",
+      "expected": 403,
+      "actual": 403,
+      "detail": "INDEPENDENT_BINDING_REVIEWER_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/0532a60a-eb81-4675-93c8-1eb4a7869ad5/jobs/2256fe3c-542f-4a69-b9b8-7ae755f5799c/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "CURRENT_AUTHENTICATED_RUNTIME_PROOF_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/0532a60a-eb81-4675-93c8-1eb4a7869ad5/jobs/2256fe3c-542f-4a69-b9b8-7ae755f5799c/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}
