@@ -102,6 +102,15 @@ FUNCTIONS = r"""
 CREATE FUNCTION etl_binding_optin_lock() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
  PERFORM 1 FROM job_orders WHERE id=NEW.job_order_id FOR UPDATE;
+ IF NEW.previous_id IS NULL AND (
+   EXISTS(SELECT 1 FROM jsonb_array_elements(NEW.method_snapshot) snap
+     JOIN pipeline_methods m ON m.source_id=(snap->>'source_id')::uuid
+     JOIN pipeline_integrations i ON i.id=m.integration_id
+     WHERE i.enabled AND i.deleted_at IS NULL)
+   OR EXISTS(SELECT 1 FROM jsonb_array_elements(NEW.method_snapshot) snap
+     JOIN pipeline_sources s ON s.id=(snap->>'source_id')::uuid
+     JOIN collectors c ON c.id=s.legacy_collector_id WHERE c.enabled)
+ ) THEN RAISE EXCEPTION 'Active shared source requires reviewed handoff before initial opt-in'; END IF;
  RETURN NEW;
 END $$;
 

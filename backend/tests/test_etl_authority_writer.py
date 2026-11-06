@@ -982,6 +982,21 @@ class AuthorityWriterTests(unittest.TestCase):
             / "writer-table-fence-results.json"
         ).write_text(json.dumps(result, indent=2))
 
+    def test_initial_optin_refuses_another_enabled_source_consumer(self):
+        from app.data_pipelines.models import PipelineMethod, PipelineIntegration
+
+        _, refs = self.seed(self.j2, "other-consumer-" + uuid4().hex)
+        with SessionLocal() as db:
+            method = db.get(PipelineMethod, UUID(refs[0]["id"]))
+            method.source_id = UUID(self.methods[0]["source_id"])
+            db.get(PipelineIntegration, method.integration_id).enabled = True
+            db.commit()
+        refused = self.req(self.base, "POST", self.payload(), 409)
+        self.assertEqual(
+            refused["detail"], "ACTIVE_SHARED_SOURCE_REQUIRES_REVIEWED_HANDOFF"
+        )
+        self.assertEqual(self.req(self.base)["versions"], [])
+
 
 class AuthorityEnvelopePolicyTests(unittest.TestCase):
     def fixture(self):

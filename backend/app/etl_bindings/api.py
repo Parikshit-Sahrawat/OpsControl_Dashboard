@@ -266,6 +266,28 @@ def _command(workflow_id, job_id, payload, db):
     ):
         raise HTTPException(409, "SOURCE_GENERATION_CHANGED_REFRESH")
     service.safe_cutover(db, sources)
+    if payload.command != "RETIRE":
+        shared = db.scalar(
+            select(PipelineMethod.id)
+            .join(
+                PipelineIntegration,
+                PipelineIntegration.id == PipelineMethod.integration_id,
+            )
+            .where(
+                PipelineMethod.source_id.in_(list(sources)),
+                PipelineIntegration.enabled.is_(True),
+                PipelineIntegration.deleted_at.is_(None),
+            )
+            .limit(1)
+        )
+        legacy_active = any(
+            source.legacy_collector_id
+            and (collector := db.get(Collector, source.legacy_collector_id))
+            and collector.enabled
+            for source in sources.values()
+        )
+        if shared or legacy_active:
+            raise HTTPException(409, "ACTIVE_SHARED_SOURCE_REQUIRES_REVIEWED_HANDOFF")
     if integration.enabled or native.selected:
         raise HTTPException(409, "ACTIVE_NATIVE_SOURCE_REQUIRES_REVIEWED_HANDOFF")
     if old:
