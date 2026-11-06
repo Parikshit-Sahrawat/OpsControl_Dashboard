@@ -996,6 +996,31 @@ class AuthorityWriterTests(unittest.TestCase):
             refused["detail"], "ACTIVE_SHARED_SOURCE_REQUIRES_REVIEWED_HANDOFF"
         )
         self.assertEqual(self.req(self.base)["versions"], [])
+        process = None
+        out = Path(os.environ["ETL_SCOPE_EVIDENCE_DIR"])
+        with tempfile.TemporaryDirectory(prefix="etl007-shared-old-") as private, (
+            out / "shared-optin-old-api.log"
+        ).open("w") as log:
+            try:
+                process, base, _ = self.start_old(OLD_SHAS[1], private, log)
+                # OC-ETL-006 has no enabled-shared-consumer API guard. The
+                # additive PostgreSQL initial-opt-in guard must refuse it.
+                refused = self.req(
+                    self.base, "POST", self.payload(), 409, base_url=base
+                )
+                self.assertEqual(
+                    refused["detail"],
+                    "BINDING_CONFLICT_OR_INVARIANT_REFUSED_REFRESH_AND_REVIEW",
+                )
+            finally:
+                if process and process.poll() is None:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=10)
+        self.assertEqual(self.req(self.base)["versions"], [])
 
 
 class AuthorityEnvelopePolicyTests(unittest.TestCase):
