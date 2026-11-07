@@ -6,6 +6,7 @@ from urllib.error import HTTPError
 from pathlib import Path
 import app.main  # noqa: F401 - register existing parent models for fixture transactions
 from app.db.session import SessionLocal
+from sqlalchemy import select
 from app.models import Organization
 from app.security.models import User, OrganizationMembership
 from app.security.passwords import hash_password
