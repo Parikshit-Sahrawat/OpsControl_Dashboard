@@ -48,6 +48,13 @@ class DataSourceCreate(DataSourceBase):
         return require_safe_url(value)
 
 class DataSourceUpdate(BaseModel):
+    @field_validator("name", "source_type", "enabled", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
     model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
@@ -121,6 +128,13 @@ class CollectorCreate(CollectorBase):
         return require_safe_config(require_supported_configuration(value))
 
 class CollectorUpdate(BaseModel):
+    @field_validator("name", "collector_type", "enabled", "interval_seconds", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
     model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
@@ -467,6 +481,13 @@ class MonitoringTemplateCreate(BaseModel):
         return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateUpdate(BaseModel):
+    @field_validator("name", "scope", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
     name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
     scope: str | None = Field(default=None, max_length=200)

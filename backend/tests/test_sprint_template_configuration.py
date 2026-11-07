@@ -48,3 +48,25 @@ class TemplateConfigurationTests(unittest.TestCase):
         ):
             with self.subTest(data=data), self.assertRaises(ValidationError):
                 MonitoringTemplateAttachmentUpdate.model_validate(data)
+
+    def test_explicit_null_required_patch_fields_are_validation_errors(self):
+        from pydantic import ValidationError
+        from app.schemas.monitoring import (
+            DataSourceUpdate,
+            CollectorUpdate,
+            MonitoringTemplateUpdate,
+        )
+
+        for model, field in [
+            (DataSourceUpdate, "name"),
+            (DataSourceUpdate, "enabled"),
+            (CollectorUpdate, "interval_seconds"),
+            (MonitoringTemplateUpdate, "scope"),
+        ]:
+            with self.subTest(model=model, field=field), self.assertRaises(
+                ValidationError
+            ):
+                model.model_validate({field: None})
+        self.assertIsNone(
+            DataSourceUpdate.model_validate({"description": None}).description
+        )
