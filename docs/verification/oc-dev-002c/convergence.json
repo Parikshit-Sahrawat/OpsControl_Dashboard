@@ -1,0 +1,29 @@
+{
+  "candidate": "80835f0065de24ebf271fc621b6d1e5e83d73bd2",
+  "pr80": "958193f266c89302b2f1919e3703faece591e0af",
+  "operation": "read-only git apply --check; no patch/migration applied",
+  "exit": 1,
+  "stderr": "error: patch failed: backend/app/schemas/monitoring.py:48\nerror: backend/app/schemas/monitoring.py: patch does not apply\nerror: patch failed: backend/scripts/v16_api_probe.py:532\nerror: backend/scripts/v16_api_probe.py: patch does not apply\nerror: patch failed: frontend/package.json:7\nerror: frontend/package.json: patch does not apply\n",
+  "migration_chain": [
+    {
+      "path": "backend/migrations/versions/0039_etl_workflow_foundation.py",
+      "sha256": "fb6bd6762cc29139895318696df7758eb0bbb12019e3fcc318f9e02af62bc347",
+      "revision": "0039_etl_workflow_foundation",
+      "down_revision": "0038_k8s_cluster_associations"
+    },
+    {
+      "path": "backend/migrations/versions/0040_etl_native_bindings.py",
+      "sha256": "7cc50f255242f3a5bae2d1266b4bc33c01fcfa6c7fe77f7744ad5898eeb6d2d0",
+      "revision": "0040_etl_native_bindings",
+      "down_revision": "0039_etl_workflow_foundation"
+    },
+    {
+      "path": "backend/migrations/versions/0041_etl_authority_writer.py",
+      "sha256": "a188bbe703d4d784f163a8cc2dfcc06fbcd824db33e84661196805ee5e46831d",
+      "revision": "0041_etl_authority_writer",
+      "down_revision": "0040_etl_native_bindings"
+    }
+  ],
+  "new_migrations_in002c": false,
+  "converged_runtime": "BLOCKED no approved integrated candidate"
+}

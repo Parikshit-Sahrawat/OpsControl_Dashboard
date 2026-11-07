@@ -1,0 +1,227 @@
+frontend/src/App.jsx:502:            onSelectLegacyExecution={selectJob}
+backend/app/api/access.py:27:    LEGACY_ROLES,
+backend/app/api/access.py:1005:    # Remove matching legacy sources too; otherwise compatibility would restore
+backend/app/api/access.py:1010:        if role_id_for_legacy(m.role) == r.id:
+backend/app/api/access.py:1016:def role_id_for_legacy(role):
+backend/app/api/access.py:1017:    return role_id(LEGACY_ROLES.get(role, ""))
+backend/app/api/access.py:1077:    # Legacy API/CLI memberships created AFTER the migration remain real customer
+backend/app/api/access.py:1089:                CustomerAccessGrant.legacy_membership_id.is_not(None),
+backend/app/api/access.py:1090:                "legacy_customer_membership",
+backend/app/api/access.py:1096:    legacy_code = case(
+backend/app/api/access.py:1099:            for code, mapped in LEGACY_ROLES.items()
+backend/app/api/access.py:1101:        else_="unsupported-legacy-role"
+backend/app/api/access.py:1103:    legacy = (
+backend/app/api/access.py:1112:            literal("legacy_customer_membership").label("source"),
+backend/app/api/access.py:1118:            (Role.code == legacy_code)
+backend/app/api/access.py:1123:            CustomerAccessGrant.legacy_membership_id == OrganizationMembership.id,
+backend/app/api/access.py:1127:    sources = union_all(actual, legacy).subquery()
+backend/app/api/access.py:1221:                CustomerAccessGrant.legacy_membership_id.is_(None),
+backend/app/api/access.py:1226:                "Revoke direct allows before adding a customer deny; inherited/legacy scope may be narrowed",
+backend/app/api/access.py:1304:        legacy = db.get(OrganizationMembership, grant_id)
+backend/app/api/access.py:1305:        if legacy is None:
+backend/app/api/access.py:1310:            if str(legacy.organization_id) not in budget(actor())["customers"]:
+backend/app/api/access.py:1312:        protect_employee(db, own(db, User, legacy.user_id, lock=True), True)
+backend/app/api/access.py:1313:        delegate(db, own(db, Role, role_id_for_legacy(legacy.role)))
+backend/app/api/access.py:1314:        db.delete(legacy)
+backend/app/api/access.py:1318:            "legacy_customer_membership",
+backend/app/api/access.py:1319:            legacy.id,
+backend/app/api/access.py:1320:            legacy.organization_id,
+backend/app/api/access.py:1337:    if g.legacy_membership_id:
+backend/app/api/access.py:1338:        legacy = db.get(OrganizationMembership, g.legacy_membership_id)
+backend/app/api/access.py:1339:        if legacy:
+backend/app/api/access.py:1340:            db.delete(legacy)
+frontend/src/excludedPlatforms.js:2:const aliases = new Set(["kubernetes", "k8s", "eks", "aks", "gke", "openshift",
+frontend/src/excludedPlatforms.js:3:  "k3s", "k0s", "microk8s", "rke", "rke2", "awseks", "amazoneks", "azureaks",
+frontend/src/excludedPlatforms.js:4:  "googlegke", "gcpgke", "amazonelasticcontainerserviceforkubernetes"]);
+frontend/src/excludedPlatforms.js:10:    || compact.includes("kubernetes") || compact.includes("openshift");
+backend/app/api/remote_protocol.py:59:        # Legacy worker must stop; new scheduler owns this collector.
+backend/app/api/remote_protocol.py:79:        collector.enabled=False   # cannot fall back to legacy local polling
+backend/app/api/remote_protocol.py:244:        # Legacy workers can only claim GET probes without custom headers.
+backend/app/api/remote_protocol.py:279:    # Preserve canonical hashes for legacy anonymous evidence/replays.
+frontend/src/pages/DomainMonitoring.jsx:5:import LegacyVMHealth from "./VMHealth";
+frontend/src/pages/DomainMonitoring.jsx:6:import LegacyAPIs from "./APIs";
+frontend/src/pages/DomainMonitoring.jsx:66:            ? <LegacyVMHealth embedded organizationIds={organizationIds} environment={environment} />
+frontend/src/pages/DomainMonitoring.jsx:67:            : <LegacyAPIs embedded organizationIds={organizationIds} environment={environment} onNavigate={onNavigate} />)}
+frontend/src/pages/MonitoringSetup.jsx:413:            <h2>Legacy monitoring configuration</h2>
+backend/app/data_pipelines/api.py:672:    legacy_pending = False
+backend/app/data_pipelines/api.py:679:            legacy_pending = True
+backend/app/data_pipelines/api.py:690:                        "Legacy VM inheritance differs; explicit resource migration required",
+backend/app/data_pipelines/api.py:710:        origin="LEGACY_PENDING" if legacy_pending else "MANUAL",
+backend/app/data_pipelines/api.py:711:        quarantined=legacy_pending,
+backend/app/data_pipelines/api.py:1201:        "legacy_collector_id",
+backend/app/data_pipelines/api.py:1206:    if cfg.get("legacy_collector_id"):
+backend/app/data_pipelines/api.py:1212:        collector = db.get(Collector, uuid.UUID(cfg["legacy_collector_id"]))
+backend/app/data_pipelines/api.py:1220:            raise HTTPException(404, "Legacy Collector unavailable")
+backend/app/data_pipelines/api.py:1231:                409, "Legacy Collector is running; retry handoff after it completes"
+backend/app/data_pipelines/api.py:1236:                409, "Legacy cursor cannot overwrite accepted V1.6 progress"
+backend/app/data_pipelines/api.py:1240:            "legacy_configuration": {
+backend/app/data_pipelines/api.py:1246:        source.legacy_collector_id = collector.id
+backend/app/data_pipelines/api.py:1272:                "Exactly one operator-confirmed legacy native job/cursor mapping is required",
+backend/app/data_pipelines/api.py:1274:        legacy_job = matching[0]
+backend/app/data_pipelines/api.py:1275:        legacy_resource = checked(db, MonitoringResource, legacy_job.resource_id, True)
+backend/app/data_pipelines/api.py:1276:        owning_integration = checked(db, PipelineIntegration, legacy_job.integration_id)
+backend/app/data_pipelines/api.py:1278:            legacy_resource.configuration.get("platform")
+backend/app/data_pipelines/api.py:1286:            or legacy_resource.environment != owning_integration.environment
+backend/app/data_pipelines/api.py:1289:                409, "Unmapped legacy platform/environment; handoff stopped"
+backend/app/data_pipelines/api.py:1291:        if legacy_resource.configuration.get("pipeline_integration_id") not in {
+backend/app/data_pipelines/api.py:1296:                409, "Legacy resource already belongs to another integration"
+backend/app/data_pipelines/api.py:1298:        legacy_resource.configuration = {
+backend/app/data_pipelines/api.py:1299:            **legacy_resource.configuration,
+backend/app/data_pipelines/api.py:1301:            "native_job_id": legacy_job.native_id,
+backend/app/data_pipelines/api.py:1303:        legacy_resource.activation_status = "CONFIGURED"
+backend/app/data_pipelines/api.py:1306:        order = db.get(JobOrder, legacy_resource.job_order_id)
+backend/app/data_pipelines/api.py:1309:        legacy_job.quarantined = False
+backend/app/data_pipelines/api.py:1310:        legacy_job.origin = "CONFIRMED_LEGACY"
+backend/app/data_pipelines/api.py:1311:        legacy_job.revision += 1
+backend/app/data_pipelines/api.py:1312:        s.event(db, legacy_job, "LEGACY_BINDING_APPROVE", actor().user_id)
+backend/app/data_pipelines/api.py:1322:            "legacy_checkpoint": dict(state.checkpoint) if state else {},
+frontend/src/pages/UnifiedResourceManagement.jsx:140:    [legacyConfiguration, setLegacyConfiguration] = useState(false),
+frontend/src/pages/UnifiedResourceManagement.jsx:144:    // customer selection. The legacy resource tabs retain their own filter.
+frontend/src/pages/UnifiedResourceManagement.jsx:205:    setLegacyConfiguration(false);
+frontend/src/pages/UnifiedResourceManagement.jsx:246:          "This VM has no complete source and Collector association. Reconcile its legacy registration before configuring collection.",
+frontend/src/pages/UnifiedResourceManagement.jsx:301:              Create {domain === "ETL" ? "Legacy Data Pipeline" : domain === "VM" ? "Compute Instance" : "API Endpoint"}
+frontend/src/pages/UnifiedResourceManagement.jsx:456:                      !r.configuration.legacy && (
+frontend/src/pages/UnifiedResourceManagement.jsx:542:                <button onClick={() => setLegacyConfiguration((v) => !v)}>
+frontend/src/pages/UnifiedResourceManagement.jsx:543:                  {legacyConfiguration ? "Hide" : "Open"} legacy monitoring
+frontend/src/pages/UnifiedResourceManagement.jsx:546:                {legacyConfiguration && (
+frontend/src/pages/UnifiedResourceManagement.jsx:558:          {selected.configuration.legacy && (
+frontend/src/pages/UnifiedResourceManagement.jsx:560:              Existing identity/history is preserved. Review legacy
+frontend/src/pages/UnifiedResourceManagement.jsx:796:        <summary>Legacy mapping reconciliation</summary>
+frontend/src/pages/UnifiedResourceManagement.jsx:944:      setError("This VM has no canonical Data Source association. Reconcile the legacy registration before configuring collection.");
+frontend/src/pages/UnifiedResourceManagement.jsx:1071:      delete payload.legacy;
+frontend/src/pages/UnifiedResourceManagement.jsx:1072:      delete payload.legacy_template_attachments;
+backend/app/data_pipelines/bridge.py:1:"""Read-only adapter bridge: bind native identity before legacy jobchain normalization."""
+backend/app/data_pipelines/models.py:162:    legacy_collector_id: Mapped[uuid.UUID | None] = mapped_column(
+backend/app/security/access_control.py:10:    LEGACY_ROLES,
+backend/app/security/access_control.py:334:    legacy_memberships = list(
+backend/app/security/access_control.py:342:        m.organization_id for m in legacy_memberships
+backend/app/security/access_control.py:397:            or g.legacy_membership_id
+backend/app/security/access_control.py:421:    # Legacy consumers and direct CLI seeds remain equivalent customer grants,
+backend/app/security/access_control.py:423:    for m in legacy_memberships:
+backend/app/security/access_control.py:424:        rid = role_id(LEGACY_ROLES.get(m.role, ""))
+backend/app/security/access_control.py:431:                    "source": "legacy_customer_membership",
+frontend/src/pipelines/ExecutionViews.jsx:143:    legacy = usePipelineFeed(
+frontend/src/pipelines/ExecutionViews.jsx:157:      (history.steps?.length ? history.steps : legacy.data?.steps || []);
+frontend/src/pipelines/ExecutionViews.jsx:185:      <State feed={native ? attempts : legacy} />
+frontend/src/pipelines/ExecutionViews.jsx:316:              value={h.source_evidence || legacy.data?.source_evidence}
+backend/app/security/access_models.py:208:    legacy_membership_id: Mapped[uuid.UUID | None] = mapped_column(
+backend/app/models/__init__.py:5:    KubernetesCluster, KubernetesClusterAssociation, KubernetesClusterAssociationDecision,
+backend/app/models/__init__.py:13:    "KubernetesCluster", "KubernetesClusterAssociation", "KubernetesClusterAssociationDecision",
+frontend/src/pipelines/PipelineWorkspace.jsx:36:  onSelectLegacyExecution,
+frontend/src/pipelines/PipelineWorkspace.jsx:144:            onSelect={onSelectLegacyExecution}
+backend/app/data_pipelines/service.py:1026:        elif job.origin == "LEGACY_PENDING":
+frontend/src/pipelines/contracts.js:15:  "LEGACY_ADOPTION",
+frontend/src/pipelines/contracts.js:102:    ...(r.category === "LEGACY_ADOPTION" ? ["ADOPT_LEGACY"] : []),
+backend/app/security/permission_catalog.py:47:LEGACY_ADMIN = READ | {
+backend/app/security/permission_catalog.py:59:LEGACY_OPERATOR = READ | {
+backend/app/security/permission_catalog.py:71:        set(LEGACY_ADMIN) | {"customers.create"},
+backend/app/security/permission_catalog.py:82:    "legacy-customer-administrator": (
+backend/app/security/permission_catalog.py:83:        "Legacy Customer Administrator",
+backend/app/security/permission_catalog.py:84:        set(LEGACY_ADMIN),
+backend/app/security/permission_catalog.py:86:    "legacy-customer-operator": ("Legacy Customer Operator", set(LEGACY_OPERATOR)),
+backend/app/security/permission_catalog.py:88:LEGACY_ROLES = {
+backend/app/security/permission_catalog.py:90:    "operator": "legacy-customer-operator",
+backend/app/security/permission_catalog.py:91:    "org_admin": "legacy-customer-administrator",
+backend/app/security/resource_scope.py:68:        elif name == "KubernetesClusterAssociation":
+backend/app/security/scope.py:3:This defense covers existing legacy routers as well as nested evidence reads.
+backend/app/security/scope.py:32:    authorization_revision: str = "legacy"
+backend/app/security/scope.py:53:                LEGACY_ADMIN,
+backend/app/security/scope.py:54:                LEGACY_OPERATOR,
+backend/app/security/scope.py:59:                "operator": LEGACY_OPERATOR,
+backend/app/security/scope.py:60:                "org_admin": LEGACY_ADMIN,
+backend/app/security/scope.py:125:    "KubernetesClusterAssociation": (),
+backend/app/security/scope.py:194:    "KubernetesCluster",
+backend/app/security/scope.py:195:    "KubernetesClusterAssociationDecision",
+backend/app/security/scope.py:523:                continue  # Legacy untyped reference; organization/source ownership remains enforced.
+backend/app/models/entities.py:1130:class KubernetesCluster(Base):
+backend/app/models/entities.py:1133:    __tablename__ = "kubernetes_clusters"
+backend/app/models/entities.py:1139:        UniqueConstraint("provider_identity", "provider_cluster_id", name="uq_k8s_verified_cluster_identity"),
+backend/app/models/entities.py:1143:class KubernetesClusterAssociation(Base):
+backend/app/models/entities.py:1146:    __tablename__ = "kubernetes_cluster_associations"
+backend/app/models/entities.py:1148:    cluster_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("kubernetes_clusters.id", ondelete="RESTRICT"), nullable=False)
+backend/app/models/entities.py:1154:        UniqueConstraint("cluster_id", "organization_id", name="uq_k8s_cluster_customer"),
+backend/app/models/entities.py:1155:        CheckConstraint("revision > 0", name="ck_k8s_association_revision"),
+backend/app/models/entities.py:1159:class KubernetesClusterAssociationDecision(Base):
+backend/app/models/entities.py:1162:    __tablename__ = "kubernetes_cluster_association_decisions"
+backend/app/models/entities.py:1164:    association_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("kubernetes_cluster_associations.id", ondelete="RESTRICT"), nullable=False)
+backend/app/models/entities.py:1171:        UniqueConstraint("association_id", "revision", name="uq_k8s_association_decision_revision"),
+backend/app/models/entities.py:1172:        CheckConstraint("revision > 0", name="ck_k8s_decision_revision"),
+backend/app/native_incidents/api.py:157:        # Unmapped legacy evidence remains unknown, never guessed from names.
+backend/app/services/etl_monitoring.py:26:    """Append source facts independently of the mutable legacy projection.
+backend/app/services/etl_monitoring.py:39:        return None  # Legacy unbound orders cannot assert canonical identity.
+backend/app/services/etl_monitoring.py:66:            # The legacy projection was applied here. Never feed this raw
+backend/app/telemetry/api.py:1139:                "Legacy log source is not a host-agent method: " + str(source_type)
+backend/app/services/excluded_platforms.py:5:_ALIASES = {"kubernetes", "k8s", "eks", "aks", "gke", "openshift", "k3s", "k0s",
+backend/app/services/excluded_platforms.py:6:            "microk8s", "rke", "rke2", "amazonelasticcontainerserviceforkubernetes",
+backend/app/services/excluded_platforms.py:7:            "amazonelastickubernetesservice", "azurekubernetesservice", "googlekubernetesengine",
+backend/app/services/excluded_platforms.py:16:    return bool(words & _ALIASES) or compact in _ALIASES or "kubernetes" in compact or "openshift" in compact
+backend/app/worker/collector_runtime.py:103:        # Legacy collection shares the control plane's workload identity and
+backend/app/worker/collector_runtime.py:369:            # or making an outbound request, including legacy Collector API paths.
+backend/app/worker/collector_runtime.py:728:    # Retire legacy Kubernetes-only collectors before any provider SDK call.
+backend/app/worker/collector_runtime.py:730:    if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
+backend/app/worker/collector_runtime.py:733:        collector.last_error = "Kubernetes monitoring retired; historical evidence retained"
+backend/app/worker/collector_runtime.py:831:        # Persistently retire previously enabled Kubernetes-only collectors.
+backend/app/worker/collector_runtime.py:836:                func.upper(Collector.collector_type).in_(("KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")),
+backend/app/worker/collector_runtime.py:844:                "Kubernetes monitoring retired; historical evidence retained"
+backend/app/worker/collector_runtime.py:858:                        ("OTEL", "PIPELINE_V16_PROXY", "KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT")
+backend/app/pipeline_adapters/pentaho_carte.py:10:from app.worker import pentaho_status as legacy
+backend/app/pipeline_adapters/pentaho_carte.py:54:        username, password = legacy.resolve_basic_auth(configuration["credential_ref"])
+backend/app/pipeline_adapters/pentaho_carte.py:57:    send = transport or legacy._transport
+backend/app/pipeline_adapters/pentaho_carte.py:74:        except legacy.PentahoStatusError:
+backend/app/pipeline_adapters/pentaho_carte.py:110:        return legacy._xml(body)
+backend/app/pipeline_adapters/pentaho_carte.py:111:    except (UnicodeError, legacy.PentahoStatusError):
+backend/app/pipeline_adapters/pentaho_carte.py:137:            legacy._transformation_steps(root, secrets)
+backend/app/pipeline_adapters/pentaho_carte.py:141:        normalized, errors, indicator, exit_status, warnings = legacy._native_result(
+backend/app/pipeline_adapters/pentaho_carte.py:147:    except legacy.PentahoStatusError:
+backend/app/pipeline_adapters/pentaho_carte.py:160:            legacy.safe_text(root.findtext("result/log_channel_id"), secrets).strip()[
+backend/app/pipeline_adapters/pentaho_carte.py:166:            legacy.safe_text(root.findtext("log_date"), secrets).strip()[:100] or None
+backend/app/pipeline_adapters/pentaho_carte.py:170:        "started_at": legacy._source_time(root.findtext("start_date")),
+backend/app/pipeline_adapters/pentaho_carte.py:171:        "ended_at": legacy._source_time(root.findtext("end_date")),
+backend/app/pipeline_adapters/pentaho_carte.py:176:            record["logs"] = legacy.safe_text(plain, secrets)
+backend/app/pipeline_adapters/pentaho_carte.py:179:            record["logs"], record["log_evidence_status"] = legacy._decoded_log(
+backend/app/pipeline_adapters/pentaho_carte.py:247:            entries = legacy._inventory_entries(
+backend/app/pipeline_adapters/pentaho_carte.py:250:        except legacy.PentahoStatusError:
+backend/app/pipeline_adapters/pentaho_carte.py:295:    native = legacy._safe_token(native, "execution id")
+backend/app/pipeline_adapters/pentaho_contracts.py:78:                    "Legacy embedded job-entry results and opt-in sanitized logs",
+backend/app/pipeline_adapters/pentaho_contracts.py:91:                    "Current legacy job-status support does not certify this full contract",
+backend/app/worker/notifications.py:232:        # Serialize claims for an alert, including legacy duplicate event rows.
+backend/app/worker/remote_scheduler.py:35:        # Retire all remote Kubernetes collectors, including those not yet due,
+backend/app/worker/remote_scheduler.py:53:                collector.last_error="Kubernetes monitoring retired; historical evidence retained"
+backend/app/worker/remote_scheduler.py:67:            if collector.collector_type.upper() in {"KUBERNETES", "K8S", "AWS_EKS", "EKS", "AKS", "AZURE_AKS", "GKE", "GOOGLE_GKE", "OPENSHIFT"}:
+backend/app/worker/remote_scheduler.py:70:                collector.last_error="Kubernetes monitoring retired; historical evidence retained"
+backend/app/telemetry/ingestion.py:169:        return None  # Explicit legacy compatibility; authenticated Collector boundary still applies.
+backend/app/unified/compatibility.py:1:"""Keep legacy creation contracts visible through one unified identity binding.
+backend/app/unified/compatibility.py:3:Manual ARCH-001 onboarding owns its binding explicitly. Legacy callers add a
+backend/app/unified/compatibility.py:17:def capture_legacy(db, context, instances):
+backend/app/unified/compatibility.py:24:        db.info.setdefault("unified_legacy_candidates", []).extend(candidates)
+backend/app/unified/compatibility.py:28:def bind_legacy(db, context):
+backend/app/unified/compatibility.py:29:    candidates = db.info.pop("unified_legacy_candidates", [])
+backend/app/unified/compatibility.py:59:                    "legacy": True,
+backend/app/unified/compatibility.py:84:                    "legacy": True,
+backend/app/unified/compatibility.py:105:                "configuration": {"legacy": True, "endpoint": obj.endpoint},
+backend/app/unified/compatibility.py:123:                        reason="UNSUPPORTED_LEGACY_ENVIRONMENT",
+backend/app/unified/api.py:212:    if r.domain == "API" and config.get("legacy"):
+backend/app/unified/api.py:344:        if r.domain == "API" and (r.configuration or {}).get("legacy")
+backend/app/unified/api.py:839:    base.pop("legacy", None)
+backend/app/unified/api.py:1400:            "Use V1.6 source verification; this resource has no independent legacy probe",
+backend/app/unified/api.py:1551:        # native evidence from a legacy process/scheduler status.
+backend/app/unified/api.py:1996:    action: Literal["DEFER", "REJECT_CLAIM", "ACCEPT_VERIFIED_CLAIM", "ADOPT_LEGACY"]
+backend/app/unified/api.py:2012:            "LEGACY_ADOPTION",
+backend/app/unified/pentaho_models.py:307:            "category IN ('AMBIGUOUS_IDENTITY','NATIVE_ALIAS_CONFLICT','RETRY_RELATIONSHIP','EXECUTION_OUTCOME','LEGACY_ADOPTION','RECOVERY_IDENTITY')",
+backend/app/unified/pentaho_models.py:358:            "action IN ('DEFER','REJECT_CLAIM','ACCEPT_VERIFIED_CLAIM','ADOPT_LEGACY')",
+backend/app/unified/pentaho_execution.py:396:                unresolved(event, "PENTAHO_LEGACY_IDENTITY_AMBIGUOUS")
+backend/app/unified/pentaho_execution.py:409:                        PentahoEvidenceReview.category == "LEGACY_ADOPTION",
+backend/app/unified/pentaho_execution.py:415:                        event, "PENTAHO_LEGACY_IDENTITY_REVIEW_REQUIRED", existing
+backend/app/unified/pentaho_execution.py:814:        return True  # Legacy profile: no new execution/retry authority granted.
+backend/app/unified/pentaho_review.py:27:    if "LEGACY" in error:
+backend/app/unified/pentaho_review.py:28:        return "LEGACY_ADOPTION"
+backend/app/unified/pentaho_review.py:46:        "legacy_status": history.status.value,
+backend/app/unified/pentaho_review.py:411:    elif action == "ADOPT_LEGACY":
+backend/app/unified/pentaho_review.py:413:            row.category != "LEGACY_ADOPTION"
+backend/app/unified/pentaho_review.py:417:            raise HTTPException(409, "A unique unbound legacy invocation is required")
+backend/app/unified/pentaho_review.py:421:                409, "Verified native alias must match legacy identity exactly"
+backend/app/unified/pentaho_review.py:429:                409, "Legacy terminal adoption requires verified native completion"
+backend/app/unified/pentaho_review.py:433:                409, "Contradictory legacy terminal evidence cannot be silently adopted"
+backend/app/unified/pentaho_review.py:441:                "Legacy failure requires verified finality, not assumed retry exhaustion",
+backend/app/unified/pentaho_review.py:453:                409, "Legacy adoption remains unsafe; no identity was changed"
+backend/app/unified/pentaho_review.py:457:    if history and action in {"ACCEPT_VERIFIED_CLAIM", "ADOPT_LEGACY"}:

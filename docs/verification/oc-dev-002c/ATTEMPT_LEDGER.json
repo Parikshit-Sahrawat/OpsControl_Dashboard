@@ -1,0 +1,75 @@
+{
+  "note": "Earlier dirty/precommit logs retain failures but are not final-SHA certification; count overlap disclosed",
+  "runs": [
+    {
+      "run": "v16",
+      "exit": 1,
+      "reason": "expected injected500 returned text; test client initially assumed JSON"
+    },
+    {
+      "run": "v16-retry",
+      "exit": 1,
+      "reason": "DELETE204 empty response incorrectly parsed as JSON"
+    },
+    {
+      "run": "focused",
+      "exit": 1,
+      "reason": "same204 issue in process loaded before attempted edit"
+    },
+    {
+      "run": "debug",
+      "exit": 1,
+      "reason": "same204 issue; corrected before committed run"
+    },
+    {
+      "run": "committed",
+      "exit": 0,
+      "reason": "531248a core15 HTTP/56 backend/new browser5 groups/load/restore pass"
+    },
+    {
+      "run": "ui-candidate",
+      "exit": 1,
+      "reason": "new select missing explicit accessible label"
+    },
+    {
+      "run": "ui-retry",
+      "exit": 1,
+      "reason": "test waited for native option visible rather than attached"
+    },
+    {
+      "run": "final",
+      "exit": 1,
+      "reason": "test assumed detail[] instead of existing redacted errors[] contract"
+    },
+    {
+      "run": "final-retry",
+      "exit": 0,
+      "reason": "80835f0 final110 backend/core15/Sprint08HTTP14/browser7+5/pipeline/load/restore pass"
+    },
+    {
+      "run": "before",
+      "exit": 0,
+      "reason": "pilot baseline,34resources/33collectors; not matched-fixture comparison"
+    },
+    {
+      "run": "before-matched",
+      "exit": 0,
+      "reason": "matched retained fixtures88resources/82collectors; exact sourceBASE with test instrumentation only"
+    },
+    {
+      "run": "release",
+      "exit": 0,
+      "reason": "developmental dirty source, not final-SHA acceptance substitute"
+    },
+    {
+      "run": "release-final",
+      "exit": 0,
+      "reason": "80835f0 final broad13 groups/restore/browser pass"
+    },
+    {
+      "run": "backend-all",
+      "exit": 0,
+      "reason": "80835f0 full57-module selection562pass2skip0fail"
+    }
+  ]
+}
