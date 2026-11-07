@@ -1,0 +1,8 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/oc-dev-002/backend/scripts/v16_api_probe.py", line 562, in <module>
+    user = db.scalar(select(User).where(User.username == "v16-api-viewer"))
+                     ^^^^^^
+NameError: name 'select' is not defined. Did you mean: 'selected'? Or did you forget to import 'select'?

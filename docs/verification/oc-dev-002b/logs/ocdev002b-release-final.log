@@ -1,0 +1,14 @@
+PASS: RBAC, two-tenant isolation, secrets, audit tamper and remote worker/lease/replay negatives
+PASS: Actual Basic-auth HTTPS, server worker heartbeat and five native failure/recovery observations
+PASS: Native alert recovery and independent in-app leased delivery; retired ITSM rejected
+PASS: Retired EKS discovery/import/activation denied; tenant boundaries and inventory preservation checked
+PASS: Excluded nested/aliased configurations, legacy source mutation, templates and local execution refused
+PASS: Disposable PostgreSQL: Kubernetes remote collectors retired, queued/leased jobs cancelled, evidence retained
+Resource browser failure: disable resource TimeoutError
+Private acceptance diagnostics retained at /tmp/opscontrol-release-pvz0ac74
+Traceback (most recent call last):
+  File "/tmp/oc-dev-002/scripts/release-acceptance.py", line 143, in <module>
+    run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
+  File "/tmp/oc-dev-002/scripts/release-acceptance.py", line 58, in run
+    raise RuntimeError('Acceptance command failed; see private diagnostics')
+RuntimeError: Acceptance command failed; see private diagnostics
