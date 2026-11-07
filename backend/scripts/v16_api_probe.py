@@ -569,7 +569,43 @@ try:
     raise AssertionError("revoked session accepted")
 except HTTPError as error:
     assert error.code == 401
-request(f"auth/memberships/{membership_id}", "PATCH", {"role":"viewer"}, admin)
+writer = request("auth/login", "POST", {"username":"v16-api-viewer", "password":fixture["viewer_password"]})["access_token"]
+request(f"resource-management/data-sources/{sid}", "PATCH", {"description":"authorized before revocation"}, writer)
+# Queue revocation before a mutation at the existing transaction-authority lock.
+from app.db.session import engine
+from sqlalchemy import text as sql_text
+import time as race_time
+from concurrent.futures import ThreadPoolExecutor as RacePool
+
+def raw_mutation():
+    try:
+        with urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"description":"forbidden concurrent"}).encode(),headers={"Authorization":"Bearer "+writer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=20) as response:
+            return response.status
+    except HTTPError as error:
+        return error.code
+
+def wait_authority_queue(count):
+    for _ in range(500):
+        with engine.connect() as poll:
+            waiting=poll.scalar(sql_text("SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND classid=782104 AND objid=8 AND NOT granted"))
+        if waiting>=count:return
+        race_time.sleep(.01)
+    raise AssertionError("Expected transaction authority waiter did not reach PostgreSQL lock")
+
+with RacePool(max_workers=2) as pool:
+    with engine.begin() as blocker:
+        blocker.execute(sql_text("SELECT pg_advisory_xact_lock(782104,8)"))
+        revocation=pool.submit(request,f"auth/memberships/{membership_id}","PATCH",{"role":"viewer"},admin)
+        wait_authority_queue(1)
+        mutation=pool.submit(raw_mutation)
+        wait_authority_queue(2)
+    assert revocation.result()["sessions_revoked"]
+    denied_status=mutation.result()
+    assert denied_status in (401,403), denied_status
+with SessionLocal() as db:
+    assert db.get(DataSource,uuid.UUID(sid)).description=="authorized before revocation"
+checks.append("Actual PostgreSQL queued revocation/update race: prior authorized writer succeeds, revocation commits first, waiting mutation401/403 with no committed partial change")
+
 with SessionLocal() as db:
     assert db.get(DataSource,uuid.UUID(sid)).name != "stale forbidden"
 checks.append("Membership role mutation revokes old session; actual stale authenticated PATCH401; no committed resource mutation; viewer role restored")
