@@ -1,0 +1,19 @@
+E
+======================================================================
+ERROR: test_sprint_resource_lifecycle (unittest.loader._FailedTest.test_sprint_resource_lifecycle)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_sprint_resource_lifecycle
+Traceback (most recent call last):
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-dev-002/backend/tests/test_sprint_resource_lifecycle.py", line 6, in <module>
+    import app.main  # noqa: F401
+    ^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'app'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
