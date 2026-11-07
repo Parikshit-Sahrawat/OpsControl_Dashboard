@@ -1,0 +1,25 @@
+cd backend && ENV=test .venv/bin/python -m unittest discover -s tests -p 'test_pipeline_transport_v16.py' -v
+test_adf_native_authority_is_qualified_not_display_name (test_pipeline_transport_v16.TransportTests.test_adf_native_authority_is_qualified_not_display_name) ... ok
+test_checkpoint_outside_pattern_or_negative_position_is_rejected (test_pipeline_transport_v16.TransportTests.test_checkpoint_outside_pattern_or_negative_position_is_rejected) ... ok
+test_equal_message_timestamp_records_have_distinct_source_offsets (test_pipeline_transport_v16.TransportTests.test_equal_message_timestamp_records_have_distinct_source_offsets) ... ok
+test_failed_backend_ack_never_advances_local_checkpoint (test_pipeline_transport_v16.TransportTests.test_failed_backend_ack_never_advances_local_checkpoint) ... ok
+test_glue_uses_verified_account_and_partition_before_job_collection (test_pipeline_transport_v16.TransportTests.test_glue_uses_verified_account_and_partition_before_job_collection) ... ok
+test_name_is_never_a_native_identity (test_pipeline_transport_v16.TransportTests.test_name_is_never_a_native_identity) ... ok
+test_nested_fixture_labels_cannot_certify_runtime (test_pipeline_transport_v16.TransportTests.test_nested_fixture_labels_cannot_certify_runtime) ... ok
+test_override_cannot_change_destination_without_canonical_handoff (test_pipeline_transport_v16.TransportTests.test_override_cannot_change_destination_without_canonical_handoff) ... ok
+test_partial_line_keeps_offset_and_reports_incomplete_coverage (test_pipeline_transport_v16.TransportTests.test_partial_line_keeps_offset_and_reports_incomplete_coverage) ... ok
+test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization (test_pipeline_transport_v16.TransportTests.test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization) ... ok
+test_recovery_claim_uses_recovery_operation_identity (test_pipeline_transport_v16.TransportTests.test_recovery_claim_uses_recovery_operation_identity) ... ok
+test_secret_references_cannot_export_backend_or_other_customer_secrets (test_pipeline_transport_v16.TransportTests.test_secret_references_cannot_export_backend_or_other_customer_secrets) ... ok
+test_truncation_fails_closed_before_acceptance (test_pipeline_transport_v16.TransportTests.test_truncation_fails_closed_before_acceptance) ... ok
+test_windows_paths_canonicalize_but_distinct_patterns_remain_separate (test_pipeline_transport_v16.TransportTests.test_windows_paths_canonicalize_but_distinct_patterns_remain_separate) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.678s
+
+OK
+V16_API_ACCEPTANCE=1 backend/.venv/bin/python scripts/v16-acceptance.py
+Ran 56 tests in 7.722s
+OK
+V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 9 groups
+V1.6 actual PostgreSQL ownership/durability/discovery/holds/recovery/scopes and additive migration PASS

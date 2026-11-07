@@ -1,0 +1,217 @@
+{
+  "synthetic": true,
+  "runtime_qualified": false,
+  "exact_build_is_fabricated_fixture_label": true,
+  "cases": [
+    {
+      "case": "success",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "SUCCESS",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": "2026-11-07T01:01:00+00:00"
+      },
+      "expected": "SUCCESS"
+    },
+    {
+      "case": "failure",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "FAILED",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": "2026-11-07T01:01:00+00:00"
+      },
+      "expected": "FAILED"
+    },
+    {
+      "case": "running",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "RUNNING",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": null
+      },
+      "expected": "RUNNING"
+    },
+    {
+      "case": "missing",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": null,
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "SUCCESS",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": "2026-11-07T01:01:00+00:00"
+      },
+      "expected": "REJECT"
+    },
+    {
+      "case": "duplicate",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "SUCCESS",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": "2026-11-07T01:01:00+00:00"
+      },
+      "expected": "SAME_ID_NOT_DB_DEDUP_PROOF"
+    },
+    {
+      "case": "stale",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-01-01T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "SUCCESS",
+        "started_at": "2026-01-01T01:00:00+00:00",
+        "ended_at": "2026-01-01T01:01:00+00:00"
+      },
+      "expected": "PARSES_BUT_NO_FRESHNESS_PROOF"
+    },
+    {
+      "case": "conflicting",
+      "context": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "synthetic-repository-object-1"
+      },
+      "record": {
+        "version": 1,
+        "surface": "PENTAHO_SERVER",
+        "exact_build": "10.2.0.0-222",
+        "authority_id": "SYNTHETIC-SERVER-ONLY",
+        "environment": "TEST",
+        "workload_kind": "JOB",
+        "native_job_id": "different-object",
+        "native_execution_id": "synthetic-execution-1",
+        "observation_id": "synthetic-observation-1",
+        "observed_at": "2026-11-07T01:02:00+00:00",
+        "authority": "EXECUTION_HISTORY",
+        "source_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "SUCCESS",
+        "started_at": "2026-11-07T01:00:00+00:00",
+        "ended_at": "2026-11-07T01:01:00+00:00"
+      },
+      "expected": "REJECT"
+    }
+  ]
+}

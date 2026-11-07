@@ -1,0 +1,10 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/OpsControl_Dashboard/backend/scripts/etl_rollback_probe.py", line 52, in <module>
+    migration('upgrade','head','empty-upgrade')
+  File "/workspace/OpsControl_Dashboard/backend/scripts/etl_rollback_probe.py", line 24, in migration
+    assert (r.returncode!=0)==blocked,(label,r.returncode)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('empty-upgrade', 1)

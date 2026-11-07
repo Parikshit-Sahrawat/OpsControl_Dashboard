@@ -53,7 +53,7 @@ try:
     env['OPSCONTROL_CREDENTIAL_ETL_FIXTURE_PASSWORD']=(private/'carte-password').read_text().strip()
     (private/'phase').write_text('no-run')
     run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(private/'tls.key'),'-out',str(private/'tls.crt'),'-days','1','-subj','/CN='+host,'-addext','subjectAltName=IP:'+host])
-    run(['docker','run','-d','--name',container,'-p','127.0.0.1:11432:5432','-e','POSTGRES_USER=opscontrol','-e','POSTGRES_PASSWORD=etl-local-only','-e','POSTGRES_DB=opscontrol','postgres:17-alpine'])
+    run(['docker','run','-d','--name',container,'--tmpfs','/var/lib/postgresql/data','-p','127.0.0.1:11432:5432','-e','POSTGRES_USER=opscontrol','-e','POSTGRES_PASSWORD=etl-local-only','-e','POSTGRES_DB=opscontrol','postgres:17-alpine'])
     for _ in range(100):
         if subprocess.run(['docker','exec',container,'pg_isready','-U','opscontrol'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:break
         time.sleep(.3)
@@ -68,7 +68,23 @@ try:
         for iteration in range(2):
             run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
             run([PYTHON,'-m','scripts.operations_migration_probe','verify'],ROOT/'backend')
-            if iteration==0:run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
+            if iteration==0:
+                # Backfilled incident history is now protected. Repeated upgrade
+                # must be idempotent without dropping that history to recreate it.
+                def dump_state():
+                    dump=subprocess.check_output(['docker','exec',container,'pg_dump','-U','opscontrol','--no-owner','--no-privileges','opscontrol'],text=True)
+                    return '\n'.join(line for line in dump.splitlines() if not line.startswith(('\\restrict ','\\unrestrict ')))
+                before=dump_state()
+                refusal=subprocess.run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],cwd=ROOT/'backend',env=env,capture_output=True,text=True)
+                assert refusal.returncode != 0
+                for marker in ('Unsafe populated ETL downgrade blocked before DDL','verified full backup','isolated restoration'):
+                    assert marker in refusal.stderr,marker
+                after=dump_state()
+                assert before==after,'Refused downgrade changed incident rows/schema/revision'
+                import hashlib
+                OUT.mkdir(parents=True,exist_ok=True)
+                (OUT/'populated-migration-preservation.json').write_text(json.dumps({'exit_code':refusal.returncode,'before_sha256':hashlib.sha256(before.encode()).hexdigest(),'after_sha256':hashlib.sha256(after.encode()).hexdigest(),'unchanged':True},indent=2))
+                (OUT/'populated-downgrade-refusal.log').write_text(refusal.stderr)
     run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
     linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
     run(['docker','run','-d','--name',fixture,'-p',host+':443:443','-e','ETL_FIXTURE_BIND=0.0.0.0',

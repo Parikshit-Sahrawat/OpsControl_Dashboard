@@ -1,0 +1,28 @@
+{
+  "workflow_id": "af8c143f-4062-43a9-8747-c1aaabc15805",
+  "organization_id": "f27681fe-0bc9-4d0a-ab23-00530ae41763",
+  "environment": "PROD",
+  "sla_seconds": 900,
+  "expected_duration_seconds": 500,
+  "windows": [
+    "08:00",
+    "10:00"
+  ],
+  "jobs": {
+    "UI job two": {
+      "id": "186f7f05-37e9-43af-afc5-a274ea82ccfe",
+      "parent": "af8c143f-4062-43a9-8747-c1aaabc15805",
+      "duration": 120,
+      "hostname": "ui-host.synthetic.invalid"
+    },
+    "UI job one": {
+      "id": "5fa259e4-83ad-4d24-bde8-2c2a61cd22c9",
+      "parent": "af8c143f-4062-43a9-8747-c1aaabc15805",
+      "duration": 150,
+      "hostname": "ui-host.synthetic.invalid"
+    }
+  },
+  "persisted_dependency_count": 1,
+  "unassigned_legacy_preserved": true,
+  "cross_tenant_parent_preserved": true
+}

@@ -19,6 +19,13 @@ jobs:
       V16_EVIDENCE_DIR: /tmp/opscontrol-v16-evidence
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Mixed-version acceptance archives these exact historical writers.
+          fetch-depth: 0
+      - name: Verify pinned older-writer source availability
+        run: |
+          git cat-file -e a915322b5c5c80b0d37dea71f6b7f70237082340:backend/app/main.py
+          git cat-file -e a061bdbabe7e250fe7141861c193ca837ef14dbe:backend/app/main.py
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -28,11 +35,27 @@ jobs:
         run: |
           python -m venv backend/.venv
           backend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked frontend and isolated Chromium tools
+        run: |
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/etl004-tools" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/etl004-tools/node_modules/.bin/playwright" install --with-deps chromium
       - name: Static and focused transport checks
         run: |
           backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py
           backend/.venv/bin/ruff check backend/app/data_pipelines
           make test-pipeline-v16
+      - name: ETL Workflow authenticated scope and migrated PostgreSQL regressions
+        env:
+          ETL_SCOPE_EVIDENCE_DIR: /tmp/opscontrol-etl-scope-evidence
+          ETL_WORKFLOW_UI_ACCEPTANCE: '1'
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/etl004-tools/node_modules/playwright/index.mjs
+        run: backend/.venv/bin/python scripts/etl-scope-acceptance.py
       - name: Protected V1.5 monitoring regressions
         working-directory: backend
         run: |
@@ -41,5 +64,7 @@ jobs:
         if: always()
         with:
           name: arch001-v16-pipeline-evidence
-          path: /tmp/opscontrol-v16-evidence
+          path: |
+            /tmp/opscontrol-v16-evidence
+            /tmp/opscontrol-etl-scope-evidence
           if-no-files-found: warn

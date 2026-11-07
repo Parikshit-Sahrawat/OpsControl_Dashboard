@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/scripts/etl-scope-acceptance.py", line 50, in <module>
+    run([python,'-m','unittest','tests.test_etl_workflow_scope','tests.test_etl_workflow_foundation','tests.test_sprint08_rbac','-v'],'regressions',root/'backend')
+  File "/workspace/OpsControl_Dashboard/scripts/etl-scope-acceptance.py", line 26, in run
+    if result.returncode:raise RuntimeError(label+' failed; sanitized log retained')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: regressions failed; sanitized log retained

@@ -1,0 +1,51 @@
+{
+  "baseline_sha": "c12db2764f6d581850b9d3ac5a89d6771a2fc002",
+  "tested_sha": "80de546078d773c0a07f88c8ebd99ce920666447",
+  "date_utc": "2026-11-07",
+  "scope": "OFFLINE_PREPARATION_ONLY",
+  "overall": "PREPARATION_VERIFIED / LIVE_QUALIFICATION_BLOCKED",
+  "offline": {
+    "run": 60,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "blocked_io_attempts": 0,
+    "provider_qualification": "NOT RUN / BLOCKED",
+    "database_connections": 0,
+    "subprocesses": 0
+  },
+  "new_cases": 10,
+  "retained_cases": 50,
+  "command": "backend/.venv/bin/python scripts/pentaho-qualification-offline.py",
+  "exit_code": 0,
+  "black": "PASS",
+  "ruff": "PASS",
+  "ci_traceability": "PASS \u201456 canonical IDs/31 included journeys/nine historical decisions",
+  "no_product_code_or_migration_changes": true,
+  "migration_files_unchanged": 44,
+  "live_endpoints": "NOT ACCESSED",
+  "provider_credentials": "NOT USED",
+  "genuine_confirmation_and_receipt_cases": "BLOCKED / NOT RUN; prepared Q01\u2013Q08",
+  "shared_data_migrations": "NOT RUN",
+  "deployment": "NOT PERFORMED",
+  "cleanup": "No containers/services/databases/volumes/private key files created; in-memory ephemeral test keys discarded at process exit",
+  "nine_current_owner_acceptance_selections": "Pending",
+  "historical_controlled_scope_approvals": "PRESERVED",
+  "D07_D08": "Pending exact owner policy decisions; no new semantics",
+  "hosted_ci": "Final HEAD conclusions and actual checkout identity recorded in PR80 closure comment after CI completes",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "documentation_checks": {
+    "json_validity": "PASS",
+    "relative_markdown_links": "PASS",
+    "all_required_outputs": "PASS",
+    "nine_pending_selections_historical_authority_preserved": "PASS",
+    "source_reference_hashes": "PASS",
+    "unchanged_migrations": "PASS",
+    "no_application_or_prior_evidence_changes": "PASS"
+  }
+}
