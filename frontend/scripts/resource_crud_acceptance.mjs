@@ -271,6 +271,8 @@ try {
   await page.reload();
   await page.getByLabel("Search resources", { exact: true }).fill("Wizard sequence refreshed");
   await page.getByRole("button", { name: "Wizard sequence refreshed", exact: true }).waitFor();
+  const enabledAgain = (await (await page.request.get(base + "/api/v1/unified/resources?domain=VM&search=Wizard%20sequence%20refreshed", { headers })).json()).items.find(r => r.data_source_id === source.id);
+  assert.equal(enabledAgain.active, true);
   await page.setViewportSize({ width:390, height:844 });
   await page.keyboard.press("Tab");
   assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");
