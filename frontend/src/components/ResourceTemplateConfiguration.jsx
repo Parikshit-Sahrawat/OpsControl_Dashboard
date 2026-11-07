@@ -89,15 +89,15 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
     </li>)}</ul>
     {!busy && !attachments.length && <p>No monitoring template attached.</p>}
     {canManage && <>
-      <label className="form-field"><span>Monitoring template</span><select value={selected} disabled={busy} onChange={e => choose(e.target.value)}>
+      <label className="form-field"><span>Monitoring template</span><select aria-label="Monitoring template" value={selected} disabled={busy} onChange={e => choose(e.target.value)}>
         <option value="">Select a committed template</option>
         {templates.filter(t => t.status === "COMMITTED").map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
       </select></label>
       {selected && <>
-        <label className="form-field"><span>Pinned template version</span><select value={version} disabled={busy || loadingVersions} onChange={e => setVersion(e.target.value)}>
+        <label className="form-field"><span>Pinned template version</span><select aria-label="Pinned template version" value={version} disabled={busy || loadingVersions} onChange={e => setVersion(e.target.value)}>
           {versions.map(v => <option key={v.id} value={v.version}>v{v.version}</option>)}
         </select></label>
-        <label className="form-field"><span>Template package overrides (JSON)</span><textarea rows={5} value={overrides} onChange={e => setOverrides(e.target.value)} aria-invalid={!!error} /></label>
+        <label className="form-field"><span>Template package overrides (JSON)</span><textarea aria-label="Template package overrides (JSON)" rows={5} value={overrides} onChange={e => setOverrides(e.target.value)} aria-invalid={!!error} /></label>
         <button type="button" disabled={busy || loadingVersions || !version} onClick={save}>Save template configuration</button>
       </>}
     </>}

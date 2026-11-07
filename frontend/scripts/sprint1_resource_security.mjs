@@ -42,12 +42,14 @@ try {
  await panel.getByText(/pinned v1/).waitFor();
  await api('monitoring/templates/'+template.id,'PATCH',{package_config:{collector:{type:'OTEL',interval_seconds:120}}});
  await panel.getByRole('button',{name:'Edit template pin',exact:true}).click();
+ await panel.getByLabel('Pinned template version',{exact:true}).locator('option[value="1"]').waitFor();
  assert.equal(await panel.getByLabel('Pinned template version',{exact:true}).inputValue(),'1');
  const overrides=panel.getByLabel('Template package overrides (JSON)',{exact:true});
  await overrides.fill('invalid json');await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
  await panel.getByRole('alert').filter({hasText:'Overrides: enter a valid JSON object.'}).waitFor();
  await overrides.fill('{"collector":{"interval_seconds":45}}');
- await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
+ await Promise.all([page.waitForResponse(r=>r.request().method()==='PATCH' && r.url().includes('/templates/'+template.id) && r.status()===200),panel.getByRole('button',{name:'Save template configuration',exact:true}).click()]);
+ await panel.getByLabel('Monitoring template',{exact:true}).waitFor();
  await panel.getByText(/pinned v1/).waitFor();
  const effectiveBefore=await api('monitoring/data-sources/'+resource.data_source_id+'/effective-configuration');
  assert.equal(effectiveBefore.collector.interval_seconds,45);assert.equal(effectiveBefore.templates[0].version,1);
