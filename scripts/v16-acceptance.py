@@ -424,6 +424,8 @@ try:
                         time.sleep(0.2)
                 else:
                     raise RuntimeError("Owned V1.6 UI readiness failed")
+                if os.getenv("V16_PERFORMANCE_PROBE") == "1":
+                    print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":
                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":

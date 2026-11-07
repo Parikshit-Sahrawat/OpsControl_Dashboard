@@ -262,6 +262,19 @@ try {
     ).json()
   ).items.find((r) => r.data_source_id === source.id);
   assert.equal(disabled.active, false);
+  // Re-enable the same persisted identity, then verify narrow-screen keyboard use.
+  await row.getByRole("button", { name: "Edit", exact: true }).click();
+  modal = page.getByRole("region", { name: "Edit Compute Instance", exact: true });
+  await modal.getByLabel("Enable resource", { exact: true }).check();
+  await modal.getByRole("button", { name: "Save resource", exact: true }).click();
+  await modal.waitFor({ state: "hidden" });
+  await page.reload();
+  await page.getByLabel("Search resources", { exact: true }).fill("Wizard sequence refreshed");
+  await page.getByRole("button", { name: "Wizard sequence refreshed", exact: true }).waitFor();
+  await page.setViewportSize({ width:390, height:844 });
+  await page.keyboard.press("Tab");
+  assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");
+  await page.screenshot({ path:process.env.RELEASE_EVIDENCE_DIR+"/resource-mobile-keyboard.png", fullPage:true });
   assert.deepEqual(errors, []);
   assert.deepEqual(serverErrors, []);
   await writeFile(
@@ -270,7 +283,8 @@ try {
       {
         status: "PASS",
         checks: [
-          "Browser create/read/update/disable persisted",
+          "Browser create/read/update/disable/re-enable and reload persisted",
+          "Narrow viewport and keyboard focus exercised",
           "Duplicate source returns 409",
           "Logical OTEL configuration creates no polling CollectorRun",
           "Edit preserves Collector ID and updates its configuration name",

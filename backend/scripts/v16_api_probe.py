@@ -532,6 +532,46 @@ with SessionLocal() as db:
     assert str(persisted.organization_id) == aid and not persisted.enabled
     assert not db.get(Collector, uuid.UUID(collector["id"])).enabled
 checks.append("Sprint1: protected ownership fields, viewer denial, disabled-parent collector enable refusal on both APIs and persisted unchanged ownership")
+# Template lifecycle uses the same authenticated API and immutable version rows.
+template = request("monitoring/templates", "POST", {"name":"Sprint template " + uuid.uuid4().hex, "package_config":{"attributes":[{"key":"team","required":True}],"collector":{"type":"HTTP"}}}, admin, 201)
+tid = template["id"]
+request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 201)
+request(f"monitoring/templates/{tid}", "PATCH", {"package_config":{"collector":{"type":"HTTP","interval_seconds":90}}}, admin)
+effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
+assert effective["templates"][0]["version"] == 1 and not effective["valid"] and "team" in effective["missing_required_attributes"]
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin)
+effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
+assert effective["valid"] and effective["collector"]["interval_seconds"] == 30 and effective["templates"][0]["version"] == 1
+versions = request(f"monitoring/templates/{tid}/versions", token=admin)
+assert {v["version"] for v in versions} == {1,2}
+request("monitoring/collectors", "POST", {"data_source_id":sid,"name":"forbidden enabled legacy collector","collector_type":"HTTP","enabled":True,"interval_seconds":60,"configuration":{}},admin,409)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"priority":200},viewer,403)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"metrics":"invalid"}},admin,422)
+request("monitoring/templates", "POST", {"name":"invalid shape","package_config":{"collector":[]}},admin,422)
+other_source=request("resource-management/data-sources","POST",{"organization_id":bid,"name":"Other template scope "+uuid.uuid4().hex,"source_type":"LINUX"},admin,201)
+request(f"monitoring/data-sources/{other_source['id']}/templates", "POST", {"template_id":tid,"template_version":1},viewer,403)
+from concurrent.futures import ThreadPoolExecutor as TemplatePool
+with TemplatePool(max_workers=2) as pool:
+    jobs=[pool.submit(request,f"monitoring/templates/{tid}","PATCH",{"package_config":{"collector":{"type":"HTTP","interval_seconds":interval}}},admin) for interval in (40,50)]
+    committed=[future.result()["version"] for future in jobs]
+assert set(committed)=={3,4}
+assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)["templates"][0]["version"]==1
+checks.append("Template immutable v1 pin survives v2 commit; required attributes and source overrides resolve; original versions retained; viewer mutation and disabled-parent legacy creation denied")
+# Role edits revoke prior sessions; stale callers cannot mutate a resource.
+with SessionLocal() as db:
+    user = db.scalar(select(User).where(User.username == "v16-api-viewer"))
+    membership = db.scalar(select(OrganizationMembership).where(OrganizationMembership.user_id == user.id))
+    membership_id = str(membership.id)
+request(f"auth/memberships/{membership_id}", "PATCH", {"role":"org_admin"}, admin)
+try:
+    urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"name":"stale forbidden"}).encode(),headers={"Authorization":"Bearer "+viewer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=10)
+    raise AssertionError("revoked session accepted")
+except HTTPError as error:
+    assert error.code == 401
+request(f"auth/memberships/{membership_id}", "PATCH", {"role":"viewer"}, admin)
+with SessionLocal() as db:
+    assert db.get(DataSource,uuid.UUID(sid)).name != "stale forbidden"
+checks.append("Membership role mutation revokes old session; actual stale authenticated PATCH401; no committed resource mutation; viewer role restored")
 # Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
 import time
 from datetime import datetime, timezone

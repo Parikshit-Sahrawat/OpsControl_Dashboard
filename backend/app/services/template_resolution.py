@@ -41,6 +41,11 @@ def _merge_named_rows(rows: list[dict], incoming: list[dict], identity: str) -> 
 
 def _apply_package(effective: dict, package: dict) -> dict:
     package = package or {}
+    from app.services.template_packages import require_template_package
+    try:
+        require_template_package(package)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
     effective["collector"] = _deep_merge(effective.get("collector", {}), package.get("collector", {}))
     effective["attributes"] = _merge_named_rows(effective.get("attributes", []), package.get("attributes", []), "key")
     effective["metrics"] = _merge_named_rows(effective.get("metrics", []), package.get("metrics", []), "metric")
@@ -154,13 +159,15 @@ def attach_template(
     priority: int = 100,
     overrides: dict | None = None,
 ):
-    source = db.get(DataSource, data_source_id)
+    source = db.get(DataSource, data_source_id, with_for_update=True)
     if not source:
         raise HTTPException(status_code=404, detail="Data source not found")
     require_supported_source(source)
     template = db.get(MonitoringTemplate, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Monitoring template not found")
+    if template.status != "COMMITTED":
+        raise HTTPException(409, "Cannot attach an inactive monitoring template")
     if source.organization_id and template.scope is None:
         raise HTTPException(status_code=409, detail="Template scope is invalid")
 

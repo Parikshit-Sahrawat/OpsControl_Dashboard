@@ -225,6 +225,7 @@ def list_collector_runs(
 @router.post("/collectors", response_model=CollectorOut, status_code=201)
 def create_collector(payload: CollectorCreate, db: Session = Depends(get_db)):
     require_supported_source(_get_or_404(DataSource, payload.data_source_id, db, "Data source"))
+    require_enabled_parent(_get_or_404(DataSource, payload.data_source_id, db, "Data source"), payload.enabled)
     item = Collector(**payload.model_dump())
     db.add(item)
     db.commit()
@@ -585,7 +586,9 @@ def commit_monitoring_template(
     payload: MonitoringTemplateUpdate,
     db: Session = Depends(get_db),
 ):
-    item = _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+    item = db.get(MonitoringTemplate, item_id, with_for_update=True)
+    if item is None:
+        raise HTTPException(404, "Monitoring template not found")
     values = payload.model_dump(exclude_unset=True)
     package = values.pop("package_config", None)
     committed_by = values.pop("committed_by", None) or "Admin"
