@@ -1,0 +1,11 @@
+# PostgreSQL preservation and convergence
+
+Final runtime source c4c773601c53d0c8f44fdcb51b447c7664fb6eb8, main lineage0038; separate release/preservation run used5b5e55c with byte-identical application files (only test finalizer differs). No Alembic revision or applied file changed. `final-application/restore.json` compares100 tables' row counts, complete sorted-row SHA256, columns and FKs after actual pg_dump/pg_restore; source unchanged. `preservation-final/report.json` independently records100 tables,1194 fixture rows,499 constraints; backup checksum overwrite/nonempty-target rejection, corrupted-checksum rejection, index migration round trip, audit/retention rollback/holds and restricted runtime role cases pass. TLS ENVIRONMENT=production here is a private security fixture, not deployment to production/shared UAT.
+
+PR80 at958193f contains unmerged0039–0041 and authority/temporal-writer guards. `COMPATIBILITY_CHECK.json` runs **git apply --check only** in untouched detached PR80 source; it reports textual conflicts in backend/app/schemas/monitoring.py, backend/scripts/v16_api_probe.py and frontend/package.json. No patch/branch merge/schema migration applied. Textual compatibility would not be runtime certification even if successful.
+
+Eventual isolated integration plan (BLOCKED until reviewed source convergence): reconcile the conflicting harness/test lists without weakening assertions; preserve PR80 migration IDs and down_revision chain; build populated0038 fixture; use reviewed exact0039→0040→0041 files; compare all ownership/configuration/history/holds; exercise admitted receipt/version/fence and fresh authorization; backup/restore and refuse unsafe downgrade before DDL; test both old writer denial and a genuinely compatible rollback candidate. Old health200 or safe500 refusal is not operational rollback compatibility. Do not create a competing0039 migration for new history tables before convergence design approval.
+
+Main-only tests do not certify combined branch safety. Customer/legacy cluster history and unrelated monitoring data retained in the synthetic restore. No customer database accessed.
+
+**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.**

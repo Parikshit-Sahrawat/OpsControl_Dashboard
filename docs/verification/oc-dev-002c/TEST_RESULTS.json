@@ -1,0 +1,79 @@
+{
+  "task": "OC-DEV-002C",
+  "source": "80835f0065de24ebf271fc621b6d1e5e83d73bd2",
+  "disposition": "PARTIAL/BLOCKED",
+  "workstreams": {
+    "A": "PARTIAL; applicability and immutable history BLOCKED",
+    "B": "PARTIAL; bounded real-browser groups PASS",
+    "C": "NOT REPRODUCED; representative coverage PARTIAL",
+    "D": "PARTIAL; exact timeout NOT REPRODUCED, cause unproven",
+    "E": "PARTIAL; main preservation PASS, PR80 convergence BLOCKED"
+  },
+  "backend_all": {
+    "executions": 564,
+    "passed": 562,
+    "failed": 0,
+    "skipped": 2,
+    "skip_reason": "Two real pinned Contrib binary checks unavailable; not qualified in this task"
+  },
+  "backend_combined": {
+    "executions": 110,
+    "failed": 0,
+    "skipped": 0,
+    "note": "56 pipeline +42 retained Sprint08 +12 focused; imported fixtures can overlap"
+  },
+  "focused_unit": {
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "new_since002b": 3,
+    "retained_since002b": 9,
+    "included_in_combined": true
+  },
+  "frontend": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "new_since002c": 0
+  },
+  "http": {
+    "core_groups": 15,
+    "new_core_groups_since002b": 1,
+    "retained_core_groups": 14,
+    "sprint08_groups": 14,
+    "negative_browser_http_fields": 4
+  },
+  "browser": {
+    "new_resource_security_groups": 7,
+    "retained_sprint08_groups": 5,
+    "pipeline": "PASS retained",
+    "resource_extended_crud": "PASS",
+    "repeated_reload_observations": 5,
+    "counts_overlap": true
+  },
+  "release": {
+    "grouped_checks": 13,
+    "tables": 100,
+    "rows": 1197,
+    "constraints": 499
+  },
+  "performance": {
+    "expected": 750,
+    "persisted_distinct": 750,
+    "physical": 750,
+    "missing": 0,
+    "duplicates": 0,
+    "verdict": "NOT REPRODUCED; no optimization or performance-fix claim"
+  },
+  "malformed_historical_exports_retained_raw": [
+    "raw/release-final/eks.json.raw.txt",
+    "raw/release/eks.json.raw.txt"
+  ],
+  "ci": "TRIGGER ON PUSH/PR SYNC; RESULT PENDING, no monitoring",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  }
+}

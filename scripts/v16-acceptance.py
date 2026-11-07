@@ -321,7 +321,7 @@ try:
                     str(python),
                     "-m",
                     "uvicorn",
-                    "app.main:app",
+                    "scripts.sprint1_instrumented_app:app" if os.getenv("V16_EXTENDED_LOAD") == "1" else "app.main:app",
                     "--host",
                     "127.0.0.1",
                     "--port",
@@ -344,6 +344,8 @@ try:
                     time.sleep(0.2)
             else:
                 raise RuntimeError("Owned V1.6 API readiness failed")
+            env["V16_API_PID"] = str(api.pid)
+            env["V16_DB_CONTAINER"] = name
             print(run([python, "-m", "scripts.v16_api_probe"], root / "backend"))
             if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
                 print(
@@ -424,6 +426,11 @@ try:
                         time.sleep(0.2)
                 else:
                     raise RuntimeError("Owned V1.6 UI readiness failed")
+                if os.getenv("V16_EXTENDED_LOAD") == "1":
+                    print(run([python, "-m", "scripts.sprint1_representative_load"], root / "backend"))
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+                if os.getenv("V16_PERFORMANCE_PROBE") == "1":
+                    print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":
                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
@@ -466,6 +473,9 @@ try:
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
+    env["V16_OWNED_CONTAINER"] = name
+    env["V16_EVIDENCE_DIR"] = str(out)
+    run([python, "-m", "scripts.sprint1_restore_probe"], root / "backend")
     (out / "report.json").write_text(
         json.dumps(
             {
@@ -493,7 +503,33 @@ try:
         "V1.6 actual PostgreSQL ownership/durability/discovery/holds/recovery/scopes and additive migration PASS"
     )
 finally:
+    # Failures in HTTP/browser probes must not bypass process/secret cleanup.
+    import re
+    import shutil
+    for process_name in ("ui", "api"):
+        process = locals().get(process_name)
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+    removed = False
     if started:
-        subprocess.run(
-            ["docker", "rm", "--force", "--volumes", name], capture_output=True
-        )
+        cleanup = subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True)
+        removed = cleanup.returncode == 0
+    for logfile in private.glob("*.log"):
+        content = logfile.read_text(errors="replace").replace(password, "[REDACTED]")
+        for secretfile in private.glob("*fixture.json"):
+            try:
+                values = json.loads(secretfile.read_text())
+                for key, value in values.items():
+                    if any(k in key.lower() for k in ("password", "token", "secret")) and isinstance(value, str) and len(value) > 6:
+                        content = content.replace(value, "[REDACTED]")
+            except (ValueError, OSError, AttributeError):
+                pass
+        content = re.sub(r"(?i)Bearer [A-Za-z0-9_.-]+", "Bearer [REDACTED]", content)
+        (out / ("private-" + logfile.name)).write_text(content)
+    shutil.rmtree(private)
+    (out / "cleanup.json").write_text(json.dumps({"container": name,"container_removed":removed,"api_stopped":locals().get("api") is None or api.poll() is not None,"ui_stopped":locals().get("ui") is None or ui.poll() is not None,"private_fixtures_removed":not private.exists(),"scope":"Exact allocated processes, container and private directory only"},indent=2))

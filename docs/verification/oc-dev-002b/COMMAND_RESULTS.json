@@ -1,0 +1,64 @@
+[
+  {
+    "name": "unit-verified",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "unittest",
+      "tests.test_sprint_template_configuration",
+      "tests.test_sprint_resource_lifecycle",
+      "-v"
+    ],
+    "exit_code": 0,
+    "source": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8"
+  },
+  {
+    "name": "frontend-verified",
+    "command": [
+      "npm",
+      "test",
+      "--prefix",
+      "frontend"
+    ],
+    "exit_code": 0,
+    "source": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8"
+  },
+  {
+    "name": "lint-verified",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "--prefix",
+      "frontend"
+    ],
+    "exit_code": 0,
+    "source": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8"
+  },
+  {
+    "name": "build-verified",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--prefix",
+      "frontend"
+    ],
+    "exit_code": 0,
+    "source": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8"
+  },
+  {
+    "name": "static-verified",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "backend/app/services/template_packages.py",
+      "backend/tests/test_sprint_template_configuration.py",
+      "backend/scripts/sprint1_otlp_load.py"
+    ],
+    "exit_code": 0,
+    "source": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8"
+  }
+]

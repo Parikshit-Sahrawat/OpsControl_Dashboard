@@ -1,0 +1,70 @@
+{
+  "disposition": "PARTIAL/BLOCKED",
+  "tested_sha": "c4c773601c53d0c8f44fdcb51b447c7664fb6eb8",
+  "unit": {
+    "run": 9,
+    "new": 4,
+    "retained": 5,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontend_helpers": {
+    "run": 41,
+    "new": 3,
+    "retained": 38,
+    "failed": 0,
+    "skipped": 0
+  },
+  "pipeline_postgresql": {
+    "run": 56,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sprint08_postgresql": {
+    "run": 42,
+    "failed": 0,
+    "skipped": 0,
+    "note": "includes imported retained incident fixture tests; not42 unique RBAC requirements"
+  },
+  "http_groups": {
+    "pipeline_and_sprint": 14,
+    "new_since002": 3,
+    "retained_since002": 11,
+    "sprint08_retained": 14
+  },
+  "browser": {
+    "resource_crud": "PASS extended flow on final source",
+    "pipeline_retained": "PASS",
+    "sprint08_retained_groups": 5,
+    "release_retained_groups": 13,
+    "counts_overlap": true
+  },
+  "restore": {
+    "tables": 100,
+    "source_unchanged": true,
+    "data_columns_fk_equal": true,
+    "release_constraint_count": 499
+  },
+  "performance": "Real legacy-compatible authenticated OTLP,20 batches x10 samples, replay+invalid token; global defect NOT REPRODUCED",
+  "CI": "TRIGGERED \u2014 RESULT PENDING after push; no monitoring",
+  "release": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "cleanup": {
+    "normal": "PASS",
+    "intentional_missing_browser": "PASS for cleanup only; browser NOT EXECUTED",
+    "intentional_runner_exit_code": 1,
+    "orphan_processes": 0
+  },
+  "unexecuted_acceptance": [
+    "Complete template-version browser editor",
+    "Delayed tenant A/B modal save interleavings",
+    "Full keyboard-only form traversal",
+    "Converged PR80/82 runtime",
+    "Global sustained performance and per-request query accounting"
+  ]
+}
