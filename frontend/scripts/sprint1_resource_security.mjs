@@ -35,7 +35,8 @@ try {
  phase='monitoring-only negative payloads';
  for(const operation of ['remote_command','service_action','restart_process','etl_retry']) {
   const denial=await api('unified/resources/vm','POST',{organization_id:f.organization_id,name:'forbidden-workload-control',environment:'DEV',hostname:'forbidden.invalid',address:'203.0.113.53',os_type:'Linux',[operation]:'forbidden'},422);
-  assert(denial.detail.some(e=>e.type==='extra_forbidden'&&e.loc.includes(operation)));
+  assert.equal(denial.detail,'Invalid input');
+  assert(denial.errors.some(e=>e.type==='extra_forbidden'&&e.loc.includes(operation)));
  }
  checks.push('Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422');
  phase='template UI pin and overrides';
