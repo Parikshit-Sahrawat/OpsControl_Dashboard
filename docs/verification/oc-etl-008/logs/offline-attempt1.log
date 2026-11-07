@@ -1,0 +1,42 @@
+Traceback (most recent call last):
+  File "/workspace/OpsControl_Dashboard/scripts/pentaho-qualification-offline.py", line 34, in <module>
+    suite = unittest.defaultTestLoader.loadTestsFromNames(targets)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 207, in loadTestsFromNames
+    suites = [self.loadTestsFromName(name, module) for name in names]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/tests/test_pentaho_surface_contracts.py", line 7, in <module>
+    import app.main  # register existing model/security contracts
+    ^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/app/main.py", line 11, in <module>
+    from app.api import operations, access
+  File "/workspace/OpsControl_Dashboard/backend/app/api/operations.py", line 14, in <module>
+    from app.unified.schemas import Environment
+  File "/workspace/OpsControl_Dashboard/backend/app/unified/schemas.py", line 10, in <module>
+    from croniter import croniter
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/croniter/__init__.py", line 4, in <module>
+    from . import croniter as cron_m
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/croniter/croniter.py", line 64, in <module>
+    if is_32bit():
+       ^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/backend/.venv/lib/python3.12/site-packages/croniter/croniter.py", line 37, in is_32bit
+    architecture = platform.architecture()[0]
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/platform.py", line 722, in architecture
+    fileout = _syscmd_file(executable, '')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/platform.py", line 671, in _syscmd_file
+    output = subprocess.check_output(['file', '-b', target],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/OpsControl_Dashboard/scripts/pentaho-qualification-offline.py", line 22, in deny
+    raise AssertionError('OC-ETL-008A is offline: network, DNS and subprocess execution forbidden')
+AssertionError: OC-ETL-008A is offline: network, DNS and subprocess execution forbidden

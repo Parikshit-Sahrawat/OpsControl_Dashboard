@@ -1,0 +1,92 @@
+[
+  {
+    "surface": "CARTE",
+    "path": "/kettle/status/",
+    "method": "GET",
+    "basis": "existing reader allowlist; exact-build compatibility UNVERIFIED",
+    "required_identity": "server + restart epoch; advisory inventory",
+    "status": "UNVERIFIED",
+    "exact_build": null,
+    "live_request_permitted": false,
+    "version_families": [
+      "8.3",
+      "9.3",
+      "9.4",
+      "10.2.x",
+      "11.0.x"
+    ],
+    "families_do_not_establish_compatibility": true
+  },
+  {
+    "surface": "CARTE",
+    "path": "/kettle/jobStatus/",
+    "method": "GET",
+    "basis": "existing reader allowlist; exact-build compatibility UNVERIFIED",
+    "required_identity": "job registration/execution ID + epoch",
+    "status": "UNVERIFIED",
+    "exact_build": null,
+    "live_request_permitted": false,
+    "version_families": [
+      "8.3",
+      "9.3",
+      "9.4",
+      "10.2.x",
+      "11.0.x"
+    ],
+    "families_do_not_establish_compatibility": true
+  },
+  {
+    "surface": "CARTE",
+    "path": "/kettle/transStatus/",
+    "method": "GET",
+    "basis": "existing reader allowlist; exact-build compatibility UNVERIFIED",
+    "required_identity": "transformation registration/execution ID + epoch",
+    "status": "UNVERIFIED",
+    "exact_build": null,
+    "live_request_permitted": false,
+    "version_families": [
+      "8.3",
+      "9.3",
+      "9.4",
+      "10.2.x",
+      "11.0.x"
+    ],
+    "families_do_not_establish_compatibility": true
+  },
+  {
+    "surface": "PENTAHO_SERVER",
+    "path": "/pentaho/api/scheduler/jobs",
+    "method": "GET",
+    "basis": "offline review hypothesis only; no cached authoritative exact-build API specification",
+    "required_identity": "scheduler authority + native schedule ID/revision",
+    "status": "UNVERIFIED",
+    "exact_build": null,
+    "live_request_permitted": false,
+    "version_families": [
+      "8.3",
+      "9.3",
+      "9.4",
+      "10.2.x",
+      "11.0.x"
+    ],
+    "families_do_not_establish_compatibility": true
+  },
+  {
+    "surface": "PENTAHO_SERVER",
+    "path": "/pentaho/api/repo/files/{pathId}/properties",
+    "method": "GET",
+    "basis": "offline review hypothesis only; no cached authoritative exact-build API specification",
+    "required_identity": "repository instance + object ID/type/version",
+    "status": "UNVERIFIED",
+    "exact_build": null,
+    "live_request_permitted": false,
+    "version_families": [
+      "8.3",
+      "9.3",
+      "9.4",
+      "10.2.x",
+      "11.0.x"
+    ],
+    "families_do_not_establish_compatibility": true
+  }
+]
