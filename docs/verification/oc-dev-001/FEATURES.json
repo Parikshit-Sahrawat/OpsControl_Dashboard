@@ -1,0 +1,2462 @@
+[
+  {
+    "module": "Resources",
+    "feature": "Resource Management",
+    "requirements": [
+      "RM-01",
+      "RM-02",
+      "RM-03",
+      "RM-04",
+      "RM-05",
+      "CMP-02",
+      "UI-002",
+      "UI-003",
+      "UI-006",
+      "UI-007",
+      "UI-008",
+      "UI-011",
+      "UI-022"
+    ],
+    "source_paths": [
+      "backend/app/api/resource_management.py",
+      "backend/app/models/entities.py",
+      "backend/app/registry/api.py",
+      "frontend/src/pages/ResourceManagementV2.jsx",
+      "frontend/src/pages/UnifiedResourceManagement.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_registry_contracts.py",
+      "backend/tests/test_database_integrity.py",
+      "backend/tests/test_removed_platform_scope.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/resource_crud_acceptance.mjs",
+      "frontend/scripts/ui_alignment_onboarding_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/access-architecture.yml",
+    "finding": "Existing scoped CRUD/drafts/configuration; one VM owner. Complete agent-onboarding and central collector UX still has historical acceptance gaps.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/resource_management.py": true,
+      "backend/app/models/entities.py": true,
+      "backend/app/registry/api.py": true,
+      "frontend/src/pages/ResourceManagementV2.jsx": true,
+      "frontend/src/pages/UnifiedResourceManagement.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/resource_management.py": true,
+      "backend/app/models/entities.py": true,
+      "backend/app/registry/api.py": true,
+      "frontend/src/pages/ResourceManagementV2.jsx": true,
+      "frontend/src/pages/UnifiedResourceManagement.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/data-sources",
+        "handler": "list_scoped_data_sources",
+        "line": 65,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/data-sources",
+        "handler": "create_scoped_data_source",
+        "line": 90,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "PATCH",
+        "relative_path": "/data-sources/{data_source_id}",
+        "handler": "update_scoped_data_source",
+        "line": 107,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "DELETE",
+        "relative_path": "/data-sources/{data_source_id}",
+        "handler": "disable_scoped_data_source",
+        "line": 131,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/collectors",
+        "handler": "list_scoped_collectors",
+        "line": 140,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/collectors",
+        "handler": "create_scoped_collector",
+        "line": 174,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "PATCH",
+        "relative_path": "/collectors/{collector_id}",
+        "handler": "update_scoped_collector",
+        "line": 195,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "method": "DELETE",
+        "relative_path": "/collectors/{collector_id}",
+        "handler": "disable_scoped_collector",
+        "line": 220,
+        "path": "backend/app/api/resource_management.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "_org",
+        "line": 44,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "_source",
+        "line": 55,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "list_scoped_data_sources",
+        "line": 65,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "create_scoped_data_source",
+        "line": 90,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "update_scoped_data_source",
+        "line": 107,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "disable_scoped_data_source",
+        "line": 131,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "list_scoped_collectors",
+        "line": 140,
+        "path": "backend/app/api/resource_management.py"
+      },
+      {
+        "name": "create_scoped_collector",
+        "line": 174,
+        "path": "backend/app/api/resource_management.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Access",
+    "feature": "Access Management / RBAC",
+    "requirements": [
+      "AM-01",
+      "AM-02",
+      "AM-03",
+      "UI-010",
+      "UI-014",
+      "UI-015"
+    ],
+    "source_paths": [
+      "backend/app/api/access.py",
+      "backend/app/security/scope.py",
+      "backend/app/security/boundaries.py",
+      "frontend/src/pages/AccessManagement.jsx",
+      "frontend/src/pages/AccessBoundaries.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_access_control.py",
+      "backend/tests/test_sprint08_rbac.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/access_acceptance.mjs",
+      "frontend/scripts/sprint08_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/access-architecture.yml",
+    "finding": "Direct/inherited scoped access and revocation have bounded execution evidence; effective-access UX and independent UAT remain.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/access.py": true,
+      "backend/app/security/scope.py": true,
+      "backend/app/security/boundaries.py": true,
+      "frontend/src/pages/AccessManagement.jsx": true,
+      "frontend/src/pages/AccessBoundaries.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/access.py": true,
+      "backend/app/security/scope.py": true,
+      "backend/app/security/boundaries.py": true,
+      "frontend/src/pages/AccessManagement.jsx": true,
+      "frontend/src/pages/AccessBoundaries.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/provider",
+        "handler": "provider_info",
+        "line": 398,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/employees",
+        "handler": "employees",
+        "line": 405,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/employees/{user_id}",
+        "handler": "employee",
+        "line": 463,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/employees",
+        "handler": "create_employee",
+        "line": 469,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "PATCH",
+        "relative_path": "/employees/{user_id}",
+        "handler": "edit_employee",
+        "line": 513,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/employees/{user_id}/password",
+        "handler": "password",
+        "line": 558,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/employees/{user_id}/effective-permissions",
+        "handler": "effective",
+        "line": 569,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/departments",
+        "handler": "departments",
+        "line": 587,
+        "path": "backend/app/api/access.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "session",
+        "line": 41,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "allowed",
+        "line": 59,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "own",
+        "line": 64,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "protected_employee_ids",
+        "line": 88,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "protect_employee",
+        "line": 126,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "delegate",
+        "line": 181,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "affected_self",
+        "line": 205,
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "name": "commit",
+        "line": 221,
+        "path": "backend/app/api/access.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Templates",
+    "feature": "Templates / activation",
+    "requirements": [
+      "RM-04",
+      "RM-05",
+      "UI-009",
+      "ETL-10"
+    ],
+    "source_paths": [
+      "backend/app/api/monitoring.py",
+      "backend/app/services/template_resolution.py",
+      "backend/app/services/activation_engine.py",
+      "frontend/src/pages/MonitoringSetup.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_activation_hydration.py",
+      "backend/tests/test_api_monitoring_config.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/test_monitoring_setup.mjs"
+    ],
+    "workflow": ".github/workflows/http-golden-path.yml",
+    "finding": "Template versions/attachments and preview/apply exist. ETL Template→Workflow→Job effective policy is not established; current tests are not proof of full ETL inheritance.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/monitoring.py": true,
+      "backend/app/services/template_resolution.py": true,
+      "backend/app/services/activation_engine.py": true,
+      "frontend/src/pages/MonitoringSetup.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/monitoring.py": true,
+      "backend/app/services/template_resolution.py": true,
+      "backend/app/services/activation_engine.py": true,
+      "frontend/src/pages/MonitoringSetup.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/data-sources",
+        "handler": "list_data_sources",
+        "line": 58,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/data-sources/{item_id}",
+        "handler": "get_data_source",
+        "line": 76,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/data-sources",
+        "handler": "create_data_source",
+        "line": 81,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "PATCH",
+        "relative_path": "/data-sources/{item_id}",
+        "handler": "update_data_source",
+        "line": 90,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "DELETE",
+        "relative_path": "/data-sources/{item_id}",
+        "handler": "disable_data_source",
+        "line": 102,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/data-sources/{item_id}/templates",
+        "handler": "list_data_source_templates",
+        "line": 109,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/data-sources/{item_id}/templates",
+        "handler": "attach_data_source_template",
+        "line": 115,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "method": "PATCH",
+        "relative_path": "/data-sources/{item_id}/templates/{template_id}",
+        "handler": "update_data_source_template",
+        "line": 131,
+        "path": "backend/app/api/monitoring.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "_get_or_404",
+        "line": 50,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "list_data_sources",
+        "line": 58,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "get_data_source",
+        "line": 76,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "create_data_source",
+        "line": 81,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "update_data_source",
+        "line": 90,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "disable_data_source",
+        "line": 102,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "list_data_source_templates",
+        "line": 109,
+        "path": "backend/app/api/monitoring.py"
+      },
+      {
+        "name": "attach_data_source_template",
+        "line": 115,
+        "path": "backend/app/api/monitoring.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Runtime",
+    "feature": "Collector runtime / agent lifecycle",
+    "requirements": [
+      "TEL-01",
+      "TEL-03",
+      "RM-05"
+    ],
+    "source_paths": [
+      "agent/opscontrol_agent.py",
+      "agent/install-linux.sh",
+      "agent/install-windows.ps1",
+      "backend/app/worker/collector_runtime.py",
+      "backend/app/api/remote_protocol.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_collection_v15.py",
+      "backend/tests/test_agent_v15.py",
+      "backend/tests/test_remote_auth.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/arch001_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/arch001-native-monitoring.yml",
+    "finding": "Pinned collector and fenced readers exist; CHK-001 loss and CHK-002 rollback persist. Windows genuine installer/provider readiness is separate.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "agent/opscontrol_agent.py": true,
+      "agent/install-linux.sh": true,
+      "agent/install-windows.ps1": true,
+      "backend/app/worker/collector_runtime.py": true,
+      "backend/app/api/remote_protocol.py": true
+    },
+    "draft_source_presence": {
+      "agent/opscontrol_agent.py": true,
+      "agent/install-linux.sh": true,
+      "agent/install-windows.ps1": true,
+      "backend/app/worker/collector_runtime.py": true,
+      "backend/app/api/remote_protocol.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "PUT",
+        "relative_path": "/collectors/{collector_id}/assignment",
+        "handler": "assign_collector",
+        "line": 44,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "DELETE",
+        "relative_path": "/collectors/{collector_id}/assignment",
+        "handler": "unassign_collector",
+        "line": 67,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/heartbeat",
+        "handler": "heartbeat",
+        "line": 121,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/workers",
+        "handler": "list_authorized_workers",
+        "line": 140,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/workers/{worker_id}/network-policy",
+        "handler": "update_network_policy",
+        "line": 152,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/jobs",
+        "handler": "enqueue_probe",
+        "line": 194,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/claim",
+        "handler": "claim_probe",
+        "line": 232,
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/results",
+        "handler": "ingest_probe",
+        "line": 285,
+        "path": "backend/app/api/remote_protocol.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "filelog_runtime_flags",
+        "line": 17,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "main",
+        "line": 435,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "redirect_request",
+        "line": 33,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "__init__",
+        "line": 38,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "request",
+        "line": 93,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "write_private",
+        "line": 108,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "enroll",
+        "line": 122,
+        "path": "agent/opscontrol_agent.py"
+      },
+      {
+        "name": "preflight",
+        "line": 152,
+        "path": "agent/opscontrol_agent.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Telemetry",
+    "feature": "Telemetry ingestion / identities",
+    "requirements": [
+      "TEL-02",
+      "TEL-03",
+      "TEL-04"
+    ],
+    "source_paths": [
+      "backend/app/telemetry/ingestion.py",
+      "backend/app/telemetry/models.py",
+      "backend/app/data_pipelines/service.py",
+      "backend/app/data_pipelines/models.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_managed_telemetry.py",
+      "backend/tests/test_pipeline_ownership_v16.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/pipeline_v16_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/pipeline-v16.yml",
+    "finding": "Authenticated OTLP logs/metrics/traces and transactional pipeline evidence/checkpoint exist. TelemetryReceipt is a batch hash receipt, not proof of a complete centralized durable-spool implementation or upstream zero loss.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/telemetry/ingestion.py": true,
+      "backend/app/telemetry/models.py": true,
+      "backend/app/data_pipelines/service.py": true,
+      "backend/app/data_pipelines/models.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/telemetry/ingestion.py": true,
+      "backend/app/telemetry/models.py": true,
+      "backend/app/data_pipelines/service.py": true,
+      "backend/app/data_pipelines/models.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "POST",
+        "relative_path": "/otlp/v1/{signal}",
+        "handler": "ingest",
+        "line": 89,
+        "path": "backend/app/telemetry/ingestion.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "timestamp",
+        "line": 40,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "value",
+        "line": 52,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "attributes",
+        "line": 63,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "name_key",
+        "line": 80,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "ingest",
+        "line": 89,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "approved_method_signals",
+        "line": 138,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "validate_method_identity",
+        "line": 162,
+        "path": "backend/app/telemetry/ingestion.py"
+      },
+      {
+        "name": "validate_method_attribution",
+        "line": 182,
+        "path": "backend/app/telemetry/ingestion.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Signals",
+    "feature": "Metrics/logs/events / alert evaluation",
+    "requirements": [
+      "TEL-02",
+      "OPS-01",
+      "ETL-09",
+      "ETL-12"
+    ],
+    "source_paths": [
+      "backend/app/worker/alert_engine.py",
+      "backend/app/unified/engines.py",
+      "backend/app/telemetry/rules.py",
+      "backend/app/api/monitoring.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_condition_refresh.py",
+      "backend/tests/test_unified_monitoring.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/operations_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/live-http-alert-recovery.yml",
+    "finding": "Metric/log rules and OPEN/RESOLVED states exist; separate ETL event layer/four-state conditions remain incomplete. No inferred ETL severity defaults.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/worker/alert_engine.py": true,
+      "backend/app/unified/engines.py": true,
+      "backend/app/telemetry/rules.py": true,
+      "backend/app/api/monitoring.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/worker/alert_engine.py": true,
+      "backend/app/unified/engines.py": true,
+      "backend/app/telemetry/rules.py": true,
+      "backend/app/api/monitoring.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/api/v1/event-parameters",
+        "handler": "event_list",
+        "line": 56,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/api/v1/event-parameters",
+        "handler": "event_create",
+        "line": 125,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/api/v1/event-parameters/{id}",
+        "handler": "event_edit",
+        "line": 130,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/api/v1/event-parameters/metrics",
+        "handler": "metrics",
+        "line": 138,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/api/v1/event-parameters/preview",
+        "handler": "event_preview",
+        "line": 151,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/api/v1/notification-delivery",
+        "handler": "destinations",
+        "line": 189,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/api/v1/notification-delivery",
+        "handler": "destination_create",
+        "line": 226,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/api/v1/notification-delivery/{id}",
+        "handler": "destination_edit",
+        "line": 256,
+        "path": "backend/app/telemetry/rules.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "_breaches",
+        "line": 18,
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "name": "_consecutive_breaches",
+        "line": 34,
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "name": "_message",
+        "line": 59,
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "name": "_queue_notifications",
+        "line": 66,
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "name": "evaluate_metric_sample",
+        "line": 96,
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "name": "utc",
+        "line": 32,
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "name": "active_parameters",
+        "line": 36,
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "name": "readable_idle_file",
+        "line": 44,
+        "path": "backend/app/unified/engines.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "ETL",
+    "feature": "ETL Workflow / Job configuration",
+    "requirements": [
+      "ETL-01",
+      "ETL-02",
+      "ETL-03",
+      "ETL-04",
+      "ETL-15",
+      "ETL-16",
+      "DP-01",
+      "UI-013",
+      "UI-018",
+      "UI-023"
+    ],
+    "source_paths": [
+      "backend/app/api/etl.py",
+      "backend/app/schemas/etl.py",
+      "backend/app/models/entities.py",
+      "frontend/src/pages/ETLJobs.jsx",
+      "frontend/src/pages/ETLWorkflowConfiguration.jsx",
+      "backend/migrations/versions/0039_etl_workflow_foundation.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_etl_workflow_scope.py",
+      "backend/tests/test_etl_dag_concurrency.py",
+      "backend/tests/test_etl_workflow_ui.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/workflow_configuration_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/pipeline-v16.yml",
+    "finding": "Main has legacy Jobs/history; first-class Workflow/DAG/configuration UI, temporal binding and new guards exist only in draft PR80. D07/D08 fields/readiness are incomplete.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/etl.py": true,
+      "backend/app/schemas/etl.py": true,
+      "backend/app/models/entities.py": true,
+      "frontend/src/pages/ETLJobs.jsx": true,
+      "frontend/src/pages/ETLWorkflowConfiguration.jsx": false,
+      "backend/migrations/versions/0039_etl_workflow_foundation.py": false
+    },
+    "draft_source_presence": {
+      "backend/app/api/etl.py": true,
+      "backend/app/schemas/etl.py": true,
+      "backend/app/models/entities.py": true,
+      "frontend/src/pages/ETLJobs.jsx": true,
+      "frontend/src/pages/ETLWorkflowConfiguration.jsx": true,
+      "backend/migrations/versions/0039_etl_workflow_foundation.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/executions",
+        "handler": "list_executions",
+        "line": 37,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/executions/{execution_id}",
+        "handler": "get_execution",
+        "line": 67,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/job-orders",
+        "handler": "create_job_order",
+        "line": 73,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/executions/{execution_id}/evidence",
+        "handler": "execution_evidence",
+        "line": 96,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/job-orders/{job_order_id}/executions",
+        "handler": "create_execution",
+        "line": 114,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/executions/{history_id}/correlation",
+        "handler": "get_execution_correlation",
+        "line": 122,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/executions/{history_id}/correlation",
+        "handler": "analyze_execution_correlation",
+        "line": 134,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/workflows",
+        "handler": "create_workflow",
+        "line": 169,
+        "path": "backend/app/api/etl.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "_item",
+        "line": 17,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "_load",
+        "line": 31,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "_out",
+        "line": 34,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "list_executions",
+        "line": 37,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "get_execution",
+        "line": 67,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "create_job_order",
+        "line": 73,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "execution_evidence",
+        "line": 96,
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "name": "create_execution",
+        "line": 114,
+        "path": "backend/app/api/etl.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "NativeBinding",
+    "feature": "Native identity / Pentaho qualification",
+    "requirements": [
+      "DP-01",
+      "DP-02",
+      "ETL-05",
+      "ETL-06",
+      "ETL-14"
+    ],
+    "source_paths": [
+      "backend/app/pipeline_adapters/pentaho_observations.py",
+      "backend/app/pipeline_adapters/pentaho_carte.py",
+      "backend/app/unified/pentaho_execution.py",
+      "backend/app/etl_bindings/authority.py",
+      "backend/app/etl_bindings/service.py",
+      "backend/migrations/versions/0040_etl_native_bindings.py",
+      "backend/migrations/versions/0041_etl_authority_writer.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_pentaho_r1.py",
+      "backend/tests/test_pentaho_carte_compat.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/pipeline_sprint07_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/pipeline-v16.yml",
+    "finding": "Read-only observation normalization and historical fixtures exist. PR80 adds unqualified authority contracts/fences; genuine confirmation/receipt admission and live cutover BLOCKED.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/pipeline_adapters/pentaho_observations.py": true,
+      "backend/app/pipeline_adapters/pentaho_carte.py": true,
+      "backend/app/unified/pentaho_execution.py": true,
+      "backend/app/etl_bindings/authority.py": false,
+      "backend/app/etl_bindings/service.py": false,
+      "backend/migrations/versions/0040_etl_native_bindings.py": false,
+      "backend/migrations/versions/0041_etl_authority_writer.py": false
+    },
+    "draft_source_presence": {
+      "backend/app/pipeline_adapters/pentaho_observations.py": true,
+      "backend/app/pipeline_adapters/pentaho_carte.py": true,
+      "backend/app/unified/pentaho_execution.py": true,
+      "backend/app/etl_bindings/authority.py": true,
+      "backend/app/etl_bindings/service.py": true,
+      "backend/migrations/versions/0040_etl_native_bindings.py": true,
+      "backend/migrations/versions/0041_etl_authority_writer.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "token",
+        "line": 28,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "context",
+        "line": 38,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "scoped_identity",
+        "line": 64,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "validate_native_steps",
+        "line": 89,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "normalize_observation",
+        "line": 126,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "prepare_records",
+        "line": 433,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "method_context",
+        "line": 534,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      },
+      {
+        "name": "proof_matches",
+        "line": 555,
+        "path": "backend/app/pipeline_adapters/pentaho_observations.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Scheduling",
+    "feature": "Native schedule observations / correlation",
+    "requirements": [
+      "ETL-02",
+      "ETL-05",
+      "ETL-07",
+      "ETL-08",
+      "ETL-11"
+    ],
+    "source_paths": [
+      "backend/app/unified/pentaho_schedule.py",
+      "backend/app/unified/pentaho_history.py",
+      "backend/app/unified/pentaho_recovery.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_pentaho_history_contracts.py",
+      "backend/tests/test_pentaho_execution_contracts.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/sprint09_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/v15-quality.yml",
+    "finding": "Native export authority/occurrences are separate from monitoring expectations. Carte status is not Server scheduler authority. No OpsControl workload dispatch/run/retry/schedule controls.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/unified/pentaho_schedule.py": true,
+      "backend/app/unified/pentaho_history.py": true,
+      "backend/app/unified/pentaho_recovery.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/unified/pentaho_schedule.py": true,
+      "backend/app/unified/pentaho_history.py": true,
+      "backend/app/unified/pentaho_recovery.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "native_schedule",
+        "line": 28,
+        "path": "backend/app/unified/pentaho_schedule.py"
+      },
+      {
+        "name": "bindings",
+        "line": 87,
+        "path": "backend/app/unified/pentaho_schedule.py"
+      },
+      {
+        "name": "authority",
+        "line": 109,
+        "path": "backend/app/unified/pentaho_schedule.py"
+      },
+      {
+        "name": "coverage",
+        "line": 184,
+        "path": "backend/app/unified/pentaho_schedule.py"
+      },
+      {
+        "name": "evaluate",
+        "line": 259,
+        "path": "backend/app/unified/pentaho_schedule.py"
+      },
+      {
+        "name": "policy",
+        "line": 23,
+        "path": "backend/app/unified/pentaho_history.py"
+      },
+      {
+        "name": "eligible",
+        "line": 27,
+        "path": "backend/app/unified/pentaho_history.py"
+      },
+      {
+        "name": "reconcile",
+        "line": 66,
+        "path": "backend/app/unified/pentaho_history.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "VM",
+    "feature": "VM Health / EC2",
+    "requirements": [
+      "CMP-01",
+      "CMP-02",
+      "UI-017"
+    ],
+    "source_paths": [
+      "backend/app/api/infrastructure.py",
+      "backend/app/api/investigations.py",
+      "frontend/src/pages/VMHealth.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_infrastructure_health_projection.py",
+      "backend/tests/test_managed_telemetry.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/infrastructure_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/infrastructure-acceptance.yml",
+    "finding": "Inventory and observed compute evidence are distinct. Controlled projections exist; real Windows/Linux/EC2 certification and freshness/agent-on latency acceptance remain.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/infrastructure.py": true,
+      "backend/app/api/investigations.py": true,
+      "frontend/src/pages/VMHealth.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/infrastructure.py": true,
+      "backend/app/api/investigations.py": true,
+      "frontend/src/pages/VMHealth.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/resources",
+        "handler": "resources",
+        "line": 111,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/resources/{source_id}",
+        "handler": "resource",
+        "line": 129,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/resources/{source_id}/history",
+        "handler": "history",
+        "line": 135,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/etl/executions/{history_id}/investigation",
+        "handler": "get_investigation",
+        "line": 21,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/etl/executions/{history_id}/investigation/transitions",
+        "handler": "transition",
+        "line": 27,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/etl/executions/{history_id}/investigation/notes",
+        "handler": "add_note",
+        "line": 37,
+        "path": "backend/app/api/investigations.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "utc",
+        "line": 17,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "snapshot",
+        "line": 20,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "prefetch_snapshots",
+        "line": 65,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "resources",
+        "line": 111,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "resource",
+        "line": 129,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "history",
+        "line": 135,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "_get",
+        "line": 12,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "name": "_ensure",
+        "line": 15,
+        "path": "backend/app/api/investigations.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "API",
+    "feature": "API / HTTPS / TLS monitoring",
+    "requirements": [
+      "API-01",
+      "UI-019"
+    ],
+    "source_paths": [
+      "backend/app/services/api_monitoring_config.py",
+      "backend/app/api/activation.py",
+      "backend/app/worker/remote_scheduler.py",
+      "backend/scripts/run_remote_agent.py",
+      "frontend/src/pages/APIs.jsx",
+      "frontend/src/pages/MonitoringSetup.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_api_monitoring_config.py",
+      "backend/tests/test_activation_hydration.py",
+      "backend/tests/test_api_service_health_projection.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/http_golden_path.mjs",
+      "frontend/scripts/monitoring_settings.test.mjs"
+    ],
+    "workflow": ".github/workflows/http-golden-path.yml",
+    "finding": "GET/HEAD HTTPS contracts and saved settings hydration have merged DEV05.1 evidence. No arbitrary methods/headers or automatic target certification.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/services/api_monitoring_config.py": true,
+      "backend/app/api/activation.py": true,
+      "backend/app/worker/remote_scheduler.py": true,
+      "backend/scripts/run_remote_agent.py": true,
+      "frontend/src/pages/APIs.jsx": true,
+      "frontend/src/pages/MonitoringSetup.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/services/api_monitoring_config.py": true,
+      "backend/app/api/activation.py": true,
+      "backend/app/worker/remote_scheduler.py": true,
+      "backend/scripts/run_remote_agent.py": true,
+      "frontend/src/pages/APIs.jsx": true,
+      "frontend/src/pages/MonitoringSetup.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "POST",
+        "relative_path": "/{source_id}/activation-preview",
+        "handler": "activation_preview",
+        "line": 31,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/{source_id}/activations",
+        "handler": "activation_apply",
+        "line": 36,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/{source_id}/activation",
+        "handler": "activation_state",
+        "line": 41,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/{source_id}/deactivation",
+        "handler": "activation_disable",
+        "line": 52,
+        "path": "backend/app/api/activation.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "build_api_config",
+        "line": 15,
+        "path": "backend/app/services/api_monitoring_config.py"
+      },
+      {
+        "name": "can_manage",
+        "line": 22,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "name": "activation_preview",
+        "line": 31,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "name": "activation_apply",
+        "line": 36,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "name": "activation_state",
+        "line": 41,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "name": "activation_disable",
+        "line": 52,
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "name": "utc",
+        "line": 22,
+        "path": "backend/app/worker/remote_scheduler.py"
+      },
+      {
+        "name": "queue_due_once",
+        "line": 24,
+        "path": "backend/app/worker/remote_scheduler.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Incidents",
+    "feature": "Incidents / correlation / recovery",
+    "requirements": [
+      "OPS-01",
+      "OPS-03",
+      "UI-021"
+    ],
+    "source_paths": [
+      "backend/app/native_incidents/service.py",
+      "backend/app/services/correlation.py",
+      "backend/app/unified/pentaho_recovery.py",
+      "frontend/src/pages/NativeIncidents.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_native_incidents_v15.py",
+      "backend/tests/test_pentaho_incident_contracts.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/release_pagination_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/operational-acceptance.yml",
+    "finding": "Recovery/incident/history/61-ID pagination controlled evidence exists. Complete ETL correlation/occurrence recovery, escalation policy and independent downstream acceptance remain.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/native_incidents/service.py": true,
+      "backend/app/services/correlation.py": true,
+      "backend/app/unified/pentaho_recovery.py": true,
+      "frontend/src/pages/NativeIncidents.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/native_incidents/service.py": true,
+      "backend/app/services/correlation.py": true,
+      "backend/app/unified/pentaho_recovery.py": true,
+      "frontend/src/pages/NativeIncidents.jsx": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "utc",
+        "line": 51,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "record",
+        "line": 55,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "details",
+        "line": 88,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "linked_alerts",
+        "line": 112,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "evaluate_recovery",
+        "line": 137,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "recovery",
+        "line": 201,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "transition",
+        "line": 349,
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "name": "attach_alert",
+        "line": 400,
+        "path": "backend/app/native_incidents/service.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Notifications",
+    "feature": "Email / in-app / webhook",
+    "requirements": [
+      "OPS-01",
+      "ETL-13",
+      "SET-01"
+    ],
+    "source_paths": [
+      "backend/app/worker/notifications.py",
+      "backend/app/telemetry/delivery.py",
+      "backend/app/telemetry/inbox.py",
+      "backend/app/telemetry/rules.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_notification_transport.py",
+      "backend/tests/test_in_app_notifications.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/full_closure_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/v15-quality.yml",
+    "finding": "SMTP TLS, generic webhook and scoped in-app outbox paths exist. Live destinations, escalation windows and ETL-specific dedup policy need independent evidence/decisions.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/worker/notifications.py": true,
+      "backend/app/telemetry/delivery.py": true,
+      "backend/app/telemetry/inbox.py": true,
+      "backend/app/telemetry/rules.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/worker/notifications.py": true,
+      "backend/app/telemetry/delivery.py": true,
+      "backend/app/telemetry/inbox.py": true,
+      "backend/app/telemetry/rules.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "",
+        "handler": "inbox",
+        "line": 100,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/preferences",
+        "handler": "preferences",
+        "line": 168,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/preferences",
+        "handler": "save_preferences",
+        "line": 176,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/api/v1/event-parameters",
+        "handler": "event_list",
+        "line": 56,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/api/v1/event-parameters",
+        "handler": "event_create",
+        "line": 125,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/api/v1/event-parameters/{id}",
+        "handler": "event_edit",
+        "line": 130,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/api/v1/event-parameters/metrics",
+        "handler": "metrics",
+        "line": 138,
+        "path": "backend/app/telemetry/rules.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/api/v1/event-parameters/preview",
+        "handler": "event_preview",
+        "line": 151,
+        "path": "backend/app/telemetry/rules.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "_env",
+        "line": 23,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_email_message_id",
+        "line": 30,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "send_email",
+        "line": 34,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "deliver",
+        "line": 77,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_claim_notification",
+        "line": 95,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_finish_notification",
+        "line": 289,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_safe_delivery_error",
+        "line": 328,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "dispatch_pending_notifications",
+        "line": 340,
+        "path": "backend/app/worker/notifications.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "RetiredIntegrations",
+    "feature": "PagerDuty / ServiceNow",
+    "requirements": [
+      "ETL-13",
+      "OPS-01"
+    ],
+    "source_paths": [
+      "backend/app/worker/notifications.py",
+      "backend/app/telemetry/delivery.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_notification_transport.py"
+    ],
+    "browser_or_node_paths": [],
+    "workflow": ".github/workflows/v15-quality.yml",
+    "finding": "Current channel dispatch rejects retired channels; generic webhook is not a native PagerDuty/ServiceNow adapter. CF-04 authority conflict: do not implement an unapproved restoration.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/worker/notifications.py": true,
+      "backend/app/telemetry/delivery.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/worker/notifications.py": true,
+      "backend/app/telemetry/delivery.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "_env",
+        "line": 23,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_email_message_id",
+        "line": 30,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "send_email",
+        "line": 34,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "deliver",
+        "line": 77,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_claim_notification",
+        "line": 95,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_finish_notification",
+        "line": 289,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "_safe_delivery_error",
+        "line": 328,
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "name": "dispatch_pending_notifications",
+        "line": 340,
+        "path": "backend/app/worker/notifications.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Operations",
+    "feature": "Overview / dashboards / reports",
+    "requirements": [
+      "OPS-04",
+      "UI-016",
+      "UI-020"
+    ],
+    "source_paths": [
+      "backend/app/api/operations.py",
+      "backend/app/unified/reporting.py",
+      "frontend/src/pages/UnifiedOverview.jsx",
+      "frontend/src/pages/Reports.jsx",
+      "frontend/src/pages/Alerts.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_unified_v15_contracts.py",
+      "backend/tests/test_sprint09_contracts.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/operations_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/operational-acceptance.yml",
+    "finding": "Evidence projections/filters/reports and bounded Alerts label fixes exist; blind-spot denominators, missing-signal semantics and broad responsive coverage remain incomplete.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/operations.py": true,
+      "backend/app/unified/reporting.py": true,
+      "frontend/src/pages/UnifiedOverview.jsx": true,
+      "frontend/src/pages/Reports.jsx": true,
+      "frontend/src/pages/Alerts.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/operations.py": true,
+      "backend/app/unified/reporting.py": true,
+      "frontend/src/pages/UnifiedOverview.jsx": true,
+      "frontend/src/pages/Reports.jsx": true,
+      "frontend/src/pages/Alerts.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/services",
+        "handler": "services",
+        "line": 90,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/services/{source_id}",
+        "handler": "service_detail",
+        "line": 108,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/collectors/{collector_id}",
+        "handler": "collector_detail",
+        "line": 118,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/reports",
+        "handler": "reports",
+        "line": 129,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/history",
+        "handler": "operational_history",
+        "line": 170,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/jobs/{job_id}/history",
+        "handler": "job_history",
+        "line": 184,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/overview",
+        "handler": "overview_counts",
+        "line": 193,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/overview",
+        "handler": "overview",
+        "line": 123,
+        "path": "backend/app/unified/reporting.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "iso",
+        "line": 18,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "scoped",
+        "line": 19,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "run_item",
+        "line": 22,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "prefetch_services",
+        "line": 28,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "service_snapshot",
+        "line": 60,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "services",
+        "line": 90,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "service_detail",
+        "line": 108,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "collector_detail",
+        "line": 118,
+        "path": "backend/app/api/operations.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Settings",
+    "feature": "Settings / profile / preferences / Help",
+    "requirements": [
+      "SET-01",
+      "SET-02",
+      "HELP-01",
+      "UI-001",
+      "UI-005",
+      "UI-012"
+    ],
+    "source_paths": [
+      "frontend/src/components/PersonalWorkspace.jsx",
+      "frontend/src/components/TopNav.jsx",
+      "backend/app/telemetry/inbox.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_in_app_notifications.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/full_closure_acceptance.mjs",
+      "frontend/scripts/ui_theme_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/v15-quality.yml",
+    "finding": "Merged profile/preference/help fixes exist. Account security editing and admin settings keys/ranges/reauth/audit contract are not approved; SET02 has no safe editor implementation.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "frontend/src/components/PersonalWorkspace.jsx": true,
+      "frontend/src/components/TopNav.jsx": true,
+      "backend/app/telemetry/inbox.py": true
+    },
+    "draft_source_presence": {
+      "frontend/src/components/PersonalWorkspace.jsx": true,
+      "frontend/src/components/TopNav.jsx": true,
+      "backend/app/telemetry/inbox.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "",
+        "handler": "inbox",
+        "line": 100,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/preferences",
+        "handler": "preferences",
+        "line": 168,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "method": "PUT",
+        "relative_path": "/preferences",
+        "handler": "save_preferences",
+        "line": 176,
+        "path": "backend/app/telemetry/inbox.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "validate_targets",
+        "line": 21,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "name": "audience",
+        "line": 44,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "name": "persist",
+        "line": 73,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "name": "inbox",
+        "line": 100,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "name": "preferences",
+        "line": 168,
+        "path": "backend/app/telemetry/inbox.py"
+      },
+      {
+        "name": "save_preferences",
+        "line": 176,
+        "path": "backend/app/telemetry/inbox.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Retention",
+    "feature": "Audit / retention / recovery / multi-tenancy",
+    "requirements": [
+      "PLT-01",
+      "PLT-03",
+      "AM-01"
+    ],
+    "source_paths": [
+      "backend/app/security/audit.py",
+      "backend/app/services/retention.py",
+      "backend/app/data_pipelines/service.py",
+      "backend/app/db/etl_rollback.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_audit_remediation.py",
+      "backend/tests/test_database_integrity.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/access_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/release-reliability.yml",
+    "finding": "Scoped audit/retention/hold and controlled restore paths exist; production WAL/PITR/DR, legal/residency and independent security signoffs remain unverified.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/security/audit.py": true,
+      "backend/app/services/retention.py": true,
+      "backend/app/data_pipelines/service.py": true,
+      "backend/app/db/etl_rollback.py": false
+    },
+    "draft_source_presence": {
+      "backend/app/security/audit.py": true,
+      "backend/app/services/retention.py": true,
+      "backend/app/data_pipelines/service.py": true,
+      "backend/app/db/etl_rollback.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "log_event",
+        "line": 11,
+        "path": "backend/app/security/audit.py"
+      },
+      {
+        "name": "prune_batch",
+        "line": 16,
+        "path": "backend/app/services/retention.py"
+      },
+      {
+        "name": "digest",
+        "line": 52,
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "name": "bounded",
+        "line": 58,
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "name": "is_sample_evidence",
+        "line": 105,
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "name": "canonical",
+        "line": 127,
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "name": "validate_reader_target",
+        "line": 185,
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "name": "clock",
+        "line": 210,
+        "path": "backend/app/data_pipelines/service.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Security",
+    "feature": "Security / image / dependency gates",
+    "requirements": [
+      "PLT-03",
+      "TEL-04",
+      "LIC-005"
+    ],
+    "source_paths": [
+      "backend/app/security/deployment.py",
+      "backend/app/security/secret_refs.py",
+      "backend/app/security/access_control.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_release_hardening.py",
+      "backend/tests/test_access_control.py"
+    ],
+    "browser_or_node_paths": [],
+    "workflow": ".github/workflows/security-validation.yml",
+    "finding": "Automated gate success is separate from independent immutable-image/SBOM/license/NOTICE clearance; current release security remains BLOCKED.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/security/deployment.py": true,
+      "backend/app/security/secret_refs.py": true,
+      "backend/app/security/access_control.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/security/deployment.py": true,
+      "backend/app/security/secret_refs.py": true,
+      "backend/app/security/access_control.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "trusted_proxies",
+        "line": 7,
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "name": "validate_runtime_database_role",
+        "line": 20,
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "name": "is_secret_field",
+        "line": 17,
+        "path": "backend/app/security/secret_refs.py"
+      },
+      {
+        "name": "_unsafe_url",
+        "line": 25,
+        "path": "backend/app/security/secret_refs.py"
+      },
+      {
+        "name": "require_safe_config",
+        "line": 36,
+        "path": "backend/app/security/secret_refs.py"
+      },
+      {
+        "name": "redact_config",
+        "line": 58,
+        "path": "backend/app/security/secret_refs.py"
+      },
+      {
+        "name": "require_safe_url",
+        "line": 68,
+        "path": "backend/app/security/secret_refs.py"
+      },
+      {
+        "name": "redact_url",
+        "line": 73,
+        "path": "backend/app/security/secret_refs.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Deployment",
+    "feature": "Deployment / installation / configuration",
+    "requirements": [
+      "PLT-02",
+      "PLT-04",
+      "LIC-006",
+      "TEL-01"
+    ],
+    "source_paths": [
+      "scripts/uat/local_auto_deploy.py",
+      "scripts/uat/pull_release.py",
+      "scripts/uat/release_handoff.py",
+      "agent/packaging/build-windows.ps1"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_worker_readiness.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/arch001_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/local-uat-auto-deploy.yml",
+    "finding": "Pull controller/release authorization and isolated tests exist. Current main publication preflight fails; live target/digest/backup/capacity/rollback readiness is not established by this audit.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "scripts/uat/local_auto_deploy.py": true,
+      "scripts/uat/pull_release.py": true,
+      "scripts/uat/release_handoff.py": true,
+      "agent/packaging/build-windows.ps1": true
+    },
+    "draft_source_presence": {
+      "scripts/uat/local_auto_deploy.py": true,
+      "scripts/uat/pull_release.py": true,
+      "scripts/uat/release_handoff.py": true,
+      "agent/packaging/build-windows.ps1": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "required",
+        "line": 20,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "run",
+        "line": 26,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "check_url",
+        "line": 30,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "atomic",
+        "line": 35,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "record",
+        "line": 46,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "config",
+        "line": 52,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "check_worker",
+        "line": 62,
+        "path": "scripts/uat/local_auto_deploy.py"
+      },
+      {
+        "name": "deploy_images",
+        "line": 70,
+        "path": "scripts/uat/local_auto_deploy.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Topology",
+    "feature": "Topology / attribution / freshness",
+    "requirements": [
+      "TOP-01",
+      "OPS-02"
+    ],
+    "source_paths": [
+      "backend/app/unified/reconstruction.py",
+      "backend/app/api/investigations.py"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_topology_traversal.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/operations_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/operational-acceptance.yml",
+    "finding": "Bounded customer-safe traversal exists; versioned freshness/expiry and SLO denominator/source policy require authority.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/unified/reconstruction.py": true,
+      "backend/app/api/investigations.py": true
+    },
+    "draft_source_presence": {
+      "backend/app/unified/reconstruction.py": true,
+      "backend/app/api/investigations.py": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/etl/executions/{history_id}/investigation",
+        "handler": "get_investigation",
+        "line": 21,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/etl/executions/{history_id}/investigation/transitions",
+        "handler": "transition",
+        "line": 27,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "method": "POST",
+        "relative_path": "/etl/executions/{history_id}/investigation/notes",
+        "handler": "add_note",
+        "line": 37,
+        "path": "backend/app/api/investigations.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "enqueue",
+        "line": 19,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "logical_payload",
+        "line": 42,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "terminal_fact",
+        "line": 80,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "reduce_execution",
+        "line": 103,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "ingest_logs",
+        "line": 314,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "ingest_connector",
+        "line": 428,
+        "path": "backend/app/unified/reconstruction.py"
+      },
+      {
+        "name": "_get",
+        "line": 12,
+        "path": "backend/app/api/investigations.py"
+      },
+      {
+        "name": "_ensure",
+        "line": 15,
+        "path": "backend/app/api/investigations.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Licensing",
+    "feature": "Product lifecycle / licensing",
+    "requirements": [
+      "LIC-001",
+      "LIC-002",
+      "LIC-003",
+      "LIC-004",
+      "LIC-005",
+      "LIC-006",
+      "LIC-007",
+      "LIC-008"
+    ],
+    "source_paths": [
+      "scripts/uat/verify_publish.py",
+      "backend/app/security/scope.py"
+    ],
+    "backend_test_paths": [],
+    "browser_or_node_paths": [],
+    "workflow": ".github/workflows/security-validation.yml",
+    "finding": "Adjacent release/RBAC code is not entitlement implementation. Journey33 has bounded principles; editions, issuer, offline clock/grace/permissions and 28 gates/LIC029–050 exact definitions remain unavailable. No license-specific tests located.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "scripts/uat/verify_publish.py": true,
+      "backend/app/security/scope.py": true
+    },
+    "draft_source_presence": {
+      "scripts/uat/verify_publish.py": true,
+      "backend/app/security/scope.py": true
+    },
+    "declared_api_examples": [],
+    "function_examples": [
+      {
+        "name": "main",
+        "line": 6,
+        "path": "scripts/uat/verify_publish.py"
+      },
+      {
+        "name": "_predicate",
+        "line": 209,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "configure_request_session",
+        "line": 231,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "scope_reads",
+        "line": 240,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "_resolve_org",
+        "line": 292,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "enforce_writes",
+        "line": 319,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "reset_mutation_audit",
+        "line": 617,
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "name": "allows",
+        "line": 38,
+        "path": "backend/app/security/scope.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  },
+  {
+    "module": "Performance",
+    "feature": "Global responsiveness / ingestion load",
+    "requirements": [
+      "PLT-04",
+      "OPS-04",
+      "TEL-02"
+    ],
+    "source_paths": [
+      "backend/app/api/infrastructure.py",
+      "backend/app/api/operations.py",
+      "backend/app/api/resource_management.py",
+      "frontend/src/pages/UnifiedOverview.jsx"
+    ],
+    "backend_test_paths": [
+      "backend/tests/test_sprint09_hardening.py"
+    ],
+    "browser_or_node_paths": [
+      "frontend/scripts/sprint09_acceptance.mjs"
+    ],
+    "workflow": ".github/workflows/v15-quality.yml",
+    "finding": "RM-DEF-036 is a global P0-provisional operator observation, not VM-only or causally proven. Existing prefetch batching is partial; all growing-data endpoints/polling need controlled load, query, latency and receipt accounting.",
+    "missing_references": [],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "main_source_presence": {
+      "backend/app/api/infrastructure.py": true,
+      "backend/app/api/operations.py": true,
+      "backend/app/api/resource_management.py": true,
+      "frontend/src/pages/UnifiedOverview.jsx": true
+    },
+    "draft_source_presence": {
+      "backend/app/api/infrastructure.py": true,
+      "backend/app/api/operations.py": true,
+      "backend/app/api/resource_management.py": true,
+      "frontend/src/pages/UnifiedOverview.jsx": true
+    },
+    "declared_api_examples": [
+      {
+        "method": "GET",
+        "relative_path": "/resources",
+        "handler": "resources",
+        "line": 111,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/resources/{source_id}",
+        "handler": "resource",
+        "line": 129,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/resources/{source_id}/history",
+        "handler": "history",
+        "line": 135,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/services",
+        "handler": "services",
+        "line": 90,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/services/{source_id}",
+        "handler": "service_detail",
+        "line": 108,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/collectors/{collector_id}",
+        "handler": "collector_detail",
+        "line": 118,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/reports",
+        "handler": "reports",
+        "line": 129,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "method": "GET",
+        "relative_path": "/history",
+        "handler": "operational_history",
+        "line": 170,
+        "path": "backend/app/api/operations.py"
+      }
+    ],
+    "function_examples": [
+      {
+        "name": "utc",
+        "line": 17,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "snapshot",
+        "line": 20,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "prefetch_snapshots",
+        "line": 65,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "resources",
+        "line": 111,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "resource",
+        "line": 129,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "history",
+        "line": 135,
+        "path": "backend/app/api/infrastructure.py"
+      },
+      {
+        "name": "iso",
+        "line": 18,
+        "path": "backend/app/api/operations.py"
+      },
+      {
+        "name": "scoped",
+        "line": 19,
+        "path": "backend/app/api/operations.py"
+      }
+    ],
+    "coverage_limit": "Definitions/mapping are not execution or complete requirement verification"
+  }
+]
