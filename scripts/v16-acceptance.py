@@ -466,6 +466,9 @@ try:
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
+    env["V16_OWNED_CONTAINER"] = name
+    env["V16_EVIDENCE_DIR"] = str(out)
+    run([python, "-m", "scripts.sprint1_restore_probe"], root / "backend")
     (out / "report.json").write_text(
         json.dumps(
             {
