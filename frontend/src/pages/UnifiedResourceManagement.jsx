@@ -11,6 +11,7 @@ import EventDelivery from "./EventDelivery";
 import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import CollectorControl from "./CollectorControl";
 import ResourceManagementV2 from "./ResourceManagementV2";
+import ResourceTemplateConfiguration from "../components/ResourceTemplateConfiguration";
 import DomainParameters, { Field } from "./DomainParameters";
 const base = "/api/v1/unified";
 const domainNames = {
@@ -1598,6 +1599,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               <p>Saving configuration does not verify native collection or activate monitoring.</p>
             </div>
           )}
+          {domain === "VM" && created?.data_source_id && hasPermission(user, "templates.view", created.organization_id) && <ResourceTemplateConfiguration key={created.data_source_id + user.authorization_revision} sourceId={created.data_source_id} organizationId={created.organization_id} user={user} />}
           <label>
             <input
               type="checkbox"
