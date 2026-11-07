@@ -32,6 +32,12 @@ try {
  const resource=(await api('unified/resources?domain=VM&search=002C%20browser%20A')).items.find(r=>r.name==='002C browser A');assert(resource);
  const other=await api('unified/resources/vm','POST',{organization_id:f.other_organization_id,name:'002C browser B',environment:'DEV',hostname:'002c-browser-b.invalid',address:'203.0.113.52',os_type:'Linux'},201);
  checks.push('Authenticated UI resource A create and persisted backend identity; resource B isolated fixture');
+ phase='monitoring-only negative payloads';
+ for(const operation of ['remote_command','service_action','restart_process','etl_retry']) {
+  const denial=await api('unified/resources/vm','POST',{organization_id:f.organization_id,name:'forbidden-workload-control',environment:'DEV',hostname:'forbidden.invalid',address:'203.0.113.53',os_type:'Linux',[operation]:'forbidden'},422);
+  assert(denial.detail.some(e=>e.type==='extra_forbidden'&&e.loc.includes(operation)));
+ }
+ checks.push('Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422');
  phase='template UI pin and overrides';
  const template=await api('monitoring/templates','POST',{name:'002C browser template',package_config:{collector:{type:'OTEL',interval_seconds:60}}},201);
  await page.getByLabel('Search resources',{exact:true}).fill('002C browser A');
