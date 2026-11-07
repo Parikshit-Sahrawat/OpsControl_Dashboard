@@ -9,6 +9,8 @@ const base=process.env.V16_API_URL,out=process.env.V16_EVIDENCE_DIR;
 const checks=[],trace=[];let inspected,phase='start';
 async function login(name,password,orgs) {
  const page=await browser.newPage({viewport:{width:1440,height:1000}});inspected=page;
+ page.on('response',r=>{if(r.url().includes('/api/'))trace.push({phase,at:Date.now(),path:new URL(r.url()).pathname,status:r.status()});});
+ page.on('requestfailed',r=>trace.push({phase,at:Date.now(),path:new URL(r.url()).pathname,failure:r.failure()?.errorText}));
  await page.addInitScript(ids=>localStorage.setItem('opscontrol.organizationIds',JSON.stringify(ids)),orgs);
  await page.goto(process.env.V16_UI_URL+'/#/resources/data-resources');
  await page.getByLabel('Username',{exact:true}).fill(name);await page.getByLabel('Password',{exact:true}).fill(password);
@@ -42,7 +44,7 @@ try {
  await panel.getByText(/pinned v1/).waitFor();
  await api('monitoring/templates/'+template.id,'PATCH',{package_config:{collector:{type:'OTEL',interval_seconds:120}}});
  await panel.getByRole('button',{name:'Edit template pin',exact:true}).click();
- await panel.getByLabel('Pinned template version',{exact:true}).locator('option[value="1"]').waitFor();
+ await panel.getByLabel('Pinned template version',{exact:true}).locator('option[value="1"]').waitFor({state:'attached'});
  assert.equal(await panel.getByLabel('Pinned template version',{exact:true}).inputValue(),'1');
  const overrides=panel.getByLabel('Template package overrides (JSON)',{exact:true});
  await overrides.fill('invalid json');await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();

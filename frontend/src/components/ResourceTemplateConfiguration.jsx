@@ -101,6 +101,6 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
         <button type="button" disabled={busy || loadingVersions || !version} onClick={save}>Save template configuration</button>
       </>}
     </>}
-    {effective && <p role="status">Configuration: {effective.valid ? "VALID" : "INCOMPLETE"}. Missing required attributes: {(effective.missing_required_attributes || []).join(", ") || "none"}. Activation and operational health require independent evidence.</p>}
+    {effective && <p role="status">Configuration: {!effective.templates?.length ? "NO TEMPLATE ATTACHED" : effective.valid ? "VALID" : "INCOMPLETE"}. Missing required attributes: {(effective.missing_required_attributes || []).join(", ") || "none"}. Activation and operational health require independent evidence.</p>}
   </section>;
 }
