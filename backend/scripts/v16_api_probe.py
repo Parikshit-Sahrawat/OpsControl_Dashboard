@@ -517,6 +517,54 @@ with SessionLocal() as db:
 checks.append(
     "Reviewed legacy handoff preserves resource/collector/JobOrder UUIDs and original checkpoint; staged identity cannot activate implicitly"
 )
+# Sprint1 lifecycle checks use real authentication, scope hooks and PostgreSQL.
+source = request("resource-management/data-sources", "POST", {"organization_id": aid, "name": "Sprint lifecycle", "source_type": "LINUX", "enabled": True}, admin, 201)
+sid = source["id"]
+collector = request("resource-management/collectors", "POST", {"data_source_id": sid, "name": "Sprint collector", "collector_type": "HTTP", "enabled": False, "interval_seconds": 60, "configuration": {}}, admin, 201)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"organization_id": bid}, admin, 422)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"name": "forbidden"}, viewer, 403)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"enabled": False}, admin)
+for route in ("resource-management", "monitoring"):
+    request(f"{route}/collectors/{collector['id']}", "PATCH", {"enabled": True}, admin, 409)
+with SessionLocal() as db:
+    from app.models import DataSource, Collector
+    persisted = db.get(DataSource, uuid.UUID(sid))
+    assert str(persisted.organization_id) == aid and not persisted.enabled
+    assert not db.get(Collector, uuid.UUID(collector["id"])).enabled
+checks.append("Sprint1: protected ownership fields, viewer denial, disabled-parent collector enable refusal on both APIs and persisted unchanged ownership")
+# Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
+import time
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+from sqlalchemy import select, func
+from app.models import MetricDefinition, MetricSample
+metric_id = uuid.uuid4()
+with SessionLocal() as db:
+    db.add(MetricDefinition(id=metric_id, organization_id=uuid.UUID(aid), data_source_id=uuid.UUID(sid), collector_id=uuid.UUID(collector["id"]), name="controlled-load", resource_type="VM", metric_type="gauge"))
+    db.commit()
+expected_ids = [uuid.uuid4() for _ in range(200)]
+def write_load():
+    for start in range(0, 200, 10):
+        with SessionLocal() as db:
+            db.add_all([MetricSample(id=identity, organization_id=uuid.UUID(aid), metric_definition_id=metric_id, collector_id=uuid.UUID(collector["id"]), observed_at=datetime.now(timezone.utc), value_numeric=1.0) for identity in expected_ids[start:start+10]])
+            db.commit()
+        time.sleep(0.01)
+latencies = []
+with ThreadPoolExecutor(max_workers=1) as pool:
+    future = pool.submit(write_load)
+    for _ in range(20):
+        started = time.perf_counter()
+        response = request("infrastructure/resources?limit=50", token=admin)
+        latencies.append((time.perf_counter()-started)*1000)
+        assert response["total"] >= 1
+    future.result()
+with SessionLocal() as db:
+    actual_ids = set(db.scalars(select(MetricSample.id).where(MetricSample.metric_definition_id == metric_id)))
+    physical = db.scalar(select(func.count()).select_from(MetricSample).where(MetricSample.metric_definition_id == metric_id))
+assert actual_ids == set(expected_ids) and physical == 200
+ordered = sorted(latencies)
+Path(os.environ["V16_EVIDENCE_DIR"]).joinpath("controlled-load.json").write_text(json.dumps({"scope":"200 direct PostgreSQL sample writes concurrent with20 authenticated infrastructure reads; not full OTLP/global responsiveness reproduction", "p50_ms":ordered[9], "p95_ms":ordered[18], "max_ms":max(ordered), "latencies_ms":latencies, "expected":200, "persisted_distinct":len(actual_ids), "physical_rows":physical, "missing":0, "duplicates":0, "global_RM_DEF_036":"NOT REPRODUCED by this bounded probe; all-module representative load remains NOT TESTED"},indent=2))
+checks.append("Controlled concurrent sample writes/read latency:200/200 stable IDs, zero missing/duplicates; no global performance certification")
 report = {
     "status": "PASS",
     "checks": checks,

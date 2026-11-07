@@ -48,6 +48,7 @@ class DataSourceCreate(DataSourceBase):
         return require_safe_url(value)
 
 class DataSourceUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
     def reject_removed_platform(cls, value):
@@ -120,6 +121,7 @@ class CollectorCreate(CollectorBase):
         return require_safe_config(require_supported_configuration(value))
 
 class CollectorUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
     def reject_removed_platform(cls, value):

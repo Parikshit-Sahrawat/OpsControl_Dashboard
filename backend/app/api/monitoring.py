@@ -1,3 +1,4 @@
+from app.services.collector_lifecycle import require_enabled_parent
 from app.services.excluded_platforms import require_supported_source, require_supported_collector
 from datetime import datetime
 from uuid import UUID
@@ -236,6 +237,7 @@ def update_collector(item_id: UUID, payload: CollectorUpdate, db: Session = Depe
     item = _get_or_404(Collector, item_id, db, "Collector")
     if payload.model_dump(exclude_unset=True) != {"enabled": False}:
         require_supported_collector(item, _get_or_404(DataSource, item.data_source_id, db, "Data source"))
+    require_enabled_parent(_get_or_404(DataSource, item.data_source_id, db, "Data source"), payload.enabled)
     for key, value in payload.model_dump(exclude_unset=True).items():
         setattr(item, key, value)
     db.commit()
