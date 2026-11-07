@@ -536,6 +536,8 @@ class MonitoringTemplateAttachmentCreate(BaseModel):
 
 class MonitoringTemplateAttachmentUpdate(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    # Optional for older clients; callers that send a revision get lost-edit protection.
+    expected_updated_at: datetime | None = None
 
     @field_validator("template_version", "priority", "enabled", check_fields=False)
     @classmethod

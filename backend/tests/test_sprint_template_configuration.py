@@ -70,3 +70,11 @@ class TemplateConfigurationTests(unittest.TestCase):
         self.assertIsNone(
             DataSourceUpdate.model_validate({"description": None}).description
         )
+
+    def test_attachment_revision_does_not_allow_unknown_ownership(self):
+        from pydantic import ValidationError
+        from app.schemas.monitoring import MonitoringTemplateAttachmentUpdate
+        parsed = MonitoringTemplateAttachmentUpdate.model_validate({"expected_updated_at": "2026-11-08T00:00:00Z", "priority": 3})
+        self.assertIsNotNone(parsed.expected_updated_at.tzinfo)
+        with self.assertRaises(ValidationError):
+            MonitoringTemplateAttachmentUpdate.model_validate({"expected_updated_at": "not-a-revision"})

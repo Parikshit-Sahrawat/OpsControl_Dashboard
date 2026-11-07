@@ -224,7 +224,7 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
       for (const a of existing) if (!wanted.has(a.template_id)) await detachDataSourceTemplate(source.id, a.template_id);
       for (const t of chosen) {
         const current = existing.find(a => a.template_id === t.id);
-        if (current) await updateDataSourceTemplate(source.id, t.id, { template_version: attachmentVersion(t, current), priority: current.priority, overrides: current.overrides || null, enabled: true });
+        if (current) await updateDataSourceTemplate(source.id, t.id, { expected_updated_at: current.updated_at, template_version: attachmentVersion(t, current), priority: current.priority, overrides: current.overrides || null, enabled: true });
         else await attachDataSourceTemplate(source.id, { template_id: t.id, template_version: attachmentVersion(t, null), priority: 100, overrides: null });
       }
       // A Collector is configuration, not a process. Host-agent enrollment and

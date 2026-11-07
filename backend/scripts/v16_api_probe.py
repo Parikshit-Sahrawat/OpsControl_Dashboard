@@ -39,10 +39,16 @@ def request(path, method="GET", payload=None, token=None, expected=200):
             timeout=15,
         )
         status = response.status
-        data = json.load(response)
+        data = None if status == 204 else json.load(response)
     except HTTPError as error:
         status = error.code
-        data = json.load(error)
+        raw = error.read()
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            if status != 500 or expected != 500:
+                raise
+            data = {"detail": "Expected injected server failure (non-JSON response)"}
     if status != expected:
         (private / "api-error.json").write_text(
             json.dumps(
@@ -609,6 +615,47 @@ checks.append("Actual PostgreSQL queued revocation/update race: prior authorized
 with SessionLocal() as db:
     assert db.get(DataSource,uuid.UUID(sid)).name != "stale forbidden"
 checks.append("Membership role mutation revokes old session; actual stale authenticated PATCH401; no committed resource mutation; viewer role restored")
+# OC-DEV-002C: real optimistic update conflict, concurrent writers and rollback.
+attachment_path = f"monitoring/data-sources/{sid}/templates/{tid}"
+original = request(f"monitoring/data-sources/{sid}/templates", token=admin)[0]
+revision = original["updated_at"]
+with TemplatePool(max_workers=2) as pool:
+    def edit_attachment(priority):
+        try:
+            headers={"Authorization":"Bearer "+admin}
+            from scripts.acceptance_scope import selection_headers
+            headers.update(selection_headers(base,admin));headers["Content-Type"]="application/json"
+            with urlopen(Request(base+"/api/v1/"+attachment_path,method="PATCH",headers=headers,data=json.dumps({"expected_updated_at":revision,"priority":priority}).encode()),timeout=20) as response:
+                return response.status,json.load(response)
+        except HTTPError as error:
+            return error.code,json.load(error)
+    competing=list(pool.map(edit_attachment,(301,302)))
+assert sorted(status for status,_ in competing)==[200,409],competing
+winner=request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]
+assert winner["priority"] in (301,302) and winner["template_version"]==1
+before_effective=request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)
+assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
+# A task-owned PostgreSQL trigger injects failure before UPDATE can commit.
+from sqlalchemy import text as injected_text
+with SessionLocal() as db:
+    db.execute(injected_text("CREATE FUNCTION sprint_attachment_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.priority=98765 THEN RAISE EXCEPTION 'controlled attachment transaction failure'; END IF; RETURN NEW; END $$"))
+    db.execute(injected_text("CREATE TRIGGER sprint_attachment_failure BEFORE UPDATE ON monitoring_template_attachments FOR EACH ROW EXECUTE FUNCTION sprint_attachment_failure()"));db.commit()
+try:
+    request(attachment_path,"PATCH",{"priority":98765},admin,500)
+    assert request(f"monitoring/data-sources/{sid}/templates",token=admin)==[winner]
+    assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
+finally:
+    with SessionLocal() as db:
+        db.execute(injected_text("DROP TRIGGER sprint_attachment_failure ON monitoring_template_attachments"))
+        db.execute(injected_text("DROP FUNCTION sprint_attachment_failure()"));db.commit()
+request(f"monitoring/templates/{tid}","DELETE",token=admin,expected=204)
+request(attachment_path,"PATCH",{"enabled":False},admin)
+request(attachment_path,"PATCH",{"enabled":True},admin,409)
+request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid},admin,409)
+assert not request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]["enabled"]
+assert {v["version"] for v in request(f"monitoring/templates/{tid}/versions",token=admin)}=={1,2,3,4}
+checks.append("002C attachment concurrent expected-revision writes produce200/409; injected PostgreSQL failure rolls back state; disabled template cannot re-enable or attach; pinned versions preserved")
+
 # Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
 import time
 from datetime import datetime, timezone

@@ -135,7 +135,7 @@ def update_data_source_template(
     payload: MonitoringTemplateAttachmentUpdate,
     db: Session = Depends(get_db),
 ):
-    require_supported_source(_get_or_404(DataSource, item_id, db, "Data source"))
+    require_supported_source(db.get(DataSource, item_id, with_for_update=True))
     attachment = db.scalar(
         select(MonitoringTemplateAttachment).where(
             MonitoringTemplateAttachment.data_source_id == item_id,
@@ -146,6 +146,20 @@ def update_data_source_template(
         raise HTTPException(status_code=404, detail="Template attachment not found")
 
     values = payload.model_dump(exclude_unset=True)
+    expected = values.pop("expected_updated_at", None)
+    if expected is not None:
+        from datetime import timezone
+        actual = attachment.updated_at
+        if actual.tzinfo is None:
+            actual = actual.replace(tzinfo=timezone.utc)
+        if expected.tzinfo is None or expected != actual:
+            raise HTTPException(409, "Template attachment changed; reload before saving")
+    # A disabled attachment can always be retired. Enabling or editing an active
+    # attachment must not bypass the same availability checks as initial attach.
+    if values.get("enabled", attachment.enabled):
+        template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
+        if template.status != "COMMITTED":
+            raise HTTPException(409, "Cannot enable an inactive monitoring template")
     if "template_version" in values:
         template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
         version = db.scalar(
@@ -160,7 +174,10 @@ def update_data_source_template(
     from app.services.excluded_platforms import require_supported_configuration
     selected_version = db.scalar(select(MonitoringTemplateVersion).where(
         MonitoringTemplateVersion.template_id == template_id,
-        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version)))
+        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version),
+        MonitoringTemplateVersion.status == "COMMITTED"))
+    if not selected_version:
+        raise HTTPException(409, "Selected committed template version is not available")
     try:
         require_supported_configuration(selected_version.package_config if selected_version else None)
     except ValueError as exc:

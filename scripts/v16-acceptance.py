@@ -321,7 +321,7 @@ try:
                     str(python),
                     "-m",
                     "uvicorn",
-                    "app.main:app",
+                    "scripts.sprint1_instrumented_app:app" if os.getenv("V16_EXTENDED_LOAD") == "1" else "app.main:app",
                     "--host",
                     "127.0.0.1",
                     "--port",
@@ -344,6 +344,8 @@ try:
                     time.sleep(0.2)
             else:
                 raise RuntimeError("Owned V1.6 API readiness failed")
+            env["V16_API_PID"] = str(api.pid)
+            env["V16_DB_CONTAINER"] = name
             print(run([python, "-m", "scripts.v16_api_probe"], root / "backend"))
             if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
                 print(
@@ -424,6 +426,9 @@ try:
                         time.sleep(0.2)
                 else:
                     raise RuntimeError("Owned V1.6 UI readiness failed")
+                if os.getenv("V16_EXTENDED_LOAD") == "1":
+                    print(run([python, "-m", "scripts.sprint1_representative_load"], root / "backend"))
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
                 if os.getenv("V16_PERFORMANCE_PROBE") == "1":
                     print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":

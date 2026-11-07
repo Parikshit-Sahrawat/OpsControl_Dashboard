@@ -1,0 +1,83 @@
+// Real HTTP and browser controls; interception delays authentic responses only.
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
+const f=JSON.parse(await readFile(process.env.V16_PRIVATE_DIR+'/browser-fixture.json','utf8'));
+const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE});
+const base=process.env.V16_API_URL,out=process.env.V16_EVIDENCE_DIR;
+const checks=[],trace=[];let inspected,phase='start';
+async function login(name,password,orgs) {
+ const page=await browser.newPage({viewport:{width:1440,height:1000}});inspected=page;
+ await page.addInitScript(ids=>localStorage.setItem('opscontrol.organizationIds',JSON.stringify(ids)),orgs);
+ await page.goto(process.env.V16_UI_URL+'/#/resources/data-resources');
+ await page.getByLabel('Username',{exact:true}).fill(name);await page.getByLabel('Password',{exact:true}).fill(password);
+ await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.getByLabel('Search resources',{exact:true}).waitFor();return page;
+}
+try {
+ const page=await login('v16-api-admin',f.password,[f.organization_id,f.other_organization_id]);
+ const admin=await page.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
+ const headers={Authorization:'Bearer '+admin,'X-OpsControl-Customers':[f.organization_id,f.other_organization_id].join(',')};
+ async function api(path,method='GET',data,status=200){const r=await page.request.fetch(base+'/api/v1/'+path,{method,headers,data});assert.equal(r.status(),status);return status===204?null:r.json();}
+ phase='resource browser create';
+ await page.getByRole('button',{name:'Create Compute Instance',exact:true}).click();let modal=page.getByRole('region',{name:'Create Compute Instance',exact:true});
+ await modal.getByLabel('Resource name',{exact:true}).fill('002C browser A');
+ await modal.getByLabel('Customer',{exact:true}).selectOption(f.organization_id);
+ await modal.getByLabel(/^Environment/).selectOption('DEV');
+ await modal.getByLabel('Hostname',{exact:true}).fill('002c-browser-a.invalid');
+ await modal.getByLabel('DNS / IP address',{exact:true}).fill('203.0.113.51');
+ await modal.getByRole('button',{name:'Save resource identity',exact:true}).click();await modal.waitFor({state:'hidden'});
+ const resource=(await api('unified/resources?domain=VM&search=002C%20browser%20A')).items.find(r=>r.name==='002C browser A');assert(resource);
+ const other=await api('unified/resources/vm','POST',{organization_id:f.other_organization_id,name:'002C browser B',environment:'DEV',hostname:'002c-browser-b.invalid',address:'203.0.113.52',os_type:'Linux'},201);
+ checks.push('Authenticated UI resource A create and persisted backend identity; resource B isolated fixture');
+ phase='tenant A/B delayed inventory';
+ await page.getByLabel('Search resources',{exact:true}).fill('002C browser');
+ await page.getByLabel('Resource customer filter',{exact:true}).selectOption(f.organization_id);
+ await page.getByRole('button',{name:'002C browser A',exact:true}).waitFor();
+ let release,captured;const held=new Promise(r=>release=r),ready=new Promise(r=>captured=r);let once=true,completed;const done=new Promise(r=>completed=r);
+ await page.route('**/api/v1/unified/resources?*',async route=>{if(!once)return route.continue();once=false;const response=await route.fetch();captured();await held;try{await route.fulfill({response});}catch(e){if(route.request().failure()?.errorText!=='net::ERR_ABORTED')throw e;}finally{completed();}});
+ try {
+  await page.getByRole('button',{name:'Refresh',exact:true}).click();await ready;
+  await page.getByLabel('Resource customer filter',{exact:true}).selectOption(f.other_organization_id);
+  await page.getByRole('button',{name:'002C browser B',exact:true}).waitFor();
+  release();await done;
+  assert.equal(await page.getByRole('button',{name:'002C browser A',exact:true}).count(),0);
+ } finally {release();await page.unroute('**/api/v1/unified/resources?*');}
+ await page.screenshot({path:out+'/resource-tenant-b.png',fullPage:true});
+ checks.push('Delayed authentic A inventory cannot overwrite B selection; A row absent');
+ const cross=await page.request.get(base+'/api/v1/unified/resources/'+resource.id,{headers:{...headers,'X-OpsControl-Customers':f.other_organization_id}});assert.equal(cross.status(),404);
+ checks.push('Selected B scope cannot fetch A resource detail even with platform administrator login');
+ phase='revocation while editor open';
+ const users=await api('auth/users');const uid=users.find(u=>u.username==='v16-api-viewer').id;
+ const membership=(await api('auth/memberships')).find(m=>m.user_id===uid&&m.organization_id===f.organization_id);
+ await api('auth/memberships/'+membership.id,'PATCH',{role:'org_admin'});
+ const operator=await login('v16-api-viewer',f.viewer_password,[f.organization_id]);
+ await operator.getByLabel('Search resources',{exact:true}).fill('002C browser A');
+ await operator.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
+ const editor=operator.getByRole('region',{name:'Edit Compute Instance',exact:true});await editor.waitFor();
+ await editor.getByLabel('Resource name',{exact:true}).fill('unsaved forbidden replacement');
+ const staleToken=await operator.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
+ await api('auth/memberships/'+membership.id,'PATCH',{role:'viewer'});
+ await operator.getByLabel('Username',{exact:true}).waitFor({timeout:15000});
+ assert.equal(await operator.getByRole('region',{name:'Edit Compute Instance',exact:true}).count(),0);
+ const stale=await page.request.put(base+'/api/v1/unified/resources/'+resource.id,{headers:{Authorization:'Bearer '+staleToken,'X-OpsControl-Customers':f.organization_id},data:{expected_revision:resource.revision,name:'forbidden',environment:resource.environment,configuration:resource.configuration,active:true}});assert.equal(stale.status(),401);
+ assert.equal((await api('unified/resources/'+resource.id)).name,'002C browser A');
+ await operator.screenshot({path:out+'/resource-revoked-editor.png',fullPage:true});
+ checks.push('Revocation closes open unsaved editor; old-session PUT401; persisted name unchanged');
+ phase='viewer mutation';
+ const viewer=await login('v16-api-viewer',f.viewer_password,[f.organization_id]);
+ await viewer.getByLabel('Search resources',{exact:true}).fill('002C browser A');
+ await viewer.getByRole('button',{name:'002C browser A',exact:true}).waitFor();
+ assert.equal(await viewer.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).count(),0);
+ const viewerToken=await viewer.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
+ assert.equal((await page.request.patch(base+'/api/v1/resource-management/data-sources/'+resource.data_source_id,{headers:{Authorization:'Bearer '+viewerToken,'X-OpsControl-Customers':f.organization_id},data:{name:'viewer forbidden'}})).status(),403);
+ checks.push('Viewer has no Edit control and actual attempted mutation403');
+ await page.screenshot({path:out+'/resource-security-desktop.png',fullPage:true});
+ assert(!('HEALTHY'===resource.activation_status));
+ await writeFile(out+'/resource-security.json',JSON.stringify({status:'PASS',checks,trace,resource_id:resource.id,other_resource_id:other.id,provider_access:false},null,2));
+ console.log('RESOURCE SECURITY BROWSER PASS '+checks.length+' groups');
+} catch(error) {
+ await inspected?.screenshot({path:out+'/resource-security-failure.png',fullPage:true});
+ await writeFile(out+'/resource-security-failure.json',JSON.stringify({phase,type:error.name,trace},null,2));
+ throw error;
+} finally {await browser.close();}

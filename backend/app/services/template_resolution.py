@@ -218,6 +218,7 @@ def attach_template(
 
 
 def detach_template(db: Session, data_source_id: UUID, template_id: UUID):
+    require_supported_source(db.get(DataSource, data_source_id, with_for_update=True))
     attachment = db.scalar(
         select(MonitoringTemplateAttachment).where(
             MonitoringTemplateAttachment.data_source_id == data_source_id,
