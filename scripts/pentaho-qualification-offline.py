@@ -36,7 +36,7 @@ if __name__ == "__main__":
         "tests.test_etl_authority_writer.AuthorityEnvelopePolicyTests",
     ]
     # croniter probes ELF width using `file`; supply actual interpreter pointer width without spawning it.
-    with patch.object(
+    with patch.object(Engine, "connect", deny), patch.object(
         platform,
         "architecture",
         return_value=(str(struct.calcsize("P") * 8) + "bit", ""),
