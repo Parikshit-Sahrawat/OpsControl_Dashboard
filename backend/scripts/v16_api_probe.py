@@ -32,6 +32,10 @@ def request(path, method="GET", payload=None, token=None, expected=200):
         source_id = path.split("/")[2]
         head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
         headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
+    if method == "PATCH" and expected == 200 and token and len(path.split("/")) == 3 and path.split("/")[0] in {"monitoring", "resource-management"} and path.split("/")[1] == "data-sources":
+        source_id = path.split("/")[2]
+        head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
+        headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"
