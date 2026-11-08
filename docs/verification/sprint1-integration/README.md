@@ -1,5 +1,7 @@
 # Sprint 1 consolidated integration — owner review candidate
 
+Latest: [closure follow-up, actual fault/browser tests and image remediation](closure-followup-2026-11-08/REPORT.md). [Current remaining blockers](closure-followup-2026-11-08/REMAINING_BLOCKERS.md). Earlier report/source identities remain historical snapshots.
+
 Repository: Parikshit-Sahrawat/OpsControl_Dashboard · draft PR [#89](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89). Branch: `integration/sprint1-pr80-81-82-83-84-86`.
 
 **Disposition: PARTIAL / BLOCKED; Sprint1 NOT COMPLETE.** All six pinned branches are integrated by three-way merge. Implemented configuration safeguards and controlled regression evidence are reviewable. Remaining configuration cutover/UX work, security findings, GitHub permission limits and owner/independent acceptance prevent closure. No main merge or deployment.

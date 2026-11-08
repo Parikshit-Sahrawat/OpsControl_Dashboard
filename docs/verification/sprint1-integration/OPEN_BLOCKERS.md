@@ -1,5 +1,7 @@
 # Remaining acceptance blockers
 
+> Historical snapshot at PR head4081fc7. The [current closure follow-up](closure-followup-2026-11-08/REPORT.md) and [remaining blockers](closure-followup-2026-11-08/REMAINING_BLOCKERS.md) supersede the single-source writer, history-UX and documented fault-test status below; earlier evidence remains preserved.
+
 Sprint1 **NOT COMPLETE**; no owner visual acceptance or independent PR approval has been supplied for this integration.
 
 | ID | Priority / type | Exact gap and dependency | Required closure evidence |

@@ -1,0 +1,19 @@
+{
+  "occupied": {
+    "kind": "REAL_TCP_BIND",
+    "address": "127.0.0.1",
+    "port": 50609,
+    "errno": 98,
+    "error": "Owned fixture bind failed address=127.0.0.1 port=50609 errno=98; refusing existing service or privileged fallback",
+    "status": "PASS_NEGATIVE"
+  },
+  "permission": {
+    "kind": "DETERMINISTIC_OS_ERROR_INJECTION_NOT_REAL_HOST_POLICY",
+    "address": "192.0.2.1",
+    "port": 443,
+    "errno": 13,
+    "error": "Owned fixture bind failed address=192.0.2.1 port=443 errno=13; refusing existing service or privileged fallback",
+    "status": "PASS_NEGATIVE"
+  },
+  "hosted_real_permission_failure": "noc-hosted-original.log"
+}

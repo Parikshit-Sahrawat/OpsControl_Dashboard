@@ -1,0 +1,10 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/pr89-operational-check/backend/scripts/v16_api_probe.py", line 556, in <module>
+    request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin, 409)
+  File "/tmp/pr89-operational-check/backend/scripts/v16_api_probe.py", line 67, in request
+    assert status == expected, (path, status, expected)
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: ('resource-management/data-sources/40d712bc-4708-4a3e-abc8-7361d2386880', 428, 409)

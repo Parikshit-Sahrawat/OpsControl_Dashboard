@@ -23,7 +23,7 @@
     "gate_declarations": "PASS",
     "workflow_validation": "PASS_28_WORKFLOWS",
     "ci_regression_tests": {
-      "pass": 24,
+      "pass": 28,
       "fail": 0,
       "skip": 0
     },
@@ -38,7 +38,7 @@
     "preserved": "Redacted logs, screenshots, database content/schema hashes and failed attempts",
     "synthetic_backups": "Removed after hash/restore evidence; no live secrets retained"
   },
-  "hosted_ci": "TRIGGER_ON_FINAL_PUSH_RESULT_PENDING",
+  "hosted_ci": "TRIGGER_ON_NEW_FINAL_PUSH_RESULT_PENDING",
   "ruleset_update": "BLOCKED_HTTP_403_ORIGINAL_13_CHECKS_UNCHANGED",
   "image_policy": "FAIL_7_HISTORICAL_ROLES_FRESH_FINAL_CANDIDATE_BLOCKED_LOCALLY",
   "limitations": [
@@ -50,5 +50,8 @@
     "Ruleset Administration-write privilege unavailable; fresh image build limited by backing storage.",
     "Owner visual acceptance and independent PR review pending.",
     "Whole-tree git diff --check flags raw archived hosted-log trailing spaces and two inherited architecture EOF blank lines; archived evidence is preserved byte-for-byte. Code paths pass whitespace checks."
-  ]
+  ],
+  "followup_source_sha": "deb1a413fd4ee723e97a656709e69dd0b0791f77",
+  "followup": "closure-followup-2026-11-08/TEST_EXECUTIONS.json",
+  "followup_migration_head": "0043_source_context_fence"
 }

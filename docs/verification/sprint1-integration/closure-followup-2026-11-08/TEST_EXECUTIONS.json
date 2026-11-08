@@ -1,0 +1,183 @@
+{
+  "baseline_sha": "4081fc75117afbd43e1fc4489925a2d65d744551",
+  "code_sha": "deb1a413fd4ee723e97a656709e69dd0b0791f77",
+  "count_policy": "Per-suite overlapping counts; do not add. Skips stay SKIPPED. Fault cuts and synthetic provider tests are not release/genuine-provider certification.",
+  "environment": {
+    "postgres": "17.11 Alpine x86_64",
+    "python_host": "3.12.14",
+    "node": "24.19.0",
+    "playwright": "1.56.1",
+    "chromium": "141.0.7390.37",
+    "database_storage": "task-owned PostgreSQL tmpfs",
+    "docker_storage": "0 free observed; no application image build/scan clearance",
+    "browser_module": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+    "browser_binary": "/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome"
+  },
+  "executions": [
+    {
+      "id": "noc-owned-docker443",
+      "source_sha": "1089acac12727878af5e185cb3fdb1e4bc4e879a",
+      "command": "OPERATIONAL_EVIDENCE_DIR=/tmp/pr89-closure-evidence/noc-docker443 OPSCONTROL_UI_THEME_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/operational-acceptance.py",
+      "exit": 0,
+      "status": "PASS_CONTROLLED_SCOPE",
+      "theme_checks": 13,
+      "contrast_measures": 6,
+      "evidence": "raw/noc-docker443",
+      "limits": "Historical hosted numeric bind address unrecovered; synthetic Carte target only"
+    },
+    {
+      "id": "backend-discovery",
+      "source_sha": "13de0a20e95b67f017fbe582fd10fdea9cd6d66d",
+      "command": "OPSCONTROL_TEST_EVIDENCE_DIR=/tmp/pr89-closure-evidence/full-retry V16_SCOPE_ACCEPTANCE=1 V16_SPRINT1_UI=1 OPSCONTROL_OTEL_BINARY=/tmp/oc-closure-tools/otelcol-contrib PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome bash scripts/test-quality.sh pentaho",
+      "status": "UNIT_SUBSUITE_PASS_LATER_HTTP_FIXTURE_FAILED",
+      "tests": 667,
+      "pass": 594,
+      "fail": 0,
+      "skip": 73,
+      "outer_exit": 1,
+      "evidence": "raw/full-retry",
+      "limits": "Wrapper fails on obsolete HTTP409 expectation; not a full harness PASS"
+    },
+    {
+      "id": "final-source-command-and-crash",
+      "source_sha": "deb1a413fd4ee723e97a656709e69dd0b0791f77",
+      "command": "S01_EVIDENCE_DIR=/tmp/pr89-closure-evidence/configuration-complete backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py",
+      "exit": 0,
+      "status": "PASS",
+      "tests": 44,
+      "pass": 44,
+      "fail": 0,
+      "skip": 0,
+      "api_restart_cases": [
+        "SIGKILL_BEFORE_LEDGER_ZERO_MUTATIONS",
+        "RETRY_ONE_COMMITTED_REVISION",
+        "SIGKILL_AFTER_COMMIT_REPLAY_NO_ADDITIONAL_REVISION"
+      ],
+      "restored_tables": 108,
+      "evidence": "raw/configuration-complete",
+      "migration_head": "0043_source_context_fence",
+      "populated_context_fence_downgrade": "REFUSED_WHOLE_DUMP_IDENTICAL"
+    },
+    {
+      "id": "etl",
+      "source_sha": "13de0a20e95b67f017fbe582fd10fdea9cd6d66d",
+      "command": "ETL_SCOPE_EVIDENCE_DIR=/tmp/pr89-closure-evidence/etl-final ETL_WORKFLOW_UI_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/etl-scope-acceptance.py",
+      "exit": 0,
+      "status": "PASS",
+      "tests": 117,
+      "pass": 117,
+      "fail": 0,
+      "skip": 0,
+      "evidence": "raw/etl-final"
+    },
+    {
+      "id": "final-http-browser",
+      "source_sha": "f45a99221325f3762d7a3a1ec9ae3c94aae6781f",
+      "command": "V16_EVIDENCE_DIR=/tmp/pr89-closure-evidence/integration-fence-final V16_SCOPE_ACCEPTANCE=1 V16_SPRINT1_UI=1 V16_STAGING_PRESERVATION=1 V16_PENTAHO_R1_ACCEPTANCE=1 V16_PENTAHO_REVIEW_ACCEPTANCE=1 V16_PENTAHO_HISTORY_ACCEPTANCE=1 V16_PENTAHO_INCIDENT_ACCEPTANCE=1 V16_SPRINT08_ACCEPTANCE=1 V16_SPRINT09_ACCEPTANCE=1 V16_SPRINT07_ACCEPTANCE=1 V16_SPRINT13_RECOVERY=1 V16_API_ACCEPTANCE=1 V16_BROWSER_ACCEPTANCE=1 V16_TEST_TARGETS=tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac OPSCONTROL_OTEL_BINARY=/tmp/oc-closure-tools/otelcol-contrib PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/v16-acceptance.py",
+      "exit": 0,
+      "status": "PASS_CONTROLLED_SCOPE",
+      "backend_cases": 98,
+      "fail": 0,
+      "skip": 0,
+      "resource_browser_groups": 8,
+      "workspace_browser_groups": 14,
+      "pipeline_http_groups": 15,
+      "pentaho_http_groups": [
+        4,
+        5,
+        4,
+        5
+      ],
+      "rbac_http_groups": 14,
+      "browser_other_groups": [
+        17,
+        5,
+        3
+      ],
+      "recovery_scenarios": 9,
+      "evidence": "raw/integration-fence-final",
+      "migration_head": "0043_source_context_fence"
+    },
+    {
+      "id": "frontend",
+      "source_sha": "62403de273545d094d81e4c3de3a46d73349a3ff",
+      "command": "npm --prefix frontend test; npm --prefix frontend run lint; npm --prefix frontend run build",
+      "status": "PASS",
+      "tests": 55,
+      "pass": 55,
+      "fail": 0,
+      "skip": 0,
+      "lint": "PASS",
+      "build": "PASS",
+      "npm_audit_findings": 0,
+      "evidence": [
+        "raw/frontend-final-tests.log",
+        "raw/frontend-final-lint.log",
+        "raw/frontend-build.log"
+      ]
+    },
+    {
+      "id": "ci-and-static",
+      "command": "python -m unittest discover -s tests -p 'test_ci_*.py' -v; bash scripts/check-workflows.sh; python scripts/ci/policy.py; docker compose -f docker-compose.demo.yml config -q; ruff check --select E9,F63,F7,F82 <changed Python>",
+      "status": "PASS",
+      "tests": 28,
+      "pass": 28,
+      "fail": 0,
+      "skip": 0,
+      "workflows": 28,
+      "scope_records": 795,
+      "unknown_still_run": 782,
+      "evidence": [
+        "raw/ci-current-unit.log",
+        "raw/workflows-current.log",
+        "raw/ci-current-policy.json",
+        "raw/static-current.log",
+        "raw/compose-validation.log"
+      ]
+    },
+    {
+      "id": "all-seven-original-image-gates",
+      "run": 42513541762,
+      "status": "FAIL",
+      "roles_failed": 7,
+      "matching_rows": 1890,
+      "evidence": "IMAGE_BASELINE.json"
+    },
+    {
+      "id": "fresh-official-base-scans",
+      "command": "syft registry:<immutable image> --platform linux/amd64 -o syft-json=<path> -o cyclonedx-json=<path>; grype sbom:<syft.json> -o json",
+      "status": "FAIL",
+      "postgres": {
+        "Critical": 4,
+        "High": 32
+      },
+      "nginx": {
+        "Critical": 1,
+        "High": 0
+      },
+      "final_application_scope": "NOT_TESTED_LOCALLY_STORAGE_BLOCKED",
+      "evidence": "BASE_CANDIDATE_SCAN_RESULTS.json"
+    },
+    {
+      "id": "final-hosted-ci",
+      "status": "TRIGGER_AFTER_FINAL_PUSH_RESULT_PENDING",
+      "limits": "Mandatory Trigger-and-Exit; no monitoring/polling"
+    }
+  ],
+  "retained_failed_attempts": [
+    "raw/noc-hosted-original.log",
+    "raw/noc-fixed-console.log",
+    "raw/configuration-attempt1",
+    "raw/full",
+    "raw/full-retry",
+    "raw/integration-final",
+    "raw/configuration-fence-final"
+  ],
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "SPRINT1": "NOT_COMPLETE"
+  }
+}

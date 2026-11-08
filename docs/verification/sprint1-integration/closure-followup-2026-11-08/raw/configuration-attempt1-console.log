@@ -1,0 +1,14 @@
+postgres-start exit 0
+postgres-port exit 0
+postgres-version exit 0
+fresh-upgrade exit 0
+empty-safe-downgrade exit 0
+forward-reupgrade exit 0
+schema-drift exit 0
+authenticated-contracts exit 1
+Traceback (most recent call last):
+  File "/tmp/pr89-closure-contract-check/scripts/sprint1-configuration-acceptance.py", line 160, in <module>
+    run(
+  File "/tmp/pr89-closure-contract-check/scripts/sprint1-configuration-acceptance.py", line 53, in run
+    raise RuntimeError(label + " failed; see redacted log")
+RuntimeError: authenticated-contracts failed; see redacted log
