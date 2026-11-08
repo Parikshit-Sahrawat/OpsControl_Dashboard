@@ -1,0 +1,1028 @@
+﻿2026-11-08T12:23:22.9816353Z Current runner version: '2.338.2'
+2026-11-08T12:23:22.9842009Z ##[group]Runner Image Provisioner
+2026-11-08T12:23:22.9843000Z Hosted Compute Agent
+2026-11-08T12:23:22.9843998Z Version: 20261028.624
+2026-11-08T12:23:22.9844661Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T12:23:22.9845581Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T12:23:22.9846325Z Worker ID: {d0eef399-0db8-43c9-b2b3-2b8328537e18}
+2026-11-08T12:23:22.9847137Z Region: canadaeast
+2026-11-08T12:23:22.9847726Z Cloud: Azure
+2026-11-08T12:23:22.9848265Z ##[endgroup]
+2026-11-08T12:23:22.9849883Z ##[group]Operating System
+2026-11-08T12:23:22.9850661Z Ubuntu
+2026-11-08T12:23:22.9851294Z 24.04.5
+2026-11-08T12:23:22.9851849Z LTS
+2026-11-08T12:23:22.9852381Z ##[endgroup]
+2026-11-08T12:23:22.9853073Z ##[group]Runner Image
+2026-11-08T12:23:22.9853990Z Image: ubuntu-24.04
+2026-11-08T12:23:22.9854648Z Version: 20261101.360.1
+2026-11-08T12:23:22.9856011Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-08T12:23:22.9857696Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-08T12:23:22.9858729Z ##[endgroup]
+2026-11-08T12:23:22.9859897Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T12:23:22.9862273Z Contents: read
+2026-11-08T12:23:22.9863058Z Metadata: read
+2026-11-08T12:23:22.9864002Z ##[endgroup]
+2026-11-08T12:23:22.9866125Z Secret source: Actions
+2026-11-08T12:23:22.9867373Z Cache mode: write
+2026-11-08T12:23:22.9868146Z Prepare workflow directory
+2026-11-08T12:23:23.0226599Z Prepare all required actions
+2026-11-08T12:23:23.0275294Z Getting action download info
+2026-11-08T12:23:23.2790858Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T12:23:23.3740310Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-08T12:23:23.4536454Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-08T12:23:23.5405954Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-08T12:23:23.7525624Z Complete job name: noc
+2026-11-08T12:23:23.8446468Z ##[group]Run actions/checkout@v4
+2026-11-08T12:23:23.8447364Z with:
+2026-11-08T12:23:23.8447912Z   repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T12:23:23.8452028Z   token: ***
+2026-11-08T12:23:23.8452481Z   ssh-strict: true
+2026-11-08T12:23:23.8452946Z   ssh-user: git
+2026-11-08T12:23:23.8453797Z   persist-credentials: true
+2026-11-08T12:23:23.8454326Z   clean: true
+2026-11-08T12:23:23.8454803Z   sparse-checkout-cone-mode: true
+2026-11-08T12:23:23.8455349Z   fetch-depth: 1
+2026-11-08T12:23:23.8455805Z   fetch-tags: false
+2026-11-08T12:23:23.8456274Z   show-progress: true
+2026-11-08T12:23:23.8456746Z   lfs: false
+2026-11-08T12:23:23.8457167Z   submodules: false
+2026-11-08T12:23:23.8457638Z   set-safe-directory: true
+2026-11-08T12:23:23.8458170Z   allow-unsafe-pr-checkout: false
+2026-11-08T12:23:23.8459040Z ##[endgroup]
+2026-11-08T12:23:24.1652086Z Syncing repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T12:23:24.1655276Z ##[group]Getting Git version info
+2026-11-08T12:23:24.1656640Z Working directory is '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T12:23:24.1658533Z [command]/usr/bin/git version
+2026-11-08T12:23:24.1790464Z git version 2.56.0
+2026-11-08T12:23:24.1825394Z ##[endgroup]
+2026-11-08T12:23:24.1845645Z Temporarily overriding HOME='/home/runner/work/_temp/dc20cab5-e87f-476a-8506-e24fda421c88' before making global git config changes
+2026-11-08T12:23:24.1848178Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T12:23:24.1853509Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T12:23:24.1924612Z Deleting the contents of '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T12:23:24.1935635Z ##[group]Initializing the repository
+2026-11-08T12:23:24.1936957Z [command]/usr/bin/git init /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T12:23:24.2077372Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T12:23:24.2079294Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T12:23:24.2080792Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T12:23:24.2082040Z hint: call:
+2026-11-08T12:23:24.2082863Z hint:
+2026-11-08T12:23:24.2083916Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T12:23:24.2084880Z hint:
+2026-11-08T12:23:24.2085822Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T12:23:24.2087534Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T12:23:24.2088720Z hint:
+2026-11-08T12:23:24.2089478Z hint: 	git branch -m <name>
+2026-11-08T12:23:24.2090269Z hint:
+2026-11-08T12:23:24.2195017Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T12:23:24.2197407Z Initialized empty Git repository in /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/.git/
+2026-11-08T12:23:24.2220437Z [command]/usr/bin/git remote add origin https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T12:23:24.2223977Z ##[endgroup]
+2026-11-08T12:23:24.2225207Z ##[group]Disabling automatic garbage collection
+2026-11-08T12:23:24.2226364Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T12:23:24.2228837Z ##[endgroup]
+2026-11-08T12:23:24.2229914Z ##[group]Setting up auth
+2026-11-08T12:23:24.2231010Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T12:23:24.2279239Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T12:23:24.2805125Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T12:23:24.2853804Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T12:23:24.3098092Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T12:23:24.3143876Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T12:23:24.3390847Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T12:23:24.3439824Z ##[endgroup]
+2026-11-08T12:23:24.3440630Z ##[group]Fetching the repository
+2026-11-08T12:23:24.3454982Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0fbe0422ea199728c22f16cc59ab3d163171b1fc:refs/remotes/pull/86/merge
+2026-11-08T12:23:27.1209188Z From https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T12:23:27.1211412Z  * [new ref]         0fbe0422ea199728c22f16cc59ab3d163171b1fc -> pull/86/merge
+2026-11-08T12:23:27.1218798Z ##[endgroup]
+2026-11-08T12:23:27.1220811Z ##[group]Determining the checkout info
+2026-11-08T12:23:27.1223083Z ##[endgroup]
+2026-11-08T12:23:27.1227284Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T12:23:27.1597449Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T12:23:27.1641752Z ##[group]Checking out the ref
+2026-11-08T12:23:27.1643406Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/86/merge
+2026-11-08T12:23:28.0396175Z Note: switching to 'refs/remotes/pull/86/merge'.
+2026-11-08T12:23:28.0396770Z 
+2026-11-08T12:23:28.0397072Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-08T12:23:28.0397727Z changes and commit them, and you can discard any commits you make in this
+2026-11-08T12:23:28.0398734Z state without impacting any branches by switching back to a branch.
+2026-11-08T12:23:28.0399179Z 
+2026-11-08T12:23:28.0399480Z If you want to create a new branch to retain commits you create, you may
+2026-11-08T12:23:28.0400055Z do so (now or later) by using -c with the switch command. Example:
+2026-11-08T12:23:28.0400378Z 
+2026-11-08T12:23:28.0400540Z   git switch -c <new-branch-name>
+2026-11-08T12:23:28.0400770Z 
+2026-11-08T12:23:28.0400971Z Or undo this operation with:
+2026-11-08T12:23:28.0401181Z 
+2026-11-08T12:23:28.0401318Z   git switch -
+2026-11-08T12:23:28.0401563Z 
+2026-11-08T12:23:28.0401929Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-08T12:23:28.0402305Z 
+2026-11-08T12:23:28.0402736Z HEAD is now at 0fbe042 Merge e74038d8248b0849127339230ef89a942b5700c5 into ffe5ac285ab8aef33a1139bce6f3da79be3d6d33
+2026-11-08T12:23:28.0471542Z ##[endgroup]
+2026-11-08T12:23:28.0528969Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T12:23:28.0563984Z 0fbe0422ea199728c22f16cc59ab3d163171b1fc
+2026-11-08T12:23:28.0877510Z ##[group]Run actions/setup-python@v5
+2026-11-08T12:23:28.0877936Z with:
+2026-11-08T12:23:28.0878237Z   python-version: 3.12
+2026-11-08T12:23:28.0878568Z   check-latest: false
+2026-11-08T12:23:28.0881586Z   token: ***
+2026-11-08T12:23:28.0881895Z   update-environment: true
+2026-11-08T12:23:28.0882230Z   allow-prereleases: false
+2026-11-08T12:23:28.0882572Z   freethreaded: false
+2026-11-08T12:23:28.0882870Z ##[endgroup]
+2026-11-08T12:23:28.2300391Z ##[group]Installed versions
+2026-11-08T12:23:28.2534608Z (node:2351) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T12:23:28.2535765Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T12:23:28.2536676Z Successfully set up CPython (3.12.16)
+2026-11-08T12:23:28.2537686Z ##[endgroup]
+2026-11-08T12:23:28.2777772Z ##[group]Run actions/setup-node@v4
+2026-11-08T12:23:28.2778426Z with:
+2026-11-08T12:23:28.2778945Z   node-version: 24
+2026-11-08T12:23:28.2779537Z   always-auth: false
+2026-11-08T12:23:28.2780061Z   check-latest: false
+2026-11-08T12:23:28.2786226Z   token: ***
+2026-11-08T12:23:28.2786718Z env:
+2026-11-08T12:23:28.2787311Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.2788273Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T12:23:28.2789224Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.2790081Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.2790931Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.2791784Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T12:23:28.2792507Z ##[endgroup]
+2026-11-08T12:23:28.4350888Z Found in cache @ /opt/hostedtoolcache/node/24.22.2/x64
+2026-11-08T12:23:28.4357042Z (node:2359) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T12:23:28.4358125Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T12:23:28.4359987Z ##[group]Environment details
+2026-11-08T12:23:28.9772939Z node: v24.22.2
+2026-11-08T12:23:28.9773831Z npm: 11.19.1
+2026-11-08T12:23:28.9774196Z yarn: 1.22.22
+2026-11-08T12:23:28.9775583Z ##[endgroup]
+2026-11-08T12:23:28.9929756Z ##[group]Run python -m venv backend/.venv
+2026-11-08T12:23:28.9930193Z [36;1mpython -m venv backend/.venv[0m
+2026-11-08T12:23:28.9931067Z [36;1mbackend/.venv/bin/python "$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt[0m
+2026-11-08T12:23:28.9931955Z [36;1mnpm ci --prefix frontend --no-audit --no-fund[0m
+2026-11-08T12:23:28.9932451Z [36;1mnpm install --prefix "$RUNNER_TEMP/noc-tools" --no-audit --no-fund playwright@1.56.1[0m
+2026-11-08T12:23:28.9933080Z [36;1m"$RUNNER_TEMP/noc-tools/node_modules/.bin/playwright" install --with-deps chromium[0m
+2026-11-08T12:23:28.9971264Z shell: /usr/bin/bash -e {0}
+2026-11-08T12:23:28.9971549Z env:
+2026-11-08T12:23:28.9971828Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.9972614Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T12:23:28.9973285Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.9973896Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.9974299Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:23:28.9974688Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T12:23:28.9975013Z ##[endgroup]
+2026-11-08T12:23:33.3027280Z Processing /tmp/opscontrol-pip-bootstrap-lx58p4q_/pip-26.2-py3-none-any.whl
+2026-11-08T12:23:33.3994151Z Installing collected packages: pip
+2026-11-08T12:23:33.3995370Z   Attempting uninstall: pip
+2026-11-08T12:23:33.4014129Z     Found existing installation: pip 25.0.1
+2026-11-08T12:23:33.4381265Z     Uninstalling pip-25.0.1:
+2026-11-08T12:23:33.4439815Z       Successfully uninstalled pip-25.0.1
+2026-11-08T12:23:34.3611407Z Successfully installed pip-26.2
+2026-11-08T12:23:34.5740853Z {"version": "26.2", "wheel_sha256": "931c303696af6fa3417112103b1cad26890e5a07eccb5b99783700e33f2b8aad", "old_pip_executed": false, "installation_index_access": false}
+2026-11-08T12:23:35.1090719Z Collecting fastapi==0.143.0 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:35.1640018Z   Downloading fastapi-0.143.0-py3-none-any.whl.metadata (26 kB)
+2026-11-08T12:23:35.2026289Z Collecting starlette==1.4.1 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 2))
+2026-11-08T12:23:35.2097407Z   Downloading starlette-1.4.1-py3-none-any.whl.metadata (6.4 kB)
+2026-11-08T12:23:35.2367071Z Collecting uvicorn==0.36.0 (from uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:35.2445220Z   Downloading uvicorn-0.36.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-08T12:23:35.5871259Z Collecting sqlalchemy==2.0.43 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 4))
+2026-11-08T12:23:35.5943966Z   Downloading sqlalchemy-2.0.43-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.6 kB)
+2026-11-08T12:23:35.6191396Z Collecting psycopg==3.2.10 (from psycopg[binary]==3.2.10->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 5))
+2026-11-08T12:23:35.6257030Z   Downloading psycopg-3.2.10-py3-none-any.whl.metadata (4.6 kB)
+2026-11-08T12:23:35.6489724Z Collecting alembic==1.16.5 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 6))
+2026-11-08T12:23:35.6552533Z   Downloading alembic-1.16.5-py3-none-any.whl.metadata (7.3 kB)
+2026-11-08T12:23:35.6730789Z Collecting pydantic-settings==2.10.1 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 7))
+2026-11-08T12:23:35.6792883Z   Downloading pydantic_settings-2.10.1-py3-none-any.whl.metadata (3.4 kB)
+2026-11-08T12:23:35.7179232Z Collecting PyYAML==6.0.3 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 8))
+2026-11-08T12:23:35.7239740Z   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-11-08T12:23:35.7440903Z Collecting opentelemetry-proto==1.38.0 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 9))
+2026-11-08T12:23:35.7504747Z   Downloading opentelemetry_proto-1.38.0-py3-none-any.whl.metadata (2.3 kB)
+2026-11-08T12:23:35.7710013Z Collecting croniter==6.0.0 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 10))
+2026-11-08T12:23:35.7776355Z   Downloading croniter-6.0.0-py2.py3-none-any.whl.metadata (32 kB)
+2026-11-08T12:23:36.1915334Z Collecting regex==2025.11.3 (from -r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 11))
+2026-11-08T12:23:36.1987233Z   Downloading regex-2025.11.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+2026-11-08T12:23:36.4130353Z Collecting boto3<2,>=1.35 (from -r backend/requirements-providers.txt (line 3))
+2026-11-08T12:23:36.4190049Z   Downloading boto3-1.43.126-py3-none-any.whl.metadata (6.6 kB)
+2026-11-08T12:23:36.4862790Z Collecting psutil==7.1.0 (from -r backend/requirements-hosts.txt (line 3))
+2026-11-08T12:23:36.4929342Z   Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (23 kB)
+2026-11-08T12:23:36.5988100Z Collecting pydantic>=2.9.0 (from fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:36.6047869Z   Downloading pydantic-2.14.3-py3-none-any.whl.metadata (141 kB)
+2026-11-08T12:23:36.6380278Z Collecting typing-extensions>=4.8.0 (from fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:36.6438631Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-08T12:23:36.6566520Z Collecting typing-inspection>=0.4.2 (from fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:36.6622348Z   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+2026-11-08T12:23:36.6742714Z Collecting annotated-doc>=0.0.2 (from fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:36.6797638Z   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+2026-11-08T12:23:36.7002719Z Collecting opentelemetry-api>=1.44.0 (from fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:36.7061005Z   Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+2026-11-08T12:23:36.7268882Z Collecting anyio<5,>=3.6.2 (from starlette==1.4.1->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 2))
+2026-11-08T12:23:36.7328327Z   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+2026-11-08T12:23:36.7546437Z Collecting click>=7.0 (from uvicorn==0.36.0->uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:36.7600955Z   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+2026-11-08T12:23:36.7744715Z Collecting h11>=0.8 (from uvicorn==0.36.0->uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:36.7799101Z   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-11-08T12:23:36.9482636Z Collecting greenlet>=1 (from sqlalchemy==2.0.43->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 4))
+2026-11-08T12:23:36.9542262Z   Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-11-08T12:23:36.9780776Z Collecting Mako (from alembic==1.16.5->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 6))
+2026-11-08T12:23:36.9837193Z   Downloading mako-1.4.3-py3-none-any.whl.metadata (2.9 kB)
+2026-11-08T12:23:37.0050672Z Collecting python-dotenv>=0.21.0 (from pydantic-settings==2.10.1->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 7))
+2026-11-08T12:23:37.0106158Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+2026-11-08T12:23:37.1579692Z Collecting protobuf<7.0,>=5.0 (from opentelemetry-proto==1.38.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 9))
+2026-11-08T12:23:37.1640941Z   Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2026-11-08T12:23:37.1799595Z Collecting python-dateutil (from croniter==6.0.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 10))
+2026-11-08T12:23:37.1858308Z   Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+2026-11-08T12:23:37.2221329Z Collecting pytz>2021.1 (from croniter==6.0.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 10))
+2026-11-08T12:23:37.2279420Z   Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+2026-11-08T12:23:37.3842403Z Collecting psycopg-binary==3.2.10 (from psycopg[binary]==3.2.10->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 5))
+2026-11-08T12:23:37.3919149Z   Downloading psycopg_binary-3.2.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.0 kB)
+2026-11-08T12:23:37.4299309Z Collecting httptools>=0.6.3 (from uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:37.4359058Z   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+2026-11-08T12:23:37.4775541Z Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:37.4839364Z   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+2026-11-08T12:23:37.5619443Z Collecting watchfiles>=0.13 (from uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:37.5680374Z   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-11-08T12:23:37.7234043Z Collecting websockets>=10.4 (from uvicorn[standard]==0.36.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 3))
+2026-11-08T12:23:37.7299610Z   Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+2026-11-08T12:23:37.9522659Z Collecting botocore<1.44.0,>=1.43.126 (from boto3<2,>=1.35->-r backend/requirements-providers.txt (line 3))
+2026-11-08T12:23:37.9585317Z   Downloading botocore-1.43.126-py3-none-any.whl.metadata (5.6 kB)
+2026-11-08T12:23:37.9728508Z Collecting jmespath<2.0.0,>=0.7.1 (from boto3<2,>=1.35->-r backend/requirements-providers.txt (line 3))
+2026-11-08T12:23:37.9789651Z   Downloading jmespath-1.1.0-py3-none-any.whl.metadata (7.6 kB)
+2026-11-08T12:23:37.9979021Z Collecting s3transfer<0.20.0,>=0.19.0 (from boto3<2,>=1.35->-r backend/requirements-providers.txt (line 3))
+2026-11-08T12:23:38.0038320Z   Downloading s3transfer-0.19.3-py3-none-any.whl.metadata (1.7 kB)
+2026-11-08T12:23:38.0203053Z Collecting idna>=2.8 (from anyio<5,>=3.6.2->starlette==1.4.1->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 2))
+2026-11-08T12:23:38.0259883Z   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-11-08T12:23:38.0336778Z Collecting python-dateutil (from croniter==6.0.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 10))
+2026-11-08T12:23:38.0393668Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-11-08T12:23:38.0635067Z Collecting urllib3!=2.2.0,<3,>=1.25.4 (from botocore<1.44.0,>=1.43.126->boto3<2,>=1.35->-r backend/requirements-providers.txt (line 3))
+2026-11-08T12:23:38.0696025Z   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-11-08T12:23:38.0877554Z Collecting six>=1.5 (from python-dateutil->croniter==6.0.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 10))
+2026-11-08T12:23:38.0933433Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-11-08T12:23:38.1290016Z Collecting annotated-types>=0.6.0 (from pydantic>=2.9.0->fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:38.1345300Z   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-11-08T12:23:38.8599605Z Collecting pydantic-core==2.50.4 (from pydantic>=2.9.0->fastapi==0.143.0->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 1))
+2026-11-08T12:23:38.8658384Z   Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
+2026-11-08T12:23:38.9313015Z Collecting MarkupSafe>=2.0 (from Mako->alembic==1.16.5->-r /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/requirements.txt (line 6))
+2026-11-08T12:23:38.9372162Z   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-08T12:23:38.9487894Z Downloading fastapi-0.143.0-py3-none-any.whl (144 kB)
+2026-11-08T12:23:38.9648658Z Downloading starlette-1.4.1-py3-none-any.whl (74 kB)
+2026-11-08T12:23:38.9768867Z Downloading uvicorn-0.36.0-py3-none-any.whl (67 kB)
+2026-11-08T12:23:38.9906338Z Downloading sqlalchemy-2.0.43-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+2026-11-08T12:23:39.0944518Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 34.7 MB/s  0:00:00
+2026-11-08T12:23:39.1012406Z Downloading psycopg-3.2.10-py3-none-any.whl (206 kB)
+2026-11-08T12:23:39.1120226Z Downloading alembic-1.16.5-py3-none-any.whl (247 kB)
+2026-11-08T12:23:39.1244582Z Downloading pydantic_settings-2.10.1-py3-none-any.whl (45 kB)
+2026-11-08T12:23:39.1324225Z Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-11-08T12:23:39.1482313Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 53.5 MB/s  0:00:00
+2026-11-08T12:23:39.1549576Z Downloading opentelemetry_proto-1.38.0-py3-none-any.whl (72 kB)
+2026-11-08T12:23:39.1637959Z Downloading croniter-6.0.0-py2.py3-none-any.whl (25 kB)
+2026-11-08T12:23:39.1724344Z Downloading regex-2025.11.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (803 kB)
+2026-11-08T12:23:39.1874563Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 803.5/803.5 kB 53.4 MB/s  0:00:00
+2026-11-08T12:23:39.1942196Z Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (291 kB)
+2026-11-08T12:23:39.2051002Z Downloading psycopg_binary-3.2.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.4 MB)
+2026-11-08T12:23:39.2545646Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 89.7 MB/s  0:00:00
+2026-11-08T12:23:39.2605258Z Downloading boto3-1.43.126-py3-none-any.whl (140 kB)
+2026-11-08T12:23:39.2688335Z Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+2026-11-08T12:23:39.2771180Z Downloading botocore-1.43.126-py3-none-any.whl (16.2 MB)
+2026-11-08T12:23:39.3724854Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.2/16.2 MB 173.0 MB/s  0:00:00
+2026-11-08T12:23:39.3785670Z Downloading jmespath-1.1.0-py3-none-any.whl (20 kB)
+2026-11-08T12:23:39.3863497Z Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+2026-11-08T12:23:39.3959287Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-11-08T12:23:39.4042103Z Downloading s3transfer-0.19.3-py3-none-any.whl (90 kB)
+2026-11-08T12:23:39.4120418Z Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-11-08T12:23:39.4201862Z Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-11-08T12:23:39.4273617Z Downloading click-8.5.1-py3-none-any.whl (126 kB)
+2026-11-08T12:23:39.4350891Z Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+2026-11-08T12:23:39.4414236Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 111.9 MB/s  0:00:00
+2026-11-08T12:23:39.4471623Z Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-11-08T12:23:39.4550505Z Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+2026-11-08T12:23:39.4612614Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 95.4 MB/s  0:00:00
+2026-11-08T12:23:39.4669702Z Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-11-08T12:23:39.4769128Z Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+2026-11-08T12:23:39.4827295Z Downloading pydantic-2.14.3-py3-none-any.whl (494 kB)
+2026-11-08T12:23:39.4930659Z Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
+2026-11-08T12:23:39.5046116Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 220.5 MB/s  0:00:00
+2026-11-08T12:23:39.5101257Z Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-11-08T12:23:39.5175415Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+2026-11-08T12:23:39.5256911Z Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+2026-11-08T12:23:39.5346948Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-11-08T12:23:39.5421117Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-08T12:23:39.5497604Z Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+2026-11-08T12:23:39.5572788Z Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+2026-11-08T12:23:39.5829713Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 196.8 MB/s  0:00:00
+2026-11-08T12:23:39.5890226Z Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+2026-11-08T12:23:39.5980733Z Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (226 kB)
+2026-11-08T12:23:39.6065187Z Downloading mako-1.4.3-py3-none-any.whl (80 kB)
+2026-11-08T12:23:39.6142542Z Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-08T12:23:39.8553639Z Installing collected packages: pytz, websockets, uvloop, urllib3, typing-extensions, six, regex, PyYAML, python-dotenv, psycopg-binary, psutil, protobuf, MarkupSafe, jmespath, idna, httptools, h11, greenlet, click, annotated-types, annotated-doc, uvicorn, typing-inspection, sqlalchemy, python-dateutil, pydantic-core, psycopg, opentelemetry-proto, opentelemetry-api, Mako, anyio, watchfiles, starlette, pydantic, croniter, botocore, alembic, s3transfer, pydantic-settings, fastapi, boto3
+2026-11-08T12:23:44.2591363Z 
+2026-11-08T12:23:44.2634118Z Successfully installed Mako-1.4.3 MarkupSafe-3.0.4 PyYAML-6.0.3 alembic-1.16.5 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.16.0 boto3-1.43.126 botocore-1.43.126 click-8.5.1 croniter-6.0.0 fastapi-0.143.0 greenlet-3.5.6 h11-0.16.0 httptools-0.9.0 idna-3.20 jmespath-1.1.0 opentelemetry-api-1.45.2 opentelemetry-proto-1.38.0 protobuf-6.33.6 psutil-7.1.0 psycopg-3.2.10 psycopg-binary-3.2.10 pydantic-2.14.3 pydantic-core-2.50.4 pydantic-settings-2.10.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 pytz-2026.6 regex-2025.11.3 s3transfer-0.19.3 six-1.17.0 sqlalchemy-2.0.43 starlette-1.4.1 typing-extensions-4.16.0 typing-inspection-0.4.5 urllib3-2.8.0 uvicorn-0.36.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.4
+2026-11-08T12:23:44.2642842Z 
+2026-11-08T12:23:44.2643803Z [notice] A new release of pip is available: 26.2 -> 26.3
+2026-11-08T12:23:44.2644926Z [notice] To update, run: /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/.venv/bin/python -m pip install --upgrade pip
+2026-11-08T12:23:46.9579723Z 
+2026-11-08T12:23:46.9580664Z added 140 packages in 2s
+2026-11-08T12:23:46.9590986Z npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+2026-11-08T12:23:46.9591823Z npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-11-08T12:23:46.9592338Z npm warn install-scripts
+2026-11-08T12:23:46.9593290Z npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+2026-11-08T12:23:48.6710274Z 
+2026-11-08T12:23:48.6710805Z added 2 packages in 2s
+2026-11-08T12:23:49.2330240Z Installing dependencies...
+2026-11-08T12:23:49.2472006Z Switching to root user to install dependencies...
+2026-11-08T12:23:49.3305244Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-08T12:23:49.3848565Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-08T12:23:49.4343799Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-08T12:23:49.4352947Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-08T12:23:49.4386543Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-08T12:23:49.4402165Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-08T12:23:49.4660305Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [743 kB]
+2026-11-08T12:23:49.5175207Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [675 kB]
+2026-11-08T12:23:49.5719021Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1425 kB]
+2026-11-08T12:23:49.5814550Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [313 kB]
+2026-11-08T12:23:49.5822043Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1711 kB]
+2026-11-08T12:23:49.5991135Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [344 kB]
+2026-11-08T12:23:49.6034665Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1840 kB]
+2026-11-08T12:23:49.6094266Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [420 kB]
+2026-11-08T12:23:49.6124242Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [50.7 kB]
+2026-11-08T12:23:49.6126012Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-08T12:23:49.7055084Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1157 kB]
+2026-11-08T12:23:49.7114321Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [234 kB]
+2026-11-08T12:23:49.7550100Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+2026-11-08T12:23:49.7603912Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+2026-11-08T12:23:49.7622724Z Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1721 kB]
+2026-11-08T12:23:49.7716976Z Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [394 kB]
+2026-11-08T12:23:49.7729536Z Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [45.4 kB]
+2026-11-08T12:23:49.7736746Z Get:24 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+2026-11-08T12:23:53.0453864Z Fetched 13.0 MB in 1s (9864 kB/s)
+2026-11-08T12:23:54.2134404Z Reading package lists...
+2026-11-08T12:23:54.2452249Z Reading package lists...
+2026-11-08T12:23:54.4632371Z Building dependency tree...
+2026-11-08T12:23:54.4640225Z Reading state information...
+2026-11-08T12:23:54.6037425Z libasound2t64 is already the newest version (1.2.11-1ubuntu0.3).
+2026-11-08T12:23:54.6038417Z libasound2t64 set to manually installed.
+2026-11-08T12:23:54.6039341Z libatk-bridge2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-08T12:23:54.6040184Z libatk-bridge2.0-0t64 set to manually installed.
+2026-11-08T12:23:54.6040947Z libatk1.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-08T12:23:54.6041608Z libatk1.0-0t64 set to manually installed.
+2026-11-08T12:23:54.6042274Z libatspi2.0-0t64 is already the newest version (2.52.0-1build1).
+2026-11-08T12:23:54.6042804Z libatspi2.0-0t64 set to manually installed.
+2026-11-08T12:23:54.6043754Z libcairo2 is already the newest version (1.18.0-3build1).
+2026-11-08T12:23:54.6044634Z libcairo2 set to manually installed.
+2026-11-08T12:23:54.6045069Z libcups2t64 is already the newest version (2.4.7-1.2ubuntu7.14).
+2026-11-08T12:23:54.6045503Z libcups2t64 set to manually installed.
+2026-11-08T12:23:54.6046380Z libdbus-1-3 is already the newest version (1.14.10-4ubuntu4.1).
+2026-11-08T12:23:54.6046822Z libdbus-1-3 set to manually installed.
+2026-11-08T12:23:54.6047257Z libdrm2 is already the newest version (2.4.125-1ubuntu0.1~24.04.2).
+2026-11-08T12:23:54.6047665Z libdrm2 set to manually installed.
+2026-11-08T12:23:54.6048063Z libgbm1 is already the newest version (25.2.8-0ubuntu0.24.04.4).
+2026-11-08T12:23:54.6048453Z libgbm1 set to manually installed.
+2026-11-08T12:23:54.6048863Z libglib2.0-0t64 is already the newest version (2.80.0-6ubuntu3.10).
+2026-11-08T12:23:54.6049444Z libglib2.0-0t64 set to manually installed.
+2026-11-08T12:23:54.6050024Z libnspr4 is already the newest version (2:4.35-1.1build1).
+2026-11-08T12:23:54.6050427Z libnspr4 set to manually installed.
+2026-11-08T12:23:54.6050811Z libnss3 is already the newest version (2:3.98-1ubuntu0.3).
+2026-11-08T12:23:54.6051184Z libnss3 set to manually installed.
+2026-11-08T12:23:54.6051590Z libpango-1.0-0 is already the newest version (1.52.1+ds-1build1).
+2026-11-08T12:23:54.6052006Z libpango-1.0-0 set to manually installed.
+2026-11-08T12:23:54.6052419Z libx11-6 is already the newest version (2:1.8.7-1ubuntu0.1).
+2026-11-08T12:23:54.6053065Z libx11-6 set to manually installed.
+2026-11-08T12:23:54.6053909Z libxcb1 is already the newest version (1.15-1ubuntu2).
+2026-11-08T12:23:54.6054578Z libxcb1 set to manually installed.
+2026-11-08T12:23:54.6055306Z libxcomposite1 is already the newest version (1:0.4.5-1build3).
+2026-11-08T12:23:54.6056049Z libxcomposite1 set to manually installed.
+2026-11-08T12:23:54.6056521Z libxdamage1 is already the newest version (1:1.1.6-1build1).
+2026-11-08T12:23:54.6056939Z libxdamage1 set to manually installed.
+2026-11-08T12:23:54.6057336Z libxext6 is already the newest version (2:1.3.4-1build2).
+2026-11-08T12:23:54.6057723Z libxext6 set to manually installed.
+2026-11-08T12:23:54.6058119Z libxfixes3 is already the newest version (1:6.0.0-2build1).
+2026-11-08T12:23:54.6058505Z libxfixes3 set to manually installed.
+2026-11-08T12:23:54.6059156Z libxkbcommon0 is already the newest version (1.6.0-1build1).
+2026-11-08T12:23:54.6059897Z libxkbcommon0 set to manually installed.
+2026-11-08T12:23:54.6060624Z libxrandr2 is already the newest version (2:1.5.2-2build1).
+2026-11-08T12:23:54.6061341Z libxrandr2 set to manually installed.
+2026-11-08T12:23:54.6061741Z xvfb is already the newest version (2:21.1.12-1ubuntu1.9).
+2026-11-08T12:23:54.6062284Z fonts-noto-color-emoji is already the newest version (2.047-0ubuntu0.24.04.1).
+2026-11-08T12:23:54.6062848Z libfontconfig1 is already the newest version (2.15.0-1.1ubuntu2).
+2026-11-08T12:23:54.6063848Z libfontconfig1 set to manually installed.
+2026-11-08T12:23:54.6064686Z libfreetype6 is already the newest version (2.13.2+dfsg-1ubuntu0.2).
+2026-11-08T12:23:54.6065527Z libfreetype6 set to manually installed.
+2026-11-08T12:23:54.6066321Z fonts-liberation is already the newest version (1:2.1.5-3).
+2026-11-08T12:23:54.6067068Z fonts-liberation set to manually installed.
+2026-11-08T12:23:54.6067771Z The following additional packages will be installed:
+2026-11-08T12:23:54.6068607Z   xfonts-encodings xfonts-utils
+2026-11-08T12:23:54.6069129Z Recommended packages:
+2026-11-08T12:23:54.6069594Z   fonts-ipafont-mincho fonts-tlwg-loma
+2026-11-08T12:23:54.6237438Z The following NEW packages will be installed:
+2026-11-08T12:23:54.6238414Z   fonts-freefont-ttf fonts-ipafont-gothic fonts-tlwg-loma-otf fonts-unifont
+2026-11-08T12:23:54.6244383Z   fonts-wqy-zenhei xfonts-cyrillic xfonts-encodings xfonts-scalable
+2026-11-08T12:23:54.6245113Z   xfonts-utils
+2026-11-08T12:23:54.6447482Z 0 upgraded, 9 newly installed, 0 to remove and 27 not upgraded.
+2026-11-08T12:23:54.6448274Z Need to get 21.1 MB of archives.
+2026-11-08T12:23:54.6449466Z After this operation, 79.5 MB of additional disk space will be used.
+2026-11-08T12:23:54.6450159Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-08T12:23:54.6899600Z Get:2 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-ipafont-gothic all 00303-21ubuntu1 [3513 kB]
+2026-11-08T12:23:54.7554919Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 fonts-freefont-ttf all 20211204+svn4273-2 [5641 kB]
+2026-11-08T12:23:54.8507963Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-tlwg-loma-otf all 1:0.7.3-1 [107 kB]
+2026-11-08T12:23:54.8846964Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-unifont all 1:15.1.01-1build1 [2993 kB]
+2026-11-08T12:23:54.9468485Z Get:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 fonts-wqy-zenhei all 0.9.45-8 [7472 kB]
+2026-11-08T12:23:55.0605553Z Get:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-encodings all 1:1.0.5-0ubuntu2 [578 kB]
+2026-11-08T12:23:55.0952484Z Get:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-utils amd64 1:7.7+6build3 [94.4 kB]
+2026-11-08T12:23:55.1252496Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 xfonts-cyrillic all 1:1.0.5+nmu1 [384 kB]
+2026-11-08T12:23:55.1579980Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 xfonts-scalable all 1:1.0.3-1.3 [304 kB]
+2026-11-08T12:23:55.4295829Z Fetched 21.1 MB in 1s (39.9 MB/s)
+2026-11-08T12:23:55.4550734Z Selecting previously unselected package fonts-ipafont-gothic.
+2026-11-08T12:23:55.4889344Z (Reading database ... 
+2026-11-08T12:23:55.4889974Z (Reading database ... 5%
+2026-11-08T12:23:55.4890366Z (Reading database ... 10%
+2026-11-08T12:23:55.4890638Z (Reading database ... 15%
+2026-11-08T12:23:55.4890890Z (Reading database ... 20%
+2026-11-08T12:23:55.4891135Z (Reading database ... 25%
+2026-11-08T12:23:55.4891381Z (Reading database ... 30%
+2026-11-08T12:23:55.4891619Z (Reading database ... 35%
+2026-11-08T12:23:55.4891864Z (Reading database ... 40%
+2026-11-08T12:23:55.4892139Z (Reading database ... 45%
+2026-11-08T12:23:55.4892719Z (Reading database ... 50%
+2026-11-08T12:23:55.4945711Z (Reading database ... 55%
+2026-11-08T12:23:55.5888437Z (Reading database ... 60%
+2026-11-08T12:23:55.7265103Z (Reading database ... 65%
+2026-11-08T12:23:55.9392252Z (Reading database ... 70%
+2026-11-08T12:23:56.1133691Z (Reading database ... 75%
+2026-11-08T12:23:56.1935800Z (Reading database ... 80%
+2026-11-08T12:23:56.3329396Z (Reading database ... 85%
+2026-11-08T12:23:56.4601249Z (Reading database ... 90%
+2026-11-08T12:23:56.5369492Z (Reading database ... 95%
+2026-11-08T12:23:56.5370007Z (Reading database ... 100%
+2026-11-08T12:23:56.5370720Z (Reading database ... 215960 files and directories currently installed.)
+2026-11-08T12:23:56.5415374Z Preparing to unpack .../0-fonts-ipafont-gothic_00303-21ubuntu1_all.deb ...
+2026-11-08T12:23:56.5519346Z Unpacking fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-08T12:23:56.7924073Z Selecting previously unselected package fonts-freefont-ttf.
+2026-11-08T12:23:56.8069254Z Preparing to unpack .../1-fonts-freefont-ttf_20211204+svn4273-2_all.deb ...
+2026-11-08T12:23:56.8077974Z Unpacking fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-08T12:23:56.8964784Z Selecting previously unselected package fonts-tlwg-loma-otf.
+2026-11-08T12:23:56.9109523Z Preparing to unpack .../2-fonts-tlwg-loma-otf_1%3a0.7.3-1_all.deb ...
+2026-11-08T12:23:56.9117102Z Unpacking fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-08T12:23:56.9354092Z Selecting previously unselected package fonts-unifont.
+2026-11-08T12:23:56.9497468Z Preparing to unpack .../3-fonts-unifont_1%3a15.1.01-1build1_all.deb ...
+2026-11-08T12:23:56.9505461Z Unpacking fonts-unifont (1:15.1.01-1build1) ...
+2026-11-08T12:23:57.0627846Z Selecting previously unselected package fonts-wqy-zenhei.
+2026-11-08T12:23:57.0772138Z Preparing to unpack .../4-fonts-wqy-zenhei_0.9.45-8_all.deb ...
+2026-11-08T12:23:57.0883006Z Unpacking fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-08T12:23:57.5758601Z Selecting previously unselected package xfonts-encodings.
+2026-11-08T12:23:57.5902740Z Preparing to unpack .../5-xfonts-encodings_1%3a1.0.5-0ubuntu2_all.deb ...
+2026-11-08T12:23:57.5911051Z Unpacking xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-08T12:23:57.6325619Z Selecting previously unselected package xfonts-utils.
+2026-11-08T12:23:57.6470548Z Preparing to unpack .../6-xfonts-utils_1%3a7.7+6build3_amd64.deb ...
+2026-11-08T12:23:57.6479929Z Unpacking xfonts-utils (1:7.7+6build3) ...
+2026-11-08T12:23:57.6887480Z Selecting previously unselected package xfonts-cyrillic.
+2026-11-08T12:23:57.7030339Z Preparing to unpack .../7-xfonts-cyrillic_1%3a1.0.5+nmu1_all.deb ...
+2026-11-08T12:23:57.7039181Z Unpacking xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-08T12:23:57.7415446Z Selecting previously unselected package xfonts-scalable.
+2026-11-08T12:23:57.7558849Z Preparing to unpack .../8-xfonts-scalable_1%3a1.0.3-1.3_all.deb ...
+2026-11-08T12:23:57.7567885Z Unpacking xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-08T12:23:57.8026546Z Setting up fonts-wqy-zenhei (0.9.45-8) ...
+2026-11-08T12:23:57.8173978Z Setting up fonts-freefont-ttf (20211204+svn4273-2) ...
+2026-11-08T12:23:57.8195387Z Setting up fonts-tlwg-loma-otf (1:0.7.3-1) ...
+2026-11-08T12:23:57.8216382Z Setting up xfonts-encodings (1:1.0.5-0ubuntu2) ...
+2026-11-08T12:23:57.8236862Z Setting up fonts-ipafont-gothic (00303-21ubuntu1) ...
+2026-11-08T12:23:57.8304124Z update-alternatives: using /usr/share/fonts/opentype/ipafont-gothic/ipag.ttf to provide /usr/share/fonts/truetype/fonts-japanese-gothic.ttf (fonts-japanese-gothic.ttf) in auto mode
+2026-11-08T12:23:57.8321479Z Setting up fonts-unifont (1:15.1.01-1build1) ...
+2026-11-08T12:23:57.8342472Z Setting up xfonts-utils (1:7.7+6build3) ...
+2026-11-08T12:23:57.8402582Z Setting up xfonts-cyrillic (1:1.0.5+nmu1) ...
+2026-11-08T12:23:57.8711901Z Setting up xfonts-scalable (1:1.0.3-1.3) ...
+2026-11-08T12:23:57.9000535Z Processing triggers for man-db (2.12.0-4build2) ...
+2026-11-08T12:23:57.9025081Z Not building database; man-db/auto-update is not 'true'.
+2026-11-08T12:23:57.9040008Z Processing triggers for fontconfig (2.15.0-1.1ubuntu2) ...
+2026-11-08T12:23:58.6913457Z 
+2026-11-08T12:23:58.6914423Z Running kernel seems to be up-to-date.
+2026-11-08T12:23:58.6914780Z 
+2026-11-08T12:23:58.6914985Z No services need to be restarted.
+2026-11-08T12:23:58.6915222Z 
+2026-11-08T12:23:58.6915443Z No containers need to be restarted.
+2026-11-08T12:23:58.6915684Z 
+2026-11-08T12:23:58.6915915Z No user sessions are running outdated binaries.
+2026-11-08T12:23:58.6916193Z 
+2026-11-08T12:23:58.6916568Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-08T12:23:59.6130282Z Downloading Chromium 141.0.7390.37 (playwright build v1194) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-linux.zip
+2026-11-08T12:23:59.8033496Z |                                                                                |   0% of 173.9 MiB
+2026-11-08T12:23:59.9154781Z |■■■■■■■■                                                                        |  10% of 173.9 MiB
+2026-11-08T12:23:59.9906171Z |■■■■■■■■■■■■■■■■                                                                |  20% of 173.9 MiB
+2026-11-08T12:24:00.0619467Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 173.9 MiB
+2026-11-08T12:24:00.1400295Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 173.9 MiB
+2026-11-08T12:24:00.2081793Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 173.9 MiB
+2026-11-08T12:24:00.2737164Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 173.9 MiB
+2026-11-08T12:24:00.3364827Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 173.9 MiB
+2026-11-08T12:24:00.4074639Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 173.9 MiB
+2026-11-08T12:24:00.4636727Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 173.9 MiB
+2026-11-08T12:24:00.5166765Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 173.9 MiB
+2026-11-08T12:24:03.8234203Z Chromium 141.0.7390.37 (playwright build v1194) downloaded to /home/runner/.cache/ms-playwright/chromium-1194
+2026-11-08T12:24:03.8239703Z Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-linux.zip
+2026-11-08T12:24:03.9870342Z |                                                                                |   0% of 2.3 MiB
+2026-11-08T12:24:03.9936568Z |■■■■■■■■                                                                        |  10% of 2.3 MiB
+2026-11-08T12:24:03.9969848Z |■■■■■■■■■■■■■■■■                                                                |  20% of 2.3 MiB
+2026-11-08T12:24:04.0006675Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 2.3 MiB
+2026-11-08T12:24:04.0022722Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 2.3 MiB
+2026-11-08T12:24:04.0043632Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 2.3 MiB
+2026-11-08T12:24:04.0062614Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 2.3 MiB
+2026-11-08T12:24:04.0087029Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 2.3 MiB
+2026-11-08T12:24:04.0097948Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 2.3 MiB
+2026-11-08T12:24:04.0116137Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 2.3 MiB
+2026-11-08T12:24:04.0131881Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 2.3 MiB
+2026-11-08T12:24:04.0693907Z FFMPEG playwright build v1011 downloaded to /home/runner/.cache/ms-playwright/ffmpeg-1011
+2026-11-08T12:24:04.0698714Z Downloading Chromium Headless Shell 141.0.7390.37 (playwright build v1194) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-headless-shell-linux.zip
+2026-11-08T12:24:04.2305548Z |                                                                                |   0% of 104.3 MiB
+2026-11-08T12:24:04.3031327Z |■■■■■■■■                                                                        |  10% of 104.3 MiB
+2026-11-08T12:24:04.3713810Z |■■■■■■■■■■■■■■■■                                                                |  20% of 104.3 MiB
+2026-11-08T12:24:04.4243472Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 104.3 MiB
+2026-11-08T12:24:04.4739947Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 104.3 MiB
+2026-11-08T12:24:04.5235984Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 104.3 MiB
+2026-11-08T12:24:04.5667260Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 104.3 MiB
+2026-11-08T12:24:04.6087913Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 104.3 MiB
+2026-11-08T12:24:04.6472814Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 104.3 MiB
+2026-11-08T12:24:04.6833489Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 104.3 MiB
+2026-11-08T12:24:04.7133942Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 104.3 MiB
+2026-11-08T12:24:06.4728870Z Chromium Headless Shell 141.0.7390.37 (playwright build v1194) downloaded to /home/runner/.cache/ms-playwright/chromium_headless_shell-1194
+2026-11-08T12:24:06.5762304Z ##[group]Run (cd backend && .venv/bin/python -m scripts.etl_unit_probe)
+2026-11-08T12:24:06.5762885Z [36;1m(cd backend && .venv/bin/python -m scripts.etl_unit_probe)[0m
+2026-11-08T12:24:06.5763908Z [36;1m(cd backend && .venv/bin/python -m scripts.infrastructure_unit_probe)[0m
+2026-11-08T12:24:06.5764486Z [36;1m(cd backend && .venv/bin/python -m scripts.provider_unit_probe)[0m
+2026-11-08T12:24:06.5764972Z [36;1m(cd backend && .venv/bin/python -m scripts.deep_checks_probe)[0m
+2026-11-08T12:24:06.5765350Z [36;1mnpm run build --prefix frontend[0m
+2026-11-08T12:24:06.5788028Z shell: /usr/bin/bash -e {0}
+2026-11-08T12:24:06.5788278Z env:
+2026-11-08T12:24:06.5788553Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:06.5788999Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T12:24:06.5789423Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:06.5789848Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:06.5790239Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:06.5790643Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T12:24:06.5790969Z ##[endgroup]
+2026-11-08T12:24:07.5139837Z ETL PARSING / SCHEDULE / SLA / CREDENTIAL REDACTION / READ-ONLY BOUNDARIES PASS
+2026-11-08T12:24:08.4652914Z Infrastructure selector, excluded orchestration, native Windows refusal and finite sanitized evidence PASS
+2026-11-08T12:24:08.7370079Z EC2 / PENTAHO READ-ONLY PROVIDER UNIT TESTS PASS
+2026-11-08T12:24:09.2044013Z READ-ONLY LINUX HOST, APACHE, TOMCAT ADAPTER TESTS PASS
+2026-11-08T12:24:09.3101576Z 
+2026-11-08T12:24:09.3102298Z > opscontrol-frontend@0.1.0 build
+2026-11-08T12:24:09.3102751Z > vite build
+2026-11-08T12:24:09.3102908Z 
+2026-11-08T12:24:09.5462679Z [36mvite v7.3.7 [32mbuilding client environment for production...[36m[39m
+2026-11-08T12:24:09.6167093Z transforming...
+2026-11-08T12:24:10.9898279Z [32m✓[39m 84 modules transformed.
+2026-11-08T12:24:11.2321454Z rendering chunks...
+2026-11-08T12:24:11.2426218Z computing gzip size...
+2026-11-08T12:24:11.2633349Z [2mdist/[22m[32mindex.html                 [39m[1m[2m  0.93 kB[22m[1m[22m[2m │ gzip:   0.51 kB[22m
+2026-11-08T12:24:11.2635565Z [2mdist/[22m[2massets/[22m[35mindex-CDIIGKFj.css  [39m[1m[2m 83.93 kB[22m[1m[22m[2m │ gzip:  15.14 kB[22m
+2026-11-08T12:24:11.2637598Z [2mdist/[22m[2massets/[22m[36mindex-YxMpa_02.js   [39m[1m[33m571.20 kB[39m[22m[2m │ gzip: 158.90 kB[22m
+2026-11-08T12:24:11.2638492Z [33m
+2026-11-08T12:24:11.2639256Z (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-11-08T12:24:11.2640169Z - Using dynamic import() to code-split the application
+2026-11-08T12:24:11.2641190Z - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-11-08T12:24:11.2642268Z - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+2026-11-08T12:24:11.2642818Z [32m✓ built in 1.69s[39m
+2026-11-08T12:24:11.3211347Z ##[group]Run backend/.venv/bin/python scripts/operational-acceptance.py
+2026-11-08T12:24:11.3211913Z [36;1mbackend/.venv/bin/python scripts/operational-acceptance.py[0m
+2026-11-08T12:24:11.3235437Z shell: /usr/bin/bash -e {0}
+2026-11-08T12:24:11.3235691Z env:
+2026-11-08T12:24:11.3235961Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:11.3236430Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T12:24:11.3236898Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:11.3237300Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:11.3237683Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:24:11.3238064Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T12:24:11.3238557Z   PLAYWRIGHT_MODULE: /home/runner/work/_temp/noc-tools/node_modules/playwright/index.mjs
+2026-11-08T12:24:11.3239100Z   OPERATIONAL_EVIDENCE_DIR: /home/runner/work/_temp/noc-evidence
+2026-11-08T12:24:11.3239480Z   OPSCONTROL_UI_THEME_ACCEPTANCE: 1
+2026-11-08T12:24:11.3239732Z ##[endgroup]
+2026-11-08T12:24:11.5516004Z ....+...+.....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*...+.............................+....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*..+..+.+.....+...+....+..+.............+..+....+..+.......+............+....................+.+..+...+....+......+........+...............+......+..........+...+......+..+...+..........+.........+..+.+.......................+......+...+...+.......+...............+.....+.+...........+...+..........+...+........+.+.....+....+............+...+.....+.......+..............+.+...+...........+.+...+.........+..+...+...+...+.+...+............+..............+.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-11-08T12:24:11.6529092Z ..+...+..+....+..................+..+................+..+.+......+...+.....+..........+...+...+..+....+...+...+..+.......+.....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*.........+...+.......+...+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*....+.....+....+..+.......+..+................+............+..+....+......+........+...............+.+..+...+....+.....+............+.+...+..+...+.+.....+.+..................+.....+......+...+.+.................+...+..........+.....+....+...+..+............+.+..+...+...+.........+...+.......+...+...+.........+..+......+....+.....+...+...+...+............+....+......+...+.....+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+2026-11-08T12:24:11.6560290Z -----
+2026-11-08T12:24:12.4901965Z Unable to find image 'postgres:17-alpine' locally
+2026-11-08T12:24:12.9508251Z 17-alpine: Pulling from library/postgres
+2026-11-08T12:24:13.0800713Z 881fc932939e: Pulling fs layer
+2026-11-08T12:24:13.0802086Z 4af2f594366f: Pulling fs layer
+2026-11-08T12:24:13.0802623Z a6e011ae4b07: Pulling fs layer
+2026-11-08T12:24:13.0802946Z 80bf5832b7b5: Pulling fs layer
+2026-11-08T12:24:13.0809515Z 06b8a748e903: Pulling fs layer
+2026-11-08T12:24:13.0810046Z 5c816eed2102: Pulling fs layer
+2026-11-08T12:24:13.0810530Z 0465fcfe7974: Pulling fs layer
+2026-11-08T12:24:13.0811017Z e0de8084b760: Pulling fs layer
+2026-11-08T12:24:13.0811465Z bdfe5a2c0729: Pulling fs layer
+2026-11-08T12:24:13.0811757Z 253db6c496ed: Pulling fs layer
+2026-11-08T12:24:13.0812019Z 5c816eed2102: Waiting
+2026-11-08T12:24:13.0812249Z 0465fcfe7974: Waiting
+2026-11-08T12:24:13.0812481Z e0de8084b760: Waiting
+2026-11-08T12:24:13.0812700Z bdfe5a2c0729: Waiting
+2026-11-08T12:24:13.0812919Z 253db6c496ed: Waiting
+2026-11-08T12:24:13.0813477Z 80bf5832b7b5: Waiting
+2026-11-08T12:24:13.0813850Z 06b8a748e903: Waiting
+2026-11-08T12:24:13.1976333Z 4af2f594366f: Verifying Checksum
+2026-11-08T12:24:13.1977322Z 4af2f594366f: Download complete
+2026-11-08T12:24:13.2479827Z a6e011ae4b07: Verifying Checksum
+2026-11-08T12:24:13.2480441Z a6e011ae4b07: Download complete
+2026-11-08T12:24:13.2695972Z 881fc932939e: Verifying Checksum
+2026-11-08T12:24:13.2697036Z 881fc932939e: Download complete
+2026-11-08T12:24:13.3136125Z 80bf5832b7b5: Verifying Checksum
+2026-11-08T12:24:13.3136709Z 80bf5832b7b5: Download complete
+2026-11-08T12:24:13.3761322Z 5c816eed2102: Verifying Checksum
+2026-11-08T12:24:13.3761942Z 5c816eed2102: Download complete
+2026-11-08T12:24:13.3850552Z 881fc932939e: Pull complete
+2026-11-08T12:24:13.4260164Z 0465fcfe7974: Verifying Checksum
+2026-11-08T12:24:13.4261396Z 0465fcfe7974: Download complete
+2026-11-08T12:24:13.4346296Z 4af2f594366f: Pull complete
+2026-11-08T12:24:13.4822016Z e0de8084b760: Verifying Checksum
+2026-11-08T12:24:13.4822737Z e0de8084b760: Download complete
+2026-11-08T12:24:14.0849719Z 253db6c496ed: Verifying Checksum
+2026-11-08T12:24:14.0850750Z 253db6c496ed: Download complete
+2026-11-08T12:24:14.0851693Z bdfe5a2c0729: Download complete
+2026-11-08T12:24:14.3611314Z 06b8a748e903: Verifying Checksum
+2026-11-08T12:24:15.4317568Z 06b8a748e903: Download complete
+2026-11-08T12:24:15.4318002Z a6e011ae4b07: Pull complete
+2026-11-08T12:24:15.4408016Z 80bf5832b7b5: Pull complete
+2026-11-08T12:24:17.9320216Z 06b8a748e903: Pull complete
+2026-11-08T12:24:17.9435346Z 5c816eed2102: Pull complete
+2026-11-08T12:24:17.9520298Z 0465fcfe7974: Pull complete
+2026-11-08T12:24:17.9616067Z e0de8084b760: Pull complete
+2026-11-08T12:24:17.9691789Z bdfe5a2c0729: Pull complete
+2026-11-08T12:24:17.9765890Z 253db6c496ed: Pull complete
+2026-11-08T12:24:17.9803931Z Digest: sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+2026-11-08T12:24:17.9816934Z Status: Downloaded newer image for postgres:17-alpine
+2026-11-08T12:24:17.9949046Z a67478a3802e3929846e345319eb70cb5205ad68c969a62ad190ab82dfb2dbb1
+2026-11-08T12:24:20.7240576Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:20.7241153Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:20.7241663Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:20.7242201Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:20.8031009Z INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+2026-11-08T12:24:20.8032438Z INFO  [alembic.runtime.migration] Running upgrade  -> 0001_initial, initial opscontrol schema
+2026-11-08T12:24:20.8805701Z INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+2026-11-08T12:24:20.8807849Z INFO  [alembic.runtime.migration] Running upgrade 0001_initial -> 0002_monitoring_configuration, add dynamic monitoring configuration models
+2026-11-08T12:24:20.9211181Z INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+2026-11-08T12:24:20.9213608Z INFO  [alembic.runtime.migration] Running upgrade 0002_monitoring_configuration -> 0003_alert_rules, add alert rules
+2026-11-08T12:24:20.9310108Z INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+2026-11-08T12:24:20.9311844Z INFO  [alembic.runtime.migration] Running upgrade 0003_alert_rules -> 0004_collector_runs, persist collector execution results
+2026-11-08T12:24:20.9388992Z INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+2026-11-08T12:24:20.9390118Z INFO  [alembic.runtime.migration] Running upgrade 0004_collector_runs -> 0005_metric_samples, add native metric samples
+2026-11-08T12:24:20.9538127Z INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+2026-11-08T12:24:20.9539273Z INFO  [alembic.runtime.migration] Running upgrade 0005_metric_samples -> 0006_alert_state, add alert state and notification delivery
+2026-11-08T12:24:20.9768526Z INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+2026-11-08T12:24:20.9769956Z INFO  [alembic.runtime.migration] Running upgrade 0006_alert_state -> 0007_log_events, add native log event storage
+2026-11-08T12:24:20.9905178Z INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+2026-11-08T12:24:20.9906531Z INFO  [alembic.runtime.migration] Running upgrade 0007_log_events -> 0008_correlation_engine, add correlation records and evidence
+2026-11-08T12:24:21.0120169Z INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+2026-11-08T12:24:21.0121654Z INFO  [alembic.runtime.migration] Running upgrade 0008_correlation_engine -> 0009_monitoring_templates, add persisted monitoring templates and version history
+2026-11-08T12:24:21.0252708Z INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+2026-11-08T12:24:21.0254543Z INFO  [alembic.runtime.migration] Running upgrade 0009_monitoring_templates -> 0010_template_attachments, add normalized data source to monitoring template attachments
+2026-11-08T12:24:21.0352032Z INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+2026-11-08T12:24:21.0353797Z INFO  [alembic.runtime.migration] Running upgrade 0010_template_attachments -> 0011_phase1_resource_management, phase 1 resource management hardening
+2026-11-08T12:24:21.0359606Z INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+2026-11-08T12:24:21.0361203Z INFO  [alembic.runtime.migration] Running upgrade 0011_phase1_resource_management -> 0012_identity_and_memberships, Identity, expiring sessions and organization memberships.
+2026-11-08T12:24:21.0535665Z INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+2026-11-08T12:24:21.0691041Z INFO  [alembic.runtime.migration] Running upgrade 0012_identity_and_memberships -> 0013_security_controls, Rate limits, security audit and explicit agent identities.
+2026-11-08T12:24:21.0693298Z INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+2026-11-08T12:24:21.0695331Z INFO  [alembic.runtime.migration] Running upgrade 0013_security_controls -> 0014_audit_mutation_guard, Reject accidental UPDATE/DELETE of security audit history at SQL level.
+2026-11-08T12:24:21.0721715Z INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+2026-11-08T12:24:21.0722499Z Revision ID: 0015_remote_jobs
+2026-11-08T12:24:21.0722816Z Revises: 0014_audit_mutation_guard
+2026-11-08T12:24:21.0724008Z INFO  [alembic.runtime.migration] Running upgrade 0014_audit_mutation_guard -> 0015_remote_jobs, Tenant-bound leased remote HTTP jobs and idempotent evidence.
+2026-11-08T12:24:21.0724929Z Revision ID: 0015_remote_jobs
+2026-11-08T12:24:21.0725273Z Revises: 0014_audit_mutation_guard
+2026-11-08T12:24:21.0967801Z INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+2026-11-08T12:24:21.0968916Z Revision ID: 0016_remote_collector_assignment
+2026-11-08T12:24:21.0969283Z Revises: 0015_remote_jobs
+2026-11-08T12:24:21.0970305Z INFO  [alembic.runtime.migration] Running upgrade 0015_remote_jobs -> 0016_remote_collector_assignment, Bind collectors to authorized remote worker and isolate local scheduler.
+2026-11-08T12:24:21.0971307Z Revision ID: 0016_remote_collector_assignment
+2026-11-08T12:24:21.0971742Z Revises: 0015_remote_jobs
+2026-11-08T12:24:21.1019125Z INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+2026-11-08T12:24:21.1020888Z INFO  [alembic.runtime.migration] Running upgrade 0016_remote_collector_assignment -> 0017_rule_catalogs_activation, Independent immutable rule versions and applied monitoring bindings.
+2026-11-08T12:24:21.1291521Z INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+2026-11-08T12:24:21.1293052Z Revision ID: 0018_pentaho_execution_identity
+2026-11-08T12:24:21.1293879Z Revises: 0017_rule_catalogs_activation
+2026-11-08T12:24:21.1295352Z INFO  [alembic.runtime.migration] Running upgrade 0017_rule_catalogs_activation -> 0018_pentaho_execution_identity, Store provider execution identity for idempotent ETL run ingestion.
+2026-11-08T12:24:21.1296408Z Revision ID: 0018_pentaho_execution_identity
+2026-11-08T12:24:21.1296960Z Revises: 0017_rule_catalogs_activation
+2026-11-08T12:24:21.1320848Z INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+2026-11-08T12:24:21.1322552Z INFO  [alembic.runtime.migration] Running upgrade 0018_pentaho_execution_identity -> 0019_infrastructure_evidence, Persist scoped, sanitized infrastructure observations.
+2026-11-08T12:24:21.1471907Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:21.1473987Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:21.1514110Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:21.1516158Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:21.1790800Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:21.1792961Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:21.1990313Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:21.1992028Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:21.2011106Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:22.2849620Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:22.2851377Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:22.2852388Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:22.2853703Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:22.2854674Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:22.3064037Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:22.3066711Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:22.3118026Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:22.3120504Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:22.3136249Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:22.3137990Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:22.3225727Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:22.3228464Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:22.3396607Z INFO  [alembic.runtime.migration] Running downgrade 0020_etl_monitoring_evidence -> 0019_infrastructure_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:22.3399285Z INFO  [alembic.runtime.migration] Running downgrade 0020_etl_monitoring_evidence -> 0019_infrastructure_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:23.4311202Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:23.4312195Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:23.4313303Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:23.4314220Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:23.4512835Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:23.4516203Z INFO  [alembic.runtime.migration] Running upgrade 0019_infrastructure_evidence -> 0020_etl_monitoring_evidence, Scoped ETL source evidence and explicit infrastructure association.
+2026-11-08T12:24:23.4606326Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:23.4608982Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:23.4921700Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:23.4923899Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:23.5037721Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:23.5040218Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:23.5054059Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:23.5056503Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:24.5870330Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:24.5871315Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:24.5872218Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:24.5873301Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:24.6070782Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:24.6074197Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:24.6120210Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:24.6122591Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:24.6137318Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:24.6139833Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:24.6220962Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:24.6223946Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:25.6725941Z Populated pre-Sprint-4 metric and ETL alert migration fixtures seeded
+2026-11-08T12:24:26.7296967Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:26.7297941Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:26.7298846Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:26.7299751Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:26.7507312Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:26.7510106Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:26.7913977Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:26.7915676Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:26.8024989Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:26.8027934Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:26.8044541Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:26.8047244Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:27.8481752Z Populated alert backfill / deterministic episodes / recovery history / upgrade repeatability PASS
+2026-11-08T12:24:28.9321650Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:28.9322352Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:28.9322984Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:28.9323973Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:28.9526176Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:28.9528828Z INFO  [alembic.runtime.migration] Running downgrade 0024_notification_leases -> 0023_worker_heartbeat, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:28.9575633Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:28.9578097Z INFO  [alembic.runtime.migration] Running downgrade 0023_worker_heartbeat -> 0022_runtime_query_indexes, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:28.9592788Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:28.9594876Z INFO  [alembic.runtime.migration] Running downgrade 0022_runtime_query_indexes -> 0021_operational_incidents, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:28.9676502Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:28.9679117Z INFO  [alembic.runtime.migration] Running downgrade 0021_operational_incidents -> 0020_etl_monitoring_evidence, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:30.0955222Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:30.0956196Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:30.0957124Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:30.0958039Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:30.1160942Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:30.1163960Z INFO  [alembic.runtime.migration] Running upgrade 0020_etl_monitoring_evidence -> 0021_operational_incidents, Local incident episodes, durable activity and historical alert backfill.
+2026-11-08T12:24:30.1583602Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:30.1585824Z INFO  [alembic.runtime.migration] Running upgrade 0021_operational_incidents -> 0022_runtime_query_indexes, Indexes for scheduler selection and deterministic newest-evidence lookups.
+2026-11-08T12:24:30.1697161Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:30.1700160Z INFO  [alembic.runtime.migration] Running upgrade 0022_runtime_query_indexes -> 0023_worker_heartbeat, Server-observed worker liveness; separate from health evidence.
+2026-11-08T12:24:30.1716583Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:30.1719189Z INFO  [alembic.runtime.migration] Running upgrade 0023_worker_heartbeat -> 0024_notification_leases, Short delivery claims and fencing for multi-replica external notifications.
+2026-11-08T12:24:31.2015492Z Populated alert backfill / deterministic episodes / recovery history / upgrade repeatability PASS
+2026-11-08T12:24:32.2696185Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:32.2697289Z INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+2026-11-08T12:24:32.2698326Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:32.2699351Z INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-11-08T12:24:32.2901564Z INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+2026-11-08T12:24:32.2904653Z INFO  [alembic.runtime.migration] Running upgrade 0024_notification_leases -> 0025_provider_department_rbac, Add internal departments/RBAC without replacing customer identity or ownership.
+2026-11-08T12:24:32.4359892Z INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+2026-11-08T12:24:32.4362932Z INFO  [alembic.runtime.migration] Running upgrade 0025_provider_department_rbac -> 0026_managed_telemetry_uat, Add managed telemetry without deleting archived incidents or legacy memberships.
+2026-11-08T12:24:32.5033017Z INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+2026-11-08T12:24:32.5036257Z INFO  [alembic.runtime.migration] Running upgrade 0026_managed_telemetry_uat -> 0027_unified_monitoring, ARCH-001 lossless resource bindings, reconstruction and schedule state.
+2026-11-08T12:24:32.6395572Z INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+2026-11-08T12:24:32.6398469Z INFO  [alembic.runtime.migration] Running upgrade 0027_unified_monitoring -> 0028_attribute_registry, Versioned attributes/capabilities, owner-private drafts and provider checkpoints.
+2026-11-08T12:24:32.6717113Z INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+2026-11-08T12:24:32.6719294Z INFO  [alembic.runtime.migration] Running upgrade 0028_attribute_registry -> 0029_agent_v15, Agent credential renewal and evidence-backed reconciliation.
+2026-11-08T12:24:32.6798356Z INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+2026-11-08T12:24:32.6800679Z INFO  [alembic.runtime.migration] Running upgrade 0029_agent_v15 -> 0030_native_incidents_v15, Lossless native lifecycle and scoped alert evidence associations.
+2026-11-08T12:24:32.7116746Z INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+2026-11-08T12:24:32.7119527Z INFO  [alembic.runtime.migration] Running upgrade 0030_native_incidents_v15 -> 0031_in_app_notifications, Durable recipient-scoped in-app delivery; preserve existing notifications.
+2026-11-08T12:24:32.7225473Z INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+2026-11-08T12:24:32.7228331Z INFO  [alembic.runtime.migration] Running upgrade 0031_in_app_notifications -> 0032_pipeline_ownership, Add lossless multi-job integration/source ownership after V1.5.
+2026-11-08T12:24:32.8147738Z INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+2026-11-08T12:24:32.8150442Z INFO  [alembic.runtime.migration] Running upgrade 0032_pipeline_ownership -> 0033_pentaho_attempts, Add scoped Pentaho identity/attempt/recovery extensions without rewriting history.
+2026-11-08T12:24:32.8813931Z INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+2026-11-08T12:24:32.8816503Z INFO  [alembic.runtime.migration] Running upgrade 0033_pentaho_attempts -> 0034_pentaho_review, Append-only Pentaho evidence review; no history rewrite or automatic grants.
+2026-11-08T12:24:32.9066967Z INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+2026-11-08T12:24:32.9069513Z INFO  [alembic.runtime.migration] Running upgrade 0034_pentaho_review -> 0035_pentaho_history, Pentaho occurrence provenance and independent historical notice obligations.
+2026-11-08T12:24:32.9298196Z INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+2026-11-08T12:24:32.9300716Z INFO  [alembic.runtime.migration] Running upgrade 0035_pentaho_history -> 0036_native_recovery, Add immutable failure associations and independent recovery assessments.
+2026-11-08T12:24:32.9518602Z INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+2026-11-08T12:24:32.9521254Z INFO  [alembic.runtime.migration] Running upgrade 0036_native_recovery -> 0037_access_boundaries, Add explicit access boundaries without granting authority or rewriting history.
+2026-11-08T12:24:32.9727833Z INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+2026-11-08T12:24:32.9730822Z INFO  [alembic.runtime.migration] Running upgrade 0037_access_boundaries -> 0038_k8s_cluster_associations, Add canonical verified EKS identity and audited customer associations.
+2026-11-08T12:24:33.1784405Z Unable to find image 'python:3.12-alpine' locally
+2026-11-08T12:24:33.5590071Z 3.12-alpine: Pulling from library/python
+2026-11-08T12:24:33.6762384Z 881fc932939e: Already exists
+2026-11-08T12:24:33.6778281Z aa121b1b1cdb: Pulling fs layer
+2026-11-08T12:24:33.6778855Z 113b91713f05: Pulling fs layer
+2026-11-08T12:24:33.6779427Z cc36311dc778: Pulling fs layer
+2026-11-08T12:24:33.7851486Z cc36311dc778: Verifying Checksum
+2026-11-08T12:24:33.7851972Z cc36311dc778: Download complete
+2026-11-08T12:24:33.8227438Z aa121b1b1cdb: Download complete
+2026-11-08T12:24:33.8930662Z 113b91713f05: Verifying Checksum
+2026-11-08T12:24:33.8931758Z 113b91713f05: Download complete
+2026-11-08T12:24:34.0546936Z aa121b1b1cdb: Pull complete
+2026-11-08T12:24:34.6684110Z 113b91713f05: Pull complete
+2026-11-08T12:24:34.6801267Z cc36311dc778: Pull complete
+2026-11-08T12:24:34.6837440Z Digest: sha256:e064671ca452259bab50e8e2c7bd896e39e9a343bb06ca25234adf6fe18d0fc7
+2026-11-08T12:24:34.6849399Z Status: Downloaded newer image for python:3.12-alpine
+2026-11-08T12:24:34.6965749Z 4289945f99d971bf5ce14c92e2f11d8c30dfe25acba8b66c790c84d9c47697fc
+2026-11-08T12:24:41.5971346Z PASS 401 GET /api/v1/organizations
+2026-11-08T12:24:41.5972184Z PASS 401 GET /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5973591Z PASS 401 GET /api/v1/monitoring/data-sources/8d180778-1556-451e-a9df-1df57f130509
+2026-11-08T12:24:41.5975021Z PASS 401 PATCH /api/v1/resource-management/data-sources/158ffb58-e910-445b-9dcb-2a0448787ddb
+2026-11-08T12:24:41.5976024Z PASS 401 GET /api/v1/etl/executions
+2026-11-08T12:24:41.5976483Z PASS 401 GET /api/v1/monitoring/templates
+2026-11-08T12:24:41.5976892Z PASS 200 GET /api/v1/auth/me
+2026-11-08T12:24:41.5977292Z PASS 200 GET /api/v1/organizations
+2026-11-08T12:24:41.5977771Z PASS 200 GET /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5978285Z PASS 200 GET /api/v1/monitoring/data-sources
+2026-11-08T12:24:41.5979149Z PASS 200 GET /api/v1/resource-management/data-sources?organization_id=a2bd1b91-632b-4623-9677-376ef20d8e8c
+2026-11-08T12:24:41.5979998Z PASS 404 GET /api/v1/monitoring/data-sources/8d180778-1556-451e-a9df-1df57f130509
+2026-11-08T12:24:41.5980684Z PASS 404 PATCH /api/v1/resource-management/data-sources/8d180778-1556-451e-a9df-1df57f130509
+2026-11-08T12:24:41.5981353Z PASS 404 PATCH /api/v1/monitoring/data-sources/8d180778-1556-451e-a9df-1df57f130509
+2026-11-08T12:24:41.5981987Z PASS 404 GET /api/v1/monitoring/collectors/3c748bfb-e00e-4aee-bb3f-3bf773046ea1
+2026-11-08T12:24:41.5982615Z PASS 404 GET /api/v1/monitoring/collectors/3c748bfb-e00e-4aee-bb3f-3bf773046ea1/runs
+2026-11-08T12:24:41.5983078Z PASS 200 GET /api/v1/etl/executions
+2026-11-08T12:24:41.5983823Z PASS 404 GET /api/v1/etl/executions/e0c960a4-fe70-4918-85ad-9ee0400f6da7
+2026-11-08T12:24:41.5984433Z PASS 404 GET /api/v1/etl/executions/e0c960a4-fe70-4918-85ad-9ee0400f6da7/investigation
+2026-11-08T12:24:41.5985072Z PASS 404 POST /api/v1/etl/executions/e0c960a4-fe70-4918-85ad-9ee0400f6da7/correlation
+2026-11-08T12:24:41.5985552Z PASS 200 GET /api/v1/etl/executions
+2026-11-08T12:24:41.5985932Z PASS 404 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5986298Z PASS 403 POST /api/v1/organizations
+2026-11-08T12:24:41.5986652Z PASS 403 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5987001Z PASS 200 GET /api/v1/organizations
+2026-11-08T12:24:41.5987514Z PASS 404 PATCH /api/v1/resource-management/data-sources/8d180778-1556-451e-a9df-1df57f130509
+2026-11-08T12:24:41.5988069Z PASS 404 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5988421Z PASS 200 GET /api/v1/organizations
+2026-11-08T12:24:41.5988716Z PASS 200 GET /api/v1/organizations
+2026-11-08T12:24:41.5989314Z PASS 201 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:41.5989697Z PASS 204 POST /api/v1/auth/logout
+2026-11-08T12:24:41.5989992Z PASS 401 GET /api/v1/organizations
+2026-11-08T12:24:41.5990296Z ALL TENANT NEGATIVE TESTS PASS
+2026-11-08T12:24:46.6107094Z CORS browser PUT/PATCH and denied origin/method preflight PASS
+2026-11-08T12:24:46.6107846Z PASS 200 POST /api/v1/auth/login
+2026-11-08T12:24:46.6108169Z PASS 200 GET /api/v1/auth/me
+2026-11-08T12:24:46.6108480Z PASS 200 GET /api/v1/auth/users
+2026-11-08T12:24:46.6108859Z PASS 422 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:46.6109298Z PASS 422 POST /api/v1/resource-management/data-sources
+2026-11-08T12:24:46.6109718Z PASS 200 GET /api/v1/resource-management/data-sources
+2026-11-08T12:24:46.6110072Z PASS 200 POST /api/v1/auth/login
+2026-11-08T12:24:46.6110420Z PASS 403 POST /api/v1/monitoring/collectors
+2026-11-08T12:24:46.6110927Z PASS 403 PATCH /api/v1/monitoring/collectors/e35e2958-ed7c-45ff-83e0-295c3ed00a75
+2026-11-08T12:24:46.6111399Z PASS 200 POST /api/v1/auth/login
+2026-11-08T12:24:46.6111685Z PASS 403 GET /api/v1/auth/users
+2026-11-08T12:24:46.6111962Z PASS 403 GET /api/v1/auth/audit
+2026-11-08T12:24:46.6112249Z PASS 403 POST /api/v1/auth/workers
+2026-11-08T12:24:46.6112523Z PASS 401 GET /api/v1/auth/me
+2026-11-08T12:24:46.6112953Z PASS 409 PATCH /api/v1/auth/users/91eb6dcd-654a-448a-ba14-4c37445dad2a/status
+2026-11-08T12:24:46.6113799Z PASS 201 POST /api/v1/access/departments
+2026-11-08T12:24:46.6114124Z PASS 201 POST /api/v1/auth/users
+2026-11-08T12:24:46.6114434Z PASS 201 POST /api/v1/auth/memberships
+2026-11-08T12:24:46.6114752Z PASS 200 POST /api/v1/auth/login
+2026-11-08T12:24:46.6115048Z PASS 403 POST /api/v1/organizations
+2026-11-08T12:24:46.6115502Z PASS 200 PATCH /api/v1/auth/memberships/10a38692-a284-4e75-8b26-43ef7f74d8e2
+2026-11-08T12:24:46.6116203Z PASS 401 GET /api/v1/auth/me
+2026-11-08T12:24:46.6116515Z PASS 200 GET /api/v1/auth/memberships
+2026-11-08T12:24:46.6116972Z PASS 204 DELETE /api/v1/auth/memberships/10a38692-a284-4e75-8b26-43ef7f74d8e2
+2026-11-08T12:24:46.6117586Z PASS 200 POST /api/v1/auth/users/a9ed22d4-fd5d-4e7f-a436-d006b6f476b3/password
+2026-11-08T12:24:46.6118038Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6118490Z PASS 200 PATCH /api/v1/auth/users/a9ed22d4-fd5d-4e7f-a436-d006b6f476b3/status
+2026-11-08T12:24:46.6118916Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6119205Z PASS 201 POST /api/v1/auth/workers
+2026-11-08T12:24:46.6119503Z PASS 200 GET /api/v1/worker/whoami
+2026-11-08T12:24:46.6119773Z PASS 401 GET /api/v1/auth/me
+2026-11-08T12:24:46.6120049Z PASS 401 GET /api/v1/worker/whoami
+2026-11-08T12:24:46.6120479Z PASS 204 DELETE /api/v1/auth/workers/1e3cef20-8ffa-4056-b51e-6f62658b2cbe
+2026-11-08T12:24:46.6120920Z PASS 401 GET /api/v1/worker/whoami
+2026-11-08T12:24:46.6121211Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6121491Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6121768Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6122050Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6122342Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6122615Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6122886Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6123508Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6123836Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6124129Z PASS 401 POST /api/v1/auth/login
+2026-11-08T12:24:46.6124427Z PASS 429 POST /api/v1/auth/login
+2026-11-08T12:24:46.6124692Z PASS 200 GET /api/v1/auth/me
+2026-11-08T12:24:46.6124970Z PASS 200 GET /api/v1/auth/audit
+2026-11-08T12:24:46.6125305Z SECURITY RELEASE HARDENING NEGATIVE TESTS PASS
+2026-11-08T12:24:47.8622803Z Public-safe, fictional demo seeded (no live infrastructure connections).
+2026-11-08T12:24:51.7912010Z Scoped ETL Job Order, monitoring policy, credential reference and live host activation PASS
+2026-11-08T12:24:54.8142840Z NOC real HTTP worker enrollment / versioned activation / unknown and disabled coverage PASS
+2026-11-08T12:24:58.7301280Z PLAYWRIGHT ETL configured PASS
+2026-11-08T12:25:04.2371757Z NOC ALERT / REPORT / PIPELINE BROWSER PASS configured
+2026-11-08T12:25:05.9094453Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: no-run
+2026-11-08T12:25:07.0345211Z Partial Carte inventory did not fabricate NO_RUN PASS
+2026-11-08T12:25:10.0837805Z PLAYWRIGHT ETL no-run PASS
+2026-11-08T12:25:11.7832032Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: running
+2026-11-08T12:25:13.0667412Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: running
+2026-11-08T12:25:17.1732198Z PLAYWRIGHT ETL running PASS
+2026-11-08T12:25:18.8288992Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: long-running
+2026-11-08T12:25:20.1371706Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: long-running
+2026-11-08T12:25:24.2257271Z PLAYWRIGHT ETL long-running PASS
+2026-11-08T12:25:25.8879383Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: sla-breach
+2026-11-08T12:25:27.2177228Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: sla-breach
+2026-11-08T12:25:30.8602083Z PLAYWRIGHT ETL sla-breach PASS
+2026-11-08T12:25:32.5433329Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: failed
+2026-11-08T12:25:34.9304788Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: failed
+2026-11-08T12:25:42.3384452Z PLAYWRIGHT ETL failed PASS
+2026-11-08T12:25:44.1365140Z NOC database-derived monitoring alerts, report denominators and read-only feeds PASS: failed
+2026-11-08T12:25:49.0134760Z NOC ALERT / REPORT / PIPELINE BROWSER PASS failed
+2026-11-08T12:25:50.6394275Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: poll-failed
+2026-11-08T12:25:52.0044821Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: poll-failed
+2026-11-08T12:25:56.0987727Z PLAYWRIGHT ETL poll-failed PASS
+2026-11-08T12:25:57.8549562Z Actual authenticated HTTPS Carte reads and idempotent lifecycle collection PASS: recovered
+2026-11-08T12:25:59.3222529Z ETL PostgreSQL, source facts, monitoring condition and alert evidence PASS: recovered
+2026-11-08T12:26:06.0124795Z PLAYWRIGHT ETL recovered PASS
+2026-11-08T12:26:07.7793773Z NOC database-derived monitoring alerts, report denominators and read-only feeds PASS: recovered
+2026-11-08T12:26:12.6363061Z NOC ALERT / REPORT / PIPELINE BROWSER PASS recovered
+2026-11-08T12:26:48.9585057Z node:internal/modules/run_main:107
+2026-11-08T12:26:48.9586133Z     triggerUncaughtException(
+2026-11-08T12:26:48.9587070Z     ^
+2026-11-08T12:26:48.9587282Z 
+2026-11-08T12:26:48.9587530Z locator.click: Timeout 30000ms exceeded.
+2026-11-08T12:26:48.9587835Z Call log:
+2026-11-08T12:26:48.9588965Z   - waiting for getByRole('navigation', { name: 'Primary navigation' }).getByRole('button', { name: 'Incidents', exact: true })
+2026-11-08T12:26:48.9589772Z 
+2026-11-08T12:26:48.9590496Z     at tab (/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/frontend/scripts/ui_theme_acceptance.mjs:136:62)
+2026-11-08T12:26:48.9591991Z     at async file:///home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/frontend/scripts/ui_theme_acceptance.mjs:310:7 {
+2026-11-08T12:26:48.9592910Z   name: 'TimeoutError'
+2026-11-08T12:26:48.9593458Z }
+2026-11-08T12:26:48.9593627Z 
+2026-11-08T12:26:48.9593764Z Node.js v24.22.2
+2026-11-08T12:26:49.0009428Z ETL_ACCEPTANCE_FAILURE phase=recovered command=node target=ui_theme_acceptance.mjs category=CalledProcessError
+2026-11-08T12:26:49.0010547Z Acceptance failed; private service logs retained at /tmp/opscontrol-etl-fr7d6byr
+2026-11-08T12:26:49.6038091Z Traceback (most recent call last):
+2026-11-08T12:26:49.6039175Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/etl-acceptance.py", line 90, in <module>
+2026-11-08T12:26:49.6040161Z     if phase in ('failed','recovered'):operations(phase);noc_browser(phase)
+2026-11-08T12:26:49.6041000Z                                                          ^^^^^^^^^^^^^^^^^^
+2026-11-08T12:26:49.6042578Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/etl-acceptance.py", line 45, in noc_browser
+2026-11-08T12:26:49.6043892Z     run(['node','frontend/scripts/ui_theme_acceptance.mjs'])
+2026-11-08T12:26:49.6044620Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/etl-acceptance.py", line 20, in run
+2026-11-08T12:26:49.6045313Z     subprocess.run(args,cwd=cwd,env=env,check=True,timeout=180)
+2026-11-08T12:26:49.6045955Z   File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/subprocess.py", line 571, in run
+2026-11-08T12:26:49.6049990Z     raise CalledProcessError(retcode, process.args,
+2026-11-08T12:26:49.6050856Z subprocess.CalledProcessError: Command '['node', 'frontend/scripts/ui_theme_acceptance.mjs']' returned non-zero exit status 1.
+2026-11-08T12:26:49.6244867Z ##[error]Process completed with exit code 1.
+2026-11-08T12:26:49.6331439Z ##[group]Run actions/upload-artifact@v4
+2026-11-08T12:26:49.6331770Z with:
+2026-11-08T12:26:49.6331985Z   name: synthetic-noc-evidence
+2026-11-08T12:26:49.6332271Z   path: /home/runner/work/_temp/noc-evidence
+2026-11-08T12:26:49.6332557Z   if-no-files-found: warn
+2026-11-08T12:26:49.6332787Z   compression-level: 6
+2026-11-08T12:26:49.6332999Z   overwrite: false
+2026-11-08T12:26:49.6333570Z   include-hidden-files: false
+2026-11-08T12:26:49.6333811Z env:
+2026-11-08T12:26:49.6334067Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:26:49.6334506Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T12:26:49.6334931Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:26:49.6335312Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:26:49.6335695Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T12:26:49.6336105Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T12:26:49.6336423Z ##[endgroup]
+2026-11-08T12:26:49.8067222Z (node:5876) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T12:26:49.8068718Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T12:26:49.8198550Z With the provided path, there will be 21 files uploaded
+2026-11-08T12:26:49.8205709Z Artifact name is valid!
+2026-11-08T12:26:49.8206269Z Root directory input is valid!
+2026-11-08T12:26:50.1001441Z Beginning upload of artifact content to blob storage
+2026-11-08T12:26:50.2790933Z (node:5876) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-08T12:26:50.6642034Z Uploaded bytes 3542826
+2026-11-08T12:26:50.7046649Z Finished uploading artifact content to blob storage!
+2026-11-08T12:26:50.7048009Z SHA256 digest of uploaded artifact zip is 93a3ad16abbb126cbb65ac9e8431fae337e6429df3db552cba0b9d7c9881cfe6
+2026-11-08T12:26:50.7049184Z Finalizing artifact upload
+2026-11-08T12:26:51.0735243Z Artifact synthetic-noc-evidence.zip successfully finalized. Artifact ID 13617241881
+2026-11-08T12:26:51.0737291Z Artifact synthetic-noc-evidence has been successfully uploaded! Final size is 3542826 bytes. Artifact ID is 13617241881
+2026-11-08T12:26:51.0743591Z Artifact download URL: https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42479882340/artifacts/13617241881
+2026-11-08T12:26:51.0994974Z Post job cleanup.
+2026-11-08T12:26:51.1858822Z [command]/usr/bin/git version
+2026-11-08T12:26:51.1907655Z git version 2.56.0
+2026-11-08T12:26:51.1980463Z Temporarily overriding HOME='/home/runner/work/_temp/a4987d4f-275e-45a7-b488-04dc7a3c429d' before making global git config changes
+2026-11-08T12:26:51.1981935Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T12:26:51.1986290Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T12:26:51.2028127Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T12:26:51.2068715Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T12:26:51.2390334Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T12:26:51.2426670Z http.https://github.com/.extraheader
+2026-11-08T12:26:51.2440450Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T12:26:51.2482484Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T12:26:51.2773998Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T12:26:51.2830893Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T12:26:51.3289929Z Cleaning up orphan processes
+2026-11-08T12:26:51.3693378Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

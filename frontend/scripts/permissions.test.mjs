@@ -67,7 +67,8 @@ test("retired navigation cannot be enabled by cached permissions", () => {
   );
 });
 
-test("incident-management UI remains excluded even with retained backend permission", () => {
+test("retired incident UI cannot be opened even with incident permission", () => {
+  assert.equal(canNavigate({ platform_admin: true }, "Incidents"), false);
   assert.equal(canNavigate({}, "Incidents"), false);
   assert.equal(
     canNavigate({ permissions: ["incidents.view"] }, "Incidents"),

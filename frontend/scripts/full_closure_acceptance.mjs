@@ -66,16 +66,20 @@ try {
  const adminHeaders={Authorization:'Bearer '+adminToken,'X-OpsControl-Customers':north};
  const incidents=await page.request.get(api+'/api/v1/native-incidents?status=CLOSED&limit=100&organization_id='+north,{headers:adminHeaders});assert.equal(incidents.status(),200);
  const expected=await incidents.json();assert.ok(expected.total>=61);assert.equal(expected.items.length,expected.total);
- // Scope-authorized UI retirement; retain independently executed backend evidence/tenant checks.
  assert.equal(await page.getByRole('button',{name:'Incidents',exact:true}).count(),0);
- const ids=expected.items.map(x=>x.id);
- assert.equal(new Set(ids).size,ids.length);
  await page.goto(process.env.RELEASE_UI_BASE+'/#/pipelines/incidents');
  assert.equal(await page.getByRole('heading',{name:'Native Incidents',exact:true}).count(),0);
  await page.screenshot({path:out+'/excluded-incident-ui.png',fullPage:true});
+ const ids=[];
+ for(let offset=0;offset<expected.total;offset+=50){
+  const response=await page.request.get(api+'/api/v1/native-incidents?status=CLOSED&limit=50&offset='+offset+'&organization_id='+north,{headers:adminHeaders});assert.equal(response.status(),200);
+  const data=await response.json();assert.equal(data.total,expected.total);assert.equal(data.items.length,Math.min(50,expected.total-offset));ids.push(...data.items.map(x=>x.id));
+ }
+ assert.equal(new Set(ids).size,ids.length);assert.deepEqual([...ids].sort(),expected.items.map(x=>x.id).sort());
  const hidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:southHeaders});assert.equal(hidden.status(),403);
  const scopedHidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:{...adminHeaders,'X-OpsControl-Customers':southHeaders['X-OpsControl-Customers']}});assert.equal(scopedHidden.status(),404);
- checks.push('Approved incident UI exclusion; retained background record totals/unique IDs and cross-tenant backend denial');
+ const beyond=await page.request.get(api+'/api/v1/native-incidents?status=CLOSED&limit=50&offset='+expected.total+'&organization_id='+north,{headers:adminHeaders});assert.equal(beyond.status(),200);assert.equal((await beyond.json()).items.length,0);
+ checks.push('Retired incident UI absent; retained background incident API pagination, stable identities, last-page bounds and cross-tenant denial');
  assert.deepEqual(errors,[]);
  await writeFile(out+'/full-closure-browser.json',JSON.stringify({status:'PASS',checks,groups:checks.length,page_errors:errors,limitations:['Preference read failure is explicitly injected for UI recovery only','Appearance is browser-local, not cross-device profile synchronization','No provider certification or new account/password policy']},null,2));
  console.log('FULL DEVELOPMENT CLOSURE BROWSER PASS',checks.length);

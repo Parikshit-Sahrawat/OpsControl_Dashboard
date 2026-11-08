@@ -144,14 +144,14 @@ export default function PipelineWorkspace({
           />
         </section>
       )}
-      {page !== "incidents" && inventoryIds.length === 0 && (
+      {inventoryIds.length === 0 && (
         <p role="status">
           Resource discovery requires resources.view as well as etl.view for the
           selected customer. Request the existing read grants from an access
           administrator.
         </p>
       )}
-      {page !== "incidents" && inventoryIds.length > 0 && (
+      {inventoryIds.length > 0 && (
         <>
           <form
             className="pipeline-filters"
