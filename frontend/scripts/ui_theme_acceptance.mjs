@@ -21,7 +21,6 @@ const primaryTabs = [
   "Compute Health",
   "API Endpoint Monitoring",
   "Alerts",
-  "Incidents",
   "Reports",
   "Resource Management",
 ];
@@ -300,6 +299,7 @@ try {
   await login(page);
   await chooseOrganization(page, "Controlled ETL Lab");
 
+  assert.equal(await page.getByRole("button",{name:"Incidents",exact:true}).count(),0);
   for (const mode of ["dark", "light"]) {
     await setTheme(page, mode);
     assert.equal(

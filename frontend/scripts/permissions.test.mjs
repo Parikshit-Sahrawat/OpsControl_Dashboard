@@ -67,10 +67,11 @@ test("retired navigation cannot be enabled by cached permissions", () => {
   );
 });
 
-test("native incident visibility requires its backend permission", () => {
+test("retired incident UI cannot be opened even with incident permission", () => {
+  assert.equal(canNavigate({ platform_admin: true }, "Incidents"), false);
   assert.equal(canNavigate({}, "Incidents"), false);
   assert.equal(
     canNavigate({ permissions: ["incidents.view"] }, "Incidents"),
-    true,
+    false,
   );
 });

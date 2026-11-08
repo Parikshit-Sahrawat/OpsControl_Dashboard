@@ -70,7 +70,7 @@ try {
       .getByRole("navigation", { name: "Primary navigation" })
       .getByRole("button", { name: "Incidents", exact: true })
       .count(),
-    1,
+    0,
   );
   await nav("Data Pipeline Monitoring");
   await page
@@ -102,7 +102,7 @@ try {
   });
   await page.getByRole("button", { name: "Dark theme", exact: true }).click();
   checks.push(
-    "Compute compact table, customer selector independence, official terminology and native Incidents navigation",
+    "Compute compact table, customer selector independence, official terminology and retired incident UI rejection",
   );
   assert(
     ["localhost", "127.0.0.1"].includes(new URL(apiOrigin).hostname),

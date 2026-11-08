@@ -132,28 +132,20 @@ try {
     "Schedule paging and server filter keep unknown/incomplete fixture coverage out of NO_RUN",
   );
   await route("incidents");
-  await page
-    .getByRole("region", { name: "Native incident correlation" })
-    .getByRole("button")
-    .first()
-    .click();
-  const incident = page.getByRole("dialog", {
-    name: "Incident correlation details",
-    exact: true,
-  });
-  await incident.getByRole("button", { name: "Audit", exact: true }).click();
-  await incident
-    .getByRole("navigation", { name: "Activities pagination" })
-    .getByRole("button", { name: "Next page" })
-    .click();
-  await incident
-    .getByRole("navigation", { name: "Activities pagination" })
-    .getByText(/21–40 of/)
-    .waitFor();
-  await shot("incident-activity");
-  checks.push(
-    "Native incident activity history pages without alternate lifecycle definitions",
-  );
+  await page.getByRole("heading", {name:"Pipeline Inventory",exact:true}).waitFor();
+  assert.equal(await page.getByRole("region",{name:"Native incident correlation"}).count(),0);
+  assert.equal(await page.getByRole("button",{name:"Incidents",exact:true}).count(),0);
+  const token=await page.evaluate(()=>sessionStorage.getItem("opscontrol.sessionToken"));
+  const headers={Authorization:"Bearer "+token,"X-OpsControl-Customers":f.organization};
+  const endpoint=process.env.V16_API_URL+"/api/v1/native-incidents/"+f.incident+"/activities";
+  const first=await page.request.get(endpoint+"?limit=20&offset=0",{headers});assert.equal(first.status(),200);
+  const initial=await first.json();assert.ok(initial.total>=205);assert.equal(initial.items.length,20);
+  const second=await page.request.get(endpoint+"?limit=20&offset=20",{headers});assert.equal(second.status(),200);
+  const next=await second.json();assert.equal(next.total,initial.total);assert.equal(next.items.length,20);
+  assert.equal(new Set([...initial.items,...next.items].map(v=>v.id)).size,40);
+  const end=await page.request.get(endpoint+"?limit=20&offset="+initial.total,{headers});assert.equal(end.status(),200);assert.equal((await end.json()).items.length,0);
+  await shot("retired-incident-route");
+  checks.push("Retired incident UI rejected; retained authenticated background activity archive has distinct pages and bounded end");
   assert.deepEqual(errors, []);
   await writeFile(
     join(process.env.V16_EVIDENCE_DIR, "sprint09-browser.json"),
