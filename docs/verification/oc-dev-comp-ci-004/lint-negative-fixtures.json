@@ -1,0 +1,39 @@
+[
+  {
+    "code": "missingGlobal();",
+    "errors": [
+      "no-undef"
+    ]
+  },
+  {
+    "code": "function f(){return; missingGlobal();}",
+    "errors": [
+      "no-undef",
+      "no-unreachable"
+    ]
+  },
+  {
+    "code": "const x={a:1,a:2};",
+    "errors": [
+      "no-dupe-keys"
+    ]
+  },
+  {
+    "code": "function f(a,a){}",
+    "errors": [
+      null
+    ]
+  },
+  {
+    "code": "function f(){try{return 1}finally{return 2}}",
+    "errors": [
+      "no-unsafe-finally"
+    ]
+  },
+  {
+    "code": "const x={} || true;",
+    "errors": [
+      "no-constant-binary-expression"
+    ]
+  }
+]

@@ -1,0 +1,102 @@
+{
+  "eslint": "10.14.0",
+  "negative_cases": [
+    {
+      "code": "missingGlobal();",
+      "rules": [
+        "no-undef"
+      ]
+    },
+    {
+      "code": "function f(){return; missingGlobal();}",
+      "rules": [
+        "no-undef",
+        "no-unreachable"
+      ]
+    },
+    {
+      "code": "const x={a:1,a:2};",
+      "rules": [
+        "no-dupe-keys"
+      ]
+    },
+    {
+      "code": "function f(a,a){}",
+      "rules": [
+        null
+      ]
+    },
+    {
+      "code": "function f(){try{return 1}finally{return 2}}",
+      "rules": [
+        "no-unsafe-finally"
+      ]
+    },
+    {
+      "code": "const x={} || true;",
+      "rules": [
+        "no-constant-binary-expression"
+      ]
+    }
+  ],
+  "glob_source_discovery": 56,
+  "source_files": [
+    "/tmp/oc-ci-main/frontend/src/App.jsx",
+    "/tmp/oc-ci-main/frontend/src/api.js",
+    "/tmp/oc-ci-main/frontend/src/auth.js",
+    "/tmp/oc-ci-main/frontend/src/components/AuthGate.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/DynamicConfigurationForm.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/EvidenceDrawer.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/InAppNotifications.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/InventoryPager.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/JobDetailsDrawer.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/KpiCard.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/NavIcon.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/PersonalWorkspace.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/StatusBadge.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/ThemeToggle.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/TopNav.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/WorldClock.jsx",
+    "/tmp/oc-ci-main/frontend/src/components/useDialogFocus.js",
+    "/tmp/oc-ci-main/frontend/src/controlPlane.js",
+    "/tmp/oc-ci-main/frontend/src/excludedPlatforms.js",
+    "/tmp/oc-ci-main/frontend/src/main.jsx",
+    "/tmp/oc-ci-main/frontend/src/monitoringSettings.js",
+    "/tmp/oc-ci-main/frontend/src/navigation.js",
+    "/tmp/oc-ci-main/frontend/src/operations.js",
+    "/tmp/oc-ci-main/frontend/src/pages/APIs.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/AccessBoundaries.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/AccessManagement.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/AccessOnboarding.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/Alerts.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/CollectorControl.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/DataPipelineIntegrations.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/DomainMonitoring.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/DomainParameters.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/DomainReports.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/ETLJobs.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/EventDelivery.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/MonitoringSetup.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/NativeIncidents.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/Overview.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/Reports.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/ResourceManagementV2.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/UnifiedOverview.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/UnifiedResourceManagement.jsx",
+    "/tmp/oc-ci-main/frontend/src/pages/VMHealth.jsx",
+    "/tmp/oc-ci-main/frontend/src/pagination.js",
+    "/tmp/oc-ci-main/frontend/src/permissions.js",
+    "/tmp/oc-ci-main/frontend/src/pipelines/ExecutionViews.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/IncidentView.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/PipelineWorkspace.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/RecoveryView.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/ReviewView.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/ScheduleView.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/contracts.js",
+    "/tmp/oc-ci-main/frontend/src/pipelines/ui.jsx",
+    "/tmp/oc-ci-main/frontend/src/pipelines/usePipelineFeed.js",
+    "/tmp/oc-ci-main/frontend/src/resourceApi.js",
+    "/tmp/oc-ci-main/frontend/src/theme.js"
+  ],
+  "ignore_semantics": "PASS"
+}
