@@ -1,0 +1,10 @@
+postgres-start exit 0
+postgres-port exit 0
+postgres-version exit 2
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/scripts/sprint1-configuration-acceptance.py", line 38, in <module>
+    run(["docker", "exec", name, "psql", "-U", "opscontrol", "-Atc", "select version()"], "postgres-version")
+  File "/tmp/oc-sprint1-integration/scripts/sprint1-configuration-acceptance.py", line 27, in run
+    if result.returncode: raise RuntimeError(label + " failed; see redacted log")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: postgres-version failed; see redacted log

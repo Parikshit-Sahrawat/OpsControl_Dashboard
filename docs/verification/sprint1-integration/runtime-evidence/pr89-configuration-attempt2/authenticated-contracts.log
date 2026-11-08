@@ -1,0 +1,245 @@
+
+test_attach_reload_history_rollback_and_detach (tests.test_source_configuration_contract.SourceConfigurationContract.test_attach_reload_history_rollback_and_detach) ... /tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+FAIL
+test_concurrent_stale_commands_and_idempotent_retry (tests.test_source_configuration_contract.SourceConfigurationContract.test_concurrent_stale_commands_and_idempotent_retry) ... FAIL
+test_history_immutable_hash_and_atomic_failure (tests.test_source_configuration_contract.SourceConfigurationContract.test_history_immutable_hash_and_atomic_failure) ... FAIL
+test_invalid_os_methods_overrides_missing_revision_and_secret (tests.test_source_configuration_contract.SourceConfigurationContract.test_invalid_os_methods_overrides_missing_revision_and_secret) ... ERROR
+test_legacy_import_is_explicit_non_operational_and_old_writers_fenced (tests.test_source_configuration_contract.SourceConfigurationContract.test_legacy_import_is_explicit_non_operational_and_old_writers_fenced) ... FAIL
+test_populated_downgrade_refusal_preserves_revision (tests.test_source_configuration_contract.SourceConfigurationContract.test_populated_downgrade_refusal_preserves_revision) ... FAIL
+test_tenant_viewer_and_stale_session_denied (tests.test_source_configuration_contract.SourceConfigurationContract.test_tenant_viewer_and_stale_session_denied) ... ok
+test_authenticated_http_workflow_job_dependency_updates_and_negatives (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives) ... ERROR
+test_authorized_workflow_and_dependency_commit_with_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authorized_workflow_and_dependency_commit_with_audit) ... ok
+test_cross_customer_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_dependency_rejected) ... ok
+test_cross_customer_job_workflow_reference_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_job_workflow_reference_rejected) ... ok
+test_dependency_endpoints_are_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_endpoints_are_immutable) ... ok
+test_dependency_self_edge_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_self_edge_rejected) ... ok
+test_existing_job_parent_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_existing_job_parent_is_immutable) ... ok
+test_failed_reference_preserves_existing_resources_and_no_success_audit (tests.test_etl_workflow_scope.WorkflowScopeTests.test_failed_reference_preserves_existing_resources_and_no_success_audit) ... ok
+test_invalid_organization_cannot_persist (tests.test_etl_workflow_scope.WorkflowScopeTests.test_invalid_organization_cannot_persist) ... ok
+test_job_environment_must_match_parent (tests.test_etl_workflow_scope.WorkflowScopeTests.test_job_environment_must_match_parent) ... ok
+test_missing_dependency_parent_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_missing_dependency_parent_rejected) ... ok
+test_read_scope_and_empty_selection (tests.test_etl_workflow_scope.WorkflowScopeTests.test_read_scope_and_empty_selection) ... ok
+test_resource_restricted_unknown_workflow_fails_closed (tests.test_etl_workflow_scope.WorkflowScopeTests.test_resource_restricted_unknown_workflow_fails_closed) ... ok
+test_same_customer_wrong_workflow_dependency_rejected (tests.test_etl_workflow_scope.WorkflowScopeTests.test_same_customer_wrong_workflow_dependency_rejected) ... ok
+test_selected_scope_limits_even_admin (tests.test_etl_workflow_scope.WorkflowScopeTests.test_selected_scope_limits_even_admin) ... ok
+test_viewer_cannot_write (tests.test_etl_workflow_scope.WorkflowScopeTests.test_viewer_cannot_write) ... ok
+test_workflow_environment_cannot_invalidate_existing_jobs (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_environment_cannot_invalidate_existing_jobs) ... ok
+test_workflow_owner_is_immutable (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_owner_is_immutable) ... ok
+test_workflow_requires_visibility_of_every_child_resource (tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_requires_visibility_of_every_child_resource) ... ok
+test_authorization_mutation_excludes_dependency_writes (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_authorization_mutation_excludes_dependency_writes) ... ok
+test_busy_workflow_returns_actionable_error_without_mutation (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_busy_workflow_returns_actionable_error_without_mutation) ... ok
+test_concurrent_duplicate_has_one_commit_and_clean_rollback (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_duplicate_has_one_commit_and_clean_rollback) ... ERROR
+test_concurrent_long_cycle_uses_entire_persisted_graph (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_long_cycle_uses_entire_persisted_graph) ... ERROR
+test_concurrent_nonconflicting_edges_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_nonconflicting_edges_both_commit) ... ERROR
+test_concurrent_opposite_edges_cannot_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_opposite_edges_cannot_both_commit) ... ERROR
+test_workflow_lock_does_not_serialize_other_workflows (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_workflow_lock_does_not_serialize_other_workflows) ... ok
+
+======================================================================
+ERROR: test_invalid_os_methods_overrides_missing_revision_and_secret (tests.test_source_configuration_contract.SourceConfigurationContract.test_invalid_os_methods_overrides_missing_revision_and_secret)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.UndefinedFunction: operator does not exist: json = json
+LINE 1: ...iguration_revision > 0 AND (NEW.connection_config IS DISTINC...
+                                                             ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  fenced := OLD.configuration_revision > 0 AND (NEW.connection_config IS DISTINCT FROM OLD.connection_config OR NEW.source_type IS DISTINCT FROM OLD.source_type OR NEW.configuration_revision IS DISTINCT FROM OLD.configuration_revision)
+CONTEXT:  PL/pgSQL function source_configuration_writer() line 9 at assignment
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 82, in test_invalid_os_methods_overrides_missing_revision_and_secret
+    source=db.get(DataSource,self.sid);source.connection_config={"opscontrol":{"os_type":"Windows"}};db.commit()
+                                                                                                     ^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 85, in save_obj
+    _emit_update_statements(
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 912, in _emit_update_statements
+    c = connection.execute(
+        ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
+    cursor.execute(statement, parameters)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/psycopg/cursor.py", line 97, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedFunction) operator does not exist: json = json
+LINE 1: ...iguration_revision > 0 AND (NEW.connection_config IS DISTINC...
+                                                             ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+QUERY:  fenced := OLD.configuration_revision > 0 AND (NEW.connection_config IS DISTINCT FROM OLD.connection_config OR NEW.source_type IS DISTINCT FROM OLD.source_type OR NEW.configuration_revision IS DISTINCT FROM OLD.configuration_revision)
+CONTEXT:  PL/pgSQL function source_configuration_writer() line 9 at assignment
+[SQL: UPDATE data_sources SET connection_config=%(connection_config)s::JSON, updated_at=%(updated_at)s::TIMESTAMP WITH TIME ZONE WHERE data_sources.id = %(data_sources_id)s::UUID]
+[parameters: {'connection_config': Json({'opscontrol': {'os_type': 'Windows'}}), 'updated_at': datetime.datetime(2026, 11, 8, 17, 14, 3, 850785), 'data_sources_id': UUID('24104555-341b-41ba-9ac5-1be4398a8cf7')}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+======================================================================
+ERROR: test_authenticated_http_workflow_job_dependency_updates_and_negatives (tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_workflow_scope.py", line 571, in test_authenticated_http_workflow_job_dependency_updates_and_negatives
+    Path(os.environ["ETL_SCOPE_EVIDENCE_DIR"], "http-results.json").write_text(
+         ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'ETL_SCOPE_EVIDENCE_DIR'
+
+======================================================================
+ERROR: test_concurrent_duplicate_has_one_commit_and_clean_rollback (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_duplicate_has_one_commit_and_clean_rollback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 178, in test_concurrent_duplicate_has_one_commit_and_clean_rollback
+    actual, outcomes = self.race(
+                       ^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 124, in race
+    os.environ["ETL_SCOPE_EVIDENCE_DIR"], self._testMethodName + ".json"
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'ETL_SCOPE_EVIDENCE_DIR'
+
+======================================================================
+ERROR: test_concurrent_long_cycle_uses_entire_persisted_graph (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_long_cycle_uses_entire_persisted_graph)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 169, in test_concurrent_long_cycle_uses_entire_persisted_graph
+    actual, _ = self.race([(self.j2, j3), (j4, self.j1)], [201, 409])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 124, in race
+    os.environ["ETL_SCOPE_EVIDENCE_DIR"], self._testMethodName + ".json"
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'ETL_SCOPE_EVIDENCE_DIR'
+
+======================================================================
+ERROR: test_concurrent_nonconflicting_edges_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_nonconflicting_edges_both_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 174, in test_concurrent_nonconflicting_edges_both_commit
+    actual, _ = self.race([(self.j1, self.j2), (self.j1, j3)], [201, 201])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 124, in race
+    os.environ["ETL_SCOPE_EVIDENCE_DIR"], self._testMethodName + ".json"
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'ETL_SCOPE_EVIDENCE_DIR'
+
+======================================================================
+ERROR: test_concurrent_opposite_edges_cannot_both_commit (tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_opposite_edges_cannot_both_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 143, in test_concurrent_opposite_edges_cannot_both_commit
+    actual, outcomes = self.race(
+                       ^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_dag_concurrency.py", line 124, in race
+    os.environ["ETL_SCOPE_EVIDENCE_DIR"], self._testMethodName + ".json"
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 714, in __getitem__
+KeyError: 'ETL_SCOPE_EVIDENCE_DIR'
+
+======================================================================
+FAIL: test_attach_reload_history_rollback_and_detach (tests.test_source_configuration_contract.SourceConfigurationContract.test_attach_reload_history_rollback_and_detach)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 62, in test_attach_reload_history_rollback_and_detach
+    first=self.command();self.assertEqual(first["application"],"NOT_REQUESTED");self.assertEqual(first["health"],"UNVERIFIED")
+          ^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 59, in command
+    self.assertEqual(code,status,body);return body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 500 != 201 : {'detail': 'Database operation failed'}
+
+======================================================================
+FAIL: test_concurrent_stale_commands_and_idempotent_retry (tests.test_source_configuration_contract.SourceConfigurationContract.test_concurrent_stale_commands_and_idempotent_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 73, in test_concurrent_stale_commands_and_idempotent_retry
+    key=uuid4();first=self.command(key=key);again=self.command(key=key);self.assertTrue(again["replayed"]);self.assertEqual(first["revision"],again["revision"])
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 59, in command
+    self.assertEqual(code,status,body);return body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 500 != 201 : {'detail': 'Database operation failed'}
+
+======================================================================
+FAIL: test_history_immutable_hash_and_atomic_failure (tests.test_source_configuration_contract.SourceConfigurationContract.test_history_immutable_hash_and_atomic_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 103, in test_history_immutable_hash_and_atomic_failure
+    self.command()
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 59, in command
+    self.assertEqual(code,status,body);return body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 500 != 201 : {'detail': 'Database operation failed'}
+
+======================================================================
+FAIL: test_legacy_import_is_explicit_non_operational_and_old_writers_fenced (tests.test_source_configuration_contract.SourceConfigurationContract.test_legacy_import_is_explicit_non_operational_and_old_writers_fenced)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 94, in test_legacy_import_is_explicit_non_operational_and_old_writers_fenced
+    code,body=self.call("POST",self.base+"/import-legacy",dict(expected_revision=0),key=uuid4());self.assertEqual(code,201,body);self.assertFalse(body["document"]["validation"]["valid"])
+                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 500 != 201 : {'detail': 'Database operation failed'}
+
+======================================================================
+FAIL: test_populated_downgrade_refusal_preserves_revision (tests.test_source_configuration_contract.SourceConfigurationContract.test_populated_downgrade_refusal_preserves_revision)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 129, in test_populated_downgrade_refusal_preserves_revision
+    self.command()
+  File "/tmp/oc-sprint1-integration/backend/tests/test_source_configuration_contract.py", line 59, in command
+    self.assertEqual(code,status,body);return body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 500 != 201 : {'detail': 'Database operation failed'}
+
+----------------------------------------------------------------------
+Ran 33 tests in 15.056s
+
+FAILED (failures=5, errors=6)

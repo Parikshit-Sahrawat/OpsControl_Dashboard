@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa4222b8-91aa-4690-b1ea-7fafb96df0ae/jobs/2de6f207-5df7-42ae-b2a3-fe9a13d783ff/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa4222b8-91aa-4690-b1ea-7fafb96df0ae/jobs/2de6f207-5df7-42ae-b2a3-fe9a13d783ff/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_IN_FLIGHT_WAIT_FOR_REVIEWED_HANDOFF"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa4222b8-91aa-4690-b1ea-7fafb96df0ae/jobs/2de6f207-5df7-42ae-b2a3-fe9a13d783ff/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_RETENTION_OR_CONTINUITY_HOLD"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa4222b8-91aa-4690-b1ea-7fafb96df0ae/jobs/2de6f207-5df7-42ae-b2a3-fe9a13d783ff/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_GENERATION_CHANGED_REFRESH"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/aa4222b8-91aa-4690-b1ea-7fafb96df0ae/readiness",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}

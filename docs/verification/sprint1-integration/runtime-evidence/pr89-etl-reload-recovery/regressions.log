@@ -1,0 +1,20 @@
+
+test_native_binding_authenticated_browser (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_native_binding_authenticated_browser) ... /tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+ok
+test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts) ... /tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+FAIL
+
+======================================================================
+FAIL: test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_workflow_ui.py", line 139, in test_real_configuration_browser_and_receipts
+    self.assertEqual(result.returncode, 0, "See redacted workflow-browser.log")
+AssertionError: 1 != 0 : See redacted workflow-browser.log
+
+----------------------------------------------------------------------
+Ran 2 tests in 21.995s
+
+FAILED (failures=1)

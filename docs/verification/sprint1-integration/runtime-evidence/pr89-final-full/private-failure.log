@@ -1,0 +1,16 @@
+
+V16_BROWSER_DIAGNOSTIC {"status":"FAIL","test":"pipeline_v16_acceptance","error_type":"TimeoutError","source":"pipeline_v16_acceptance.mjs","line":48,"column":6}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('navigation', { name: 'Primary navigation' }).getByRole('button', { name: 'Data Sources / Resources', exact: true })[22m
+
+    at navigate (/tmp/oc-sprint1-integration/frontend/scripts/pipeline_v16_acceptance.mjs:48:6)
+    at async file:///tmp/oc-sprint1-integration/frontend/scripts/pipeline_v16_acceptance.mjs:59:3 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

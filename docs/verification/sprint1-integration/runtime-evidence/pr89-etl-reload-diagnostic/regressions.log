@@ -1,0 +1,42 @@
+
+test_native_binding_authenticated_browser (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_native_binding_authenticated_browser) ... /tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+FAIL
+test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts) ... /tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/sqlalchemy/sql/schema.py:3624: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  return util.wrap_callable(lambda ctx: fn(), fn)  # type: ignore
+FAIL
+
+======================================================================
+FAIL: test_native_binding_authenticated_browser (tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_native_binding_authenticated_browser)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_binding_lifecycle.py", line 539, in test_native_binding_authenticated_browser
+    self.assertEqual(result.returncode, 0, result.stderr[-1500:])
+AssertionError: 1 != 0 : node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Sign out', exact: true }) to be visible[22m
+
+    at config (/tmp/oc-sprint1-integration/frontend/scripts/native_binding_acceptance.mjs:31:69)
+    at async file:///tmp/oc-sprint1-integration/frontend/scripts/native_binding_acceptance.mjs:66:3 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0
+
+
+======================================================================
+FAIL: test_real_configuration_browser_and_receipts (tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/backend/tests/test_etl_workflow_ui.py", line 139, in test_real_configuration_browser_and_receipts
+    self.assertEqual(result.returncode, 0, "See redacted workflow-browser.log")
+AssertionError: 1 != 0 : See redacted workflow-browser.log
+
+----------------------------------------------------------------------
+Ran 2 tests in 69.936s
+
+FAILED (failures=2)

@@ -1,0 +1,278 @@
+[
+  {
+    "legacy_context": "frontend-build",
+    "workflow": ".github/workflows/phase1-staging.yml",
+    "equivalent_context": "frontend-build",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "npm ci --no-audit --no-fund\nnpm run build\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "frontend-dependency-audit",
+    "workflow": ".github/workflows/security-validation.yml",
+    "equivalent_context": "frontend-dependency-audit",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "npm ci --no-audit --no-fund",
+      "mkdir -p /tmp/npm-audit\nresult=0\nnpm audit --omit=dev --audit-level=moderate --json > /tmp/npm-audit/runtime.json || result=1\nnpm audit --audit-level=moderate --json > /tmp/npm-audit/all.json || result=1\nexit \"$result\"\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "image-validation",
+    "workflow": ".github/workflows/local-uat-image-validation.yml",
+    "equivalent_context": "image-validation",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python -m pip install PyYAML==6.0.2",
+      "python3 -m unittest discover -s tests -v",
+      "set -euo pipefail\ndocker run --rm --entrypoint /usr/local/bin/otelcol-contrib opscontrol-uat-backend:validation --version | tee /tmp/collector-version.txt\ngrep -F '0.123.0' /tmp/collector-version.txt\ndocker run --rm --entrypoint python opscontrol-uat-backend:validation -c '\nimport os, importlib, pathlib\nassert os.environ[\"OPSCONTROL_OTEL_BINARY\"] == \"/usr/local/bin/otelcol-contrib\"\nassert pathlib.Path(os.environ[\"OPSCONTROL_OTEL_BINARY\"]).is_file()\nimportlib.import_module(\"scripts.run_api\")\nimportlib.import_module(\"scripts.run_collector_worker\")\nprint(\"PASS: API and worker entrypoint modules import\")\n'\ndocker run --rm --entrypoint nginx opscontrol-uat-frontend:validation -t\n",
+      "docker tag opscontrol-uat-backend:validation opscontrol-uat-api:latest\npython3 scripts/uat/disposable_worker_acceptance.py\n",
+      "echo \"PASS: hosted runner only; build push=false; no deployment job or self-hosted runner.\"\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "contracts",
+    "workflow": ".github/workflows/stage-b-validation.yml",
+    "equivalent_context": "contracts",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python -m unittest discover -s scripts/uat -p test_stage_b.py -v",
+      "python -m compileall -q scripts/uat/stage_b_state.py scripts/uat/stage_b_deploy.py scripts/uat/stage_b_smoke.py\ngit diff --check\n",
+      "bash scripts/check-workflows.sh"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "python-dependency-audit",
+    "workflow": ".github/workflows/security-validation.yml",
+    "equivalent_context": "python-dependency-audit",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install \"pip-audit>=2.9,<3\"",
+      "mkdir -p /tmp/python-audit\nresult=0\npython -m pip_audit -r backend/requirements-providers.txt -r backend/requirements-hosts.txt --strict --format json --output /tmp/python-audit/runtime.json || result=1\npython -m pip_audit -r backend/requirements-dev.txt --strict --format json --output /tmp/python-audit/development.json || result=1\nexit \"$result\"\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "secret-history-scan",
+    "workflow": ".github/workflows/security-validation.yml",
+    "equivalent_context": "secret-history-scan",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "staging-smoke",
+    "workflow": ".github/workflows/phase1-staging.yml",
+    "equivalent_context": "staging-smoke",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install -r backend/requirements.txt",
+      "python -m compileall -q app migrations\npython -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('mapper/app import OK')\"\n",
+      "# Exercise reversible revisions before the protected access upgrade.\n# The populated preservation probe in the next step applies HEAD.\nalembic upgrade 0024_notification_leases\nalembic current\nalembic downgrade 0023_worker_heartbeat\nalembic upgrade 0024_notification_leases\nalembic current\npython - <<'PY'\nfrom sqlalchemy import inspect\nfrom app.db.session import engine\ntables = set(inspect(engine).get_table_names())\nrequired = {\"organizations\", \"data_sources\", \"collectors\", \"metric_definitions\", \"monitoring_templates\", \"monitoring_template_attachments\", \"metric_samples\"}\nrequired |= {\"users\", \"access_sessions\", \"organization_memberships\", \"auth_throttle_buckets\", \"security_audit_events\", \"worker_identities\", \"remote_probe_jobs\", \"remote_probe_evidence\", \"monitoring_rule_catalogs\", \"monitoring_rule_versions\", \"monitoring_activations\", \"monitoring_rule_bindings\"}\nassert required <= tables, f\"Missing tables: {required - tables}\"\nprint(f\"Migration smoke OK; {len(tables)} tables\")\nPY\n",
+      "python scripts/existing_database_upgrade_probe.py",
+      "uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/opscontrol-api.log 2>&1 &\necho $! > /tmp/opscontrol-api.pid\npython - <<'PY'\nimport json, time, urllib.request\nfor i in range(30):\n    try:\n        with urllib.request.urlopen(\"http://127.0.0.1:8000/openapi.json\", timeout=2) as r:\n            payload=json.load(r)\n            assert \"/api/v1/organizations\" in payload[\"paths\"]\n            print(\"API startup/OpenAPI OK\")\n            break\n    except Exception:\n        if i == 29: raise\n        time.sleep(1)\nPY\n",
+      "python scripts/auth_tenant_probe.py",
+      "python scripts/deep_tenant_security_probe.py",
+      "python scripts/security_release_probe.py",
+      "python scripts/test_remote_egress.py",
+      "python scripts/remote_protocol_probe.py",
+      "python scripts/provider_unit_probe.py",
+      "python scripts/phase2_pentaho_persistence_probe.py",
+      "python scripts/secrets_provider_probe.py",
+      "python scripts/deep_checks_probe.py",
+      "python scripts/phase2_activation_probe.py",
+      "python -m scripts.prune_security_sessions",
+      "npm ci --no-audit --no-fund\nnpm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &\necho $! > /tmp/opscontrol-vite.pid\n",
+      "npm install --no-save --no-audit --no-fund playwright@1.56.1\nnpx playwright install --with-deps chromium\nnode scripts/capture_phase1_ui.mjs\n",
+      "node scripts/test_world_clock.mjs",
+      "node scripts/test_monitoring_setup.mjs",
+      "node scripts/test_access_management.mjs"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "private-https",
+    "workflow": ".github/workflows/private-https-acceptance.yml",
+    "equivalent_context": "private-https",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "set -euo pipefail\nmkdir -p /tmp/opscontrol-fixture\nopenssl req -x509 -newkey rsa:2048 -nodes -days 1             -keyout /tmp/opscontrol-fixture/tls.key             -out /tmp/opscontrol-fixture/tls.crt             -subj \"/CN=portal.example.test\"             -addext \"subjectAltName=DNS:portal.example.test\" >/dev/null 2>&1\nchmod 600 /tmp/opscontrol-fixture/tls.key\necho healthy > /tmp/opscontrol-fixture/state\ndocker network create --driver bridge --internal --subnet 172.28.77.0/24 opscontrol-private-fixture\ndocker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\"             python:3.12-alpine python /app.py\n",
+      "set -euo pipefail\nfor i in {1..20}; do\n  if docker exec opscontrol-private-target python -c 'import socket;socket.create_connection((\"127.0.0.1\",443),1).close()' 2>/dev/null; then break; fi\n  sleep 1\ndone\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\n",
+      "set -euo pipefail\necho running > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py RUNNING\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py UNKNOWN\n",
+      "set -euo pipefail\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-private-fixture)\" = true\ndocker run --rm --network opscontrol-private-fixture python:3.12-alpine             python -c 'import socket\ns=socket.socket();s.settimeout(2)\ntry:\n    s.connect((\"1.1.1.1\",443))\n    raise AssertionError(\"Outside-network egress unexpectedly permitted\")\nexcept (OSError,TimeoutError):\n    print(\"PASS: external egress blocked at Docker network layer\")'\n",
+      "docker rm -f opscontrol-private-target || true\ndocker network rm opscontrol-private-fixture || true\nrm -rf /tmp/opscontrol-fixture\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "verification",
+    "workflow": ".github/workflows/v15-quality.yml",
+    "equivalent_context": "verification",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "echo \"OPSCONTROL_TEST_EVIDENCE_DIR=$RUNNER_TEMP/v15-quality\" >> \"$GITHUB_ENV\"\necho \"PRETTIER_BIN=$RUNNER_TEMP/v15-tools/node_modules/.bin/prettier\" >> \"$GITHUB_ENV\"\necho \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/v15-tools/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\necho \"OPSCONTROL_OTEL_BINARY=$RUNNER_TEMP/otelcol-contrib\" >> \"$GITHUB_ENV\"\n",
+      "bash scripts/check-workflows.sh",
+      "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/v15-tools\" --no-audit --no-fund prettier@3.5.3 playwright@1.56.1\n\"$RUNNER_TEMP/v15-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+      "python verification/dev052/provision_contrib.py --output \"$OPSCONTROL_OTEL_BINARY\"\n",
+      "bash scripts/build-demo-agent.sh",
+      "make test-quality",
+      "make test-unit\nmake test-agent\n",
+      "make test-e2e",
+      "make test-pentaho",
+      "bash scripts/test-quality.sh compatibility",
+      "make test-security",
+      "cat > \"$RUNNER_TEMP/v15-build-cache.yml\" <<'CACHE'\nservices:\n  api:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  worker:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  frontend:\n    build:\n      cache_from: [opscontrol-v15-frontend-cache:latest]\nCACHE\n",
+      "make test-docker",
+      "make test-coverage"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "pipeline-contracts",
+    "workflow": ".github/workflows/pipeline-v16.yml",
+    "equivalent_context": "pipeline-contracts",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "git cat-file -e a915322b5c5c80b0d37dea71f6b7f70237082340:backend/app/main.py\ngit cat-file -e a061bdbabe7e250fe7141861c193ca837ef14dbe:backend/app/main.py\n",
+      "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\n",
+      "npm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/etl004-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/etl004-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+      "backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py\nbackend/.venv/bin/ruff check backend/app/data_pipelines\nmake test-pipeline-v16\n",
+      "backend/.venv/bin/python scripts/etl-scope-acceptance.py",
+      ".venv/bin/python -m unittest tests.test_unified_monitoring tests.test_unified_v15_contracts tests.test_pipeline_runtime_v15 tests.test_pipeline_adapters tests.test_native_incidents_v15 tests.test_access_control tests.test_remote_auth -v\n"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "restore-retention-tls",
+    "workflow": ".github/workflows/release-reliability.yml",
+    "equivalent_context": "restore-retention-tls",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/release-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/release-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+      "(cd backend && .venv/bin/python -m unittest discover -s tests -v)",
+      "chmod -R go-rwx backend/app backend/scripts\ndocker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend\ndocker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print(\"Non-root read-only runtime imports PASS\")'\n",
+      "backend/.venv/bin/python scripts/release-acceptance.py"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "access-rbac",
+    "workflow": ".github/workflows/access-architecture.yml",
+    "equivalent_context": "access-rbac",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/access-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/access-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+      "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\n",
+      "backend/.venv/bin/python scripts/access-acceptance.py",
+      "backend/.venv/bin/python scripts/access-docker-demo.py"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": "noc",
+    "workflow": ".github/workflows/operational-acceptance.yml",
+    "equivalent_context": "noc",
+    "status": "RETAIN_ENFORCED",
+    "retirement": "NOT_AUTHORIZED_UNTIL_EQUIVALENCE_VERIFIED",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/noc-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/noc-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+      "(cd backend && .venv/bin/python -m scripts.etl_unit_probe)\n(cd backend && .venv/bin/python -m scripts.infrastructure_unit_probe)\n(cd backend && .venv/bin/python -m scripts.provider_unit_probe)\n(cd backend && .venv/bin/python -m scripts.deep_checks_probe)\nnpm run build --prefix frontend\n",
+      "backend/.venv/bin/python scripts/operational-acceptance.py"
+    ],
+    "reason": "Distinct coverage remains; no filename-only or scope-name retirement"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/ci-policy.yml",
+    "equivalent_context": "scope-policy",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python -m pip install PyYAML==6.0.2",
+      "bash scripts/check-workflows.sh\npython scripts/ci/policy.py\npython -m unittest discover -s tests -p 'test_ci_*.py' -v\n"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/validation.yml",
+    "equivalent_context": "unit-and-build",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python scripts/ci/require_success.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/development-gates.yml",
+    "equivalent_context": "real-postgres-migration",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+      "backend/.venv/bin/python scripts/v16-acceptance.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/development-gates.yml",
+    "equivalent_context": "app-api-browser",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+      "echo \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/ci-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/ci-browser/node_modules/.bin/playwright\" install --with-deps chromium\necho \"PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e \"import {chromium} from '$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())\")\" >> \"$GITHUB_ENV\"\n",
+      "backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py",
+      "backend/.venv/bin/python scripts/v16-acceptance.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/development-gates.yml",
+    "equivalent_context": "sprint-evidence",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python scripts/ci/require_success.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/security-artifacts.yml",
+    "equivalent_context": "security-sbom",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python scripts/ci/require_success.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  },
+  {
+    "legacy_context": null,
+    "workflow": ".github/workflows/resource-workspace.yml",
+    "equivalent_context": "authenticated-workspace",
+    "status": "ADDITIVE_REQUIRED_CHECK_CANDIDATE",
+    "commands": [
+      "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix frontend --no-save --package-lock=false playwright@1.56.1\nfrontend/node_modules/.bin/playwright install --with-deps chromium\necho \"PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e \"import {chromium} from './frontend/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())\")\" >> \"$GITHUB_ENV\"\n",
+      "npm test --prefix frontend\nnpm run lint --prefix frontend\nnpm run build --prefix frontend\n",
+      "backend/.venv/bin/python scripts/v16-acceptance.py"
+    ],
+    "reason": "New gate supplements, does not replace, legacy required coverage"
+  }
+]

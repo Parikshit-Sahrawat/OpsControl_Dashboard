@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7eccea14-206d-4775-9d42-098acc6e5a8a/jobs/668494bd-c317-4bf4-aa5a-73ebf492fe7a/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "ACTIVE_SHARED_SOURCE_REQUIRES_REVIEWED_HANDOFF"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/7eccea14-206d-4775-9d42-098acc6e5a8a/jobs/668494bd-c317-4bf4-aa5a-73ebf492fe7a/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7eccea14-206d-4775-9d42-098acc6e5a8a/jobs/668494bd-c317-4bf4-aa5a-73ebf492fe7a/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "BINDING_CONFLICT_OR_INVARIANT_REFUSED_REFRESH_AND_REVIEW"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/7eccea14-206d-4775-9d42-098acc6e5a8a/jobs/668494bd-c317-4bf4-aa5a-73ebf492fe7a/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}
