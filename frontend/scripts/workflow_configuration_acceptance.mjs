@@ -20,6 +20,14 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }),
 page.on("pageerror", (err) => errors.push(err.name));
 const region = () =>
   page.getByRole("region", { name: "ETL Workflow configuration", exact: true });
+const transport = [];
+page.on('response', async response => {
+ if (response.url().includes('/api/v1/auth/me')) {
+  const row={path:'/api/v1/auth/me',status:response.status(),at:Date.now()}; transport.push(row);
+  if(!response.ok()) row.detail=await response.text().catch(()=> 'unavailable');
+ }
+});
+page.on('requestfailed', request => { if(request.url().includes('/api/')) transport.push({path:new URL(request.url()).pathname,failed:request.failure()?.errorText,at:Date.now()}); });
 async function login(name) {
   await page.goto(ui);
   await page.getByLabel("Username", { exact: true }).fill(name);
@@ -28,6 +36,7 @@ async function login(name) {
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
 }
 async function configuration(customer) {
+  await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   if (page.url() !== ui + "/#/resources/data-resources") await page.goto(ui + "/#/resources/data-resources");
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   await page.getByRole("tab", { name: "Data Pipelines", exact: true }).click();
@@ -335,6 +344,7 @@ try {
       } catch {
         /* Request may be cancelled by tenant switch. */
       } finally {
+  await writeFile(out+"/workflow_configuration_acceptance.mjs.transport.json",JSON.stringify(transport,null,2));
         delivered();
       }
     },
@@ -491,5 +501,6 @@ try {
   console.error(error);
   throw error;
 } finally {
+  await writeFile(out+"/workflow_configuration_acceptance.mjs.transport.json",JSON.stringify(transport,null,2));
   await browser.close();
 }

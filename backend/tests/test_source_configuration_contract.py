@@ -260,6 +260,12 @@ class SourceConfigurationContract(unittest.TestCase):
 
     def test_legacy_import_is_explicit_non_operational_and_old_writers_fenced(self):
         with SessionLocal() as db:
+            # Explicit maintenance import fixture, emulating rows retained by
+            # the forward migration. Public/older writers cannot set this fence.
+            db.execute(
+                text("SELECT set_config('opscontrol.configuration_source', :id, true)"),
+                dict(id=self.sid),
+            )
             db.add(
                 MonitoringTemplateAttachment(
                     data_source_id=self.sid,

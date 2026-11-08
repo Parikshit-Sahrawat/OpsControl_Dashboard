@@ -203,18 +203,24 @@ try:
             python,
             "-m",
             "unittest",
-            "tests.test_etl_workflow_scope",
-            "tests.test_etl_workflow_foundation",
-            "tests.test_etl_dag_concurrency",
-            "tests.test_etl_native_binding_contract",
-            "tests.test_etl_binding_lifecycle",
-            "tests.test_etl_authority_writer",
             *(
-                ["tests.test_etl_workflow_ui"]
-                if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1"
-                else []
+                os.environ["ETL_SCOPE_TEST_TARGETS"].split(",")
+                if os.environ.get("ETL_SCOPE_TEST_TARGETS")
+                else [
+                    "tests.test_etl_workflow_scope",
+                    "tests.test_etl_workflow_foundation",
+                    "tests.test_etl_dag_concurrency",
+                    "tests.test_etl_native_binding_contract",
+                    "tests.test_etl_binding_lifecycle",
+                    "tests.test_etl_authority_writer",
+                    *(
+                        ["tests.test_etl_workflow_ui"]
+                        if os.getenv("ETL_WORKFLOW_UI_ACCEPTANCE") == "1"
+                        else []
+                    ),
+                    "tests.test_sprint08_rbac",
+                ]
             ),
-            "tests.test_sprint08_rbac",
             "-v",
         ],
         "regressions",

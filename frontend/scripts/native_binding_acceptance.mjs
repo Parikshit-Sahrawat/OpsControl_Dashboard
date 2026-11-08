@@ -10,6 +10,14 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }),
   checks = [];
 const ui = process.env.ETL_WORKFLOW_UI_URL,
   out = process.env.ETL_SCOPE_EVIDENCE_DIR;
+const transport = [];
+page.on('response', async response => {
+ if (response.url().includes('/api/v1/auth/me')) {
+  const row={path:'/api/v1/auth/me',status:response.status(),at:Date.now()}; transport.push(row);
+  if(!response.ok()) row.detail=await response.text().catch(()=> 'unavailable');
+ }
+});
+page.on('requestfailed', request => { if(request.url().includes('/api/')) transport.push({path:new URL(request.url()).pathname,failed:request.failure()?.errorText,at:Date.now()}); });
 async function open(user) {
   await page.goto(ui);
   await page.getByLabel("Username", { exact: true }).fill(user);
@@ -19,6 +27,7 @@ async function open(user) {
   await config();
 }
 async function config() {
+  await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   if (page.url() !== ui + "/#/resources/data-resources") await page.goto(ui + "/#/resources/data-resources");
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   await page.getByRole("tab", { name: "Data Pipelines", exact: true }).click();
@@ -155,6 +164,7 @@ try {
         assert.match(route.request().failure()?.errorText || "", /ERR_ABORTED/);
         assert.match(String(error), /already handled|Target.*closed|canceled/i);
       } finally {
+  await writeFile(out+"/native_binding_acceptance.mjs.transport.json",JSON.stringify(transport,null,2));
         delayedResponse();
       }
     },
@@ -208,5 +218,6 @@ try {
   );
   throw e;
 } finally {
+  await writeFile(out+"/native_binding_acceptance.mjs.transport.json",JSON.stringify(transport,null,2));
   await browser.close();
 }

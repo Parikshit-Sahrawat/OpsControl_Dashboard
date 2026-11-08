@@ -110,7 +110,8 @@ def upgrade():
         fenced := OLD.configuration_revision > 0 AND (NEW.connection_config::jsonb IS DISTINCT FROM OLD.connection_config::jsonb OR NEW.source_type IS DISTINCT FROM OLD.source_type OR NEW.configuration_revision IS DISTINCT FROM OLD.configuration_revision);
       ELSE
         IF TG_OP = 'DELETE' THEN sid := OLD.data_source_id; ELSE sid := NEW.data_source_id; END IF;
-        SELECT configuration_revision > 0 INTO fenced FROM data_sources WHERE id = sid FOR UPDATE;
+        PERFORM 1 FROM data_sources WHERE id = sid FOR UPDATE;
+        fenced := true;
         IF TG_OP = 'UPDATE' AND NEW.data_source_id IS DISTINCT FROM OLD.data_source_id THEN
           RAISE EXCEPTION 'Template attachment ownership is immutable';
         END IF;
