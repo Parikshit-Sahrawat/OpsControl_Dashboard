@@ -229,7 +229,9 @@ try {
   const jobs = await (
     await page.request.get(
       base + "/api/v1/etl/workflows/" + workflow.id + "/jobs",
-      { headers },
+      // Only retry this idempotent read once for ECONNRESET from a stale
+      // keep-alive socket after reload. Never retry a mutation or HTTP failure.
+      { headers, maxRetries: 1 },
     )
   ).json();
   const a = jobs.find((j) => j.name === "UI job one").id,
