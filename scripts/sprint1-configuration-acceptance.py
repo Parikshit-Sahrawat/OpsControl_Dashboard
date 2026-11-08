@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Owned PostgreSQL17 + actual HTTP: source revision and integration contract."""
+
 import os
 import json
 import secrets
@@ -126,33 +127,40 @@ try:
         ROOT / "backend",
     )
     run([python, "-m", "alembic", "check"], "schema-drift", ROOT / "backend")
-    with (private / "api.log").open("w") as log:
-        api = subprocess.Popen(
-            [
-                python,
-                "-m",
-                "uvicorn",
-                "app.main:app",
-                "--host",
-                "127.0.0.1",
-                "--port",
-                str(port),
-                "--no-access-log",
-            ],
-            cwd=ROOT / "backend",
-            env=env,
-            stdout=log,
-            stderr=subprocess.STDOUT,
-        )
-    for _ in range(100):
-        try:
-            with urlopen(env["ETL_SCOPE_API_URL"] + "/health", timeout=1) as response:
-                if response.status == 200:
-                    break
-        except Exception:
-            time.sleep(0.2)
-    else:
-        raise RuntimeError("API readiness failed")
+
+    def start_api():
+        global api
+        with (private / "api.log").open("a") as log:
+            api = subprocess.Popen(
+                [
+                    python,
+                    "-m",
+                    "uvicorn",
+                    "app.main:app",
+                    "--host",
+                    "127.0.0.1",
+                    "--port",
+                    str(port),
+                    "--no-access-log",
+                ],
+                cwd=ROOT / "backend",
+                env=env,
+                stdout=log,
+                stderr=subprocess.STDOUT,
+            )
+        for _ in range(100):
+            try:
+                with urlopen(
+                    env["ETL_SCOPE_API_URL"] + "/health", timeout=1
+                ) as response:
+                    if response.status == 200:
+                        break
+            except Exception:
+                time.sleep(0.2)
+        else:
+            raise RuntimeError("API readiness failed")
+
+    start_api()
     targets = os.environ.get(
         "S01_TEST_TARGETS",
         "tests.test_source_configuration_contract,tests.test_etl_workflow_scope,tests.test_etl_dag_concurrency",
@@ -160,6 +168,36 @@ try:
     run(
         [python, "-m", "unittest", *targets, "-v"],
         "authenticated-contracts",
+        ROOT / "backend",
+    )
+    # Deterministic process death at a DB-instrumented pre-ledger boundary;
+    # then retry, kill after independently visible commit, restart and replay.
+    state = private / "restart-state.json"
+    run(
+        [
+            python,
+            "-m",
+            "scripts.source_configuration_restart_probe",
+            "interrupt",
+            state,
+            api.pid,
+        ],
+        "api-sigkill-before-ledger",
+        ROOT / "backend",
+    )
+    api.wait(timeout=10)
+    start_api()
+    run(
+        [python, "-m", "scripts.source_configuration_restart_probe", "recover", state],
+        "api-restart-recover",
+        ROOT / "backend",
+    )
+    api.kill()
+    api.wait(timeout=10)
+    start_api()
+    run(
+        [python, "-m", "scripts.source_configuration_restart_probe", "replay", state],
+        "api-restart-postcommit-replay",
         ROOT / "backend",
     )
     run(
