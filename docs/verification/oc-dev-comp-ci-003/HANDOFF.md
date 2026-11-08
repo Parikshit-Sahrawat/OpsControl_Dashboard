@@ -22,3 +22,5 @@ Six original failed PR84 workflow logs/artifacts were downloaded and independent
 Push each authorized branch; update draft PR84/85 and open separate draft scope PR; trigger affected CI and record available run links once, then stop. CI TRIGGERED — RESULT PENDING at final handoff; no polling/completion claim. No live deployment, image publication, branch-protection changes, merge or Sprint2.
 
 **Sprint1 NOT COMPLETE · CHK001 FAIL · CHK002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.**
+
+Four principal harnesses were rerun against committed PR84 HEAD8427cbc8c6387ab6e496a44c210db3c9eb3101e3 after all helper changes: access, ARCH001, operational and release each exit0. Exact commands/source IDs/elapsed times and raw logs in final-source-verification/. Repeats do not add distinct coverage. Final Docker process list is captured separately. Staging18-command and consolidated compatibility evidence remains on PR84.
