@@ -1,12 +1,6 @@
 name: Stage B UAT deployment contract validation
 on:
   pull_request:
-    paths:
-      - '.github/workflows/stage-b-*.yml'
-      - 'scripts/uat/stage_b_*.py'
-      - 'scripts/uat/test_stage_b.py'
-      - 'deploy/uat/**'
-      - 'backend/Dockerfile.uat'
   workflow_dispatch:
 permissions:
   contents: read
