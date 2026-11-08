@@ -287,6 +287,17 @@ try:
         root / "backend",
     )
     (out / "ownership.txt").write_text(output + "\n")
+    if os.getenv("V16_BACKUP_RESTORE") == "1":
+        print(
+            run(
+                [
+                    python,
+                    "scripts/ci/postgres_restore.py",
+                    name,
+                    out / "backup-restore.json",
+                ]
+            )
+        )
     if os.getenv("V16_SPRINT13_RECOVERY") == "1":
         env["V16_OWNED_CONTAINER"] = name
         env["V16_EVIDENCE_DIR"] = str(out)
@@ -439,6 +450,8 @@ try:
                     print(run(["node", "frontend/scripts/sprint08_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT09_ACCEPTANCE") == "1":
                     print(run(["node", "frontend/scripts/sprint09_acceptance.mjs"]))
+                if os.getenv("V16_SCOPE_ACCEPTANCE") == "1":
+                    print(run(["node", "frontend/scripts/ci_scope_acceptance.mjs"]))
         finally:
             if ui:
                 ui.terminate()
@@ -493,7 +506,52 @@ try:
         "V1.6 actual PostgreSQL ownership/durability/discovery/holds/recovery/scopes and additive migration PASS"
     )
 finally:
+    # Failures in HTTP/browser probes must not bypass process/secret cleanup.
+    import re
+    import shutil
+
+    for process_name in ("ui", "api"):
+        process = locals().get(process_name)
+        if process is not None and process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+    removed = False
     if started:
-        subprocess.run(
+        cleanup = subprocess.run(
             ["docker", "rm", "--force", "--volumes", name], capture_output=True
         )
+        removed = cleanup.returncode == 0
+    for logfile in private.glob("*.log"):
+        content = logfile.read_text(errors="replace").replace(password, "[REDACTED]")
+        for secretfile in private.glob("*fixture.json"):
+            try:
+                values = json.loads(secretfile.read_text())
+                for key, value in values.items():
+                    if (
+                        any(k in key.lower() for k in ("password", "token", "secret"))
+                        and isinstance(value, str)
+                        and len(value) > 6
+                    ):
+                        content = content.replace(value, "[REDACTED]")
+            except (ValueError, OSError, AttributeError):
+                pass
+        content = re.sub(r"(?i)Bearer [A-Za-z0-9_.-]+", "Bearer [REDACTED]", content)
+        (out / ("private-" + logfile.name)).write_text(content)
+    shutil.rmtree(private)
+    (out / "cleanup.json").write_text(
+        json.dumps(
+            {
+                "container": name,
+                "container_removed": removed,
+                "api_stopped": locals().get("api") is None or api.poll() is not None,
+                "ui_stopped": locals().get("ui") is None or ui.poll() is not None,
+                "private_fixtures_removed": not private.exists(),
+                "scope": "Exact allocated processes, container and private directory only",
+            },
+            indent=2,
+        )
+    )

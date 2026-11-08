@@ -1,0 +1,99 @@
+name: "OC Dev - Tier B - PostgreSQL API and Browser Integration"
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: real-development-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-postgres-migration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      ENV: test
+      V16_TEST_TARGETS: tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac
+      V16_STAGING_PRESERVATION: '1'
+      V16_BACKUP_RESTORE: '1'
+      V16_SPRINT08_ACCEPTANCE: '1'
+      V16_EVIDENCE_DIR: /tmp/ci-real-postgres-migration
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Existing backend requirements
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python backend/bootstrap_pip.py
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+      - name: Real disposable PostgreSQL contracts
+        run: backend/.venv/bin/python scripts/v16-acceptance.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: real-postgres-migration-evidence
+          path: /tmp/ci-real-postgres-migration
+          if-no-files-found: error
+  app-api-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      ENV: test
+      V16_TEST_TARGETS: tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac
+      V16_STAGING_PRESERVATION: '1'
+      V16_BACKUP_RESTORE: '1'
+      V16_SPRINT08_ACCEPTANCE: '1'
+      V16_EVIDENCE_DIR: /tmp/ci-app-api-browser
+      V16_API_ACCEPTANCE: '1'
+      V16_BROWSER_ACCEPTANCE: '1'
+      V16_SCOPE_ACCEPTANCE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Existing backend requirements
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python backend/bootstrap_pip.py
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Locked frontend and pinned Playwright
+        run: |
+          echo "PLAYWRIGHT_MODULE=$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs" >> "$GITHUB_ENV"
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix "$RUNNER_TEMP/ci-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/ci-browser/node_modules/.bin/playwright" install --with-deps chromium
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e "import {chromium} from '$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())")" >> "$GITHUB_ENV"
+      - name: Real disposable PostgreSQL contracts and authenticated browser
+        run: backend/.venv/bin/python scripts/v16-acceptance.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: app-api-browser-evidence
+          path: /tmp/ci-app-api-browser
+          if-no-files-found: error
+  sprint-evidence:
+    if: always()
+    needs: [real-postgres-migration, app-api-browser]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Reject failed, cancelled, missing or skipped mandatory results
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: python scripts/ci/require_success.py

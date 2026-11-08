@@ -204,7 +204,7 @@ try {
   check(pageErrors.length===0,`desktop has no uncaught page errors: ${pageErrors.join('; ')}`);
   if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,'organisational-access-desktop.png'),fullPage:true});
   await nav.getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();
-  for (const name of ['Pipeline Inventory','Execution History','Schedule Monitoring','Evidence Review','Recovery Tracking','Incident Correlation']) {
+  for (const name of ['Pipeline Inventory','Execution History','Schedule Monitoring','Evidence Review','Recovery Tracking']) {
     await desktop.getByRole('link',{name,exact:true}).click();
     await desktop.getByRole('heading',{name,exact:true}).waitFor();
     check(true,`pipeline ${name}`);
@@ -214,9 +214,8 @@ try {
     await desktop.getByRole('tab',{name}).click();
     check(await desktop.getByLabel('Report resource').getAttribute('type')==='search',`${name} has searchable resource selection`);
   }
-  await nav.getByRole('button',{name:'Incidents',exact:true}).click();
-  await desktop.getByLabel('Incident pages').waitFor();
-  check(await desktop.getByLabel('Incident pages').getByText(/of \d+ incidents/).count()===1,'incident pager displays scoped range and total');
+  check(await nav.getByRole('button',{name:'Incidents',exact:true}).count()===0,'excluded incident-management navigation remains unavailable');
+  check(await desktop.getByRole('link',{name:'Incident Correlation',exact:true}).count()===0,'excluded incident UI is not a pipeline action');
   await nav.getByRole('button',{name:'Collapse sidebar'}).click();
   check(await desktop.getByRole('button',{name:'Expand sidebar'}).count()===1,'desktop sidebar collapse preserved');
   if (evidenceDir) await desktop.screenshot({path:path.join(evidenceDir,'navigation-r2-pipelines-desktop.png'),fullPage:true});

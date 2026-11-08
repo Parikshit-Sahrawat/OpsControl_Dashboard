@@ -1,0 +1,79 @@
+{
+  "allocated_containers": [
+    {
+      "evidence": "integration-committed/cleanup.json",
+      "container": "opscontrol-v16-e912829bf7f9",
+      "inspect_exit_code": 1,
+      "absence_confirmed": true,
+      "cleanup_record": {
+        "container": "opscontrol-v16-e912829bf7f9",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      }
+    },
+    {
+      "evidence": "restore-diagnostic-failed/cleanup.json",
+      "container": "opscontrol-v16-275184c794b5",
+      "inspect_exit_code": 1,
+      "absence_confirmed": true,
+      "cleanup_record": {
+        "container": "opscontrol-v16-275184c794b5",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      }
+    },
+    {
+      "evidence": "restore-first-failed/cleanup.json",
+      "container": "opscontrol-v16-d297bf925e51",
+      "inspect_exit_code": 1,
+      "absence_confirmed": true,
+      "cleanup_record": {
+        "container": "opscontrol-v16-d297bf925e51",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      }
+    },
+    {
+      "evidence": "integration-scope-failed/cleanup.json",
+      "container": "opscontrol-v16-b42bb38481d8",
+      "inspect_exit_code": 1,
+      "absence_confirmed": true,
+      "cleanup_record": {
+        "container": "opscontrol-v16-b42bb38481d8",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      }
+    },
+    {
+      "evidence": "integration-baseline/cleanup.json",
+      "container": "opscontrol-v16-44e22fdf1e7d",
+      "inspect_exit_code": 1,
+      "absence_confirmed": true,
+      "cleanup_record": {
+        "container": "opscontrol-v16-44e22fdf1e7d",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      }
+    }
+  ],
+  "all_allocated_containers_absent": true,
+  "scoped_scanner_cache_removed": true,
+  "existing_postgres_image_retained": true,
+  "dump_policy": "Synthetic credential-bearing pg_dump erased; restore database dropped before container cleanup",
+  "broad_docker_cleanup_used": false
+}
