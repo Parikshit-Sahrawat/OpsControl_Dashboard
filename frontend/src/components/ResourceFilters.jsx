@@ -3,7 +3,7 @@ import { ENVIRONMENTS } from "../workspaceFilters";
 export default function ResourceFilters({ customers, customer, environment, search, active, onChange, onApply, total, busy }) {
   const [advanced, setAdvanced] = useState(false);
   const field = (name, value) => onChange(name, value);
-  return <section className="workspace-filters card" aria-label="Resource quick filters">
+  return <section className="workspace-filters card" aria-label="Resource quick filters" aria-describedby="resource-filter-help">
     <div className="workspace-filter-heading"><h2>Quick filters</h2><span role="status">{busy ? "Updating matches…" : `${total ?? 0} matching resources`}</span></div>
     <div className="workspace-filter-grid">
       <label className="form-field"><span>Customer</span><select aria-label="Resource customer filter" value={customer} onChange={e => field("customer", e.target.value)}>
@@ -16,6 +16,7 @@ export default function ResourceFilters({ customers, customer, environment, sear
       </select></label>
       <label className="form-field workspace-filter-search"><span>Resource name</span><input aria-label="Search resources" type="search" maxLength={200} value={search} onChange={e => field("search", e.target.value)} placeholder="Search resource names…" /></label>
       <button type="button" onClick={() => setAdvanced(v => !v)} aria-expanded={advanced} aria-controls="resource-advanced-filters">Advanced filters</button>
+      <button type="button" onClick={() => onChange("reset", "")}>Reset filters</button><button className="primary-button" type="button" onClick={onApply}>Apply filters</button>
     </div>
     {advanced && <div id="resource-advanced-filters" className="workspace-advanced-filters">
       <label className="form-field"><span>Configuration state</span><select aria-label="Configuration state filter" value={active} onChange={e => field("active", e.target.value)}><option value="">All configurations</option><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
@@ -23,7 +24,7 @@ export default function ResourceFilters({ customers, customer, environment, sear
     </div>}
     <div className="workspace-filter-footer"><div className="filter-chip-list" aria-label="Applied resource filters">
       {[["customer", customer && (customers.find(c => c.id === customer)?.name || "Unavailable customer")], ["environment", environment], ["search", search], ["active", active && (active === "true" ? "Enabled" : "Disabled")]].filter(([,v]) => v).map(([name,label]) => <button type="button" className="filter-chip" key={name} aria-label={`Remove ${name} filter`} onClick={() => field(name, "")}>{label} <span aria-hidden="true">×</span></button>)}
-    </div><div className="workspace-filter-actions"><button type="button" onClick={() => onChange("reset", "")}>Reset filters</button><button className="primary-button" type="button" onClick={onApply}>Apply filters</button></div></div>
-    <p className="workspace-filter-note">Filters update the authorized inventory as you change them. Apply refreshes the same selection. The URL preserves these filters; it never grants access or stores credentials.</p>
+    </div></div>
+    <p id="resource-filter-help" className="sr-only">Filters update the authorized inventory as you change them. Apply refreshes the same selection. The URL preserves these filters; it never grants access or stores credentials.</p>
   </section>;
 }

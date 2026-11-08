@@ -476,6 +476,7 @@ try {
   await page
     .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
+  await page.getByRole("button", { name: "Resource Management navigation", exact: true }).click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Organizations", exact: true })
@@ -485,6 +486,7 @@ try {
     .getByRole("table")
     .getByText("Sprint 07 Alpha", { exact: true })
     .waitFor();
+  await page.getByRole("button", { name: "Access Management navigation", exact: true }).click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Employees", exact: true })

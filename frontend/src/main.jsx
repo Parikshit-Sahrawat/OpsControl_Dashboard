@@ -10,3 +10,5 @@ createRoot(document.getElementById("root")).render(
     <AuthGate />
   </React.StrictMode>
 );
+
+import "./desktop-workspace.css";

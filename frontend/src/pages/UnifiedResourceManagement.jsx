@@ -322,7 +322,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   if (form) return formView;
   if (area === "templates") return <TemplateCatalog user={user} />;
   return (
-    <div className="resource-management-v2 unified-resources">
+    <div className="resource-management-v2 unified-resources" data-resource-area={area}>
       {!["organizations", "collectors"].includes(area) && <div className="page-heading">
         <div>
           <h1>Resource Management</h1>
@@ -405,6 +405,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           {area === "resources" ? domainNames[domain] : parameterNames[domain]}
         </h2>
         <table>
+          <caption className="sr-only">Authorized configuration inventory. Configuration enabled or saved does not establish monitoring health.</caption>
+          <colgroup><col style={{width:"20%"}}/><col style={{width:"15%"}}/><col style={{width:"9%"}}/><col style={{width:"17%"}}/><col style={{width:"15%"}}/><col style={{width:"24%"}}/></colgroup>
           <thead>
             <tr>
               <th>Resource</th>
@@ -425,7 +427,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                   >
                     {r.name}
                   </button>
-                  <small>{r.id}</small>
+                  <small className="inventory-resource-id" title={r.id}>{r.id}</small>
                 </td>
                 <td><span className="inventory-customer-name" title={r.inherited.customer}>{r.inherited.customer}</span></td>
                 <td>{r.environment}</td>
@@ -439,8 +441,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                       : r.inherited.dns || r.configuration.endpoint}
                 </td>
                 <td>
-                  {r.activation_status}
-                  <small>{r.active ? "Configuration enabled · health in Operations" : "Configuration inactive"}</small>
+                  <span className="status status--unknown">{r.activation_status}</span>
+                  <small>{r.active ? "Enabled" : "Disabled"}</small>
                 </td>
                 <td>
                   <div className="row-actions">
@@ -460,8 +462,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                       area === "resources" &&
                       r.primary_collector_id &&
                       allowed("collectors.view", r.organization_id) && (
-                        <button onClick={() => openCollector(r)}>
-                          Collector Configuration
+                        <button aria-label="Collector Configuration" title="Collector Configuration" onClick={() => openCollector(r)}>
+                          Collector
                         </button>
                       )}
                   </div>

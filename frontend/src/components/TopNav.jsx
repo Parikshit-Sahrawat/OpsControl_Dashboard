@@ -1,41 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { canNavigate, administrationPage } from "../permissions";
-import { canOpenSection } from "../navigation";
+import { administrationPage } from "../permissions";
+import { FEATURE_GROUPS as sections } from "../featureDirectory.js";
+import FeatureDirectory from "./FeatureDirectory";
 import ThemeToggle from "./ThemeToggle";
 import WorldClock from "./WorldClock";
 import useDialogFocus from "./useDialogFocus";
 import InAppNotifications from "./InAppNotifications";
-import NavIcon from "./NavIcon";
 import PersonalWorkspace from "./PersonalWorkspace";
 import GlobalResourceSearch from "./GlobalResourceSearch";
 import { configurationCapable } from "../workspaceFilters";
 
-// Labels describe the UI; keys remain the existing page identities and guards.
-const sections = [
-  { name: "Overview", items: [["Overview", "Dashboard"]] },
-  { name: "Operations", items: [
-    ["Data Pipeline Monitoring", "Data Pipelines"],
-    ["Compute Health", "Compute Instances"],
-    ["API Endpoint Monitoring", "API Endpoints"],
-    ["Alerts", "Alerts"], ["Reports", "Reports"],
-  ] },
-  { name: "Resource Management", items: [
-    ["Resource Management", "Organizations", "organizations"],
-    ["Resource Management", "Data Sources / Resources", "resources"],
-    ["Resource Management", "Collectors", "collectors"],
-    ["Resource Management", "Monitoring Templates", "templates"],
-    ["Resource Management", "Event Parameters", "parameters"],
-    ["Resource Management", "Alert Rules", "rules"],
-    ["Resource Management", "Notification Delivery", "delivery"],
-  ] },
-  { name: "Access Management", items: [
-    ["Access Management", "Departments", "Departments"],
-    ["Access Management", "Employees", "Employees"],
-    ["Access Management", "Roles & Permissions", "Roles & Permissions"],
-    ["Access Management", "Organisational Access", "Organisational Access"],
-    ["Access Management", "Access Audit", "Access Audit"],
-  ] },
-];
 const environmentChoices = ["PROD", "QA", "TEST", "DEV", "SANDBOX"];
 
 export default function TopNav({
@@ -54,21 +28,12 @@ export default function TopNav({
   onEnvironmentChange,
 }) {
   const configMode = configurationCapable(user, organizationIds);
-  const [density, setDensity] = useState(() => localStorage.getItem("opscontrol.density") === "compact" ? "compact" : "comfortable");
+  const [density, setDensity] = useState(() => localStorage.getItem("opscontrol.density") === "comfortable" ? "comfortable" : "compact");
   useEffect(() => { document.documentElement.dataset.density = density; localStorage.setItem("opscontrol.density", density); }, [density]);
   const [personal, setPersonal] = useState(null);
   const [open, setOpen] = useState(false);
   const [envOpen, setEnvOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [expandedGroups, setExpandedGroups] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("opscontrol.navGroups") || "{}");
-      return Object.fromEntries(sections.map(({ name }) => [name, saved?.[name] !== false]));
-    } catch { return {}; }
-  });
-  useEffect(() => {
-    localStorage.setItem("opscontrol.navGroups", JSON.stringify(expandedGroups));
-  }, [expandedGroups]);
   const mobileToggle = useRef(null);
   const navigation = useRef(null);
   const [collapsed, setCollapsed] = useState(
@@ -146,9 +111,6 @@ export default function TopNav({
   };
 
   const currentGroup = sections.find((section) => section.items.some(([key]) => key === active));
-  useEffect(() => {
-    if (currentGroup) setExpandedGroups((previous) => ({ ...previous, [currentGroup.name]: true }));
-  }, [currentGroup]);
   const currentDestination = currentGroup?.items.find(([key, , child]) =>
     key === active && (!child || child === activeSection));
   return (
@@ -199,43 +161,7 @@ export default function TopNav({
         >
           {collapsed ? "+" : "×"}
         </button>
-        {sections.map((section) => {
-          const visible = section.items.filter(([key, , child]) =>
-            child ? canOpenSection(user, key, child) : canNavigate(user, key));
-          return visible.length ? (
-            <div className="nav-group" role="group" aria-label={section.name} key={section.name}>
-              <button
-                type="button"
-                className="nav-section-label nav-group-toggle"
-                aria-label={`${section.name} navigation`}
-                aria-expanded={collapsed || expandedGroups[section.name] !== false}
-                aria-controls={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`}
-                onClick={() => setExpandedGroups((previous) => ({ ...previous, [section.name]: previous[section.name] === false }))}
-              >
-                <span>{section.name}</span><span aria-hidden="true">{expandedGroups[section.name] === false && !collapsed ? "▸" : "▾"}</span>
-              </button>
-              <div id={`nav-group-${section.name.replaceAll(" ", "-").toLowerCase()}`} className="nav-group-items" hidden={!collapsed && expandedGroups[section.name] === false}>
-              {visible.map(([key, label, child]) => (
-                <button
-                  key={child || key}
-                  aria-label={child ? label : key}
-                  title={collapsed ? label : undefined}
-                  aria-current={active === key && (!child || activeSection === child) ? "page" : undefined}
-                  className={active === key && (!child || activeSection === child) ? "nav-button active" : "nav-button"}
-                  onClick={() => {
-                    onChange(key, child ? { section: child } : {});
-                    if (mobileOpen) mobileToggle.current?.focus();
-                    setMobileOpen(false);
-                  }}
-                >
-                  <NavIcon name={key} />
-                  <span>{label}</span>
-                </button>
-              ))}
-              </div>
-            </div>
-          ) : null;
-        })}
+        <FeatureDirectory user={user} active={active} activeSection={activeSection} collapsed={collapsed} onNavigate={(page,target)=>{onChange(page,target);if(mobileOpen)mobileToggle.current?.focus();setMobileOpen(false);}} />
         <div className="sidebar-footnote">
           <span className="sidebar-footnote-mark" aria-hidden="true">
             ◈
