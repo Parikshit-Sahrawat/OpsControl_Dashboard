@@ -699,6 +699,10 @@ class SourceConfigurationContract(unittest.TestCase):
 
     def test_populated_downgrade_refusal_preserves_revision(self):
         self.command()
+        with SessionLocal() as db:
+            before_revision = db.execute(
+                text("select version_num from alembic_version")
+            ).scalar_one()
         env = dict(os.environ)
         attempt = subprocess.run(
             [sys.executable, "-m", "alembic", "downgrade", "0041_etl_authority_writer"],
@@ -719,7 +723,7 @@ class SourceConfigurationContract(unittest.TestCase):
                 db.execute(
                     text("select version_num from alembic_version")
                 ).scalar_one(),
-                "0042_source_configuration",
+                before_revision,
             )
         (Path(os.environ["S01_EVIDENCE_DIR"]) / "populated-refusal.log").write_text(
             attempt.stdout + attempt.stderr
