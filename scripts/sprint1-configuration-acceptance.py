@@ -200,6 +200,64 @@ try:
         "api-restart-postcommit-replay",
         ROOT / "backend",
     )
+    # Refusing the new metadata fence downgrade must preserve the entire schema,
+    # rows, revision and function definitions, not merely return an error.
+    import hashlib
+
+    def dump_state():
+        dumped = subprocess.check_output(
+            [
+                "docker",
+                "exec",
+                name,
+                "pg_dump",
+                "-U",
+                "opscontrol",
+                "--no-owner",
+                "--no-privileges",
+                "opscontrol",
+            ],
+            text=True,
+        )
+        return "\n".join(
+            line
+            for line in dumped.splitlines()
+            if not line.startswith(("\\restrict ", "\\unrestrict "))
+        )
+
+    before = dump_state()
+    refusal = subprocess.run(
+        [python, "-m", "alembic", "downgrade", "0042_source_configuration"],
+        cwd=ROOT / "backend",
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    (OUT / "context-fence-populated-refusal.log").write_text(
+        refusal.stderr.replace(password, "[REDACTED]")
+    )
+    assert (
+        refusal.returncode != 0
+        and "Unsafe populated ETL downgrade blocked before DDL" in refusal.stderr
+    )
+    after = dump_state()
+    assert before == after, (
+        "Refused0043 downgrade changed data/schema/function definitions"
+    )
+    (OUT / "context-fence-preservation.json").write_text(
+        json.dumps(
+            {
+                "status": "PASS",
+                "refused_exit": refusal.returncode,
+                "target": "0042_source_configuration",
+                "before_sha256": hashlib.sha256(before.encode()).hexdigest(),
+                "after_sha256": hashlib.sha256(after.encode()).hexdigest(),
+                "whole_dump_unchanged": True,
+            },
+            indent=2,
+        )
+    )
     run(
         [python, "scripts/ci/postgres_restore.py", name, OUT / "backup-restore.json"],
         "backup-restore",
