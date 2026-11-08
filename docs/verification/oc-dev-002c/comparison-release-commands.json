@@ -1,0 +1,37 @@
+[
+  {
+    "label": "before-matched",
+    "cwd": "/tmp/ocdev002c-before",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "flags": {
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers",
+      "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac,tests.test_sprint_template_configuration,tests.test_sprint_resource_lifecycle",
+      "V16_SPRINT08_ACCEPTANCE": "1",
+      "V16_EXTENDED_LOAD": "1",
+      "V16_API_ACCEPTANCE": "1",
+      "V16_BROWSER_ACCEPTANCE": "1",
+      "V16_STAGING_PRESERVATION": "1",
+      "V16_EVIDENCE_DIR": "/tmp/ocdev002c-evidence/before-matched"
+    },
+    "exit": 0
+  },
+  {
+    "label": "release-final",
+    "cwd": "/tmp/ocdev002c-repo",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/release-acceptance.py"
+    ],
+    "flags": {
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers",
+      "RELEASE_BROWSER_ACCEPTANCE": "1",
+      "RELEASE_EVIDENCE_DIR": "/tmp/ocdev002c-evidence/release-final"
+    },
+    "exit": 0
+  }
+]

@@ -13,6 +13,17 @@ const browser = await chromium.launch({
 const page = await browser.newPage({ viewport: { width: 1600, height: 1100 } });
 const errors = [],
   serverErrors = [];
+const diagnostics = [], reloads = [];
+page.on("requestfailed", r => diagnostics.push({kind:"requestfailed", path:new URL(r.url()).pathname, error:r.failure()?.errorText, at:Date.now()}));
+page.on("response", r => {if(r.url().includes("/api/"))diagnostics.push({kind:"response",path:new URL(r.url()).pathname,status:r.status(),at:Date.now()});});
+page.on("framenavigated", f => {if(f===page.mainFrame())diagnostics.push({kind:"navigation",path:new URL(f.url()).pathname,hash:new URL(f.url()).hash,at:Date.now()});});
+async function keyboardTo(locator) {
+  for(let i=0;i<90;i++) {
+    if(await locator.evaluate(el=>el===document.activeElement))return;
+    await page.keyboard.press("Tab");
+  }
+  throw Error("Target was not keyboard reachable");
+}
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("response", (r) => {
   if (r.url().includes("/api/") && r.status() >= 500)
@@ -262,6 +273,44 @@ try {
     ).json()
   ).items.find((r) => r.data_source_id === source.id);
   assert.equal(disabled.active, false);
+  // Re-enable the same persisted identity, then verify narrow-screen keyboard use.
+  await row.getByRole("button", { name: "Edit", exact: true }).click();
+  modal = page.getByRole("region", { name: "Edit Compute Instance", exact: true });
+  await modal.getByLabel("Enable resource", { exact: true }).check();
+  await modal.getByRole("button", { name: "Save resource", exact: true }).click();
+  await modal.waitFor({ state: "hidden" });
+  await page.reload();
+  await page.getByLabel("Search resources", { exact: true }).fill("Wizard sequence refreshed");
+  await page.getByRole("button", { name: "Wizard sequence refreshed", exact: true }).waitFor();
+  const enabledAgain = (await (await page.request.get(base + "/api/v1/unified/resources?domain=VM&search=Wizard%20sequence%20refreshed", { headers })).json()).items.find(r => r.data_source_id === source.id);
+  assert.equal(enabledAgain.active, true);
+  phase = "repeated reload diagnostic";
+  for(let iteration=0;iteration<5;iteration++) {
+    const beforeUrl=page.url();const started=Date.now();
+    await page.reload();
+    await page.getByLabel("Search resources",{exact:true}).fill("Wizard sequence refreshed");
+    await page.getByRole("button",{name:"Wizard sequence refreshed",exact:true}).waitFor();
+    reloads.push({iteration,before_hash:new URL(beforeUrl).hash,after_hash:new URL(page.url()).hash,elapsed_ms:Date.now()-started,status:"PASS"});
+  }
+  phase="keyboard-only resource edit";
+  row=page.getByRole("row").filter({hasText:"Wizard sequence refreshed"});
+  await keyboardTo(row.getByRole("button",{name:"Edit",exact:true}));
+  await page.keyboard.press("Enter");
+  modal=page.getByRole("region",{name:"Edit Compute Instance",exact:true});
+  const nameInput=modal.getByLabel("Resource name",{exact:true});
+  await keyboardTo(nameInput);await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type("Wizard keyboard persisted");
+  await keyboardTo(modal.getByRole("button",{name:"Save resource",exact:true}));
+  await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
+  await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
+  await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
+  await page.reload();
+  await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
+  await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
+  await page.setViewportSize({ width:390, height:844 });
+  await page.keyboard.press("Tab");
+  assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");
+  await page.screenshot({ path:process.env.RELEASE_EVIDENCE_DIR+"/resource-mobile-keyboard.png", fullPage:true });
   assert.deepEqual(errors, []);
   assert.deepEqual(serverErrors, []);
   await writeFile(
@@ -270,13 +319,17 @@ try {
       {
         status: "PASS",
         checks: [
-          "Browser create/read/update/disable persisted",
+          "Browser create/read/update/disable/re-enable and reload persisted",
+          "Narrow viewport and keyboard-only edit/save persisted",
+          "Five exact repeated reloads preserve resource route and persisted records",
           "Duplicate source returns 409",
           "Logical OTEL configuration creates no polling CollectorRun",
           "Edit preserves Collector ID and updates its configuration name",
           "Other tenant cannot read registration or mutate source",
           "Older authenticated inventory refresh cannot overwrite newer persisted state",
         ],
+        reloads,
+        diagnostics,
         page_errors: errors,
         server_errors: serverErrors,
       },
@@ -292,6 +345,9 @@ try {
   console.error(
     "RESOURCE_CRUD_FAILURE " + JSON.stringify({ phase, type: error.name }),
   );
+  await mkdir(process.env.RELEASE_EVIDENCE_DIR,{recursive:true});
+  await page.screenshot({path:process.env.RELEASE_EVIDENCE_DIR+"/resource-failure.png",fullPage:true});
+  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/resource-failure.json",JSON.stringify({phase,type:error.name,hash:new URL(page.url()).hash,reloads,diagnostics},null,2));
   throw error;
 } finally {
   await browser.close();

@@ -1,0 +1,33 @@
+test_both_patch_routes_refuse_disabled_parent_without_commit (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit) ... 
+  test_both_patch_routes_refuse_disabled_parent_without_commit (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit) (route='update_scoped_collector') ... ERROR
+test_both_patch_routes_refuse_disabled_parent_without_commit (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit) ... ERROR
+test_configuration_does_not_assert_health (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_configuration_does_not_assert_health) ... ok
+test_disabling_and_enabled_parent_are_supported (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_disabling_and_enabled_parent_are_supported) ... ok
+test_ownership_and_unknown_patch_fields_are_rejected (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_ownership_and_unknown_patch_fields_are_rejected) ... ok
+
+======================================================================
+ERROR: test_both_patch_routes_refuse_disabled_parent_without_commit (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit) (route='update_scoped_collector')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-dev-002/backend/tests/test_sprint_resource_lifecycle.py", line 30, in test_both_patch_routes_refuse_disabled_parent_without_commit
+    handler(uuid4(), CollectorUpdate(enabled=True), db)
+  File "/tmp/oc-dev-002/backend/app/api/resource_management.py", line 206, in update_scoped_collector
+    require_supported_collector(item, _source(db, item.data_source_id))
+  File "/tmp/oc-dev-002/backend/app/services/excluded_platforms.py", line 49, in require_supported_collector
+    if is_excluded_platform(collector.collector_type):
+                            ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'collector_type'
+
+======================================================================
+ERROR: test_both_patch_routes_refuse_disabled_parent_without_commit (tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/oc-dev-002/backend/tests/test_sprint_resource_lifecycle.py", line 31, in test_both_patch_routes_refuse_disabled_parent_without_commit
+    self.assertEqual(error.exception.status_code, 409)
+                     ^^^^^^^^^^^^^^^
+AttributeError: '_AssertRaisesContext' object has no attribute 'exception'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+FAILED (errors=2)

@@ -1,0 +1,73 @@
+[
+  {
+    "name": "units",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "unittest",
+      "tests.test_sprint_template_configuration",
+      "tests.test_sprint_resource_lifecycle",
+      "tests.test_sprint_monitoring_only",
+      "-v"
+    ],
+    "flags": {
+      "PYTHONPATH": "backend"
+    },
+    "exit": 0,
+    "source_sha": "80835f0065de24ebf271fc621b6d1e5e83d73bd2"
+  },
+  {
+    "name": "frontend",
+    "command": [
+      "npm",
+      "test",
+      "--prefix",
+      "frontend"
+    ],
+    "flags": {},
+    "exit": 0,
+    "source_sha": "80835f0065de24ebf271fc621b6d1e5e83d73bd2"
+  },
+  {
+    "name": "lint",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "--prefix",
+      "frontend"
+    ],
+    "flags": {},
+    "exit": 0,
+    "source_sha": "80835f0065de24ebf271fc621b6d1e5e83d73bd2"
+  },
+  {
+    "name": "build",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--prefix",
+      "frontend"
+    ],
+    "flags": {},
+    "exit": 0,
+    "source_sha": "80835f0065de24ebf271fc621b6d1e5e83d73bd2"
+  },
+  {
+    "name": "ruff",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "ruff",
+      "check",
+      "backend/scripts/sprint1_representative_load.py",
+      "backend/scripts/sprint1_instrumented_app.py",
+      "backend/tests/test_sprint_template_configuration.py",
+      "backend/tests/test_sprint_monitoring_only.py"
+    ],
+    "flags": {},
+    "exit": 0,
+    "source_sha": "80835f0065de24ebf271fc621b6d1e5e83d73bd2"
+  }
+]

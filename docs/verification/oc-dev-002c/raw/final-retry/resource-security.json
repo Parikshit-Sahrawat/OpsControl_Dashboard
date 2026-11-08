@@ -1,0 +1,461 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Authenticated UI resource A create and persisted backend identity; resource B isolated fixture",
+    "Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422",
+    "Browser template V1 pin survives V2; invalid JSON field error; override save/reload deterministic; stale edit409 preserves unsaved text",
+    "Delayed authentic A inventory cannot overwrite B selection; A row absent",
+    "Selected B scope cannot fetch A resource detail even with platform administrator login",
+    "Revocation closes open unsaved editor; old-session PUT401; persisted name unchanged",
+    "Viewer has no Edit control and actual attempted mutation403"
+  ],
+  "trace": [
+    {
+      "phase": "start",
+      "at": 1794077847809,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "start",
+      "at": 1794077847825,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077847933,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077847936,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077847972,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848023,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848065,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848092,
+      "path": "/api/v1/resource-drafts",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848228,
+      "path": "/api/v1/unified/resources/vm",
+      "status": 201
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848369,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848424,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848426,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848446,
+      "path": "/api/v1/unified/resources/ef9d3789-fcf2-413e-a80e-721d3d02182d",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848476,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794077848505,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848731,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848877,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848877,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848894,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848910,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848918,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848937,
+      "path": "/api/v1/monitoring/collectors/a1f4daed-3e99-408f-b0b2-77469b6dbab4",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077848984,
+      "path": "/api/v1/monitoring/templates/9a61d1b6-7a17-413a-bde4-333b9079689d/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849189,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 201
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849248,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849265,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849281,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849414,
+      "path": "/api/v1/monitoring/templates/9a61d1b6-7a17-413a-bde4-333b9079689d/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849591,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates/9a61d1b6-7a17-413a-bde4-333b9079689d",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849670,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849699,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849703,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849820,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849883,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849888,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849908,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849917,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077849959,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850162,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850168,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850202,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850204,
+      "path": "/api/v1/monitoring/collectors/a1f4daed-3e99-408f-b0b2-77469b6dbab4",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850206,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850218,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850350,
+      "path": "/api/v1/monitoring/templates/9a61d1b6-7a17-413a-bde4-333b9079689d/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794077850494,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates/9a61d1b6-7a17-413a-bde4-333b9079689d",
+      "status": 409
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077851701,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077851713,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077852163,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077852242,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077852277,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794077852284,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077852870,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077852886,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077852987,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077852988,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853018,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853028,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853075,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853289,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853309,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853359,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/templates",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853362,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853367,
+      "path": "/api/v1/monitoring/collectors/a1f4daed-3e99-408f-b0b2-77469b6dbab4",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077853381,
+      "path": "/api/v1/monitoring/data-sources/fafdd3c8-c307-46b5-bfb0-fdf6b0fb918f",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077854851,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794077857941,
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858765,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858785,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858877,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858880,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858920,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858923,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794077858973,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    }
+  ],
+  "resource_id": "ef9d3789-fcf2-413e-a80e-721d3d02182d",
+  "other_resource_id": "8a7aa6f4-e166-4a07-b5d6-8f930f25be4c",
+  "provider_access": false
+}

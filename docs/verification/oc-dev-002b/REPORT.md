@@ -1,0 +1,23 @@
+# OC-DEV-002B — Sprint1 completion attempt
+
+**Disposition: PARTIAL/BLOCKED.** Bounded product fixes and real development acceptance delivered; missing conditions are not forced COMPLETE. Main `ffe5ac285ab8aef33a1139bce6f3da79be3d6d33`; start PR82 `6adc4f0680f785fe9d7478c15367bf41e8049eee`. Planning PR81 `af9bad0428dd4023829e210cb923d32fa0adba3c`; separate PR80 `958193f266c89302b2f1919e3703faece591e0af`. Existing PR82 branch dev/oc-dev-002-secure-resource-preservation retained. All draft/unmerged at preflight. Exact tested final source **c4c773601c53d0c8f44fdcb51b447c7664fb6eb8**; earlier implementationc6e2071 and test increments preserved. Final evidence commit recorded in PR82 handoff.
+
+[Implementation matrix](IMPLEMENTATION_MATRIX.md), [authorization](AUTHORIZATION_REGRESSIONS.md), [Resource UI](RESOURCE_UI_ACCEPTANCE.md), [templates](TEMPLATE_LIFECYCLE_MATRIX.md), [migration preservation](MIGRATION_PRESERVATION.md), [performance](PERFORMANCE_BASELINE_AND_RESULTS.md), [tests](AUTOMATED_TEST_RESULTS.md), [remaining blockers](REMAINING_BLOCKERS.md). Machine results TEST_RESULTS.json and source/file manifests accompany raw logs/screenshots.
+
+Fixed: template version silently upgraded on resource edits; attachment-read failure silently assumed empty; editor state remained open on scope/auth changes; existing ownership select editable despite immutable backend contract; inactive template attachment accepted; concurrent template commits lacked serialization; malformed package containers/null required PATCH fields reached invalid processing/database errors; enabled collector could be created through legacy route on disabled parent. Existing RBAC and migration guards retained, no permission expansion.
+
+New actual HTTP checks prove template version/override/required-attribute lifecycle, concurrentv3/v4 commits preserving selectedv1 and old versions; viewer/foreign-source denial; stale session401; queued real PostgreSQL revocation/update rejection with no mutation. Actual Resource browser verifies persisted create/edit/disable/re-enable/reload and collector identity, invalid duplicate, foreign-user denial, older-response ordering, narrow viewport/focus. Full declared scope is not equivalent to these bounded cases.
+
+Final9 backend unit (4new+5retained),41 frontend helper (3new+38retained),56 retained pipeline PostgreSQL,42 retained Sprint08 suite cases,14 core HTTP groups (3new+11retained),14 retained Sprint08 HTTP,5 retained Sprint08 browser and13 release grouped checks pass. Main100 tables and499 constraints preserve restored data/relations/history. Counts overlap. Frontend lint/build/focused Ruff pass. No applied migration or collector/permission-catalog changes.
+
+Real OTLP comparative probe:20 batches×10 samples, replay+invalid token;200 distinct/physical samples,20 receipts,0missing/duplicates on both app versions.3 authenticated read paths and browser navigation measured before/during/after load. Global defect NOT REPRODUCED and no performance fix claimed; detailed metrics/limits are in performance report. No real provider credential, qualified proof or workload control introduced.
+
+Main migration line0038 only; branch convergence with PR80 is BLOCKED (git apply --check conflict, no patch applied). New attachment-history schema cannot be slipped into conflicting0039. Source/package validation and authorization fixes do not claim structured applicability, complete template UI, full A/B-switch interleavings or global throughput certification.201/501/503/123 analysis from002 retained; no spool implementation/security waiver/publication bypass.
+
+Task-owned randomized PostgreSQL/TLS containers and owned API/UI processes removed by harness finally blocks; cleanup.json records exact identities and no remaining containers. Restore clones dropped; synthetic archives/evidence retained. No broad Docker cleanup. Prior002 evidence and unmerged branches untouched. No formal owner UAT or genuine provider certification.
+
+**CI TRIGGERED — RESULT PENDING** after final push/PR82 update. Required trigger-and-exit policy: do not poll, monitor or wait for CI conclusions. No deployment/publication workflow dispatched. Stop after handoff; no003.
+
+**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.**
+
+Finalizer hardeningc4c7736 also guarantees task-owned API/UI termination and fixture-secret removal on failure, with redacted diagnostics exported. Success and deliberate missing-browser failure cleanup both verified. No orphan task server found. Legacy malformed EKS export bytes retained as raw text; source classification not silently changed.
