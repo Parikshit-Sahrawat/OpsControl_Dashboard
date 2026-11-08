@@ -18,10 +18,10 @@ export default function ResourceFilters({ customers, customer, environment, sear
       <button type="button" onClick={() => setAdvanced(v => !v)} aria-expanded={advanced} aria-controls="resource-advanced-filters">Advanced filters</button>
       <button type="button" onClick={() => onChange("reset", "")}>Reset filters</button><button className="primary-button" type="button" onClick={onApply}>Apply filters</button>
     </div>
-    {advanced && <div id="resource-advanced-filters" className="workspace-advanced-filters">
+    <div hidden={!advanced} id="resource-advanced-filters" className="workspace-advanced-filters">
       <label className="form-field"><span>Configuration state</span><select aria-label="Configuration state filter" value={active} onChange={e => field("active", e.target.value)}><option value="">All configurations</option><option value="true">Enabled</option><option value="false">Disabled</option></select></label>
       <p className="muted">Configuration state does not establish monitoring health. Process, service, time-range and freshness filters will be available with their qualified monitoring views.</p>
-    </div>}
+    </div>
     <div className="workspace-filter-footer"><div className="filter-chip-list" aria-label="Applied resource filters">
       {[["customer", customer && (customers.find(c => c.id === customer)?.name || "Unavailable customer")], ["environment", environment], ["search", search], ["active", active && (active === "true" ? "Enabled" : "Disabled")]].filter(([,v]) => v).map(([name,label]) => <button type="button" className="filter-chip" key={name} aria-label={`Remove ${name} filter`} onClick={() => field(name, "")}>{label} <span aria-hidden="true">×</span></button>)}
     </div></div>

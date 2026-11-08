@@ -69,5 +69,7 @@
 @media(max-width:600px){.workspace-filter-grid{grid-template-columns:1fr}.workspace-filter-grid>button{min-height:36px}}
 @media(min-width:1101px){
  .unified-resources .inventory-scroll {max-block-size:calc(100dvh - 455px);}
- .unified-resources .workspace-filters:has(.workspace-advanced-filters)~.inventory-scroll {max-block-size:calc(100dvh - 525px);}
+ .unified-resources .workspace-filters:has(.workspace-advanced-filters:not([hidden]))~.inventory-scroll {max-block-size:calc(100dvh - 525px);}
 }
+
+.workspace-advanced-filters[hidden] {display:none;}
