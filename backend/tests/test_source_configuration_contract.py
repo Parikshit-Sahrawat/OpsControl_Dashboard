@@ -301,6 +301,14 @@ class SourceConfigurationContract(unittest.TestCase):
         )
         self.assertEqual(
             self.call(
+                "PATCH",
+                f"monitoring/data-sources/{self.sid}",
+                dict(endpoint="https://retarget.example.test"),
+            )[0],
+            409,
+        )
+        self.assertEqual(
+            self.call(
                 "POST",
                 f"monitoring/data-sources/{self.sid}/templates",
                 dict(template_id=self.tid, template_version=1),
@@ -464,6 +472,28 @@ class SourceConfigurationContract(unittest.TestCase):
             db.commit()
         self.command(members=[self.member | dict(template_version=2)], status=422)
         self.command(members=[self.member, self.member], status=422)
+        excluded = {
+            "applicability": {
+                "schema_version": 1,
+                "source_types": ["AWS_EKS"],
+                "os": ["Linux"],
+                "methods": [
+                    {
+                        "name": "Host",
+                        "method_type": "HOST_METRICS",
+                        "configuration": {"scrapers": ["cpu"]},
+                    }
+                ],
+            }
+        }
+        self.assertEqual(
+            self.call(
+                "POST",
+                "monitoring/templates",
+                dict(name="Excluded manifest " + uuid4().hex, package_config=excluded),
+            )[0],
+            422,
+        )
         self.assertEqual(self.call("GET", self.base)[1]["revision"], 0)
 
     def test_source_history_foreign_key_and_actor_are_not_client_controlled(self):

@@ -38,7 +38,9 @@ def parse_applicability(value):
 class Applicability(BaseModel):
     model_config = ConfigDict(extra="forbid")
     schema_version: Literal[1]
-    source_types: list[str] = Field(min_length=1, max_length=30)
+    source_types: list[
+        Literal["LINUX", "LINUX_HOST", "WINDOWS", "WINDOWS_HOST", "VM"]
+    ] = Field(min_length=1, max_length=5)
     os: list[Literal["Windows", "Linux"]] = Field(min_length=1, max_length=2)
     methods: list[MethodInput] = Field(min_length=1, max_length=30)
     collector_override_fields: list[Literal["interval_seconds", "interval"]] = Field(
@@ -84,6 +86,16 @@ def applicability(source, package, overrides):
             # DNS/TLS/connectivity are still mandatory at preview/apply/dispatch.
         else:
             os_type = host_os(source)
+            expected_os = {
+                "LINUX": "Linux",
+                "LINUX_HOST": "Linux",
+                "WINDOWS": "Windows",
+                "WINDOWS_HOST": "Windows",
+            }.get(source.source_type)
+            if expected_os is not None and os_type != expected_os:
+                reasons.append(
+                    dict(code="SOURCE_OS_IDENTITY_CONFLICT", path="applicability/os")
+                )
             if package.get("collector", {}).get("type") not in (
                 None,
                 "OTEL",
