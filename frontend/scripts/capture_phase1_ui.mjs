@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 /**
  * Browser evidence for Phase 1 staging review.
  * Captures real rendered pages; never calls a screenshot a completed feature.
@@ -96,7 +97,7 @@ try {
   }
 
   for (const [label, filename] of categories) {
-    await page.getByRole("button", { name: navigationLabel[label] || label, exact: true }).click();
+    await navigatePrimary(page, navigationLabel[label] || label);
     await capture(label, filename);
   }
   await page.waitForTimeout(1500);

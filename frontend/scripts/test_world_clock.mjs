@@ -12,9 +12,10 @@ try {
   await page.getByRole("button", { name: "Sign in" }).click();
   try { await page.waitForSelector("button.nav-button", { timeout: 20000 }); }
   catch (error) { throw new Error("Authenticated UI failed: " + (await page.locator("body").innerText()) + " / " + String(error) + " pageErrors=" + errors.join(" | ")); }
-  const clock = page.locator(".world-clock");
+  await page.getByLabel("Display preferences", { exact: true }).click();
+  const clock = page.locator(".utility-preferences .world-clock");
   await clock.waitFor();
-  const selector = page.getByRole("combobox", { name: "World clock timezone" });
+  const selector = clock.getByRole("combobox", { name: "World clock timezone" });
   if (await selector.inputValue() !== "Asia/Kolkata") throw new Error("Unexpected default timezone");
   const before = await clock.locator("time").innerText();
   await page.waitForTimeout(1350);
@@ -25,6 +26,7 @@ try {
   if (ny === after) throw new Error("Changing timezone did not change displayed time");
   if (!/New York/.test(await selector.locator("option:checked").innerText())) throw new Error("Timezone selection lost");
   await page.reload();
+  await page.getByLabel("Display preferences", { exact: true }).click();
   if (await selector.inputValue() !== "America/New_York") throw new Error("Timezone preference not preserved across reload");
   await selector.selectOption("UTC");
   const utc = await clock.locator("time").innerText();

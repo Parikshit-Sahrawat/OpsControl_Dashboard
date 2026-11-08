@@ -1,0 +1,8 @@
+Private UAT diagnostics: /tmp/opscontrol-uat-6xstcd3l
+Traceback (most recent call last):
+  File "/tmp/oc-dev-comp-001/scripts/uat/acceptance.py", line 118, in <module>
+    dbport = run(["docker", "port", name, "5432/tcp"]).rsplit(":", 1)[1]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-dev-comp-001/scripts/uat/acceptance.py", line 58, in run
+    raise RuntimeError("Owned UAT command failed; private diagnostics retained")
+RuntimeError: Owned UAT command failed; private diagnostics retained

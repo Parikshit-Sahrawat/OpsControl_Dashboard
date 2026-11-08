@@ -1,0 +1,147 @@
+{
+  "status": "FAIL",
+  "error": "['node', PosixPath('/tmp/oc-dev-comp-001/frontend/scripts/test_world_clock.mjs')]",
+  "records": [
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "opscontrol-ci003-stage-d49dde26c0",
+        "--tmpfs",
+        "/var/lib/postgresql/data",
+        "-p",
+        "127.0.0.1::5432",
+        "-e",
+        "POSTGRES_USER=opscontrol",
+        "-e",
+        "POSTGRES_PASSWORD=[REDACTED]",
+        "-e",
+        "POSTGRES_DB=opscontrol",
+        "postgres:17-alpine"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "docker",
+        "inspect",
+        "opscontrol-ci003-stage-d49dde26c0"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "0024_notification_leases"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.existing_database_upgrade_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.auth_tenant_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.deep_tenant_security_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.security_release_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.test_remote_egress"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.remote_protocol_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.provider_unit_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.phase2_pentaho_persistence_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.secrets_provider_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.deep_checks_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python",
+        "-m",
+        "scripts.phase2_activation_probe"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node",
+        "/tmp/oc-dev-comp-001/frontend/scripts/capture_phase1_ui.mjs"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "node",
+        "/tmp/oc-dev-comp-001/frontend/scripts/test_world_clock.mjs"
+      ],
+      "exit_code": 1
+    }
+  ]
+}
