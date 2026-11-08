@@ -46,6 +46,11 @@ def noc_browser(phase):
 def target():return start([PYTHON,'-c','import time;time.sleep(3600)'],label='linux-target')
 
 try:
+    # Never use another task's service if a fixed fixture port is occupied.
+    for address, port in [('127.0.0.1',11432),('127.0.0.1',18800),('127.0.0.1',15174),(host,443)]:
+        with socket.socket() as claim:
+            try: claim.bind((address,port))
+            except OSError as exc: raise RuntimeError('Owned fixture port unavailable; refusing existing service') from exc
     import ipaddress
     if ipaddress.ip_address(host).is_loopback:raise RuntimeError('Controlled fixture needs an actual private interface address')
     for name in ('admin-password','carte-password'):
@@ -122,4 +127,28 @@ finally:
             try:process.wait(timeout=5)
             except subprocess.TimeoutExpired:process.kill();process.wait()
     subprocess.run(['docker','rm','-f','-v',fixture,container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    if passed:shutil.rmtree(private)
+    # Preserve redacted failure/success logs, not synthetic credentials or keys.
+    import re, hashlib
+    OUT.mkdir(parents=True,exist_ok=True)
+    redactions=['etl-local-only']
+    def secrets_from(value):
+        if isinstance(value,dict):
+            for key,item in value.items():
+                if any(word in key.lower() for word in ('password','token','secret')) and isinstance(item,str) and len(item)>6:redactions.append(item)
+                else:secrets_from(item)
+        elif isinstance(value,list):
+            for item in value:secrets_from(item)
+    for file in private.glob('*.json'):
+        try:secrets_from(json.loads(file.read_text()))
+        except (ValueError,OSError):pass
+    for filename in ('admin-password','carte-password'):
+        if (private/filename).exists():redactions.append((private/filename).read_text().strip())
+    for file in private.glob('*.log'):
+        content=file.read_text(errors='replace')
+        for secret in redactions:content=content.replace(secret,'[REDACTED]')
+        content=re.sub(r'(?i)(Bearer|Basic) [A-Za-z0-9_.+/=-]+',r'\1 [REDACTED]',content)
+        (OUT/('private-'+file.name)).write_text(content)
+    fingerprints={file.name:hashlib.sha256(file.read_bytes()).hexdigest() for file in private.iterdir() if file.is_file()}
+    remaining={name:subprocess.run(['docker','inspect','--type','container',name],capture_output=True).returncode==0 for name in (fixture,container)}
+    shutil.rmtree(private)
+    (OUT/'cleanup.json').write_text(json.dumps({'containers_absent':not any(remaining.values()),'remaining':remaining,'processes_stopped':all(process.poll() is not None for process in processes),'private_removed':not private.exists(),'fixture_hashes':fingerprints,'scope':'Only allocated fixture/container/processes/private directory; no shared UAT or production'},indent=2))
