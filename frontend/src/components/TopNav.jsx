@@ -2,9 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { canNavigate, administrationPage } from "../permissions";
 import { canOpenSection } from "../navigation";
 import ThemeToggle from "./ThemeToggle";
+import WorldClock from "./WorldClock";
+import useDialogFocus from "./useDialogFocus";
 import InAppNotifications from "./InAppNotifications";
 import NavIcon from "./NavIcon";
 import PersonalWorkspace from "./PersonalWorkspace";
+import GlobalResourceSearch from "./GlobalResourceSearch";
+import { configurationCapable } from "../workspaceFilters";
 
 // Labels describe the UI; keys remain the existing page identities and guards.
 const sections = [
@@ -13,12 +17,13 @@ const sections = [
     ["Data Pipeline Monitoring", "Data Pipelines"],
     ["Compute Health", "Compute Instances"],
     ["API Endpoint Monitoring", "API Endpoints"],
-    ["Alerts", "Alerts"], ["Incidents", "Incidents"], ["Reports", "Reports"],
+    ["Alerts", "Alerts"], ["Reports", "Reports"],
   ] },
   { name: "Resource Management", items: [
     ["Resource Management", "Organizations", "organizations"],
     ["Resource Management", "Data Sources / Resources", "resources"],
     ["Resource Management", "Collectors", "collectors"],
+    ["Resource Management", "Monitoring Templates", "templates"],
     ["Resource Management", "Event Parameters", "parameters"],
     ["Resource Management", "Alert Rules", "rules"],
     ["Resource Management", "Notification Delivery", "delivery"],
@@ -48,6 +53,9 @@ export default function TopNav({
   environment = "",
   onEnvironmentChange,
 }) {
+  const configMode = configurationCapable(user, organizationIds);
+  const [density, setDensity] = useState(() => localStorage.getItem("opscontrol.density") === "compact" ? "compact" : "comfortable");
+  useEffect(() => { document.documentElement.dataset.density = density; localStorage.setItem("opscontrol.density", density); }, [density]);
   const [personal, setPersonal] = useState(null);
   const [open, setOpen] = useState(false);
   const [envOpen, setEnvOpen] = useState(false);
@@ -72,6 +80,9 @@ export default function TopNav({
       : "expanded";
     localStorage.setItem("opscontrol.sidebarCollapsed", String(collapsed));
   }, [collapsed]);
+  useDialogFocus(navigation, mobileOpen, () => setMobileOpen(false));
+  const preferencePanel=useRef(null);
+  useEffect(()=>{const resize=()=>{if(preferencePanel.current)preferencePanel.current.open=window.innerWidth>=1800;};resize();window.addEventListener("resize",resize);return()=>window.removeEventListener("resize",resize);},[]);
   const ref = useRef(null);
   useEffect(() => {
     setOpen(false);
@@ -141,7 +152,7 @@ export default function TopNav({
   const currentDestination = currentGroup?.items.find(([key, , child]) =>
     key === active && (!child || child === activeSection));
   return (
-    <header className="topbar">
+    <header className="topbar" data-workspace-mode={configMode ? "configuration" : "operations"}>
       <div className="brand">
         <button
           className="brand-link"
@@ -321,6 +332,9 @@ export default function TopNav({
           )}
         </div>
       )}
+      <GlobalResourceSearch key={user.id+user.authorization_revision+organizationIds.join(",")+JSON.stringify(environment)} user={user} organizationIds={organizationIds} environment={environment} onSelect={resource => onChange("Resource Management", { section: "resources", resourceId: resource.id, resourceDomain: resource.domain, resourceOrganizationId: resource.organization_id })} />
+      <details ref={preferencePanel} className="utility-preferences"><summary aria-label="Display preferences">Display</summary><div className="utility-preference-panel"><div className="utility-clock"><WorldClock /></div><label className="density-selector"><span>Density</span><select aria-label="Display density" value={density} onChange={e => setDensity(e.target.value)}><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label></div></details>
+      <div className="workspace-role" aria-label="Workspace permissions">{configMode ? "Configuration access" : "Operations view"}</div>
       <div className="personal-workspace-actions">
       <button className="filter-button" type="button" onClick={() => setPersonal("profile")}>My profile</button>
       <button className="filter-button" type="button" onClick={() => setPersonal("help")}>Help</button>

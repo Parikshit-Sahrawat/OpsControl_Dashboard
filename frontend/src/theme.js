@@ -4,7 +4,7 @@ const systemTheme = () => window.matchMedia?.("(prefers-color-scheme: dark)").ma
 let explicitPreference = false;
 
 export function getTheme() {
-  return document.documentElement.dataset.theme || "dark";
+  return document.documentElement.dataset.theme || "light";
 }
 
 function applyTheme(value) {
@@ -17,7 +17,7 @@ export function initializeTheme() {
   let saved;
   try { saved = window.localStorage.getItem(KEY); } catch { /* Preferences remain usable without storage. */ }
   explicitPreference = valid(saved);
-  applyTheme(valid(saved) ? saved : systemTheme());
+  applyTheme(valid(saved) ? saved : "light");
 }
 
 export function setTheme(value) {
@@ -32,7 +32,7 @@ export function subscribeTheme(callback) {
   const storage = event => {
     if (event.key === KEY || event.key === null) {
       explicitPreference = valid(event.newValue);
-      applyTheme(valid(event.newValue) ? event.newValue : systemTheme());
+      applyTheme(valid(event.newValue) ? event.newValue : "light");
       callback();
     }
   };

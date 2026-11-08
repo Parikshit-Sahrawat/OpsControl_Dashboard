@@ -84,7 +84,7 @@ try {
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
-    1,
+    0,
   );
   await page.getByRole("button", { name: "Global environments" }).click();
   await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();

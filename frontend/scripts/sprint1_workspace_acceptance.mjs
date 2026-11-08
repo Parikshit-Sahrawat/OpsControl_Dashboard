@@ -1,0 +1,78 @@
+import assert from "node:assert/strict";
+import { readFile,writeFile } from "node:fs/promises";
+import {pathToFileURL} from "node:url";
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
+const f=JSON.parse(await readFile(process.env.V16_PRIVATE_DIR+'/browser-fixture.json','utf8'));
+const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE});
+const out=process.env.V16_EVIDENCE_DIR,base=process.env.V16_API_URL,checks=[],trace=[],shots=[];let inspected,phase='seed';
+async function login(name,password) {
+ const p=await browser.newPage({viewport:{width:1366,height:950}});inspected=p;
+ await p.addInitScript(id=>{localStorage.setItem('opscontrol.organizationIds',JSON.stringify([id]));localStorage.setItem('opscontrol.theme','light');},f.organization_id);
+ p.on('response',r=>{if(r.url().includes('/api/'))trace.push({phase,path:new URL(r.url()).pathname,status:r.status(),at:Date.now()});});
+ await p.goto(process.env.V16_UI_URL+'/#/resources/data-resources');
+ await p.getByLabel('Username',{exact:true}).fill(name);await p.getByLabel('Password',{exact:true}).fill(password);await p.getByRole('button',{name:'Sign in',exact:true}).click();await p.getByLabel('Search resources',{exact:true}).waitFor();return p;
+}
+async function shot(p,label,width){await p.setViewportSize({width,height:width<500?844:1000});await p.getByLabel('Search resources',{exact:true}).waitFor();const layout=await p.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,overflow:[...document.querySelectorAll('body *')].filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+1&&getComputedStyle(e).position!=='fixed'&&!e.closest('.table-wrap');}).slice(0,12).map(e=>({tag:e.tagName,cls:e.className,right:e.getBoundingClientRect().right}))}));assert.ok(layout.scroll<=width,'No page overflow: '+JSON.stringify(layout));await p.screenshot({path:out+'/'+label+'-'+width+'.png',fullPage:true});shots.push(label+'-'+width+'.png');}
+try {
+ const p=await login('v16-api-admin',f.password);const token=await p.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
+ const headers={Authorization:'Bearer '+token,'X-OpsControl-Customers':[f.organization_id,f.other_organization_id].join(',')};
+ async function api(path,method='GET',data,status=200){const r=await p.request.fetch(base+'/api/v1/'+path,{headers,method,data});assert.equal(r.status(),status);return status===204?null:r.json();}
+ const resources=[];
+ for(let i=1;i<=6;i++)resources.push(await api('unified/resources/vm','POST',{name:'Reference Compute '+i,organization_id:f.organization_id,environment:i<=3?'PROD':'DEV',hostname:'reference-'+i+'.invalid',address:'203.0.113.'+(100+i),os_type:i%2?'Windows':'Linux'},201));
+ await api('unified/resources/vm','POST',{name:'Foreign isolated sentinel',organization_id:f.other_organization_id,environment:'PROD',hostname:'foreign-reference.invalid',address:'203.0.113.199',os_type:'Linux'},201);
+ phase='resource filtering';
+ await p.getByLabel('Resource customer filter',{exact:true}).selectOption(f.organization_id);
+ await p.getByLabel('Search resources',{exact:true}).fill('Reference Compute');
+ await p.getByRole('button',{name:'Apply filters',exact:true}).click();
+ await p.getByText('6 matching resources',{exact:true}).waitFor();
+ await p.waitForURL(u=>u.searchParams.get('rm.search')==='Reference Compute');
+ await p.reload();await p.getByText('6 matching resources',{exact:true}).waitFor();assert.equal(await p.getByLabel('Search resources',{exact:true}).inputValue(),'Reference Compute');
+ await p.getByLabel('Resource environment filter',{exact:true}).selectOption('PROD');await p.getByText('3 matching resources',{exact:true}).waitFor();
+ await p.getByRole('button',{name:'Remove environment filter',exact:true}).click();await p.getByText('6 matching resources',{exact:true}).waitFor();
+ await p.getByRole('button',{name:'Advanced filters',exact:true}).click();await p.getByLabel('Configuration state filter',{exact:true}).selectOption('false');await p.getByText('0 matching resources',{exact:true}).waitFor();
+ await p.getByRole('button',{name:'Remove active filter',exact:true}).click();await p.getByText('6 matching resources',{exact:true}).waitFor();
+ checks.push('Real scoped environment/configuration/name filters, chips, counts, apply and URL reload persistence');
+ for(const w of [1366,1920,768,390])await shot(p,'admin-resources',w);
+ phase='global resource search';await p.setViewportSize({width:1366,height:950});
+ await p.keyboard.press('ControlOrMeta+k');let search=p.getByRole('dialog',{name:'Find a resource',exact:true});await search.waitFor();
+ await search.getByLabel('Global resource query',{exact:true}).fill('Reference Compute 1');
+ await search.getByRole('button',{name:/Reference Compute 1/}).waitFor();await search.getByLabel('Global resource query',{exact:true}).press('Enter');await search.waitFor({state:'hidden'});
+ await p.getByRole('region',{name:'Resource details',exact:true}).getByRole('heading',{name:'Reference Compute 1',exact:true}).waitFor();
+ await p.getByRole('button',{name:'Close details',exact:true}).click();
+ await p.keyboard.press('ControlOrMeta+k');search=p.getByRole('dialog',{name:'Find a resource',exact:true});await search.getByLabel('Global resource query',{exact:true}).fill('Foreign isolated sentinel');await search.getByText('No authorized resources match. Try a different resource name.',{exact:true}).waitFor();await p.keyboard.press('Escape');await search.waitFor({state:'hidden'});
+ checks.push('Keyboard global search queries actual selected tenant and opens exact resource; foreign-tenant zero results and Escape focus recovery');
+ phase='delayed tenant response';
+ let releaseOld, receivedOld;const oldReady=new Promise(resolve=>{receivedOld=resolve;});const oldRelease=new Promise(resolve=>{releaseOld=resolve;});
+ let held=false;const delayed=async route=>{const u=new URL(route.request().url());if(!held&&u.searchParams.get('organization_id')===f.organization_id){held=true;const response=await route.fetch();receivedOld();await oldRelease;try{await route.fulfill({response});}catch{/* Cancelled by the tenant switch. */}}else await route.continue();};
+ await p.route('**/api/v1/unified/resources?**',delayed);
+ await p.getByRole('button',{name:'Apply filters',exact:true}).click();await oldReady;
+ await p.getByLabel('Resource customer filter',{exact:true}).selectOption(f.other_organization_id);await p.getByLabel('Search resources',{exact:true}).fill('Foreign isolated sentinel');await p.getByText('1 matching resources',{exact:true}).waitFor();
+ releaseOld();await p.unroute('**/api/v1/unified/resources?**',delayed);assert.equal(await p.getByRole('button',{name:'Reference Compute 1',exact:true}).count(),0);
+ await p.getByRole('button',{name:'Foreign isolated sentinel',exact:true}).waitFor();
+ await p.getByLabel('Resource customer filter',{exact:true}).selectOption(f.organization_id);await p.getByLabel('Search resources',{exact:true}).fill('Reference Compute');await p.getByText('6 matching resources',{exact:true}).waitFor();
+ checks.push('Delayed real tenant-A HTTP response cannot overwrite tenant-B inventory after switching; both responses originate from authenticated backend');
+ phase='display preferences';const display=p.getByLabel('Display preferences',{exact:true});await display.click();await p.getByLabel('Display density',{exact:true}).selectOption('compact');await p.getByLabel('World clock timezone',{exact:true}).selectOption('UTC');assert.equal(await p.evaluate(()=>document.documentElement.dataset.density),'compact');await display.click();
+ await p.getByRole('button',{name:'Collapse sidebar',exact:true}).click();assert.equal(await p.evaluate(()=>document.documentElement.dataset.sidebar),'collapsed');await p.getByRole('button',{name:'Expand sidebar',exact:true}).click();
+ checks.push('Working density/timezone preferences and collapse/expand sidebar');
+ phase='catalogue package workflow';await p.getByRole('button',{name:'Monitoring Templates',exact:true}).click();await p.getByRole('heading',{name:'Monitoring Templates',exact:true}).waitFor();await p.getByRole('button',{name:'Create Template',exact:true}).click();
+ const editor=p.getByRole('dialog',{name:'Create Monitoring Template',exact:true});await editor.getByLabel('Template Name',{exact:true}).fill('Approved workspace policy');await editor.getByRole('button',{name:'Validate',exact:true}).click();
+ await editor.getByRole('button',{name:'Apply & Commit Changes',exact:true}).click();await editor.waitFor({state:'hidden'});
+ const card=p.getByRole('article').filter({hasText:'Approved workspace policy'});await card.getByRole('button',{name:'Package versions',exact:true}).click();await p.getByRole('region',{name:'Template package history',exact:true}).getByText(/v1/).waitFor();await p.getByRole('button',{name:'Close package history',exact:true}).click();
+ await p.screenshot({path:out+'/admin-template-catalogue.png',fullPage:true});checks.push('Actual admin template create/client validation/backend commit/reloaded immutable version history');
+ phase='viewer scope';const viewer=await login('v16-api-viewer',f.viewer_password);
+ await viewer.getByLabel('Search resources',{exact:true}).fill('Reference Compute');await viewer.getByText('6 matching resources',{exact:true}).waitFor();
+ assert.equal(await viewer.getByRole('button',{name:'Create Compute Instance',exact:true}).count(),0);assert.equal(await viewer.getByRole('row').filter({hasText:'Reference Compute 1'}).getByRole('button',{name:'Edit',exact:true}).count(),0);
+ assert.equal(await viewer.getByRole('button',{name:'Incidents',exact:true}).count(),0);
+ await viewer.keyboard.press('ControlOrMeta+k');let vs=viewer.getByRole('dialog',{name:'Find a resource',exact:true});await vs.getByLabel('Global resource query',{exact:true}).fill('Reference Compute 1');await vs.getByRole('button',{name:/Reference Compute 1/}).click();await viewer.getByRole('region',{name:'Resource details',exact:true}).getByRole('heading',{name:'Reference Compute 1',exact:true}).waitFor();
+ await viewer.getByRole('button',{name:'Close details',exact:true}).click();
+ for(const w of [1366,1920,768,390])await shot(viewer,'operator-resources',w);
+ checks.push('Same dataset/components in operator layout; no create/edit/incident UI controls; keyboard search and read-only exact resource selection');
+ phase='forged URL scope';await viewer.goto(process.env.V16_UI_URL+'/?rm.customer='+f.other_organization_id+'#/resources/data-resources');await viewer.getByRole('alert').filter({hasText:/bookmarked customer/}).waitFor();assert.equal(await viewer.getByRole('button',{name:'Foreign isolated sentinel',exact:true}).count(),0);await viewer.getByRole('button',{name:'Reset filters',exact:true}).click();await viewer.getByLabel('Search resources',{exact:true}).fill('Reference Compute');await viewer.getByText('6 matching resources',{exact:true}).waitFor();
+ checks.push('Forged foreign bookmark fails closed with actionable reset; never falls back silently to broader tenant scope');
+ phase='mobile keyboard drawer';await viewer.setViewportSize({width:390,height:844});await viewer.getByRole('button',{name:'Open navigation',exact:true}).click();await viewer.getByRole('navigation',{name:'Primary navigation'}).waitFor();await viewer.keyboard.press('Escape');assert.equal(await viewer.getByRole('button',{name:'Open navigation',exact:true}).getAttribute('aria-expanded'),'false');
+ checks.push('Responsive mobile drawer opens, traps focus and closes with Escape');
+ await p.goto(process.env.V16_UI_URL+'/#/pipelines/incidents');assert.equal(await p.getByText('Incident Correlation',{exact:true}).count(),0);
+ const vtoken=await viewer.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));const denied=await viewer.request.patch(base+'/api/v1/resource-management/data-sources/'+resources[0].data_source_id,{headers:{Authorization:'Bearer '+vtoken,'X-OpsControl-Customers':f.organization_id},data:{name:'viewer forbidden'}});assert.equal(denied.status(),403);
+ checks.push('Retired incident route cannot render management UI; viewer mutation still403 on actual API');
+ await writeFile(out+'/workspace-ui.json',JSON.stringify({status:'PASS',checks,screenshots:shots,trace,source_scope:'Resource Management/shared shell only; no later telemetry implementation or synthetic health',visual_comparison:'Text and supplied image reviewed; not pixel-identical; operator-specific owner visual acceptance pending'},null,2));console.log('SPRINT1 WORKSPACE BROWSER PASS '+checks.length+' groups');
+} catch(e){await inspected?.screenshot({path:out+'/workspace-ui-failure.png',fullPage:true});await writeFile(out+'/workspace-ui-failure.json',JSON.stringify({phase,type:e.name,trace},null,2));throw e;}finally{await browser.close();}

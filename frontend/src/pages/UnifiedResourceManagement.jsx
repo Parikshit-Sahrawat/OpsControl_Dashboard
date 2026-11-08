@@ -11,6 +11,10 @@ import EventDelivery from "./EventDelivery";
 import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
 import CollectorControl from "./CollectorControl";
 import ResourceManagementV2 from "./ResourceManagementV2";
+import ResourceTemplateConfiguration from "../components/ResourceTemplateConfiguration";
+import TemplateCatalog from "../components/TemplateCatalog";
+import ResourceFilters from "../components/ResourceFilters";
+import { readResourceFilters, writeResourceFilters, validateResourceFilters, configurationCapable } from "../workspaceFilters";
 import DomainParameters, { Field } from "./DomainParameters";
 const base = "/api/v1/unified";
 const domainNames = {
@@ -113,13 +117,17 @@ function Modal({ title, onClose, children, focus = true, workspace = false }) {
     </div>
   );
 }
-export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange }) {
+export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange, resourceSelection, onResourceSelectionHandled }) {
   const [area, setArea] = useState(section || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
-    [domain, setDomain] = useState("VM"),
+    [domain, setDomain] = useState(() => readResourceFilters(window.location.search).domain),
     [customers, setCustomers] = useState([]),
-    [customer, setCustomer] = useState(""),
-    [environment, setEnvironment] = useState(""),
-    [search, setSearch] = useState(""),
+    [customer, setCustomer] = useState(() => readResourceFilters(window.location.search).customer),
+    [environment, setEnvironment] = useState(() => readResourceFilters(window.location.search).environment),
+    [search, setSearch] = useState(() => readResourceFilters(window.location.search).search),
+    [searchQuery, setSearchQuery] = useState(() => readResourceFilters(window.location.search).search),
+    [activeState, setActiveState] = useState(() => readResourceFilters(window.location.search).active),
+    [authorizedLoaded, setAuthorizedLoaded] = useState(false),
+    [customerError, setCustomerError] = useState(""),
     [offset, setOffset] = useState(0),
     [data, setData] = useState(null),
     [error, setError] = useState(""),
@@ -145,17 +153,20 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       ? null : customer ? [customer] : customers.map(c => c.id));
     return () => setAdministrativeCustomers(null);
   },[area,customer,customers]);
+  const previousSection = useRef(section);
   const seq = useRef(0);
   const control = (path, method, payload, options={}) => scopedControl(path, method, payload, {...options,customerIds:customer?[customer]:customers.map(c=>c.id)});
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
   useEffect(() => {
-    if (["organizations", "resources", "collectors", "parameters", "rules", "delivery"].includes(section)) {
+    if (["organizations", "resources", "collectors", "parameters", "rules", "delivery", "templates"].includes(section)) {
       setArea(section);
       setSelected(null);
       setCollector(null);
       setSource(null);
-      setSearch("");
+      setForm(null);
+      if (previousSection.current !== section) setSearch("");
+      previousSection.current = section;
       setOffset(0);
     }
   }, [section]);
@@ -170,35 +181,61 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   };
   useEffect(() => {
     let live = true;
+    setAuthorizedLoaded(false); setCustomerError("");
     fetchAuthorizedCustomers()
-      .then((v) => live && setCustomers(v))
-      .catch((e) => live && setError(e.message));
+      .then(v => { if(live) { setCustomers(v); setAuthorizedLoaded(true); } })
+      .catch(e => { if(live) { setCustomers([]); setCustomerError(e.message); setAuthorizedLoaded(true); } });
     return () => {
       live = false;
     };
   }, [reload, user.authorization_revision]);
+  useEffect(() => { const timer = setTimeout(() => setSearchQuery(search), 250); return () => clearTimeout(timer); }, [search]);
+  useEffect(() => {
+    const next = writeResourceFilters(window.location.search, { customer, environment, search: searchQuery, active: activeState, domain });
+    window.history.replaceState(null, "", window.location.pathname + (next ? "?" + next : "") + window.location.hash);
+  }, [customer, environment, searchQuery, activeState, domain]);
+  useEffect(() => {
+    const restore = () => { const f=readResourceFilters(window.location.search);setDomain(f.domain);setCustomer(f.customer);setEnvironment(f.environment);setSearch(f.search);setActiveState(f.active); };
+    window.addEventListener("popstate",restore);return()=>window.removeEventListener("popstate",restore);
+  }, []);
+  useEffect(() => {
+    if (!resourceSelection?.id || !authorizedLoaded) return;
+    const controller = new AbortController(); let live=true;
+    if (!customers.some(c=>c.id===resourceSelection.organizationId)) { setError("The selected resource customer is unavailable in this authorized scope."); return; }
+    if (customer !== resourceSelection.organizationId || domain !== resourceSelection.domain) { setCustomer(resourceSelection.organizationId); setDomain(resourceSelection.domain); return; }
+    scopedControl(base+"/resources/"+resourceSelection.id,"GET",undefined,{customerIds:[resourceSelection.organizationId],signal:controller.signal}).then(v=>{
+      if(live && v.organization_id===resourceSelection.organizationId) {setSelected(v);setArea("resources");onResourceSelectionHandled?.();}
+    }).catch(e=>{if(live && e.name!=="AbortError")setError(e.message);});
+    return()=>{live=false;controller.abort();};
+  }, [resourceSelection?.id, resourceSelection?.organizationId, resourceSelection?.domain, customer, domain, authorizedLoaded, user.authorization_revision]);
   useEffect(() => {
     const version = ++seq.current;
     setData(null);
     setError("");
-    if (!["resources", "parameters", "rules"].includes(area)) return;
+    if (!["resources", "parameters", "rules"].includes(area) || !authorizedLoaded) return;
+    if (customerError) { setError(customerError); return; }
+    const invalid=validateResourceFilters({customer,environment,active:activeState,domain},customers);
+    if(invalid) {setError(invalid);return;}
+    if(!customers.length) {setData({items:[],total:0,has_more:false});return;}
+    const controller=new AbortController();
     const q = new URLSearchParams({
       domain,
       limit: "50",
       offset: String(offset),
-      search,
+      search: searchQuery,
     });
     if (customer) q.append("organization_id", customer);
     if (environment) q.set("environment", environment);
-    control(base + "/resources?" + q)
+    if (activeState) q.set("active",activeState);
+    control(base + "/resources?" + q,"GET",undefined,{signal:controller.signal})
       .then((v) => {
         if (seq.current === version) setData(v);
       })
       .catch((e) => seq.current === version && setError(e.message));
     return () => {
-      seq.current++;
+      seq.current++; controller.abort();
     };
-  }, [area, domain, customer, environment, search, offset, reload, customers]);
+  }, [area, domain, customer, environment, searchQuery, activeState, offset, reload, customers, authorizedLoaded, customerError]);
   useEffect(() => {
     setSelected(null);
     setLegacyConfiguration(false);
@@ -283,6 +320,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     />
   );
   if (form) return formView;
+  if (area === "templates") return <TemplateCatalog user={user} />;
   return (
     <div className="resource-management-v2 unified-resources">
       {!["organizations", "collectors"].includes(area) && <div className="page-heading">
@@ -350,47 +388,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           parameter version.
         </p>
       )}
-      <div className="resource-toolbar" hidden={area === "delivery"}>
-        <Field label="Resource customer filter">
-          <select
-            value={customer}
-            onChange={(e) => {
-              setCustomer(e.target.value);
-              setOffset(0);
-            }}
-          >
-            <option value="">All authorized customers</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Resource environment filter">
-          <select
-            value={environment}
-            onChange={(e) => {
-              setEnvironment(e.target.value);
-              setOffset(0);
-            }}
-          >
-            <option value="">All environments</option>
-            {["PROD", "QA", "TEST", "DEV", "SANDBOX"].map((e) => (
-              <option key={e}>{e}</option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Search resources">
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setOffset(0);
-            }}
-          />
-        </Field>
-      </div>
+      {area !== "delivery" && <ResourceFilters customers={customers} customer={customer} environment={environment} search={search} active={activeState} total={data?.total} busy={!data&&!error} onApply={() => {setSearchQuery(search);refresh();}} onChange={(field,value)=>{setOffset(0);setSelected(null);if(field==="reset"){setCustomer("");setEnvironment("");setSearch("");setActiveState("");setDomain("VM");}else if(field==="customer")setCustomer(value);else if(field==="environment")setEnvironment(value);else if(field==="active")setActiveState(value);else setSearch(value);}} />}
+      {area === "resources" && <div className="workspace-summary-grid" aria-label="Resource configuration summary"><article className="card"><span>Matching resources</span><strong>{data?.total ?? "—"}</strong><small>Authorized current filters</small></article><article className="card"><span>Loaded on this page</span><strong>{data?.items.length ?? "—"}</strong><small>Paginated inventory</small></article><article className="card"><span>Workspace access</span><strong>{configurationCapable(user,customer?[customer]:customers.map(c=>c.id)) ? "Configuration" : "Read only"}</strong><small>Monitoring health requires separate evidence</small></article></div>}
       {error && (
         <p role="alert" className="error-banner">
           {error}
@@ -1598,6 +1597,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               <p>Saving configuration does not verify native collection or activate monitoring.</p>
             </div>
           )}
+          {domain === "VM" && created?.data_source_id && hasPermission(user, "templates.view", created.organization_id) && <ResourceTemplateConfiguration key={created.data_source_id + user.authorization_revision} sourceId={created.data_source_id} organizationId={created.organization_id} user={user} />}
           <label>
             <input
               type="checkbox"

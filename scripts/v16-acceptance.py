@@ -424,6 +424,9 @@ try:
                         time.sleep(0.2)
                 else:
                     raise RuntimeError("Owned V1.6 UI readiness failed")
+                if os.getenv("V16_SPRINT1_UI") == "1":
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+                    print(run(["node", "frontend/scripts/sprint1_workspace_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":
                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
@@ -466,6 +469,9 @@ try:
         )
     )
     run([python, "-m", "alembic", "check"], root / "backend")
+    env["V16_OWNED_CONTAINER"] = name
+    env["V16_EVIDENCE_DIR"] = str(out)
+    run([python, "-m", "scripts.sprint1_restore_probe"], root / "backend")
     (out / "report.json").write_text(
         json.dumps(
             {

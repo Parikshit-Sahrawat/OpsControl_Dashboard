@@ -65,21 +65,16 @@ try {
  const adminHeaders={Authorization:'Bearer '+adminToken,'X-OpsControl-Customers':north};
  const incidents=await page.request.get(api+'/api/v1/native-incidents?status=CLOSED&limit=100&organization_id='+north,{headers:adminHeaders});assert.equal(incidents.status(),200);
  const expected=await incidents.json();assert.ok(expected.total>=61);assert.equal(expected.items.length,expected.total);
- await page.getByRole('button',{name:'Incidents',exact:true}).click();await page.getByLabel('Incident status',{exact:true}).selectOption('CLOSED');
- const ids=[];
- for(let offset=0;offset<expected.total;offset+=50){
-  const count=Math.min(50,expected.total-offset);
-  await page.getByText(`${offset+1}–${offset+count} of ${expected.total} incidents`,{exact:true}).waitFor();
-  const pageIds=await page.locator('.native-incidents tbody td:first-child small').allTextContents();assert.equal(pageIds.length,count);ids.push(...pageIds);
-  if(offset+count<expected.total)await page.getByRole('button',{name:'Next',exact:true}).click();
- }
- assert.equal(new Set(ids).size,ids.length);assert.deepEqual([...ids].sort(),expected.items.map(x=>x.id).sort());
- assert.equal(await page.getByRole('button',{name:'Next',exact:true}).isDisabled(),true);
- await page.screenshot({path:out+'/incident-pagination-last-page.png',fullPage:true});
+ // Scope-authorized UI retirement; retain independently executed backend evidence/tenant checks.
+ assert.equal(await page.getByRole('button',{name:'Incidents',exact:true}).count(),0);
+ const ids=expected.items.map(x=>x.id);
+ assert.equal(new Set(ids).size,ids.length);
+ await page.goto(process.env.RELEASE_UI_BASE+'/#/pipelines/incidents');
+ assert.equal(await page.getByRole('heading',{name:'Native Incidents',exact:true}).count(),0);
+ await page.screenshot({path:out+'/excluded-incident-ui.png',fullPage:true});
  const hidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:southHeaders});assert.equal(hidden.status(),403);
  const scopedHidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:{...adminHeaders,'X-OpsControl-Customers':southHeaders['X-OpsControl-Customers']}});assert.equal(scopedHidden.status(),404);
- await page.getByLabel('Incident status',{exact:true}).selectOption('OPEN');await page.getByRole('button',{name:'Previous',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Previous',exact:true}).isDisabled(),true);
- checks.push('UI-021 real multi-page filtered incident totals, distinct IDs, last-page bounds, filter reset and cross-tenant denial');
+ checks.push('Approved incident UI exclusion; retained background record totals/unique IDs and cross-tenant backend denial');
  assert.deepEqual(errors,[]);
  await writeFile(out+'/full-closure-browser.json',JSON.stringify({status:'PASS',checks,groups:checks.length,page_errors:errors,limitations:['Preference read failure is explicitly injected for UI recovery only','Appearance is browser-local, not cross-device profile synchronization','No provider certification or new account/password policy']},null,2));
  console.log('FULL DEVELOPMENT CLOSURE BROWSER PASS',checks.length);

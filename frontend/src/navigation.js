@@ -5,6 +5,7 @@ import { canNavigate, hasPermission } from "./permissions.js";
 export const SECTION_ROUTES = {
   "#/resources/organizations": ["Resource Management", "organizations"],
   "#/resources/data-resources": ["Resource Management", "resources"],
+  "#/resources/templates": ["Resource Management", "templates"],
   "#/resources/collectors": ["Resource Management", "collectors"],
   "#/resources/event-parameters": ["Resource Management", "parameters"],
   "#/resources/alert-rules": ["Resource Management", "rules"],
@@ -19,6 +20,7 @@ export const SECTION_ROUTES = {
 export function canOpenSection(user, page, section) {
   if (!canNavigate(user, page)) return false;
   if (page === "Resource Management") {
+    if (section === "templates") return hasPermission(user, "templates.view");
     if (section === "organizations") return hasPermission(user, "customers.view");
     if (section === "collectors")
       return hasPermission(user, "collectors.view") && hasPermission(user, "resources.view");
