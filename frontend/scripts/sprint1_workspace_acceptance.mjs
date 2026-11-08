@@ -53,7 +53,8 @@ try {
  checks.push('Delayed real tenant-A HTTP response cannot overwrite tenant-B inventory after switching; both responses originate from authenticated backend');
  phase='display preferences';const display=p.getByLabel('Display preferences',{exact:true});await display.click();await p.getByLabel('Display density',{exact:true}).selectOption('compact');await p.getByLabel('World clock timezone',{exact:true}).selectOption('UTC');assert.equal(await p.evaluate(()=>document.documentElement.dataset.density),'compact');await display.click();
  await p.getByRole('button',{name:'Collapse sidebar',exact:true}).click();assert.equal(await p.evaluate(()=>document.documentElement.dataset.sidebar),'collapsed');await p.getByRole('button',{name:'Expand sidebar',exact:true}).click();
- checks.push('Working density/timezone preferences and collapse/expand sidebar');
+ await p.getByRole('button',{name:'Dark theme',exact:true}).click();for(const w of [1366,390])await shot(p,'admin-resources-dark',w);await p.getByRole('button',{name:'Light theme',exact:true}).click();await p.setViewportSize({width:1366,height:950});
+ checks.push('Working density/timezone preferences and collapse/expand sidebar; retained dark theme at desktop and mobile');
  phase='catalogue package workflow';await p.getByRole('button',{name:'Monitoring Templates',exact:true}).click();await p.getByRole('heading',{name:'Monitoring Templates',exact:true}).waitFor();await p.getByRole('button',{name:'Create Template',exact:true}).click();
  const editor=p.getByRole('dialog',{name:'Create Monitoring Template',exact:true});await editor.getByLabel('Template Name',{exact:true}).fill('Approved workspace policy');await editor.getByRole('button',{name:'Validate',exact:true}).click();
  await editor.getByRole('button',{name:'Apply & Commit Changes',exact:true}).click();await editor.waitFor({state:'hidden'});
