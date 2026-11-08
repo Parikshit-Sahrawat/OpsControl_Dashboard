@@ -124,7 +124,15 @@ class SourceConfigurationContract(unittest.TestCase):
         )
 
     def call(
-        self, method, path, body=None, token=None, key=None, auth=True, selected=None
+        self,
+        method,
+        path,
+        body=None,
+        token=None,
+        key=None,
+        auth=True,
+        selected=None,
+        expected_revision=None,
     ):
         headers = {"Content-Type": "application/json"}
         if auth:
@@ -134,6 +142,8 @@ class SourceConfigurationContract(unittest.TestCase):
             )
         if key:
             headers["Idempotency-Key"] = str(key)
+        if expected_revision is not None:
+            headers["Expected-Revision"] = str(expected_revision)
         req = Request(
             os.environ["ETL_SCOPE_API_URL"] + "/api/v1/" + path,
             method=method,
@@ -256,6 +266,24 @@ class SourceConfigurationContract(unittest.TestCase):
                 428,
             )
         self.assertEqual(self.call("GET", self.base)[1]["revision"], 2)
+        for revision, prefix in enumerate(
+            ("monitoring", "resource-management"), start=2
+        ):
+            code, changed = self.call(
+                "PATCH",
+                f"{prefix}/data-sources/{self.sid}",
+                {"description": f"Atomic adapter {revision}"},
+                key=uuid4(),
+                expected_revision=revision,
+            )
+            self.assertEqual(code, 200, changed)
+            self.assertEqual(changed["configuration_revision"], revision + 1)
+            self.assertEqual(
+                self.call("GET", self.base + f"/revisions/{revision + 1}")[1][
+                    "document"
+                ]["source_context"]["description"],
+                f"Atomic adapter {revision}",
+            )
 
     def test_preview_context_is_nonpersistent_and_identity_fields_cannot_be_forged(
         self,
