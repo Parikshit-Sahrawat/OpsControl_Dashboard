@@ -1,0 +1,3314 @@
+{
+  "schema": 1,
+  "policy": "Unknown tests run broad existing suites. No test retirement authorized by a filename. Source reviews required before changing classifications.",
+  "authority": "Owner approved CI001 implementation and all-PR gates; b8c1615340828d1d3031c635fb319565dd9f222a",
+  "protected_assertions": {
+    "backend/tests/test_eks_discovery.py": [
+      "test_even_platform_admin_cannot_discover_removed_platform",
+      "self.assertFalse(hasattr"
+    ],
+    "backend/tests/test_kubernetes_cluster_associations.py": [
+      "test_legacy_history_identity_revision_and_delete_guards",
+      "UPDATE kubernetes_cluster_association_decisions"
+    ],
+    "backend/tests/test_removed_platform_scope.py": [
+      "test_nested_source_template_and_collector_configs_are_rejected"
+    ],
+    "backend/tests/test_native_incidents_v15.py": [
+      "test_service_denies_cross_customer",
+      "test_duplicate_worker_lease_performs_no_writes"
+    ],
+    "backend/scripts/provider_unit_probe.py": [
+      "def test_aws",
+      "def test_pentaho",
+      "Unsafe or invalid provider config accepted"
+    ]
+  },
+  "tests": {
+    "backend/tests/test_access_control.py::test_transaction_denial_releases_session_and_authorization_lock": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_agent_transport_keeps_its_separate_handler_authentication": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_default_deny_and_customer_action_scope": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_unknown_routes_are_denied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_every_existing_http_route_has_an_explicit_policy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_access_administrator_defaults_have_no_operational_permission": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_access_control.py::test_mass_assignment_and_weak_password_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_activation_hydration.py::test_persisted_selection_metadata_excludes_configuration_and_secrets": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_activation_hydration.py::test_missing_activation_returns_not_configured": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_activation_hydration.py::test_unauthorized_source_cannot_read_activation_metadata": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_activation_hydration.py::test_legacy_activation_infers_template_selection_from_persisted_plan": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_reenrollment.py::test_same_identity_force_keeps_checkpoint_and_private_backup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_reenrollment.py::test_normal_restart_does_not_consume_new_enrollment": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_reenrollment.py::test_different_resource_never_overwrites_existing_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_private_write_and_checkpoint_survives_apply": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_invalid_configuration_never_stops_working_runtime": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_failed_runtime_start_restores_previous_yaml": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_runtime_launch_exception_restores_previous_yaml": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_first_runtime_launch_exception_leaves_no_unapproved_config": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_missing_or_private_log_path_is_not_healthy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_offline_restart_rejects_modified_local_yaml": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_offline_restart_uses_validated_private_configuration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_rotation_grace_expires": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_handoff_flag_follows_actual_config_for_validate_start_and_rollback": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_offline_handoff_restart_uses_same_checked_contract": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_agent_v15.py::test_applied_is_not_verified_without_all_receipts": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_get_defaults_preserve_existing_remote_worker_protocol": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_unsupported_or_unsafe_api_configuration_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_bounded_latency_assertion_is_retained": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_head_and_allowlisted_headers_are_valid": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_header_injection_is_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_monitoring_config.py::test_valid_explicit_get_preserves_status_and_timeout": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_service_health_projection.py::test_stopped_probe_with_recent_success_is_not_healthy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_head_uses_pinned_tls_and_only_approved_header": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_legacy_get_preserves_transport_signature": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_latency_assertion_marks_slow_probe_failed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_invalid_latency_limit_is_denied_before_dns": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_agent_executes_v2_claim_under_local_policy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_agent_rejects_server_policy_expansion": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_untrusted_header_is_denied_before_dns": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_crlf_injection_is_denied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_api_worker_v2.py::test_post_is_denied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_native_partial_three_of_three_idempotent_and_empty_preserves": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_conflicting_and_out_of_order_claims_preserve_projection_and_raw_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_reordered_native_step_copies_and_nullable_metrics_survive_api": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_unknown_observation_never_resolves_verified_failure": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_paged_sources_collectors_scoped_totals_and_legacy_shape": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_dependency_preview_and_pages_preserve_full_scoped_history": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_inline_platform_creation_is_atomic_and_does_not_change_other_scope": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_audit_remediation.py::test_native_xml_fenced_source_to_attempt_steps_and_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_five_schemas_and_advanced_transport": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_file_checkpoints_are_path_stable": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_scrape_timeout_filter_labels_and_verified_tls": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_filelog_handoff_is_synchronous_persistent_and_backpressured": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_absent_or_disabled_filelog_retains_nonfile_pipeline_behavior": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_concurrent_five_methods_reference_unique_receivers": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_legacy_short_interval_gets_compatible_timeout": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_invalid_source_configurations_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_actual_contrib_accepts_five_methods": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_actual_scrape_and_log_rotation_truncation_restart": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_actual_quiet_file_is_idle_and_missing_file_is_error": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_idle_observation_is_distinct_from_real_reception": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_observations_are_closed_and_bounded": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_collection_v15.py::test_selected_signals_are_enforced_for_attributed_telemetry": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_condition_refresh.py::test_existing_active_condition_reenables_only_explicitly_approved_rule": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_condition_refresh.py::test_disabled_setup_cannot_open_or_reenable_alert": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_database_integrity.py::test_restore_text_array_cast_rewrite_is_equivalent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_database_integrity.py::test_changed_allowed_values_and_operator_are_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_database_integrity.py::test_unapproved_constraint_definition_remains_byte_exact": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_database_integrity.py::test_unvalidated_constraint_is_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_eks_discovery.py::test_removed_provider_adapter_and_capability": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_eks_discovery.py::test_even_platform_admin_cannot_discover_removed_platform": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_eks_discovery.py::test_customer_admin_still_cannot_use_deployment_identity": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_in_app_notifications.py::test_malformed_or_unbounded_targets_fail_validation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_in_app_notifications.py::test_plain_credentials_and_unknown_settings_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_in_app_notifications.py::test_inactive_foreign_provider_or_customer_denied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_in_app_notifications.py::test_authorized_active_recipient_accepted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_in_app_notifications.py::test_audience_respects_opt_out_and_current_customer_permission": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_in_app_notifications.py::test_fanout_is_bounded_and_mismatched_evidence_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_infrastructure_health_projection.py::test_stopped_collector_with_recent_success_is_not_healthy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_kubernetes_cluster_associations.py::test_customer_isolation_and_forged_selection": {
+      "classification": "LEGACY_PRESERVATION",
+      "disposition": "RUN",
+      "reason": "Historical scope and append-only preservation; never skip"
+    },
+    "backend/tests/test_kubernetes_cluster_associations.py::test_legacy_resource_boundaries_and_foreign_write_denied": {
+      "classification": "LEGACY_PRESERVATION",
+      "disposition": "RUN",
+      "reason": "Historical scope and append-only preservation; never skip"
+    },
+    "backend/tests/test_kubernetes_cluster_associations.py::test_legacy_history_identity_revision_and_delete_guards": {
+      "classification": "LEGACY_PRESERVATION",
+      "disposition": "RUN",
+      "reason": "Historical scope and append-only preservation; never skip"
+    },
+    "backend/tests/test_managed_telemetry.py::test_same_type_methods_have_independent_receiver_identities": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_only_explicit_signals_enabled_and_disabled_methods_excluded": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_binding_paths_and_os_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_no_raw_credentials_or_invalid_signal_fields": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_invalid_duplicate_listeners_and_exporter_origins": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_itsm_routes_removed_alert_routes_present": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_percentage_rule_requires_valid_minimum_duration_count": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_actual_file_access_missing_source_and_private_state": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_management_secret_cannot_be_scrape_authentication": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_sustained_breach_requires_complete_duration_and_contiguous_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_dynamic_baseline_requires_history_and_combined_uses_stricter_threshold": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_managed_telemetry.py::test_unavailable_collector_validator_fails_with_actionable_safe_error": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_empty_evidence_never_proves_recovery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_stable_fresh_resolved_evidence_verifies": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_stale_alert_uses_real_fresh_condition": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_future_evidence_cannot_verify": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_active_or_evidenceless_condition_blocks": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_observation_window_cannot_be_skipped": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_open_alert_blocks": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_state_graph_forbids_unverified_shortcuts": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_stale_revision_preserves_state": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_recovery_failure_preserves_state": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_service_denies_cross_customer": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_service_denies_unauthenticated": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_acknowledgement_requires_exact_permission": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_mass_assignment_is_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_authorized_transition_uses_authenticated_actor": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_pending_detail_is_reused_before_flush": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_recovery_rejects_resolved_transient_rebreach": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_recovery_rejects_unhealthy_sample_inside_window": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_recovery_rejects_nan_sample": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_native_incidents_v15.py::test_duplicate_worker_lease_performs_no_writes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notification_transport.py::test_webhook_verifies_dns_identity_and_has_retry_idempotency_key": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notification_transport.py::test_webhook_rejected_or_oversized_response_never_reports_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notification_transport.py::test_webhook_managed_authentication_and_header_injection_rejection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notification_transport.py::test_smtp_tls_authentication_message_identity_and_header_sanitization": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notification_transport.py::test_destination_revocation_prevents_delivery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_retired_itsm_cannot_deliver": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_only_secure_webhooks": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_email_recipient_and_secret_boundaries": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_valid_smtp_configuration_accepts_real_address_syntax": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_idempotent_in_app_reference": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_notifications.py::test_provider_error_never_contains_secrets": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_native_inventory_extracts_job_despite_empty_transformations": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_native_transformation_outcomes_and_step_metrics": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_transformation_missing_counters_and_conflicts_remain_unknown": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_supplied_pdi_94_native_job_status_fixtures": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_native_fixture_scoped_read_only_poll_and_idempotent_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_native_result_requires_consistent_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_legacy_adapter_preserves_step_copy_identity_on_reorder": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_native_step_observation_shape_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_missing_zero_and_malformed_numbers_stay_distinct": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_base64_gzip_cdata_whitespace_and_redaction": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_inventory_empty_multiple_and_explicit_only_use_get": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_partial_inventory_ingests_observed_runs_without_claiming_no_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_monitoring_transport_failure_is_not_execution_failure": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_repeated_child_names_do_not_merge_or_invent_native_uuid": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_carte_compat.py::test_r1_rejects_wrong_status_root": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_native_lifecycle_outcome_and_completeness_are_separate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_unattested_observation_never_self_certifies_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_names_and_time_matching_configuration_cannot_group_r1_invocations": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_declared_retry_authority_needs_native_scheduler_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_native_completion_proof_and_cancellation_are_monitoring_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_routes_require_view_or_investigation_not_resource_creation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_contracts.py::test_native_cancelled_terminal_does_not_invent_sla_success_or_staleness": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_single_success_has_canonical_history_attempt_and_aliases": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_verified_failed_attempt_pending_then_success_after_retry": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_verified_final_failure_exhausted_is_terminal": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_missing_retry_authority_never_implies_exhaustion": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_process_exit_alone_unknown_and_scheduler_alone_not_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_duplicate_observations_keep_raw_records_but_not_duplicate_attempts_revisions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_out_of_order_start_and_earlier_retry_do_not_regress_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_unverified_retry_proposal_remains_separate_and_quarantined": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_conflicting_native_alias_does_not_retarget_confirmed_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_native_retry_revision_advances_without_rewriting_prior_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_manual_recovery_keeps_failed_original_and_distinct_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_many_to_many_recovery_links_and_reversal_are_append_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_recovery_self_confirmation_and_viewer_mutation_are_denied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_cross_customer_history_and_relation_are_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_identity_quarantine_blocks_recovery_confirmation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_revision_and_alias_mutations_and_history_deletion_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_legal_hold_and_referenced_raw_history_survive_cleanup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_stale_source_generation_does_not_accept_attempt_or_advance_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_cancelled_is_native_outcome_without_execution_controls": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_execution_r1.py::test_known_retry_predecessor_cannot_point_back_from_an_earlier_attempt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_contracts.py::test_spring_gap_skipped_and_fall_fold_is_explicit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_contracts.py::test_schedule_authority_not_implicitly_configured": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_contracts.py::test_native_schedule_requires_immutable_identity_inventory_and_hash": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_contracts.py::test_replay_privileges_not_implicitly_inherited": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_contracts.py::test_historical_worker_failure_does_not_prevent_live_alert_delivery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_historical_failure_obligation_keeps_occurrence_discovery_and_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_delivery_retries_audits_and_recipient_scoped_inbox": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_conflicted_failure_cannot_queue_or_deliver_authoritative_notice": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_queued_notice_blocked_if_identity_later_quarantined": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_recipient_access_revocation_is_respected_at_delivery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_notice_and_inbox_are_immutable_under_legal_hold": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_late_failure_keeps_closed_incident_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_explicit_expectation_grace_and_legitimate_no_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_unhealthy_or_suspended_collection_never_infers_no_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_unknown_and_manual_schedule_not_native_success_or_no_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_verified_native_schedule_and_freshness": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_provider_replay_explicitly_unsupported": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_bounded_reconciliation_preserves_live_and_physical_recovery_cursors": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_beyond_bound_requires_independent_approval": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_live_priority_and_holds_fail_closed_without_cursor_advance": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_stale_generation_or_fence_rejects_replay": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_notification_claims_and_completions_are_fenced": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_schedule_occurrence_does_not_claim_attempt_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_manual_mode_creates_no_expected_occurrences": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_persisted_occurrence_authority_cannot_be_rewritten": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_shared_holds_compose_and_no_failover_is_possible": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_replay_preparation_failure_keeps_live_health_and_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_stale_replay_cleanup_cannot_release_replacement_owner": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_historical_failure_never_drives_live_incident_conditions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_replay_batch_bound_resumes_cursor_without_starving_live_collection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_history_r1.py::test_incomplete_poll_does_not_prove_no_run_despite_idle_health": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_contracts.py::test_cause_requires_occurrence_authority_and_hash": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_contracts.py::test_unverified_cause_cannot_correlate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_contracts.py::test_root_scope_and_proof_are_exact": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_contracts.py::test_assessment_results_are_independent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_contracts.py::test_assessment_input_requires_revision_key_and_bounded_period": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_verified_failure_creates_native_incident_and_replay_is_idempotent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_common_root_groups_distinct_failures_and_preserves_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_unrelated_same_job_and_time_stay_separate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_waiting_for_retry_creates_no_terminal_incident": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_historical_root_never_reopens_resolved_incident": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_conflicted_failure_cannot_create_authoritative_association": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_manual_recovery_preserves_failed_original_and_requires_observation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_unhealthy_monitoring_blocks_and_resets_window": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_incomplete_recovery_is_not_restoration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_stale_idempotent_and_unauthorized_assessments": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_failure_and_assessment_evidence_is_immutable": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_distinct_failure_observations_are_all_preserved": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_unhealthy_downstream_dependency_blocks_recovery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_gap_in_observation_restarts_period": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_missing_schedule_compliance_blocks_validation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_conflicting_recovery_evidence_blocks_validation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_current_source_requires_complete_receipt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_concurrent_assessments_serialize_revision": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_live_failure_after_closed_root_creates_new_episode": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_incident_r1.py::test_concurrent_correlation_preserves_single_incident": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_metadata_registration.py::test_canonical_monitoring_resource_is_registered": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_metadata_registration.py::test_pentaho_history_columns_and_scoped_fk_resolve": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_cli_start_and_exit_do_not_invent_completion": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_cli_bound_native_result_is_locally_normalized": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_pid_name_and_close_timestamps_are_not_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_identity_scopes_customer_authority_environment_workload_epoch": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_scope_mismatch_and_unsupported_agent_os_are_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_pan_and_windows_remain_distinct_from_kitchen": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_raw_command_credentials_are_never_persisted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_server_scheduler_and_repository_never_assert_execution_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_server_unknown_authority_missing_hash_and_universal_endpoint_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_unknown_build_family_and_schema_versions_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_parses_job_and_transformation_without_certification": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_missing_errors_unknown_and_stopped_never_become_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_wrong_native_id_epoch_and_workload_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_unsafe_xml_oversize_dtd_entities_and_alternate_encoding_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_inventory_is_advisory_and_not_complete_persistent_discovery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_only_fixed_get_status_paths_and_safe_escaped_parameters": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_reader_enforces_local_policy_tls_auth_and_control_endpoint_deny": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_unbound_customer_cannot_collect": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_context_validation_is_additive_legacy_and_other_eight_unchanged": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_surface_method_and_host_cannot_bypass_canonical_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_exact_build_surface_proof_is_additional_not_static_certification": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_customer_bound_bridge_passes_scope_before_native_routing": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_unauthenticated_or_other_customer_agent_is_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_unchanged_status_does_not_repeat_evidence_and_epoch_continuity_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_carte_tls_failure_is_structured_and_body_not_logged": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_executable_and_scheduler_provenance_without_retry_grouping": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_r1.py::test_runtime_profile_api_rejects_wrong_build_before_marking_certified": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_contracts.py::test_claim_categories_do_not_mix_identity_outcomes_and_recovery": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_contracts.py::test_granular_permission_not_granted_to_existing_investigators": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_contracts.py::test_conflict_projection_guard_does_not_query_or_modify_outcome": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_contracts.py::test_review_input_no_override_fields_or_workload_actions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_contracts.py::test_authority_integrity_snapshot_required_for_reviewed_correction": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_equal_authority_conflict_pins_last_projection_and_both_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_weaker_outcome_cannot_override_verified_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_verified_correction_is_append_only_and_idempotent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_reject_preserves_outcome_and_defer_does_not_resolve": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_stale_revision_and_changed_idempotency_are_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_concurrent_reviewers_have_one_committed_winner": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_alias_collision_never_reassigns_confirmed_aliases": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_verified_legacy_adoption_requires_explicit_review": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_retry_authority_conflict_not_resolvable_as_execution_outcome": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_identity_quarantine_blocks_outcome_correction": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_ordinary_investigator_has_no_implicit_adjudication_privilege": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_cross_customer_decision_denied_and_database_fk_rejects": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_review_context_decisions_and_raw_history_are_immutable": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_duplicate_and_late_start_do_not_clear_conflict_or_regress": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_legal_hold_pins_unverified_review_raw_without_attempt_revision": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_closed_incident_not_reopened_by_evidence_correction": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_same_native_observation_id_with_changed_evidence_is_reviewed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_legacy_conflicting_outcome_cannot_be_adopted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_batched_conflict_preserves_first_verified_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_pre_sprint04_quarantine_backfill_is_bounded_and_idempotent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_later_retry_policy_cannot_silently_regress_terminal_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_reviewed_correction_cannot_automatically_drive_incident_conditions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_operator_can_flag_recovery_identity_without_creating_recovery_link": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_raw_acceptance_order_survives_reverse_connector_inventory": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_review_r1.py::test_pending_legacy_backfill_cannot_be_bypassed_by_review": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_three_surfaces_are_read_only_and_never_runtime_verified": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_partial_surfaces_do_not_claim_native_producers_or_live_support": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_consumer_mutation_cannot_rewrite_later_declarations": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_other_eight_platform_descriptions_remain_unchanged": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_declarations_cannot_select_an_unimplemented_runtime": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pentaho_surface_contracts.py::test_authorized_catalogue_exposes_candidates_without_certification": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pip_bootstrap.py::test_bad_wheel_is_rejected_before_execution": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_platform_normalization": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_registry_all_nine_and_closed_configs": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_airflow_pagination_and_steps": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_iics_warnings_unknown_and_paging": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_adf_body_window_continuation_and_failure": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_nifi_async_flow_semantics": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_glue_sdk_read_only_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_ssis_active_runs_revisited": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_pentaho_preserves_carte_step_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_custom_checkpoint_partial_rotation_and_distinct_raw": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_tls_egress_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_invalid_time_rejected_and_distinct_sources_preserved": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_retries_preserve_checkpoint_and_auth_is_not_retried": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_http_auth_rate_limit_schema_and_redirection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_custom_identical_records_remain_distinct_and_resume": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_terminal_snapshot_does_not_invent_execution_end": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_airflow_steps_bounded_paginated_resume_and_attempt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_pentaho_untimed_step_failure_preserved_without_fake_duration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_iics_embedded_activity_detail_and_invalid_inventory": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_adf_embedded_activity_and_on_demand_continuation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_configuration_registry_helpers_types_and_closed_properties": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_adapters.py::test_custom_explicit_step_record_does_not_end_parent_execution": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_token_41_expires_token_42_commits_then_delayed_41_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_evidence_constraint_failure_rolls_back_checkpoint_and_receipt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_generation_change_rejects_old_ticket": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_shared_integration_pause_and_composed_manual_hold": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_reference_hold_reconciliation_does_not_churn_fence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_unverified_profile_blocks_acquisition": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_no_selection_or_name_based_routing": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_discovery_rename_and_incomplete_absence_preserve_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_manual_discovery_match_requires_confirmation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_recovery_bounds_and_live_cursor_separation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_legal_hold_release_requires_independent_actor": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_optimistic_operation_idempotency_mismatch_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_postgres_rejects_cross_customer_method_fk": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_fence_itself_rejects_same_owner_with_live_lease": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_retention_respects_legal_hold_and_selected_stale_jobs": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_expired_runtime_proof_retains_only_safe_attestation_metadata": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_control_plane_tick_is_durable_and_does_not_read_providers": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_native_job_projection_preserves_v15_identity_and_provider_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_stale_observation_stops_claiming_receiving_without_fabricated_data": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_two_actual_database_sessions_cannot_both_own_source": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_discovery_unverified_draft_succeeds_activation_stays_blocked": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_unauthorized_discovery_never_reads_or_stales": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_incomplete_discovery_does_not_stale_or_delete": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_redetection_does_not_require_runtime_eligibility": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_equivalent_readers_share_one_unit_and_one_fenced_owner": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_different_credentials_cannot_share": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_different_queries_and_checkpoint_interpretation_cannot_share": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_durable_contract_rejects_single_reader_change_without_handoff": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_enabling_incompatible_binding_is_rejected_by_api": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_preparation_exception_rolls_back_and_releases_owned_lease": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_invalid_recovery_operation_cannot_become_live_collection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_expired_worker_never_commits_checkpoint_or_cleans_new_owner": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_replacement_commit_survives_stale_worker_cleanup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_recovery_failure_preserves_live_and_recovery_cursors": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_verification_failure_is_structured_and_does_not_advance": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_replacement_active_lease_is_never_released_by_stale_cleanup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_adding_incompatible_binding_is_rejected_by_api": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_failed_database_preparation_is_rolled_back_before_cleanup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_expired_recovery_claim_is_requeued_and_refenced": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_upgrade_fixture_cleanup_orders_resource_before_source_preserves_others": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_upgrade_fixture_unexpected_dependency_rolls_back_entire_cleanup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_discovery_revoked_during_provider_read_never_reconciles_absence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_reader_contract_covers_transport_endpoint_overrides_and_evidence_options": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_review_stale_cleanup_cannot_change_replacement_recovery_claim": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_legacy_job_initial_host_binding_preserves_immutable_ownership": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_legacy_job_initial_host_binding_rejects_other_customer": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_legacy_http_primary_binding_preserves_real_probe_reports": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_legacy_http_binding_never_replaces_existing_primary": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_fenced_acceptance_normalizes_and_redacts_atomically": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_scope_failure_rolls_back_evidence_and_cursor": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_stale_generation_rejected_before_normalization": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_normalized_event_cannot_bypass_native_observation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_server_export_scheduler_never_changes_execution_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_requires_exact_build_surface_even_with_prior_profile_proof": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_selected_native_identity_projects_to_existing_resource": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_ownership_v16.py::test_pentaho_r1_host_os_mismatch_rejected_before_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_cursor_and_evidence_commit_together_and_resume": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_evidence_failure_rolls_back_cursor_progress": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_failed_partial_mutation_does_not_advance_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_scope_mismatch_stops_before_provider_read": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_step_times_do_not_create_parent_start": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_terminal_without_end_preserved_and_no_fabricated_time": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_running_snapshot_uses_received_clock_without_changing_source_start": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_invalid_payload_checkpoint_never_persists_progress": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_retry_reads_keep_original_checkpoint_then_persist_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_runtime_v15.py::test_provider_raw_evidence_is_recursively_secret_redacted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_equal_message_timestamp_records_have_distinct_source_offsets": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_failed_backend_ack_never_advances_local_checkpoint": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_partial_line_keeps_offset_and_reports_incomplete_coverage": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_truncation_fails_closed_before_acceptance": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_recovery_claim_uses_recovery_operation_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_adf_native_authority_is_qualified_not_display_name": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_nested_fixture_labels_cannot_certify_runtime": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_secret_references_cannot_export_backend_or_other_customer_secrets": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_glue_uses_verified_account_and_partition_before_job_collection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_override_cannot_change_destination_without_canonical_handoff": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_name_is_never_a_native_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_windows_paths_canonicalize_but_distinct_patterns_remain_separate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_checkpoint_outside_pattern_or_negative_position_is_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_pipeline_transport_v16.py::test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_provider_failure_classification.py::test_official_sdk_error_categories_and_redacted_messages": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_provider_failure_classification.py::test_missing_identity_and_connection_failures_are_distinct": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_quiet_file_readiness.py::test_quiet_readable_files_are_idle_availability_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_quiet_file_readiness.py::test_wrong_revision_or_checksum_does_not_activate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_quiet_file_readiness.py::test_no_file_permission_error_or_partial_reads_are_not_ready": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_quiet_file_readiness.py::test_future_stale_and_unaware_observations_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_quiet_file_readiness.py::test_non_file_sources_need_independent_reception": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_package_checksum_is_stable_and_covers_capabilities": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_supported_sources_and_nine_adapters_have_typed_definitions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_nullable_refs_defaults_and_validation_render_without_secret_values": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_partial_draft_retains_empty_fields_without_claiming_activation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_unknown_attributes_bad_types_and_embedded_credentials_are_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_customer_fields_must_agree_and_resource_id_is_valid_uuid": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_linked_resource_cannot_change_domain_or_customer": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_owner_context_requires_authenticated_provider": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_lookup_query_binds_id_provider_and_owner_before_returning_data": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_customer_permission_denial_precedes_any_draft_write": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_bad_payload_is_422_without_persistence_or_secret_error_echo": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_stale_revision_and_domain_changes_are_conflicts_before_mutation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_uninstalled_registry_is_503_not_a_fake_default": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_registry_contracts.py::test_runtime_model_defaults_are_timezone_aware_and_scoped": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_mixed_case_and_other_url_credentials_are_rejected_and_redacted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_url_without_credentials_is_preserved": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_production_loaded_from_dotenv_denies_environment_credentials": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_invalid_environment_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_short_user_password_is_validation_error": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_nonfinite_thresholds_are_rejected_on_all_write_paths": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_finite_threshold_is_preserved": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_proxy_trust_rejects_wildcards_and_unbounded_networks": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_production_legacy_api_fails_before_secret_or_network_access": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_release_hardening.py::test_slow_identity_database_does_not_block_asgi_event_loop": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_remote_auth.py::test_unapproved_reference_is_denied_before_secret_retrieval_and_transport": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_remote_auth.py::test_approved_reference_sends_basic_only_to_pinned_verified_transport": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_remote_auth.py::test_colon_account_rejected_before_transport": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_remote_auth.py::test_reference_validation_never_resolves_credentials": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_no_cluster_routes_or_capabilities": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_removed_source_inputs_rejected": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_supported_source_inputs_preserved": {
+      "classification": "INCLUDED_POSITIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_nested_operational_aliases_rejected_without_erasing_generic_labels": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_legacy_source_cannot_be_relabelled_by_collector": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_nested_source_template_and_collector_configs_are_rejected": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_removed_platform_scope.py::test_configuration_depth_is_bounded": {
+      "classification": "EXCLUDED_NEGATIVE",
+      "disposition": "RUN",
+      "reason": "Reviewed supported input preservation or excluded capability denial"
+    },
+    "backend/tests/test_schema_contract.py::test_unique_constraints_remain_separate_from_lookup_indexes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_schema_contract.py::test_partial_indexes_preserve_alert_and_scheduler_semantics": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_schema_contract.py::test_latest_evidence_indexes_have_deterministic_descending_order": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_schema_contract.py::test_named_lookup_and_chronological_indexes_match_migrations": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_schema_contract.py::test_jsonb_contract_without_converting_existing_json_columns": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_schema_contract.py::test_template_version_fk_preserves_existing_cascade": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint07_frontend_contracts.py::test_review_decision_anchors_server_candidate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint07_frontend_contracts.py::test_recovery_proposal_and_decision_revision_contracts": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint07_frontend_contracts.py::test_scoped_pagination_and_bounded_occurrences": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint07_frontend_contracts.py::test_canonical_detail_evidence_routes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint07_frontend_contracts.py::test_restoration_is_server_evaluated": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_one_customer_sql_scope": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_no_selection_is_empty": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_omitted_selection_and_wildcard_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_all_requires_separate_authority": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_all_future_and_snapshot_semantics": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_unassigned_all_role_never_grants": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_environment_limit_filters_before_pagination": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_resource_limit_allows_exact_id": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_deny_overrides_limit_and_inherited_allow": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_global_employee_deny_survives_other_grants": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_direct_and_legacy_multi_department_inheritance_preserved": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_invalid_persisted_policy_fails_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_revocation_changes_existing_session_projection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_delegation_is_not_inferred_from_access_role": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_delegation_budget_prevents_role_escalation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_scope_revision_explains_restrictions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_inventory_query_count_is_not_per_row": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_large_customer_selection_keeps_restriction_sql_bounded": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_boundary_decision_history_cannot_be_rewritten_or_deleted": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_separate_delegations_cannot_form_permission_customer_cross_product": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_worker_replay_rechecks_resource_restrictions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint08_rbac.py::test_multiple_limits_intersect_instead_of_bypassing_a_restriction": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_contracts.py::test_new_archives_are_read_only_and_bounded": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_contracts.py::test_collection_filters_use_fixed_contract_allowlists": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_contracts.py::test_invalid_client_authority_never_becomes_all": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_contracts.py::test_service_credentials_do_not_request_employee_scope": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_worker_restart_resumes_retained_recovery_without_reprocessing": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_inventory_projection_queries_are_constant_for_a_page": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_outcome_filter_keeps_pending_retry_nonterminal": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_execution_children_are_batched_and_bounded": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_schedule_archive_beyond_legacy_cap_and_stable_order": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_attempt_alias_archive_and_child_idor": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_large_integration_detail_has_safe_readiness_and_pages": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint09_hardening.py::test_incident_association_filter_and_activity_scope": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint12_shared_trust.py::test_two_customer_and_one_customer_scope_with_forged_selection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint12_shared_trust.py::test_cross_customer_edge_and_second_vm_binding_fail_closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint12_shared_trust.py::test_unapproved_method_identity_cannot_relabel_source": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint13_recovery_probe.py::test_kubernetes_history_guard_keeps_current_revision": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint13_recovery_probe.py::test_earlier_guard_rolls_back_the_whole_downgrade": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_sprint13_recovery_probe.py::test_unknown_failure_or_changed_revision_is_not_preservation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_terminal_conflicts.py::test_conflict_preserves_unknown_without_explicit_precedence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_terminal_conflicts.py::test_explicit_precedence_preserves_selected_failure_evidence": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_terminal_conflicts.py::test_unmatched_preference_does_not_silently_allow_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_terminal_conflicts.py::test_consistent_terminal_evidence_needs_no_policy_override": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_paths_duplicates_and_rollback": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_eight_adversarial_concurrent_additions_remain_acyclic": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_concurrent_duplicate_creates_one_current_edge": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_lock_timeout_rolls_back_without_partial_edge": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_deadlock_aborts_one_transaction_without_partial_edge": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_resource_limit_rejects_hidden_parent_without_exposing_edges": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_topology_traversal.py::test_validation_bound_allows_999_reachable_nodes_but_rejects_1000": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_saas_etl_requires_customer_but_not_vm": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_api_identity_rejects_credentials_and_unsafe_configuration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_import_never_executes_yaml_or_accepts_recursive_aliases": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_override_cannot_change_tenant_identity_or_invalid_units": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_missing_execution_id_is_unresolved_not_inferred": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_jobchain_filter_and_retry_identity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_unknown_timezone_and_invalid_pattern_fail_as_validation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_spring_gap_is_skipped_and_fall_fold_is_deterministic": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_calendar_month_quarter_custom_and_exceptions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_worker_entity_contract_and_tls_failure_are_not_health": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_monitoring.py::test_cloud_adapter_accepts_the_existing_worker_entity": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_generic_edit_preserves_internal_alert_setup_and_bound_log_method_ids": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_generic_edit_cannot_escalate_or_erase_internal_alert_policy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_echoing_exact_internal_state_is_compatible_without_creating_privileges": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_stale_resource_revision_fails_before_making_any_changes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_host_identity_and_os_cannot_be_repurposed_by_edit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_pause_stops_source_collector_and_vm_without_erasing_history_or_policy": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_environment_propagation_retains_child_threshold_overrides": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_monitoring_activation_does_not_require_optional_parameters_or_alert_setup": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_activation_requires_approval_and_actual_readiness_boundary": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_metric_selection_cannot_reference_another_customer_or_source": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_native_connection_failure_is_not_success_and_never_echoes_secret_error": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_native_connection_requires_configured_pipeline_and_collectors_authority": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_enabled_alert_setup_requires_active_version_and_same_customer_destination": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_overrides_cannot_change_identity_or_bypass_threshold_validation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_percentage_and_recovery_direction_require_finite_coherent_values": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_duplicate_matching_never_uses_only_message_or_jobchain": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_api_configuration_rejects_tls_disable_auth_over_http_and_header_injection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_timestamp_parsing_preserves_timezone_and_rejects_nonexistent_dst": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_event_identity_retry_and_execution_mode_rejections_are_explicit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_malformed_document_and_regex_mismatch_are_not_fabricated_executions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_report_range_requires_aware_ordered_bounded_dates": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_unified_v15_contracts.py::test_report_query_contains_customer_resource_environment_and_domain_filters": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_worker_readiness.py::test_database_success_writes_heartbeat": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_worker_readiness.py::test_database_failure_does_not_refresh_heartbeat": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "backend/tests/test_worker_readiness.py::test_disabled_heartbeat_does_not_open_database": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_all_success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_missing_failed_skipped_cancelled": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_complete_unit_fixture_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_current_gates_cannot_authorize_release": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_sha_replay_and_operation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_expiry_and_reviewers": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_current_structure": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_path_filter_prohibited_for_all_prs": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_target_trigger_prohibited": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_unpinned_action_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_privileged_pr_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_hidden_failure_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_test_omission_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_required_context_removal_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_bounded_fixture": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_tamper": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_digest_mismatch": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_stale_database": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_high_critical_unknown_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_inventory_is_not_legal_clearance": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_shared_or_uat_targets_rejected_before_docker_access": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_equivalent_enum_array_cast_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_ci_contracts.py::test_only_generated_restrict_keys_are_ignored": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_local_auto_deploy.py::test_app_only_commands": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_local_auto_deploy.py::test_unexpected_service_image_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_local_auto_deploy.py::test_no_build_allowed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_local_auto_deploy.py::test_atomic_last_known_good": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_valid_manifest": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_replay": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_wrong_main": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_wrong_repository": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_wrong_ref": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_wrong_workflow": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_malformed_digest": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_unknown_service": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_missing_migration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_failed_ci": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_missing_approval": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_pull_release.py::test_atomic_json": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_verified_certificate_and_subject": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_wrong_subject_digest": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_wrong_run_attempt_in_certificate": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_missing_certificate_run_binding": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_no_attestation": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_authoritative_run_and_attempt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_failed_attempt_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_wrong_source_sha_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec01_attestation.py::test_wrong_run_attempt_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_valid_fixture": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_unapproved_mapping": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_admin_bypass": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_stale_reviews_allowed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_last_push_approval_not_required": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_ruleset_requires_audit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_stale_review_commit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_self_approval": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_requested_changes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_failed_check": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_wrong_check_sha": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_fake_actions_app": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_duplicate_check": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_incomplete_check_pagination": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_wrong_workflow": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_wrong_workflow_event": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_missing_protection": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec02_authorization.py::test_ambiguous_pr": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_valid": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_missing_fd": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_env_only_cannot_bypass": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_tamper_image": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_tamper_sha": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_tamper_run": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_replay": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_expired": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_future": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_missing_key": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_weak_key_permissions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_key_symlink": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_concurrent_replay_exactly_one_wins": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec03_handoff.py::test_oversize": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec04_isolation.py::test_untrusted_owner_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec04_isolation.py::test_root_execution_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec04_isolation.py::test_symlink_rejected": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec05_worker.py::test_worker_exec_is_independent": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec05_worker.py::test_worker_failure_propagates": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec06_recovery.py::test_failure_rolls_back_and_preserves_baseline": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec06_recovery.py::test_failed_rollback_preserves_baseline": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_sec06_recovery.py::test_recovery_records_new_baseline": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_workflow_static.py::test_hosted_only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "tests/test_workflow_static.py::test_timer_not_enabled_by_default": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Retain until assertion-level review; no filename exclusions"
+    },
+    "frontend/scripts/explicit_scope.test.mjs::owned browser clients explicitly select a UUID snapshot and empty stays empty": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/explicit_scope.test.mjs::failed customer lookup cannot fall back to unrestricted operational requests": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::authorized active collector restores all editable settings and pinned selections without copying credentials": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::legacy default GET settings remain explicit and optional assertions empty": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::disabled collector resets controls; a collector belonging to another source fails closed": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::out-of-order source fetch cannot replace the selected source or organization": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::pending hydration preserves actual user edits and invalidates an in-flight preview": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::source switch cancels a real pending settings read and no stale state or error is applied": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::permission failures propagate instead of silently exposing an editable default configuration": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::saved selections are applied before controls become ready": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::excluded source aliases cannot become monitoring selections": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/monitoring_settings.test.mjs::VM and application types and generic telemetry terms stay supported": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/navigation.test.mjs::approved child hashes open only existing authorized sections": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/navigation.test.mjs::organizational access is an access view, never a customer grant": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/navigation.test.mjs::configuration sections have stable guarded routes": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::navigation and customer actions default deny": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::administrative pages use independent filters": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::revocation replaces UI affordances; platform capability is explicit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::malformed cached customer preferences cannot corrupt selector state": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::retired navigation cannot be enabled by cached permissions": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/permissions.test.mjs::native incident visibility requires its backend permission": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::six pages and seven existing incident states": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::pending retry remains nonterminal despite failed attempt": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::scheduler or process success cannot imply verified native success": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::scheduler retry and manual recovery preserve original failure": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::explicit customer scope never expands to ALL": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::old success or failure is invalidated on customer switch": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::native workload classifications remain distinct": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::persisted schedule authority and incomplete coverage stay explicit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::review actions require category and verified completion": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::independent recovery confirmation and confirmed-only reversal": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::timestamps use explicit UTC": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::capabilities follow bound methods only": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::revision and authorization errors are explicit": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/pipelines.test.mjs::resource restriction affordances do not become grants": {
+      "classification": "UNKNOWN",
+      "disposition": "RUN",
+      "reason": "Existing Node test remains mandatory"
+    }
+  }
+}

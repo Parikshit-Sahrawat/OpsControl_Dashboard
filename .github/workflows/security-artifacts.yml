@@ -1,0 +1,88 @@
+name: Digest-bound image SBOM and licence evidence
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: security-artifacts-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  image-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - role: backend-runtime
+            context: backend
+            file: backend/Dockerfile.runtime
+            target: runtime
+          - role: backend-migration
+            context: backend
+            file: backend/Dockerfile.runtime
+            target: migration
+          - role: uat-backend
+            context: backend
+            file: backend/Dockerfile.uat
+            target: ''
+          - role: frontend
+            context: frontend
+            file: frontend/Dockerfile.demo
+            target: ''
+          - role: postgres
+            image: postgres:17
+          - role: ingestion-gateway
+            image: nginx:1.28-alpine
+          - role: otel-contrib
+            image: otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify and install locked official scanner binaries
+        run: python scripts/ci/install_scanners.py "$RUNNER_TEMP/scanners"
+      - name: Obtain isolated candidate only, never push or deploy
+        env:
+          ROLE: ${{ matrix.role }}
+          CONTEXT: ${{ matrix.context }}
+          DOCKERFILE: ${{ matrix.file }}
+          TARGET: ${{ matrix.target }}
+          IMAGE: ${{ matrix.image }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$IMAGE" ]]; then
+            docker pull "$IMAGE"
+            docker tag "$IMAGE" "opscontrol-ci-$ROLE:scan"
+          else
+            args=()
+            if [[ -n "$TARGET" ]]; then args+=(--target "$TARGET"); fi
+            docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt "${args[@]}" -f "$DOCKERFILE" -t "opscontrol-ci-$ROLE:scan" "$CONTEXT"
+          fi
+      - name: CycloneDX, OS/transitive scan, licence inventory and provenance gate
+        env:
+          ROLE: ${{ matrix.role }}
+        run: python scripts/ci/scan_image.py "opscontrol-ci-$ROLE:scan" "$RUNNER_TEMP/image-evidence" "$RUNNER_TEMP/scanners"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: image-evidence-${{ matrix.role }}
+          path: ${{ runner.temp }}/image-evidence
+          if-no-files-found: error
+  security-sbom:
+    if: always()
+    needs: [image-evidence]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: python scripts/ci/require_success.py
