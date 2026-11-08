@@ -20,7 +20,7 @@ try {
  const page=await login('v16-api-admin',f.password,[f.organization_id,f.other_organization_id]);
  const admin=await page.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
  const headers={Authorization:'Bearer '+admin,'X-OpsControl-Customers':[f.organization_id,f.other_organization_id].join(',')};
- async function api(path,method='GET',data,status=200){const r=await page.request.fetch(base+'/api/v1/'+path,{method,headers,data});assert.equal(r.status(),status);return status===204?null:r.json();}
+ async function api(path,method='GET',data,status=200){let h=headers;if(['POST','PATCH','DELETE'].includes(method)&&path.startsWith('monitoring/data-sources/')&&path.includes('/templates')){const sid=path.split('/')[2];const state=await api('monitoring/data-sources/'+sid+'/configuration');h={...headers,'Expected-Revision':String(state.revision),'Idempotency-Key':globalThis.crypto.randomUUID()};}const r=await page.request.fetch(base+'/api/v1/'+path,{method,headers:h,data});assert.equal(r.status(),status);return status===204?null:r.json();}
  phase='resource browser create';
  await page.getByRole('button',{name:'Create Compute Instance',exact:true}).click();let modal=page.getByRole('region',{name:'Create Compute Instance',exact:true});
  await modal.getByLabel('Resource name',{exact:true}).fill('002C browser A');
@@ -40,7 +40,8 @@ try {
  }
  checks.push('Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422');
  phase='template UI pin and overrides';
- const template=await api('monitoring/templates','POST',{name:'002C browser template',package_config:{collector:{type:'OTEL',interval_seconds:60}}},201);
+ const applicability={schema_version:1,source_types:['LINUX','WINDOWS'],os:['Linux','Windows'],methods:[{name:'Host metrics',method_type:'HOST_METRICS',configuration:{scrapers:['cpu'],interval_seconds:30}}],collector_override_fields:['interval_seconds']};
+ const template=await api('monitoring/templates','POST',{name:'002C browser template',package_config:{applicability,collector:{type:'OTEL',interval_seconds:60}}},201);
  await page.getByLabel('Search resources',{exact:true}).fill('002C browser A');
  await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
  modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});
@@ -57,7 +58,7 @@ try {
  await overrides.fill('invalid json');await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
  await panel.getByRole('alert').filter({hasText:'Overrides: enter a valid JSON object.'}).waitFor();
  await overrides.fill('{"collector":{"interval_seconds":45}}');
- await Promise.all([page.waitForResponse(r=>r.request().method()==='PATCH' && r.url().includes('/templates/'+template.id) && r.status()===200),panel.getByRole('button',{name:'Save template configuration',exact:true}).click()]);
+ await Promise.all([page.waitForResponse(r=>r.request().method()==='POST' && r.url().includes('/configuration/commands') && r.status()===201),panel.getByRole('button',{name:'Save template configuration',exact:true}).click()]);
  await panel.getByLabel('Monitoring template',{exact:true}).waitFor();
  await panel.getByText(/pinned v1/).waitFor();
  const effectiveBefore=await api('monitoring/data-sources/'+resource.data_source_id+'/effective-configuration');
@@ -73,7 +74,7 @@ try {
  await panel.getByLabel('Template package overrides (JSON)',{exact:true}).fill('{"collector":{"interval_seconds":46}}');
  await api('monitoring/data-sources/'+resource.data_source_id+'/templates/'+template.id,'PATCH',{priority:999});
  await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
- await panel.getByRole('alert').filter({hasText:'Template attachment changed; reload before saving'}).waitFor();
+ await panel.getByRole('alert').filter({hasText:'STALE_REVISION'}).waitFor();
  assert.equal(await panel.getByLabel('Template package overrides (JSON)',{exact:true}).inputValue(),'{"collector":{"interval_seconds":46}}');
  await page.screenshot({path:out+'/template-stale-edit-preserved.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});

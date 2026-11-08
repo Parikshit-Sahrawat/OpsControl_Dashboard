@@ -77,6 +77,10 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/ci-browser" --no-audit --no-fund playwright@1.56.1
           "$RUNNER_TEMP/ci-browser/node_modules/.bin/playwright" install --with-deps chromium
           echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e "import {chromium} from '$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())")" >> "$GITHUB_ENV"
+      - name: Source revisions, immutable history, ETL authorization and DAG transactions
+        env:
+          S01_EVIDENCE_DIR: /tmp/ci-app-api-browser/source-contracts
+        run: backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py
       - name: Real disposable PostgreSQL contracts and authenticated browser
         run: backend/.venv/bin/python scripts/v16-acceptance.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

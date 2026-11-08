@@ -161,7 +161,7 @@ export default function TopNav({
         >
           {collapsed ? "+" : "×"}
         </button>
-        <FeatureDirectory user={user} active={active} activeSection={activeSection} collapsed={collapsed} onNavigate={(page,target)=>{onChange(page,target);if(mobileOpen)mobileToggle.current?.focus();setMobileOpen(false);}} />
+        <FeatureDirectory user={user} active={active} activeSection={activeSection} collapsed={collapsed} onExpand={() => setCollapsed(false)} onNavigate={(page,target)=>{onChange(page,target);if(mobileOpen)mobileToggle.current?.focus();setMobileOpen(false);}} />
         <div className="sidebar-footnote">
           <span className="sidebar-footnote-mark" aria-hidden="true">
             ◈

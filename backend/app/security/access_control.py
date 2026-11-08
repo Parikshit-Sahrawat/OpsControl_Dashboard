@@ -142,6 +142,7 @@ def route_permissions(method: str, path: str) -> tuple[str, ...]:
         return ("resources.view",) if read else ("collectors.manage",)
     if (
         path.startswith("/api/v1/rule-catalogs")
+        or "/configuration" in path and path.startswith("/api/v1/monitoring/data-sources/")
         or "/templates" in path
         or "/alert-rules" in path
     ):

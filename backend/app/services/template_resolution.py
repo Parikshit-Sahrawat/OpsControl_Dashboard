@@ -104,6 +104,10 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
 
     for attachment in attachments:
         template, version = _template_version(db, attachment)
+        from app.services.template_applicability import applicability
+        effective.setdefault("applicability_reasons", []).extend(applicability(source, version.package_config or {}, attachment.overrides or {}))
+        if template.status != "COMMITTED":
+            effective.setdefault("applicability_reasons", []).append({"code":"DEPENDENCY_RETIRED", "template_id":str(template.id)})
         before = deepcopy(effective)
         _apply_package(effective, version.package_config or {})
         if attachment.overrides:
@@ -147,7 +151,7 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
         if item.get("required") and item.get("defaultValue") in (None, "")
         and opscontrol.get("attributes", {}).get(item.get("key")) in (None, "")
     ]
-    effective["valid"] = not bool(effective["missing_required_attributes"])
+    effective["valid"] = not bool(effective["missing_required_attributes"] or effective.get("applicability_reasons"))
     return effective
 
 

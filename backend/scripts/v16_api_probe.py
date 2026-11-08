@@ -28,6 +28,10 @@ def request(path, method="GET", payload=None, token=None, expected=200):
         headers["Authorization"] = "Bearer " + token
         from scripts.acceptance_scope import selection_headers
         headers.update(selection_headers(base,token))
+    if method in {"POST", "PATCH", "DELETE"} and path.startswith("monitoring/data-sources/") and "/templates" in path and token and expected not in {403,404}:
+        source_id = path.split("/")[2]
+        head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
+        headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"
@@ -540,13 +544,17 @@ with SessionLocal() as db:
     assert not db.get(Collector, uuid.UUID(collector["id"])).enabled
 checks.append("Sprint1: protected ownership fields, viewer denial, disabled-parent collector enable refusal on both APIs and persisted unchanged ownership")
 # Template lifecycle uses the same authenticated API and immutable version rows.
-template = request("monitoring/templates", "POST", {"name":"Sprint template " + uuid.uuid4().hex, "package_config":{"attributes":[{"key":"team","required":True}],"collector":{"type":"HTTP"}}}, admin, 201)
+applicability = {"schema_version":1,"source_types":["LINUX"],"os":["Linux"],"methods":[{"name":"Host metrics","method_type":"HOST_METRICS","configuration":{"scrapers":["cpu"],"interval_seconds":30}}],"collector_override_fields":["interval_seconds"]}
+template = request("monitoring/templates", "POST", {"name":"Sprint template " + uuid.uuid4().hex, "package_config":{"applicability":applicability,"attributes":[{"key":"team","required":True}],"collector":{"type":"OTEL"}}}, admin, 201)
 tid = template["id"]
+request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 422)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"}}}}, admin)
 request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 201)
 request(f"monitoring/templates/{tid}", "PATCH", {"package_config":{"collector":{"type":"HTTP","interval_seconds":90}}}, admin)
 effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
-assert effective["templates"][0]["version"] == 1 and not effective["valid"] and "team" in effective["missing_required_attributes"]
-request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin)
+assert effective["templates"][0]["version"] == 1 and effective["valid"] and not effective["missing_required_attributes"]
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin, 409)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"collector":{"interval_seconds":30}}}, admin)
 effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
 assert effective["valid"] and effective["collector"]["interval_seconds"] == 30 and effective["templates"][0]["version"] == 1
 versions = request(f"monitoring/templates/{tid}/versions", token=admin)
@@ -619,10 +627,11 @@ checks.append("Membership role mutation revokes old session; actual stale authen
 attachment_path = f"monitoring/data-sources/{sid}/templates/{tid}"
 original = request(f"monitoring/data-sources/{sid}/templates", token=admin)[0]
 revision = original["updated_at"]
+source_revision=request(f"monitoring/data-sources/{sid}/configuration",token=admin)["revision"]
 with TemplatePool(max_workers=2) as pool:
     def edit_attachment(priority):
         try:
-            headers={"Authorization":"Bearer "+admin}
+            headers={"Authorization":"Bearer "+admin,"Expected-Revision":str(source_revision),"Idempotency-Key":str(uuid.uuid4())}
             from scripts.acceptance_scope import selection_headers
             headers.update(selection_headers(base,admin));headers["Content-Type"]="application/json"
             with urlopen(Request(base+"/api/v1/"+attachment_path,method="PATCH",headers=headers,data=json.dumps({"expected_updated_at":revision,"priority":priority}).encode()),timeout=20) as response:
@@ -651,7 +660,7 @@ finally:
 request(f"monitoring/templates/{tid}","DELETE",token=admin,expected=204)
 request(attachment_path,"PATCH",{"enabled":False},admin)
 request(attachment_path,"PATCH",{"enabled":True},admin,409)
-request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid},admin,409)
+request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid,"template_version":1},admin,409)
 assert not request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]["enabled"]
 assert {v["version"] for v in request(f"monitoring/templates/{tid}/versions",token=admin)}=={1,2,3,4}
 checks.append("002C attachment concurrent expected-revision writes produce200/409; injected PostgreSQL failure rolls back state; disabled template cannot re-enable or attach; pinned versions preserved")

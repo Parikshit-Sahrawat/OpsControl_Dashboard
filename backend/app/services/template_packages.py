@@ -1,4 +1,4 @@
-"""Validate existing package container shapes without inventing policy defaults."""
+"""Validate package shapes and explicit versioned applicability, never infer it."""
 
 
 def require_template_package(value):
@@ -9,8 +9,9 @@ def require_template_package(value):
     if not isinstance(value.get("collector", {}), dict):
         raise ValueError("collector configuration must be an object")
     for key in ("attributes", "metrics", "alerts", "logs"):
-        if not isinstance(value.get(key, []), list) or any(
-            not isinstance(row, dict) for row in value.get(key, [])
-        ):
+        if not isinstance(value.get(key, []), list) or any(not isinstance(row, dict) for row in value.get(key, [])):
             raise ValueError(f"{key} configuration must be an array of objects")
+    if value.get("applicability") is not None:
+        from app.services.template_applicability import Applicability
+        Applicability.model_validate(value["applicability"])
     return value

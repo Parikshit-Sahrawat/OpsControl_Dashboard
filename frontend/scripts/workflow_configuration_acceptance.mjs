@@ -28,7 +28,8 @@ async function login(name) {
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
 }
 async function configuration(customer) {
-  await page.goto(ui + "/#/resources/data-resources");
+  if (page.url() !== ui + "/#/resources/data-resources") await page.goto(ui + "/#/resources/data-resources");
+  await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   await page.getByRole("tab", { name: "Data Pipelines", exact: true }).click();
   await page
     .getByLabel("Resource customer filter", { exact: true })

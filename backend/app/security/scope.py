@@ -124,6 +124,7 @@ _PATHS = {
     "OperationalIncident": ("organization",),
     "IncidentActivity": ("organization",),
     "DataSource": ("organization",),
+    "SourceConfigurationRevision": ("data_source", "organization"),
     "KubernetesClusterAssociation": (),
     "Collector": ("data_source", "organization"),
     "InfrastructureEvidence": ("organization",),

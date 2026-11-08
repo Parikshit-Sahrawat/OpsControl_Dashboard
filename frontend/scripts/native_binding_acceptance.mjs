@@ -5,7 +5,7 @@ const { chromium } = await import(
   pathToFileURL(process.env.PLAYWRIGHT_MODULE).href
 );
 const f = JSON.parse(await readFile(process.env.ETL_BINDING_FIXTURE, "utf8"));
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }),
   checks = [];
 const ui = process.env.ETL_WORKFLOW_UI_URL,
@@ -19,7 +19,8 @@ async function open(user) {
   await config();
 }
 async function config() {
-  await page.goto(ui + "/#/resources/data-resources");
+  if (page.url() !== ui + "/#/resources/data-resources") await page.goto(ui + "/#/resources/data-resources");
+  await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
   await page.getByRole("tab", { name: "Data Pipelines", exact: true }).click();
   await page
     .getByLabel("Resource customer filter", { exact: true })

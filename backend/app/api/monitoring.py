@@ -3,7 +3,7 @@ from app.services.excluded_platforms import require_supported_source, require_su
 from datetime import datetime
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -44,8 +44,11 @@ from app.schemas.monitoring import (
 
 from app.services.template_resolution import attach_template, detach_template, list_template_attachments, resolve_data_source_configuration
 from app.security.secret_refs import redact_config
+from app.security.scope import current_principal
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["Monitoring Configuration"])
+from app.api.source_configuration import router as configuration_router
+router.include_router(configuration_router)
 
 
 def _get_or_404(model, item_id: UUID, db: Session, label: str):
@@ -112,87 +115,50 @@ def list_data_source_templates(item_id: UUID, db: Session = Depends(get_db)):
     return list_template_attachments(db, item_id)
 
 
+def _legacy_configuration_command(db, item_id, template_id, changes, expected_revision, idempotency_key, detach=False):
+    from app.services import source_configuration as commands
+    if expected_revision is None or idempotency_key is None:
+        raise HTTPException(428, "REVISION_REQUIRED: use source configuration command with expected revision and idempotency key")
+    commands.source_row(db, item_id, lock=True, write=True)
+    members = commands.members(db, item_id)
+    existing = next((m for m in members if m["template_id"] == str(template_id)), None)
+    if detach:
+        if existing is None:
+            raise HTTPException(404, "Template attachment not found")
+        members.remove(existing)
+    elif existing:
+        existing.update(changes)
+    else:
+        members.append(dict(template_id=str(template_id), **changes))
+    payload = commands.Command(expected_revision=expected_revision, attachments=members)
+    commands.commit(db, item_id, payload, idempotency_key)
+    return db.scalar(select(MonitoringTemplateAttachment).where(MonitoringTemplateAttachment.data_source_id == item_id, MonitoringTemplateAttachment.template_id == template_id))
+
+
 @router.post("/data-sources/{item_id}/templates", response_model=MonitoringTemplateAttachmentOut, status_code=201)
-def attach_data_source_template(
-    item_id: UUID,
-    payload: MonitoringTemplateAttachmentCreate,
-    db: Session = Depends(get_db),
-):
-    return attach_template(
-        db,
-        item_id,
-        payload.template_id,
-        payload.template_version,
-        payload.priority,
-        payload.overrides,
-    )
+def attach_data_source_template(item_id: UUID, payload: MonitoringTemplateAttachmentCreate,
+    expected_revision: int | None = Header(default=None, ge=0), idempotency_key: UUID | None = Header(default=None), db: Session = Depends(get_db)):
+    version = payload.template_version
+    if version is None:
+        raise HTTPException(422, "Explicit immutable template version required")
+    return _legacy_configuration_command(db, item_id, payload.template_id,
+        dict(template_version=version, priority=payload.priority, overrides=payload.overrides or {}, enabled=True), expected_revision, idempotency_key)
 
 
 @router.patch("/data-sources/{item_id}/templates/{template_id}", response_model=MonitoringTemplateAttachmentOut)
-def update_data_source_template(
-    item_id: UUID,
-    template_id: UUID,
-    payload: MonitoringTemplateAttachmentUpdate,
-    db: Session = Depends(get_db),
-):
-    require_supported_source(db.get(DataSource, item_id, with_for_update=True))
-    attachment = db.scalar(
-        select(MonitoringTemplateAttachment).where(
-            MonitoringTemplateAttachment.data_source_id == item_id,
-            MonitoringTemplateAttachment.template_id == template_id,
-        )
-    )
-    if not attachment:
-        raise HTTPException(status_code=404, detail="Template attachment not found")
-
+def update_data_source_template(item_id: UUID, template_id: UUID, payload: MonitoringTemplateAttachmentUpdate,
+    expected_revision: int | None = Header(default=None, ge=0), idempotency_key: UUID | None = Header(default=None), db: Session = Depends(get_db)):
     values = payload.model_dump(exclude_unset=True)
-    expected = values.pop("expected_updated_at", None)
-    if expected is not None:
-        from datetime import timezone
-        actual = attachment.updated_at
-        if actual.tzinfo is None:
-            actual = actual.replace(tzinfo=timezone.utc)
-        if expected.tzinfo is None or expected != actual:
-            raise HTTPException(409, "Template attachment changed; reload before saving")
-    # A disabled attachment can always be retired. Enabling or editing an active
-    # attachment must not bypass the same availability checks as initial attach.
-    if values.get("enabled", attachment.enabled):
-        template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
-        if template.status != "COMMITTED":
-            raise HTTPException(409, "Cannot enable an inactive monitoring template")
-    if "template_version" in values:
-        template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
-        version = db.scalar(
-            select(MonitoringTemplateVersion).where(
-                MonitoringTemplateVersion.template_id == template_id,
-                MonitoringTemplateVersion.version == values["template_version"],
-                MonitoringTemplateVersion.status == "COMMITTED",
-            )
-        )
-        if not version:
-            raise HTTPException(status_code=409, detail=f"Template version {values['template_version']} is not available")
-    from app.services.excluded_platforms import require_supported_configuration
-    selected_version = db.scalar(select(MonitoringTemplateVersion).where(
-        MonitoringTemplateVersion.template_id == template_id,
-        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version),
-        MonitoringTemplateVersion.status == "COMMITTED"))
-    if not selected_version:
-        raise HTTPException(409, "Selected committed template version is not available")
-    try:
-        require_supported_configuration(selected_version.package_config if selected_version else None)
-    except ValueError as exc:
-        raise HTTPException(422, str(exc)) from None
-    for key, value in values.items():
-        setattr(attachment, key, value)
-    db.commit()
-    db.refresh(attachment)
-    return attachment
+    values.pop("expected_updated_at", None)
+    if values.get("overrides") is None and "overrides" in values:
+        values["overrides"] = {}
+    return _legacy_configuration_command(db, item_id, template_id, values, expected_revision, idempotency_key)
 
 
 @router.delete("/data-sources/{item_id}/templates/{template_id}", status_code=204)
-def detach_data_source_template(item_id: UUID, template_id: UUID, db: Session = Depends(get_db)):
-    _get_or_404(DataSource, item_id, db, "Data source")
-    detach_template(db, item_id, template_id)
+def detach_data_source_template(item_id: UUID, template_id: UUID,
+    expected_revision: int | None = Header(default=None, ge=0), idempotency_key: UUID | None = Header(default=None), db: Session = Depends(get_db)):
+    _legacy_configuration_command(db, item_id, template_id, {}, expected_revision, idempotency_key, detach=True)
 
 
 @router.get("/data-sources/{item_id}/effective-configuration")
@@ -580,7 +546,7 @@ def create_monitoring_template(payload: MonitoringTemplateCreate, db: Session = 
         status="COMMITTED",
         package_config=payload.package_config,
         committed_at=datetime.utcnow(),
-        committed_by=payload.committed_by or "Admin",
+        committed_by=current_principal.get().username,
     )
     db.add(item)
     db.flush()
@@ -608,7 +574,9 @@ def commit_monitoring_template(
         raise HTTPException(404, "Monitoring template not found")
     values = payload.model_dump(exclude_unset=True)
     package = values.pop("package_config", None)
-    committed_by = values.pop("committed_by", None) or "Admin"
+    values.pop("committed_by", None)
+    from app.security.scope import current_principal
+    committed_by = current_principal.get().username
     for key, value in values.items():
         setattr(item, key, value)
 

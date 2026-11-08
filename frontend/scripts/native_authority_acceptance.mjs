@@ -7,7 +7,7 @@ const { chromium } = await import(
 const f = JSON.parse(
   await readFile(process.env.ETL_AUTHORITY_BROWSER_FIXTURE, "utf8"),
 );
-const browser = await chromium.launch({ headless: true }),
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {}) }),
   page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }),
   checks = [];
 const out = process.env.ETL_SCOPE_EVIDENCE_DIR,
