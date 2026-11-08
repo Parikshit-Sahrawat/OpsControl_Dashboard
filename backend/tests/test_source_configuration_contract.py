@@ -159,6 +159,55 @@ class SourceConfigurationContract(unittest.TestCase):
         self.assertEqual(code, status, body)
         return body
 
+    def test_unified_resource_edit_and_source_revision_commit_together(self):
+        code, resource = self.call(
+            "POST",
+            "unified/resources/vm",
+            dict(
+                organization_id=self.org,
+                name="Context VM " + uuid4().hex,
+                environment="DEV",
+                hostname=uuid4().hex + ".invalid",
+                address="203.0.113.67",
+                os_type="Linux",
+            ),
+        )
+        self.assertEqual(code, 201, resource)
+        base = f"monitoring/data-sources/{resource['data_source_id']}/configuration"
+        self.assertEqual(
+            self.call(
+                "POST",
+                base + "/commands",
+                dict(expected_revision=0, attachments=[self.member]),
+                key=uuid4(),
+            )[0],
+            201,
+        )
+        path = f"unified/resources/{resource['id']}"
+        current = self.call("GET", path)[1]
+        payload = dict(
+            expected_revision=current["revision"],
+            expected_source_revision=current["source_configuration_revision"],
+            configuration_command_key=str(uuid4()),
+            name=current["name"],
+            environment="QA",
+            configuration=current["configuration"],
+            active=True,
+        )
+        code, updated = self.call("PUT", path, payload)
+        self.assertEqual(code, 200, updated)
+        self.assertEqual(updated["source_configuration_revision"], 2)
+        self.assertEqual(updated["revision"], current["revision"] + 1)
+        revision = self.call("GET", base + "/revisions/2")[1]
+        self.assertEqual(
+            revision["document"]["source_context"]["configuration"]["opscontrol"][
+                "environment"
+            ],
+            "QA",
+        )
+        self.assertEqual(self.call("PUT", path, payload)[0], 409)
+        self.assertEqual(self.call("GET", base)[1]["revision"], 2)
+
     def test_atomic_context_revalidation_and_legacy_writer_preconditions(self):
         self.command()
         changed = {
@@ -502,7 +551,7 @@ class SourceConfigurationContract(unittest.TestCase):
                 f"monitoring/data-sources/{self.sid}",
                 dict(connection_config={}),
             )[0],
-            409,
+            428,
         )
         self.assertEqual(
             self.call(
@@ -510,7 +559,7 @@ class SourceConfigurationContract(unittest.TestCase):
                 f"monitoring/data-sources/{self.sid}",
                 dict(endpoint="https://retarget.example.test"),
             )[0],
-            409,
+            428,
         )
         self.assertEqual(
             self.call(

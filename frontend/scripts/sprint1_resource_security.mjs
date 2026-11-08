@@ -77,6 +77,41 @@ try {
  await panel.getByRole('alert').filter({hasText:'STALE_REVISION'}).waitFor();
  assert.equal(await panel.getByLabel('Template package overrides (JSON)',{exact:true}).inputValue(),'{"collector":{"interval_seconds":46}}');
  await page.screenshot({path:out+'/template-stale-edit-preserved.png',fullPage:true});
+ phase='staged draft history detach diff conflict recovery';
+ await panel.getByRole('button',{name:'Refresh current revision and retain staged input',exact:true}).click();
+ await panel.getByRole('button',{name:'Validate staged draft',exact:true}).waitFor();
+ assert.equal(await panel.getByLabel('Template package overrides (JSON)',{exact:true}).inputValue(),'{"collector":{"interval_seconds":46}}');
+ const draftHead=(await api('monitoring/data-sources/'+resource.data_source_id+'/configuration')).revision;
+ await panel.getByRole('button',{name:'Validate staged draft',exact:true}).click();
+ await panel.getByRole('region',{name:'Staged configuration preview',exact:true}).getByText(/Backend validation: VALID/).waitFor();
+ assert.equal((await api('monitoring/data-sources/'+resource.data_source_id+'/configuration')).revision,draftHead);
+ await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
+ await panel.getByText(/pinned v1/).waitFor();
+ await panel.getByRole('button',{name:'View revision 1',exact:true}).click();
+ await panel.getByRole('region',{name:'Configuration revision detail',exact:true}).getByText(/content_hash/).waitFor();
+ await panel.getByRole('button',{name:'Compare revision 1 to current',exact:true}).click();
+ await panel.getByRole('region',{name:'Configuration revision comparison',exact:true}).getByText('Configuration changed',{exact:true}).waitFor();
+ await panel.getByRole('button',{name:'Review detach 002C browser template',exact:true}).click();
+ await panel.getByRole('button',{name:'Confirm detach template',exact:true}).click();
+ await panel.getByText('No monitoring template attached.',{exact:true}).waitFor();
+ assert.equal((await api('monitoring/data-sources/'+resource.data_source_id+'/templates')).length,0);
+ await panel.getByRole('button',{name:'Restore revision 1 as new configuration',exact:true}).click();
+ await panel.getByText(/pinned v1/).waitFor();
+ // Populate >one history page through authenticated commands, never a UI mock.
+ for(let i=0;i<11;i++){
+  const current=await api('monitoring/data-sources/'+resource.data_source_id+'/configuration');
+  const response=await page.request.post(base+'/api/v1/monitoring/data-sources/'+resource.data_source_id+'/configuration/commands',{headers:{...headers,'Idempotency-Key':globalThis.crypto.randomUUID()},data:{expected_revision:current.revision,attachments:current.attachments}});
+  assert.equal(response.status(),201);
+ }
+ await modal.getByRole('button',{name:'Cancel',exact:true}).click();
+ await page.getByRole('button',{name:'Refresh',exact:true}).click();
+ await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
+ modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});panel=modal.getByRole('region',{name:'Monitoring template configuration',exact:true});
+ await panel.getByRole('button',{name:'Load older configuration history',exact:true}).click();
+ await panel.getByRole('button',{name:'View revision 1',exact:true}).waitFor();
+ await page.screenshot({path:out+'/configuration-history-diff-detach-draft.png',fullPage:true});
+ checks.push('Staged preview persists no revision; stale-write explicit refresh preserves draft; immutable detail/diff, audited detach/restore and real keyset history pagination');
+
  await page.setViewportSize({width:390,height:844});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.screenshot({path:out+'/template-mobile.png',fullPage:true});
