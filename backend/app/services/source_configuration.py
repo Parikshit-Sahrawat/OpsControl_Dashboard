@@ -232,7 +232,9 @@ def evaluate(db, source, intent):
             evaluated_at=datetime.now(timezone.utc).isoformat(),
         ),
         source_context=dict(
-            source_type=source.source_type, configuration=redact_config(config)
+            source_type=source.source_type,
+            endpoint=redact_config(source.endpoint),
+            configuration=redact_config(config),
         ),
         application="NOT_REQUESTED",
         health="UNVERIFIED",

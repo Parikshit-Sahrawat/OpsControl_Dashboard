@@ -107,7 +107,7 @@ def upgrade():
         IF NEW.organization_id IS DISTINCT FROM OLD.organization_id AND OLD.configuration_revision > 0 THEN
           RAISE EXCEPTION 'Revisioned source ownership is immutable';
         END IF;
-        fenced := OLD.configuration_revision > 0 AND (NEW.connection_config::jsonb IS DISTINCT FROM OLD.connection_config::jsonb OR NEW.source_type IS DISTINCT FROM OLD.source_type OR NEW.configuration_revision IS DISTINCT FROM OLD.configuration_revision);
+        fenced := OLD.configuration_revision > 0 AND (NEW.connection_config::jsonb IS DISTINCT FROM OLD.connection_config::jsonb OR NEW.source_type IS DISTINCT FROM OLD.source_type OR NEW.endpoint IS DISTINCT FROM OLD.endpoint OR NEW.configuration_revision IS DISTINCT FROM OLD.configuration_revision);
       ELSE
         IF TG_OP = 'DELETE' THEN sid := OLD.data_source_id; ELSE sid := NEW.data_source_id; END IF;
         PERFORM 1 FROM data_sources WHERE id = sid FOR UPDATE;
