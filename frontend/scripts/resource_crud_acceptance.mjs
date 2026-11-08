@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import { scopeHeaders } from "./explicit_scope.mjs";
 // Actual browser forms and authenticated backend; no mocked API responses.
 import assert from "node:assert/strict";
@@ -39,6 +40,7 @@ try {
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   phase = "open onboarding";
+  await preparePrimaryNavigation(page);
   await page
     .getByRole("button", { name: "Data Sources / Resources", exact: true })
     .click();

@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Real owned API/PostgreSQL and Chromium. Only an explicitly labelled failed-read UI test injects a response.
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -54,7 +55,7 @@ try {
  await page.unroute('**/api/v1/notifications/preferences');await dialog.getByRole('button',{name:'Retry preferences',exact:true}).click();await dialog.getByLabel('Receive in-app notifications').waitFor();await page.keyboard.press('Escape');
  checks.push('SET-01 explicitly injected failed read cannot save defaults; real API retry restores persisted value');
  await page.evaluate(ids=>{localStorage.setItem('opscontrol.organizationIds',JSON.stringify(ids));localStorage.setItem('opscontrol.customerSelectionMode','SELECTED');},headers['X-OpsControl-Customers'].split(','));
- await page.reload();await page.getByRole('button',{name:'Alerts',exact:true}).click();
+ await page.reload();await navigatePrimary(page,'Alerts');
  await page.getByLabel('Alert status',{exact:true}).selectOption('RESOLVED');await page.getByLabel('Monitoring domain',{exact:true}).selectOption('API');await page.getByLabel('Search alerts',{exact:true}).fill('scope');
  assert.equal(await page.getByLabel('Alert status',{exact:true}).inputValue(),'RESOLVED');assert.equal(await page.getByLabel('Monitoring domain',{exact:true}).inputValue(),'API');
  await page.screenshot({path:out+'/alerts-filter-labels.png',fullPage:true});checks.push('UI-020 real Alerts accessible status/domain/search controls work without redesign');
