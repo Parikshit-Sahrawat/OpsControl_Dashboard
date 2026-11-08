@@ -1,0 +1,30 @@
+[
+  {
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "pip",
+      "list",
+      "--format=json"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "pip_audit",
+      "--version"
+    ],
+    "exit": 0
+  }
+]

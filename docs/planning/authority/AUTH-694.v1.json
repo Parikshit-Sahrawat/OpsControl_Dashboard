@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "authority_id": "AUTH-694",
+  "decision_version": 1,
+  "version_semantics": "Repository registration v1 of owner-supplied text; original questionnaire document version is not recovered. This is not a new approval timestamp or signature.",
+  "title": "Versioned Product-Authority Reconciliation and Independent Release-Gate Enforcement",
+  "round": 110,
+  "selected_option": "A",
+  "decision_status": "APPROVED",
+  "approval_source": "PRODUCT_OWNER_CHATGPT_CONVERSATION",
+  "scope": "PRODUCT_WIDE",
+  "supersession_status": "CURRENT",
+  "repository_source_artifact": "SOURCE_NOT_RECOVERED",
+  "repository_implementation_status": "NOT_VERIFIED",
+  "certification_status": "NOT_CERTIFIED",
+  "formal_uat_acceptance": "PENDING",
+  "original_source": {
+    "conversation": "ChatGPT OpsControl Product Guide authority questionnaire",
+    "round": 110,
+    "artifact_status": "SOURCE_NOT_RECOVERED",
+    "repository_url": null,
+    "approval_timestamp": null,
+    "signature": null
+  },
+  "registration_provenance": {
+    "task": "OC-AUTH-694-REG",
+    "parent": "OC-DEV-COMP-000",
+    "authority": "Owner-provided decision text in the current task is authoritative for registration",
+    "independent_original_source_verification": "NOT_VERIFIED"
+  },
+  "decision": "Establish and maintain a versioned reconciliation of all applicable OpsControl product-authority decisions through AUTH-694 against all 31 included product journeys; all 14 sequential development-closure steps; actual implementation/integration; superseded, excluded and withdrawn requirements; automated evidence/gaps; formal owner UAT requirements; cross-journey dependencies/blockers; and independent security, durability, qualification and production-release gates.",
+  "mandatory_rule": "Product-authority approval must never be treated as proof of implementation, successful testing, certification, owner UAT acceptance or production release readiness.",
+  "included_scope": [
+    "Windows/Linux host, process and service monitoring",
+    "Current and historical performance monitoring",
+    "API monitoring",
+    "Read-only Pentaho ETL monitoring",
+    "Email/PagerDuty notifications",
+    "Background alert lifecycle, correlation and automated recovery",
+    "Centralized PostgreSQL-backed durable spool architecture"
+  ],
+  "excluded_scope": [
+    "ServiceNow",
+    "Incident-management UI",
+    "SFTP monitoring",
+    "Cloud object storage monitoring",
+    "Pentaho execution or mutation controls"
+  ],
+  "spool_status": {
+    "architecture": "APPROVED_ARCHITECTURE",
+    "implementation": "NOT_VERIFIED",
+    "certification": "NOT_CERTIFIED",
+    "note": "Approval of centralized PostgreSQL-backed durable spool architecture is not completed implementation or verified recovery; no alternative architecture is substituted."
+  },
+  "preserved_decisions": [
+    {
+      "authority_id": "AUTH-491",
+      "selected_option": "B",
+      "original_decision_text": "SOURCE_NOT_RECOVERED"
+    },
+    {
+      "authority_id": "AUTH-495",
+      "selected_option": "C",
+      "original_decision_text": "SOURCE_NOT_RECOVERED"
+    }
+  ],
+  "closure_evidence_rule": {
+    "distinct_states": [
+      "ASSUMED_EXTERNAL_CLOSURE",
+      "PROVIDER_VERIFIED_CLOSURE"
+    ],
+    "rule": "Local resolution or assumed external closure does not establish provider-verified external closure. Do not display/assert external closure as verified without qualified evidence. Preserve original B/C selections without inventing unrecovered option wording.",
+    "option_to_state_mapping": "SOURCE_NOT_RECOVERED; no mapping between B/C and either closure type is invented"
+  },
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "PRODUCTION_RELEASE": "NO-GO",
+    "FORMAL_OWNER_UAT": "PENDING",
+    "DEVELOPMENT_CLOSURE": "NOT COMPLETE"
+  },
+  "reconciliation_reference": "AUTH-694_RECONCILIATION.v1.json",
+  "canonical_requirement_register": "../DEVELOPMENT_COMPLETION_REGISTER.md",
+  "required_traceability_fields": [
+    "authority_id",
+    "decision_version",
+    "approval_status",
+    "supersession_status",
+    "original_source_and_provenance",
+    "applicable_product_journey_ids",
+    "applicable_closure_step_ids",
+    "module_and_capability_ownership",
+    "implementation_status",
+    "source_code_references",
+    "automated_test_references_and_outcomes",
+    "evidence_artifacts_and_commit_sha",
+    "gaps_blockers_dependencies",
+    "owner_uat_acceptance",
+    "release_eligibility_and_gates"
+  ],
+  "approval_provenance_status": "APPROVED_BY_OWNER_IN_CONVERSATION",
+  "related_approved_program": {
+    "source_commit": "8a09bd142fb6dbf7a79b131c0490e67e8de3fde0",
+    "path": "../OC_DEV_COMP_PROGRAM_2026-11-08.md",
+    "note": "Owner-approved execution policy context; not original AUTH-694 questionnaire artifact."
+  }
+}

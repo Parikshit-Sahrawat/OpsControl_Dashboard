@@ -1,0 +1,25 @@
+{
+  "command": [
+    "backend/.venv/bin/python",
+    "scripts/v16-acceptance.py"
+  ],
+  "flags": {
+    "V16_TEST_TARGETS": "tests.test_worker_readiness",
+    "V16_API_ACCEPTANCE": "1",
+    "V16_BROWSER_ACCEPTANCE": "1",
+    "V16_EVIDENCE_DIR": "/tmp/occomp000-baseline/cleanup-negative",
+    "PLAYWRIGHT_MODULE": "/tmp/occomp000-no-such-playwright.mjs",
+    "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+  },
+  "expected_exit": 1,
+  "actual_exit": 1,
+  "verdict": "PASS cleanup negative only; browser NOT EXECUTED",
+  "cleanup": {
+    "container": "opscontrol-v16-4e2f66a2b32f",
+    "container_removed": true,
+    "api_stopped": true,
+    "ui_stopped": true,
+    "private_fixtures_removed": true,
+    "scope": "Exact allocated processes, container and private directory only"
+  }
+}
