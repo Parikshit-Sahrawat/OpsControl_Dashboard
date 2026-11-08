@@ -29,3 +29,5 @@ Operational and compatibility disposable PostgreSQL startup failed with initdb N
 - All27 PR85 workflow definitions validated under CI003A; PR84 existing workflow checker passed. Workflow definitions on PR84 are unchanged.
 
 Raw results retain failures and screenshots, source hashes and scoped cleanup. No grand total across overlapping suites. All six affected hosted workflows will be triggered by the PR84 push; results PENDING under Trigger-and-Exit. No merge, deploy, publication or release promotion. Sprint1 NOT COMPLETE; CHK001 FAIL, CHK002 BLOCKED, SECURITY BLOCKED, RELEASE NO-GO.
+
+Evidence packaging validation found two `eks.json` files containing multiple original JSON values. Their bytes are retained as `.jsonstream`, not falsely presented as single JSON documents. All other JSON parses; checksum manifest covers the raw streams too. Initial validator failure is retained here as a packaging correction, not a runtime test failure.
