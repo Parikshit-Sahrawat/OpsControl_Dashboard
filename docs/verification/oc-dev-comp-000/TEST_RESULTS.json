@@ -1,0 +1,113 @@
+{
+  "task": "OC-DEV-COMP-000",
+  "disposition": "SPRINT0_DELIVERED_FOR_REVIEW_WITH_BLOCKERS; not sprint acceptance or development closure",
+  "main_sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+  "tested_harness_sha": "d4c5e8e24b7c9d3c62fa35a5c6ea87ec75e43e79",
+  "authority_registration_commit": "24cc0bdeae8f2cf2b761e79ae35b03547bc758f4",
+  "approved_program_commit": "8a09bd142fb6dbf7a79b131c0490e67e8de3fde0",
+  "product_source_changes": false,
+  "backend": {
+    "executions": 552,
+    "passed": 550,
+    "failed": 0,
+    "skipped": 2,
+    "skipped_cases": [
+      "test_actual_contrib_accepts_five_methods",
+      "test_actual_scrape_and_log_rotation_truncation_restart"
+    ],
+    "skip_reason": "Pinned Contrib binary not configured; actual interoperability NOT TESTED"
+  },
+  "frontend": {
+    "passed": 38,
+    "failed": 0,
+    "skipped": 0
+  },
+  "http": {
+    "core_groups": 9,
+    "rbac_groups": 14
+  },
+  "browser": {
+    "pipeline": "PASS",
+    "rbac_groups": 5,
+    "resource_crud": "PASS actual FastAPI/PG",
+    "counts_overlap": true
+  },
+  "security_restore": {
+    "groups": 13,
+    "tables": 100,
+    "rows": 1191,
+    "constraints": 499,
+    "restore_seconds": 0.662,
+    "dump_sha256": "2b299e9c9b501b9bb15578d552589f542124f697397637ba202ab424c2ff02d9"
+  },
+  "security_scans": {
+    "pip_audit_exit": 1,
+    "pip_advisory_entries": 10,
+    "pip_affected_packages": [
+      {
+        "name": "black",
+        "version": "25.1.0",
+        "advisories": [
+          "PYSEC-2026-2121",
+          "PYSEC-2026-2120",
+          "GHSA-cg8m-r9f2-5wm2"
+        ]
+      },
+      {
+        "name": "oauthlib",
+        "version": "4.0.0",
+        "advisories": [
+          "GHSA-3jp2-3mrg-2vxc"
+        ]
+      },
+      {
+        "name": "pip",
+        "version": "25.0.1",
+        "advisories": [
+          "PYSEC-2026-196",
+          "PYSEC-2026-1795",
+          "PYSEC-2026-1796",
+          "PYSEC-2026-2875",
+          "PYSEC-2026-2876",
+          "PYSEC-2026-3721"
+        ]
+      }
+    ],
+    "npm_audit_exit": 1,
+    "npm_metadata": {
+      "info": 0,
+      "low": 0,
+      "moderate": 4,
+      "high": 0,
+      "critical": 0,
+      "total": 4
+    },
+    "image_scan": "BLOCKED: scanners/final immutable application candidate identities absent; no image/SBOM clearance"
+  },
+  "authority_registration_validation": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "implementation_certification": "NOT_VERIFIED/NOT_CERTIFIED"
+  },
+  "runtime_fixture_scope": "Owned loopback PostgreSQL17; authenticated FastAPI and React/Vite/Chromium; no genuine provider targets, production or shared UAT",
+  "parent_sprints_started": false,
+  "malformed_legacy_exports_preserved_raw": [
+    "raw/security-restore-faults/eks.json.raw.txt"
+  ],
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "OWNER_UAT": "PENDING",
+    "DEVELOPMENT_CLOSURE": "NOT COMPLETE"
+  },
+  "cleanup_failure_injection": {
+    "expected_exit": 1,
+    "actual_exit": 1,
+    "status": "PASS for cleanup only; browser NOT EXECUTED",
+    "source": "raw/cleanup-negative/expected-failure-result.json"
+  }
+}

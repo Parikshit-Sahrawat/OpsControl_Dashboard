@@ -1,0 +1,23 @@
+# OC-DEV-COMP-000 — Sprint0 review handoff
+
+Sprint0 review date:2026-11-08 Asia/Calcutta. Application baseline `ffe5ac285ab8aef33a1139bce6f3da79be3d6d33`, tested harness `d4c5e8e24b7c9d3c62fa35a5c6ea87ec75e43e79`.
+
+
+**Sprint0 planning/baseline delivered for review with explicit blockers; not sprint acceptance or development closure. Sprint1 NOT STARTED.** Verified main `ffe5ac285ab8aef33a1139bce6f3da79be3d6d33` unchanged. Isolated branch dev/oc-dev-comp-000-baseline from main; no existing draft work overwritten. Tested harness `d4c5e8e24b7c9d3c62fa35a5c6ea87ec75e43e79`, unchanged main application source. AUTH694 registration commit `24cc0bdeae8f2cf2b761e79ae35b03547bc758f4`. Final evidence-only commit reported in handoff.
+
+Adopted exact owner-approved program `8a09bd142fb6dbf7a79b131c0490e67e8de3fde0` by reading and copying only its one document verbatim; no merge/cherry-pick. Global mandatory test policy now applies repository-wide through AGENTS.md, policy, SDLC and canonical register. Real PostgreSQL/API/React/Playwright baseline executed during development. [Program reconciliation](PROGRAM_RECONCILIATION.md) and [approved source identity](APPROVED_PROGRAM_SOURCE.json).
+
+[AUTH694](../../planning/authority/REGISTER.md):OptionA/Round110 APPROVED_BY_OWNER_IN_CONVERSATION, original repository artifact SOURCE_NOT_RECOVERED, implementation NOT_VERIFIED, certification NOT_CERTIFIED, UAT PENDING. Register/versioned33-slot journey and14-step traceability without inventing missing30definitions or original canonical step wording. AUTH491=B/AUTH495=C preserved with local/assumed-versus-provider-verified closure distinction. [Authority/scope](AUTHORITY_AND_SCOPE.md), [registration report](auth-694/REPORT.md).
+
+Reusable draft80/81/82 work and exact SHA/conflict/dependency review: [baseline reconciliation](BASELINE_AND_PR_RECONCILIATION.md). No code/migrations assembled into main/integration candidate. Current fullmain→PR82 overlay check on PR80 yields2text conflicts; prior incremental3-conflict evidence retained as different base, not treated resolved. Proposed integration strategy stays on development candidates until final Sprint10review/explicit owner merge approval.
+
+Delivered dependency-ordered20-ticket [Sprint1–10 backlog](SPRINTS_01_10_PLAN.md) matching the approved program exactly, [machine backlog](SPRINTS_01_10_BACKLOG.json), [gap matrix](GAP_MATRIX.csv), scope conflicts and source/test/owner-role links. No future sprint authorization inferred. Spool remains approved architecture only; source transaction/recovery decisions and implementation proof outstanding.
+
+Baseline:550backend PASS/2SKIP,38frontend PASS, lint/build/Compose/new harness Ruff PASS;9 coreHTTP and14RBAC HTTP groups,5RBAC browser groups, pipeline/resource browsers and13controlled security/restore groups PASS.100tables/1191rows/499constraints restored. Tests overlap. Two actual pinned Contrib tests unavailable; no genuine provider qualification. AUTH694 documentation9tests PASS. Fresh security scans FAIL with findings:10pip advisory entries/3installed-test-toolchain packages and4moderate npm lock package entries. Black/pip in the inherited test venv lag the source pins; these are not asserted production-image counts. Runtime direct pins match; clean candidate applicability remains unverified. Image-level scans/SBOM/candidate identity BLOCKED. No security clearance or waived findings. [Results](TEST_RESULTS.md), [security](SECURITY_BASELINE.md), [fault boundaries](FAULT_AND_COMPONENT_BOUNDARIES.md).
+
+Current conflicts:incident UI still active though excluded; PD delivery missing while included; Pentaho raw-log7day-after-completion policy not verified in code. No operational changes in Sprint0. Current provided14-step tracker preserved:1PARTIAL,2–12PENDING,13–14BLOCKED; no later step marked complete from related old evidence. [Scope conflicts](PROGRAM_SCOPE_CONFLICTS.md).
+
+Next:owner reviews Sprint0, authority gaps and exact Sprint1prerequisites (applicability/history/convergence); separately authorizes Sprint1. Keep all9owner selections Pending and D07/D08 unresolved unless exact authority supplied. No deployment/shared UAT access/formal UAT/provider calls or main merge. Normal cleanup and a deliberate missing-browser exit1 both remove exact task resources/private inputs; the expected-failure browser is NOT EXECUTED, not PASS. Cleanup evidence names only allocated fixtures, no broad prune. Hosted CI, if triggered on final draft review PR, remains RESULT PENDING under Trigger-and-Exit; no completion monitoring.
+
+
+**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO · formal owner UAT PENDING · development closure NOT COMPLETE.**
