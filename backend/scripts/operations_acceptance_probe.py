@@ -99,7 +99,7 @@ def setup():
             "organization_id": state["org_id"],
             "name": "Fictional NOC HTTPS Portal",
             "source_type": "API",
-            "endpoint": "https://" + host + "/ready",
+            "endpoint": "https://" + host + ":" + os.environ.get("ETL_FIXTURE_PORT", "443") + "/ready",
         },
     )
     worker = api(
@@ -186,7 +186,7 @@ def setup():
             "data_source_id": unknown["id"],
             "name": "not-yet-observed",
             "collector_type": "HTTP",
-            "configuration": {"url": "https://" + host + "/ready"},
+            "configuration": {"url": "https://" + host + ":" + os.environ.get("ETL_FIXTURE_PORT", "443") + "/ready"},
         },
     )
     api(

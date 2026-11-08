@@ -2,6 +2,7 @@
 """Disposable Sprint 3 controlled HTTPS Carte lifecycle and real browser gate."""
 import json, os, secrets, shutil, socket, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
+from fixture_ports import claim_port, https_port
 ROOT=Path(__file__).resolve().parents[1];PYTHON=str(ROOT/'backend/.venv/bin/python')
 OUT=Path(os.getenv('ETL_EVIDENCE_DIR',str(ROOT/'docs/screenshots/etl')))
 private=Path(tempfile.mkdtemp(prefix='opscontrol-etl-'));private.chmod(0o700)
@@ -46,11 +47,14 @@ def noc_browser(phase):
 def target():return start([PYTHON,'-c','import time;time.sleep(3600)'],label='linux-target')
 
 try:
-    # Never use another task's service if a fixed fixture port is occupied.
-    for address, port in [('127.0.0.1',11432),('127.0.0.1',18800),('127.0.0.1',15174),(host,443)]:
-        with socket.socket() as claim:
-            try: claim.bind((address,port))
-            except OSError as exc: raise RuntimeError('Owned fixture port unavailable; refusing existing service') from exc
+    # Fail closed on occupied/denied ports. A failed Docker bind also aborts;
+    # no request is ever redirected to a pre-existing service.
+    for address, port in [('127.0.0.1',11432),('127.0.0.1',18800),('127.0.0.1',15174)]:
+        claim_port(address, port)
+    fixture_port = https_port(host, int(os.getenv('ETL_FIXTURE_PORT', '0')))
+    env['ETL_FIXTURE_PORT'] = str(fixture_port)
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT/'fixture-binding.json').write_text(json.dumps({'address':host, 'host_port':fixture_port, 'container_port':443, 'scheme':'https', 'certificate_verification':True}, indent=2))
     import ipaddress
     if ipaddress.ip_address(host).is_loopback:raise RuntimeError('Controlled fixture needs an actual private interface address')
     for name in ('admin-password','carte-password'):
@@ -96,7 +100,7 @@ try:
                 (OUT/'populated-downgrade-refusal.log').write_text(refusal.stderr)
     run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
     linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
-    run(['docker','run','-d','--name',fixture,'-p',host+':443:443','-e','ETL_FIXTURE_BIND=0.0.0.0',
+    run(['docker','run','-d','--name',fixture,'-p',host+':'+str(fixture_port)+':443','-e','ETL_FIXTURE_BIND=0.0.0.0',
         '-v',str(private)+':/fixture','-v',str(ROOT/'deploy/fixtures/pentaho_carte_api.py')+':/app.py:ro',
         'python:3.12-alpine','python','/app.py','/fixture',host])
     start([PYTHON,'-m','uvicorn','app.main:app','--host','127.0.0.1','--port','18800','--no-access-log'],ROOT/'backend','api')

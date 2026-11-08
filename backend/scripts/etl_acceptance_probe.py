@@ -42,7 +42,7 @@ def setup():
     job=api(201,'POST','/api/v1/etl/job-orders',admin,{'organization_id':org['id'],'hostname':'etl-controlled-worker','name':'Fictional Daily Warehouse','expected_runtime_seconds':60,'sla_seconds':120,'host_data_source_id':host['id'],
         'expected_window_start':(now-timedelta(minutes=20)).strftime('%H:%M'),'expected_window_end':(now-timedelta(minutes=10)).strftime('%H:%M'),'no_run_grace_seconds':60,'timezone':'UTC'})
     source=api(201,'POST','/api/v1/resource-management/data-sources',admin,{'organization_id':org['id'],'name':'Controlled HTTPS Carte','source_type':'PENTAHO'})
-    cfg={'url':'https://'+os.environ['ETL_FIXTURE_IP'],'job_name':job['name'],'job_order_id':job['id'],'credential_ref':'etl-fixture','allowed_hosts':[os.environ['ETL_FIXTURE_IP']],'allowed_cidrs':[os.environ['ETL_FIXTURE_IP']+'/32'],'collect_logs':True}
+    cfg={'url':'https://'+os.environ['ETL_FIXTURE_IP']+':'+os.environ.get('ETL_FIXTURE_PORT','443'),'job_name':job['name'],'job_order_id':job['id'],'credential_ref':'etl-fixture','allowed_hosts':[os.environ['ETL_FIXTURE_IP']],'allowed_cidrs':[os.environ['ETL_FIXTURE_IP']+'/32'],'collect_logs':True}
     collector=api(201,'POST','/api/v1/resource-management/collectors',admin,{'data_source_id':source['id'],'name':'read-only-carte-history','collector_type':'PENTAHO','interval_seconds':3600,'configuration':cfg})
     state.update(job_id=job['id'],collector_id=collector['id'],source_id=source['id'],host_id=host['id'],host_collector_id=activation['collector_id'],collector_config=cfg)
     (PRIVATE/'session.json').write_text(json.dumps(state));(PRIVATE/'session.json').chmod(0o600)
@@ -132,7 +132,7 @@ def isolation():
     import ssl
     context=ssl.create_default_context()
     for method,path,expected in [('GET','/kettle/status/?xml=Y',401),('POST','/kettle/startJob/',403)]:
-        request=urllib.request.Request('https://'+os.environ['ETL_FIXTURE_IP']+path,method=method)
+        request=urllib.request.Request('https://'+os.environ['ETL_FIXTURE_IP']+':'+os.environ.get('ETL_FIXTURE_PORT','443')+path,method=method)
         opener=urllib.request.build_opener(urllib.request.ProxyHandler({}),urllib.request.HTTPSHandler(context=context))
         try:opener.open(request,timeout=5)
         except urllib.error.HTTPError as e:assert e.code==expected
