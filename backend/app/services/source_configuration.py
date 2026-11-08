@@ -143,6 +143,7 @@ def output(row):
 
 
 def evaluate(db, source, intent):
+    require_supported_source(source)
     from app.services.template_resolution import _apply_package
     from app.services.template_applicability import applicability
 

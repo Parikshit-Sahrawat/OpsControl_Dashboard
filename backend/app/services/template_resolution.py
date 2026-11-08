@@ -93,6 +93,13 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
     if not source:
         raise HTTPException(status_code=404, detail="Data source not found")
 
+    excluded = False
+    try:
+        require_supported_source(source)
+    except HTTPException as exc:
+        if exc.status_code != 422:
+            raise
+        excluded = True  # Read-only historical visibility never grants eligibility.
     attachments = list_template_attachments(db, data_source_id, enabled_only=True)
     effective = {
         "data_source_id": str(source.id),
@@ -104,6 +111,7 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
         "logs": [],
         "conflicts": [],
         "valid": True,
+        "applicability_reasons": ([{"code":"EXCLUDED_SOURCE", "path":"source"}] if excluded else []),
     }
 
     for attachment in attachments:

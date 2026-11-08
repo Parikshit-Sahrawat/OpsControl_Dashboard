@@ -270,6 +270,27 @@ class SourceConfigurationContract(unittest.TestCase):
         )
         self.assertEqual(self.call("GET", self.base)[1]["revision"], 0)
 
+        with SessionLocal() as db:
+            db.get(DataSource, self.sid).source_type = "AWS_EKS"
+            db.commit()
+        self.assertEqual(
+            self.call(
+                "POST",
+                self.base + "/preview",
+                dict(expected_revision=0, attachments=[]),
+            )[0],
+            422,
+        )
+        self.command(members=[], status=422)
+        code, effective = self.call(
+            "GET", f"monitoring/data-sources/{self.sid}/effective-configuration"
+        )
+        self.assertEqual(code, 200)
+        self.assertFalse(effective["valid"])
+        self.assertEqual(
+            effective["applicability_reasons"][0]["code"], "EXCLUDED_SOURCE"
+        )
+
     def test_legacy_import_is_explicit_non_operational_and_old_writers_fenced(self):
         with SessionLocal() as db:
             # Explicit maintenance import fixture, emulating rows retained by
