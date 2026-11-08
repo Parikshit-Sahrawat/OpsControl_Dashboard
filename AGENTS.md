@@ -1,0 +1,5 @@
+# OpsControl repository development instructions
+
+The product-owner-approved [global mandatory development test policy](docs/policies/MANDATORY_DEVELOPMENT_TEST_POLICY.md) applies across this repository and every development-completion sprint. Read it before changing behavior or test harnesses. Use real PostgreSQL/migrations and authenticated running FastAPI/React/Playwright boundaries for applicable integration claims; mocks cannot certify those contracts. Record exact evidence and explicit skips/blockers. Do not replace development tests with later owner UAT.
+
+No merge to main until final development-completion integration review and explicit owner approval. No automatic deployment or provider qualification. Keep CHK-001 FAIL, CHK-002 BLOCKED, SECURITY BLOCKED and RELEASE NO-GO absent independently verified, authorized transitions. Preserve existing work and historical evidence. Scope/authority decisions must be sourced; missing numbered journey definitions remain SOURCE_NOT_RECOVERED. Do not interpret this file as approval for new functionality.
