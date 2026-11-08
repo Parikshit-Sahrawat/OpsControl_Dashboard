@@ -20,7 +20,7 @@ def verify_artifacts(directory, manifest):
             raise ValueError("Evidence path traversal")
         if not re.fullmatch("[a-f0-9]{64}", expected) or hashlib.sha256(file.read_bytes()).hexdigest() != expected:
             raise ValueError("Evidence checksum mismatch: " + name)
-    actual = {str(f.relative_to(directory)) for f in directory.rglob("*") if f.is_file() and f.name != "ARTIFACT_SHA256.json" and "__pycache__" not in f.parts}
+    actual = {str(f.relative_to(directory)) for f in directory.rglob("*") if f.is_file() and f != directory / "ARTIFACT_SHA256.json" and "__pycache__" not in f.parts}
     if actual != set(manifest["files"]):
         raise ValueError("Evidence inventory incomplete")
 
@@ -31,8 +31,8 @@ def validate():
     for file in BASE.glob("*.json"):
         json.loads(file.read_text())
     metadata = json.loads((BASE / "VALIDATION.json").read_text())
-    assert metadata["gates"] == {"CHK-001":"FAIL", "CHK-002":"BLOCKED", "SECURITY":"BLOCKED", "RELEASE":"NO-GO", "SPRINT1":"NOT_COMPLETE"}
-    assert metadata["merge_authorized"] is False
+    if metadata["gates"] != {"CHK-001":"FAIL", "CHK-002":"BLOCKED", "SECURITY":"BLOCKED", "RELEASE":"NO-GO", "SPRINT1":"NOT_COMPLETE"} or metadata["merge_authorized"] is not False:
+        raise ValueError("Independent gates or merge restriction were misrepresented")
     root = BASE.parents[2]
     # Current review documents only. Relocated historical branch blobs retain
     # their original-source relative references and are explicitly identified.
