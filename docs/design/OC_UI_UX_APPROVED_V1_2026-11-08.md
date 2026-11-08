@@ -1,4 +1,4 @@
-# OpsControl UI/UX Design Authority — Unified Monitoring Workspace v1.0
+# OpsControl UI/UX Design Authority — Unified Monitoring Workspace v1.1 (functionality-first clarification)
 
 **Authority:** Product-owner approval in OpsControl ChatGPT conversation, 2026-11-08.
 **Approval:** APPROVED_FOR_IMPLEMENTATION_IN_DEVELOPMENT_PROGRAM.
@@ -8,9 +8,28 @@
 **Source baseline:** Sprint 0 draft PR #83 at `f9cdc8d9204c40d66c1d956166bb6125eaec7581`. This document is a **post-Sprint-0 additive design record**, not a rewrite of the Sprint 0 sealed test evidence.
 **Program:** [Approved development-completion program](../planning/OC_DEV_COMP_PROGRAM_2026-11-08.md). No intermediate merge to `main`, no deploy, no formal owner UAT.
 
+## OWNER CLARIFICATION — Functionality-first UI adaptation (2026-11-08; supersedes any conflicting visual-first wording)
+
+**Priority rule: CURRENT IMPLEMENTED APPLICATION FUNCTIONALITY AND APPROVED REQUIREMENTS ARE AUTHORITATIVE; THE GENERATED IMAGE IS A VISUAL DESIGN INSPIRATION ONLY.** Adapt the frontend UI **to the current application capabilities**. Do not change application behavior, data contracts, API endpoints, backend services, database models, migrations, domain rules, monitoring semantics, security policies, routing meaning, permissions, existing functional workflows, or feature scope merely to resemble the image. No destructive redesign, no replacement of working controls with attractive but inert mockup widgets.
+
+**Required workflow for Codex and reviewers:**
+1. Audit the *actual current* frontend routes, visible controls, workflows, API calls, authorization and tests; produce an **existing-functionality inventory** before UI changes.
+2. Make a screen-by-screen mapping: `existing route/feature → existing action/API/permission → proposed visual layout/component → evidence/test`. Keep features and their meaning intact; keep necessary controls accessible within equivalent or fewer sensible navigation steps.
+3. Apply the reference picture selectively for **navy sidebar, light canvas, spacing, typography, card/panel styling, tabs, visual hierarchy, readable tables, filters that existing backend supports, accessibility and responsive design**. Rearrange presentation where safe, without breaking interactions.
+4. Do **not** invent controls/features, telemetry fields, chart series, permissions, transitions, search indices, filter capabilities, configuration editors, save endpoints, rollouts or reports because they appear in the artwork. Do not remove working capabilities simply because they are absent from the artwork. Existing approved product exclusions still apply, but their retirement must be tracked as independent authorized scope changes, not incidental UI styling.
+5. New filters may be added as **presentation-only options** only if the actual API/data supports them, including server-side tenant scoping, pagination, time windows and rate limits. A UI filter cannot promise a query the backend does not perform. Keep unsupported concepts in a later product backlog without creating fake controls.
+6. Nontechnical operator and admin layouts must reflect **existing RBAC and backend contracts**; hiding a button does not grant/revoke permission. Preserve current users' working actions and use role-aware progressive disclosure.
+7. Refactor styles/components incrementally with functional parity tests before/after. Run current backend/API/real PostgreSQL/React/Playwright regression under mandatory development policy. Verify keyboard and responsive layouts, organization scoping, current functionality, deep links and exact click outcomes.
+8. Where the image and implemented code disagree, **follow existing implemented code and approved current authority**; document the deviation in a visual mapping report. No backend/business-logic changes under the UI design task. Future roadmap feature work is separately planned and independently tested under its own sprint authorization.
+9. Preserve the review sequence: Sprint 0 is delivered, Sprint 1 begins only upon authorization, no intermediate `main` merge, no formal UAT or release gate change.
+
+**Acceptance:** Functional parity is mandatory; visual similarity is secondary. A working but visually adapted OpsControl UI is preferred over a pixel-matched mockup that changes or fakes features.
+
+---
+
 ## 1. Design intent and fidelity
 
-Build a polished, professional, low-friction enterprise NOC/operations web UI that matches the owner-approved image **as closely as feasible**, while respecting existing application contracts, accessibility, responsiveness, actual data availability and performance. Favor layout and interaction fidelity over decorative imitation. All displayed operational functionality must use real, permission-scoped application behavior, not nonfunctional demo controls, invented health states or hard-coded telemetry.
+Build a polished, professional, low-friction enterprise NOC/operations web UI that **adapts the approved image's presentation to current working application functionality**, while preserving existing application contracts, accessibility, responsiveness, actual data availability and performance. Favor layout and interaction fidelity over decorative imitation. All displayed operational functionality must use real, permission-scoped application behavior, not nonfunctional demo controls, invented health states or hard-coded telemetry.
 
 The owner requested **two role-specific experiences** using a shared design system:
 - **Admin / configuration-capable operator:** overview and monitor detail plus actual permitted configuration, template editing, validation, apply/rollout, history, access controls and advanced filters.
