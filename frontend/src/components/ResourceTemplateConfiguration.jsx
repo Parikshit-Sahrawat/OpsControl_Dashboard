@@ -46,7 +46,7 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
   };
   useEffect(() => {
     setSelected(""); setVersions([]); setVersion(""); setOverrides("{}");
-    setTemplates([]); setAttachments([]); setEffective(null); setHead(null); setHistory([]); commandKey.current = null; pendingTransition.current = null; setDetaching(null); load();
+    setTemplates([]); setAttachments([]); setEffective(null); setHead(null); setHistory([]); setNextBefore(null); setRevisionDetail(null); setComparison(null); setDraftPreview(null); setConflict(false); commandKey.current = null; pendingTransition.current = null; setDetaching(null); load();
     return () => { generation.current++; selection.current++; };
     // load/call intentionally capture the exact scope for this generation.
   }, [sourceId, organizationId, user.authorization_revision]);
@@ -56,7 +56,7 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
     setDraftPreview(null); setSelected(id); setVersions([]); setVersion(""); setError("");
     const existing = attachments.find(a => a.template_id === id);
     setOverrides(JSON.stringify(existing?.overrides || {}, null, 2));
-    if (!id) return;
+    if (!id) { setLoadingVersions(false); return; }
     setLoadingVersions(true);
     try {
       const rows = await call(`/api/v1/monitoring/templates/${id}/versions`);
