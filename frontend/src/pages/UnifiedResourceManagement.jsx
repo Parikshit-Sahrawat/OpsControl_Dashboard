@@ -427,7 +427,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
                   </button>
                   <small>{r.id}</small>
                 </td>
-                <td>{r.inherited.customer}</td>
+                <td><span className="inventory-customer-name" title={r.inherited.customer}>{r.inherited.customer}</span></td>
                 <td>{r.environment}</td>
                 <td>
                   {domain === "ETL"
