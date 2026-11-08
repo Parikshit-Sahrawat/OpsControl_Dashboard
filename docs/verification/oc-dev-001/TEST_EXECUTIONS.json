@@ -1,0 +1,80 @@
+{
+  "observed_utc": "2026-11-07T13:50:07Z",
+  "executions": [
+    {
+      "name": "main guarded backend contracts",
+      "source_sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+      "command": "/workspace/OpsControl_Dashboard/backend/.venv/bin/python /tmp/ocdev001-bounded-tests.py /tmp/oc-dev-001-audit",
+      "reproduction": "Use bounded_contract_tests.py in this package with a clean worktree at pinned main",
+      "exit_code": 0,
+      "run": 61,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "forbidden_io": 0,
+      "log": "logs/main-contract-tests.log"
+    },
+    {
+      "name": "PR80 guarded backend contracts",
+      "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+      "command": "backend/.venv/bin/python /tmp/ocdev001-bounded-tests.py /workspace/OpsControl_Dashboard",
+      "reproduction": "Use bounded_contract_tests.py with a clean worktree at pinned PR80",
+      "exit_code": 0,
+      "run": 61,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "forbidden_io": 0,
+      "log": "logs/pr80-contract-tests.log"
+    },
+    {
+      "name": "main frontend helper/source tests",
+      "source_sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+      "command": "npm test --prefix frontend",
+      "exit_code": 0,
+      "run": 38,
+      "failed": 0,
+      "skipped": 0,
+      "log": "logs/main-frontend-tests.log"
+    },
+    {
+      "name": "PR80 frontend helper/source tests",
+      "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+      "command": "npm test --prefix frontend",
+      "exit_code": 0,
+      "run": 46,
+      "failed": 0,
+      "skipped": 0,
+      "log": "logs/pr80-frontend-tests.log"
+    },
+    {
+      "name": "PR80 Pentaho/authority offline",
+      "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+      "command": "backend/.venv/bin/python scripts/pentaho-qualification-offline.py",
+      "exit_code": 0,
+      "run": 60,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "forbidden_io": 0,
+      "log": "logs/pr80-authority-offline.log"
+    },
+    {
+      "name": "PR80 CI traceability",
+      "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+      "command": "python scripts/check-ci-roadmap.py",
+      "exit_code": 0,
+      "log": "logs/pr80-traceability.log"
+    }
+  ],
+  "counts_overlap": true,
+  "full_regression_pg_browser_genuine_provider_formal_uat": "NOT RUN by this audit; historical/current hosted results are separate sources",
+  "environment": {
+    "python": "Python 3.12.14",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "dependency_installs": "NONE",
+    "network_database_subprocess_guard": "Contract runner uses Engine/socket/DNS/Popen guards; not an OS network sandbox",
+    "resources_created": "No service/container/DB/volume/provider credential created"
+  }
+}

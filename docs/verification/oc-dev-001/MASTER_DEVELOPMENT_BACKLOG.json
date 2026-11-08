@@ -1,0 +1,2921 @@
+[
+  {
+    "id": "OC-DEV-101",
+    "task_type": "CODING",
+    "module": "Telemetry",
+    "requirements": [
+      "TEL-03",
+      "ETL-14"
+    ],
+    "title": "Central PostgreSQL durable-spool admission and recovery",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-201"
+    ],
+    "coding_scope": "backend/app/telemetry/ingestion.py; backend/app/data_pipelines/service.py; reviewed forward-additive spool schema",
+    "automated_tests": "SIGKILL at receipt/spool/checkpoint/ack boundaries; repeated restart; full capacity; retry/retention; independent ID ledger",
+    "acceptance_criteria": "Preserve approved centralized PostgreSQL design; atomically persist admitted data before acknowledgement; reconcile distinct IDs, missing IDs and physical duplicates. Document upstream pre-admission loss separately; do not close CHK001 from DB-only success.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "TEL-03:BLOCKED_EXTERNAL_DEPENDENCY; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Central PostgreSQL durable-spool admission and recovery — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "verification/dev052/queue_restart/replay.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-102",
+    "task_type": "CODING",
+    "module": "Runtime",
+    "requirements": [
+      "TEL-03",
+      "PLT-01"
+    ],
+    "title": "Checkpoint/rollback compatibility preservation",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-201"
+    ],
+    "coding_scope": "Existing checkpoint compatibility/recovery contracts under docs/verification/dev052/security; agent configuration (reviewed scope only)",
+    "automated_tests": "Populated JSON/protobuf state; interrupted conversion; hash-verified backups; refusal of unsafe downgrade",
+    "acceptance_criteria": "Retain production0.123.0 pin; prove supported preservation paths and fail closed for unsupported rollback. CHK002 remains blocked until independently qualified.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "TEL-03:BLOCKED_EXTERNAL_DEPENDENCY; PLT-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Checkpoint/rollback compatibility preservation — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "verification/dev052/queue_restart/replay.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/scripts/database_backup.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-103",
+    "task_type": "CODING",
+    "module": "Access",
+    "requirements": [
+      "AM-01",
+      "CMP-02",
+      "RM-05",
+      "ETL-16"
+    ],
+    "title": "Cross-resource write authorization and revocation regression closure",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "backend/app/security/scope.py; resource_scope.py; boundaries.py; protected API tests",
+    "automated_tests": "Authenticated create/edit/retire; stale session and permission revocation; forged tenant/environment IDs; transactional rollback",
+    "acceptance_criteria": "No unauthorized mutation or cross-tenant attribution; extend existing safeguards only for a reproduced gap, retain passing enforcement.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "AM-01:IMPLEMENTED_AUTOMATED_VERIFIED; CMP-02:IMPLEMENTED_AUTOMATED_VERIFIED; RM-05:IMPLEMENTED_AUTOMATED_VERIFIED; ETL-16:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Cross-resource write authorization and revocation regression closure — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/access_models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/models/entities.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-104",
+    "task_type": "CODING",
+    "module": "Settings",
+    "requirements": [
+      "SET-02"
+    ],
+    "title": "Approved admin-settings persistence vertical slice",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-202",
+      "OC-DEV-103"
+    ],
+    "coding_scope": "New narrowly scoped settings API/model/migration only after exact key contract; frontend authorized settings workspace",
+    "automated_tests": "Allowlisted keys/ranges; unauthorized roles; secret references/redaction; audit; save/reload and failed save",
+    "acceptance_criteria": "Only explicitly approved settings editable, persisted/audited with tenant/global ownership defined; no arbitrary config editor.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "SET-02:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Approved admin-settings persistence vertical slice — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/App.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/navigation.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/main.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/core/config.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-105",
+    "task_type": "CODING",
+    "module": "Resources",
+    "requirements": [
+      "RM-02",
+      "RM-03",
+      "UI-002",
+      "UI-003",
+      "UI-006",
+      "UI-007",
+      "UI-022"
+    ],
+    "title": "Resource onboarding/draft/edit and lifecycle closure",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-103"
+    ],
+    "coding_scope": "frontend/src/pages/ResourceManagementV2.jsx; backend/app/registry/api.py; api/resource_management.py",
+    "automated_tests": "Organization switch/stale responses; failed saves; reload; disabled records; authenticated eight-step journey",
+    "acceptance_criteria": "One canonical Resource Management owner; saved/reopened resource configuration preserved; fix only reproduced historical defects.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "RM-02:PARTIALLY_IMPLEMENTED; RM-03:PARTIALLY_IMPLEMENTED; UI-002:IMPLEMENTED_TEST_GAP; UI-003:IMPLEMENTED_TEST_GAP; UI-006:PARTIALLY_IMPLEMENTED; UI-007:PARTIALLY_IMPLEMENTED; UI-022:IMPLEMENTED_TEST_GAP",
+    "gap": "Resource onboarding/draft/edit and lifecycle closure — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/TopNav.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/visual-system.css"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-106",
+    "task_type": "CODING",
+    "module": "Templates",
+    "requirements": [
+      "RM-04",
+      "RM-05",
+      "UI-008",
+      "UI-009"
+    ],
+    "title": "Template attachment → effective config → activation vertical slice",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-105"
+    ],
+    "coding_scope": "services/template_resolution.py; activation_engine.py; MonitoringSetup.jsx",
+    "automated_tests": "Version precedence; attachment enable/disable; preview invalidation; generation changes; negative activation; restart",
+    "acceptance_criteria": "Exactly resolved configuration drives selected collector; saving alone does not activate or imply health.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "RM-04:IMPLEMENTED_AUTOMATED_VERIFIED; RM-05:IMPLEMENTED_AUTOMATED_VERIFIED; UI-008:IMPLEMENTED_TEST_GAP; UI-009:PARTIALLY_IMPLEMENTED",
+    "gap": "Template attachment → effective config → activation vertical slice — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-107",
+    "task_type": "CODING",
+    "module": "Telemetry",
+    "requirements": [
+      "TEL-02",
+      "TEL-03",
+      "RM-05"
+    ],
+    "title": "Source attribution and independently reconciled telemetry receipts",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-101",
+      "OC-DEV-103"
+    ],
+    "coding_scope": "telemetry/ingestion.py; data_pipelines/service.py; worker collector paths",
+    "automated_tests": "Concurrent ownership, stale generation/fence; in-flight replacement; duplicate/replay/missing stable IDs",
+    "acceptance_criteria": "Every admitted signal has authorized source/method/version; no silent loss or reattribution. Preserve raw evidence and quarantine ambiguity.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "TEL-02:PARTIALLY_IMPLEMENTED; TEL-03:BLOCKED_EXTERNAL_DEPENDENCY; RM-05:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Source attribution and independently reconciled telemetry receipts — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "verification/dev052/queue_restart/replay.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-108",
+    "task_type": "CODING",
+    "module": "Signals",
+    "requirements": [
+      "OPS-01",
+      "OPS-03"
+    ],
+    "title": "Signal-to-alert-to-incident recovery vertical slice",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-107"
+    ],
+    "coding_scope": "worker/alert_engine.py; native_incidents/service.py; unified/engines.py",
+    "automated_tests": "Stale/missing signal; threshold crossing/recovery; duplicated observations; dependent service failures",
+    "acceptance_criteria": "Outcome/recovery derived from current evidence; incident history and original failures retained; no false recovery from missing data.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "OPS-01:PARTIALLY_IMPLEMENTED; OPS-03:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Signal-to-alert-to-incident recovery vertical slice — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-109",
+    "task_type": "CODING",
+    "module": "Operations",
+    "requirements": [
+      "OPS-04",
+      "UI-016",
+      "UI-017",
+      "UI-019",
+      "UI-020",
+      "UI-021"
+    ],
+    "title": "Dashboard filters and evidence-backed drilldowns",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-108"
+    ],
+    "coding_scope": "pages/UnifiedOverview.jsx; VMHealth.jsx; APIs.jsx; native incident/report APIs",
+    "automated_tests": "Organization/environment filters; zero-data/unknown states; KPI click-through; independent expected IDs/counts",
+    "acceptance_criteria": "Visible totals match scoped persisted evidence; zero/unknown/stale separated; no duplicate configuration owner.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "OPS-04:PARTIALLY_IMPLEMENTED; UI-016:IMPLEMENTED_TEST_GAP; UI-017:IMPLEMENTED_TEST_GAP; UI-019:IMPLEMENTED_TEST_GAP; UI-020:IMPLEMENTED_AUTOMATED_VERIFIED; UI-021:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Dashboard filters and evidence-backed drilldowns — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/Reports.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedOverview.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/DomainMonitoring.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/VMHealth.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/infrastructure-acceptance.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-110",
+    "task_type": "CODING",
+    "module": "Operations",
+    "requirements": [
+      "OPS-04",
+      "PLT-01"
+    ],
+    "title": "Reports, export scope and retention-aware counts",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-109",
+      "OC-DEV-121"
+    ],
+    "coding_scope": "unified/reporting.py; pages/Reports.jsx; services/retention.py",
+    "automated_tests": "Filtered counts/exports; revoked permissions; boundary pagination; holds; redaction",
+    "acceptance_criteria": "Reports reproduce source/time/filter boundaries and never reveal another tenant or held-secret data.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "OPS-04:PARTIALLY_IMPLEMENTED; PLT-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Reports, export scope and retention-aware counts — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/Reports.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/scripts/database_backup.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-111",
+    "task_type": "CODING",
+    "module": "Settings",
+    "requirements": [
+      "SET-01"
+    ],
+    "title": "Profile/account security approved remainder",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-202",
+      "OC-DEV-103"
+    ],
+    "coding_scope": "components/PersonalWorkspace.jsx; protected self-account API",
+    "automated_tests": "Self-only edits; reauthentication/session revocation; audit; failed save/stale responses",
+    "acceptance_criteria": "Preserve current preferences; implement only approved identity/security fields and recovery policy, with no invented password semantics.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "SET-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Profile/account security approved remainder — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/InAppNotifications.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-112",
+    "task_type": "CODING",
+    "module": "Settings",
+    "requirements": [
+      "RM-03",
+      "UI-001",
+      "UI-005",
+      "UI-012",
+      "UI-023"
+    ],
+    "title": "Responsive and keyboard workflow regression fixes",
+    "priority": "P2",
+    "dependencies": [
+      "OC-DEV-105"
+    ],
+    "coding_scope": "TopNav.jsx; resource/ETL workspaces; shared styles",
+    "automated_tests": "Mounted component plus actual keyboard/browser tests at390/768/1366, light/dark; reload persistence",
+    "acceptance_criteria": "No clipping/overlap and deterministic focus/navigation; retain approved eight-step journey and Workflow-first forms.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "RM-03:PARTIALLY_IMPLEMENTED; UI-001:IMPLEMENTED_TEST_GAP; UI-005:PARTIALLY_IMPLEMENTED; UI-012:PARTIALLY_IMPLEMENTED; UI-023:PARTIALLY_IMPLEMENTED",
+    "gap": "Responsive and keyboard workflow regression fixes — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/TopNav.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/visual-system.css"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/App.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/TopNav.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/navigation.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/resource-v2.css"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/visual-system.css"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-113",
+    "task_type": "CODING",
+    "module": "Access",
+    "requirements": [
+      "AM-02",
+      "AM-03",
+      "UI-014",
+      "UI-015"
+    ],
+    "title": "Department → employee → effective-access vertical slice",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-103"
+    ],
+    "coding_scope": "pages/AccessManagement.jsx; api/access.py; access boundary views",
+    "automated_tests": "Direct/inherited/deny display; permissions revoked while open; member navigation; tenant restrictions",
+    "acceptance_criteria": "Displayed effective access matches backend authority; no permissions inferred from UI role names.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "AM-02:IMPLEMENTED_TEST_GAP; AM-03:IMPLEMENTED_TEST_GAP; UI-014:IMPLEMENTED_TEST_GAP; UI-015:PARTIALLY_IMPLEMENTED",
+    "gap": "Department → employee → effective-access vertical slice — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/AccessManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/AccessManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/access.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/access-management.css"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/AccessBoundaries.jsx"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-114",
+    "task_type": "CODING",
+    "module": "Runtime",
+    "requirements": [
+      "TEL-01",
+      "TEL-02"
+    ],
+    "title": "Linux enrollment/journald least-privilege lifecycle",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-103",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "agent/install-linux.sh; opscontrol_agent.py; telemetry enrollment API",
+    "automated_tests": "Install/restart/unenroll; denied journald access; bounded logs; token rotation; offline packaging checks",
+    "acceptance_criteria": "Actionable diagnostics without broad privilege escalation; genuine-host positive qualification remains separate.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "TEL-01:PARTIALLY_IMPLEMENTED; TEL-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Linux enrollment/journald least-privilege lifecycle — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-115",
+    "task_type": "CODING",
+    "module": "Runtime",
+    "requirements": [
+      "TEL-01",
+      "LIC-007"
+    ],
+    "title": "Windows installer and enrolled-service lifecycle",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-103",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "agent/packaging/build-windows.ps1; opscontrol-agent.iss; windows_service.py",
+    "automated_tests": "Package provenance/signing; service restart/uninstall; revocation; no embedded credentials",
+    "acceptance_criteria": "Produce actual authorized installer artifact with reproducible hashes; do not label ZIP/source script as EXE certification.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "TEL-01:PARTIALLY_IMPLEMENTED; LIC-007:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Windows installer and enrolled-service lifecycle — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-116",
+    "task_type": "VERIFICATION",
+    "module": "API",
+    "requirements": [
+      "API-01",
+      "UI-019"
+    ],
+    "title": "API saved-configuration, freshness and negative-path closure",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-106"
+    ],
+    "coding_scope": "Focused tests/evidence only; existing production paths retained unless a specific regression is reproduced. MonitoringSetup.jsx; api/activation.py; services/api_monitoring_config.py",
+    "automated_tests": "Retained HEAD/10000/header reload assertions; source/tenant switch; edits during polling; TLS/egress/method denials",
+    "acceptance_criteria": "Preserve merged DEV05.1 hydration behavior and HTTPS GET/HEAD contracts; fix only demonstrated residual defects.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "API-01:IMPLEMENTED_AUTOMATED_VERIFIED; UI-019:IMPLEMENTED_TEST_GAP",
+    "gap": "API saved-configuration, freshness and negative-path closure — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/MonitoringSetup.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/services/activation_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/APIs.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/DomainMonitoring.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/release-acceptance.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-117",
+    "task_type": "CODING",
+    "module": "VM",
+    "requirements": [
+      "CMP-01",
+      "CMP-02",
+      "UI-017"
+    ],
+    "title": "VM/EC2 source-health versus inventory reconciliation",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-107"
+    ],
+    "coding_scope": "api/infrastructure.py; pages/VMHealth.jsx; native signal projections",
+    "automated_tests": "CPU/memory/disk/network/services; stale/unavailable sources; ownership denial; independent IDs/timestamps",
+    "acceptance_criteria": "No health from registration alone; one owning customer; measured agent-on dashboard latency.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "CMP-01:IMPLEMENTED_AUTOMATED_VERIFIED; CMP-02:IMPLEMENTED_AUTOMATED_VERIFIED; UI-017:IMPLEMENTED_TEST_GAP",
+    "gap": "VM/EC2 source-health versus inventory reconciliation — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/models/entities.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/collector_runtime.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/models/entities.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/DomainMonitoring.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/VMHealth.jsx"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-118",
+    "task_type": "CODING",
+    "module": "Notifications",
+    "requirements": [
+      "OPS-01",
+      "ETL-13"
+    ],
+    "title": "Email/in-app delivery and recovery notification accounting",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-108",
+      "OC-DEV-205"
+    ],
+    "coding_scope": "telemetry/delivery.py; worker/notifications.py; telemetry/inbox.py",
+    "automated_tests": "Outbox lease expiry; SMTP TLS failure; timeout/retry/dedup; revoked recipients; original/recovery event identity",
+    "acceptance_criteria": "Supported channels deliver/retry audibly within approved policy; retired PagerDuty/ServiceNow remain rejected unless separately approved.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "OPS-01:PARTIALLY_IMPLEMENTED; ETL-13:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Email/in-app delivery and recovery notification accounting — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-119",
+    "task_type": "CODING",
+    "module": "Topology",
+    "requirements": [
+      "TOP-01",
+      "OPS-02"
+    ],
+    "title": "Customer-safe topology freshness and history",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-206",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "unified/reconstruction.py; investigations/topology projections",
+    "automated_tests": "Cycles/bounded traversal; expired edges; cross-tenant refs; denominator reproducibility",
+    "acceptance_criteria": "Versioned approved graph/expiry/SLO policy applied; incomplete/unknown evidence never becomes healthy.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "TOP-01:PARTIALLY_IMPLEMENTED; OPS-02:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Customer-safe topology freshness and history — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-120",
+    "task_type": "CODING",
+    "module": "Operations",
+    "requirements": [
+      "OPS-04",
+      "TEL-02"
+    ],
+    "title": "Coverage/blind-spot and self-monitoring projections",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-206",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "telemetry/readiness projections; operational dashboards",
+    "automated_tests": "Missing expected signals; worker/API outage; delayed receipt; ingestion backlog",
+    "acceptance_criteria": "Coverage denominator is explicit and source-versioned; monitor health independent of workload outcome.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "OPS-04:PARTIALLY_IMPLEMENTED; TEL-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Coverage/blind-spot and self-monitoring projections — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/Reports.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-121",
+    "task_type": "CODING",
+    "module": "Retention",
+    "requirements": [
+      "PLT-01"
+    ],
+    "title": "Cross-module migration/backup/restore preservation",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "Alembic future additive revisions; db/etl_rollback.py; task-owned preservation probes",
+    "automated_tests": "Fresh/populated upgrades; refused unsafe downgrade; row/schema/content hashes; holds and legal audit",
+    "acceptance_criteria": "No applied history rewrite or destructive retirement; restored data and authorization relationships match; real DR certification separate.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "PLT-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Cross-module migration/backup/restore preservation — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/scripts/database_backup.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-122",
+    "task_type": "CODING",
+    "module": "Deployment",
+    "requirements": [
+      "PLT-02",
+      "PLT-04",
+      "LIC-006"
+    ],
+    "title": "Immutable candidate / isolated installation and rollback contract",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-121",
+      "OC-DEV-132",
+      "OC-DEV-123",
+      "OC-DEV-503"
+    ],
+    "coding_scope": "scripts/uat release/controller tools and dedicated isolated fixture",
+    "automated_tests": "Digest-bound manifest/authorization/replay/concurrency; independent worker readiness; interrupted deploy and automatic rollback",
+    "acceptance_criteria": "Prepare only reviewed immutable candidates; refuse rollback to incompatible writers; no real UAT or publication until separately authorized.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "PLT-02:PARTIALLY_IMPLEMENTED; PLT-04:PARTIALLY_IMPLEMENTED; LIC-006:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Immutable candidate / isolated installation and rollback contract — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_deploy.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_state.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pagination.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/remote_scheduler.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-123",
+    "task_type": "CODING",
+    "module": "Security",
+    "requirements": [
+      "PLT-03",
+      "LIC-005"
+    ],
+    "title": "Runtime image and tooling security remediation backlog",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "Exact affected Dockerfiles/dependency pins discovered by preserved scans; security evidence",
+    "automated_tests": "Digest-bound SBOM/scan deltas; critical/high reachability; TLS/RBAC regressions; no suppression",
+    "acceptance_criteria": "Account for every applicable finding; independent security/legal approval remains separate from scanner PASS.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "PLT-03:BLOCKED_EXTERNAL_DEPENDENCY; LIC-005:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Runtime image and tooling security remediation backlog — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/core/config.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-124",
+    "task_type": "CODING",
+    "module": "Licensing",
+    "requirements": [
+      "LIC-001",
+      "LIC-002",
+      "LIC-003",
+      "LIC-004",
+      "LIC-007",
+      "LIC-008"
+    ],
+    "title": "Approved entitlement lifecycle vertical slice",
+    "priority": "P2",
+    "dependencies": [
+      "OC-DEV-203",
+      "OC-DEV-103",
+      "OC-DEV-121"
+    ],
+    "coding_scope": "Proposed versioned entitlement API/model/verifier/UI after exact policy approval",
+    "automated_tests": "Issuer/signature/expiry/replay; offline clock/grace; non-destructive restrictions; tenant/RBAC/audit",
+    "acceptance_criteria": "Only approved editions/permissions enforced; never block historical evidence access through invented defaults.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "LIC-001:REQUIREMENT_AUTHORITY_PENDING; LIC-002:REQUIREMENT_AUTHORITY_PENDING; LIC-003:REQUIREMENT_AUTHORITY_PENDING; LIC-004:REQUIREMENT_AUTHORITY_PENDING; LIC-007:REQUIREMENT_AUTHORITY_PENDING; LIC-008:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Approved entitlement lifecycle vertical slice — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+        "path": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-125",
+    "task_type": "CODING",
+    "module": "ETL",
+    "requirements": [
+      "ETL-02",
+      "ETL-03",
+      "ETL-08"
+    ],
+    "title": "Workflow calendar and Job threshold approved remainder",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-204",
+      "OC-DEV-501"
+    ],
+    "coding_scope": "api/etl.py; schemas/etl.py; pages/ETLWorkflowConfiguration.jsx",
+    "automated_tests": "Approved timezone/calendar/DST cases; threshold inheritance/elapsed/freshness; reload/invalid input",
+    "acceptance_criteria": "Implement exact D07/D08 decisions only; preserve legacy interpretation and separate Workflow timing from Job duration.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "ETL-02:PARTIALLY_IMPLEMENTED; ETL-03:PARTIALLY_IMPLEMENTED; ETL-08:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Workflow calendar and Job threshold approved remainder — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/ETLWorkflowConfiguration.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/workflowConfiguration.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-126",
+    "task_type": "CODING",
+    "module": "NativeBinding",
+    "requirements": [
+      "DP-01",
+      "DP-02",
+      "ETL-06",
+      "ETL-07"
+    ],
+    "title": "Read-only database/log native observation adapters",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-301",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "pipeline_adapters and reviewed source schema/config; no provider controls",
+    "automated_tests": "Same-row RUNNING→terminal; overlap/checkpoint; missing/duplicate/conflicting IDs; schema drift",
+    "acceptance_criteria": "Approved exact source schemas mapped without executing jobs; genuine provider cases remain explicitly blocked without authorized evidence.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "DP-01:PARTIALLY_IMPLEMENTED; DP-02:PARTIALLY_IMPLEMENTED; ETL-06:BLOCKED_EXTERNAL_DEPENDENCY; ETL-07:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Read-only database/log native observation adapters — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/pipeline_adapters/pentaho_carte.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/pentaho_execution.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/pentaho_history.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/pipeline_adapters/native.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/runtime.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-127",
+    "task_type": "CODING",
+    "module": "ETL",
+    "requirements": [
+      "ETL-09",
+      "ETL-10"
+    ],
+    "title": "ETL event rule / Template→Workflow→Job policy layer",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-204",
+      "OC-DEV-207",
+      "OC-DEV-501",
+      "OC-DEV-106"
+    ],
+    "coding_scope": "Dedicated reviewed ETL policy models/API/reducer/UI, additive schema if needed",
+    "automated_tests": "Versioned precedence/overrides; tenant/RBAC; no implicit activation; migration compatibility",
+    "acceptance_criteria": "Separate event derivation from alert notification policy; reuse canonical configuration ownership, no second execution engine.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "ETL-09:NOT_IMPLEMENTED; ETL-10:NOT_IMPLEMENTED",
+    "gap": "ETL event rule / Template→Workflow→Job policy layer — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-128",
+    "task_type": "CODING",
+    "module": "ETL",
+    "requirements": [
+      "ETL-11",
+      "ETL-12",
+      "ETL-13"
+    ],
+    "title": "ETL event lifecycle and evidence correlation",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-127",
+      "OC-DEV-108",
+      "OC-DEV-205"
+    ],
+    "coding_scope": "unified/pentaho_history.py; native_incidents/pentaho.py; event projections",
+    "automated_tests": "Pending/firing/recovered policy; stale orthogonal; retry/native attempts; idempotent historical notices",
+    "acceptance_criteria": "Only recovered/approved catalog rules execute; original failure, late evidence and native attempts preserved; no inferred scheduler retry.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "ETL-11:REQUIREMENT_AUTHORITY_PENDING; ETL-12:PARTIALLY_IMPLEMENTED; ETL-13:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "ETL event lifecycle and evidence correlation — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-129",
+    "task_type": "CODING",
+    "module": "ETL",
+    "requirements": [
+      "ETL-15",
+      "ETL-16",
+      "ETL-02"
+    ],
+    "title": "Authoritative Workflow readiness and UI completion",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-125",
+      "OC-DEV-130",
+      "OC-DEV-128"
+    ],
+    "coding_scope": "etl_bindings/service.py; unified/engines.py; ETLWorkflowConfiguration.jsx; ETLNativeBindings.jsx",
+    "automated_tests": "Six independent dimensions; stale/revoked proof; missing evidence; failed saves/tenant switching",
+    "acceptance_criteria": "Saving is not ACTIVE/HEALTHY; aggregate readiness only from independently satisfied prerequisites; no Run/Retry/Stop controls.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "ETL-15:PARTIALLY_IMPLEMENTED; ETL-16:IMPLEMENTED_AUTOMATED_VERIFIED; ETL-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Authoritative Workflow readiness and UI completion — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/ETLWorkflowConfiguration.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/workflowConfiguration.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-130",
+    "task_type": "CODING",
+    "module": "NativeBinding",
+    "requirements": [
+      "ETL-05",
+      "ETL-14",
+      "DP-01"
+    ],
+    "title": "Genuine-proof qualified confirmation and receipt cases",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-301",
+      "OC-DEV-501",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "etl_bindings/authority.py; authority_api.py; provenance tests",
+    "automated_tests": "Prepared Q01–Q08; canonical alias conflict; current binding/source generation; revocation at commit; raw receipt accounting",
+    "acceptance_criteria": "Use authorized genuine original evidence, never promote synthetic attestation; retain exact immutable binding/version links.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "ETL-05:PARTIALLY_IMPLEMENTED; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY; DP-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Genuine-proof qualified confirmation and receipt cases — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/ETLNativeBindings.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/authority.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-131",
+    "task_type": "CODING",
+    "module": "NativeBinding",
+    "requirements": [
+      "ETL-05",
+      "ETL-14",
+      "RM-05"
+    ],
+    "title": "Active-reader atomic/fail-closed cutover",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-130",
+      "OC-DEV-101"
+    ],
+    "coding_scope": "etl_bindings/service.py; source handoff/continuity/lease fencing",
+    "automated_tests": "Concurrent replacement; in-flight reads/commit; crash/restart; stale reader receipt; no silent reattribution",
+    "acceptance_criteria": "Keep active replacement blocked until exact transaction/cutover guarantees proven with independent IDs.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "ETL-05:PARTIALLY_IMPLEMENTED; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY; RM-05:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Active-reader atomic/fail-closed cutover — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/ETLNativeBindings.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/authority.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-132",
+    "task_type": "CODING",
+    "module": "Deployment",
+    "requirements": [
+      "PLT-01",
+      "PLT-02",
+      "ETL-14"
+    ],
+    "title": "Authority-aware older-writer rollback candidate",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-501",
+      "OC-DEV-121"
+    ],
+    "coding_scope": "Writer protocol/candidate compatibility fixtures; additive guard migrations unchanged",
+    "automated_tests": "Old/new mixed requests; restart; restored DB; unaffected legacy writes; unsafe downgrade refusal",
+    "acceptance_criteria": "Preserve0040/0041 guards; old500 refusal is not operational compatibility. Qualify a safe compatible/degraded candidate before rollback.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "PLT-01:PARTIALLY_IMPLEMENTED; PLT-02:PARTIALLY_IMPLEMENTED; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Authority-aware older-writer rollback candidate — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/scripts/database_backup.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_deploy.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_state.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-133",
+    "task_type": "VERIFICATION",
+    "module": "Resources",
+    "requirements": [
+      "RM-02",
+      "UI-007",
+      "K8S-01",
+      "K8S-02"
+    ],
+    "title": "Legacy/excluded platform regression boundary",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-105",
+      "OC-DEV-121"
+    ],
+    "coding_scope": "Focused tests/evidence only; existing production paths retained unless a specific regression is reproduced. services/excluded_platforms.py; resource import/activation/template attachment tests",
+    "automated_tests": "Nested/aliased excluded payloads; retained historical rows; authorization; supported VM/API/Pentaho paths",
+    "acceptance_criteria": "No operational Kubernetes/EKS/AKS/GKE/OpenShift or Service Catalog reintroduction; retain historical schema/audits.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "RM-02:PARTIALLY_IMPLEMENTED; UI-007:PARTIALLY_IMPLEMENTED; K8S-01:SUPERSEDED_OR_EXCLUDED; K8S-02:SUPERSEDED_OR_EXCLUDED",
+    "gap": "Legacy/excluded platform regression boundary — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/resourceApi.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/services/excluded_platforms.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/models/entities.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-134",
+    "task_type": "VERIFICATION",
+    "module": "Settings",
+    "requirements": [
+      "HELP-01",
+      "SET-01"
+    ],
+    "title": "Help/support diagnostics and preference regression closure",
+    "priority": "P2",
+    "dependencies": [
+      "OC-DEV-111",
+      "OC-DEV-105"
+    ],
+    "coding_scope": "Focused tests/evidence only; existing production paths retained unless a specific regression is reproduced. PersonalWorkspace.jsx; operator docs; self-only preferences",
+    "automated_tests": "Role-restricted preferences; redacted support copy; keyboard focus/Escape; saved/reload and failed requests",
+    "acceptance_criteria": "Preserve merged bounded Help behavior; no support secret leakage or unsupported security-setting edits.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "S",
+    "current_state": "HELP-01:IMPLEMENTED_AUTOMATED_VERIFIED; SET-01:PARTIALLY_IMPLEMENTED",
+    "gap": "Help/support diagnostics and preference regression closure — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/navigation.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/InAppNotifications.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-201",
+    "task_type": "DECISION",
+    "module": "Telemetry",
+    "requirements": [
+      "TEL-03",
+      "ETL-14"
+    ],
+    "title": "Recover/approve detailed PostgreSQL spool transaction and retention contract",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "Documentation/design only; preserve approved centralized PostgreSQL architecture",
+    "automated_tests": "Review source admission/ack boundaries, capacity, source inventory and retention tests",
+    "acceptance_criteria": "Owner supplies exact design/version and boundaries. Do not replace with Kafka, custom collector fork or source replay as unapproved primary.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "TEL-03:BLOCKED_EXTERNAL_DEPENDENCY; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Recover/approve detailed PostgreSQL spool transaction and retention contract — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "verification/dev052/queue_restart/replay.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-202",
+    "task_type": "DECISION",
+    "module": "Settings",
+    "requirements": [
+      "SET-01",
+      "SET-02"
+    ],
+    "title": "Approve editable settings and account security field contract",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Owner/security decision register",
+    "automated_tests": "Explicit key/type/range, role, tenant/global scope, reauthentication, recovery, audit and secret-ref examples",
+    "acceptance_criteria": "Approval documented before new fields; preserve existing self preferences.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "S",
+    "current_state": "SET-01:PARTIALLY_IMPLEMENTED; SET-02:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Approve editable settings and account security field contract — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/InAppNotifications.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/App.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/navigation.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/main.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/core/config.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-203",
+    "task_type": "DECISION",
+    "module": "Licensing",
+    "requirements": [
+      "LIC-001",
+      "LIC-002",
+      "LIC-003",
+      "LIC-004",
+      "LIC-005",
+      "LIC-006",
+      "LIC-007",
+      "LIC-008"
+    ],
+    "title": "Recover licensing policy and exact lifecycle gates",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Owner architecture/licensing source recovery",
+    "automated_tests": "Edition/key/offline/grace/permissions/28-gate and LIC029–050 source review",
+    "acceptance_criteria": "No invented license policy or legal certification; bounded Journey33 principles retained.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "LIC-001:REQUIREMENT_AUTHORITY_PENDING; LIC-002:REQUIREMENT_AUTHORITY_PENDING; LIC-003:REQUIREMENT_AUTHORITY_PENDING; LIC-004:REQUIREMENT_AUTHORITY_PENDING; LIC-005:REQUIREMENT_AUTHORITY_PENDING; LIC-006:REQUIREMENT_AUTHORITY_PENDING; LIC-007:REQUIREMENT_AUTHORITY_PENDING; LIC-008:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Recover licensing policy and exact lifecycle gates — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+        "path": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-204",
+    "task_type": "DECISION",
+    "module": "ETL",
+    "requirements": [
+      "ETL-02",
+      "ETL-03",
+      "ETL-08"
+    ],
+    "title": "Resolve D07/D08 exact calendar and long-running policy",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "OC_ETL_005 decision register; owner source",
+    "automated_tests": "Concrete recurrence/timezone/calendar/elapsed/freshness examples with approved expected outputs",
+    "acceptance_criteria": "D07/D08 remain Pending until explicit decision; source polling interval is not Workflow frequency.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "S",
+    "current_state": "ETL-02:PARTIALLY_IMPLEMENTED; ETL-03:PARTIALLY_IMPLEMENTED; ETL-08:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Resolve D07/D08 exact calendar and long-running policy — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/ETLWorkflowConfiguration.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/workflowConfiguration.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-205",
+    "task_type": "DECISION",
+    "module": "Notifications",
+    "requirements": [
+      "OPS-01",
+      "ETL-13"
+    ],
+    "title": "Resolve supported channel and escalation authority CF-04",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Owner disposition of retired PagerDuty/ServiceNow and recipient/escalation contract",
+    "automated_tests": "Approved channel list and event/delivery semantics",
+    "acceptance_criteria": "Preserve currently retired integrations unless explicitly reapproved; generic webhook is not provider certification.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "S",
+    "current_state": "OPS-01:PARTIALLY_IMPLEMENTED; ETL-13:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Resolve supported channel and escalation authority CF-04 — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/alert_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/notifications.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-206",
+    "task_type": "DECISION",
+    "module": "Topology",
+    "requirements": [
+      "TOP-01",
+      "OPS-02",
+      "OPS-04",
+      "TEL-04"
+    ],
+    "title": "Approve freshness/SLO/topology/PKI uncertainty policy",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Versioned owner/security policy",
+    "automated_tests": "Denominator, expiry, expected signals, clock uncertainty and certificate lifecycle examples",
+    "acceptance_criteria": "No arbitrary defaults substituted for missing exact authority.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "TOP-01:PARTIALLY_IMPLEMENTED; OPS-02:REQUIREMENT_AUTHORITY_PENDING; OPS-04:PARTIALLY_IMPLEMENTED; TEL-04:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Approve freshness/SLO/topology/PKI uncertainty policy — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/Reports.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/egress.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-207",
+    "task_type": "DECISION",
+    "module": "ETL",
+    "requirements": [
+      "ETL-09",
+      "ETL-10",
+      "ETL-11",
+      "ETL-12"
+    ],
+    "title": "Recover exact v1.7 event/override contract",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Approved architecture source recovery",
+    "automated_tests": "Named catalog, precedence, notification separation and lifecycle expected results",
+    "acceptance_criteria": "Preserve approved principles without inventing unrecovered event names/severity/override values.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "ETL-09:NOT_IMPLEMENTED; ETL-10:NOT_IMPLEMENTED; ETL-11:REQUIREMENT_AUTHORITY_PENDING; ETL-12:PARTIALLY_IMPLEMENTED",
+    "gap": "Recover exact v1.7 event/override contract — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-208",
+    "task_type": "DECISION",
+    "module": "Authority",
+    "requirements": [
+      "IMP-001",
+      "IMP-002",
+      "IMP-003",
+      "IMP-004",
+      "IMP-005",
+      "IMP-006",
+      "IMP-007",
+      "IMP-008",
+      "IMP-009",
+      "IMP-010",
+      "IMP-011",
+      "IMP-012",
+      "IMP-013",
+      "IMP-014",
+      "IMP-015",
+      "IMP-016",
+      "IMP-017",
+      "IMP-018",
+      "IMP-019",
+      "IMP-020",
+      "IMP-021",
+      "IMP-022",
+      "IMP-023",
+      "IMP-024",
+      "IMP-025",
+      "IMP-026",
+      "IMP-027",
+      "IMP-028",
+      "IMP-029",
+      "IMP-030",
+      "IMP-031",
+      "IMP-032",
+      "IMP-033",
+      "IMP-034",
+      "IMP-035",
+      "IMP-036",
+      "IMP-037",
+      "IMP-038",
+      "IMP-039",
+      "IMP-040",
+      "IMP-041",
+      "IMP-042",
+      "IMP-043",
+      "IMP-044",
+      "IMP-045",
+      "IMP-046",
+      "IMP-047",
+      "IMP-048",
+      "IMP-049",
+      "IMP-050",
+      "IMP-051",
+      "IMP-052",
+      "IMP-053",
+      "IMP-054",
+      "IMP-055",
+      "IMP-056",
+      "IMP-057",
+      "IMP-058",
+      "IMP-059",
+      "IMP-060",
+      "IMP-061",
+      "IMP-062",
+      "OC-IMP-001",
+      "OC-IMP-002",
+      "OC-IMP-003",
+      "OC-IMP-004",
+      "OC-IMP-005",
+      "OC-IMP-006",
+      "OC-IMP-007",
+      "OC-IMP-008",
+      "OC-IMP-009",
+      "OC-IMP-010",
+      "OC-IMP-011",
+      "OC-IMP-012",
+      "OC-IMP-013",
+      "OC-IMP-014",
+      "OC-IMP-015",
+      "OC-IMP-016",
+      "OC-IMP-018"
+    ],
+    "title": "Recover62 historical definitions,17 active proposals and30 journey crosswalks",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "Historical source/approval register; no product code",
+    "automated_tests": "Unique canonical IDs, approvals, source versions and mapping validation",
+    "acceptance_criteria": "No coding of unrecovered scope. Existing Journey20 excluded/Journey32 skipped and OC-IMP017 superseded remain.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "IMP-001:SOURCE_NOT_RECOVERED; IMP-002:SOURCE_NOT_RECOVERED; IMP-003:SOURCE_NOT_RECOVERED; IMP-004:SOURCE_NOT_RECOVERED; IMP-005:SOURCE_NOT_RECOVERED; IMP-006:SOURCE_NOT_RECOVERED; IMP-007:SOURCE_NOT_RECOVERED; IMP-008:SOURCE_NOT_RECOVERED; IMP-009:SOURCE_NOT_RECOVERED; IMP-010:SOURCE_NOT_RECOVERED; IMP-011:SOURCE_NOT_RECOVERED; IMP-012:SOURCE_NOT_RECOVERED; IMP-013:SOURCE_NOT_RECOVERED; IMP-014:SOURCE_NOT_RECOVERED; IMP-015:SOURCE_NOT_RECOVERED; IMP-016:SOURCE_NOT_RECOVERED; IMP-017:SOURCE_NOT_RECOVERED; IMP-018:SOURCE_NOT_RECOVERED; IMP-019:SOURCE_NOT_RECOVERED; IMP-020:SOURCE_NOT_RECOVERED; IMP-021:SOURCE_NOT_RECOVERED; IMP-022:SOURCE_NOT_RECOVERED; IMP-023:SOURCE_NOT_RECOVERED; IMP-024:SOURCE_NOT_RECOVERED; IMP-025:SOURCE_NOT_RECOVERED; IMP-026:SOURCE_NOT_RECOVERED; IMP-027:SOURCE_NOT_RECOVERED; IMP-028:SOURCE_NOT_RECOVERED; IMP-029:SOURCE_NOT_RECOVERED; IMP-030:SOURCE_NOT_RECOVERED; IMP-031:SOURCE_NOT_RECOVERED; IMP-032:SOURCE_NOT_RECOVERED; IMP-033:SOURCE_NOT_RECOVERED; IMP-034:SOURCE_NOT_RECOVERED; IMP-035:SOURCE_NOT_RECOVERED; IMP-036:SOURCE_NOT_RECOVERED; IMP-037:SOURCE_NOT_RECOVERED; IMP-038:SOURCE_NOT_RECOVERED; IMP-039:SOURCE_NOT_RECOVERED; IMP-040:SOURCE_NOT_RECOVERED; IMP-041:SOURCE_NOT_RECOVERED; IMP-042:SOURCE_NOT_RECOVERED; IMP-043:SOURCE_NOT_RECOVERED; IMP-044:SOURCE_NOT_RECOVERED; IMP-045:SOURCE_NOT_RECOVERED; IMP-046:SOURCE_NOT_RECOVERED; IMP-047:SOURCE_NOT_RECOVERED; IMP-048:SOURCE_NOT_RECOVERED; IMP-049:SOURCE_NOT_RECOVERED; IMP-050:SOURCE_NOT_RECOVERED; IMP-051:SOURCE_NOT_RECOVERED; IMP-052:SOURCE_NOT_RECOVERED; IMP-053:SOURCE_NOT_RECOVERED; IMP-054:SOURCE_NOT_RECOVERED; IMP-055:SOURCE_NOT_RECOVERED; IMP-056:SOURCE_NOT_RECOVERED; IMP-057:SOURCE_NOT_RECOVERED; IMP-058:SOURCE_NOT_RECOVERED; IMP-059:SOURCE_NOT_RECOVERED; IMP-060:SOURCE_NOT_RECOVERED; IMP-061:SOURCE_NOT_RECOVERED; IMP-062:SOURCE_NOT_RECOVERED; OC-IMP-001:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-002:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-003:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-004:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-005:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-006:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-007:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-008:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-009:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-010:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-011:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-012:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-013:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-014:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-015:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-016:REQUIREMENT_AUTHORITY_PENDING; OC-IMP-018:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Recover62 historical definitions,17 active proposals and30 journey crosswalks — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+        "path": "docs/planning/DEVELOPMENT_COMPLETION_REGISTER.md"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-301",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "NativeBinding",
+    "requirements": [
+      "DP-01",
+      "DP-02",
+      "ETL-05",
+      "ETL-06",
+      "ETL-14"
+    ],
+    "title": "Authorize and independently qualify exact-build read-only native target",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "No coding until authorization; oc-etl-008 checklist",
+    "automated_tests": "Native namespace/object/schedule/execution chain; issuer/reviewer/TLS/network/credentials; original source inventory",
+    "acceptance_criteria": "Genuine evidence required; no live target authorized by this audit; no execution/scheduling/retry controls.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "DP-01:PARTIALLY_IMPLEMENTED; DP-02:PARTIALLY_IMPLEMENTED; ETL-05:PARTIALLY_IMPLEMENTED; ETL-06:BLOCKED_EXTERNAL_DEPENDENCY; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Authorize and independently qualify exact-build read-only native target — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/pipeline_adapters/pentaho_carte.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/pentaho_execution.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/pentaho_history.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/pipeline_adapters/native.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/runtime.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-302",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "Runtime",
+    "requirements": [
+      "TEL-01",
+      "CMP-01",
+      "DP-02"
+    ],
+    "title": "Genuine Windows/Linux/EC2/provider build certification",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-114",
+      "OC-DEV-115",
+      "OC-DEV-117"
+    ],
+    "coding_scope": "Owner-authorized provider lab only",
+    "automated_tests": "Exact OS/build read-only operation, least privilege, install/service lifecycle and receipt accounting",
+    "acceptance_criteria": "Synthetic tests do not satisfy genuine-provider certification.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "TEL-01:PARTIALLY_IMPLEMENTED; CMP-01:IMPLEMENTED_AUTOMATED_VERIFIED; DP-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Genuine Windows/Linux/EC2/provider build certification — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/models/entities.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/collector_runtime.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/engines.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/pipeline_adapters/native.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/runtime.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/data_pipelines/service.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-303",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "Security",
+    "requirements": [
+      "PLT-03",
+      "LIC-005"
+    ],
+    "title": "Independent security and license/NOTICE clearance",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-123"
+    ],
+    "coding_scope": "Independent accountable review; no risk waiver",
+    "automated_tests": "Exact immutable images, SBOM/findings applicability; direct/transitive/base licenses and source obligations",
+    "acceptance_criteria": "No applicable unresolved High/Critical suppressed; independent signoff remains required.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "PLT-03:BLOCKED_EXTERNAL_DEPENDENCY; LIC-005:REQUIREMENT_AUTHORITY_PENDING",
+    "gap": "Independent security and license/NOTICE clearance — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/core/config.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-304",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "Retention",
+    "requirements": [
+      "PLT-01",
+      "PLT-03"
+    ],
+    "title": "Independent backup/PITR/DR and retention acceptance",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-121"
+    ],
+    "coding_scope": "Authorized separate recovery environment only",
+    "automated_tests": "Approved RPO/RTO and WAL/PITR; legal holds, encrypted backup restore, site recovery",
+    "acceptance_criteria": "Task fixture restore is not production DR certification.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "PLT-01:PARTIALLY_IMPLEMENTED; PLT-03:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Independent backup/PITR/DR and retention acceptance — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/scripts/database_backup.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/deployment.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/core/config.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-305",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "Deployment",
+    "requirements": [
+      "PLT-02",
+      "PLT-04"
+    ],
+    "title": "Target installation/network/proxy/security-tool compatibility",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-122"
+    ],
+    "coding_scope": "Separately authorized target, never owner UAT without permission",
+    "automated_tests": "Private CA/DNS/VPN/proxy, capacity, exact digests, rollback and endpoint bounds",
+    "acceptance_criteria": "No deployment permitted by this audit. CrowdStrike/Zscaler etc remain unqualified without actual evidence.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "PLT-02:PARTIALLY_IMPLEMENTED; PLT-04:PARTIALLY_IMPLEMENTED",
+    "gap": "Target installation/network/proxy/security-tool compatibility — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_deploy.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_state.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pagination.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/remote_scheduler.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-306",
+    "task_type": "EXTERNAL_QUALIFICATION",
+    "module": "Runtime",
+    "requirements": [
+      "TEL-03",
+      "ETL-14"
+    ],
+    "title": "Independent CHK001/CHK002 reliability qualification",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-101",
+      "OC-DEV-102",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "Approved isolated reliability harness",
+    "automated_tests": "Persisted original source IDs; admission/loss/duplicates; rollback compatibility and restart cuts",
+    "acceptance_criteria": "Existing CHK001 FAIL and CHK002 BLOCKED do not change from internal tests or spool-only success.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "TEL-03:BLOCKED_EXTERNAL_DEPENDENCY; ETL-14:BLOCKED_EXTERNAL_DEPENDENCY",
+    "gap": "Independent CHK001/CHK002 reliability qualification — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "verification/dev052/queue_restart/replay.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/models.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/etl_bindings/service.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/versions/0040_etl_native_bindings.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-401",
+    "task_type": "FORMAL_UAT",
+    "module": "Acceptance",
+    "requirements": [
+      "RM-01",
+      "RM-04",
+      "RM-05",
+      "AM-01",
+      "CMP-01",
+      "CMP-02",
+      "API-01",
+      "OPS-03",
+      "UI-010"
+    ],
+    "title": "Nine current owner-acceptance selections",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "No coding; owner acceptance register",
+    "automated_tests": "Owner evaluates exact current source and original evidence; independent UAT recorded separately",
+    "acceptance_criteria": "All nine selections Pending; historical controlled-scope approvals unchanged.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "RM-01:IMPLEMENTED_AUTOMATED_VERIFIED; RM-04:IMPLEMENTED_AUTOMATED_VERIFIED; RM-05:IMPLEMENTED_AUTOMATED_VERIFIED; AM-01:IMPLEMENTED_AUTOMATED_VERIFIED; CMP-01:IMPLEMENTED_AUTOMATED_VERIFIED; CMP-02:IMPLEMENTED_AUTOMATED_VERIFIED; API-01:IMPLEMENTED_AUTOMATED_VERIFIED; OPS-03:IMPLEMENTED_AUTOMATED_VERIFIED; UI-010:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Nine current owner-acceptance selections — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/organizations.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/scope.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/ResourceManagementV2.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-402",
+    "task_type": "FORMAL_UAT",
+    "module": "Acceptance",
+    "requirements": [
+      "RM-02",
+      "RM-03",
+      "SET-01",
+      "HELP-01",
+      "OPS-04"
+    ],
+    "title": "Independent full-product UAT and historical defect disposition",
+    "priority": "P1",
+    "dependencies": [],
+    "coding_scope": "No coding without a reproduced defect; owner-controlled UAT intake",
+    "automated_tests": "Exact SHA/schema/environment; expected/actual, logs/screenshots, severity and stable IDs",
+    "acceptance_criteria": "Do not access live UAT here; record each RM-DEF disposition without closure on merge.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "UNESTIMATED",
+    "current_state": "RM-02:PARTIALLY_IMPLEMENTED; RM-03:PARTIALLY_IMPLEMENTED; SET-01:PARTIALLY_IMPLEMENTED; HELP-01:IMPLEMENTED_AUTOMATED_VERIFIED; OPS-04:PARTIALLY_IMPLEMENTED",
+    "gap": "Independent full-product UAT and historical defect disposition — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/TopNav.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/visual-system.css"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/components/InAppNotifications.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/security/models.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-501",
+    "task_type": "VERIFICATION",
+    "module": "ETL",
+    "requirements": [
+      "ETL-01",
+      "ETL-04",
+      "ETL-15",
+      "ETL-16"
+    ],
+    "title": "Review unmerged PR80 foundation and candidate provenance",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "No automatic merge; existing source/tests/docs review",
+    "automated_tests": "Retain002–008 scope/migration/DAG/browser/writer regressions at exact candidate SHA",
+    "acceptance_criteria": "Implemented-unmerged is not main. Any integration/merge requires separate authorization; preserve current draft state.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "M",
+    "current_state": "ETL-01:IMPLEMENTED_AUTOMATED_VERIFIED; ETL-04:PARTIALLY_IMPLEMENTED; ETL-15:PARTIALLY_IMPLEMENTED; ETL-16:IMPLEMENTED_AUTOMATED_VERIFIED",
+    "gap": "Review unmerged PR80 foundation and candidate provenance — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/schemas/etl.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/ETLWorkflowConfiguration.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/workflowConfiguration.js"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-502",
+    "task_type": "VERIFICATION",
+    "module": "Operations",
+    "requirements": [
+      "RM-02",
+      "API-01",
+      "OPS-01",
+      "SET-01",
+      "UI-012",
+      "UI-011",
+      "UI-013",
+      "UI-018"
+    ],
+    "title": "Mounted component and authenticated browser coverage closure",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-105",
+      "OC-DEV-108"
+    ],
+    "coding_scope": "Focused tests and task-owned HTTP/PG/browser fixtures only",
+    "automated_tests": "Save/reload/error/stale response, scoped roles, actual responsive keyboard browser paths",
+    "acceptance_criteria": "Distinguish Node source/helper tests from mounted React components and genuine-provider acceptance.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "RM-02:PARTIALLY_IMPLEMENTED; API-01:IMPLEMENTED_AUTOMATED_VERIFIED; OPS-01:PARTIALLY_IMPLEMENTED; SET-01:PARTIALLY_IMPLEMENTED; UI-012:PARTIALLY_IMPLEMENTED; UI-011:IMPLEMENTED_TEST_GAP; UI-013:PARTIALLY_IMPLEMENTED; UI-018:IMPLEMENTED_TEST_GAP",
+    "gap": "Mounted component and authenticated browser coverage closure — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/MonitoringSetup.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/services/activation_engine.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/remote_protocol.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/api/activation.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/alert_engine.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-503",
+    "task_type": "VERIFICATION",
+    "module": "Deployment",
+    "requirements": [
+      "PLT-02"
+    ],
+    "title": "Diagnose current-main publication authorization preflight failure",
+    "priority": "P0",
+    "dependencies": [],
+    "coding_scope": "Workflow/source/log review only; no publication rerun",
+    "automated_tests": "Exact main/approved PR checks, release gates, expected failure cases; preserve actual hosted log limitations",
+    "acceptance_criteria": "Explain failed publish stage or retain blocker; never bypass release authorization to turn status green.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "S",
+    "current_state": "PLT-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Diagnose current-main publication authorization preflight failure — decision/external/acceptance dependency only; not coding authorized by this audit",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_deploy.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "scripts/uat/stage_b_state.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-135",
+    "task_type": "CODING",
+    "module": "Performance",
+    "requirements": [
+      "PLT-04",
+      "OPS-04",
+      "TEL-02"
+    ],
+    "title": "Global responsiveness under sustained ingestion RM-DEF-036",
+    "priority": "P0",
+    "dependencies": [
+      "OC-DEV-103"
+    ],
+    "coding_scope": "All growing-data APIs and dashboard polling; indexed/batched queries, pagination, operational aggregates; migration indexes only after evidence",
+    "automated_tests": "Reproduce task-owned ingestion with independent IDs; P50/P95/max latency, query plans/counts, response size, UI responsiveness, completeness and tenant correctness",
+    "acceptance_criteria": "Global gate covers Overview, Organizations, Resources, ETL, VM, APIs, Incidents, Correlation, Collectors and history; measure before/after, preserve evidence, no performance improvement by dropping telemetry.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "XL",
+    "current_state": "PLT-04:PARTIALLY_IMPLEMENTED; OPS-04:PARTIALLY_IMPLEMENTED; TEL-02:PARTIALLY_IMPLEMENTED",
+    "gap": "Global responsiveness under sustained ingestion RM-DEF-036 — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pagination.js"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/worker/remote_scheduler.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/db/etl_rollback.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/migrations/env.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/reporting.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/Reports.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/native_incidents/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  },
+  {
+    "id": "OC-DEV-136",
+    "task_type": "CODING",
+    "module": "Resources",
+    "requirements": [
+      "RM-02",
+      "RM-04",
+      "UI-008",
+      "UI-009"
+    ],
+    "title": "One-time onboarding → centralized collector administration RM-DEF-039",
+    "priority": "P1",
+    "dependencies": [
+      "OC-DEV-105",
+      "OC-DEV-106",
+      "OC-DEV-107"
+    ],
+    "coding_scope": "ResourceManagementV2.jsx; CollectorControl.jsx; collector/configuration/deployment APIs",
+    "automated_tests": "Onboard once; reopen to same collector/resource/revision/history; central edits; role denial; failed save; real-browser reload; no re-enrollment",
+    "acceptance_criteria": "Recognize connected agents; completed onboarding links Manage Collector; all ongoing edits use same canonical ID and history without a second activation plane.",
+    "risk": "Tenant isolation, data/provenance and operational compatibility",
+    "estimate": "L",
+    "current_state": "RM-02:PARTIALLY_IMPLEMENTED; RM-04:IMPLEMENTED_AUTOMATED_VERIFIED; UI-008:IMPLEMENTED_TEST_GAP; UI-009:PARTIALLY_IMPLEMENTED",
+    "gap": "One-time onboarding → centralized collector administration RM-DEF-039 — bounded prospective implementation after listed prerequisites; not executed by OC-DEV-001",
+    "evidence": [
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/registry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/unified/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/UnifiedResourceManagement.jsx"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "backend/app/telemetry/api.py"
+      },
+      {
+        "sha": "958193f266c89302b2f1919e3703faece591e0af",
+        "path": "frontend/src/pages/CollectorControl.jsx"
+      }
+    ],
+    "source_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "proposed_only": true
+  }
+]
