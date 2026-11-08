@@ -5,7 +5,6 @@ export const NAV_PERMISSIONS = {
   "Compute Health": "resources.view",
   "API Endpoint Monitoring": "resources.view",
   Alerts: "alerts.view",
-  Incidents: "incidents.view",
   Reports: "reports.view",
   "Resource Management": "customers.view",
   "Access Management": "access.view",

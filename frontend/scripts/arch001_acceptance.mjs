@@ -84,7 +84,7 @@ try {
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
-    1,
+    0,
   );
   await page.getByRole("button", { name: "Global environments" }).click();
   await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();
@@ -359,7 +359,6 @@ try {
     "Compute Health",
     "API Endpoint Monitoring",
     "Alerts",
-    "Incidents",
     "Reports",
   ]) {
     await nav(name);
@@ -370,36 +369,7 @@ try {
       })
       .waitFor();
   }
-  await nav("Incidents");
-  await page.getByRole("button", { name: "Global environments" }).click();
-  await page.getByRole("button", { name: "All environments", exact: true }).click();
-  await page
-    .getByLabel("Incident status", { exact: true })
-    .selectOption("OPEN");
-  const incidentRow = page.locator("tbody tr").first();
-  await incidentRow.getByRole("button").click();
-  const incidentId = await incidentRow.locator("small").innerText();
-  await page
-    .getByRole("heading", { name: "Recovery validation", exact: true })
-    .waitFor();
-  const ack = response(
-    "/api/v1/native-incidents/" + incidentId + "/transition",
-    "POST",
-  );
-  await page
-    .getByRole("button", { name: "Acknowledge incident", exact: true })
-    .click();
-  assert.equal((await ack).status(), 200);
-  const note = "Controlled browser investigation " + Date.now();
-  await page.getByLabel("Investigation note", { exact: true }).fill(note);
-  const savedNote = response(
-    "/api/v1/native-incidents/" + incidentId + "/notes",
-    "POST",
-  );
-  await page.getByRole("button", { name: "Add note", exact: true }).click();
-  assert.equal((await savedNote).status(), 200);
-  await page.getByText(note, { exact: true }).waitFor();
-  await shot("arch001-native-incident-investigation.png");
+  assert.equal(await page.getByRole("button", {name:"Incidents",exact:true}).count(),0);
   await page
     .getByRole("button", { name: "Notifications", exact: true })
     .click();
