@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Actual Chromium and authenticated backend evidence. No API interception or mocks.
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -21,7 +22,6 @@ const primaryTabs = [
   "Compute Health",
   "API Endpoint Monitoring",
   "Alerts",
-  "Incidents",
   "Reports",
   "Resource Management",
 ];
@@ -128,12 +128,7 @@ async function expandExisting(page, label) {
 }
 
 async function tab(page, name) {
-  if (await page.getByRole("button", { name: "Open navigation" }).isVisible())
-    await page.getByRole("button", { name: "Open navigation" }).click();
-  const destination = name === "Resource Management" ? "Data Sources / Resources"
-    : name === "Access Management" ? "Employees" : name;
-  await page.getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: destination, exact: true }).click();
+  await navigatePrimary(page,name);
   await page.getByRole("heading", { name: headings[name] || name, exact: true }).waitFor();
   // Wait for actual persisted fixture evidence on each redesigned screen.
   if (name === "Overview") {
@@ -293,9 +288,9 @@ async function badgeContrast(page, mode) {
 try {
   const page = await makePage({ colorScheme: "dark" });
   await page.goto(origin);
-  await themeIs(page, "dark");
+  await themeIs(page, "light");
   checks.push(
-    "Unset preference follows actual browser dark color scheme before authentication",
+    "Unset preference preserves approved light default despite browser dark color scheme",
   );
   await login(page);
   await chooseOrganization(page, "Controlled ETL Lab");
@@ -470,13 +465,13 @@ try {
   await systemLight.goto(origin);
   await themeIs(systemLight, "light");
   await systemLight.emulateMedia({ colorScheme: "dark" });
-  await themeIs(systemLight, "dark");
+  await themeIs(systemLight, "light");
   await setTheme(systemLight, "light");
   await systemLight.emulateMedia({ colorScheme: "light" });
   await systemLight.emulateMedia({ colorScheme: "dark" });
   await themeIs(systemLight, "light");
   checks.push(
-    "Unset preference tracks operating-system theme changes; explicit selection stays selected",
+    "Approved light default is stable across operating-system changes; explicit selection stays selected",
   );
 
   const invalid = await makePage({ colorScheme: "light" }, () =>
@@ -509,8 +504,11 @@ try {
     });
   });
   await storageDenied.goto(origin);
+  await themeIs(storageDenied, "light");
+  await setTheme(storageDenied, "dark");
   await themeIs(storageDenied, "dark");
   await setTheme(storageDenied, "light");
+  await themeIs(storageDenied, "light");
   await storageDenied
     .getByRole("textbox", { name: "Username", exact: true })
     .waitFor();

@@ -105,7 +105,7 @@ function OrgModal({ item, onClose, onSaved }) {
   </Modal>;
 }
 
-function TemplateEditor({ value, onClose, onSaved }) {
+export function TemplateEditor({ value, onClose, onSaved, user }) {
   const initial = normalizeTemplate(value || {});
   const [draft, setDraft] = useState(initial);
   const [saved, setSaved] = useState(clone(initial));
@@ -138,10 +138,12 @@ function TemplateEditor({ value, onClose, onSaved }) {
   const commit = async () => {
     if (validate().length) return;
     const p = clone(draft); delete p.id; delete p.version; delete p.status; delete p.committed_at;
-    const result = draft.id ? await updateMonitoringTemplate(draft.id, { name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: "Admin" });
+    try {
+    const result = draft.id ? await updateMonitoringTemplate(draft.id, { name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
     const next = normalizeTemplate(result); setDraft(clone(next)); setSaved(clone(next)); setErrors([]); onSaved(next);
+    } catch (error) { setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
   };
-  const loadHistory = async () => { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); };
+  const loadHistory = async () => { try { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); } catch(error) { setErrors([error.message]); } };
   const add = (section, value, reset) => { setDraft(d => ({ ...d, [section]: [...d[section], clone(value)] })); reset(); };
 
   const renderAttributes = <div className="template-editor-panel">

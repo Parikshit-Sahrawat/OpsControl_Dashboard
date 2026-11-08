@@ -18,7 +18,6 @@ import ETLJobs from "../pages/ETLJobs";
 import ScheduleView from "./ScheduleView";
 import ReviewView from "./ReviewView";
 import RecoveryView from "./RecoveryView";
-import IncidentView from "./IncidentView";
 import "./pipelines.css";
 const hashPage = () => {
   const key = window.location.hash.split("/")[2];
@@ -347,13 +346,6 @@ export default function PipelineWorkspace({
             </>
           )}
         </>
-      )}
-      {page === "incidents" && (
-        <IncidentView
-          organizationIds={ids}
-          environment={environment}
-          user={user}
-        />
       )}
       {drawer && (
         <Drawer

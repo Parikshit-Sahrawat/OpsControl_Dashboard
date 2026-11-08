@@ -40,6 +40,8 @@ const steps = [
   "Validate & Activate",
 ];
 async function navigate(target = page) {
+  const category=target.getByRole("button", {name:"Resource Management navigation",exact:true});
+  if(await category.getAttribute("aria-expanded")==="false") await category.click();
   await target
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Data Sources / Resources", exact: true })

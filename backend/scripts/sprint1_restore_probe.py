@@ -93,9 +93,11 @@ finally:
             "backup_sha256": hashlib.sha256(archive).hexdigest(),
             "snapshots": before,
             "source_unchanged": True,
+            "temporary_archive_disposition": "Removed after verified restoration; hash retained; contains synthetic auth records",
             "restored_schema_data_fk_equal": True,
         },
         indent=2,
     )
 )
-print("Synthetic full backup/restore PASS:", len(before), "tables")
+(out / "synthetic-backup.dump").unlink()
+print("Synthetic full backup/restore PASS:", len(before), "tables; temporary archive removed after verified restore")

@@ -57,7 +57,11 @@ try:
     for _ in range(100):
         if subprocess.run(['docker','exec',container,'pg_isready','-U','opscontrol'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:break
         time.sleep(.3)
-    else:raise RuntimeError('Disposable PostgreSQL not ready')
+    else:
+        OUT.mkdir(parents=True,exist_ok=True)
+        diagnostic=subprocess.run(['docker','logs',container],capture_output=True,text=True)
+        (OUT/'postgres-readiness-failure.log').write_text((diagnostic.stdout+'\n'+diagnostic.stderr).replace('etl-local-only','[REDACTED]'))
+        raise RuntimeError('Disposable PostgreSQL not ready; redacted container log retained')
     run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
     run([PYTHON,'-m','alembic','downgrade','0019_infrastructure_evidence'],ROOT/'backend')
     run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')

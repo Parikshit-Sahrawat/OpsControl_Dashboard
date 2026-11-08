@@ -13,6 +13,7 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
   const [version, setVersion] = useState("");
   const [overrides, setOverrides] = useState("{}");
   const [revision, setRevision] = useState(null);
+  const [showEffective, setShowEffective] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(true);
   const [loadingVersions, setLoadingVersions] = useState(false);
@@ -101,6 +102,7 @@ export default function ResourceTemplateConfiguration({ sourceId, organizationId
         <button type="button" disabled={busy || loadingVersions || !version} onClick={save}>Save template configuration</button>
       </>}
     </>}
+    {effective && <><button type="button" onClick={() => setShowEffective(v=>!v)}>{showEffective ? "Hide" : "Preview"} saved effective configuration</button>{showEffective && <pre className="effective-config-preview" aria-label="Saved effective configuration">{JSON.stringify(effective,null,2)}</pre>}</>}
     {effective && <p role="status">Configuration: {!effective.templates?.length ? "NO TEMPLATE ATTACHED" : effective.valid ? "VALID" : "INCOMPLETE"}. Missing required attributes: {(effective.missing_required_attributes || []).join(", ") || "none"}. Activation and operational health require independent evidence.</p>}
   </section>;
 }

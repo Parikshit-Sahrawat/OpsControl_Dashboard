@@ -5,7 +5,6 @@ export const PAGES = {
   schedules: "Schedule Monitoring",
   evidence: "Evidence Review",
   recovery: "Recovery Tracking",
-  incidents: "Incident Correlation",
 };
 export const CATEGORIES = [
   "AMBIGUOUS_IDENTITY",

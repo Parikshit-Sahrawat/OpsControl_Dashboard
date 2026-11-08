@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import { scopeHeaders } from "./explicit_scope.mjs";
 // Real browser and PostgreSQL-backed API. No mocked responses or health records.
 import assert from "node:assert/strict";
@@ -55,6 +56,7 @@ async function login(username) {
     .fill(fixture.admin_password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
+  await preparePrimaryNavigation(page);
   return page;
 }
 async function call(page, path, method = "GET", body) {

@@ -1,0 +1,113 @@
+{
+  "sprint_disposition": "PARTIAL_OWNER_REVIEW_REQUIRED",
+  "broad_backend": {
+    "run": 564,
+    "passed": 562,
+    "failed": 0,
+    "skipped": 2,
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5",
+    "evidence": "evidence/final/ownership.txt",
+    "limitation": "Unit and integration tests under owned PostgreSQL environment; not all unit tests exercise real boundaries"
+  },
+  "focused_final": {
+    "run": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0,
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf"
+  },
+  "expanded_regression": {
+    "run": 68,
+    "passed": 68,
+    "failed": 0,
+    "skipped": 0,
+    "overlaps_broad": true
+  },
+  "frontend": {
+    "passed": 44,
+    "failed": 0,
+    "skipped": 0,
+    "lint_exit": 0,
+    "build_exit": 0,
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf"
+  },
+  "browser_groups": {
+    "workspace": 9,
+    "resource_security": 7,
+    "retained_authorization": 5,
+    "retained_pentaho": 17,
+    "pipeline_eight_step": "PASS"
+  },
+  "http_groups": {
+    "core": 15,
+    "authorization": 14,
+    "pentaho": 4,
+    "pentaho_review": 5,
+    "pentaho_history": 4,
+    "pentaho_incident": 5
+  },
+  "release_harness": {
+    "groups": 13,
+    "status": "PASS",
+    "not_release_clearance": true
+  },
+  "security": {
+    "pip_advisory_records": 10,
+    "affected_installed_packages": 3,
+    "npm_moderate_entries": 4,
+    "pip_audit_exit": 1,
+    "npm_audit_exit": 1,
+    "image_scans": "BLOCKED_NOT_TESTED",
+    "unrestricted_existing_python_lint": "FAIL_19_EXISTING_0_NEW_SIGNATURES"
+  },
+  "authority_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "UAT": "PENDING",
+    "owner_selections": "9_PENDING"
+  },
+  "ci": "TRIGGER_ON_PR_RESULT_PENDING_NO_MONITORING",
+  "restores": {
+    "final": {
+      "tables": 100,
+      "rows": 14522,
+      "foreign_keys": 237,
+      "schema_data_equal": true,
+      "backup_sha256": "6a0f89a469f70fce4dc33f794d4e5f0bae83cebbc0701c8f497dad3009fc7857"
+    },
+    "final-visual": {
+      "tables": 100,
+      "rows": 2912,
+      "foreign_keys": 237,
+      "schema_data_equal": true,
+      "backup_sha256": "8686baaa53384f8dc35d1a91cb1e342776228e116d8deb1eede1b31b3617c4a3"
+    },
+    "final-workspace": {
+      "tables": 100,
+      "rows": 760,
+      "foreign_keys": 237,
+      "schema_data_equal": true,
+      "backup_sha256": "50dcad155ff96a5ed69baa374efa6deffe4b984ef0dfc4e98e300d3daab4bd45"
+    },
+    "staging-preservation-02": {
+      "tables": 100,
+      "rows": 1261,
+      "foreign_keys": 237,
+      "schema_data_equal": true,
+      "backup_sha256": "718c411346b372a3412ec06ede65a8bfdc1d9c161f0e6bb7e2c83ca383585fb8"
+    },
+    "release": {
+      "tables": 100,
+      "rows": 1197,
+      "constraints": 499,
+      "restore_seconds": 0.668,
+      "dump_sha256": "094596c5e4f28c7c6a65f76a5587f3e2fbdf7b25ca26eb250fee1c6c543aeeec"
+    }
+  }
+}

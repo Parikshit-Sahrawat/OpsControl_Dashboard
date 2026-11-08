@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Real backend inventory and password login; no API mocks.
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -27,7 +28,7 @@ try {
     await page.getByRole('button',{name:theme+' theme',exact:true}).click();
     for (const tab of ['Compute Health','API Endpoint Monitoring']) {
       phase=`navigation:${theme}:${tab}`;
-      await page.getByRole('button',{name:tab,exact:true}).click();
+      await navigatePrimary(page,tab);
       const label = tab === 'Compute Health' ? 'infrastructure adapter health' : 'service probe health';
       // Domain navigation preserves the expanded compatibility inventory.
       const show = page.getByRole('button',{name:'Show '+label,exact:true});

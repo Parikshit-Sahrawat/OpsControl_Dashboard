@@ -458,6 +458,9 @@ try:
                     print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
                 if os.getenv("V16_PERFORMANCE_PROBE") == "1":
                     print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
+                if os.getenv("V16_SPRINT1_UI") == "1":
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+                    print(run(["node", "frontend/scripts/sprint1_workspace_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":
                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
