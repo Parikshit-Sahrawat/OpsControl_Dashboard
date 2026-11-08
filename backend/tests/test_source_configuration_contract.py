@@ -598,6 +598,26 @@ class SourceConfigurationContract(unittest.TestCase):
             428,
         )
 
+    def test_old_metadata_and_auth_writers_cannot_bypass_revision_history(self):
+        self.command()
+        for field, value in (
+            ("name", "untracked"),
+            ("description", "untracked"),
+            ("auth_type", "forged"),
+        ):
+            with SessionLocal() as db:
+                with self.assertRaises(DBAPIError):
+                    db.execute(
+                        text(f"UPDATE data_sources SET {field}=:value WHERE id=:id"),
+                        dict(value=value, id=self.sid),
+                    )
+                    db.commit()
+        self.assertEqual(self.call("GET", self.base)[1]["revision"], 1)
+        source = self.call("GET", f"monitoring/data-sources/{self.sid}")[1]
+        self.assertNotEqual(source["name"], "untracked")
+        self.assertIsNone(source["description"])
+        self.assertIsNone(source["auth_type"])
+
     def test_history_immutable_hash_and_atomic_failure(self):
         self.command()
         with SessionLocal() as db:
