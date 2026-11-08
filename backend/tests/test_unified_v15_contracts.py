@@ -53,6 +53,7 @@ class UnifiedServiceContracts(unittest.TestCase):
         )
         self.vm = Row(hostname="unit-host", environment="QA", monitoring_enabled=True)
         self.source = Row(
+            configuration_revision=0,  # Legacy fixture matches the model default.
             endpoint="unit-host.example.test",
             connection_config={"opscontrol": {"os_type": "Linux", "environment": "QA"}},
             enabled=True,
