@@ -73,7 +73,9 @@ jobs:
         if: always()
         with:
           name: image-evidence-${{ matrix.role }}
-          path: ${{ runner.temp }}/image-evidence
+          path: |
+            ${{ runner.temp }}/image-evidence
+            !${{ runner.temp }}/image-evidence/grype-cache/**
           if-no-files-found: error
   security-sbom:
     if: always()
