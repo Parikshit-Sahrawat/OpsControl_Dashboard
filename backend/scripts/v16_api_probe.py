@@ -553,7 +553,7 @@ request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"
 request(f"monitoring/templates/{tid}", "PATCH", {"package_config":{"collector":{"type":"HTTP","interval_seconds":90}}}, admin)
 effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
 assert effective["templates"][0]["version"] == 1 and effective["valid"] and not effective["missing_required_attributes"]
-request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin, 409)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin, 428)
 request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"collector":{"interval_seconds":30}}}, admin)
 effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
 assert effective["valid"] and effective["collector"]["interval_seconds"] == 30 and effective["templates"][0]["version"] == 1
