@@ -12,6 +12,6 @@ def require_template_package(value):
         if not isinstance(value.get(key, []), list) or any(not isinstance(row, dict) for row in value.get(key, [])):
             raise ValueError(f"{key} configuration must be an array of objects")
     if value.get("applicability") is not None:
-        from app.services.template_applicability import Applicability
-        Applicability.model_validate(value["applicability"])
+        from app.services.template_applicability import parse_applicability
+        parse_applicability(value["applicability"])
     return value

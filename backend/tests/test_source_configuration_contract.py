@@ -508,3 +508,82 @@ class SourceConfigurationContract(unittest.TestCase):
                 [],
             )
             self.assertEqual(db.get(DataSource, self.sid).status, "UNKNOWN")
+
+    def test_https_template_uses_real_api_schema_without_claiming_network_authority(
+        self,
+    ):
+        package = {
+            "collector": {"type": "HTTP"},
+            "applicability": {
+                "schema_version": 1,
+                "family": "API",
+                "source_types": ["API"],
+                "methods": [
+                    {
+                        "name": "Read-only check",
+                        "method_type": "HTTPS",
+                        "configuration": {
+                            "method": "HEAD",
+                            "expected_status": 204,
+                            "max_response_time_ms": 10000,
+                            "headers": {"x-opscontrol-check": "source-revision"},
+                        },
+                    }
+                ],
+            },
+        }
+        with SessionLocal() as db:
+            source = db.get(DataSource, self.sid)
+            source.source_type = "API"
+            source.endpoint = "https://synthetic-api.example.test/health"
+            template = db.get(MonitoringTemplate, self.tid)
+            template.version = 2
+            template.package_config = package
+            db.add(
+                MonitoringTemplateVersion(
+                    template_id=self.tid, version=2, package_config=package
+                )
+            )
+            db.commit()
+        row = self.command(members=[self.member | dict(template_version=2)])
+        self.assertEqual(row["application"], "NOT_REQUESTED")
+        status, effective = self.call(
+            "GET", f"monitoring/data-sources/{self.sid}/effective-configuration"
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(effective["valid"])
+        self.assertEqual(effective["collector"]["method"], "HEAD")
+        self.assertEqual(effective["collector"]["max_response_time_ms"], 10000)
+        for version, configuration in enumerate(
+            [
+                {"method": "POST"},
+                {"method": "GET", "body": "forbidden"},
+                {"url": "http://synthetic-api.example.test"},
+            ],
+            start=3,
+        ):
+            invalid = {
+                **package,
+                "applicability": {
+                    **package["applicability"],
+                    "methods": [
+                        {
+                            "name": "Unsafe method",
+                            "method_type": "HTTPS",
+                            "configuration": configuration,
+                        }
+                    ],
+                },
+            }
+            with SessionLocal() as db:
+                template = db.get(MonitoringTemplate, self.tid)
+                template.version = version
+                template.package_config = invalid
+                db.add(
+                    MonitoringTemplateVersion(
+                        template_id=self.tid, version=version, package_config=invalid
+                    )
+                )
+                db.commit()
+            self.command(1, [self.member | dict(template_version=version)], status=422)
+        self.assertEqual(self.call("GET", self.base)[1]["revision"], 1)

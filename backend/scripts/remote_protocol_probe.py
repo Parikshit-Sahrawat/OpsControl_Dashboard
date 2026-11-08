@@ -19,6 +19,10 @@ def req(method,path,token=None,body=None):
     headers={"Content-Type":"application/json"}
     if token: headers["Authorization"]="Bearer "+token
     headers.update(probe_headers(BASE, token, path))
+    if token and method in {"POST","PATCH","DELETE"} and path.startswith('/api/v1/monitoring/data-sources/') and '/templates' in path:
+        source_id=path.split('/')[5]
+        code,head=req('GET','/api/v1/monitoring/data-sources/'+source_id+'/configuration',token)
+        if code==200:headers.update({'Expected-Revision':str(head['revision']),'Idempotency-Key':str(uuid.uuid4())})
     request=urllib.request.Request(BASE+path,method=method,data=data,headers=headers)
     try:
         with urllib.request.urlopen(request,timeout=20) as response:

@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
@@ -40,8 +41,7 @@ const steps = [
   "Validate & Activate",
 ];
 async function navigate(target = page) {
-  const category=target.getByRole("button", {name:"Resource Management navigation",exact:true});
-  if(await category.getAttribute("aria-expanded")==="false") await category.click();
+  await preparePrimaryNavigation(target);
   await target
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Data Sources / Resources", exact: true })

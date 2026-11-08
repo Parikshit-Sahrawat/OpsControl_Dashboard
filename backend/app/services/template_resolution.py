@@ -46,7 +46,11 @@ def _apply_package(effective: dict, package: dict) -> dict:
         require_template_package(package)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from None
-    effective["collector"] = _deep_merge(effective.get("collector", {}), package.get("collector", {}))
+    collector = deepcopy(package.get("collector", {}))
+    manifest = package.get("applicability") or {}
+    if manifest.get("family") == "API":
+        collector = _deep_merge(collector, manifest["methods"][0]["configuration"])
+    effective["collector"] = _deep_merge(effective.get("collector", {}), collector)
     effective["attributes"] = _merge_named_rows(effective.get("attributes", []), package.get("attributes", []), "key")
     effective["metrics"] = _merge_named_rows(effective.get("metrics", []), package.get("metrics", []), "metric")
     effective["alerts"] = _merge_named_rows(effective.get("alerts", []), package.get("alerts", []), "name")

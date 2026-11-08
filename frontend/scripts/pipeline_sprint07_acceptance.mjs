@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -476,7 +477,7 @@ try {
   await page
     .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
-  await page.getByRole("button", { name: "Resource Management navigation", exact: true }).click();
+  await preparePrimaryNavigation(page);
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Organizations", exact: true })
@@ -486,7 +487,7 @@ try {
     .getByRole("table")
     .getByText("Sprint 07 Alpha", { exact: true })
     .waitFor();
-  await page.getByRole("button", { name: "Access Management navigation", exact: true }).click();
+  await preparePrimaryNavigation(page);
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Employees", exact: true })

@@ -2,7 +2,37 @@
 
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
+from fastapi import HTTPException
 from app.telemetry.configuration import MethodInput, validate_method, host_os
+
+
+class APIMethod(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    name: str = Field(min_length=1, max_length=160)
+    method_type: Literal["HTTPS"]
+    configuration: dict
+
+
+class APIApplicability(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    schema_version: Literal[1]
+    family: Literal["API"]
+    source_types: list[Literal["HTTP", "HTTPS", "API", "API_ENDPOINT"]] = Field(
+        min_length=1
+    )
+    methods: list[APIMethod] = Field(min_length=1, max_length=1)
+    collector_override_fields: list[Literal["interval_seconds", "interval"]] = Field(
+        default_factory=list
+    )
+    override_components: list[Literal["attributes", "metrics", "alerts", "logs"]] = (
+        Field(default_factory=list)
+    )
+
+
+def parse_applicability(value):
+    return (
+        APIApplicability if value.get("family") == "API" else Applicability
+    ).model_validate(value)
 
 
 class Applicability(BaseModel):
@@ -25,24 +55,53 @@ def applicability(source, package, overrides):
         return [dict(code="LEGACY_APPLICABILITY_UNVERIFIED", path="applicability")]
     reasons = []
     try:
-        contract = Applicability.model_validate(manifest)
-        os_type = host_os(source)
-        if package.get("collector", {}).get("type") not in (
-            None,
-            "OTEL",
-            "WINDOWS",
-            "LINUX",
-        ):
-            reasons.append(
-                dict(code="COLLECTOR_METHOD_INCOMPATIBLE", path="collector/type")
+        contract = parse_applicability(manifest)
+        if isinstance(contract, APIApplicability):
+            from app.services.api_monitoring_config import validate_api_settings
+
+            if source.source_type not in contract.source_types or package.get(
+                "collector", {}
+            ).get("type") not in (None, "HTTP", "API"):
+                reasons.append(
+                    dict(code="SOURCE_METHOD_INCOMPATIBLE", path="applicability")
+                )
+            method = contract.methods[0]
+            if set(method.configuration) - {
+                "url",
+                "method",
+                "expected_status",
+                "timeout_seconds",
+                "headers",
+                "max_response_time_ms",
+            }:
+                reasons.append(
+                    dict(code="METHOD_SCHEMA_INVALID", path="applicability/methods")
+                )
+            validate_api_settings(
+                {**package.get("collector", {}), **method.configuration}, source
             )
-        if (
-            source.source_type not in contract.source_types
-            or os_type not in contract.os
-        ):
-            reasons.append(dict(code="OS_SOURCE_INCOMPATIBLE", path="applicability"))
-        for method in contract.methods:
-            validate_method(method, os_type)
+            # This is shape/HTTPS compatibility only. Real worker allowlists,
+            # DNS/TLS/connectivity are still mandatory at preview/apply/dispatch.
+        else:
+            os_type = host_os(source)
+            if package.get("collector", {}).get("type") not in (
+                None,
+                "OTEL",
+                "WINDOWS",
+                "LINUX",
+            ):
+                reasons.append(
+                    dict(code="COLLECTOR_METHOD_INCOMPATIBLE", path="collector/type")
+                )
+            if (
+                source.source_type not in contract.source_types
+                or os_type not in contract.os
+            ):
+                reasons.append(
+                    dict(code="OS_SOURCE_INCOMPATIBLE", path="applicability")
+                )
+            for method in contract.methods:
+                validate_method(method, os_type)
         allowed = set(contract.override_components)
         if contract.collector_override_fields:
             allowed.add("collector")
@@ -56,7 +115,7 @@ def applicability(source, package, overrides):
             )
         if set(overrides or {}) - allowed:
             reasons.append(dict(code="OVERRIDE_PATH_FORBIDDEN", path="overrides"))
-    except ValueError:
+    except (ValueError, HTTPException):
         reasons.append(
             dict(
                 code="METHOD_SCHEMA_INVALID_OR_UNVERIFIED", path="applicability/methods"
