@@ -13,7 +13,7 @@ const sections = [
     ["Data Pipeline Monitoring", "Data Pipelines"],
     ["Compute Health", "Compute Instances"],
     ["API Endpoint Monitoring", "API Endpoints"],
-    ["Alerts", "Alerts"], ["Incidents", "Incidents"], ["Reports", "Reports"],
+    ["Alerts", "Alerts"], ["Reports", "Reports"],
   ] },
   { name: "Resource Management", items: [
     ["Resource Management", "Organizations", "organizations"],

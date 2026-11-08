@@ -105,7 +105,7 @@ export function ExecutionHistory({ resource, user, onRecovery }) {
                 <Status value={h.pentaho_review_state || "UNKNOWN"} />
               </small>
             </td>
-            <td>{h.incident_number || "See Incidents tab"}</td>
+            <td>{h.incident_number || "No recorded correlation"}</td>
           </tr>
         ))}
       </Table>
@@ -170,7 +170,6 @@ export function ExecutionDrawer({
           "Attempts",
           "Evidence",
           ...(steps.length ? ["Steps"] : []),
-          "Incidents",
           "Audit",
         ].map((t) => (
           <button
@@ -436,84 +435,9 @@ export function ExecutionDrawer({
             attempts={attempts.data.items}
           />
         )}
-      {tab === "Incidents" && (
-        <ExecutionIncidents resource={resource} history={h} user={user} />
-      )}
     </Drawer>
   );
 }
-function ExecutionIncidents({ resource, history, user }) {
-  const [offset, setOffset] = useState(0),
-    allowed = hasPermission(
-      user,
-      "incidents.view",
-      resource.organization_id,
-      resource,
-    );
-  const feed = usePipelineFeed(
-    allowed
-      ? "/api/v1/native-incidents?" +
-          params([resource.organization_id], resource.environment, {
-            limit: 20,
-            offset,
-          })
-      : null,
-  );
-  return !allowed ? (
-    <p>Incident evidence requires incidents.view for this customer.</p>
-  ) : (
-    <>
-      <State feed={feed} />
-      <p>
-        Customer-scoped incidents, 20 per page. Open failure evidence to check
-        the exact execution ID; the list does not assert unrelated incidents as
-        correlations.
-      </p>
-      {feed.data?.items.map((i) => (
-        <IncidentMatch key={i.id} incident={i} history={history} />
-      ))}
-      <Pager
-        total={feed.data?.total}
-        offset={offset}
-        onChange={setOffset}
-        label="Scoped incidents"
-      />
-    </>
-  );
-}
-function IncidentMatch({ incident, history }) {
-  const [open, setOpen] = useState(false),
-    [offset, setOffset] = useState(0),
-    feed = usePipelineFeed(
-      open
-        ? `/api/v1/native-incidents/${incident.id}/execution-failures?limit=20&offset=${offset}`
-        : null,
-    );
-  return (
-    <details onToggle={(e) => setOpen(e.currentTarget.open)}>
-      <summary>
-        {incident.title} · {incident.status}
-      </summary>
-      <State feed={feed} />
-      {feed.data?.items.map((f) => (
-        <div key={f.id}>
-          <strong>
-            {f.history_id === history.id ? "This execution" : "Other execution"}
-          </strong>{" "}
-          <Identifier value={f.history_id} />
-          <Evidence value={f.evidence?.failure_cause} />
-        </div>
-      ))}
-      <Pager
-        total={feed.data?.total}
-        offset={offset}
-        onChange={setOffset}
-        label="Failure associations"
-      />
-    </details>
-  );
-}
-
 function AttemptEvidence({ resource, history, attempts }) {
   const [attempt, setAttempt] = useState(attempts[0].id),
     [collection, setCollection] = useState("revisions"),
