@@ -7,6 +7,7 @@ import secrets
 import subprocess
 import sys
 import unittest
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.error import HTTPError
@@ -157,6 +158,177 @@ class SourceConfigurationContract(unittest.TestCase):
         )
         self.assertEqual(code, status, body)
         return body
+
+    def test_atomic_context_revalidation_and_legacy_writer_preconditions(self):
+        self.command()
+        changed = {
+            "endpoint": "updated.synthetic.invalid",
+            "connection_config": {
+                "opscontrol": {"os_type": "Linux", "environment": "QA"}
+            },
+        }
+        code, value = self.call(
+            "POST",
+            self.base + "/commands",
+            dict(
+                expected_revision=1, attachments=[self.member], source_context=changed
+            ),
+            key=uuid4(),
+        )
+        self.assertEqual(code, 201, value)
+        self.assertEqual(
+            value["document"]["source_context"]["endpoint"], changed["endpoint"]
+        )
+        code, invalid = self.call(
+            "POST",
+            self.base + "/commands",
+            dict(
+                expected_revision=2,
+                attachments=[self.member],
+                source_context={
+                    "source_type": "WINDOWS",
+                    "connection_config": {"opscontrol": {"os_type": "Windows"}},
+                },
+            ),
+            key=uuid4(),
+        )
+        self.assertEqual(code, 422, invalid)
+        self.assertEqual(self.call("GET", self.base)[1]["revision"], 2)
+        source = self.call("GET", f"monitoring/data-sources/{self.sid}")[1]
+        self.assertEqual(source["source_type"], "LINUX")
+        self.assertEqual(source["endpoint"], changed["endpoint"])
+        for prefix in ("monitoring", "resource-management"):
+            self.assertEqual(
+                self.call(
+                    "PATCH",
+                    f"{prefix}/data-sources/{self.sid}",
+                    {"endpoint": "refused.synthetic.invalid"},
+                )[0],
+                428,
+            )
+        self.assertEqual(self.call("GET", self.base)[1]["revision"], 2)
+
+    def test_preview_context_is_nonpersistent_and_identity_fields_cannot_be_forged(
+        self,
+    ):
+        code, result = self.call(
+            "POST",
+            self.base + "/preview",
+            dict(
+                expected_revision=0,
+                attachments=[self.member],
+                source_context={
+                    "name": "Preview only",
+                    "endpoint": "preview.synthetic.invalid",
+                },
+            ),
+        )
+        self.assertEqual(code, 200, result)
+        self.assertEqual(
+            result["source_context"]["endpoint"], "preview.synthetic.invalid"
+        )
+        self.assertIsNone(
+            self.call("GET", f"monitoring/data-sources/{self.sid}")[1]["endpoint"]
+        )
+        self.assertEqual(
+            self.call(
+                "POST",
+                self.base + "/commands",
+                dict(
+                    expected_revision=0,
+                    attachments=[],
+                    source_context={"organization_id": self.other},
+                ),
+                key=uuid4(),
+            )[0],
+            422,
+        )
+
+    def test_revocation_commits_before_waiting_command_authorization(self):
+        # Hold the same PostgreSQL transaction-authority lock as real revocations.
+        # The authenticated request resolves its initial principal, then waits.
+        with SessionLocal() as owner, ThreadPoolExecutor(max_workers=1) as pool:
+            owner.execute(text("SELECT pg_advisory_xact_lock(782104, 8)"))
+            pending = pool.submit(
+                self.call,
+                "POST",
+                self.base + "/commands",
+                dict(expected_revision=0, attachments=[self.member]),
+                key=uuid4(),
+            )
+            try:
+                deadline = time.monotonic() + 10
+                waiting = False
+                while time.monotonic() < deadline:
+                    owner.execute(text("SELECT pg_stat_clear_snapshot()"))
+                    waiting = bool(
+                        owner.scalar(
+                            text(
+                                "SELECT EXISTS(SELECT 1 FROM pg_stat_activity WHERE wait_event='advisory' AND pid<>pg_backend_pid())"
+                            )
+                        )
+                    )
+                    if waiting:
+                        break
+                    time.sleep(0.05)
+                self.assertTrue(
+                    waiting,
+                    "Authenticated command did not reach real authorization lock",
+                )
+                owner.execute(
+                    text("UPDATE users SET active=false WHERE id=:id"), {"id": self.uid}
+                )
+                owner.commit()
+                self.assertEqual(pending.result(timeout=15)[0], 403)
+            finally:
+                owner.rollback()  # Never leave an authority lock blocking cleanup.
+        with SessionLocal() as db:
+            self.assertEqual(db.get(DataSource, self.sid).configuration_revision, 0)
+            self.assertEqual(
+                list(
+                    db.scalars(
+                        select(SourceConfigurationRevision).where(
+                            SourceConfigurationRevision.data_source_id == self.sid
+                        )
+                    )
+                ),
+                [],
+            )
+
+    def test_database_connection_termination_rolls_back_full_command(self):
+        with SessionLocal() as db:
+            db.execute(
+                text(
+                    "CREATE FUNCTION s01_disconnect() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.data_source_id::text = '"
+                    + self.sid
+                    + "' THEN PERFORM pg_terminate_backend(pg_backend_pid()); END IF; RETURN NEW; END $$"
+                )
+            )
+            db.execute(
+                text(
+                    "CREATE TRIGGER s01_disconnect BEFORE INSERT ON source_configuration_revisions FOR EACH ROW EXECUTE FUNCTION s01_disconnect()"
+                )
+            )
+            db.commit()
+        key = uuid4()
+        try:
+            self.command(key=key, status=500)
+            self.assertEqual(self.call("GET", self.base)[1]["revision"], 0)
+            self.assertEqual(
+                self.call("GET", f"monitoring/data-sources/{self.sid}/templates")[1], []
+            )
+        finally:
+            with SessionLocal() as db:
+                db.execute(
+                    text(
+                        "DROP TRIGGER s01_disconnect ON source_configuration_revisions"
+                    )
+                )
+                db.execute(text("DROP FUNCTION s01_disconnect()"))
+                db.commit()
+        retried = self.command(key=key)
+        self.assertEqual(retried["revision"], 1)
+        self.assertFalse(retried["replayed"])
 
     def test_attach_reload_history_rollback_and_detach(self):
         first = self.command()

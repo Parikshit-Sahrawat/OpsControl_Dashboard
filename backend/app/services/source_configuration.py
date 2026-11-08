@@ -17,6 +17,7 @@ from app.models import (
     MonitoringTemplateVersion,
 )
 from app.models.entities import SourceConfigurationRevision
+from app.schemas.monitoring import DataSourceUpdate
 from app.security.scope import current_principal
 from app.security.secret_refs import require_safe_config, redact_config
 from app.services.excluded_platforms import (
@@ -62,6 +63,7 @@ class Command(BaseModel):
     model_config = ConfigDict(extra="forbid")
     expected_revision: int = Field(ge=0)
     attachments: list[Member] = Field(max_length=100)
+    source_context: DataSourceUpdate | None = None
 
 
 class Rollback(BaseModel):
@@ -233,6 +235,8 @@ def evaluate(db, source, intent):
             evaluated_at=datetime.now(timezone.utc).isoformat(),
         ),
         source_context=dict(
+            name=source.name,
+            description=source.description,
             source_type=source.source_type,
             endpoint=redact_config(source.endpoint),
             configuration=redact_config(config),
@@ -254,11 +258,67 @@ def current(db, source):
     )
 
 
-def commit(db, source_id, payload, key, kind="UPDATE", target=None, importing=False):
+def context_values(source, payload):
+    context = getattr(payload, "source_context", None)
+    if context is None:
+        return {}
+    values = context.model_dump(exclude_unset=True)
+    # Lifecycle enablement and authentication changes retain their own authority.
+    if set(values) - {
+        "name",
+        "description",
+        "source_type",
+        "endpoint",
+        "connection_config",
+    }:
+        raise HTTPException(
+            422, "Source command supports identity/configuration fields only"
+        )
+    principal = current_principal.get()
+    if not principal or not principal.allows(
+        "resources.update", source.organization_id
+    ):
+        raise HTTPException(
+            403, "Resource update permission required for source context"
+        )
+    return values
+
+
+def legacy_context_update(db, source, payload, expected_revision, key):
+    if expected_revision is None or key is None:
+        raise HTTPException(
+            428,
+            "Expected-Revision and Idempotency-Key required for revisioned resource edits",
+        )
+    command = Command(
+        expected_revision=expected_revision,
+        attachments=members(db, source.id),
+        source_context=payload,
+    )
+    commit(db, source.id, command, key)
+    db.refresh(source)
+    return source
+
+
+def commit(
+    db,
+    source_id,
+    payload,
+    key,
+    kind="UPDATE",
+    target=None,
+    importing=False,
+    finalize=True,
+):
     source = source_row(db, source_id, lock=True, write=True)
     principal = current_principal.get()
     require_supported_source(source)
-    request = dict(command=payload.model_dump(mode="json"), kind=kind, target=target)
+    encoded = payload.model_dump(mode="json")
+    if encoded.get("source_context") is None:
+        encoded.pop(
+            "source_context", None
+        )  # Existing committed idempotency hashes remain valid.
+    request = dict(command=encoded, kind=kind, target=target)
     request_hash = digest(request)
     prior = db.scalar(
         select(SourceConfigurationRevision).where(
@@ -273,13 +333,17 @@ def commit(db, source_id, payload, key, kind="UPDATE", target=None, importing=Fa
         return dict(
             **output(prior),
             replayed=True,
-            current_revision=source.configuration_revision
+            current_revision=source.configuration_revision,
         )
     if payload.expected_revision != source.configuration_revision:
         raise HTTPException(
             409,
             dict(code="STALE_REVISION", current_revision=source.configuration_revision),
         )
+    values = context_values(source, payload)
+    for field, value in values.items():
+        setattr(source, field, value)
+    require_supported_source(source)
     old_members = members(db, source.id)
     if old_members and source.configuration_revision == 0 and not importing:
         raise HTTPException(
@@ -357,6 +421,9 @@ def commit(db, source_id, payload, key, kind="UPDATE", target=None, importing=Fa
     )
     db.add(row)
     source.configuration_revision = number
-    db.commit()
-    db.refresh(row)
+    if finalize:
+        db.commit()
+        db.refresh(row)
+    else:
+        db.flush()
     return dict(**output(row), replayed=False, current_revision=number)

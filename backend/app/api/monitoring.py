@@ -91,8 +91,11 @@ def create_data_source(payload: DataSourceCreate, db: Session = Depends(get_db))
 
 
 @router.patch("/data-sources/{item_id}", response_model=DataSourceOut)
-def update_data_source(item_id: UUID, payload: DataSourceUpdate, db: Session = Depends(get_db)):
+def update_data_source(item_id: UUID, payload: DataSourceUpdate, db: Session = Depends(get_db), expected_revision: int | None = Header(default=None, ge=0), idempotency_key: UUID | None = Header(default=None)):
     item = _get_or_404(DataSource, item_id, db, "Data source")
+    if item.configuration_revision and payload.model_dump(exclude_unset=True) != {"enabled": False}:
+        from app.services.source_configuration import legacy_context_update
+        return legacy_context_update(db, item, payload, expected_revision, idempotency_key)
     if payload.model_dump(exclude_unset=True) != {"enabled": False}:
         require_supported_source(item)
     for key, value in payload.model_dump(exclude_unset=True).items():

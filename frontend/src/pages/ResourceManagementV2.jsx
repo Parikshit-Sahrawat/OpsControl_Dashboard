@@ -14,8 +14,7 @@ import {
   fetchCollectors, createCollector, updateCollector, disableCollector,
   fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
   fetchMonitoringTemplateVersions, disableMonitoringTemplate,
-  fetchDataSourceTemplates, attachDataSourceTemplate, updateDataSourceTemplate,
-  detachDataSourceTemplate, fetchEffectiveDataSourceConfiguration,
+  fetchDataSourceTemplates, commitSourceConfiguration, fetchEffectiveDataSourceConfiguration,
 } from "../resourceApi";
 
 const NAV = [
@@ -216,6 +215,8 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(initial || { organization_id: organizations.find(o => o.active)?.id || "", name: "", visible_name: "", hostname: "", environment: "PROD", os_type: "Windows", workload_roles: ["Application"], product_family: "Operations", product: "Application Platform", host_groups: ["PROD"], templates: [], description: "" });
+  const savedSource = useRef(null);
+  const pendingCommand = useRef(null);
   const [agent, setAgent] = useState(() => ({name: initial?.agent_registration?.name || ""}));
   const [orgEditor, setOrgEditor] = useState(null);
   const update = patch => setForm(v => ({ ...v, ...patch }));
@@ -226,15 +227,17 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
     try {
       const chosen = templates.filter(t => form.templates.includes(t.id));
       const config = { opscontrol: { ...meta(initial), visible_name: form.visible_name || form.name, hostname: form.hostname, environment: form.environment, workload_roles: form.workload_roles, server_type: form.workload_roles.length > 1 ? "Multi-role" : form.workload_roles[0], os_type: form.os_type, product_family: form.product_family, product: form.product, host_groups: form.host_groups, template_ids: form.templates, templates: chosen.map(t => t.name) } };
-      const source = initial?.id ? await updateDataSource(initial.id, { name: form.name || form.hostname, endpoint: form.hostname, description: form.description || null, connection_config: { ...(initial.connection_config || {}), ...config } }) : await createDataSource({ organization_id: form.organization_id, name: form.name || form.hostname, source_type: form.os_type.toUpperCase(), endpoint: form.hostname, description: form.description || null, auth_type: "SECRET_REFERENCE", connection_config: config, enabled: true });
-      const existing = await fetchDataSourceTemplates(source.id);
-      const wanted = new Set(form.templates);
-      for (const a of existing) if (!wanted.has(a.template_id)) await detachDataSourceTemplate(source.id, a.template_id);
-      for (const t of chosen) {
-        const current = existing.find(a => a.template_id === t.id);
-        if (current) await updateDataSourceTemplate(source.id, t.id, { expected_updated_at: current.updated_at, template_version: attachmentVersion(t, current), priority: current.priority, overrides: current.overrides || null, enabled: true });
-        else await attachDataSourceTemplate(source.id, { template_id: t.id, template_version: attachmentVersion(t, null), priority: 100, overrides: null });
-      }
+      const context = { name: form.name || form.hostname, source_type: form.os_type.toUpperCase(), endpoint: form.hostname, description: form.description || null, connection_config: { ...(initial?.connection_config || {}), ...config } };
+      const source = initial || savedSource.current || await createDataSource({ organization_id: form.organization_id, ...context, auth_type: "SECRET_REFERENCE", enabled: true });
+      savedSource.current = source;
+      const existing = initial?.template_attachments || [];
+      if (source.configuration_revision || chosen.length || existing.length) {
+        const attachments = chosen.map((t, i) => { const current = existing.find(a => a.template_id === t.id); return {template_id:t.id, template_version:attachmentVersion(t,current), priority:(i+1)*100, overrides:current?.overrides || {}, enabled:true}; });
+        const payload = {expected_revision:source.configuration_revision || 0, attachments, source_context:context};
+        const encoded = JSON.stringify(payload);
+        if (pendingCommand.current?.encoded !== encoded) pendingCommand.current = {encoded, key:window.crypto.randomUUID()};
+        await commitSourceConfiguration(source.id, payload, pendingCommand.current.key);
+      } else if (initial) await updateDataSource(initial.id, context);
       // A Collector is configuration, not a process. Host-agent enrollment and
       // explicit configuration application start telemetry. Reconcile edits
       // without modifying an operational HTTP/infrastructure collector.
@@ -337,7 +340,7 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
         fetchDataSourceTemplates(source.id), fetchCollectors({ data_source_id: source.id }),
       ]);
       if (generation !== reloadGeneration.current) return;
-      setWizard({ initial: { ...source, agent_registration: registrations.find(c => c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: sourceOS(source), workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "Operations", product: m.product || "Application Platform", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
+      setWizard({ initial: { ...source, template_attachments: a, agent_registration: registrations.find(c => c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: sourceOS(source), workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "Operations", product: m.product || "Application Platform", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
     } catch (e) {
       if (generation === reloadGeneration.current) setError(e.message || "Unable to load saved Data Source settings");
     }

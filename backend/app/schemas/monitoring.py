@@ -84,6 +84,7 @@ class DataSourceUpdate(BaseModel):
         return require_safe_url(value)
 
 class DataSourceOut(DataSourceBase):
+    configuration_revision: int = 0
     model_config = ConfigDict(from_attributes=True)
     id: UUID
     organization_id: UUID

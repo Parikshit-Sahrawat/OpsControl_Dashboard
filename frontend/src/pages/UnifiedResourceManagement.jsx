@@ -1086,6 +1086,8 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           delete config[key];
         r = await control(base + "/resources/" + existing.id, "PUT", {
           expected_revision: existing.revision,
+          expected_source_revision: existing.source_configuration_revision ?? null,
+          configuration_command_key: window.crypto.randomUUID(),
           name: form.name,
           environment: form.environment,
           configuration: config,

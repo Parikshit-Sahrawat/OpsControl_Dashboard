@@ -3,7 +3,7 @@ from app.services.excluded_platforms import require_supported_source, require_su
 from uuid import UUID
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Header
 from sqlalchemy import and_, false, func, or_, select, true
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -109,8 +109,13 @@ def update_scoped_data_source(
     data_source_id: UUID,
     payload: DataSourceUpdate,
     db: Session = Depends(get_db),
+    expected_revision: int | None = Header(default=None, ge=0),
+    idempotency_key: UUID | None = Header(default=None),
 ):
     item = _source(db, data_source_id)
+    if item.configuration_revision and payload.model_dump(exclude_unset=True) != {"enabled": False}:
+        from app.services.source_configuration import legacy_context_update
+        return legacy_context_update(db, item, payload, expected_revision, idempotency_key)
     values = payload.model_dump(exclude_unset=True)
     if values != {"enabled": False}:
         require_supported_source(item)

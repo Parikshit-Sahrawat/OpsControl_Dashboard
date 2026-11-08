@@ -319,7 +319,9 @@ def output(db, r, projection=None):
     )
     setup = (r.configuration or {}).get("alert_setup") or {}
     inherited = binding(db, r, projection)
+    source = (projection["sources"].get(r.data_source_id) if projection is not None else db.get(DataSource, r.data_source_id)) if r.data_source_id else None
     return {
+        "source_configuration_revision": source.configuration_revision if source else None,
         **document(r),
         "event_parameters_configured": bool(parameters),
         "alerting_configured": bool(setup.get("enabled")),
@@ -798,6 +800,8 @@ def create_api(payload: APICreate, db=Depends(get_db)):
 
 class ResourceEdit(Strict):
     expected_revision: int = Field(ge=1)
+    expected_source_revision: int | None = Field(default=None, ge=0)
+    configuration_command_key: uuid.UUID | None = None
     name: str = Field(min_length=1, max_length=200)
     environment: Environment
     configuration: dict
@@ -809,6 +813,7 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
     r = resource(db, id, "resources.update", True)
     if payload.expected_revision != r.revision:
         raise HTTPException(409, "Resource changed; reload before editing")
+    source_command = None
     config = dict(payload.configuration)
     # Alert setup has a separate permission/revision contract. A generic edit
     # may echo it unchanged but must never create, change or erase it.
@@ -862,15 +867,18 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
                 raise HTTPException(
                     409, "Changing an enrolled host OS requires deliberate migration"
                 )
-            source.endpoint = typed.address
-            source.connection_config = {
+            context = dict(endpoint=typed.address, connection_config={
                 **(source.connection_config or {}),
-                "opscontrol": {
-                    **(source.connection_config or {}).get("opscontrol", {}),
-                    "environment": payload.environment,
-                    "visible_name": payload.name,
-                },
-            }
+                "opscontrol": {**(source.connection_config or {}).get("opscontrol", {}), "environment": payload.environment, "visible_name": payload.name},
+            })
+            if source.configuration_revision:
+                if payload.expected_source_revision is None or payload.configuration_command_key is None:
+                    raise HTTPException(428, "Source revision and configuration command key required; reload resource")
+                from app.services import source_configuration as source_service
+                source_command = (source.id, source_service.Command(expected_revision=payload.expected_source_revision, attachments=source_service.members(db, source.id), source_context=context), payload.configuration_command_key)
+            else:
+                source.endpoint = context["endpoint"]
+                source.connection_config = context["connection_config"]
         db.get(VM, r.vm_id).environment = payload.environment
         if r.primary_collector_id:
             require_permission("collectors.manage", r.organization_id)
@@ -894,6 +902,8 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
                     )
                 if child.domain == "API" and child.data_source_id:
                     cs = db.get(DataSource, child.data_source_id)
+                    if cs.configuration_revision and payload.environment != (cs.connection_config or {}).get("opscontrol", {}).get("environment"):
+                        raise HTTPException(409, "Revisioned child source requires explicit coordinated context update")
                     cs.connection_config = {
                         **(cs.connection_config or {}),
                         "opscontrol": {
@@ -1026,6 +1036,8 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
         if r.job_order_id:
             db.get(JobOrder, r.job_order_id).monitoring_enabled = False
     audit(db, r, "ARCH_RESOURCE_UPDATE")
+    if source_command:
+        source_service.commit(db, *source_command, finalize=False)
     commit(db)
     return output(db, r)
 

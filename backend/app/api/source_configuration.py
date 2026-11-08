@@ -20,6 +20,24 @@ def preview(item_id: UUID, payload: service.Command, db=Depends(get_db)):
     source = service.source_row(db, item_id, write=True)
     if payload.expected_revision != source.configuration_revision:
         raise HTTPException(409, "STALE_REVISION")
+    from types import SimpleNamespace
+
+    source = SimpleNamespace(
+        **{
+            key: getattr(source, key)
+            for key in (
+                "id",
+                "organization_id",
+                "source_type",
+                "endpoint",
+                "connection_config",
+                "name",
+                "description",
+            )
+        }
+    )
+    for field, value in service.context_values(source, payload).items():
+        setattr(source, field, value)
     return service.evaluate(
         db,
         source,
