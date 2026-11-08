@@ -35,12 +35,21 @@ with SessionLocal() as db:
         )
         db.add_all([org, user])
         db.flush()
-        job = JobOrder(
-            organization_id=org.id,
-            name="Controlled legacy execution " + uuid.uuid4().hex,
-            environment="TEST",
-            active=True,
-            monitoring_enabled=False,
+        # The seed runs against schema 0032, before the ETL workflow_id
+        # column exists. Do not flush a current JobOrder ORM instance here.
+        job_id = uuid.uuid4()
+        db.execute(
+            text(
+                """INSERT INTO job_orders
+                (id, organization_id, name, environment, active,
+                 monitoring_enabled, created_at)
+                VALUES (:id, :org, :name, 'TEST', true, false, now())"""
+            ),
+            {
+                "id": job_id,
+                "org": org.id,
+                "name": "Controlled legacy execution " + uuid.uuid4().hex,
+            },
         )
         source = PipelineSource(
             organization_id=org.id,
@@ -49,7 +58,7 @@ with SessionLocal() as db:
             identity={"physical_scope": "controlled-migration-source"},
             continuity_validated=False,
         )
-        db.add_all([job, source])
+        db.add(source)
         db.flush()
         evidence = PipelineEvidence(
             organization_id=org.id,
@@ -78,7 +87,7 @@ with SessionLocal() as db:
             ),
             {
                 "id": history_id,
-                "job": job.id,
+                "job": job_id,
                 "evidence": json.dumps(
                     {"origin": "CONTROLLED_FIXTURE", "preserve": True}
                 ),
@@ -93,7 +102,7 @@ with SessionLocal() as db:
                     "password_hash_sha256": hashlib.sha256(
                         user.password_hash.encode()
                     ).hexdigest(),
-                    "job_id": str(job.id),
+                    "job_id": str(job_id),
                     "history_id": str(history_id),
                     "source_id": str(source.id),
                     "evidence_id": str(evidence.id),
@@ -126,7 +135,8 @@ with SessionLocal() as db:
             == before["password_hash_sha256"]
         )
         assert db.get(Organization, uuid.UUID(before["organization_id"]))
-        assert db.get(JobOrder, uuid.UUID(before["job_id"]))
+        # Verification runs at 0036, before workflow_id exists in 0039.
+        assert db.scalar(text("SELECT id FROM job_orders WHERE id=:id"), {"id": uuid.UUID(before["job_id"])})
         assert (
             db.get(PipelineEvidence, uuid.UUID(before["evidence_id"])).payload[
                 "preserve"

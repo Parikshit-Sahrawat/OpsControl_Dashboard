@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/f27bf1f3-bb35-4582-8c4c-f85f9e270d09/jobs/da58c6a7-d5d8-403e-bb12-1630265c3ffa/native-bindings",
+      "expected": 404,
+      "actual": 404,
+      "detail": "Record unavailable"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7699b616-93fb-40bb-8799-51352fdc3a8b/jobs/e2c1f29e-96c6-41f7-bfb1-d93c538a5dd3/native-bindings",
+      "expected": 401,
+      "actual": 401,
+      "detail": "Authentication required"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7699b616-93fb-40bb-8799-51352fdc3a8b/jobs/e2c1f29e-96c6-41f7-bfb1-d93c538a5dd3/native-bindings",
+      "expected": 422,
+      "actual": 422,
+      "detail": "Invalid input"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7699b616-93fb-40bb-8799-51352fdc3a8b/jobs/e2c1f29e-96c6-41f7-bfb1-d93c538a5dd3/native-bindings",
+      "expected": 422,
+      "actual": 422,
+      "detail": "Duplicate method IDs"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7699b616-93fb-40bb-8799-51352fdc3a8b/jobs/e2c1f29e-96c6-41f7-bfb1-d93c538a5dd3/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_GENERATION_CHANGED_REFRESH"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/7699b616-93fb-40bb-8799-51352fdc3a8b/jobs/e2c1f29e-96c6-41f7-bfb1-d93c538a5dd3/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_JOB_RESOURCE_OR_ENVIRONMENT_MISMATCH"
+    }
+  ]
+}

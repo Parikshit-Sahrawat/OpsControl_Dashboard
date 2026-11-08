@@ -105,6 +105,15 @@ def predicates(p):
                 c.id.in_(bound.where(r.c.id.in_(visible))),
                 ~c.id.in_(bound.where(~r.c.id.in_(visible))),
             )
+        elif name == "ETLWorkflow":
+            jobs = tables["JobOrder"]
+            # A restricted actor must see every child binding; empty/unbound
+            # workflows cannot establish resource-level authority.
+            refs = select(jobs.c.workflow_id).where(jobs.c.workflow_id.is_not(None))
+            value = and_(
+                c.id.in_(refs.where(expr("JobOrder"))),
+                ~c.id.in_(refs.where(~expr("JobOrder"))),
+            )
         elif name == "PipelineIntegration":
             j = tables["PipelineJob"]
             jobs = select(j.c.integration_id)
@@ -167,7 +176,13 @@ def predicates(p):
                 "history_id": "JobOrderHistory",
                 "failed_history_id": "JobOrderHistory",
                 "recovery_history_id": "JobOrderHistory",
+                "attestation_id": "ETLNativeAttestation",
+                "binding_id": "ETLNativeBinding",
+                "evidence_id": "PipelineEvidence",
                 "job_order_id": "JobOrder",
+                "workflow_id": "ETLWorkflow",
+                "predecessor_job_id": "JobOrder",
+                "successor_job_id": "JobOrder",
                 "incident_id": "OperationalIncident",
                 "collector_id": "Collector",
                 "data_source_id": "DataSource",
@@ -276,7 +291,13 @@ def check_write(db, obj, p):
             "failed_history_id": "JobOrderHistory",
             "recovery_history_id": "JobOrderHistory",
             "incident_id": "OperationalIncident",
+            "attestation_id": "ETLNativeAttestation",
+            "binding_id": "ETLNativeBinding",
+            "evidence_id": "PipelineEvidence",
             "job_order_id": "JobOrder",
+            "workflow_id": "ETLWorkflow",
+            "predecessor_job_id": "JobOrder",
+            "successor_job_id": "JobOrder",
             "source_id": "PipelineSource",
             "integration_id": "PipelineIntegration",
             "method_id": "PipelineMethod",

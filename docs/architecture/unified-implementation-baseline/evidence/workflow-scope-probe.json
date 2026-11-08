@@ -1,0 +1,22 @@
+{
+  "source_sha": "e69528ad2b826398474382f34126feeca740f6a6",
+  "kind": "in-memory actual before_flush handler; no DB connection or HTTP transport",
+  "expected_approved_behavior": "authorized admin can persist a scoped workflow; security checks remain enforced",
+  "observations": [
+    {
+      "model": "ETLWorkflow",
+      "registered_for_scope": false,
+      "result": "DENIED",
+      "http_status": 403,
+      "detail": "Resource cannot be modified through this API"
+    },
+    {
+      "model": "ETLWorkflowDependency",
+      "registered_for_scope": false,
+      "result": "DENIED",
+      "http_status": 403,
+      "detail": "Resource cannot be modified through this API"
+    }
+  ],
+  "verdict": "FAIL: both new models denied by production request write hook; mock route tests do not cover this boundary"
+}

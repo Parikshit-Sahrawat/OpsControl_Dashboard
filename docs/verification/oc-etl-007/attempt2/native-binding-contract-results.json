@@ -1,0 +1,239 @@
+{
+  "status": "PASS",
+  "scope": "Existing staged/legacy bridge and reviewed source handoff only; no new native-binding activation authority",
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/jobs/0f2cad9b-35c6-4877-89a2-6a41729c91d9/selection",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/activate",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "GET",
+      "path": "unified/resources/71a2aece-eec8-4fc5-b814-0fb00c5eb5fd/verification",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "unified/resources/71a2aece-eec8-4fc5-b814-0fb00c5eb5fd/activate",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/68cf7143-4a25-41b0-a756-7e67d3c10d96/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 422,
+      "actual": 422
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/connections",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/capabilities",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/methods",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/associations",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/associations",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/validate",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/activate",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/sources/ed03888c-b8d1-4bb8-8364-9b28776be954/change-preview",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/operations/a05c8219-1c57-43bd-8d19-c1c9bbf7e2d8/approve",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/operations/a05c8219-1c57-43bd-8d19-c1c9bbf7e2d8/approve",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/operations/a05c8219-1c57-43bd-8d19-c1c9bbf7e2d8/apply",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/activate",
+      "expected": 409,
+      "actual": 409
+    },
+    {
+      "method": "DELETE",
+      "path": "data-pipelines/associations/7df495f9-047c-4601-baf7-9b9e174026d1",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 201,
+      "actual": 201
+    },
+    {
+      "method": "GET",
+      "path": "access/roles",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "PATCH",
+      "path": "access/roles/4f21cbfe-75a2-463f-ac38-77de61a2bfc0",
+      "expected": 200,
+      "actual": 200
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 403,
+      "actual": 403
+    },
+    {
+      "method": "GET",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588",
+      "expected": 404,
+      "actual": 404
+    },
+    {
+      "method": "POST",
+      "path": "data-pipelines/integrations/e84187e9-2c8d-412f-a397-85b42ab56588/jobs",
+      "expected": 401,
+      "actual": 401
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/75e10df2-636e-4709-8433-854bcffaa11c/monitoring",
+      "expected": 200,
+      "actual": 200
+    }
+  ],
+  "structural_chain": {
+    "workflow_id": "75e10df2-636e-4709-8433-854bcffaa11c",
+    "job_order_id": "71a2aece-eec8-4fc5-b814-0fb00c5eb5fd",
+    "resource_id": "71a2aece-eec8-4fc5-b814-0fb00c5eb5fd",
+    "pipeline_job_id": "0f2cad9b-35c6-4877-89a2-6a41729c91d9",
+    "method_id": "05940756-d69d-4930-b5d1-3cc9992c4581",
+    "source_id": "ed03888c-b8d1-4bb8-8364-9b28776be954"
+  },
+  "before_generation": "8de1a99f-aae9-4d25-9f6b-ff805822edba",
+  "after_generation": "34a4c80e-b1d9-4faa-87ed-351a39af1add",
+  "historical_receipt_sha256": "a4c43c80dad7e7d688cce78d80f2d82156ba37efdedfd85d9878e9a890039d47",
+  "historical_receipt_unchanged": true,
+  "old_evidence_retained": true,
+  "removed_association_row_retained": false,
+  "temporal_binding_replacement": "BLOCKED / NOT IMPLEMENTED",
+  "genuine_provider_certification": "NOT TESTED",
+  "workflow_activation": "BLOCKED"
+}

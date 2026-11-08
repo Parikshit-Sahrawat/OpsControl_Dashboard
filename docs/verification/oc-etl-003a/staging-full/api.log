@@ -1,0 +1,471 @@
+INFO:     Started server process [309164]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:40280 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40284 - "GET /api/v1/organizations HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40288 - "GET /api/v1/resource-management/data-sources HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40302 - "GET /api/v1/monitoring/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40318 - "PATCH /api/v1/resource-management/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40322 - "GET /api/v1/etl/executions HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40330 - "GET /api/v1/monitoring/templates HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40336 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40346 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40358 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40364 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40368 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40380 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40394 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40406 - "GET /api/v1/organizations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40412 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40428 - "GET /api/v1/resource-management/data-sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40442 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40448 - "GET /api/v1/monitoring/data-sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40462 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40472 - "GET /api/v1/resource-management/data-sources?organization_id=9b6d7ca6-fdb5-44a4-9f90-fd00d299bb31 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40482 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40498 - "GET /api/v1/monitoring/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40504 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40518 - "PATCH /api/v1/resource-management/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40526 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40542 - "PATCH /api/v1/monitoring/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40554 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40570 - "GET /api/v1/monitoring/collectors/0fc51327-9b4a-4ea7-a37b-133ff8c00980 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40578 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40594 - "GET /api/v1/monitoring/collectors/0fc51327-9b4a-4ea7-a37b-133ff8c00980/runs HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40604 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40618 - "GET /api/v1/etl/executions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40624 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40632 - "GET /api/v1/etl/executions/e4c05432-8408-4dbf-9f36-937c0e000296 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40638 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40644 - "GET /api/v1/etl/executions/e4c05432-8408-4dbf-9f36-937c0e000296/investigation HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40654 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40656 - "POST /api/v1/etl/executions/e4c05432-8408-4dbf-9f36-937c0e000296/correlation HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40660 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40672 - "GET /api/v1/etl/executions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40686 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40694 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40704 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40716 - "POST /api/v1/organizations HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:40728 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40740 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:40756 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40764 - "GET /api/v1/organizations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40774 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40776 - "PATCH /api/v1/resource-management/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40784 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40786 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:40794 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40808 - "GET /api/v1/organizations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40822 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40830 - "GET /api/v1/organizations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40842 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40844 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 201 Created
+INFO:     127.0.0.1:40846 - "POST /api/v1/auth/logout HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:40856 - "GET /api/v1/auth/customer-scope HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40870 - "GET /api/v1/organizations HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:40884 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40900 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40902 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40908 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40916 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40922 - "GET /api/v1/monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40928 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40942 - "GET /api/v1/monitoring/logs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40956 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40960 - "GET /api/v1/monitoring/alert-rules HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40976 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40980 - "GET /api/v1/monitoring/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40986 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40988 - "GET /api/v1/monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40990 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41002 - "GET /api/v1/monitoring/metrics/880ef765-24cc-41d0-828b-1b2a29153119 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41016 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41030 - "GET /api/v1/monitoring/logs/4d441ebc-3672-4aa9-a766-06389e54a7f2 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41044 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41060 - "GET /api/v1/monitoring/alert-rules/6ee8b02d-eae5-4843-8979-f3bce770e715 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41068 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41072 - "GET /api/v1/monitoring/alerts/2302c2f5-28c6-4dd2-9ac9-2819ee88fea3 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41088 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41102 - "GET /api/v1/monitoring/metrics/880ef765-24cc-41d0-828b-1b2a29153119/samples HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41112 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41122 - "GET /api/v1/monitoring/logs/4d441ebc-3672-4aa9-a766-06389e54a7f2/events HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41136 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41150 - "GET /api/v1/monitoring/alerts/2302c2f5-28c6-4dd2-9ac9-2819ee88fea3/notifications HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41164 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41168 - "PATCH /api/v1/monitoring/metrics/880ef765-24cc-41d0-828b-1b2a29153119 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41172 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41184 - "DELETE /api/v1/monitoring/alert-rules/6ee8b02d-eae5-4843-8979-f3bce770e715 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41190 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41198 - "PATCH /api/v1/monitoring/logs/4d441ebc-3672-4aa9-a766-06389e54a7f2 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41212 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41222 - "POST /api/v1/monitoring/metrics HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41236 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41240 - "POST /api/v1/monitoring/alert-rules HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:41242 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41258 - "POST /api/v1/monitoring/metrics HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:41266 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41276 - "GET /api/v1/monitoring/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41284 - "OPTIONS /api/v1/resource-management/data-sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41294 - "OPTIONS /api/v1/resource-management/data-sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41308 - "OPTIONS /api/v1/resource-management/data-sources HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:41314 - "OPTIONS /api/v1/resource-management/data-sources HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:41316 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41326 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41328 - "GET /api/v1/auth/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41336 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41340 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:41344 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41360 - "POST /api/v1/resource-management/data-sources HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:41364 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41368 - "GET /api/v1/resource-management/data-sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41378 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41392 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41398 - "POST /api/v1/monitoring/collectors HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41410 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41412 - "PATCH /api/v1/monitoring/collectors/e532445a-b8f4-4e4a-b845-891e6aa88bdf HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41420 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41436 - "GET /api/v1/auth/users HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41442 - "GET /api/v1/auth/audit HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41448 - "POST /api/v1/auth/workers HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41450 - "GET /api/v1/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41452 - "PATCH /api/v1/auth/users/055b8ef6-4573-49c1-9ba1-baf939ad6344/status HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:41464 - "POST /api/v1/access/departments HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41480 - "POST /api/v1/auth/users HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41492 - "POST /api/v1/auth/memberships HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41504 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41508 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41514 - "POST /api/v1/organizations HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41528 - "PATCH /api/v1/auth/memberships/f565397d-c1b3-4030-b360-dbcd1a8333c7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41540 - "GET /api/v1/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41548 - "GET /api/v1/auth/memberships HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41558 - "DELETE /api/v1/auth/memberships/f565397d-c1b3-4030-b360-dbcd1a8333c7 HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:41572 - "POST /api/v1/auth/users/8965713f-bc08-48c2-afca-e4995bf01649/password HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41586 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41590 - "PATCH /api/v1/auth/users/8965713f-bc08-48c2-afca-e4995bf01649/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41604 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41612 - "POST /api/v1/auth/workers HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41614 - "GET /api/v1/worker/whoami HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41622 - "GET /api/v1/auth/me HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41630 - "GET /api/v1/worker/whoami HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41636 - "DELETE /api/v1/auth/workers/45591a77-137f-44ae-820f-02ac2816a16e HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:41646 - "GET /api/v1/worker/whoami HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41660 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41662 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41678 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41684 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41686 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41702 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41708 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41724 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41732 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41742 - "POST /api/v1/auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41752 - "POST /api/v1/auth/login HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:41756 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41764 - "GET /api/v1/auth/audit HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41780 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41786 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41788 - "POST /api/v1/auth/workers HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41796 - "POST /api/v1/auth/workers HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41812 - "POST /api/v1/worker/claim HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41824 - "POST /api/v1/worker/claim HTTP/1.1" 413 Request Entity Too Large
+INFO:     127.0.0.1:41826 - "POST /api/v1/worker/claim HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:41828 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41840 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41854 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41866 - "PUT /api/v1/remote-probes/workers/4f6b87be-b2b3-487f-9f84-a8060ba6f4c1/network-policy HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:41882 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41886 - "PUT /api/v1/remote-probes/workers/4f6b87be-b2b3-487f-9f84-a8060ba6f4c1/network-policy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41902 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41910 - "PUT /api/v1/remote-probes/workers/66b0909b-4a9b-49e1-8f25-d6587f1e7db8/network-policy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41918 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41926 - "PUT /api/v1/remote-probes/collectors/7733b945-8e7a-43fa-90a1-e0819f07b0fb/assignment HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41940 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41946 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:41954 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41966 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41968 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41976 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:41980 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41990 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42002 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42014 - "POST /api/v1/worker/results HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:42018 - "POST /api/v1/worker/results HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:42020 - "POST /api/v1/worker/results HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:42028 - "POST /api/v1/worker/results HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:42034 - "POST /api/v1/worker/results HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:42048 - "POST /api/v1/worker/results HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:42062 - "POST /api/v1/worker/results HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:42070 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42072 - "GET /api/v1/remote-probes/jobs/753464e8-590f-4f26-a732-0537f14ad7cf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42088 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42092 - "GET /api/v1/remote-probes/jobs/753464e8-590f-4f26-a732-0537f14ad7cf HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:42108 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42116 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:42118 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42122 - "POST /api/v1/worker/results HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:56586 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56588 - "DELETE /api/v1/remote-probes/collectors/7733b945-8e7a-43fa-90a1-e0819f07b0fb/assignment HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:56590 - "DELETE /api/v1/auth/workers/4f6b87be-b2b3-487f-9f84-a8060ba6f4c1 HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:56600 - "POST /api/v1/worker/claim HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:56616 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56624 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56628 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56644 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56652 - "POST /api/v1/auth/workers HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56668 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56672 - "PUT /api/v1/remote-probes/workers/bb8f226a-8e92-425d-86bb-f2a7fdca0dbf/network-policy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56680 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56688 - "POST /api/v1/rule-catalogs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56690 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56704 - "POST /api/v1/rule-catalogs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56716 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56720 - "POST /api/v1/rule-catalogs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56726 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56732 - "POST /api/v1/rule-catalogs HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:56734 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56738 - "POST /api/v1/rule-catalogs HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:56748 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56752 - "GET /api/v1/rule-catalogs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56756 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56772 - "GET /api/v1/rule-catalogs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56784 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56798 - "POST /api/v1/rule-catalogs/590650e1-357e-4532-90bc-5d792b4f0910/versions HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56810 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56818 - "POST /api/v1/rule-catalogs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56832 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56838 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56840 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56842 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56844 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56846 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56848 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56856 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56868 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56884 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activations HTTP/1.1" 403 Forbidden
+INFO:     127.0.0.1:56898 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56900 - "POST /api/v1/data-sources/21bcf0f2-abe9-4343-b206-dca698fc2388/activations HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56912 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56922 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:56924 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56934 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56940 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56944 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56958 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56970 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56972 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56988 - "GET /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56996 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57006 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57008 - "POST /api/v1/worker/results HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:57014 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57028 - "POST /api/v1/remote-probes/jobs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:57038 - "POST /api/v1/worker/claim HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57044 - "POST /api/v1/worker/results HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:57060 - "POST /api/v1/worker/results HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:57064 - "POST /api/v1/worker/results HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:57080 - "POST /api/v1/worker/results HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:57090 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57094 - "GET /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/diagnostics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57098 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57114 - "GET /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/diagnostics HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57130 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57134 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/deactivation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57140 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57156 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/deactivation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57172 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57182 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activation-preview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57198 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57208 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/activations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57222 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57226 - "POST /api/v1/data-sources/bfff37c8-57aa-4490-8fa3-0c7d0a5a0b10/deactivation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48430 - "OPTIONS /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48430 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48430 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "GET /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/overview?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "OPTIONS /api/v1/unified/overview?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/unified/overview?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "OPTIONS /api/v1/unified/resources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&domain=ETL&limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/unified/resources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&domain=ETL&limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "GET /api/v1/unified/resources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&domain=ETL&limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/infrastructure/resources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&offset=0&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/domain-state/VM?limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/unified/domain-state/VM?limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "GET /api/v1/unified/domain-state/VM?limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/infrastructure/resources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&offset=0&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/operations/services?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/unified/domain-state/API?limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/domain-state/API?limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "GET /api/v1/operations/services?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48442 - "OPTIONS /api/v1/unified/alerts?limit=100&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/correlations?limit=100&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "OPTIONS /api/v1/unified/alerts?limit=100&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48530 - "OPTIONS /api/v1/unified/correlations?limit=100&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48530 - "GET /api/v1/unified/alerts?limit=100&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "GET /api/v1/unified/correlations?limit=100&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "OPTIONS /api/v1/unified/resources?domain=ETL&limit=200&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48530 - "OPTIONS /api/v1/unified/reports/ETL?start=2026-10-30T00%3A00%3A00Z&end=2026-11-07T00%3A00%3A00.000Z&limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/resources?domain=ETL&limit=200&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "OPTIONS /api/v1/unified/reports/ETL?start=2026-10-30T00%3A00%3A00Z&end=2026-11-07T00%3A00%3A00.000Z&limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/etl/executions?latest_only=true&organization_ids=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/unified/resources?domain=ETL&limit=200&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "GET /api/v1/unified/reports/ETL?start=2026-10-30T00%3A00%3A00Z&end=2026-11-07T00%3A00%3A00.000Z&limit=50&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=ETL&limit=200&offset=0&organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "OPTIONS /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "OPTIONS /api/v1/data-pipelines/catalogue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/resources?domain=VM&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "OPTIONS /api/v1/data-pipelines/integrations?search=&offset=0&limit=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "OPTIONS /api/v1/unified/resources?domain=ETL&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48456 - "OPTIONS /api/v1/unified/resources?domain=VM&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48554 - "OPTIONS /api/v1/data-pipelines/integrations?search=&offset=0&limit=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48530 - "GET /api/v1/data-pipelines/catalogue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/unified/resources?domain=ETL&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=VM&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48520 - "GET /api/v1/data-pipelines/integrations?search=&offset=0&limit=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48554 - "GET /api/v1/data-pipelines/catalogue HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/unified/resources?domain=VM&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/data-pipelines/integrations?search=&offset=0&limit=25 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=ETL&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "GET /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48452 - "OPTIONS /api/v1/notification-delivery?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "OPTIONS /api/v1/notification-delivery?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48554 - "GET /api/v1/notification-delivery?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48538 - "GET /api/v1/notification-delivery?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59444 - "OPTIONS /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "OPTIONS /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59444 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59444 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59468 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "OPTIONS /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59468 - "OPTIONS /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59480 - "GET /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "GET /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59480 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59480 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59460 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "OPTIONS /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59500 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59500 - "OPTIONS /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59500 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "OPTIONS /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59486 - "OPTIONS /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "OPTIONS /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "OPTIONS /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "GET /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "OPTIONS /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59534 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "GET /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "GET /api/v1/unified/resources?domain=VM&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "GET /api/v1/unified/resources?domain=API&limit=50&offset=0&search= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "OPTIONS /api/v1/unified/resources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "OPTIONS /api/v1/unified/resources?limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "OPTIONS /api/v1/monitoring/data-sources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59534 - "OPTIONS /api/v1/rule-catalogs?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "OPTIONS /api/v1/remote-probes/workers?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "OPTIONS /api/v1/rule-catalogs?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59546 - "OPTIONS /api/v1/monitoring/data-sources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59534 - "OPTIONS /api/v1/remote-probes/workers?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59502 - "GET /api/v1/unified/resources?limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "GET /api/v1/unified/resources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "GET /api/v1/monitoring/data-sources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "GET /api/v1/rule-catalogs?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59546 - "GET /api/v1/remote-probes/workers?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "GET /api/v1/monitoring/data-sources?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "GET /api/v1/rule-catalogs?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "GET /api/v1/remote-probes/workers?organization_id=9ccf0f47-c7ba-4294-b469-403b4312fc91 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "OPTIONS /api/v1/data-sources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9/activation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59518 - "OPTIONS /api/v1/data-sources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9/diagnostics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59510 - "GET /api/v1/data-sources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9/diagnostics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59520 - "GET /api/v1/data-sources/f0cc26cf-acf5-4009-8861-e94b44a1f6e9/activation HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "OPTIONS /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "OPTIONS /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "OPTIONS /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "OPTIONS /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "OPTIONS /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "OPTIONS /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "GET /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58364 - "OPTIONS /api/v1/auth/logout HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "GET /api/v1/unified/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "POST /api/v1/auth/logout HTTP/1.1" 204 No Content
+INFO:     127.0.0.1:58368 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58352 - "GET /api/v1/auth/customer-scope HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "OPTIONS /api/v1/access/boundaries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "OPTIONS /api/v1/access/roles HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "OPTIONS /api/v1/access/permissions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "OPTIONS /api/v1/access/customer-directory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "OPTIONS /api/v1/access/departments?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "OPTIONS /api/v1/access/employees?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "OPTIONS /api/v1/access/provider HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "OPTIONS /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "OPTIONS /api/v1/access/boundaries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "OPTIONS /api/v1/access/roles HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "OPTIONS /api/v1/access/permissions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "OPTIONS /api/v1/access/customer-directory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "OPTIONS /api/v1/access/departments?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "OPTIONS /api/v1/access/employees?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "OPTIONS /api/v1/access/provider HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/etl/executions?latest_only=true HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "OPTIONS /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "OPTIONS /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/access/departments?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "GET /api/v1/access/permissions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "GET /api/v1/access/customer-directory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "GET /api/v1/access/roles HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "GET /api/v1/access/employees?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "GET /api/v1/access/provider HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "GET /api/v1/access/boundaries HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "GET /api/v1/access/departments?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58392 - "GET /api/v1/access/permissions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58386 - "GET /api/v1/access/roles HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58378 - "GET /api/v1/access/customer-directory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58400 - "GET /api/v1/access/provider HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "GET /api/v1/access/employees?limit=200&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58368 - "GET /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "GET /api/v1/access/employees?limit=25&offset=0 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [309164]

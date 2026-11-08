@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "commands": [
+    {
+      "args": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "run",
+        "-d",
+        "--name",
+        "oc-etl003a-stage-6c231069",
+        "--tmpfs",
+        "/var/lib/postgresql/data",
+        "-p",
+        "127.0.0.1::5432",
+        "-e",
+        "POSTGRES_USER=opscontrol",
+        "-e",
+        "POSTGRES_PASSWORD=synthetic-local",
+        "-e",
+        "POSTGRES_DB=opscontrol",
+        "postgres:17-alpine"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "exec",
+        "oc-etl003a-stage-6c231069",
+        "psql",
+        "-U",
+        "opscontrol",
+        "-Atc",
+        "SELECT version()"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "0024_notification_leases"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "downgrade",
+        "0023_worker_heartbeat"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "0024_notification_leases"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "scripts/existing_database_upgrade_probe.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "args": [
+        "/workspace/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "scope": "staging migration and populated upgrade steps; HTTP/browser covered by hosted staging job separately"
+}

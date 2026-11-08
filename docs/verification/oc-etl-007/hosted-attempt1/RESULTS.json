@@ -1,0 +1,116 @@
+{
+  "status": "FAIL",
+  "source_sha": "2dbff3b9928b55f1ed39eedb9ea70d4312f597bc",
+  "working_tree_diff": [],
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "run",
+        "-d",
+        "--name",
+        "oc-etl002-97e0f5920a7b",
+        "--label",
+        "task=OC-ETL-002",
+        "--tmpfs",
+        "/var/lib/postgresql/data",
+        "-p",
+        "127.0.0.1::5432",
+        "-e",
+        "POSTGRES_PASSWORD",
+        "-e",
+        "POSTGRES_DB=etl_scope",
+        "postgres:17-alpine"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard",
+      "exit_code": 0,
+      "log": "postgres-start.log"
+    },
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "port",
+        "oc-etl002-97e0f5920a7b",
+        "5432/tcp"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard",
+      "exit_code": 0,
+      "log": "postgres-port.log"
+    },
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "inspect",
+        "--format",
+        "{{.Id}} {{.Image}}",
+        "oc-etl002-97e0f5920a7b"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard",
+      "exit_code": 0,
+      "log": "postgres-identity.log"
+    },
+    {
+      "command": [
+        "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "head"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend",
+      "exit_code": 0,
+      "log": "migration-upgrade.log"
+    },
+    {
+      "command": [
+        "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "check"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend",
+      "exit_code": 0,
+      "log": "migration-model-check.log"
+    },
+    {
+      "command": [
+        "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "scripts.etl_rollback_probe"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend",
+      "exit_code": 0,
+      "log": "rollback-preservation.log"
+    },
+    {
+      "command": [
+        "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "tests.test_etl_workflow_scope",
+        "tests.test_etl_workflow_foundation",
+        "tests.test_etl_dag_concurrency",
+        "tests.test_etl_native_binding_contract",
+        "tests.test_etl_binding_lifecycle",
+        "tests.test_etl_authority_writer",
+        "tests.test_etl_workflow_ui",
+        "tests.test_sprint08_rbac",
+        "-v"
+      ],
+      "cwd": "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/backend",
+      "exit_code": 1,
+      "log": "regressions.log"
+    }
+  ],
+  "container": "oc-etl002-97e0f5920a7b",
+  "identity": "f29aae99e7bf2fbfc5be09db80ade9600285bb1119764dbb766607966dad9cd7 sha256:aac5ed9e090c8b3e134bf1dcf3f9fe0787a29cecdf7867de8b53b5d8abc3eef2",
+  "remaining_container": false,
+  "cleanup_exit": 0,
+  "api_stopped": true,
+  "ui_stopped": true,
+  "volumes": "tmpfs only; rm -v scoped to owned container",
+  "production_or_uat_access": false
+}

@@ -34,6 +34,23 @@ class PreservedDowngradeTests(unittest.TestCase):
             "0038_k8s_cluster_associations",
         )
 
+    def test_central_guard_requires_recovery_guidance(self):
+        message = "Unsafe populated ETL downgrade blocked before DDL: workflows. Take a verified full backup and rehearse isolated restoration"
+        assert_preserved_downgrade(
+            subprocess.CompletedProcess([], 1, stderr=message), "0039", "0039"
+        )
+        for error, revision in (
+            (message, "0038"),
+            ("Unsafe populated ETL downgrade blocked before DDL", "0039"),
+        ):
+            with self.subTest(error=error, revision=revision):
+                with self.assertRaises(AssertionError):
+                    assert_preserved_downgrade(
+                        subprocess.CompletedProcess([], 1, stderr=error),
+                        "0039",
+                        revision,
+                    )
+
     def test_unknown_failure_or_changed_revision_is_not_preservation(self):
         for returncode, stderr, after in (
             (0, "", "0031_in_app_notifications"),

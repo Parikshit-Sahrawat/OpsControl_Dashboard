@@ -1,0 +1,14 @@
+# Contract and acceptance gaps
+
+| ID / requirement | Status | Evidence and precise missing contract | Next bounded prerequisite |
+|---|---|---|---|
+| WF-004-G1 / ETL-02 | BLOCKED_ARCHITECTURE | WorkflowCreate/Update support timezone/weekdays/windows/duration/SLA, but no frequency/recurrence/holiday calendar field. Resource polling frequency_seconds is not Workflow recurrence. | Owner/architecture supplies approved recurrence and calendar/DST/occurrence semantics; versioned backend contract and tests before a UI control |
+| WF-004-G2 / ETL-03 | BLOCKED_ARCHITECTURE | WorkflowJobCreate/Update expose expected_duration_seconds, no separate long-running threshold or approved override precedence. | Approve threshold semantics/precedence and persist through supported API/schema without overwriting historical runtime expectations |
+| WF-004-G3 / ETL-03/15 | BLOCKED_ARCHITECTURE | Workflow child is JobOrder; PipelineAssociation.job_id refers to PipelineJob with method/generation fences. There is no WorkflowJob write contract binding them. Hostname is not a native Job ID and no automatic grouping/reparenting is allowed. | Define a non-destructive native PipelineJob→Workflow Job bridge reusing generation-bound source ownership, canonical resource IDs and tenant constraints; preserve legacy records |
+| WF-004-G4 / ETL-02/15 | BLOCKED_ARCHITECTURE / EXTERNAL | Persisted Workflow.active and Job.monitoring_enabled are settings, not proof of source-bound Workflow activation or certified connectivity. No authoritative Workflow activation/operational readiness contract exists. | Establish activation prerequisites and evidence-backed state machine; certify actual source connectivity separately. Current API reports BLOCKED/UNVERIFIED; never infer healthy from save |
+| WF-004-G5 / ETL-15 | NOT IMPLEMENTED in this slice | Full Workflow occurrences, completeness and outcome/health derivation still require B03/B05/B06 native observations and policy semantics. | Implement approved lifecycle after binding/occurrence contracts; preserve monitoring-only behavior |
+| WF-004-G6 / all new UI | OWNER_ACCEPTANCE_PENDING / INDEPENDENT_UAT_PENDING | Controlled fixtures, authenticated browser and PostgreSQL verification are technical evidence, not owner approval or genuine provider certification. | Owner review and separately authorized independent/provider UAT |
+
+The existing shared scope and DAG safeguards are verified for the supported write paths. These gaps are not waived and do not invalidate unrelated nine controlled owner approvals. Next recommended task: approve and implement only the native Job binding and Workflow readiness contract (G3/G4), before presenting active monitoring. Calendar/frequency and threshold definitions require their own recovered authority. No workload execution, scheduling, retry or termination is permitted.
+
+CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.
