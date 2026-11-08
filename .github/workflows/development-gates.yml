@@ -97,7 +97,10 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Reject failed, cancelled, missing or skipped mandatory results
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
         run: python scripts/ci/require_success.py
+      - name: Verify consolidated artifact inventory and immutable source provenance
+        run: python docs/verification/sprint1-integration/validate_evidence.py
