@@ -49,6 +49,7 @@ try {
  await p.screenshot({path:out+'/feature-directory-desktop.png',fullPage:false});checks.push('Approved single-panel category/subcategory/leaf navigation, multiple expansions, keyboard arrows/Home/End and no flyout');
 
  for(const w of [1366,1440,1920,768,390])await shot(p,'admin-resources',w);
+ for(const [width,height] of [[1920,1080],[1440,900],[1366,768]]){await p.setViewportSize({width,height});await p.screenshot({path:out+'/admin-desktop-'+width+'x'+height+'.png',fullPage:false});shots.push('admin-desktop-'+width+'x'+height+'.png');}
  phase='accessibility checks';await p.setViewportSize({width:1366,height:768});const accessibility=await p.evaluate(()=>{const ids=[...document.querySelectorAll('[id]')].map(e=>e.id);const visible=e=>!!e.getClientRects().length;const controls=[...document.querySelectorAll('.workspace-filters input,.workspace-filters select,.workspace-filters button,#primary-navigation button')].filter(visible);return {duplicateIds:ids.filter((id,i)=>ids.indexOf(id)!==i),unnamedControls:controls.filter(e=>!(e.getAttribute('aria-label')||e.textContent.trim()||[...(e.labels||[])].some(l=>l.textContent.trim()))).map(e=>e.outerHTML.slice(0,150)),brokenControls:controls.filter(e=>e.hasAttribute('aria-controls')&&!document.getElementById(e.getAttribute('aria-controls'))).map(e=>e.getAttribute('aria-controls')),checkedControls:controls.length,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches};});assert.deepEqual(accessibility.duplicateIds,[]);assert.deepEqual(accessibility.unnamedControls,[]);assert.deepEqual(accessibility.brokenControls,[]);await writeFile(out+'/accessibility-checks.json',JSON.stringify({status:'PASS',...accessibility,limitations:'Targeted labels/IDREF/keyboard/layout checks; not comprehensive WCAG or assistive-technology certification'},null,2));checks.push('Targeted accessible names, unique IDs, valid control references and keyboard focus checks');
  phase='global resource search';await p.setViewportSize({width:1366,height:950});
  await p.keyboard.press('ControlOrMeta+k');let search=p.getByRole('dialog',{name:'Find a resource',exact:true});await search.waitFor();
@@ -98,6 +99,13 @@ try {
  await p.goto(process.env.V16_UI_URL+'/#/pipelines/incidents');assert.equal(await p.getByText('Incident Correlation',{exact:true}).count(),0);
  const vtoken=await viewer.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));const denied=await viewer.request.patch(base+'/api/v1/resource-management/data-sources/'+resources[0].data_source_id,{headers:{Authorization:'Bearer '+vtoken,'X-OpsControl-Customers':f.organization_id},data:{name:'viewer forbidden'}});assert.equal(denied.status(),403);
  checks.push('Retired incident route cannot render management UI; viewer mutation still403 on actual API');
+ phase='default theme and explicit persistence';
+ const theme=await browser.newPage({colorScheme:'dark',viewport:{width:1440,height:900}});
+ await theme.goto(process.env.V16_UI_URL);await theme.getByLabel('Username',{exact:true}).waitFor();
+ assert.equal(await theme.evaluate(()=>document.documentElement.dataset.theme),'light','Default remains approved light theme even on a dark OS');
+ await theme.getByRole('button',{name:'Dark theme',exact:true}).click();await theme.reload();await theme.getByLabel('Username',{exact:true}).waitFor();assert.equal(await theme.evaluate(()=>document.documentElement.dataset.theme),'dark');
+ await theme.getByRole('button',{name:'Light theme',exact:true}).click();await theme.close();
+ checks.push('Actual theme component defaults light on dark OS and persists explicit dark choice through reload');
  phase='session transport fault and authoritative revocation';
  await p.route('**/api/v1/auth/me', route=>route.abort('failed'));
  await p.reload();await p.getByLabel('Username',{exact:true}).waitFor();
