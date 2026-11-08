@@ -2,7 +2,7 @@
 """Disposable Sprint 3 controlled HTTPS Carte lifecycle and real browser gate."""
 import json, os, secrets, shutil, socket, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
-from fixture_ports import claim_port, https_port
+from fixture_ports import claim_port
 ROOT=Path(__file__).resolve().parents[1];PYTHON=str(ROOT/'backend/.venv/bin/python')
 OUT=Path(os.getenv('ETL_EVIDENCE_DIR',str(ROOT/'docs/screenshots/etl')))
 private=Path(tempfile.mkdtemp(prefix='opscontrol-etl-'));private.chmod(0o700)
@@ -51,8 +51,11 @@ try:
     # no request is ever redirected to a pre-existing service.
     for address, port in [('127.0.0.1',11432),('127.0.0.1',18800),('127.0.0.1',15174)]:
         claim_port(address, port)
-    fixture_port = https_port(host, int(os.getenv('ETL_FIXTURE_PORT', '0')))
-    env['ETL_FIXTURE_PORT'] = str(fixture_port)
+    # Worker protocol deliberately requires443. Only the Docker daemon claims
+    # this privileged port; unprivileged Python must not pre-bind it. Docker
+    # publishes exclusively and fails closed if another service owns it.
+    fixture_port = 443
+    env['ETL_FIXTURE_PORT'] = '443'
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT/'fixture-binding.json').write_text(json.dumps({'address':host, 'host_port':fixture_port, 'container_port':443, 'scheme':'https', 'certificate_verification':True}, indent=2))
     import ipaddress
