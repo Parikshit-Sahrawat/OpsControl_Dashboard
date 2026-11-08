@@ -1,0 +1,35 @@
+name: "OC Dev - Tier F - Independent Release Readiness - Manual Gated"
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        type: string
+        required: true
+      approval_ref:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  release-readiness:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Deny absent approvals and independent gates
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          APPROVAL_REF: ${{ inputs.approval_ref }}
+          PHASE: ${{ vars.OC_RELEASE_PHASE }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$PHASE" = SPRINT10_APPROVED
+          python scripts/ci/release_authorization.py --sha "$SOURCE_SHA" --record "$APPROVAL_REF" --operation release-readiness
+          python scripts/uat/verify_publish.py "$SOURCE_SHA"

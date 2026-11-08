@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/oc-ci-main/scripts/ci/scan_image.py", line 110, in <module>
+    scan(sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3]))
+  File "/tmp/oc-ci-main/scripts/ci/scan_image.py", line 38, in scan
+    capture([str(tools / "grype"), "db", "update"], output / "grype-db-update.log")
+  File "/tmp/oc-ci-main/scripts/ci/scan_image.py", line 18, in capture
+    raise RuntimeError("Scanner command failed: " + args[0])
+RuntimeError: Scanner command failed: /tmp/oc-ci-scanners/grype

@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+  "remote_main_base": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+  "overall": "PARTIAL_BLOCKED",
+  "local_checks": {
+    "final-postgres-api-browser": {
+      "command": [
+        "backend/.venv/bin/python",
+        "scripts/v16-acceptance.py"
+      ],
+      "cwd": "/tmp/oc-ci-main",
+      "exit_code": 1,
+      "elapsed_seconds": 99.13,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-postgres-api-browser.txt"
+    },
+    "final-backend": {
+      "command": [
+        "../backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "/tmp/oc-ci-main/backend",
+      "exit_code": 0,
+      "elapsed_seconds": 3.07,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-backend.txt"
+    },
+    "final-frontend-build": {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "/tmp/oc-ci-main/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 2.04,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-frontend-build.txt"
+    },
+    "final-workflow-lint": {
+      "command": [
+        "bash",
+        "scripts/check-workflows.sh"
+      ],
+      "cwd": "/tmp/oc-ci-main",
+      "exit_code": 0,
+      "elapsed_seconds": 2.65,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-workflow-lint.txt"
+    },
+    "final-frontend-lint": {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "cwd": "/tmp/oc-ci-main/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 1.22,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-frontend-lint.txt"
+    },
+    "final-frontend-tests": {
+      "command": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/tmp/oc-ci-main/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 0.62,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-frontend-tests.txt"
+    },
+    "final-controller": {
+      "command": [
+        "backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "/tmp/oc-ci-main",
+      "exit_code": 0,
+      "elapsed_seconds": 0.42,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-controller.txt"
+    },
+    "final-stage-b": {
+      "command": [
+        "backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/uat",
+        "-p",
+        "test_stage_b.py",
+        "-v"
+      ],
+      "cwd": "/tmp/oc-ci-main",
+      "exit_code": 0,
+      "elapsed_seconds": 0.27,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-stage-b.txt"
+    },
+    "final-policy": {
+      "command": [
+        "backend/.venv/bin/python",
+        "scripts/ci/policy.py"
+      ],
+      "cwd": "/tmp/oc-ci-main",
+      "exit_code": 0,
+      "elapsed_seconds": 0.27,
+      "tested_implementation_sha": "2b8eba401fdf13992593a9ccd9a4398ca400465d",
+      "environment_overrides": {
+        "PLAYWRIGHT_NODEJS_PATH": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint08_rbac",
+        "V16_STAGING_PRESERVATION": "1",
+        "V16_BACKUP_RESTORE": "1",
+        "V16_SPRINT08_ACCEPTANCE": "1",
+        "V16_API_ACCEPTANCE": "1",
+        "V16_BROWSER_ACCEPTANCE": "1",
+        "V16_SCOPE_ACCEPTANCE": "1",
+        "V16_EVIDENCE_DIR": "/tmp/oc-ci-committed-integration",
+        "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+        "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+      },
+      "log": "final-policy.txt"
+    }
+  },
+  "counts": {
+    "controller_total": 90,
+    "controller_pass": 90,
+    "new_ci_tests_included_not_additional": 23,
+    "stage_b_pass": 12,
+    "frontend_pass": 38,
+    "backend_total": 552,
+    "backend_pass": 332,
+    "backend_skip": 220,
+    "backend_fail": 0,
+    "real_postgres_pass": 98,
+    "real_postgres_fail": 0,
+    "real_postgres_skip": 0,
+    "http_group_pass": 23,
+    "browser_existing_workflow_pass": 1,
+    "browser_authorization_group_pass": 5,
+    "browser_scope_rejection_pass": 0,
+    "browser_scope_rejection_fail": 1
+  },
+  "database": {
+    "version": "17.11",
+    "tables_compared": 100,
+    "backup_restore": "PASS",
+    "original_content_and_normalized_schema_unchanged": true,
+    "populated_downgrade_refusal": "PASS_IN_EARLIER_BASELINE; final later guard step NOT RUN after browser scope failure"
+  },
+  "security": {
+    "image_matches": {
+      "Critical": 4,
+      "High": 32,
+      "Medium": 27,
+      "Low": 2
+    },
+    "installed_environment_python_advisory_records": 10,
+    "npm_full_graph_moderate_records": 4,
+    "licenses": "PENDING_ACCOUNTABLE_REVIEW",
+    "seven_role_hosted_candidate_scan": "NOT_RUN_LOCALLY; one existing local PostgreSQL identity scanned"
+  },
+  "hosted_ci": "NOT_TRIGGERED_YET; trigger-and-exit at handoff; no completion polling authorized",
+  "release_gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "limitations": [
+    "Source/test inventory existence is not successful execution",
+    "Configured gates are baseline integration, not full S01-D1-D4 qualification",
+    "Main still exposes excluded incident UI; real rejection test FAIL",
+    "New required-check binding/effective branch protection needs admin review",
+    "No real provider, formal UAT, deployment, signing or image publication",
+    "No removal/deduplication of UNKNOWN suites",
+    "Repeated checks are not additive test counts"
+  ],
+  "documentation_validation": {
+    "status": "PASS",
+    "json_files_parsed": 73,
+    "markdown_relative_links": "PASS",
+    "source_hashes": "PASS",
+    "scope_execution_rows": 657,
+    "scope_id_uniqueness": "PASS",
+    "source_and_workflow_paths": "PASS",
+    "command_sha_consistency": "PASS",
+    "preserved_failure_statuses": "PASS",
+    "limitations": "Checks do not validate recovered requirement authority, full assertion equivalence, hosted CI or release eligibility."
+  }
+}

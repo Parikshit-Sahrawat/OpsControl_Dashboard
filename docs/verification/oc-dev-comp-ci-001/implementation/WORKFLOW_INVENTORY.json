@@ -1,0 +1,2597 @@
+{
+  "schema": 1,
+  "workflows": [
+    {
+      "path": ".github/workflows/access-architecture.yml",
+      "name": "Customer ownership and internal access acceptance",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "access-rbac",
+          "check_name": "access-rbac",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Prepare locked frontend, backend and isolated browser tooling",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/access-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/access-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Backend and frontend automated tests and build",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Populated migration, provider/department/customer security and actual browser journeys",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/access-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Clean owned Docker demo build, idempotency and restart",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/access-docker-demo.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload actual browser captures and redacted migration/security evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/agent-packaging.yml",
+      "name": "Agent native packaging",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "linux_runtime_url": {
+              "description": "Approved HTTPS Linux x64 runtime archive URL (Contrib 0.123.0)",
+              "required": "true"
+            },
+            "windows_runtime_url": {
+              "description": "Approved HTTPS Windows x64 runtime archive URL (Contrib 0.123.0)",
+              "required": "true"
+            },
+            "windows_archive_sha256": {
+              "description": "Independently verified Windows archive SHA-256",
+              "required": "true"
+            },
+            "linux_archive_sha256": {
+              "description": "Independently verified Linux archive SHA-256",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "id": "package",
+          "check_name": "package",
+          "runner": "${{ matrix.os }}",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Linux package",
+              "uses": null,
+              "command": "[[ \"$RUNTIME_URL\" == https://* ]] || exit 1\n[[ \"$ARCHIVE_SHA\" =~ ^[0-9a-fA-F]{64}$ ]] || exit 1\ncurl --fail --proto '=https' --tlsv1.2 \"$RUNTIME_URL\" -o /tmp/runtime.tar.gz\necho \"$ARCHIVE_SHA  /tmp/runtime.tar.gz\" | sha256sum -c -\nmkdir /tmp/runtime\ntar -xzf /tmp/runtime.tar.gz -C /tmp/runtime\npython scripts/build-agent-package.py --os linux --runtime /tmp/runtime/otelcol-contrib --sha256 \"$(sha256sum /tmp/runtime/otelcol-contrib | cut -d' ' -f1)\" --output opscontrol-agent-linux.zip\nbash -n agent/install-linux.sh agent/uninstall-linux.sh\n",
+              "working_directory": null,
+              "condition": "runner.os == 'Linux'"
+            },
+            {
+              "name": "Windows EXE package",
+              "uses": null,
+              "command": "if (-not $env:RUNTIME_URL.StartsWith('https://')) { throw 'HTTPS required' }\nif ($env:ARCHIVE_SHA -notmatch '^[0-9a-fA-F]{64}$') { throw 'SHA-256 required' }\nInvoke-WebRequest $env:RUNTIME_URL -OutFile \"$env:TEMP\\runtime.tar.gz\"\nif ((Get-FileHash \"$env:TEMP\\runtime.tar.gz\" -Algorithm SHA256).Hash.ToLowerInvariant() -ne $env:ARCHIVE_SHA.ToLowerInvariant()) { throw 'Archive checksum mismatch' }\nNew-Item -ItemType Directory \"$env:TEMP\\runtime\"\ntar -xzf \"$env:TEMP\\runtime.tar.gz\" -C \"$env:TEMP\\runtime\"\nif (-not (Test-Path \"${env:ProgramFiles(x86)}\\Inno Setup 6\\ISCC.exe\")) { choco install innosetup --yes --no-progress; if ($LASTEXITCODE) { throw \"Inno Setup installation failed\" } }\n$runtime = \"$env:TEMP\\runtime\\otelcol-contrib.exe\"\n& agent/packaging/build-windows.ps1 -Runtime $runtime -RuntimeSha256 (Get-FileHash $runtime -Algorithm SHA256).Hash\n",
+              "working_directory": null,
+              "condition": "runner.os == 'Windows'"
+            },
+            {
+              "name": "Native Windows source and executable checks",
+              "uses": null,
+              "command": "foreach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {\n  $tokens=$null; $errors=$null\n  [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null\n  if ($errors.Count) { throw \"PowerShell parse failed: $file\" }\n}\n& agent/packaging/stage/OpsControlService.exe --help\nif (-not (Test-Path agent/packaging/output/OpsControlAgent-1.5.0-Windows-x64.exe)) { throw 'Compiled installer missing' }\n",
+              "working_directory": null,
+              "condition": "runner.os == 'Windows'"
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/arch001-native-monitoring.yml",
+      "name": "ARCH-001 native monitoring",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "native-monitoring",
+          "check_name": "native-monitoring",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Prepare pinned dependencies",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/arch-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/arch-browser/node_modules/.bin/playwright\" install --with-deps chromium\ndocker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker create --name arch-runtime --network none otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker cp arch-runtime:/otelcol-contrib \"$RUNNER_TEMP/otelcol-contrib\"\ndocker rm arch-runtime\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Full units and production frontend",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Actual TLS Agent and native engines",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/arch001-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Browser and tenant acceptance",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/arch001-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload actual redacted evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/aws-ec2-live-acceptance.yml",
+      "name": "AWS EC2 Read-Only Field Acceptance",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "aws_account_id": {
+              "description": "Authorized 12-digit disposable sandbox AWS account",
+              "required": "true"
+            },
+            "aws_region": {
+              "description": "Region containing a disposable test instance",
+              "required": "true",
+              "default": "ap-south-1"
+            },
+            "instance_id": {
+              "description": "Authorized sandbox EC2 instance ID",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "id": "read-only-ec2",
+          "check_name": "read-only-ec2",
+          "runner": "ubuntu-latest",
+          "permissions": {
+            "contents": "read",
+            "id-token": "write"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Acquire short-lived AWS identity using restricted GitHub OIDC role",
+              "uses": "aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Exercise actual instance health and CloudWatch APIs",
+              "uses": null,
+              "command": "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install 'boto3>=1.35,<2'\nPYTHONPATH=. python scripts/aws_live_acceptance.py \\\n  --account \"$APPROVED_ACCOUNT\" \\\n  --region \"$APPROVED_REGION\" \\\n  --instance-id \"$APPROVED_INSTANCE\" \\\n  --evidence-output \"$RUNNER_TEMP/aws-evidence.json\"\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Upload genuine provider evidence after acceptance",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ci-policy.yml",
+      "name": "CI scope and workflow integrity",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "scope-policy",
+          "check_name": "scope-policy",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python -m pip install PyYAML==6.0.2",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Every workflow, test scope and negative security contracts",
+              "uses": null,
+              "command": "bash scripts/check-workflows.sh\npython scripts/ci/policy.py\npython -m unittest discover -s tests -p 'test_ci_*.py' -v\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/consolidated-uat.yml",
+      "name": "Consolidated manual UAT and managed telemetry",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "managed-telemetry-uat",
+          "check_name": "managed-telemetry-uat",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Prepare dependencies and pinned upstream Collector",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/uat-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/uat-browser/node_modules/.bin/playwright\" install --with-deps chromium\ndocker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker create --name uat-binary --network none otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker cp uat-binary:/otelcol-contrib \"$RUNNER_TEMP/otelcol-contrib\"\ndocker rm uat-binary\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Focused suites and production build",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\nbash -n agent/install-linux.sh\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Populated migration, real TLS OTel reception and actual browser journeys",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/uat/acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload redacted runtime evidence and screenshots",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/demo-smoke.yml",
+      "name": "Public-Safe One-Command Demo Smoke",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "demo-localhost",
+          "check_name": "demo-localhost",
+          "runner": "ubuntu-latest",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build/start synthetic demo (single command)",
+              "uses": null,
+              "command": "bash scripts/demo-up.sh",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify local-only API, fictional organization and random login",
+              "uses": null,
+              "command": "python3 - <<'PY'\nimport json,time,urllib.request,urllib.error,pathlib\napi='http://127.0.0.1:8000'\nui='http://127.0.0.1:5173'\nfor n in range(75):\n    try:\n        urllib.request.urlopen(api+'/openapi.json',timeout=3).close()\n        urllib.request.urlopen(ui+'/',timeout=3).close()\n        break\n    except Exception:\n        time.sleep(2)\nelse:raise AssertionError('Demo frontend/API never became healthy')\npassword=pathlib.Path('.demo-private/admin-password').read_text().strip()\nassert len(password)>=20 and password!='admin'\nbody=json.dumps({'username':'demo-admin','password':password}).encode()\nreq=urllib.request.Request(api+'/api/v1/auth/login',body,\n    {'Content-Type':'application/json'},method='POST')\nwith urllib.request.urlopen(req,timeout=10) as response:\n    token=json.load(response)['access_token']\nreq=urllib.request.Request(api+'/api/v1/auth/me',\n    headers={'Authorization':'Bearer '+token})\nwith urllib.request.urlopen(req,timeout=10) as response:\n    identity=json.load(response)\nassert identity['all_customers_authorized'], 'Demo administrator lacks explicit ALL authority'\nreq=urllib.request.Request(api+'/api/v1/organizations',\n    headers={'Authorization':'Bearer '+token,\n             'X-OpsControl-Customers':'ALL'})\nwith urllib.request.urlopen(req,timeout=10) as response:\n    orgs=json.load(response)\nassert any(x['code']=='DEMO-LAB' for x in orgs),orgs\nassert all('example' in x['name'].lower() or 'fictional' in x['name'].lower() for x in orgs),orgs\nprint('PUBLIC-SAFE LOCALHOST DEMO SMOKE PASSED')\nPY\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Assert database has no published port and UI/API bind only loopback",
+              "uses": null,
+              "command": "python3 - <<'PY'\nimport json,subprocess\nconfig=json.loads(subprocess.check_output([\n    'docker','compose','-f','docker-compose.demo.yml','config','--format','json']))\nassert not config['services']['postgres'].get('ports'), 'Database publishes a host port'\nfor name in ('api','frontend'):\n    ports=config['services'][name].get('ports',[])\n    assert ports and all(p.get('host_ip')=='127.0.0.1' for p in ports),(name,ports)\nprint('Demo exposed only on loopback; PostgreSQL private.')\nPY\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Stop disposable demo and delete test credentials",
+              "uses": null,
+              "command": "docker compose -f docker-compose.demo.yml logs --tail=50 || true\ndocker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true\nrm -rf .demo-private\n",
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/development-gates.yml",
+      "name": "Real component development gates",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "real-postgres-migration",
+          "check_name": "real-postgres-migration",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Existing backend requirements",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Real disposable PostgreSQL contracts",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/v16-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "app-api-browser",
+          "check_name": "app-api-browser",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Existing backend requirements",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Locked frontend and pinned Playwright",
+              "uses": null,
+              "command": "echo \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/ci-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/ci-browser/node_modules/.bin/playwright\" install --with-deps chromium\necho \"PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e \"import {chromium} from '$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())\")\" >> \"$GITHUB_ENV\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Real disposable PostgreSQL contracts and authenticated browser",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/v16-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "sprint-evidence",
+          "check_name": "sprint-evidence",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [
+            "real-postgres-migration",
+            "app-api-browser"
+          ],
+          "condition": "always()",
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Reject failed, cancelled, missing or skipped mandatory results",
+              "uses": null,
+              "command": "python scripts/ci/require_success.py",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/egress-firewall-smoke.yml",
+      "name": "Network-Layer Egress Firewall Test",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "isolated-docker-bridge",
+          "check_name": "isolated-docker-bridge",
+          "runner": "ubuntu-latest",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify actual restricted Docker network behavior",
+              "uses": null,
+              "command": "bash scripts/verify-firewall-docker.sh",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Validate NetworkPolicy manifest exists and is scoped",
+              "uses": null,
+              "command": "test -f deploy/examples/remote-agent-networkpolicy.yaml\ngrep -q 'policyTypes:' deploy/examples/remote-agent-networkpolicy.yaml\necho \"Manifest inspection is not a live CNI enforcement test.\"\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/etl-acceptance.yml",
+      "name": "Controlled Pentaho ETL monitoring acceptance",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "etl",
+          "check_name": "etl",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install backend, frontend and isolated browser tools",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/etl-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/etl-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "ETL source and schedule boundaries, provider regression and frontend build",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m scripts.etl_unit_probe)\n(cd backend && .venv/bin/python -m scripts.provider_unit_probe)\nnpm run build --prefix frontend\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Authenticated TLS lifecycle, source/host evidence, alerts and actual browser tests",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/etl-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload ETL browser captures and redacted runtime evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/http-golden-path.yml",
+      "name": "HTTP monitoring golden path",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "golden-path",
+          "check_name": "golden-path",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install frontend and isolated browser tools",
+              "uses": null,
+              "command": "cd frontend\nnpm ci --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/golden-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/golden-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Run real HTTPS lifecycle and browser assertions",
+              "uses": null,
+              "command": "scripts/http-golden-path.sh",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload actual screenshots and redacted database/audit evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/infrastructure-acceptance.yml",
+      "name": "Controlled infrastructure monitoring acceptance",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "infrastructure",
+          "check_name": "infrastructure",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install backend, frontend and isolated browser tools",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/infra-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/infra-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Backend boundaries and frontend build",
+              "uses": null,
+              "command": ".venv/bin/python -m scripts.infrastructure_unit_probe\n.venv/bin/python -m scripts.provider_unit_probe\n.venv/bin/python -m scripts.deep_checks_probe\nnpm run build --prefix ../frontend\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Scoped discovery, activation, health, alerts and actual browser tests",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/infrastructure-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload infrastructure evidence with explicit origins",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/live-http-alert-recovery.yml",
+      "name": "Live Private HTTPS Alert and Recovery",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "real-tls-evidence-alert",
+          "check_name": "real-tls-evidence-alert",
+          "runner": "ubuntu-latest",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Start isolated disposable API and PostgreSQL",
+              "uses": null,
+              "command": "set -euo pipefail\nmkdir -p .demo-private\nchmod 700 .demo-private\numask 077\npython3 - <<'PY'\nimport pathlib,secrets\npathlib.Path(\".demo-private/admin-password\").write_text(secrets.token_urlsafe(32))\nPY\nif ! docker pull public.ecr.aws/docker/library/postgres:17; then\n  # Public ECR occasionally rate-limits anonymous CI. Use the same\n  # official PostgreSQL 17 image from Docker Hub for this disposable lab.\n  docker pull postgres:17\n  docker tag postgres:17 public.ecr.aws/docker/library/postgres:17\nfi\ndocker compose -f docker-compose.demo.yml up --build -d postgres api\nfor i in {1..75}; do\n  if curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null; then break; fi\n  sleep 2\ndone\ncurl -fsS http://127.0.0.1:8000/openapi.json >/dev/null\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Launch TLS target and outbound-only agent on separate isolated networks",
+              "uses": null,
+              "command": "set -euo pipefail\nmkdir -p /tmp/opscontrol-fixture\nopenssl req -x509 -newkey rsa:2048 -nodes -days 1 \\\n  -keyout /tmp/opscontrol-fixture/tls.key -out /tmp/opscontrol-fixture/tls.crt \\\n  -subj '/CN=portal.example.test' -addext 'subjectAltName=DNS:portal.example.test' >/dev/null 2>&1\nchmod 600 /tmp/opscontrol-fixture/tls.key\necho healthy >/tmp/opscontrol-fixture/state\ndocker network create --internal --subnet 172.28.77.0/24 opscontrol-fixture-target-net\ndocker network create --internal --subnet 172.28.78.0/24 opscontrol-fixture-control-net\napi_id=\"$(docker compose -f docker-compose.demo.yml ps -q api)\"\ndocker network connect --alias opscontrol-control opscontrol-fixture-control-net \"$api_id\"\ndocker run -d --name opscontrol-private-fixture --network opscontrol-fixture-target-net \\\n  --ip 172.28.77.10 --network-alias portal.example.test \\\n  -v /tmp/opscontrol-fixture:/fixture:ro \\\n  -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\" \\\n  python:3.12-alpine python /app.py\ndocker run -d --name opscontrol-private-agent --network opscontrol-fixture-target-net \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e SSL_CERT_FILE=/fixture/ca.crt -e PYTHONPATH=/src \\\n  python:3.12-alpine sleep 3600\ndocker network connect opscontrol-fixture-control-net opscontrol-private-agent\nfor i in {1..20}; do\n  if docker exec opscontrol-private-fixture python -c \\\n      'import socket;socket.create_connection((\"127.0.0.1\",443),1).close()' 2>/dev/null; then break; fi\n  sleep 1\ndone\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify real healthy \u2192 failed \u2192 recovered evidence and native alert lifecycle",
+              "uses": null,
+              "command": "set -euo pipefail\napi_id=\"$(docker compose -f docker-compose.demo.yml ps -q api)\"\ntoken=\"$(docker exec \"$api_id\" python -m scripts.live_https_acceptance setup)\"\ntest -n \"$token\"\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance healthy\necho failed >/tmp/opscontrol-fixture/state\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance schedule\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance failed\necho healthy >/tmp/opscontrol-fixture/state\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance schedule\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance recovered\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Assert network-level containment",
+              "uses": null,
+              "command": "set -euo pipefail\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-target-net)\" = true\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-control-net)\" = true\ndocker exec opscontrol-private-agent python -c 'import socket\ns=socket.socket();s.settimeout(2)\ntry:\n    s.connect((\"1.1.1.1\",443))\n    raise AssertionError(\"Unapproved internet egress unexpectedly allowed\")\nexcept (OSError,TimeoutError):\n    print(\"PASS: private agent has no public network egress\")'\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Cleanup and purge synthetic secrets",
+              "uses": null,
+              "command": "docker rm -f opscontrol-private-agent opscontrol-private-fixture || true\ndocker network rm opscontrol-fixture-target-net opscontrol-fixture-control-net || true\ndocker compose -f docker-compose.demo.yml logs --tail=80 api || true\ndocker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true\nrm -rf /tmp/opscontrol-fixture .demo-private\n",
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/local-uat-auto-deploy.yml",
+      "name": "Publish verified UAT release (hosted only)",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "source_sha": {
+              "description": "Approved immutable main SHA",
+              "required": "true",
+              "type": "string"
+            },
+            "approval_ref": {
+              "description": "Committed release authorization record ID",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "id": "publish",
+          "check_name": "publish",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "write",
+            "packages": "write",
+            "id-token": "write",
+            "attestations": "write",
+            "checks": "read",
+            "pull-requests": "read"
+          },
+          "needs": [],
+          "condition": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.OC_UAT_PUBLISH_ENABLED == 'true'",
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify exact current main and approved PR",
+              "uses": null,
+              "command": "set -euo pipefail\ncurrent=$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq '.commit.sha')\ntest \"$current\" = \"$GITHUB_SHA\"\ntest \"$APPROVED_SHA\" = \"$GITHUB_SHA\"\npython3 scripts/ci/release_authorization.py --sha \"$APPROVED_SHA\" --record \"$APPROVAL_REF\" --operation publish\npython3 scripts/uat/verify_publish.py \"$GITHUB_SHA\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Normalize image prefix",
+              "uses": null,
+              "command": "echo \"prefix=ghcr.io/${GITHUB_REPOSITORY,,}\" >> \"$GITHUB_OUTPUT\"",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build and publish backend",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build and publish frontend",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Create release manifest",
+              "uses": null,
+              "command": "python3 scripts/uat/create_release.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Attest exact manifest bytes",
+              "uses": "actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Publish release asset",
+              "uses": null,
+              "command": "set -euo pipefail\ntest \"$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq '.commit.sha')\" = \"$GITHUB_SHA\"\ngh release create \"uat-$GITHUB_SHA\" release.json --repo \"$GITHUB_REPOSITORY\" \\\n  --target \"$GITHUB_SHA\" --title \"UAT release $GITHUB_SHA\" --notes 'Signed UAT release manifest; deployment controlled by local policy.'\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/local-uat-image-validation.yml",
+      "name": "Validate UAT application images (no deploy)",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "image-validation",
+          "check_name": "image-validation",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "CI policy test dependency",
+              "uses": null,
+              "command": "python -m pip install PyYAML==6.0.2",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Controller security and recovery regressions",
+              "uses": null,
+              "command": "python3 -m unittest discover -s tests -v",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build backend locally on hosted runner (no push)",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build frontend locally on hosted runner (no push)",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify collector binary, API and worker module entrypoints",
+              "uses": null,
+              "command": "set -euo pipefail\ndocker run --rm --entrypoint /usr/local/bin/otelcol-contrib opscontrol-uat-backend:validation --version | tee /tmp/collector-version.txt\ngrep -F '0.123.0' /tmp/collector-version.txt\ndocker run --rm --entrypoint python opscontrol-uat-backend:validation -c '\nimport os, importlib, pathlib\nassert os.environ[\"OPSCONTROL_OTEL_BINARY\"] == \"/usr/local/bin/otelcol-contrib\"\nassert pathlib.Path(os.environ[\"OPSCONTROL_OTEL_BINARY\"]).is_file()\nimportlib.import_module(\"scripts.run_api\")\nimportlib.import_module(\"scripts.run_collector_worker\")\nprint(\"PASS: API and worker entrypoint modules import\")\n'\ndocker run --rm --entrypoint nginx opscontrol-uat-frontend:validation -t\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Disposable worker readiness and recovery acceptance",
+              "uses": null,
+              "command": "docker tag opscontrol-uat-backend:validation opscontrol-uat-api:latest\npython3 scripts/uat/disposable_worker_acceptance.py\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Confirm images were not published or deployed",
+              "uses": null,
+              "command": "echo \"PASS: hosted runner only; build push=false; no deployment job or self-hosted runner.\"\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/operational-acceptance.yml",
+      "name": "Synthetic operational dashboard acceptance",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "noc",
+          "check_name": "noc",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Prepare virtual environment and isolated browser tools",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/noc-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/noc-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Provider boundaries and frontend build",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m scripts.etl_unit_probe)\n(cd backend && .venv/bin/python -m scripts.infrastructure_unit_probe)\n(cd backend && .venv/bin/python -m scripts.provider_unit_probe)\n(cd backend && .venv/bin/python -m scripts.deep_checks_probe)\nnpm run build --prefix frontend\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Populated migrations, synthetic monitoring, tenancy and browser regression",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/operational-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload actual browser captures and redacted database evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/phase1-staging.yml",
+      "name": "OpsControl Security Release Gate",
+      "triggers": {
+        "push": {
+          "branches": [
+            "docs/sdlc-phase-1"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "staging-smoke",
+          "check_name": "staging-smoke",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install backend dependencies",
+              "uses": null,
+              "command": "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install -r backend/requirements.txt",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Compile and import backend",
+              "uses": null,
+              "command": "python -m compileall -q app migrations\npython -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('mapper/app import OK')\"\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Apply migrations against disposable PostgreSQL",
+              "uses": null,
+              "command": "# Exercise reversible revisions before the protected access upgrade.\n# The populated preservation probe in the next step applies HEAD.\nalembic upgrade 0024_notification_leases\nalembic current\nalembic downgrade -1\nalembic upgrade 0024_notification_leases\nalembic current\npython - <<'PY'\nfrom sqlalchemy import inspect\nfrom app.db.session import engine\ntables = set(inspect(engine).get_table_names())\nrequired = {\"organizations\", \"data_sources\", \"collectors\", \"metric_definitions\", \"monitoring_templates\", \"monitoring_template_attachments\", \"metric_samples\"}\nrequired |= {\"users\", \"access_sessions\", \"organization_memberships\", \"auth_throttle_buckets\", \"security_audit_events\", \"worker_identities\", \"remote_probe_jobs\", \"remote_probe_evidence\", \"monitoring_rule_catalogs\", \"monitoring_rule_versions\", \"monitoring_activations\", \"monitoring_rule_bindings\"}\nassert required <= tables, f\"Missing tables: {required - tables}\"\nprint(f\"Migration smoke OK; {len(tables)} tables\")\nPY\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Preserve existing organization and data source through incremental migrations",
+              "uses": null,
+              "command": "python scripts/existing_database_upgrade_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Start API and check HTTP endpoints",
+              "uses": null,
+              "command": "uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/opscontrol-api.log 2>&1 &\necho $! > /tmp/opscontrol-api.pid\npython - <<'PY'\nimport json, time, urllib.request\nfor i in range(30):\n    try:\n        with urllib.request.urlopen(\"http://127.0.0.1:8000/openapi.json\", timeout=2) as r:\n            payload=json.load(r)\n            assert \"/api/v1/organizations\" in payload[\"paths\"]\n            print(\"API startup/OpenAPI OK\")\n            break\n    except Exception:\n        if i == 29: raise\n        time.sleep(1)\nPY\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Assert identity and tenant isolation against disposable PostgreSQL",
+              "uses": null,
+              "command": "python scripts/auth_tenant_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Assert nested metric, log, and alert authorization boundaries",
+              "uses": null,
+              "command": "python scripts/deep_tenant_security_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Assert throttling, audit, revocation and worker credentials",
+              "uses": null,
+              "command": "python scripts/security_release_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Reject DNS rebinding, metadata, and unsafe targets",
+              "uses": null,
+              "command": "python scripts/test_remote_egress.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Assert secure remote dispatch and evidence ingestion",
+              "uses": null,
+              "command": "python scripts/remote_protocol_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify read-only EC2, Kubernetes and Pentaho collectors with offline fakes",
+              "uses": null,
+              "command": "python scripts/provider_unit_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify Pentaho Carte read-only history persistence and deduplication",
+              "uses": null,
+              "command": "python scripts/phase2_pentaho_persistence_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify production credential references and secret redaction policy",
+              "uses": null,
+              "command": "python scripts/secrets_provider_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify read-only Linux/Apache/Tomcat collectors and unsafe-config rejection",
+              "uses": null,
+              "command": "python scripts/deep_checks_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify separate rules \u2192 activation \u2192 remote run \u2192 alerts end-to-end",
+              "uses": null,
+              "command": "python scripts/phase2_activation_probe.py",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": "Verify expired-session cleanup maintenance command",
+              "uses": null,
+              "command": "python -m scripts.prune_security_sessions",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Run frontend for browser evidence",
+              "uses": null,
+              "command": "npm ci --no-audit --no-fund\nnpm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &\necho $! > /tmp/opscontrol-vite.pid\n",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Capture authenticated React UI with Playwright",
+              "uses": null,
+              "command": "npm install --no-save --no-audit --no-fund playwright@1.56.1\nnpx playwright install --with-deps chromium\nnode scripts/capture_phase1_ui.mjs\n",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Assert homepage live clock behavior",
+              "uses": null,
+              "command": "node scripts/test_world_clock.mjs",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Verify authenticated HTTP onboarding and rule/activation UI",
+              "uses": null,
+              "command": "node scripts/test_monitoring_setup.mjs",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Assert platform-admin navigation is role-restricted",
+              "uses": null,
+              "command": "node scripts/test_access_management.mjs",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Upload API logs and tenant evidence",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "frontend-build",
+          "check_name": "frontend-build",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install and build frontend",
+              "uses": null,
+              "command": "npm ci --no-audit --no-fund\nnpm run build\n",
+              "working_directory": "frontend",
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/pipeline-v16.yml",
+      "name": "ARCH-001 V1.6 pipeline ownership",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "pipeline-contracts",
+          "check_name": "pipeline-contracts",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install existing locked backend tools",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Static and focused transport checks",
+              "uses": null,
+              "command": "backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py\nbackend/.venv/bin/ruff check backend/app/data_pipelines\nmake test-pipeline-v16\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Protected V1.5 monitoring regressions",
+              "uses": null,
+              "command": ".venv/bin/python -m unittest tests.test_unified_monitoring tests.test_unified_v15_contracts tests.test_pipeline_runtime_v15 tests.test_pipeline_adapters tests.test_native_incidents_v15 tests.test_access_control tests.test_remote_auth -v\n",
+              "working_directory": "backend",
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/private-https-acceptance.yml",
+      "name": "Private HTTPS Target Acceptance",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "private-https",
+          "check_name": "private-https",
+          "runner": "ubuntu-latest",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Create isolated private-network HTTPS fixture",
+              "uses": null,
+              "command": "set -euo pipefail\nmkdir -p /tmp/opscontrol-fixture\nopenssl req -x509 -newkey rsa:2048 -nodes -days 1             -keyout /tmp/opscontrol-fixture/tls.key             -out /tmp/opscontrol-fixture/tls.crt             -subj \"/CN=portal.example.test\"             -addext \"subjectAltName=DNS:portal.example.test\" >/dev/null 2>&1\nchmod 600 /tmp/opscontrol-fixture/tls.key\necho healthy > /tmp/opscontrol-fixture/state\ndocker network create --driver bridge --internal --subnet 172.28.77.0/24 opscontrol-private-fixture\ndocker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\"             python:3.12-alpine python /app.py\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Probe real private TLS target and detect incident",
+              "uses": null,
+              "command": "set -euo pipefail\nfor i in {1..20}; do\n  if docker exec opscontrol-private-target python -c 'import socket;socket.create_connection((\"127.0.0.1\",443),1).close()' 2>/dev/null; then break; fi\n  sleep 1\ndone\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify real TLS Carte-shaped read-only execution lifecycle",
+              "uses": null,
+              "command": "set -euo pipefail\necho running > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py RUNNING\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py UNKNOWN\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Check private network is isolated at Docker layer",
+              "uses": null,
+              "command": "set -euo pipefail\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-private-fixture)\" = true\ndocker run --rm --network opscontrol-private-fixture python:3.12-alpine             python -c 'import socket\ns=socket.socket();s.settimeout(2)\ntry:\n    s.connect((\"1.1.1.1\",443))\n    raise AssertionError(\"Outside-network egress unexpectedly permitted\")\nexcept (OSError,TimeoutError):\n    print(\"PASS: external egress blocked at Docker network layer\")'\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Cleanup",
+              "uses": null,
+              "command": "docker rm -f opscontrol-private-target || true\ndocker network rm opscontrol-private-fixture || true\nrm -rf /tmp/opscontrol-fixture\n",
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/release-readiness.yml",
+      "name": "Independent release readiness (manual, no publish)",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "source_sha": {
+              "type": "string",
+              "required": "true"
+            },
+            "approval_ref": {
+              "type": "string",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "id": "release-readiness",
+          "check_name": "release-readiness",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read",
+            "checks": "read",
+            "pull-requests": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Deny absent approvals and independent gates",
+              "uses": null,
+              "command": "test \"$GITHUB_REF\" = refs/heads/main\ntest \"$PHASE\" = SPRINT10_APPROVED\npython scripts/ci/release_authorization.py --sha \"$SOURCE_SHA\" --record \"$APPROVAL_REF\" --operation release-readiness\npython scripts/uat/verify_publish.py \"$SOURCE_SHA\"\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/release-reliability.yml",
+      "name": "Controlled release reliability and deployment",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "restore-retention-tls",
+          "check_name": "restore-retention-tls",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install existing locked frontend and backend dependencies",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/release-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/release-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Offline security regression",
+              "uses": null,
+              "command": "(cd backend && .venv/bin/python -m unittest discover -s tests -v)",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Non-root runtime image under a restrictive checkout umask",
+              "uses": null,
+              "command": "chmod -R go-rwx backend/app backend/scripts\ndocker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend\ndocker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print(\"Non-root read-only runtime imports PASS\")'\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Populated restore, bounded retention, multi-process recovery and actual TLS ingress",
+              "uses": null,
+              "command": "backend/.venv/bin/python scripts/release-acceptance.py",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload redacted acceptance ledger",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/security-artifacts.yml",
+      "name": "Digest-bound image SBOM and licence evidence",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "image-evidence",
+          "check_name": "image-evidence",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify and install locked official scanner binaries",
+              "uses": null,
+              "command": "python scripts/ci/install_scanners.py \"$RUNNER_TEMP/scanners\"",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Obtain isolated candidate only, never push or deploy",
+              "uses": null,
+              "command": "set -euo pipefail\nif [[ -n \"$IMAGE\" ]]; then\n  docker pull \"$IMAGE\"\n  docker tag \"$IMAGE\" \"opscontrol-ci-$ROLE:scan\"\nelse\n  args=()\n  if [[ -n \"$TARGET\" ]]; then args+=(--target \"$TARGET\"); fi\n  docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt \"${args[@]}\" -f \"$DOCKERFILE\" -t \"opscontrol-ci-$ROLE:scan\" \"$CONTEXT\"\nfi\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "CycloneDX, OS/transitive scan, licence inventory and provenance gate",
+              "uses": null,
+              "command": "python scripts/ci/scan_image.py \"opscontrol-ci-$ROLE:scan\" \"$RUNNER_TEMP/image-evidence\" \"$RUNNER_TEMP/scanners\"",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "security-sbom",
+          "check_name": "security-sbom",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [
+            "image-evidence"
+          ],
+          "condition": "always()",
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python scripts/ci/require_success.py",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/security-validation.yml",
+      "name": "Security and Dependency Validation",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "python-dependency-audit",
+          "check_name": "python-dependency-audit",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install vulnerability scanner",
+              "uses": null,
+              "command": "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install \"pip-audit>=2.9,<3\"",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Check published Python dependency advisories",
+              "uses": null,
+              "command": "mkdir -p /tmp/python-audit\nresult=0\npython -m pip_audit -r backend/requirements-providers.txt -r backend/requirements-hosts.txt --strict --format json --output /tmp/python-audit/runtime.json || result=1\npython -m pip_audit -r backend/requirements-dev.txt --strict --format json --output /tmp/python-audit/development.json || result=1\nexit \"$result\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "frontend-dependency-audit",
+          "check_name": "frontend-dependency-audit",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install locked frontend dependencies",
+              "uses": null,
+              "command": "npm ci --no-audit --no-fund",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": "Check production dependency advisories",
+              "uses": null,
+              "command": "mkdir -p /tmp/npm-audit\nresult=0\nnpm audit --omit=dev --audit-level=moderate --json > /tmp/npm-audit/runtime.json || result=1\nnpm audit --audit-level=moderate --json > /tmp/npm-audit/all.json || result=1\nexit \"$result\"\n",
+              "working_directory": "frontend",
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "secret-history-scan",
+          "check_name": "secret-history-scan",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/stage-b-uat.yml",
+      "name": "Stage B branch-aware UAT (manual, disabled until pilot)",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "operation": {
+              "description": "record_main, deploy_feature, release, deploy_main, feature_mode, maintenance",
+              "type": "choice",
+              "required": "true",
+              "options": [
+                "record_main",
+                "deploy_feature",
+                "release",
+                "deploy_main",
+                "feature_mode",
+                "maintenance"
+              ]
+            },
+            "source_branch": {
+              "description": "Exact reviewed feature branch (deploy_feature only)",
+              "type": "string"
+            },
+            "source_sha": {
+              "description": "Immutable 40-character commit SHA; latest branch tip",
+              "type": "string"
+            },
+            "approval_ref": {
+              "description": "Approved UAT change record",
+              "type": "string",
+              "required": "true"
+            },
+            "migration_review_ref": {
+              "description": "Independent migration review record, when migrations differ",
+              "type": "string"
+            },
+            "migration_approver": {
+              "description": "Independent migration reviewer, when migrations differ",
+              "type": "string"
+            },
+            "backup_path": {
+              "description": "UAT-owned verified backup path, when migrations differ",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "id": "authorize",
+          "check_name": "authorize",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true'",
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Require committed exact-SHA authorization before any build or privileged host",
+              "uses": null,
+              "command": "python3 scripts/ci/release_authorization.py --sha \"$SOURCE_SHA\" --record \"$APPROVAL_REF\" --operation \"$OPERATION\"\npython3 scripts/uat/verify_publish.py \"$SOURCE_SHA\"\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        },
+        {
+          "id": "build",
+          "check_name": "build",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read",
+            "checks": "read",
+            "packages": "write"
+          },
+          "needs": "authorize",
+          "condition": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true' && (inputs.operation == 'deploy_feature' || inputs.operation == 'deploy_main')",
+          "steps": [
+            {
+              "name": "Guard pilot and immutable source",
+              "uses": null,
+              "command": "test \"$ENABLED\" = true\n[[ \"$SOURCE_SHA\" =~ ^[0-9a-f]{40}$ ]]\nif [[ \"$OPERATION\" = deploy_main ]]; then\n  branch=main\nelse\n  branch=\"$SOURCE_BRANCH\"\n  [[ \"$branch\" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$ ]]\n  [[ \"$branch\" != main && \"$branch\" != *..* && \"$branch\" != *//* ]]\nfi\nremote=$(gh api \"repos/$GITHUB_REPOSITORY/git/ref/heads/$branch\" --jq .object.sha)\ntest \"$remote\" = \"$SOURCE_SHA\"\ngh api --paginate --slurp \"repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/check-suites?per_page=100\" > \"$RUNNER_TEMP/stage-b-check-suites.json\"\npython3 - \"$RUNNER_TEMP/stage-b-check-suites.json\" <<'PY'\nimport json\nimport sys\nitems=[item for page in json.load(open(sys.argv[1])) for item in page['check_suites']]\nif not items or any(item['status']!='completed' or item['conclusion']!='success' for item in items):\n    raise SystemExit('Source SHA requires completed successful GitHub check suites')\nPY\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify checkout and image names",
+              "uses": null,
+              "command": "test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"\necho \"prefix=ghcr.io/${GITHUB_REPOSITORY,,}\" >> \"$GITHUB_OUTPUT\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Verify reviewed source revision and migration digest",
+              "uses": null,
+              "command": "test -f backend/Dockerfile.uat\ntest -f frontend/Dockerfile.demo\nhash=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)\necho \"hash=$hash\" >> \"$GITHUB_OUTPUT\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build immutable backend image on isolated hosted runner",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build immutable frontend image on isolated hosted runner",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        },
+        {
+          "id": "operate",
+          "check_name": "operate",
+          "runner": [
+            "self-hosted",
+            "Linux",
+            "X64",
+            "opscontrol-stage-b-uat"
+          ],
+          "permissions": {
+            "contents": "read",
+            "packages": "read"
+          },
+          "needs": [
+            "authorize",
+            "build"
+          ],
+          "condition": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true' && needs.authorize.result == 'success' && always() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.operation != 'deploy_feature' && inputs.operation != 'deploy_main'))",
+          "steps": [
+            {
+              "name": "Refuse unconfigured or unapproved runner",
+              "uses": null,
+              "command": "test \"$ENABLED\" = true\ntest \"$RUNNER_MARKER\" = opscontrol-stage-b-uat\ntest -f /etc/opscontrol/stage-b-runner-approved\ntest -n \"$STAGE_B_UAT_BASE_COMPOSE\"\ntest -n \"$STAGE_B_UAT_STATE_DIR\"\ntest -n \"$STAGE_B_UAT_PROJECT\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Require configured independent environment protection",
+              "uses": null,
+              "command": "reviewers=$(gh api \"repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration\" --jq '[.protection_rules[]? | select(.type == \"required_reviewers\")] | length')\ntest \"$reviewers\" -ge 1\nself_review=$(gh api \"repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration\" --jq '.prevent_self_review')\ntest \"$self_review\" = true\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Require trusted deployment source",
+              "uses": null,
+              "command": "current=$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq .commit.sha)\ntest \"$(git rev-parse HEAD)\" = \"$current\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Operate only the owned UAT project",
+              "uses": null,
+              "command": "set -euo pipefail\nexport STAGE_B_AUTH_SMOKE=\"$GITHUB_WORKSPACE/scripts/uat/stage_b_smoke.py\"\nargs=(--state-dir \"$STAGE_B_UAT_STATE_DIR\" --approval-ref \"$APPROVAL_REF\" --request \"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\")\ncase \"$OPERATION\" in\n  record_main) python3 scripts/uat/stage_b_deploy.py record-main \"${args[@]}\" --sha \"$SOURCE_SHA\" ;;\n  release) python3 scripts/uat/stage_b_deploy.py release \"${args[@]}\" ;;\n  feature_mode) python3 scripts/uat/stage_b_deploy.py feature-mode \"${args[@]}\" ;;\n  maintenance) python3 scripts/uat/stage_b_deploy.py maintenance \"${args[@]}\" ;;\n  deploy_feature|deploy_main)\n    branch=\"$SOURCE_BRANCH\"\n    if [[ \"$OPERATION\" = deploy_main ]]; then branch=main; fi\n    docker_config=$(mktemp -d)\n    chmod 700 \"$docker_config\"\n    trap 'rm -rf -- \"$docker_config\"' EXIT\n    export DOCKER_CONFIG=\"$docker_config\"\n    printf '%s' \"$GH_TOKEN\" | docker login ghcr.io --username \"$GITHUB_ACTOR\" --password-stdin >/dev/null\n    python3 scripts/uat/stage_b_deploy.py deploy \"${args[@]}\" \\\n      --project \"$STAGE_B_UAT_PROJECT\" --base-compose \"$STAGE_B_UAT_BASE_COMPOSE\" \\\n      --branch \"$branch\" --sha \"$SOURCE_SHA\" \\\n      --backend-image \"$IMAGE_PREFIX-backend@$BACKEND_DIGEST\" \\\n      --frontend-image \"$IMAGE_PREFIX-frontend@$FRONTEND_DIGEST\" \\\n      --migration-hash \"$MIGRATION_HASH\" \\\n      --migration-review-ref \"$MIGRATION_REVIEW_REF\" \\\n      --migration-approver \"$MIGRATION_APPROVER\" \\\n      --backup \"$BACKUP_PATH\" --backup-root \"$STAGE_B_UAT_BACKUP_ROOT\" \\\n      --api-url \"$STAGE_B_UAT_API_URL\" --frontend-url \"$STAGE_B_UAT_FRONTEND_URL\"\n    ;;\n  *) exit 2 ;;\nesac\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Upload sanitized deployment status",
+              "uses": null,
+              "command": "if [[ -n \"${STAGE_B_STATE_DIR:-}\" && -f \"$STAGE_B_STATE_DIR/state.json\" ]]; then\n  python3 - \"$STAGE_B_STATE_DIR/state.json\" \"$RUNNER_TEMP/stage-b-status.json\" <<'PY'\nimport json,sys\nstate=json.load(open(sys.argv[1]))\nfor field in ('failed_attempt','inflight'):\n    state.pop(field,None)\nwith open(sys.argv[2],'w') as out: json.dump(state,out)\nPY\nfi\n",
+              "working_directory": null,
+              "condition": "always()"
+            },
+            {
+              "name": null,
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/stage-b-validation.yml",
+      "name": "Stage B UAT deployment contract validation",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "contracts",
+          "check_name": "contracts",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Deployment state and migration safety contracts",
+              "uses": null,
+              "command": "python -m unittest discover -s scripts/uat -p test_stage_b.py -v",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Python syntax and whitespace",
+              "uses": null,
+              "command": "python -m compileall -q scripts/uat/stage_b_state.py scripts/uat/stage_b_deploy.py scripts/uat/stage_b_smoke.py\ngit diff --check\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Existing pinned workflow contract check",
+              "uses": null,
+              "command": "bash scripts/check-workflows.sh",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/v15-quality.yml",
+      "name": "ARCH-001 V1.5 continuous quality",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "verification",
+          "check_name": "verification",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": "Configure runner-local evidence and tool paths",
+              "uses": null,
+              "command": "echo \"OPSCONTROL_TEST_EVIDENCE_DIR=$RUNNER_TEMP/v15-quality\" >> \"$GITHUB_ENV\"\necho \"PRETTIER_BIN=$RUNNER_TEMP/v15-tools/node_modules/.bin/prettier\" >> \"$GITHUB_ENV\"\necho \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/v15-tools/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\necho \"OPSCONTROL_OTEL_BINARY=$RUNNER_TEMP/otelcol-contrib\" >> \"$GITHUB_ENV\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Validate workflow contracts",
+              "uses": null,
+              "command": "bash scripts/check-workflows.sh",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Install locked runtime and development tools",
+              "uses": null,
+              "command": "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/v15-tools\" --no-audit --no-fund prettier@3.5.3 playwright@1.56.1\n\"$RUNNER_TEMP/v15-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Extract digest-pinned actual OTel runtime",
+              "uses": null,
+              "command": "python verification/dev052/provision_contrib.py --output \"$OPSCONTROL_OTEL_BINARY\"\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Build digest-pinned Linux Agent package",
+              "uses": null,
+              "command": "bash scripts/build-demo-agent.sh",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Formatting, lint, frontend build",
+              "uses": null,
+              "command": "make test-quality",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Unit and Agent lifecycle checks",
+              "uses": null,
+              "command": "make test-unit\nmake test-agent\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Actual disposable PostgreSQL, TLS Agent, OTel and browser UAT",
+              "uses": null,
+              "command": "make test-e2e",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Canonical Pentaho PostgreSQL, preservation, RBAC and six-page regression",
+              "uses": null,
+              "command": "make test-pentaho",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Independent Access and controlled legacy workflow regressions",
+              "uses": null,
+              "command": "bash scripts/test-quality.sh compatibility",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Authorization and dependency vulnerability checks",
+              "uses": null,
+              "command": "make test-security",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Cache backend Docker build layers",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Cache frontend Docker build layers",
+              "uses": "docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Configure smoke build cache inputs",
+              "uses": null,
+              "command": "cat > \"$RUNNER_TEMP/v15-build-cache.yml\" <<'CACHE'\nservices:\n  api:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  worker:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  frontend:\n    build:\n      cache_from: [opscontrol-v15-frontend-cache:latest]\nCACHE\n",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Mandatory owned Docker build, startup, migrations and authentication smoke",
+              "uses": null,
+              "command": "make test-docker",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Measure and report critical-module coverage",
+              "uses": null,
+              "command": "make test-coverage",
+              "working_directory": null,
+              "condition": "always()"
+            },
+            {
+              "name": "Preserve redacted results and screenshots",
+              "uses": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+              "command": null,
+              "working_directory": null,
+              "condition": "always()"
+            }
+          ]
+        },
+        {
+          "id": "windows-source-checks",
+          "check_name": "windows-source-checks",
+          "runner": "windows-2022",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": "Compile Agent source and parse Windows installers",
+              "uses": null,
+              "command": "python -m compileall -q agent\nif ($LASTEXITCODE) { throw 'Agent Python compilation failed' }\nforeach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {\n  $tokens=$null; $errors=$null\n  [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null\n  if ($errors.Count) { throw \"PowerShell parse failed: $file\" }\n}\n",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/validation.yml",
+      "name": "OpsControl Validation",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "id": "backend-validation",
+          "check_name": "backend-validation",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && pip install -r requirements-providers.txt -r requirements-hosts.txt",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python -m compileall -q app migrations",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python -m unittest discover -s tests -v",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python -m scripts.export_api_inventory /tmp/opscontrol-api-inventory.json",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('SQLAlchemy mapper validation passed')\"",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        },
+        {
+          "id": "frontend-validation",
+          "check_name": "frontend-validation",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [],
+          "condition": null,
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "npm ci",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "npm test",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "npm run lint",
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "npm run build",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        },
+        {
+          "id": "unit-and-build",
+          "check_name": "unit-and-build",
+          "runner": "ubuntu-24.04",
+          "permissions": {
+            "contents": "read"
+          },
+          "needs": [
+            "backend-validation",
+            "frontend-validation"
+          ],
+          "condition": "always()",
+          "steps": [
+            {
+              "name": null,
+              "uses": "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              "command": null,
+              "working_directory": null,
+              "condition": null
+            },
+            {
+              "name": null,
+              "uses": null,
+              "command": "python scripts/ci/require_success.py",
+              "working_directory": null,
+              "condition": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": "Commands and workflow definitions, not proof of execution or release clearance."
+}

@@ -70,7 +70,7 @@ try {
       .getByRole("navigation", { name: "Primary navigation" })
       .getByRole("button", { name: "Incidents", exact: true })
       .count(),
-    1,
+    0,
   );
   await nav("Data Pipeline Monitoring");
   await page
