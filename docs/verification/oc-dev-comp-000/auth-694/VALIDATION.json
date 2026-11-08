@@ -1,0 +1,35 @@
+{
+  "task": "OC-AUTH-694-REG",
+  "status": "PASS documentation registration only",
+  "commands": [
+    {
+      "command": [
+        "backend/.venv/bin/python",
+        "docs/planning/authority/validate_records.py"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "docs/planning/authority",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0
+    }
+  ],
+  "focused_tests": 9,
+  "original_source_artifact": "SOURCE_NOT_RECOVERED",
+  "existing_authority_schema": "No global AUTH-ID schema/register found; introduced stdlib contract validator, not a generic JSON Schema engine",
+  "production_code_schema_config_changes": false,
+  "main_modified": false,
+  "original_approval_url_timestamp_signature": "NOT_SUPPLIED, none invented",
+  "gates_unchanged": true,
+  "approval_is_not_implementation_or_certification": true
+}

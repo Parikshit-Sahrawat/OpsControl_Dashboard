@@ -32,3 +32,7 @@ The phases are governance gates, not a prohibition on iterative development. Wor
 - Avoid production credentials and customer data in public repository documents.
 - No application behavior changes are included in this documentation PR.
 - Do not merge until scope, priorities, acceptance criteria, and security constraints are reviewed.
+
+## Global development test policy — owner update 2026-11-08
+
+The [mandatory development test policy](../policies/MANDATORY_DEVELOPMENT_TEST_POLICY.md) applies to the entire OpsControl product and OC-DEV-COMP-000 onward. Development requires real applicable component-boundary testing before acceptance; formal owner UAT remains later. No main merge before final development-completion integration review and explicit approval. Historical reports are not rewritten or retroactively certified.

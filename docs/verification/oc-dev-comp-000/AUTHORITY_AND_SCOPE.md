@@ -1,0 +1,17 @@
+# Authority, supersession and scope
+
+Sprint0 review date:2026-11-08 Asia/Calcutta. Application baseline `ffe5ac285ab8aef33a1139bce6f3da79be3d6d33`, tested harness `d4c5e8e24b7c9d3c62fa35a5c6ea87ec75e43e79`.
+
+
+AUTH-694 registration completed at `24cc0bdeae8f2cf2b761e79ae35b03547bc758f4`: [record](../../planning/authority/AUTH-694.v1.json), [index](../../planning/authority/REGISTER.md), [reconciliation](../../planning/authority/AUTH-694_RECONCILIATION.v1.json), [registration evidence](auth-694/REPORT.md). Owner-provided OptionA/Round110 decision is authoritative for registration, APPROVED/CURRENT product-wide. The original ChatGPT repository artifact remains SOURCE_NOT_RECOVERED; no URL/timestamp/signature invented. Implementation NOT_VERIFIED, certification NOT_CERTIFIED, owner UAT PENDING. Registration version1 is not a fabricated original document version. AUTH-491=B and AUTH-495=C preserved; local/assumed closure does not establish provider-verified external closure.
+
+31 included journey slots remain; Journey20 Service Catalog excluded,32 Kubernetes/container observability skipped.30 included numbered definitions unrecovered;33 licensing/lifecycle partially recovered. Current14-step tracker labels were owner-supplied in OC-DEV-002C supplement and referenced from PR82, not recovered original questionnaire canonical wording. The approved program's Sprint0–10 labels do not replace those definitions. Missing historical authority through694 is not fabricated. Canonical requirement IDs remain in Development Completion Register; no competing requirement catalogue.
+
+Current final scope: Windows/Linux host/process/service, current/historical performance, selected processes, API, read-only Pentaho, Email/PagerDuty, background alert lifecycle/correlation/recovery/notifications, multi-organization controls and approved central PostgreSQL spool architecture. Excluded:ServiceNow, incident UI, SFTP, cloud object-storage/S3 monitoring, Kubernetes workloads and Pentaho mutation/dispatch/scheduling/retry controls. OpsControl deployment on Kubernetes remains permitted. Data/history/guards are preserved. No product removals/behavior changes in Sprint0.
+
+Scope conflicts observed: main's Incidents navigation/NativeIncidents page is active despite current exclusion; notifications worker has EMAIL/IN_APP/DEST paths but no dedicated PagerDuty branch; release fixtures still assert retired ITSM rejection. That passing old-behavior test does not satisfy current PagerDuty inclusion or incident-UI exclusion. Existing background alert/correlation state/history must be retained while UI is retired in an approved implementation sprint. No active SFTP/object-storage adapter was identified in inspected app paths; semantic payload/route absence still requires execution evidence before any exclusion certification.
+
+Approved program additionally supplies Pentaho raw logs default7days after completion, prompt unrelated-data disposal and minimized longer-lived structured evidence under legal holds/deletion governance. Current baseline report says ETL/audit history retained indefinitely; raw-versus-structured/hold enforcement remains a source/design gap for Sprint6, not silently corrected here. All nine owner-acceptance selections Pending; historical controlled approvals unchanged; D07/D08 not implicitly resolved by a program summary.
+
+
+**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO · formal owner UAT PENDING · development closure NOT COMPLETE.**
