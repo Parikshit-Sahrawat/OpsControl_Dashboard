@@ -30,6 +30,10 @@ class APIApplicability(BaseModel):
 
 
 def parse_applicability(value):
+    if not isinstance(value, dict):
+        raise ValueError("Applicability manifest must be an object")
+    if type(value.get("schema_version")) is not int:
+        raise ValueError("Applicability schema_version must be an integer")
     return (
         APIApplicability if value.get("family") == "API" else Applicability
     ).model_validate(value)
@@ -37,6 +41,7 @@ def parse_applicability(value):
 
 class Applicability(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    family: Literal["HOST"] = "HOST"
     schema_version: Literal[1]
     source_types: list[
         Literal["LINUX", "LINUX_HOST", "WINDOWS", "WINDOWS_HOST", "VM"]

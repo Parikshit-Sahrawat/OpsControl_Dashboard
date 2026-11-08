@@ -229,6 +229,18 @@ class SourceConfigurationContract(unittest.TestCase):
         self.assertEqual(self.call("GET", self.base)[1]["revision"], 2)
 
     def test_invalid_os_methods_overrides_missing_revision_and_secret(self):
+        for manifest in ([], False, {"schema_version": True}):
+            self.assertEqual(
+                self.call(
+                    "POST",
+                    "monitoring/templates",
+                    dict(
+                        name="Malformed manifest " + uuid4().hex,
+                        package_config={"applicability": manifest},
+                    ),
+                )[0],
+                422,
+            )
         with SessionLocal() as db:
             source = db.get(DataSource, self.sid)
             source.connection_config = {"opscontrol": {"os_type": "Windows"}}
