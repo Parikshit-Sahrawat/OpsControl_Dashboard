@@ -1,0 +1,419 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Authenticated UI resource A create and persisted backend identity; resource B isolated fixture",
+    "Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422",
+    "Browser template V1 pin survives V2; invalid JSON field error; override save/reload deterministic; stale edit409 preserves unsaved text",
+    "Delayed authentic A inventory cannot overwrite B selection; A row absent",
+    "Selected B scope cannot fetch A resource detail even with platform administrator login",
+    "Revocation closes open unsaved editor; old-session PUT401; persisted name unchanged",
+    "Viewer has no Edit control and actual attempted mutation403"
+  ],
+  "trace": [
+    {
+      "phase": "start",
+      "at": 1794111288146,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "start",
+      "at": 1794111288163,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288271,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288313,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288318,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288362,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288395,
+      "path": "/api/v1/resource-drafts",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288513,
+      "path": "/api/v1/unified/resources/vm",
+      "status": 201
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288540,
+      "path": "/api/v1/unified/resources",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288618,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288670,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288785,
+      "path": "/api/v1/unified/resources/e955bdb9-2a5a-43bc-855b-97c772f201be",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288804,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "resource browser create",
+      "at": 1794111288804,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289534,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289573,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289587,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289590,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289608,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289613,
+      "path": "/api/v1/monitoring/collectors/631781a0-bc79-4112-bb34-2e3f6fb6184b",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289651,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289856,
+      "path": "/api/v1/monitoring/templates/8eb0387b-560d-4e3b-b3f0-9bcb5151bfd7/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111289959,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 201
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290034,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290042,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290043,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290177,
+      "path": "/api/v1/monitoring/templates/8eb0387b-560d-4e3b-b3f0-9bcb5151bfd7/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290358,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates/8eb0387b-560d-4e3b-b3f0-9bcb5151bfd7",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290399,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290447,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290460,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290567,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290600,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290617,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290651,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290825,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290841,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290856,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290865,
+      "path": "/api/v1/monitoring/collectors/631781a0-bc79-4112-bb34-2e3f6fb6184b",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290869,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111290876,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111291048,
+      "path": "/api/v1/monitoring/templates/8eb0387b-560d-4e3b-b3f0-9bcb5151bfd7/versions",
+      "status": 200
+    },
+    {
+      "phase": "template UI pin and overrides",
+      "at": 1794111292071,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates/8eb0387b-560d-4e3b-b3f0-9bcb5151bfd7",
+      "status": 409
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794111293256,
+      "path": "/api/v1/unified/resources",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794111293285,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794111293321,
+      "path": "/api/v1/unified/resources",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794111293372,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "tenant A/B delayed inventory",
+      "at": 1794111293501,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294035,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294048,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294137,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294157,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294192,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294327,
+      "path": "/api/v1/monitoring/templates",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294367,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/effective-configuration",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294405,
+      "path": "/api/v1/attribute-registry",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294416,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750/templates",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294420,
+      "path": "/api/v1/monitoring/data-sources/90030827-2c57-49fe-b57d-2f238201c750",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294437,
+      "path": "/api/v1/monitoring/collectors/631781a0-bc79-4112-bb34-2e3f6fb6184b",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111294472,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111295597,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "revocation while editor open",
+      "at": 1794111299118,
+      "path": "/api/v1/auth/me",
+      "status": 401
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794111299849,
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794111299863,
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794111299949,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794111299967,
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "viewer mutation",
+      "at": 1794111300012,
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    }
+  ],
+  "resource_id": "e955bdb9-2a5a-43bc-855b-97c772f201be",
+  "other_resource_id": "f15e9628-1c71-464f-a7cd-5375eb0ae866",
+  "provider_access": false
+}

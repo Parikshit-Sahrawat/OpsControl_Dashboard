@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import { chromium } from "playwright";
 
 const browser = await chromium.launch({ headless: true });
@@ -9,6 +10,7 @@ async function login(username) {
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.waitForSelector("button.nav-button", { timeout: 20000 });
+  await preparePrimaryNavigation(page);
 }
 try {
   await page.goto("http://127.0.0.1:5173", { waitUntil: "domcontentloaded" });

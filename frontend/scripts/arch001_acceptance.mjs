@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Actual authenticated browser and API evidence; no interception or fabricated telemetry.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -28,18 +29,7 @@ page.on("response", (r) => {
   if (r.url().includes("/api/v1/") && r.status() >= 500)
     failed.push(r.status() + ":" + new URL(r.url()).pathname);
 });
-const nav = async (name) =>
-  page
-    .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", {
-      name:
-        {
-          "Resource Management": "Data Sources / Resources",
-          "Access Management": "Employees",
-        }[name] || name,
-      exact: true,
-    })
-    .click();
+const nav = (name) => navigatePrimary(page,name);
 const shot = async (name) => {
   await page.screenshot({ path: join(out, name), fullPage: true });
   screenshots.push(name);
@@ -84,7 +74,7 @@ try {
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
-    1,
+    0,
   );
   await page.getByRole("button", { name: "Global environments" }).click();
   await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();
@@ -359,7 +349,6 @@ try {
     "Compute Health",
     "API Endpoint Monitoring",
     "Alerts",
-    "Incidents",
     "Reports",
   ]) {
     await nav(name);
@@ -370,36 +359,10 @@ try {
       })
       .waitFor();
   }
-  await nav("Incidents");
-  await page.getByRole("button", { name: "Global environments" }).click();
-  await page.getByRole("button", { name: "All environments", exact: true }).click();
-  await page
-    .getByLabel("Incident status", { exact: true })
-    .selectOption("OPEN");
-  const incidentRow = page.locator("tbody tr").first();
-  await incidentRow.getByRole("button").click();
-  const incidentId = await incidentRow.locator("small").innerText();
-  await page
-    .getByRole("heading", { name: "Recovery validation", exact: true })
-    .waitFor();
-  const ack = response(
-    "/api/v1/native-incidents/" + incidentId + "/transition",
-    "POST",
-  );
-  await page
-    .getByRole("button", { name: "Acknowledge incident", exact: true })
-    .click();
-  assert.equal((await ack).status(), 200);
-  const note = "Controlled browser investigation " + Date.now();
-  await page.getByLabel("Investigation note", { exact: true }).fill(note);
-  const savedNote = response(
-    "/api/v1/native-incidents/" + incidentId + "/notes",
-    "POST",
-  );
-  await page.getByRole("button", { name: "Add note", exact: true }).click();
-  assert.equal((await savedNote).status(), 200);
-  await page.getByText(note, { exact: true }).waitFor();
-  await shot("arch001-native-incident-investigation.png");
+  assert.equal(await page.getByRole("navigation",{name:"Primary navigation"}).getByRole("button",{name:"Incidents",exact:true}).count(),0);
+  await page.goto(process.env.ARCH001_UI_URL+"/#/incidents");
+  assert.equal(await page.getByRole("heading",{name:"Incidents",exact:true}).count(),0);
+  await shot("arch001-excluded-incident-ui.png");
   await page
     .getByRole("button", { name: "Notifications", exact: true })
     .click();

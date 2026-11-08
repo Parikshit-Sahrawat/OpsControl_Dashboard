@@ -1,0 +1,1944 @@
+diff --git a/backend/app/api/monitoring.py b/backend/app/api/monitoring.py
+index 639e3e5..5cde860 100644
+--- a/backend/app/api/monitoring.py
++++ b/backend/app/api/monitoring.py
+@@ -1,3 +1,4 @@
++from app.services.collector_lifecycle import require_enabled_parent
+ from app.services.excluded_platforms import require_supported_source, require_supported_collector
+ from datetime import datetime
+ from uuid import UUID
+@@ -134,7 +135,7 @@ def update_data_source_template(
+     payload: MonitoringTemplateAttachmentUpdate,
+     db: Session = Depends(get_db),
+ ):
+-    require_supported_source(_get_or_404(DataSource, item_id, db, "Data source"))
++    require_supported_source(db.get(DataSource, item_id, with_for_update=True))
+     attachment = db.scalar(
+         select(MonitoringTemplateAttachment).where(
+             MonitoringTemplateAttachment.data_source_id == item_id,
+@@ -145,6 +146,20 @@ def update_data_source_template(
+         raise HTTPException(status_code=404, detail="Template attachment not found")
+ 
+     values = payload.model_dump(exclude_unset=True)
++    expected = values.pop("expected_updated_at", None)
++    if expected is not None:
++        from datetime import timezone
++        actual = attachment.updated_at
++        if actual.tzinfo is None:
++            actual = actual.replace(tzinfo=timezone.utc)
++        if expected.tzinfo is None or expected != actual:
++            raise HTTPException(409, "Template attachment changed; reload before saving")
++    # A disabled attachment can always be retired. Enabling or editing an active
++    # attachment must not bypass the same availability checks as initial attach.
++    if values.get("enabled", attachment.enabled):
++        template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
++        if template.status != "COMMITTED":
++            raise HTTPException(409, "Cannot enable an inactive monitoring template")
+     if "template_version" in values:
+         template = _get_or_404(MonitoringTemplate, template_id, db, "Monitoring template")
+         version = db.scalar(
+@@ -159,7 +174,10 @@ def update_data_source_template(
+     from app.services.excluded_platforms import require_supported_configuration
+     selected_version = db.scalar(select(MonitoringTemplateVersion).where(
+         MonitoringTemplateVersion.template_id == template_id,
+-        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version)))
++        MonitoringTemplateVersion.version == values.get("template_version", attachment.template_version),
++        MonitoringTemplateVersion.status == "COMMITTED"))
++    if not selected_version:
++        raise HTTPException(409, "Selected committed template version is not available")
+     try:
+         require_supported_configuration(selected_version.package_config if selected_version else None)
+     except ValueError as exc:
+@@ -224,6 +242,7 @@ def list_collector_runs(
+ @router.post("/collectors", response_model=CollectorOut, status_code=201)
+ def create_collector(payload: CollectorCreate, db: Session = Depends(get_db)):
+     require_supported_source(_get_or_404(DataSource, payload.data_source_id, db, "Data source"))
++    require_enabled_parent(_get_or_404(DataSource, payload.data_source_id, db, "Data source"), payload.enabled)
+     item = Collector(**payload.model_dump())
+     db.add(item)
+     db.commit()
+@@ -236,6 +255,7 @@ def update_collector(item_id: UUID, payload: CollectorUpdate, db: Session = Depe
+     item = _get_or_404(Collector, item_id, db, "Collector")
+     if payload.model_dump(exclude_unset=True) != {"enabled": False}:
+         require_supported_collector(item, _get_or_404(DataSource, item.data_source_id, db, "Data source"))
++    require_enabled_parent(_get_or_404(DataSource, item.data_source_id, db, "Data source"), payload.enabled)
+     for key, value in payload.model_dump(exclude_unset=True).items():
+         setattr(item, key, value)
+     db.commit()
+@@ -583,7 +603,9 @@ def commit_monitoring_template(
+     payload: MonitoringTemplateUpdate,
+     db: Session = Depends(get_db),
+ ):
+-    item = _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
++    item = db.get(MonitoringTemplate, item_id, with_for_update=True)
++    if item is None:
++        raise HTTPException(404, "Monitoring template not found")
+     values = payload.model_dump(exclude_unset=True)
+     package = values.pop("package_config", None)
+     committed_by = values.pop("committed_by", None) or "Admin"
+diff --git a/backend/app/api/resource_management.py b/backend/app/api/resource_management.py
+index b616d69..9bf63de 100644
+--- a/backend/app/api/resource_management.py
++++ b/backend/app/api/resource_management.py
+@@ -1,3 +1,4 @@
++from app.services.collector_lifecycle import require_enabled_parent
+ from app.services.excluded_platforms import require_supported_source, require_supported_collector
+ from uuid import UUID
+ from typing import Literal
+@@ -203,6 +204,7 @@ def update_scoped_collector(
+     values = payload.model_dump(exclude_unset=True)
+     if values != {"enabled": False}:
+         require_supported_collector(item, _source(db, item.data_source_id))
++    require_enabled_parent(_source(db, item.data_source_id), values.get("enabled"))
+     for key, value in values.items():
+         setattr(item, key, value)
+     try:
+diff --git a/backend/app/schemas/monitoring.py b/backend/app/schemas/monitoring.py
+index f2dc523..f47b14a 100644
+--- a/backend/app/schemas/monitoring.py
++++ b/backend/app/schemas/monitoring.py
+@@ -48,6 +48,14 @@ class DataSourceCreate(DataSourceBase):
+         return require_safe_url(value)
+ 
+ class DataSourceUpdate(BaseModel):
++    @field_validator("name", "source_type", "enabled", check_fields=False)
++    @classmethod
++    def reject_null_required_fields(cls, value):
++        if value is None:
++            raise ValueError("Required configuration field cannot be null")
++        return value
++
++    model_config = ConfigDict(extra="forbid")
+     @field_validator("source_type", "collector_type", check_fields=False)
+     @classmethod
+     def reject_removed_platform(cls, value):
+@@ -120,6 +128,14 @@ class CollectorCreate(CollectorBase):
+         return require_safe_config(require_supported_configuration(value))
+ 
+ class CollectorUpdate(BaseModel):
++    @field_validator("name", "collector_type", "enabled", "interval_seconds", check_fields=False)
++    @classmethod
++    def reject_null_required_fields(cls, value):
++        if value is None:
++            raise ValueError("Required configuration field cannot be null")
++        return value
++
++    model_config = ConfigDict(extra="forbid")
+     @field_validator("source_type", "collector_type", check_fields=False)
+     @classmethod
+     def reject_removed_platform(cls, value):
+@@ -461,9 +477,17 @@ class MonitoringTemplateCreate(BaseModel):
+     @field_validator("package_config")
+     @classmethod
+     def validate_no_embedded_secrets(cls, value):
+-        return require_safe_config(require_supported_configuration(value))
++        from app.services.template_packages import require_template_package
++        return require_safe_config(require_supported_configuration(require_template_package(value)))
+ 
+ class MonitoringTemplateUpdate(BaseModel):
++    @field_validator("name", "scope", check_fields=False)
++    @classmethod
++    def reject_null_required_fields(cls, value):
++        if value is None:
++            raise ValueError("Required configuration field cannot be null")
++        return value
++
+     name: str | None = Field(default=None, min_length=1, max_length=200)
+     description: str | None = None
+     scope: str | None = Field(default=None, max_length=200)
+@@ -474,7 +498,8 @@ class MonitoringTemplateUpdate(BaseModel):
+     @field_validator("package_config")
+     @classmethod
+     def validate_no_embedded_secrets(cls, value):
+-        return require_safe_config(require_supported_configuration(value))
++        from app.services.template_packages import require_template_package
++        return require_safe_config(require_supported_configuration(require_template_package(value)))
+ 
+ class MonitoringTemplateOut(BaseModel):
+     model_config = ConfigDict(from_attributes=True)
+@@ -496,6 +521,7 @@ class MonitoringTemplateOut(BaseModel):
+         return redact_config(value)
+ 
+ class MonitoringTemplateAttachmentCreate(BaseModel):
++    model_config = ConfigDict(extra="forbid")
+     template_id: UUID
+     template_version: int | None = Field(default=None, ge=1)
+     priority: int = Field(default=100, ge=0, le=100000)
+@@ -505,9 +531,21 @@ class MonitoringTemplateAttachmentCreate(BaseModel):
+     @field_validator("overrides")
+     @classmethod
+     def validate_no_embedded_secrets(cls, value):
+-        return require_safe_config(require_supported_configuration(value))
++        from app.services.template_packages import require_template_package
++        return require_safe_config(require_supported_configuration(require_template_package(value)))
+ 
+ class MonitoringTemplateAttachmentUpdate(BaseModel):
++    model_config = ConfigDict(extra="forbid")
++    # Optional for older clients; callers that send a revision get lost-edit protection.
++    expected_updated_at: datetime | None = None
++
++    @field_validator("template_version", "priority", "enabled", check_fields=False)
++    @classmethod
++    def reject_null_state(cls, value):
++        if value is None:
++            raise ValueError("Configuration state cannot be null")
++        return value
++
+     template_version: int | None = Field(default=None, ge=1)
+     priority: int | None = Field(default=None, ge=0, le=100000)
+     overrides: dict | None = None
+@@ -517,7 +555,8 @@ class MonitoringTemplateAttachmentUpdate(BaseModel):
+     @field_validator("overrides")
+     @classmethod
+     def validate_no_embedded_secrets(cls, value):
+-        return require_safe_config(require_supported_configuration(value))
++        from app.services.template_packages import require_template_package
++        return require_safe_config(require_supported_configuration(require_template_package(value)))
+ 
+ class MonitoringTemplateAttachmentOut(BaseModel):
+     model_config = ConfigDict(from_attributes=True)
+diff --git a/backend/app/services/collector_lifecycle.py b/backend/app/services/collector_lifecycle.py
+new file mode 100644
+index 0000000..8553d06
+--- /dev/null
++++ b/backend/app/services/collector_lifecycle.py
+@@ -0,0 +1,8 @@
++"""Configuration guards; never evidence of telemetry or operational health."""
++
++from fastapi import HTTPException
++
++
++def require_enabled_parent(source, enabled):
++    if enabled is True and not source.enabled:
++        raise HTTPException(409, "Cannot enable a collector on a disabled data source")
+diff --git a/backend/app/services/template_packages.py b/backend/app/services/template_packages.py
+new file mode 100644
+index 0000000..043f2e7
+--- /dev/null
++++ b/backend/app/services/template_packages.py
+@@ -0,0 +1,16 @@
++"""Validate existing package container shapes without inventing policy defaults."""
++
++
++def require_template_package(value):
++    if value is None:
++        return value
++    if not isinstance(value, dict):
++        raise ValueError("Template package must be an object")
++    if not isinstance(value.get("collector", {}), dict):
++        raise ValueError("collector configuration must be an object")
++    for key in ("attributes", "metrics", "alerts", "logs"):
++        if not isinstance(value.get(key, []), list) or any(
++            not isinstance(row, dict) for row in value.get(key, [])
++        ):
++            raise ValueError(f"{key} configuration must be an array of objects")
++    return value
+diff --git a/backend/app/services/template_resolution.py b/backend/app/services/template_resolution.py
+index 6dccad9..a81629f 100644
+--- a/backend/app/services/template_resolution.py
++++ b/backend/app/services/template_resolution.py
+@@ -41,6 +41,11 @@ def _merge_named_rows(rows: list[dict], incoming: list[dict], identity: str) ->
+ 
+ def _apply_package(effective: dict, package: dict) -> dict:
+     package = package or {}
++    from app.services.template_packages import require_template_package
++    try:
++        require_template_package(package)
++    except ValueError as exc:
++        raise HTTPException(422, str(exc)) from None
+     effective["collector"] = _deep_merge(effective.get("collector", {}), package.get("collector", {}))
+     effective["attributes"] = _merge_named_rows(effective.get("attributes", []), package.get("attributes", []), "key")
+     effective["metrics"] = _merge_named_rows(effective.get("metrics", []), package.get("metrics", []), "metric")
+@@ -154,13 +159,15 @@ def attach_template(
+     priority: int = 100,
+     overrides: dict | None = None,
+ ):
+-    source = db.get(DataSource, data_source_id)
++    source = db.get(DataSource, data_source_id, with_for_update=True)
+     if not source:
+         raise HTTPException(status_code=404, detail="Data source not found")
+     require_supported_source(source)
+     template = db.get(MonitoringTemplate, template_id)
+     if not template:
+         raise HTTPException(status_code=404, detail="Monitoring template not found")
++    if template.status != "COMMITTED":
++        raise HTTPException(409, "Cannot attach an inactive monitoring template")
+     if source.organization_id and template.scope is None:
+         raise HTTPException(status_code=409, detail="Template scope is invalid")
+ 
+@@ -211,6 +218,7 @@ def attach_template(
+ 
+ 
+ def detach_template(db: Session, data_source_id: UUID, template_id: UUID):
++    require_supported_source(db.get(DataSource, data_source_id, with_for_update=True))
+     attachment = db.scalar(
+         select(MonitoringTemplateAttachment).where(
+             MonitoringTemplateAttachment.data_source_id == data_source_id,
+diff --git a/backend/scripts/sprint1_instrumented_app.py b/backend/scripts/sprint1_instrumented_app.py
+new file mode 100644
+index 0000000..15c2806
+--- /dev/null
++++ b/backend/scripts/sprint1_instrumented_app.py
+@@ -0,0 +1,41 @@
++"""Disposable acceptance ASGI wrapper. Never used by product deployment."""
++
++import contextvars
++import os
++from sqlalchemy import event
++from app.db.session import engine
++from app.main import app as application
++
++assert os.environ.get("OPSCONTROL_V16_ACCEPTANCE") == "1"
++assert os.environ.get("ENVIRONMENT") == "test"
++queries = contextvars.ContextVar("sprint_query_count", default=None)
++
++
++@event.listens_for(engine, "before_cursor_execute")
++def count_query(*args):
++    counter = queries.get()
++    if counter is not None:
++        counter[0] += 1
++
++
++async def app(scope, receive, send):
++    if scope["type"] != "http":
++        return await application(scope, receive, send)
++    counter = [0]
++    reset = queries.set(counter)
++
++    async def measured_send(message):
++        if message["type"] == "http.response.start":
++            message = {
++                **message,
++                "headers": [
++                    *message.get("headers", []),
++                    (b"x-sprint-test-sql-count", str(counter[0]).encode()),
++                ],
++            }
++        await send(message)
++
++    try:
++        await application(scope, receive, measured_send)
++    finally:
++        queries.reset(reset)
+diff --git a/backend/scripts/sprint1_otlp_load.py b/backend/scripts/sprint1_otlp_load.py
+new file mode 100644
+index 0000000..6901efa
+--- /dev/null
++++ b/backend/scripts/sprint1_otlp_load.py
+@@ -0,0 +1,222 @@
++"""Task-owned real OTLP/HTTP + authenticated reads; never a throughput certificate."""
++
++import app.main  # noqa: F401
++import json
++import os
++import secrets
++import time
++import uuid
++import subprocess
++from pathlib import Path
++from datetime import datetime, timedelta, timezone
++from concurrent.futures import ThreadPoolExecutor
++from urllib.request import Request, urlopen
++from urllib.error import HTTPError
++from sqlalchemy import select, func, text
++from app.db.session import SessionLocal
++from app.models import DataSource, Collector, MetricSample, MetricDefinition
++from app.telemetry.models import ManagedAgent, TelemetryReceipt
++from app.security.models import WorkerIdentity
++from app.security.http import token_digest
++
++assert os.environ.get("OPSCONTROL_V16_ACCEPTANCE") == "1"
++base = os.environ["V16_API_URL"]
++out = Path(os.environ["V16_EVIDENCE_DIR"])
++f = json.loads(
++    (Path(os.environ["V16_PRIVATE_DIR"]) / "browser-fixture.json").read_text()
++)
++secret = secrets.token_urlsafe(32)
++with SessionLocal() as db:
++    s = DataSource(
++        organization_id=uuid.UUID(f["organization_id"]),
++        name="OTLP load " + uuid.uuid4().hex,
++        source_type="LINUX",
++        enabled=True,
++    )
++    db.add(s)
++    db.flush()
++    c = Collector(
++        data_source_id=s.id,
++        name="Synthetic authenticated OTLP",
++        collector_type="OTEL",
++        enabled=True,
++    )
++    w = WorkerIdentity(
++        organization_id=s.organization_id,
++        name=uuid.uuid4().hex,
++        token_hash=token_digest(secret),
++        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
++    )
++    db.add_all([c, w])
++    db.flush()
++    a = ManagedAgent(
++        organization_id=s.organization_id,
++        collector_id=c.id,
++        worker_id=w.id,
++        hostname="controlled.invalid",
++        version="SYNTHETIC",
++        runtime_version="0.123.0",
++    )
++    db.add(a)
++    db.commit()
++    cid = c.id
++    agentid = a.id
++
++
++def call(path, token, body=None):
++    headers = {
++        "Authorization": "Bearer " + token,
++        "X-OpsControl-Customers": f["organization_id"],
++    }
++    if body is not None:
++        headers["Content-Type"] = "application/json"
++    with urlopen(
++        Request(
++            base + "/api/v1/" + path,
++            headers=headers,
++            data=json.dumps(body).encode() if body is not None else None,
++        ),
++        timeout=20,
++    ) as r:
++        return r.status, json.load(r)
++
++
++_, login = call(
++    "auth/login", "unused", {"username": "v16-api-admin", "password": f["password"]}
++)
++token = login["access_token"]
++paths = [
++    "infrastructure/resources?limit=25",
++    "resource-management/data-sources?paginated=true&limit=25",
++    "unified/resources?limit=25",
++]
++
++
++def reads(count):
++    timings = []
++    for i in range(count):
++        start = time.perf_counter()
++        status, _ = call(paths[i % len(paths)], token)
++        timings.append((time.perf_counter() - start) * 1000)
++        assert status == 200
++    ordered = sorted(timings)
++    return {
++        "requests": count,
++        "errors": 0,
++        "p50_ms": ordered[(count - 1) // 2],
++        "p95_ms": ordered[min(count - 1, int(count * 0.95))],
++        "p99_ms": ordered[-1],
++        "latencies_ms": timings,
++    }
++
++
++base_time = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(seconds=5)
++payloads = []
++for batch in range(20):
++    points = [
++        {
++            "timeUnixNano": str(
++                int(
++                    (base_time + timedelta(milliseconds=batch * 10 + i)).timestamp()
++                    * 1000
++                )
++                * 1000000
++            ),
++            "asDouble": batch * 10 + i,
++        }
++        for i in range(10)
++    ]
++    payloads.append(
++        {
++            "resourceMetrics": [
++                {
++                    "scopeMetrics": [
++                        {
++                            "metrics": [
++                                {
++                                    "name": "sprint.real.otlp",
++                                    "unit": "1",
++                                    "gauge": {"dataPoints": points},
++                                }
++                            ]
++                        }
++                    ]
++                }
++            ]
++        }
++    )
++before = reads(12)
++
++
++def ingest():
++    for payload in payloads:
++        status, _ = call("agent/otlp/v1/metrics", secret, payload)
++        assert status == 200
++        time.sleep(0.03)
++
++
++with ThreadPoolExecutor(max_workers=2) as pool:
++    ingestion = pool.submit(ingest)
++    reading = pool.submit(reads, 30)
++    if os.environ.get("V16_UI_URL"):
++        subprocess.run(
++            [
++                "node",
++                str(
++                    Path(__file__).resolve().parents[2]
++                    / "frontend/scripts/sprint1_load_navigation.mjs"
++                ),
++            ],
++            check=True,
++            timeout=60,
++        )
++    during = reading.result()
++    ingestion.result()
++call("agent/otlp/v1/metrics", secret, payloads[0])  # deliberate transport replay
++try:
++    call("agent/otlp/v1/metrics", "invalid-synthetic-token", payloads[0])
++    raise AssertionError("invalid token accepted")
++except HTTPError as e:
++    assert e.code == 401
++recovery = reads(12)
++with SessionLocal() as db:
++    values = list(
++        db.scalars(
++            select(MetricSample.value_numeric)
++            .join(MetricDefinition)
++            .where(MetricDefinition.collector_id == cid)
++        )
++    )
++    receipts = db.scalar(
++        select(func.count())
++        .select_from(TelemetryReceipt)
++        .where(TelemetryReceipt.agent_id == agentid)
++    )
++    plan = db.execute(
++        text(
++            "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT DISTINCT ON(metric_definition_id) id FROM metric_samples WHERE collector_id=:id ORDER BY metric_definition_id, observed_at DESC"
++        ),
++        {"id": cid},
++    ).scalar()
++assert len(values) == 200 and set(values) == set(range(200)) and receipts == 20
++result = {
++    "scope": "20 actual authenticated legacy-compatible OTLP JSON batches x10 samples; one replay and one invalid-token negative; 3 API paths; synthetic agent identity, not qualified provider/method generation",
++    "baseline_no_ingestion": before,
++    "concurrent_ingestion": during,
++    "after_ingestion": recovery,
++    "payload_attempts": 22,
++    "accepted_http_responses": 21,
++    "expected_rejection_401": 1,
++    "distinct_batch_receipts": receipts,
++    "expected_source_ids": list(range(200)),
++    "persisted_source_ids": sorted(values),
++    "persisted_distinct": len(set(values)),
++    "physical_rows": len(values),
++    "missing": 0,
++    "duplicates": 0,
++    "sample_latest_query_plan": plan,
++    "sql_queries_per_api_request": "NOT MEASURED; representative query EXPLAIN only",
++    "global_RM_DEF_036": "NOT REPRODUCED at this bounded load; not full-system certification",
++}
++(out / "otlp-performance.json").write_text(json.dumps(result, indent=2))
++print("Actual OTLP performance probe PASS:200/200 IDs;20 receipts; replay deduplicated")
+diff --git a/backend/scripts/sprint1_representative_load.py b/backend/scripts/sprint1_representative_load.py
+new file mode 100644
+index 0000000..ae2c224
+--- /dev/null
++++ b/backend/scripts/sprint1_representative_load.py
+@@ -0,0 +1,315 @@
++"""Bounded multi-level HTTP ingestion/load study with independent DB accounting."""
++
++import app.main  # noqa: F401
++import json
++import os
++import time
++import uuid
++import secrets
++import threading
++import subprocess
++from pathlib import Path
++from concurrent.futures import ThreadPoolExecutor
++from datetime import datetime, timedelta, timezone
++from urllib.request import Request, urlopen
++from sqlalchemy import select, func, text
++from app.db.session import SessionLocal
++from app.models import DataSource, Collector, MetricDefinition, MetricSample
++from app.telemetry.models import ManagedAgent, TelemetryReceipt
++from app.security.models import WorkerIdentity
++from app.security.http import token_digest
++
++assert os.environ.get("OPSCONTROL_V16_ACCEPTANCE") == "1"
++assert os.environ.get("ENVIRONMENT") == "test"
++out = Path(os.environ["V16_EVIDENCE_DIR"])
++fixture = json.loads(
++    (Path(os.environ["V16_PRIVATE_DIR"]) / "browser-fixture.json").read_text()
++)
++base = os.environ["V16_API_URL"]
++org = fixture["organization_id"]
++
++
++def call(path, token, payload=None):
++    start = time.perf_counter()
++    headers = {"Authorization": "Bearer " + token, "X-OpsControl-Customers": org}
++    if payload is not None:
++        headers["Content-Type"] = "application/json"
++    with urlopen(
++        Request(
++            base + "/api/v1/" + path,
++            headers=headers,
++            data=json.dumps(payload).encode() if payload is not None else None,
++        ),
++        timeout=20,
++    ) as r:
++        body = json.load(r)
++        return body, {
++            "path": path.split("?")[0],
++            "ms": (time.perf_counter() - start) * 1000,
++            "status": r.status,
++            "sql_queries": int(r.headers["x-sprint-test-sql-count"]),
++        }
++
++
++login, _ = call(
++    "auth/login",
++    "unused",
++    {"username": "v16-api-admin", "password": fixture["password"]},
++)
++token = login["access_token"]
++secret = secrets.token_urlsafe(32)
++with SessionLocal() as db:
++    sources = [
++        DataSource(
++            organization_id=uuid.UUID(org),
++            name="load-" + uuid.uuid4().hex,
++            source_type="LINUX",
++            enabled=True,
++        )
++        for _ in range(30)
++    ]
++    db.add_all(sources)
++    db.flush()
++    collectors = [
++        Collector(
++            data_source_id=s.id,
++            name="bounded-load-collector",
++            collector_type="OTEL",
++            enabled=True,
++        )
++        for s in sources
++    ]
++    db.add_all(collectors)
++    worker = WorkerIdentity(
++        organization_id=uuid.UUID(org),
++        name=uuid.uuid4().hex,
++        token_hash=token_digest(secret),
++        expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
++    )
++    db.add(worker)
++    db.flush()
++    agent = ManagedAgent(
++        organization_id=uuid.UUID(org),
++        collector_id=collectors[0].id,
++        worker_id=worker.id,
++        hostname="synthetic.invalid",
++        version="SYNTHETIC",
++        runtime_version="0.123.0",
++    )
++    db.add(agent)
++    db.commit()
++    cid, aid, sid = collectors[0].id, agent.id, sources[0].id
++paths = [
++    "infrastructure/resources?limit=25",
++    "resource-management/data-sources?paginated=true&limit=25",
++    "unified/resources?limit=25",
++    f"monitoring/data-sources/{sid}/effective-configuration",
++]
++levels = []
++base_time = datetime.now(timezone.utc) - timedelta(minutes=1)
++ordinal = 0
++api_pid = int(os.environ["V16_API_PID"])
++
++
++def process_sample():
++    fields = Path(f"/proc/{api_pid}/stat").read_text().split()
++    return {
++        "monotonic": time.monotonic(),
++        "cpu_ticks": int(fields[13]) + int(fields[14]),
++        "rss_bytes": int(fields[23]) * os.sysconf("SC_PAGE_SIZE"),
++    }
++
++
++for name, users, producers, pause in [
++    ("idle", 1, 0, 0.04),
++    ("moderate", 2, 1, 0.05),
++    ("higher", 4, 2, 0.02),
++]:
++    started = time.monotonic()
++    stop = threading.Event()
++    metrics = []
++    errors = []
++    lock = threading.Lock()
++    samples = []
++    inventory = []
++
++    def sampler():
++        while not stop.is_set():
++            samples.append(process_sample())
++            stop.wait(0.1)
++
++    def reader():
++        i = 0
++        while time.monotonic() - started < 5:
++            try:
++                _, m = call(paths[i % len(paths)], token)
++                with lock:
++                    metrics.append(m)
++            except Exception as exc:
++                with lock:
++                    errors.append(type(exc).__name__)
++            i += 1
++            time.sleep(0.02)
++
++    def producer(number):
++        global ordinal
++        for batch in range(25):
++            with lock:
++                ids = list(range(ordinal, ordinal + 10))
++                ordinal += 10
++                inventory.extend(ids)
++            payload = {
++                "resourceMetrics": [
++                    {
++                        "scopeMetrics": [
++                            {
++                                "metrics": [
++                                    {
++                                        "name": "sprint.sustained." + str(number),
++                                        "gauge": {
++                                            "dataPoints": [
++                                                {
++                                                    "timeUnixNano": str(
++                                                        int(
++                                                            (
++                                                                base_time
++                                                                + timedelta(
++                                                                    milliseconds=i
++                                                                )
++                                                            ).timestamp()
++                                                            * 1e9
++                                                        )
++                                                    ),
++                                                    "asDouble": i,
++                                                }
++                                                for i in ids
++                                            ]
++                                        },
++                                    }
++                                ]
++                            }
++                        ]
++                    }
++                ]
++            }
++            _, m = call("agent/otlp/v1/metrics", secret, payload)
++            assert m["status"] == 200
++            time.sleep(pause)
++
++    sampling = threading.Thread(target=sampler)
++    sampling.start()
++    try:
++        with ThreadPoolExecutor(max_workers=users + producers + 1) as pool:
++            readers = [pool.submit(reader) for _ in range(users)]
++            writers = [pool.submit(producer, n) for n in range(producers)]
++            if name == "higher":
++                subprocess.run(
++                    [
++                        "node",
++                        str(
++                            Path(__file__).resolve().parents[2]
++                            / "frontend/scripts/sprint1_load_navigation.mjs"
++                        ),
++                    ],
++                    check=True,
++                    timeout=50,
++                )
++            for future in readers + writers:
++                future.result()
++    finally:
++        stop.set()
++        sampling.join()
++    elapsed = time.monotonic() - started
++    ordered = sorted(m["ms"] for m in metrics)
++    assert ordered and not errors
++    with SessionLocal() as db:
++        values = list(
++            db.scalars(
++                select(MetricSample.value_numeric)
++                .join(MetricDefinition)
++                .where(MetricDefinition.collector_id == cid)
++            )
++        )
++        receipts = db.scalar(
++            select(func.count())
++            .select_from(TelemetryReceipt)
++            .where(TelemetryReceipt.agent_id == aid)
++        )
++        db_bytes = db.scalar(text("SELECT pg_database_size(current_database())"))
++    expected = set(range(ordinal))
++    persisted = set(values)
++    missing = sorted(expected - persisted)
++    assert not missing and len(values) == len(persisted) == ordinal
++    ticks = os.sysconf("SC_CLK_TCK")
++    levels.append(
++        {
++            "level": name,
++            "duration_s": elapsed,
++            "concurrent_readers": users,
++            "concurrent_ingestion_producers": producers,
++            "new_samples": len(inventory),
++            "new_sample_rate_per_s": len(inventory) / elapsed,
++            "resources_added": 30,
++            "collectors_added": 30,
++            "active_simulated_transports": 1 if producers else 0,
++            "series_per_transport": 2 if producers == 2 else producers,
++            "request_count": len(metrics),
++            "errors": errors,
++            "p50_ms": ordered[(len(ordered) - 1) // 2],
++            "p95_ms": ordered[min(len(ordered) - 1, int(len(ordered) * 0.95))],
++            "p99_ms": ordered[min(len(ordered) - 1, int(len(ordered) * 0.99))],
++            "sql_query_counts_by_path": {
++                p: sorted(set(m["sql_queries"] for m in metrics if m["path"] == p))
++                for p in sorted(set(m["path"] for m in metrics))
++            },
++            "request_metrics": metrics,
++            "api_process_samples": samples,
++            "api_cpu_seconds": (samples[-1]["cpu_ticks"] - samples[0]["cpu_ticks"])
++            / ticks,
++            "api_max_rss_bytes": max(s["rss_bytes"] for s in samples),
++            "postgres_database_bytes": db_bytes,
++            "cumulative_expected": ordinal,
++            "cumulative_distinct": len(persisted),
++            "physical_rows": len(values),
++            "missing_ids": missing,
++            "duplicates": len(values) - len(persisted),
++            "cumulative_receipts": receipts,
++        }
++    )
++with SessionLocal() as db:
++    plan = db.execute(
++        text(
++            "EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) SELECT DISTINCT ON(metric_definition_id) id FROM metric_samples WHERE collector_id=:id ORDER BY metric_definition_id,observed_at DESC"
++        ),
++        {"id": cid},
++    ).scalar()
++    total_resources = db.scalar(select(func.count()).select_from(DataSource))
++    total_collectors = db.scalar(select(func.count()).select_from(Collector))
++result = {
++    "status": "PASS for bounded accounting, not global throughput acceptance",
++    "levels": levels,
++    "resources_total": total_resources,
++    "collectors_total": total_collectors,
++    "missing": 0,
++    "duplicates": 0,
++    "expected_ids": list(range(ordinal)),
++    "persisted_ids": sorted(persisted),
++    "latest_sample_plan": plan,
++    "cpu_count": os.cpu_count(),
++    "cgroup_cpu_max": Path("/sys/fs/cgroup/cpu.max").read_text().strip(),
++    "cgroup_memory_max": Path("/sys/fs/cgroup/memory.max").read_text().strip(),
++    "limitations": [
++        "5-second API reader windows; finite producers can stop before window ends",
++        "synthetic legacy-compatible OTLP auth; no qualified method/version/provider proof",
++        "only API process CPU/RSS measured; not all container/browser processes",
++        "one representative SQL plan; query counts include request auth/security queries",
++        "not production scale or a defined SLO",
++    ],
++    "RM_DEF_036": "NOT REPRODUCED in tested boundary",
++}
++(out / "representative-load.json").write_text(json.dumps(result, indent=2))
++print(
++    "MULTILEVEL REAL OTLP: "
++    + str(ordinal)
++    + " expected/distinct/physical;0 missing/duplicate; SQL and process metrics retained"
++)
+diff --git a/backend/scripts/sprint1_restore_probe.py b/backend/scripts/sprint1_restore_probe.py
+new file mode 100644
+index 0000000..afff472
+--- /dev/null
++++ b/backend/scripts/sprint1_restore_probe.py
+@@ -0,0 +1,101 @@
++"""Hash-compare a complete synthetic database restore inside the owned container."""
++
++import hashlib
++import json
++import os
++from pathlib import Path
++import subprocess
++from sqlalchemy import create_engine, inspect, text
++from app.db.session import engine
++
++assert os.environ.get("OPSCONTROL_V16_ACCEPTANCE") == "1"
++container = os.environ["V16_OWNED_CONTAINER"]
++assert container.startswith("opscontrol-v16-")
++out = Path(os.environ["V16_EVIDENCE_DIR"])
++
++
++def snapshot(connection_engine):
++    result = {}
++    with connection_engine.connect() as db:
++        inspector = inspect(db)
++        for table in inspector.get_table_names():
++            quoted = db.dialect.identifier_preparer.quote(table)
++            rows = list(
++                db.scalars(
++                    text(
++                        f"SELECT to_jsonb(t)::text FROM {quoted} t ORDER BY to_jsonb(t)::text"
++                    )
++                )
++            )
++            result[table] = {
++                "count": len(rows),
++                "sha256": hashlib.sha256(json.dumps(rows).encode()).hexdigest(),
++                "columns": [
++                    (c["name"], str(c["type"]), c["nullable"])
++                    for c in inspector.get_columns(table)
++                ],
++                "foreign_keys": inspector.get_foreign_keys(table),
++            }
++    return result
++
++
++before = snapshot(engine)
++archive = subprocess.check_output(
++    [
++        "docker",
++        "exec",
++        container,
++        "pg_dump",
++        "-U",
++        "opscontrol",
++        "-d",
++        "opscontrol",
++        "-Fc",
++    ]
++)
++(out / "synthetic-backup.dump").write_bytes(archive)
++subprocess.run(
++    ["docker", "exec", container, "createdb", "-U", "opscontrol", "sprint_restore"],
++    check=True,
++)
++subprocess.run(
++    [
++        "docker",
++        "exec",
++        "-i",
++        container,
++        "pg_restore",
++        "-U",
++        "opscontrol",
++        "-d",
++        "sprint_restore",
++        "--no-owner",
++        "--no-privileges",
++    ],
++    input=archive,
++    check=True,
++)
++restored_engine = create_engine(engine.url.set(database="sprint_restore"))
++try:
++    restored = snapshot(restored_engine)
++    assert before == restored and before == snapshot(engine)
++finally:
++    restored_engine.dispose()
++    subprocess.run(
++        ["docker", "exec", container, "dropdb", "-U", "opscontrol", "sprint_restore"],
++        check=True,
++    )
++(out / "restore.json").write_text(
++    json.dumps(
++        {
++            "status": "PASS",
++            "tables_compared": len(before),
++            "backup_sha256": hashlib.sha256(archive).hexdigest(),
++            "snapshots": before,
++            "source_unchanged": True,
++            "restored_schema_data_fk_equal": True,
++        },
++        indent=2,
++    )
++)
++print("Synthetic full backup/restore PASS:", len(before), "tables")
+diff --git a/backend/scripts/v16_api_probe.py b/backend/scripts/v16_api_probe.py
+index 8aaf4a3..91e481c 100644
+--- a/backend/scripts/v16_api_probe.py
++++ b/backend/scripts/v16_api_probe.py
+@@ -6,6 +6,7 @@ from urllib.error import HTTPError
+ from pathlib import Path
+ import app.main  # noqa: F401 - register existing parent models for fixture transactions
+ from app.db.session import SessionLocal
++from sqlalchemy import select
+ from app.models import Organization
+ from app.security.models import User, OrganizationMembership
+ from app.security.passwords import hash_password
+@@ -38,10 +39,16 @@ def request(path, method="GET", payload=None, token=None, expected=200):
+             timeout=15,
+         )
+         status = response.status
+-        data = json.load(response)
++        data = None if status == 204 else json.load(response)
+     except HTTPError as error:
+         status = error.code
+-        data = json.load(error)
++        raw = error.read()
++        try:
++            data = json.loads(raw)
++        except json.JSONDecodeError:
++            if status != 500 or expected != 500:
++                raise
++            data = {"detail": "Expected injected server failure (non-JSON response)"}
+     if status != expected:
+         (private / "api-error.json").write_text(
+             json.dumps(
+@@ -517,6 +524,171 @@ with SessionLocal() as db:
+ checks.append(
+     "Reviewed legacy handoff preserves resource/collector/JobOrder UUIDs and original checkpoint; staged identity cannot activate implicitly"
+ )
++# Sprint1 lifecycle checks use real authentication, scope hooks and PostgreSQL.
++source = request("resource-management/data-sources", "POST", {"organization_id": aid, "name": "Sprint lifecycle", "source_type": "LINUX", "enabled": True}, admin, 201)
++sid = source["id"]
++collector = request("resource-management/collectors", "POST", {"data_source_id": sid, "name": "Sprint collector", "collector_type": "HTTP", "enabled": False, "interval_seconds": 60, "configuration": {}}, admin, 201)
++request(f"resource-management/data-sources/{sid}", "PATCH", {"organization_id": bid}, admin, 422)
++request(f"resource-management/data-sources/{sid}", "PATCH", {"name": "forbidden"}, viewer, 403)
++request(f"resource-management/data-sources/{sid}", "PATCH", {"enabled": False}, admin)
++for route in ("resource-management", "monitoring"):
++    request(f"{route}/collectors/{collector['id']}", "PATCH", {"enabled": True}, admin, 409)
++with SessionLocal() as db:
++    from app.models import DataSource, Collector
++    persisted = db.get(DataSource, uuid.UUID(sid))
++    assert str(persisted.organization_id) == aid and not persisted.enabled
++    assert not db.get(Collector, uuid.UUID(collector["id"])).enabled
++checks.append("Sprint1: protected ownership fields, viewer denial, disabled-parent collector enable refusal on both APIs and persisted unchanged ownership")
++# Template lifecycle uses the same authenticated API and immutable version rows.
++template = request("monitoring/templates", "POST", {"name":"Sprint template " + uuid.uuid4().hex, "package_config":{"attributes":[{"key":"team","required":True}],"collector":{"type":"HTTP"}}}, admin, 201)
++tid = template["id"]
++request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 201)
++request(f"monitoring/templates/{tid}", "PATCH", {"package_config":{"collector":{"type":"HTTP","interval_seconds":90}}}, admin)
++effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
++assert effective["templates"][0]["version"] == 1 and not effective["valid"] and "team" in effective["missing_required_attributes"]
++request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin)
++effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
++assert effective["valid"] and effective["collector"]["interval_seconds"] == 30 and effective["templates"][0]["version"] == 1
++versions = request(f"monitoring/templates/{tid}/versions", token=admin)
++assert {v["version"] for v in versions} == {1,2}
++request("monitoring/collectors", "POST", {"data_source_id":sid,"name":"forbidden enabled legacy collector","collector_type":"HTTP","enabled":True,"interval_seconds":60,"configuration":{}},admin,409)
++request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"priority":200},viewer,403)
++request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"metrics":"invalid"}},admin,422)
++request("monitoring/templates", "POST", {"name":"invalid shape","package_config":{"collector":[]}},admin,422)
++other_source=request("resource-management/data-sources","POST",{"organization_id":bid,"name":"Other template scope "+uuid.uuid4().hex,"source_type":"LINUX"},admin,201)
++request(f"monitoring/data-sources/{other_source['id']}/templates", "POST", {"template_id":tid,"template_version":1},viewer,403)
++from concurrent.futures import ThreadPoolExecutor as TemplatePool
++with TemplatePool(max_workers=2) as pool:
++    jobs=[pool.submit(request,f"monitoring/templates/{tid}","PATCH",{"package_config":{"collector":{"type":"HTTP","interval_seconds":interval}}},admin) for interval in (40,50)]
++    committed=[future.result()["version"] for future in jobs]
++assert set(committed)=={3,4}
++assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)["templates"][0]["version"]==1
++checks.append("Template immutable v1 pin survives v2 commit; required attributes and source overrides resolve; original versions retained; viewer mutation and disabled-parent legacy creation denied")
++# Role edits revoke prior sessions; stale callers cannot mutate a resource.
++with SessionLocal() as db:
++    user = db.scalar(select(User).where(User.username == "v16-api-viewer"))
++    membership = db.scalar(select(OrganizationMembership).where(OrganizationMembership.user_id == user.id))
++    membership_id = str(membership.id)
++request(f"auth/memberships/{membership_id}", "PATCH", {"role":"org_admin"}, admin)
++try:
++    urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"name":"stale forbidden"}).encode(),headers={"Authorization":"Bearer "+viewer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=10)
++    raise AssertionError("revoked session accepted")
++except HTTPError as error:
++    assert error.code == 401
++writer = request("auth/login", "POST", {"username":"v16-api-viewer", "password":fixture["viewer_password"]})["access_token"]
++request(f"resource-management/data-sources/{sid}", "PATCH", {"description":"authorized before revocation"}, writer)
++# Queue revocation before a mutation at the existing transaction-authority lock.
++from app.db.session import engine
++from sqlalchemy import text as sql_text
++import time as race_time
++from concurrent.futures import ThreadPoolExecutor as RacePool
++
++def raw_mutation():
++    try:
++        with urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"description":"forbidden concurrent"}).encode(),headers={"Authorization":"Bearer "+writer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=20) as response:
++            return response.status
++    except HTTPError as error:
++        return error.code
++
++def wait_authority_queue(count):
++    for _ in range(500):
++        with engine.connect() as poll:
++            waiting=poll.scalar(sql_text("SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND classid=782104 AND objid=8 AND NOT granted"))
++        if waiting>=count:return
++        race_time.sleep(.01)
++    raise AssertionError("Expected transaction authority waiter did not reach PostgreSQL lock")
++
++with RacePool(max_workers=2) as pool:
++    with engine.begin() as blocker:
++        blocker.execute(sql_text("SELECT pg_advisory_xact_lock(782104,8)"))
++        revocation=pool.submit(request,f"auth/memberships/{membership_id}","PATCH",{"role":"viewer"},admin)
++        wait_authority_queue(1)
++        mutation=pool.submit(raw_mutation)
++        wait_authority_queue(2)
++    assert revocation.result()["sessions_revoked"]
++    denied_status=mutation.result()
++    assert denied_status in (401,403), denied_status
++with SessionLocal() as db:
++    assert db.get(DataSource,uuid.UUID(sid)).description=="authorized before revocation"
++checks.append("Actual PostgreSQL queued revocation/update race: prior authorized writer succeeds, revocation commits first, waiting mutation401/403 with no committed partial change")
++
++with SessionLocal() as db:
++    assert db.get(DataSource,uuid.UUID(sid)).name != "stale forbidden"
++checks.append("Membership role mutation revokes old session; actual stale authenticated PATCH401; no committed resource mutation; viewer role restored")
++# OC-DEV-002C: real optimistic update conflict, concurrent writers and rollback.
++attachment_path = f"monitoring/data-sources/{sid}/templates/{tid}"
++original = request(f"monitoring/data-sources/{sid}/templates", token=admin)[0]
++revision = original["updated_at"]
++with TemplatePool(max_workers=2) as pool:
++    def edit_attachment(priority):
++        try:
++            headers={"Authorization":"Bearer "+admin}
++            from scripts.acceptance_scope import selection_headers
++            headers.update(selection_headers(base,admin));headers["Content-Type"]="application/json"
++            with urlopen(Request(base+"/api/v1/"+attachment_path,method="PATCH",headers=headers,data=json.dumps({"expected_updated_at":revision,"priority":priority}).encode()),timeout=20) as response:
++                return response.status,json.load(response)
++        except HTTPError as error:
++            return error.code,json.load(error)
++    competing=list(pool.map(edit_attachment,(301,302)))
++assert sorted(status for status,_ in competing)==[200,409],competing
++winner=request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]
++assert winner["priority"] in (301,302) and winner["template_version"]==1
++before_effective=request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)
++assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
++# A task-owned PostgreSQL trigger injects failure before UPDATE can commit.
++from sqlalchemy import text as injected_text
++with SessionLocal() as db:
++    db.execute(injected_text("CREATE FUNCTION sprint_attachment_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.priority=98765 THEN RAISE EXCEPTION 'controlled attachment transaction failure'; END IF; RETURN NEW; END $$"))
++    db.execute(injected_text("CREATE TRIGGER sprint_attachment_failure BEFORE UPDATE ON monitoring_template_attachments FOR EACH ROW EXECUTE FUNCTION sprint_attachment_failure()"));db.commit()
++try:
++    request(attachment_path,"PATCH",{"priority":98765},admin,500)
++    assert request(f"monitoring/data-sources/{sid}/templates",token=admin)==[winner]
++    assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
++finally:
++    with SessionLocal() as db:
++        db.execute(injected_text("DROP TRIGGER sprint_attachment_failure ON monitoring_template_attachments"))
++        db.execute(injected_text("DROP FUNCTION sprint_attachment_failure()"));db.commit()
++request(f"monitoring/templates/{tid}","DELETE",token=admin,expected=204)
++request(attachment_path,"PATCH",{"enabled":False},admin)
++request(attachment_path,"PATCH",{"enabled":True},admin,409)
++request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid},admin,409)
++assert not request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]["enabled"]
++assert {v["version"] for v in request(f"monitoring/templates/{tid}/versions",token=admin)}=={1,2,3,4}
++checks.append("002C attachment concurrent expected-revision writes produce200/409; injected PostgreSQL failure rolls back state; disabled template cannot re-enable or attach; pinned versions preserved")
++
++# Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
++import time
++from datetime import datetime, timezone
++from concurrent.futures import ThreadPoolExecutor
++from sqlalchemy import select, func
++from app.models import MetricDefinition, MetricSample
++metric_id = uuid.uuid4()
++with SessionLocal() as db:
++    db.add(MetricDefinition(id=metric_id, organization_id=uuid.UUID(aid), data_source_id=uuid.UUID(sid), collector_id=uuid.UUID(collector["id"]), name="controlled-load", resource_type="VM", metric_type="gauge"))
++    db.commit()
++expected_ids = [uuid.uuid4() for _ in range(200)]
++def write_load():
++    for start in range(0, 200, 10):
++        with SessionLocal() as db:
++            db.add_all([MetricSample(id=identity, organization_id=uuid.UUID(aid), metric_definition_id=metric_id, collector_id=uuid.UUID(collector["id"]), observed_at=datetime.now(timezone.utc), value_numeric=1.0) for identity in expected_ids[start:start+10]])
++            db.commit()
++        time.sleep(0.01)
++latencies = []
++with ThreadPoolExecutor(max_workers=1) as pool:
++    future = pool.submit(write_load)
++    for _ in range(20):
++        started = time.perf_counter()
++        response = request("infrastructure/resources?limit=50", token=admin)
++        latencies.append((time.perf_counter()-started)*1000)
++        assert response["total"] >= 1
++    future.result()
++with SessionLocal() as db:
++    actual_ids = set(db.scalars(select(MetricSample.id).where(MetricSample.metric_definition_id == metric_id)))
++    physical = db.scalar(select(func.count()).select_from(MetricSample).where(MetricSample.metric_definition_id == metric_id))
++assert actual_ids == set(expected_ids) and physical == 200
++ordered = sorted(latencies)
++Path(os.environ["V16_EVIDENCE_DIR"]).joinpath("controlled-load.json").write_text(json.dumps({"scope":"200 direct PostgreSQL sample writes concurrent with20 authenticated infrastructure reads; not full OTLP/global responsiveness reproduction", "p50_ms":ordered[9], "p95_ms":ordered[18], "max_ms":max(ordered), "latencies_ms":latencies, "expected":200, "persisted_distinct":len(actual_ids), "physical_rows":physical, "missing":0, "duplicates":0, "global_RM_DEF_036":"NOT REPRODUCED by this bounded probe; all-module representative load remains NOT TESTED"},indent=2))
++checks.append("Controlled concurrent sample writes/read latency:200/200 stable IDs, zero missing/duplicates; no global performance certification")
+ report = {
+     "status": "PASS",
+     "checks": checks,
+diff --git a/backend/tests/test_sprint_monitoring_only.py b/backend/tests/test_sprint_monitoring_only.py
+new file mode 100644
+index 0000000..65344d8
+--- /dev/null
++++ b/backend/tests/test_sprint_monitoring_only.py
+@@ -0,0 +1,37 @@
++"""The VM configuration surface describes observation, never workload commands."""
++
++import unittest
++from pydantic import ValidationError
++from app.unified.schemas import VMCreate, VMParameters
++
++
++class MonitoringOnlyConfigurationTests(unittest.TestCase):
++    def test_workload_operations_are_not_vm_registration_fields(self):
++        valid = {
++            "organization_id": "00000000-0000-0000-0000-000000000001",
++            "name": "read-only",
++            "environment": "DEV",
++            "hostname": "synthetic.invalid",
++            "address": "203.0.113.10",
++            "os_type": "Linux",
++        }
++        self.assertEqual(VMCreate.model_validate(valid).hostname, "synthetic.invalid")
++        for key in ("remote_command", "service_action", "restart_process", "etl_retry"):
++            with self.subTest(operation=key), self.assertRaises(ValidationError) as exc:
++                VMCreate.model_validate({**valid, key: "forbidden"})
++            self.assertTrue(
++                any(
++                    e["type"] == "extra_forbidden" and e["loc"] == (key,)
++                    for e in exc.exception.errors()
++                )
++            )
++
++    def test_parameter_selectors_do_not_authorize_service_control(self):
++        baseline = VMParameters.model_validate(
++            {"domain": "VM", "services": ["sshd"], "processes": ["python"]}
++        )
++        self.assertEqual(baseline.services, ["sshd"])
++        with self.assertRaises(ValidationError):
++            VMParameters.model_validate(
++                {"domain": "VM", "services": ["sshd"], "service_action": "restart"}
++            )
+diff --git a/backend/tests/test_sprint_resource_lifecycle.py b/backend/tests/test_sprint_resource_lifecycle.py
+new file mode 100644
+index 0000000..867eabb
+--- /dev/null
++++ b/backend/tests/test_sprint_resource_lifecycle.py
+@@ -0,0 +1,71 @@
++"""Lifecycle negative contracts; existing owned HTTP/RBAC tests run separately."""
++
++import unittest
++from types import SimpleNamespace
++from unittest.mock import Mock
++from uuid import uuid4
++import app.main  # noqa: F401
++from fastapi import HTTPException
++from pydantic import ValidationError
++from app.api import resource_management, monitoring
++from app.schemas.monitoring import DataSourceUpdate, CollectorUpdate
++from app.services.collector_lifecycle import require_enabled_parent
++
++
++class ResourceLifecycleTests(unittest.TestCase):
++    def test_ownership_and_unknown_patch_fields_are_rejected(self):
++        for model, field in [
++            (DataSourceUpdate, "organization_id"),
++            (CollectorUpdate, "data_source_id"),
++        ]:
++            with self.subTest(model=model), self.assertRaises(ValidationError):
++                model.model_validate({field: str(uuid4())})
++
++    def test_configuration_does_not_assert_health(self):
++        with self.assertRaises(ValidationError):
++            CollectorUpdate.model_validate({"status": "HEALTHY"})
++
++    def test_both_patch_routes_refuse_disabled_parent_without_commit(self):
++        for handler in [
++            resource_management.update_scoped_collector,
++            monitoring.update_collector,
++        ]:
++            db = Mock()
++            collector = SimpleNamespace(
++                data_source_id=uuid4(),
++                enabled=False,
++                collector_type="HTTP",
++                configuration={},
++            )
++            db.get.side_effect = [
++                collector,
++                SimpleNamespace(
++                    enabled=False, source_type="LINUX", connection_config={}
++                ),
++                SimpleNamespace(enabled=False),
++            ]
++            with self.subTest(route=handler.__name__), self.assertRaises(
++                HTTPException
++            ) as error:
++                handler(uuid4(), CollectorUpdate(enabled=True), db)
++            self.assertEqual(error.exception.status_code, 409)
++            db.commit.assert_not_called()
++            self.assertFalse(collector.enabled)
++
++    def test_disabling_and_enabled_parent_are_supported(self):
++        require_enabled_parent(SimpleNamespace(enabled=False), False)
++        require_enabled_parent(SimpleNamespace(enabled=True), True)
++
++    def test_unreviewed_release_mapping_fails_before_network(self):
++        import importlib.util
++        from pathlib import Path
++        from unittest.mock import patch
++
++        file = Path(__file__).resolve().parents[2] / "scripts/uat/pull_release.py"
++        spec = importlib.util.spec_from_file_location("sprint_publish_policy", file)
++        module = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(module)
++        with patch.object(module, "api") as api:
++            with self.assertRaisesRegex(module.Rejected, "Trusted workflow mapping"):
++                module.check_ci("f" * 40)
++            api.assert_not_called()
+diff --git a/backend/tests/test_sprint_template_configuration.py b/backend/tests/test_sprint_template_configuration.py
+new file mode 100644
+index 0000000..71a02cd
+--- /dev/null
++++ b/backend/tests/test_sprint_template_configuration.py
+@@ -0,0 +1,80 @@
++import unittest
++from fastapi import HTTPException
++from app.services.template_resolution import _apply_package
++
++
++class TemplateConfigurationTests(unittest.TestCase):
++    def test_malformed_package_fails_with_validation_instead_of_500(self):
++        for package in (
++            {"collector": []},
++            {"metrics": "invalid"},
++            {"logs": [1]},
++            {"attributes": None},
++        ):
++            with self.subTest(package=package), self.assertRaises(
++                HTTPException
++            ) as error:
++                _apply_package({}, package)
++            self.assertEqual(error.exception.status_code, 422)
++
++    def test_named_overrides_preserve_unrelated_metrics(self):
++        original = {
++            "metrics": [
++                {"metric": "cpu", "unit": "pct"},
++                {"metric": "disk", "unit": "bytes"},
++            ]
++        }
++        output = _apply_package(
++            original, {"metrics": [{"metric": "cpu", "interval": 30}]}
++        )
++        self.assertEqual(
++            output["metrics"],
++            [
++                {"metric": "cpu", "unit": "pct", "interval": 30},
++                {"metric": "disk", "unit": "bytes"},
++            ],
++        )
++        self.assertEqual(original["metrics"][1], {"metric": "disk", "unit": "bytes"})
++
++    def test_attachment_update_rejects_forged_ownership_and_null_state(self):
++        from pydantic import ValidationError
++        from app.schemas.monitoring import MonitoringTemplateAttachmentUpdate
++
++        for data in (
++            {"data_source_id": "forged"},
++            {"enabled": None},
++            {"template_version": None},
++            {"priority": None},
++        ):
++            with self.subTest(data=data), self.assertRaises(ValidationError):
++                MonitoringTemplateAttachmentUpdate.model_validate(data)
++
++    def test_explicit_null_required_patch_fields_are_validation_errors(self):
++        from pydantic import ValidationError
++        from app.schemas.monitoring import (
++            DataSourceUpdate,
++            CollectorUpdate,
++            MonitoringTemplateUpdate,
++        )
++
++        for model, field in [
++            (DataSourceUpdate, "name"),
++            (DataSourceUpdate, "enabled"),
++            (CollectorUpdate, "interval_seconds"),
++            (MonitoringTemplateUpdate, "scope"),
++        ]:
++            with self.subTest(model=model, field=field), self.assertRaises(
++                ValidationError
++            ):
++                model.model_validate({field: None})
++        self.assertIsNone(
++            DataSourceUpdate.model_validate({"description": None}).description
++        )
++
++    def test_attachment_revision_does_not_allow_unknown_ownership(self):
++        from pydantic import ValidationError
++        from app.schemas.monitoring import MonitoringTemplateAttachmentUpdate
++        parsed = MonitoringTemplateAttachmentUpdate.model_validate({"expected_updated_at": "2026-11-08T00:00:00Z", "priority": 3})
++        self.assertIsNotNone(parsed.expected_updated_at.tzinfo)
++        with self.assertRaises(ValidationError):
++            MonitoringTemplateAttachmentUpdate.model_validate({"expected_updated_at": "not-a-revision"})
+diff --git a/frontend/package.json b/frontend/package.json
+index 7a24e5c..a0601f2 100644
+--- a/frontend/package.json
++++ b/frontend/package.json
+@@ -7,7 +7,7 @@
+     "dev": "vite",
+     "build": "vite build",
+     "preview": "vite preview",
+-    "test": "node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/monitoring_settings.test.mjs",
++    "test": "node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/template_attachment.test.mjs scripts/monitoring_settings.test.mjs",
+     "lint": "eslint src"
+   },
+   "dependencies": {
+diff --git a/frontend/scripts/resource_crud_acceptance.mjs b/frontend/scripts/resource_crud_acceptance.mjs
+index 7fc4a8d..7c5103e 100644
+--- a/frontend/scripts/resource_crud_acceptance.mjs
++++ b/frontend/scripts/resource_crud_acceptance.mjs
+@@ -13,6 +13,17 @@ const browser = await chromium.launch({
+ const page = await browser.newPage({ viewport: { width: 1600, height: 1100 } });
+ const errors = [],
+   serverErrors = [];
++const diagnostics = [], reloads = [];
++page.on("requestfailed", r => diagnostics.push({kind:"requestfailed", path:new URL(r.url()).pathname, error:r.failure()?.errorText, at:Date.now()}));
++page.on("response", r => {if(r.url().includes("/api/"))diagnostics.push({kind:"response",path:new URL(r.url()).pathname,status:r.status(),at:Date.now()});});
++page.on("framenavigated", f => {if(f===page.mainFrame())diagnostics.push({kind:"navigation",path:new URL(f.url()).pathname,hash:new URL(f.url()).hash,at:Date.now()});});
++async function keyboardTo(locator) {
++  for(let i=0;i<90;i++) {
++    if(await locator.evaluate(el=>el===document.activeElement))return;
++    await page.keyboard.press("Tab");
++  }
++  throw Error("Target was not keyboard reachable");
++}
+ page.on("pageerror", (e) => errors.push(e.message));
+ page.on("response", (r) => {
+   if (r.url().includes("/api/") && r.status() >= 500)
+@@ -262,6 +273,44 @@ try {
+     ).json()
+   ).items.find((r) => r.data_source_id === source.id);
+   assert.equal(disabled.active, false);
++  // Re-enable the same persisted identity, then verify narrow-screen keyboard use.
++  await row.getByRole("button", { name: "Edit", exact: true }).click();
++  modal = page.getByRole("region", { name: "Edit Compute Instance", exact: true });
++  await modal.getByLabel("Enable resource", { exact: true }).check();
++  await modal.getByRole("button", { name: "Save resource", exact: true }).click();
++  await modal.waitFor({ state: "hidden" });
++  await page.reload();
++  await page.getByLabel("Search resources", { exact: true }).fill("Wizard sequence refreshed");
++  await page.getByRole("button", { name: "Wizard sequence refreshed", exact: true }).waitFor();
++  const enabledAgain = (await (await page.request.get(base + "/api/v1/unified/resources?domain=VM&search=Wizard%20sequence%20refreshed", { headers })).json()).items.find(r => r.data_source_id === source.id);
++  assert.equal(enabledAgain.active, true);
++  phase = "repeated reload diagnostic";
++  for(let iteration=0;iteration<5;iteration++) {
++    const beforeUrl=page.url();const started=Date.now();
++    await page.reload();
++    await page.getByLabel("Search resources",{exact:true}).fill("Wizard sequence refreshed");
++    await page.getByRole("button",{name:"Wizard sequence refreshed",exact:true}).waitFor();
++    reloads.push({iteration,before_hash:new URL(beforeUrl).hash,after_hash:new URL(page.url()).hash,elapsed_ms:Date.now()-started,status:"PASS"});
++  }
++  phase="keyboard-only resource edit";
++  row=page.getByRole("row").filter({hasText:"Wizard sequence refreshed"});
++  await keyboardTo(row.getByRole("button",{name:"Edit",exact:true}));
++  await page.keyboard.press("Enter");
++  modal=page.getByRole("region",{name:"Edit Compute Instance",exact:true});
++  const nameInput=modal.getByLabel("Resource name",{exact:true});
++  await keyboardTo(nameInput);await page.keyboard.press("ControlOrMeta+A");
++  await page.keyboard.type("Wizard keyboard persisted");
++  await keyboardTo(modal.getByRole("button",{name:"Save resource",exact:true}));
++  await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
++  await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
++  await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
++  await page.reload();
++  await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
++  await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
++  await page.setViewportSize({ width:390, height:844 });
++  await page.keyboard.press("Tab");
++  assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");
++  await page.screenshot({ path:process.env.RELEASE_EVIDENCE_DIR+"/resource-mobile-keyboard.png", fullPage:true });
+   assert.deepEqual(errors, []);
+   assert.deepEqual(serverErrors, []);
+   await writeFile(
+@@ -270,13 +319,17 @@ try {
+       {
+         status: "PASS",
+         checks: [
+-          "Browser create/read/update/disable persisted",
++          "Browser create/read/update/disable/re-enable and reload persisted",
++          "Narrow viewport and keyboard-only edit/save persisted",
++          "Five exact repeated reloads preserve resource route and persisted records",
+           "Duplicate source returns 409",
+           "Logical OTEL configuration creates no polling CollectorRun",
+           "Edit preserves Collector ID and updates its configuration name",
+           "Other tenant cannot read registration or mutate source",
+           "Older authenticated inventory refresh cannot overwrite newer persisted state",
+         ],
++        reloads,
++        diagnostics,
+         page_errors: errors,
+         server_errors: serverErrors,
+       },
+@@ -292,6 +345,9 @@ try {
+   console.error(
+     "RESOURCE_CRUD_FAILURE " + JSON.stringify({ phase, type: error.name }),
+   );
++  await mkdir(process.env.RELEASE_EVIDENCE_DIR,{recursive:true});
++  await page.screenshot({path:process.env.RELEASE_EVIDENCE_DIR+"/resource-failure.png",fullPage:true});
++  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/resource-failure.json",JSON.stringify({phase,type:error.name,hash:new URL(page.url()).hash,reloads,diagnostics},null,2));
+   throw error;
+ } finally {
+   await browser.close();
+diff --git a/frontend/scripts/sprint1_load_navigation.mjs b/frontend/scripts/sprint1_load_navigation.mjs
+new file mode 100644
+index 0000000..28742cf
+--- /dev/null
++++ b/frontend/scripts/sprint1_load_navigation.mjs
+@@ -0,0 +1,19 @@
++import {readFile,writeFile} from 'node:fs/promises';
++import {pathToFileURL} from 'node:url';
++import assert from 'node:assert/strict';
++const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
++const f=JSON.parse(await readFile(process.env.V16_PRIVATE_DIR+'/browser-fixture.json','utf8'));
++const browser=await chromium.launch({headless:true});
++try {
++ const page=await browser.newPage({viewport:{width:1280,height:800}});let requests=0,errors=0;
++ page.on('response',r=>{if(r.url().includes('/api/')){requests++;if(r.status()>=500) errors++;}});
++ const start=performance.now();await page.goto(process.env.V16_UI_URL);
++ await page.getByLabel('Username').fill('v16-api-admin');await page.getByLabel('Password').fill(f.password);
++ await page.getByRole('button',{name:'Sign in',exact:true}).click();
++ await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();const loginMs=performance.now()-start;
++ const nav=performance.now();await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
++ await page.getByRole('button',{name:'Create Compute Instance',exact:true}).waitFor();const navigationMs=performance.now()-nav;
++ const lag=await page.evaluate(async()=>{const t=performance.now();await new Promise(r=>setTimeout(r,50));return performance.now()-t-50;});
++ assert.equal(errors,0);
++ await writeFile(process.env.V16_EVIDENCE_DIR+'/load-navigation.json',JSON.stringify({status:'PASS',login_render_ms:loginMs,resource_navigation_ms:navigationMs,event_loop_delay_ms:lag,api_response_count:requests,server_errors:errors,scope:'one authenticated desktop navigation during producer window; not all-module/mobile throughput certification'},null,2));
++} finally {await browser.close();}
+diff --git a/frontend/scripts/sprint1_resource_security.mjs b/frontend/scripts/sprint1_resource_security.mjs
+new file mode 100644
+index 0000000..435994c
+--- /dev/null
++++ b/frontend/scripts/sprint1_resource_security.mjs
+@@ -0,0 +1,135 @@
++// Real HTTP and browser controls; interception delays authentic responses only.
++import assert from 'node:assert/strict';
++import {readFile,writeFile} from 'node:fs/promises';
++import {pathToFileURL} from 'node:url';
++const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href);
++const f=JSON.parse(await readFile(process.env.V16_PRIVATE_DIR+'/browser-fixture.json','utf8'));
++const browser=await chromium.launch({headless:true,executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE});
++const base=process.env.V16_API_URL,out=process.env.V16_EVIDENCE_DIR;
++const checks=[],trace=[];let inspected,phase='start';
++async function login(name,password,orgs) {
++ const page=await browser.newPage({viewport:{width:1440,height:1000}});inspected=page;
++ page.on('response',r=>{if(r.url().includes('/api/'))trace.push({phase,at:Date.now(),path:new URL(r.url()).pathname,status:r.status()});});
++ page.on('requestfailed',r=>trace.push({phase,at:Date.now(),path:new URL(r.url()).pathname,failure:r.failure()?.errorText}));
++ await page.addInitScript(ids=>localStorage.setItem('opscontrol.organizationIds',JSON.stringify(ids)),orgs);
++ await page.goto(process.env.V16_UI_URL+'/#/resources/data-resources');
++ await page.getByLabel('Username',{exact:true}).fill(name);await page.getByLabel('Password',{exact:true}).fill(password);
++ await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.getByLabel('Search resources',{exact:true}).waitFor();return page;
++}
++try {
++ const page=await login('v16-api-admin',f.password,[f.organization_id,f.other_organization_id]);
++ const admin=await page.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
++ const headers={Authorization:'Bearer '+admin,'X-OpsControl-Customers':[f.organization_id,f.other_organization_id].join(',')};
++ async function api(path,method='GET',data,status=200){const r=await page.request.fetch(base+'/api/v1/'+path,{method,headers,data});assert.equal(r.status(),status);return status===204?null:r.json();}
++ phase='resource browser create';
++ await page.getByRole('button',{name:'Create Compute Instance',exact:true}).click();let modal=page.getByRole('region',{name:'Create Compute Instance',exact:true});
++ await modal.getByLabel('Resource name',{exact:true}).fill('002C browser A');
++ await modal.getByLabel('Customer',{exact:true}).selectOption(f.organization_id);
++ await modal.getByLabel(/^Environment/).selectOption('DEV');
++ await modal.getByLabel('Hostname',{exact:true}).fill('002c-browser-a.invalid');
++ await modal.getByLabel('DNS / IP address',{exact:true}).fill('203.0.113.51');
++ await modal.getByRole('button',{name:'Save resource identity',exact:true}).click();await modal.waitFor({state:'hidden'});
++ const resource=(await api('unified/resources?domain=VM&search=002C%20browser%20A')).items.find(r=>r.name==='002C browser A');assert(resource);
++ const other=await api('unified/resources/vm','POST',{organization_id:f.other_organization_id,name:'002C browser B',environment:'DEV',hostname:'002c-browser-b.invalid',address:'203.0.113.52',os_type:'Linux'},201);
++ checks.push('Authenticated UI resource A create and persisted backend identity; resource B isolated fixture');
++ phase='monitoring-only negative payloads';
++ for(const operation of ['remote_command','service_action','restart_process','etl_retry']) {
++  const denial=await api('unified/resources/vm','POST',{organization_id:f.organization_id,name:'forbidden-workload-control',environment:'DEV',hostname:'forbidden.invalid',address:'203.0.113.53',os_type:'Linux',[operation]:'forbidden'},422);
++  assert.equal(denial.detail,'Invalid input');
++  assert(denial.errors.some(e=>e.type==='extra_forbidden'&&e.loc.includes(operation)));
++ }
++ checks.push('Actual HTTP rejects remote command, service action, process restart and ETL retry payload fields422');
++ phase='template UI pin and overrides';
++ const template=await api('monitoring/templates','POST',{name:'002C browser template',package_config:{collector:{type:'OTEL',interval_seconds:60}}},201);
++ await page.getByLabel('Search resources',{exact:true}).fill('002C browser A');
++ await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
++ modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});
++ let panel=modal.getByRole('region',{name:'Monitoring template configuration',exact:true});
++ await panel.getByLabel('Monitoring template',{exact:true}).selectOption(template.id);
++ await panel.getByLabel('Pinned template version',{exact:true}).selectOption('1');
++ await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
++ await panel.getByText(/pinned v1/).waitFor();
++ await api('monitoring/templates/'+template.id,'PATCH',{package_config:{collector:{type:'OTEL',interval_seconds:120}}});
++ await panel.getByRole('button',{name:'Edit template pin',exact:true}).click();
++ await panel.getByLabel('Pinned template version',{exact:true}).locator('option[value="1"]').waitFor({state:'attached'});
++ assert.equal(await panel.getByLabel('Pinned template version',{exact:true}).inputValue(),'1');
++ const overrides=panel.getByLabel('Template package overrides (JSON)',{exact:true});
++ await overrides.fill('invalid json');await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
++ await panel.getByRole('alert').filter({hasText:'Overrides: enter a valid JSON object.'}).waitFor();
++ await overrides.fill('{"collector":{"interval_seconds":45}}');
++ await Promise.all([page.waitForResponse(r=>r.request().method()==='PATCH' && r.url().includes('/templates/'+template.id) && r.status()===200),panel.getByRole('button',{name:'Save template configuration',exact:true}).click()]);
++ await panel.getByLabel('Monitoring template',{exact:true}).waitFor();
++ await panel.getByText(/pinned v1/).waitFor();
++ const effectiveBefore=await api('monitoring/data-sources/'+resource.data_source_id+'/effective-configuration');
++ assert.equal(effectiveBefore.collector.interval_seconds,45);assert.equal(effectiveBefore.templates[0].version,1);
++ await modal.getByRole('button',{name:'Cancel',exact:true}).click();
++ await page.reload();await page.getByLabel('Search resources',{exact:true}).fill('002C browser A');
++ await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
++ modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});panel=modal.getByRole('region',{name:'Monitoring template configuration',exact:true});
++ await panel.getByText(/pinned v1/).waitFor();
++ assert.deepEqual(await api('monitoring/data-sources/'+resource.data_source_id+'/effective-configuration'),effectiveBefore);
++ await panel.getByRole('button',{name:'Edit template pin',exact:true}).click();
++ await panel.getByLabel('Pinned template version',{exact:true}).waitFor();
++ await panel.getByLabel('Template package overrides (JSON)',{exact:true}).fill('{"collector":{"interval_seconds":46}}');
++ await api('monitoring/data-sources/'+resource.data_source_id+'/templates/'+template.id,'PATCH',{priority:999});
++ await panel.getByRole('button',{name:'Save template configuration',exact:true}).click();
++ await panel.getByRole('alert').filter({hasText:'Template attachment changed; reload before saving'}).waitFor();
++ assert.equal(await panel.getByLabel('Template package overrides (JSON)',{exact:true}).inputValue(),'{"collector":{"interval_seconds":46}}');
++ await page.screenshot({path:out+'/template-stale-edit-preserved.png',fullPage:true});
++ await page.setViewportSize({width:390,height:844});
++ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
++ await page.screenshot({path:out+'/template-mobile.png',fullPage:true});
++ await page.setViewportSize({width:1440,height:1000});
++ await modal.getByRole('button',{name:'Cancel',exact:true}).click();
++ checks.push('Browser template V1 pin survives V2; invalid JSON field error; override save/reload deterministic; stale edit409 preserves unsaved text');
++ phase='tenant A/B delayed inventory';
++ await page.getByLabel('Search resources',{exact:true}).fill('002C browser');
++ await page.getByLabel('Resource customer filter',{exact:true}).selectOption(f.organization_id);
++ await page.getByRole('button',{name:'002C browser A',exact:true}).waitFor();
++ let release,captured;const held=new Promise(r=>release=r),ready=new Promise(r=>captured=r);let once=true,completed;const done=new Promise(r=>completed=r);
++ await page.route('**/api/v1/unified/resources?*',async route=>{if(!once)return route.continue();once=false;const response=await route.fetch();captured();await held;try{await route.fulfill({response});}catch(e){if(route.request().failure()?.errorText!=='net::ERR_ABORTED')throw e;}finally{completed();}});
++ try {
++  await page.getByRole('button',{name:'Refresh',exact:true}).click();await ready;
++  await page.getByLabel('Resource customer filter',{exact:true}).selectOption(f.other_organization_id);
++  await page.getByRole('button',{name:'002C browser B',exact:true}).waitFor();
++  release();await done;
++  assert.equal(await page.getByRole('button',{name:'002C browser A',exact:true}).count(),0);
++ } finally {release();await page.unroute('**/api/v1/unified/resources?*');}
++ await page.screenshot({path:out+'/resource-tenant-b.png',fullPage:true});
++ checks.push('Delayed authentic A inventory cannot overwrite B selection; A row absent');
++ const cross=await page.request.get(base+'/api/v1/unified/resources/'+resource.id,{headers:{...headers,'X-OpsControl-Customers':f.other_organization_id}});assert.equal(cross.status(),404);
++ checks.push('Selected B scope cannot fetch A resource detail even with platform administrator login');
++ phase='revocation while editor open';
++ const users=await api('auth/users');const uid=users.find(u=>u.username==='v16-api-viewer').id;
++ const membership=(await api('auth/memberships')).find(m=>m.user_id===uid&&m.organization_id===f.organization_id);
++ await api('auth/memberships/'+membership.id,'PATCH',{role:'org_admin'});
++ const operator=await login('v16-api-viewer',f.viewer_password,[f.organization_id]);
++ await operator.getByLabel('Search resources',{exact:true}).fill('002C browser A');
++ await operator.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
++ const editor=operator.getByRole('region',{name:'Edit Compute Instance',exact:true});await editor.waitFor();
++ await editor.getByLabel('Resource name',{exact:true}).fill('unsaved forbidden replacement');
++ const staleToken=await operator.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
++ await api('auth/memberships/'+membership.id,'PATCH',{role:'viewer'});
++ await operator.getByLabel('Username',{exact:true}).waitFor({timeout:15000});
++ assert.equal(await operator.getByRole('region',{name:'Edit Compute Instance',exact:true}).count(),0);
++ const stale=await page.request.put(base+'/api/v1/unified/resources/'+resource.id,{headers:{Authorization:'Bearer '+staleToken,'X-OpsControl-Customers':f.organization_id},data:{expected_revision:resource.revision,name:'forbidden',environment:resource.environment,configuration:resource.configuration,active:true}});assert.equal(stale.status(),401);
++ assert.equal((await api('unified/resources/'+resource.id)).name,'002C browser A');
++ await operator.screenshot({path:out+'/resource-revoked-editor.png',fullPage:true});
++ checks.push('Revocation closes open unsaved editor; old-session PUT401; persisted name unchanged');
++ phase='viewer mutation';
++ const viewer=await login('v16-api-viewer',f.viewer_password,[f.organization_id]);
++ await viewer.getByLabel('Search resources',{exact:true}).fill('002C browser A');
++ await viewer.getByRole('button',{name:'002C browser A',exact:true}).waitFor();
++ assert.equal(await viewer.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).count(),0);
++ const viewerToken=await viewer.evaluate(()=>sessionStorage.getItem('opscontrol.sessionToken'));
++ assert.equal((await page.request.patch(base+'/api/v1/resource-management/data-sources/'+resource.data_source_id,{headers:{Authorization:'Bearer '+viewerToken,'X-OpsControl-Customers':f.organization_id},data:{name:'viewer forbidden'}})).status(),403);
++ checks.push('Viewer has no Edit control and actual attempted mutation403');
++ await page.screenshot({path:out+'/resource-security-desktop.png',fullPage:true});
++ assert(!('HEALTHY'===resource.activation_status));
++ await writeFile(out+'/resource-security.json',JSON.stringify({status:'PASS',checks,trace,resource_id:resource.id,other_resource_id:other.id,provider_access:false},null,2));
++ console.log('RESOURCE SECURITY BROWSER PASS '+checks.length+' groups');
++} catch(error) {
++ await inspected?.screenshot({path:out+'/resource-security-failure.png',fullPage:true});
++ await writeFile(out+'/resource-security-failure.json',JSON.stringify({phase,type:error.name,trace},null,2));
++ throw error;
++} finally {await browser.close();}
+diff --git a/frontend/scripts/template_attachment.test.mjs b/frontend/scripts/template_attachment.test.mjs
+new file mode 100644
+index 0000000..0821691
+--- /dev/null
++++ b/frontend/scripts/template_attachment.test.mjs
+@@ -0,0 +1,6 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import { attachmentVersion } from '../src/templateAttachmentSelection.js';
++test('existing pin survives a newer published template',()=>assert.equal(attachmentVersion({version:2},{template_version:1}),1));
++test('new attachment selects current published version',()=>assert.equal(attachmentVersion({version:3},null),3));
++test('malformed persisted pin cannot silently select latest',()=>{for(const v of [null,0,-1,'1',undefined]) assert.throws(()=>attachmentVersion({version:3},{template_version:v}));});
+diff --git a/frontend/src/components/ResourceTemplateConfiguration.jsx b/frontend/src/components/ResourceTemplateConfiguration.jsx
+new file mode 100644
+index 0000000..72afa5d
+--- /dev/null
++++ b/frontend/src/components/ResourceTemplateConfiguration.jsx
+@@ -0,0 +1,106 @@
++import { useEffect, useRef, useState } from "react";
++import { control } from "../controlPlane";
++import { hasPermission } from "../permissions";
++
++// The existing source attachment is the only configuration owner. Saving here
++// does not activate a collector or establish health/provider compatibility.
++export default function ResourceTemplateConfiguration({ sourceId, organizationId, user }) {
++  const [templates, setTemplates] = useState([]);
++  const [attachments, setAttachments] = useState([]);
++  const [effective, setEffective] = useState(null);
++  const [selected, setSelected] = useState("");
++  const [versions, setVersions] = useState([]);
++  const [version, setVersion] = useState("");
++  const [overrides, setOverrides] = useState("{}");
++  const [revision, setRevision] = useState(null);
++  const [error, setError] = useState("");
++  const [busy, setBusy] = useState(true);
++  const [loadingVersions, setLoadingVersions] = useState(false);
++  const generation = useRef(0);
++  const selection = useRef(0);
++  const canManage = hasPermission(user, "templates.manage", organizationId);
++  const base = `/api/v1/monitoring/data-sources/${sourceId}`;
++  const call = (path, method = "GET", body) => control(path, method, body, { customerIds: [organizationId] });
++
++  const load = async () => {
++    const ticket = ++generation.current;
++    setBusy(true); setError("");
++    try {
++      const [catalogue, attached, resolved] = await Promise.all([
++        call("/api/v1/monitoring/templates"), call(base + "/templates"), call(base + "/effective-configuration"),
++      ]);
++      if (generation.current !== ticket) return;
++      setTemplates(catalogue); setAttachments(attached); setEffective(resolved);
++    } catch (e) { if (generation.current === ticket) setError(e.message); }
++    finally { if (generation.current === ticket) setBusy(false); }
++  };
++  useEffect(() => {
++    setSelected(""); setVersions([]); setVersion(""); setOverrides("{}"); setRevision(null);
++    setTemplates([]); setAttachments([]); setEffective(null); load();
++    return () => { generation.current++; selection.current++; };
++    // load/call intentionally capture the exact scope for this generation.
++  }, [sourceId, organizationId, user.authorization_revision]);
++
++  const choose = async (id) => {
++    const ticket = ++selection.current;
++    setSelected(id); setVersions([]); setVersion(""); setError("");
++    const existing = attachments.find(a => a.template_id === id);
++    setRevision(existing?.updated_at || null);
++    setOverrides(JSON.stringify(existing?.overrides || {}, null, 2));
++    if (!id) return;
++    setLoadingVersions(true);
++    try {
++      const rows = await call(`/api/v1/monitoring/templates/${id}/versions`);
++      if (selection.current !== ticket) return;
++      const committed = rows.filter(v => v.status === "COMMITTED");
++      setVersions(committed);
++      setVersion(String(existing?.template_version || committed[0]?.version || ""));
++    } catch (e) { if (selection.current === ticket) setError(e.message); }
++    finally { if (selection.current === ticket) setLoadingVersions(false); }
++  };
++  const save = async () => {
++    const ticket = generation.current;
++    setError("");
++    let parsed;
++    try { parsed = JSON.parse(overrides); }
++    catch { setError("Overrides: enter a valid JSON object."); return; }
++    if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
++      setError("Overrides: enter a JSON object, not a list or scalar."); return;
++    }
++    setBusy(true);
++    try {
++      const existing = attachments.find(a => a.template_id === selected);
++      const payload = { template_version: Number(version), overrides: parsed };
++      await call(base + "/templates" + (existing ? `/${selected}` : ""), existing ? "PATCH" : "POST",
++        existing ? { ...payload, expected_updated_at: revision } : { ...payload, template_id: selected });
++      if (generation.current !== ticket) return;
++      setSelected(""); setVersion(""); setVersions([]); setOverrides("{}");
++      await load();
++    } catch (e) { if (generation.current === ticket) { setError(e.message); setBusy(false); } }
++  };
++  return <section aria-label="Monitoring template configuration" className="card">
++    <h3>Monitoring template configuration</h3>
++    <p>Explicit committed version pins and validated package overrides. Saved configuration is not monitoring activation or healthy telemetry. Provider compatibility is unverified. Historical attachment revisions are not available.</p>
++    {busy && <p role="status">Loading or saving template configuration…</p>}
++    {error && <p role="alert">{error}</p>}
++    <ul>{attachments.map(a => <li key={a.id}>
++      {templates.find(t => t.id === a.template_id)?.name || a.template_id} · pinned v{a.template_version} · {a.enabled ? "Configuration enabled" : "Configuration disabled"}
++      {canManage && <button type="button" disabled={busy} onClick={() => choose(a.template_id)}>Edit template pin</button>}
++    </li>)}</ul>
++    {!busy && !attachments.length && <p>No monitoring template attached.</p>}
++    {canManage && <>
++      <label className="form-field"><span>Monitoring template</span><select aria-label="Monitoring template" value={selected} disabled={busy} onChange={e => choose(e.target.value)}>
++        <option value="">Select a committed template</option>
++        {templates.filter(t => t.status === "COMMITTED").map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
++      </select></label>
++      {selected && <>
++        <label className="form-field"><span>Pinned template version</span><select aria-label="Pinned template version" value={version} disabled={busy || loadingVersions} onChange={e => setVersion(e.target.value)}>
++          {versions.map(v => <option key={v.id} value={v.version}>v{v.version}</option>)}
++        </select></label>
++        <label className="form-field"><span>Template package overrides (JSON)</span><textarea aria-label="Template package overrides (JSON)" rows={5} value={overrides} onChange={e => setOverrides(e.target.value)} aria-invalid={!!error} /></label>
++        <button type="button" disabled={busy || loadingVersions || !version} onClick={save}>Save template configuration</button>
++      </>}
++    </>}
++    {effective && <p role="status">Configuration: {!effective.templates?.length ? "NO TEMPLATE ATTACHED" : effective.valid ? "VALID" : "INCOMPLETE"}. Missing required attributes: {(effective.missing_required_attributes || []).join(", ") || "none"}. Activation and operational health require independent evidence.</p>}
++  </section>;
++}
+diff --git a/frontend/src/pages/ResourceManagementV2.jsx b/frontend/src/pages/ResourceManagementV2.jsx
+index a7bb7fc..a69a4b2 100644
+--- a/frontend/src/pages/ResourceManagementV2.jsx
++++ b/frontend/src/pages/ResourceManagementV2.jsx
+@@ -1,3 +1,4 @@
++import { attachmentVersion } from "../templateAttachmentSelection.js";
+ import { isExcludedPlatform } from "../excludedPlatforms.js";
+ import { useEffect, useMemo, useRef, useState } from "react";
+ import useDialogFocus from "../components/useDialogFocus";
+@@ -218,13 +219,13 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
+       const chosen = templates.filter(t => form.templates.includes(t.id));
+       const config = { opscontrol: { ...meta(initial), visible_name: form.visible_name || form.name, hostname: form.hostname, environment: form.environment, workload_roles: form.workload_roles, server_type: form.workload_roles.length > 1 ? "Multi-role" : form.workload_roles[0], os_type: form.os_type, product_family: form.product_family, product: form.product, host_groups: form.host_groups, template_ids: form.templates, templates: chosen.map(t => t.name) } };
+       const source = initial?.id ? await updateDataSource(initial.id, { name: form.name || form.hostname, endpoint: form.hostname, description: form.description || null, connection_config: { ...(initial.connection_config || {}), ...config } }) : await createDataSource({ organization_id: form.organization_id, name: form.name || form.hostname, source_type: form.os_type.toUpperCase(), endpoint: form.hostname, description: form.description || null, auth_type: "SECRET_REFERENCE", connection_config: config, enabled: true });
+-      const existing = await fetchDataSourceTemplates(source.id).catch(() => []);
++      const existing = await fetchDataSourceTemplates(source.id);
+       const wanted = new Set(form.templates);
+       for (const a of existing) if (!wanted.has(a.template_id)) await detachDataSourceTemplate(source.id, a.template_id);
+       for (const t of chosen) {
+         const current = existing.find(a => a.template_id === t.id);
+-        if (current) await updateDataSourceTemplate(source.id, t.id, { template_version: Number(t.version || current.template_version), priority: current.priority, overrides: current.overrides || null, enabled: true });
+-        else await attachDataSourceTemplate(source.id, { template_id: t.id, template_version: Number(t.version || 1), priority: 100, overrides: null });
++        if (current) await updateDataSourceTemplate(source.id, t.id, { expected_updated_at: current.updated_at, template_version: attachmentVersion(t, current), priority: current.priority, overrides: current.overrides || null, enabled: true });
++        else await attachDataSourceTemplate(source.id, { template_id: t.id, template_version: attachmentVersion(t, null), priority: 100, overrides: null });
+       }
+       // A Collector is configuration, not a process. Host-agent enrollment and
+       // explicit configuration application start telemetry. Reconcile edits
+@@ -244,7 +245,7 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
+ 
+   return <Modal title={initial?.id ? "Edit Data Source" : "Add Data Source"} wide onClose={() => !saving && onClose()}>
+     <div className="onboarding-steps">{["Organization", "Data Source", "Templates", "Collector Configuration", "Review"].map((x, i) => <div key={x} className={step === i + 1 ? "onboarding-step active" : step > i + 1 ? "onboarding-step complete" : "onboarding-step"}><span>{step > i + 1 ? "✓" : i + 1}</span>{x}</div>)}</div>
+-    {step === 1 && <div className="resource-form"><div className="info-box">Start with the customer boundary. Organizations can be created or edited without leaving onboarding.</div><Field label="Organization"><select value={form.organization_id} onChange={e => update({ organization_id: e.target.value })}>{organizations.filter(o => o.active || o.id === form.organization_id).map(o => <option key={o.id} value={o.id}>{o.name} ({o.code})</option>)}</select></Field><div className="heading-actions"><button type="button" className="filter-button" onClick={() => setOrgEditor({})}>+ Create Organization</button>{form.organization_id && <button type="button" className="filter-button" onClick={() => setOrgEditor(organizations.find(o => o.id === form.organization_id))}>Edit Selected Organization</button>}</div><div className="form-footer"><span className="muted small">Step 1 of 5</span><button type="button" className="primary-button" disabled={!form.organization_id} onClick={() => setStep(2)}>Next: Data Source →</button></div>{orgEditor && <OrgModal item={orgEditor.id ? orgEditor : null} onClose={() => setOrgEditor(null)} onSaved={saved => { setOrgEditor(null); setForm(v => ({ ...v, organization_id: saved.id })); onOrganizationSaved?.(saved); }} />}</div>}
++    {step === 1 && <div className="resource-form"><div className="info-box">Start with the customer boundary. Organizations can be created or edited without leaving onboarding.</div><Field label="Organization"><select disabled={Boolean(initial?.id)} value={form.organization_id} onChange={e => update({ organization_id: e.target.value })}>{organizations.filter(o => o.active || o.id === form.organization_id).map(o => <option key={o.id} value={o.id}>{o.name} ({o.code})</option>)}</select></Field><div className="heading-actions"><button type="button" className="filter-button" onClick={() => setOrgEditor({})}>+ Create Organization</button>{form.organization_id && <button type="button" className="filter-button" onClick={() => setOrgEditor(organizations.find(o => o.id === form.organization_id))}>Edit Selected Organization</button>}</div><div className="form-footer"><span className="muted small">Step 1 of 5</span><button type="button" className="primary-button" disabled={!form.organization_id} onClick={() => setStep(2)}>Next: Data Source →</button></div>{orgEditor && <OrgModal item={orgEditor.id ? orgEditor : null} onClose={() => setOrgEditor(null)} onSaved={saved => { setOrgEditor(null); setForm(v => ({ ...v, organization_id: saved.id })); onOrganizationSaved?.(saved); }} />}</div>}
+     {step === 2 && <div className="resource-form"><div className="info-box">A Data Source is an organization VM/machine. Workload Roles are multi-select, so a VM can be both ETL and Application.</div><div className="form-grid"><Field label="Host Name"><input required value={form.hostname} onChange={e => update({ hostname: e.target.value, name: form.name || e.target.value })} /></Field><Field label="Visible Name"><input value={form.visible_name} onChange={e => update({ visible_name: e.target.value })} /></Field></div><div className="form-grid"><Field label="Environment"><select value={form.environment} onChange={e => update({ environment: e.target.value })}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="OS Type"><select value={form.os_type} onChange={e => update({ os_type: e.target.value })}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div><Field label="Workload Roles"><div className="check-grid">{ROLES.map(x => <label className="check-option" key={x}><input type="checkbox" checked={form.workload_roles.includes(x)} onChange={() => toggle("workload_roles", x)} /><span>{x}</span></label>)}</div></Field><div className="form-grid"><Field label="Product Family"><input value={form.product_family} onChange={e => update({ product_family: e.target.value })} /></Field><Field label="Product"><select value={form.product} onChange={e => update({ product: e.target.value })}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div><Field label="Host Groups"><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={form.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field><Field label="Description"><textarea value={form.description} onChange={e => update({ description: e.target.value })} /></Field><div className="form-footer"><button className="filter-button" type="button" onClick={() => setStep(1)}>← Organization</button><button className="primary-button" type="button" disabled={!form.hostname || !form.workload_roles.length} onClick={() => setStep(3)}>Next: Templates →</button></div></div>}
+     {step === 3 && <div className="resource-form"><div className="info-box">Select one or more policy packages. The effective configuration is resolved from pinned template versions plus Data Source overrides.</div><div className="template-grid">{templates.filter(t => t.status !== "DISABLED").map(t => <button type="button" className={form.templates.includes(t.id) ? "template-card selected" : "template-card"} key={t.id} onClick={() => toggle("templates", t.id)}><div className="template-card-head"><div><b>{t.name}</b><small>{t.scope} · v{t.version}</small></div><span className="template-check">{form.templates.includes(t.id) ? "✓" : "+"}</span></div><p>{t.description}</p><div className="template-example-list"><span>{t.metrics.length} metrics</span><span>{t.alerts.length} alerts</span><span>{t.logs.length} log rules</span></div></button>)}</div><div className="form-footer"><button className="filter-button" type="button" onClick={() => setStep(2)}>← Data Source</button><button className="primary-button" type="button" onClick={() => setStep(4)}>Next: Collector Configuration →</button></div></div>}
+     {step===4&&<div className="resource-form"><h3>Collector Details</h3><Field label="Collector name"><input value={agent.name} onChange={e=>setAgent(v=>({...v,name:e.target.value}))}/></Field><p>OS Type inherited from Data Source: {form.os_type}. Add Collection Methods and enroll the OpsControl Agent after saving.</p><div className="form-footer"><button type="button" onClick={()=>setStep(3)}>Back</button><button type="button" onClick={()=>setStep(5)}>Review</button></div></div>}
+@@ -293,7 +294,7 @@ export default function ResourceManagementV2({ user, section, embedded = false,
+     } catch (e) { if (generation === reloadGeneration.current) setError(e.message || "Unable to load Resource Management"); }
+     finally { if (generation === reloadGeneration.current) setLoading(false); }
+   };
+-  useEffect(() => { setDataSources([]); setCollectors([]); reload(); return () => { reloadGeneration.current++; }; }, [customerFilter, user?.authorization_revision]);
++  useEffect(() => { setWizard(null); setCollectorEditor(null); setDataSources([]); setCollectors([]); reload(); return () => { reloadGeneration.current++; }; }, [customerFilter, user?.authorization_revision]);
+   useEffect(() => { if (section) { setTab(section); setQuery(""); setPage(0); if (section === "organizations") setOrganizationFilter(""); } }, [section]);
+   // Resolve a Compute Instance's collector against the authorized inventory.
+   // Never open a collector by ID alone without checking its source scope.
+diff --git a/frontend/src/pages/UnifiedResourceManagement.jsx b/frontend/src/pages/UnifiedResourceManagement.jsx
+index bfefe01..ee41529 100644
+--- a/frontend/src/pages/UnifiedResourceManagement.jsx
++++ b/frontend/src/pages/UnifiedResourceManagement.jsx
+@@ -11,6 +11,7 @@ import EventDelivery from "./EventDelivery";
+ import DynamicConfigurationForm from "../components/DynamicConfigurationForm";
+ import CollectorControl from "./CollectorControl";
+ import ResourceManagementV2 from "./ResourceManagementV2";
++import ResourceTemplateConfiguration from "../components/ResourceTemplateConfiguration";
+ import DomainParameters, { Field } from "./DomainParameters";
+ const base = "/api/v1/unified";
+ const domainNames = {
+@@ -1598,6 +1599,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+               <p>Saving configuration does not verify native collection or activate monitoring.</p>
+             </div>
+           )}
++          {domain === "VM" && created?.data_source_id && hasPermission(user, "templates.view", created.organization_id) && <ResourceTemplateConfiguration key={created.data_source_id + user.authorization_revision} sourceId={created.data_source_id} organizationId={created.organization_id} user={user} />}
+           <label>
+             <input
+               type="checkbox"
+diff --git a/frontend/src/templateAttachmentSelection.js b/frontend/src/templateAttachmentSelection.js
+new file mode 100644
+index 0000000..f98f1d8
+--- /dev/null
++++ b/frontend/src/templateAttachmentSelection.js
+@@ -0,0 +1,6 @@
++// Resource edits preserve the selected immutable version. Upgrades are explicit.
++export function attachmentVersion(template, existing) {
++  const version = existing ? existing.template_version : template.version;
++  if (!Number.isInteger(version) || version < 1) throw new Error("Template version must be a positive integer");
++  return version;
++}
+diff --git a/scripts/v16-acceptance.py b/scripts/v16-acceptance.py
+index f33cc4e..f17fdda 100755
+--- a/scripts/v16-acceptance.py
++++ b/scripts/v16-acceptance.py
+@@ -321,7 +321,7 @@ try:
+                     str(python),
+                     "-m",
+                     "uvicorn",
+-                    "app.main:app",
++                    "scripts.sprint1_instrumented_app:app" if os.getenv("V16_EXTENDED_LOAD") == "1" else "app.main:app",
+                     "--host",
+                     "127.0.0.1",
+                     "--port",
+@@ -344,6 +344,8 @@ try:
+                     time.sleep(0.2)
+             else:
+                 raise RuntimeError("Owned V1.6 API readiness failed")
++            env["V16_API_PID"] = str(api.pid)
++            env["V16_DB_CONTAINER"] = name
+             print(run([python, "-m", "scripts.v16_api_probe"], root / "backend"))
+             if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
+                 print(
+@@ -424,6 +426,11 @@ try:
+                         time.sleep(0.2)
+                 else:
+                     raise RuntimeError("Owned V1.6 UI readiness failed")
++                if os.getenv("V16_EXTENDED_LOAD") == "1":
++                    print(run([python, "-m", "scripts.sprint1_representative_load"], root / "backend"))
++                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
++                if os.getenv("V16_PERFORMANCE_PROBE") == "1":
++                    print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
+                 if os.getenv("V16_SPRINT07_ONLY") != "1":
+                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
+                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
+@@ -466,6 +473,9 @@ try:
+         )
+     )
+     run([python, "-m", "alembic", "check"], root / "backend")
++    env["V16_OWNED_CONTAINER"] = name
++    env["V16_EVIDENCE_DIR"] = str(out)
++    run([python, "-m", "scripts.sprint1_restore_probe"], root / "backend")
+     (out / "report.json").write_text(
+         json.dumps(
+             {
+@@ -493,7 +503,33 @@ try:
+         "V1.6 actual PostgreSQL ownership/durability/discovery/holds/recovery/scopes and additive migration PASS"
+     )
+ finally:
++    # Failures in HTTP/browser probes must not bypass process/secret cleanup.
++    import re
++    import shutil
++    for process_name in ("ui", "api"):
++        process = locals().get(process_name)
++        if process is not None and process.poll() is None:
++            process.terminate()
++            try:
++                process.wait(timeout=15)
++            except subprocess.TimeoutExpired:
++                process.kill()
++                process.wait(timeout=5)
++    removed = False
+     if started:
+-        subprocess.run(
+-            ["docker", "rm", "--force", "--volumes", name], capture_output=True
+-        )
++        cleanup = subprocess.run(["docker", "rm", "--force", "--volumes", name], capture_output=True)
++        removed = cleanup.returncode == 0
++    for logfile in private.glob("*.log"):
++        content = logfile.read_text(errors="replace").replace(password, "[REDACTED]")
++        for secretfile in private.glob("*fixture.json"):
++            try:
++                values = json.loads(secretfile.read_text())
++                for key, value in values.items():
++                    if any(k in key.lower() for k in ("password", "token", "secret")) and isinstance(value, str) and len(value) > 6:
++                        content = content.replace(value, "[REDACTED]")
++            except (ValueError, OSError, AttributeError):
++                pass
++        content = re.sub(r"(?i)Bearer [A-Za-z0-9_.-]+", "Bearer [REDACTED]", content)
++        (out / ("private-" + logfile.name)).write_text(content)
++    shutil.rmtree(private)
++    (out / "cleanup.json").write_text(json.dumps({"container": name,"container_removed":removed,"api_stopped":locals().get("api") is None or api.poll() is not None,"ui_stopped":locals().get("ui") is None or ui.poll() is not None,"private_fixtures_removed":not private.exists(),"scope":"Exact allocated processes, container and private directory only"},indent=2))

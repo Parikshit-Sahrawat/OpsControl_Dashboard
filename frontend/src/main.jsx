@@ -3,9 +3,12 @@ import { createRoot } from "react-dom/client";
 import AuthGate from "./components/AuthGate";
 import "./styles.css";
 import "./visual-system.css";
+import "./design-system-v1.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthGate />
   </React.StrictMode>
 );
+
+import "./desktop-workspace.css";

@@ -1,0 +1,201 @@
+{
+  "source_audit_commit": "ccd524f3afd9231d6d3056071d922577fefcf538",
+  "audit_execution_source": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5",
+  "fresh_scan_in_review": false,
+  "python_records": 10,
+  "npm_affected_entries": 4,
+  "findings": [
+    {
+      "ecosystem": "installed Python environment",
+      "package": "black",
+      "version": "25.1.0",
+      "id": "PYSEC-2026-2121",
+      "aliases": [
+        "GHSA-3936-cmfr-pm3m",
+        "CVE-2026-32274"
+      ],
+      "fix_versions": [
+        "26.3.1"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "black",
+      "version": "25.1.0",
+      "id": "PYSEC-2026-2120",
+      "aliases": [
+        "CVE-2026-31900",
+        "GHSA-v53h-f6m7-xcgm"
+      ],
+      "fix_versions": [
+        "26.3.0"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "black",
+      "version": "25.1.0",
+      "id": "GHSA-cg8m-r9f2-5wm2",
+      "aliases": [
+        "CVE-2026-114134"
+      ],
+      "fix_versions": [
+        "26.10.1"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "oauthlib",
+      "version": "4.0.0",
+      "id": "GHSA-3jp2-3mrg-2vxc",
+      "aliases": [
+        "CVE-2026-49272"
+      ],
+      "fix_versions": [
+        "4.0.1"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-196",
+      "aliases": [
+        "GHSA-wf93-45jw-7689",
+        "CVE-2026-8643"
+      ],
+      "fix_versions": [
+        "26.1.2"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-1795",
+      "aliases": [
+        "CVE-2025-8869",
+        "GHSA-4xh5-x5gv-qwph"
+      ],
+      "fix_versions": [
+        "25.3"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-1796",
+      "aliases": [
+        "CVE-2026-1703",
+        "GHSA-6vgw-5pg2-w6jp"
+      ],
+      "fix_versions": [
+        "26.0"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-2875",
+      "aliases": [
+        "CVE-2026-3219",
+        "GHSA-58qw-9mgm-455v"
+      ],
+      "fix_versions": [
+        "26.1"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-2876",
+      "aliases": [
+        "GHSA-jp4c-xjxw-mgf9",
+        "CVE-2026-6357"
+      ],
+      "fix_versions": [
+        "26.1"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "installed Python environment",
+      "package": "pip",
+      "version": "25.0.1",
+      "id": "PYSEC-2026-3721",
+      "aliases": [
+        "CVE-2026-13346",
+        "GHSA-qwm4-qh6w-59xr"
+      ],
+      "fix_versions": [
+        "26.2"
+      ],
+      "disposition": "UNRESOLVED_SCAN_MATCH_NO_WAIVER"
+    },
+    {
+      "ecosystem": "npm lock dependency graph",
+      "package": "@eslint-community/eslint-utils",
+      "severity": "moderate",
+      "via": [
+        "eslint"
+      ],
+      "disposition": "UNRESOLVED_AFFECTED_ENTRY_NOT_DISTINCT_CVE_COUNT"
+    },
+    {
+      "ecosystem": "npm lock dependency graph",
+      "package": "@eslint/config-array",
+      "severity": "moderate",
+      "via": [
+        "minimatch"
+      ],
+      "disposition": "UNRESOLVED_AFFECTED_ENTRY_NOT_DISTINCT_CVE_COUNT"
+    },
+    {
+      "ecosystem": "npm lock dependency graph",
+      "package": "eslint",
+      "severity": "moderate",
+      "via": [
+        "@eslint-community/eslint-utils",
+        "@eslint/config-array",
+        "minimatch"
+      ],
+      "disposition": "UNRESOLVED_AFFECTED_ENTRY_NOT_DISTINCT_CVE_COUNT"
+    },
+    {
+      "ecosystem": "npm lock dependency graph",
+      "package": "minimatch",
+      "severity": "moderate",
+      "via": [
+        {
+          "source": 1244623,
+          "name": "minimatch",
+          "dependency": "minimatch",
+          "title": "minimatch has potential denial of service via globparts amplification",
+          "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-405"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=7.0.0 <11.0.1"
+        }
+      ],
+      "disposition": "UNRESOLVED_AFFECTED_ENTRY_NOT_DISTINCT_CVE_COUNT"
+    }
+  ],
+  "limits": "Toolchain installed Black25.1.0/pip25.0.1 differs from source pins; extra oauthlib4.0.0. No final image certification or exception. Dependency locks unchanged by correction."
+}

@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import { scopeHeaders } from "./explicit_scope.mjs";
 // PostgreSQL-backed browser checks. This script only runs in the owned ARCH lab.
 import assert from "node:assert/strict";
@@ -56,6 +57,8 @@ async function login(name) {
   await page.getByLabel("Password", { exact: true }).fill(fixture.password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await page.getByRole("button", { name: "Sign out", exact: true }).waitFor();
+  if ((page.viewportSize()?.width || 0) >= 768)
+    await preparePrimaryNavigation(page);
 }
 const section = async (name) => {
   await page

@@ -1,0 +1,209 @@
+[
+  {
+    "name": "broad-backend-resource-rbac",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5",
+    "exit_code": 0,
+    "flags": {
+      "V16_API_ACCEPTANCE": "1",
+      "V16_BROWSER_ACCEPTANCE": "1",
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers",
+      "V16_TEST_TARGETS": "tests.test_access_control,tests.test_activation_hydration,tests.test_agent_reenrollment,tests.test_agent_v15,tests.test_api_monitoring_config,tests.test_api_service_health_projection,tests.test_api_worker_v2,tests.test_audit_remediation,tests.test_collection_v15,tests.test_condition_refresh,tests.test_database_integrity,tests.test_eks_discovery,tests.test_in_app_notifications,tests.test_infrastructure_health_projection,tests.test_kubernetes_cluster_associations,tests.test_managed_telemetry,tests.test_native_incidents_v15,tests.test_notification_transport,tests.test_notifications,tests.test_pentaho_carte_compat,tests.test_pentaho_execution_contracts,tests.test_pentaho_execution_r1,tests.test_pentaho_history_contracts,tests.test_pentaho_history_r1,tests.test_pentaho_incident_contracts,tests.test_pentaho_incident_r1,tests.test_pentaho_metadata_registration,tests.test_pentaho_r1,tests.test_pentaho_review_contracts,tests.test_pentaho_review_r1,tests.test_pentaho_surface_contracts,tests.test_pip_bootstrap,tests.test_pipeline_adapters,tests.test_pipeline_ownership_v16,tests.test_pipeline_runtime_v15,tests.test_pipeline_transport_v16,tests.test_provider_failure_classification,tests.test_quiet_file_readiness,tests.test_registry_contracts,tests.test_release_hardening,tests.test_remote_auth,tests.test_removed_platform_scope,tests.test_schema_contract,tests.test_sprint07_frontend_contracts,tests.test_sprint08_rbac,tests.test_sprint09_contracts,tests.test_sprint09_hardening,tests.test_sprint12_shared_trust,tests.test_sprint13_recovery_probe,tests.test_sprint_monitoring_only,tests.test_sprint_resource_lifecycle,tests.test_sprint_template_configuration,tests.test_terminal_conflicts,tests.test_topology_traversal,tests.test_unified_monitoring,tests.test_unified_v15_contracts,tests.test_worker_readiness",
+      "V16_SPRINT1_UI": "1",
+      "V16_SPRINT08_ACCEPTANCE": "1",
+      "V16_EVIDENCE_DIR": "/tmp/ocs1-evidence/final"
+    },
+    "note": null
+  },
+  {
+    "name": "expanded-migration-pentaho-browser",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "fcd385a76a30efb23eea667bba9b6d1fc9073b54",
+    "exit_code": 0,
+    "flags": {
+      "V16_API_ACCEPTANCE": "1",
+      "V16_BROWSER_ACCEPTANCE": "1",
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers",
+      "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16,tests.test_sprint_resource_lifecycle,tests.test_sprint_template_configuration,tests.test_sprint_monitoring_only",
+      "V16_STAGING_PRESERVATION": "1",
+      "V16_PENTAHO_R1_ACCEPTANCE": "1",
+      "V16_PENTAHO_REVIEW_ACCEPTANCE": "1",
+      "V16_PENTAHO_HISTORY_ACCEPTANCE": "1",
+      "V16_PENTAHO_INCIDENT_ACCEPTANCE": "1",
+      "V16_SPRINT1_UI": "1",
+      "V16_SPRINT07_ACCEPTANCE": "1",
+      "V16_SPRINT08_ACCEPTANCE": "1",
+      "V16_EVIDENCE_DIR": "/tmp/ocs1-evidence/final-visual"
+    },
+    "note": null
+  },
+  {
+    "name": "final-workspace",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf",
+    "exit_code": 0,
+    "flags": {
+      "V16_API_ACCEPTANCE": "1",
+      "V16_BROWSER_ACCEPTANCE": "1",
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers",
+      "V16_TEST_TARGETS": "tests.test_sprint_resource_lifecycle,tests.test_sprint_template_configuration,tests.test_sprint_monitoring_only",
+      "V16_SPRINT1_UI": "1",
+      "V16_EVIDENCE_DIR": "/tmp/ocs1-evidence/final-workspace"
+    },
+    "note": null
+  },
+  {
+    "name": "staging-preservation-corrected-selection",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "b9b6a95ed14f5a2eac2c829bdf7af261fdb1874d",
+    "exit_code": 0,
+    "flags": {
+      "V16_TEST_TARGETS": "tests.test_pipeline_ownership_v16",
+      "V16_STAGING_PRESERVATION": "1",
+      "V16_EVIDENCE_DIR": "/tmp/ocs1-evidence/staging-preservation-02"
+    },
+    "note": null
+  },
+  {
+    "name": "release-preservation-TLS-faults",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/release-acceptance.py"
+    ],
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5",
+    "exit_code": 0,
+    "flags": {
+      "RELEASE_BROWSER_ACCEPTANCE": "1",
+      "RELEASE_EVIDENCE_DIR": "/tmp/ocs1-evidence/release",
+      "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+      "PLAYWRIGHT_BROWSERS_PATH": "/tmp/oc-etl003a-browsers"
+    },
+    "note": null
+  },
+  {
+    "name": "frontend-tests",
+    "command": [
+      "npm",
+      "test",
+      "--prefix",
+      "frontend"
+    ],
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf",
+    "exit_code": 0,
+    "flags": {},
+    "note": null
+  },
+  {
+    "name": "frontend-lint",
+    "command": [
+      "npm",
+      "run",
+      "lint",
+      "--prefix",
+      "frontend"
+    ],
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf",
+    "exit_code": 0,
+    "flags": {},
+    "note": null
+  },
+  {
+    "name": "frontend-build",
+    "command": [
+      "npm",
+      "run",
+      "build",
+      "--prefix",
+      "frontend"
+    ],
+    "source_sha": "ba80b49816d5ad216f699610ebb25f9203ea6ecf",
+    "exit_code": 0,
+    "flags": {},
+    "note": null
+  },
+  {
+    "name": "development",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "UNCOMMITTED_DEVELOPMENT_SNAPSHOT",
+    "exit_code": 1,
+    "flags": {},
+    "note": "390px overflow; dirty precommit source"
+  },
+  {
+    "name": "development-02",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "UNCOMMITTED_DEVELOPMENT_SNAPSHOT",
+    "exit_code": 1,
+    "flags": {},
+    "note": "Enter selected and reopened dialog; dirty precommit source"
+  },
+  {
+    "name": "development-03",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "UNCOMMITTED_DEVELOPMENT_SNAPSHOT",
+    "exit_code": 0,
+    "flags": {},
+    "note": "Passed development diagnostic run; dirty precommit source"
+  },
+  {
+    "name": "staging-preservation",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/v16-acceptance.py"
+    ],
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5",
+    "exit_code": 1,
+    "flags": {},
+    "note": "Focused tests did not populate protected pipeline identities; no preservation guard bypassed"
+  },
+  {
+    "name": "pip-audit",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "pip_audit",
+      "--format",
+      "json",
+      "--progress-spinner",
+      "off",
+      "--cache-dir",
+      "/tmp/occomp000-pip-audit-cache"
+    ],
+    "exit_code": 1,
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5"
+  },
+  {
+    "name": "npm-audit",
+    "command": [
+      "npm",
+      "audit",
+      "--json"
+    ],
+    "exit_code": 1,
+    "source_sha": "95b4ab6d172e77c13b8b3e34be1568d2927dbed5"
+  }
+]

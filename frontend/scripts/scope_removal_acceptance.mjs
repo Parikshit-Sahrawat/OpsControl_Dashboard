@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 // Actual Chromium + authenticated owned API; no route mocking or source searches.
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -36,6 +37,7 @@ try{
    assert.equal(response.status(),201,await response.text());
    if(kind==='api')apiResource=await response.json();
  }
+ await preparePrimaryNavigation(page);
  await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
  for(const name of ['scope-linux','scope-windows','scope-ec2']){
    await page.getByLabel('Search resources',{exact:true}).fill(name);

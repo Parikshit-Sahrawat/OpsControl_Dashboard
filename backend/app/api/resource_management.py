@@ -1,3 +1,4 @@
+from app.services.collector_lifecycle import require_enabled_parent
 from app.services.excluded_platforms import require_supported_source, require_supported_collector
 from uuid import UUID
 from typing import Literal
@@ -203,6 +204,7 @@ def update_scoped_collector(
     values = payload.model_dump(exclude_unset=True)
     if values != {"enabled": False}:
         require_supported_collector(item, _source(db, item.data_source_id))
+    require_enabled_parent(_source(db, item.data_source_id), values.get("enabled"))
     for key, value in values.items():
         setattr(item, key, value)
     try:

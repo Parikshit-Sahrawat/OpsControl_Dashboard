@@ -131,6 +131,7 @@ try {
   checks.push(
     "Non-elevated selector exposes no ALL and clearing the final customer removes operational data",
   );
+  await delegate.getByRole("button", { name: "Access Management navigation", exact: true }).click();
   await delegate
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Employees", exact: true })
