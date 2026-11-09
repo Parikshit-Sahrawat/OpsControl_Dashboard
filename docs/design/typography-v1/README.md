@@ -34,3 +34,5 @@ Use the recorded Playwright1.56.1 / Chromium141.0.7390.37 tool paths or compatib
 **Decision requested:** choose Inter / IBM Plex Sans / Source Sans3, approve or revise the semantic scale and loading/fallback strategy. Recommendation is Plex Sans + Plex Mono, subject to owner approval and native-zoom validation. Product-wide migration must be a separate authorized implementation.
 
 CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO. No merge/deployment/UAT or Sprint2 authorization.
+
+Original OFL licence texts retain upstream CRLF/trailing whitespace and exact hashes. Whole-tree whitespace warnings on those raw legal files are retained; they are not modified to satisfy formatting.
