@@ -125,7 +125,7 @@ try {
  await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
  modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});
  await modal.getByLabel(/^Environment/).selectOption('QA');
- await modal.getByRole('button',{name:'Save resource identity',exact:true}).click();await modal.waitFor({state:'hidden'});
+ await modal.getByRole('button',{name:'Save resource',exact:true}).click();await modal.waitFor({state:'hidden'});
  assert.equal((await api('unified/resources/'+resource.id)).environment,'QA');
  assert.equal((await api('unified/resources/'+childApi.id)).environment,'QA');
  assert.equal((await api('monitoring/data-sources/'+childApi.data_source_id+'/configuration')).revision,2);
