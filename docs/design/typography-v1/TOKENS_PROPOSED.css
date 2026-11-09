@@ -1,0 +1,30 @@
+/* DESIGN PROPOSAL ONLY. Not imported by OpsControl. Owner approval required. */
+:root {
+  --oc-font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --oc-font-code: "IBM Plex Mono", ui-monospace, monospace;
+  --oc-text-meta: .8125rem; /* 13px at default root; no fixed root font size */
+  --oc-text-label: .875rem;
+  --oc-text-body: .9375rem;
+  --oc-text-card: 1.0625rem;
+  --oc-text-section: 1.25rem;
+  --oc-text-page: 1.75rem;
+  --oc-text-metric: 2rem;
+  --oc-weight-normal: 400;
+  --oc-weight-label: 500;
+  --oc-weight-heading: 600;
+  --oc-leading-tight: 1.2;
+  --oc-leading-body: 1.5;
+  --oc-leading-code: 1.6;
+  --oc-tracking-heading: -.015em;
+}
+.oc-page-title { font: var(--oc-weight-heading) var(--oc-text-page)/var(--oc-leading-tight) var(--oc-font-ui); letter-spacing:var(--oc-tracking-heading); }
+.oc-section-title { font:var(--oc-weight-heading) var(--oc-text-section)/1.3 var(--oc-font-ui); }
+.oc-body { font:var(--oc-weight-normal) var(--oc-text-body)/var(--oc-leading-body) var(--oc-font-ui); }
+.oc-label { font:var(--oc-weight-label) var(--oc-text-label)/1.4 var(--oc-font-ui); }
+.oc-meta { font:var(--oc-weight-normal) var(--oc-text-meta)/1.45 var(--oc-font-ui); }
+.oc-metric { font:var(--oc-weight-heading) var(--oc-text-metric)/1.15 var(--oc-font-ui); font-variant-numeric:tabular-nums; }
+.oc-code { font:400 var(--oc-text-meta)/var(--oc-leading-code) var(--oc-font-code); overflow-wrap:anywhere; }
+
+.oc-navigation { font:500 var(--oc-text-label)/1.4 var(--oc-font-ui); }
+.oc-control { font:400 var(--oc-text-label)/1.45 var(--oc-font-ui); }
+.oc-table { font:400 var(--oc-text-label)/1.45 var(--oc-font-ui); font-variant-numeric:tabular-nums; }
