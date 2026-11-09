@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "evidence_origin": "CONTROLLED_LOAD_TEST",
+  "limits": "Loopback, bounded load; measures HTTP acceptance, not production capacity or database restoration.",
+  "thresholds": {
+    "max_error_rate": 0,
+    "max_p95_ms": 2000,
+    "min_requests_per_second": 1
+  },
+  "results": [
+    {
+      "mode": "api",
+      "requests": 100,
+      "concurrency": 4,
+      "duration_seconds": 3.817,
+      "requests_per_second": 26.196,
+      "mean_latency_ms": 151.294,
+      "p50_latency_ms": 114.529,
+      "p95_latency_ms": 536.591,
+      "p99_latency_ms": 582.476,
+      "error_rate": 0.0,
+      "status_counts": {
+        "200": 100
+      },
+      "thresholds_passed": true
+    },
+    {
+      "mode": "ingestion",
+      "requests": 100,
+      "concurrency": 4,
+      "duration_seconds": 1.872,
+      "requests_per_second": 53.411,
+      "mean_latency_ms": 73.942,
+      "p50_latency_ms": 73.786,
+      "p95_latency_ms": 79.007,
+      "p99_latency_ms": 81.991,
+      "error_rate": 0.0,
+      "status_counts": {
+        "200": 100
+      },
+      "thresholds_passed": true
+    }
+  ]
+}
