@@ -1191,6 +1191,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         )}
       <div className="resource-onboarding-content">
       {error && <p className="error-banner" role="alert">{error}</p>}
+      {(item || created) && !contextSnapshot && <p role="status">{contextFailure ? "Configuration revisions unavailable: "+contextFailure+". Close and reopen this workspace to retry." : "Loading authorized configuration revisions before saving…"}</p>}
       {!item && <div className="heading-actions">
         <button disabled={busy} onClick={saveDraft}>Save draft</button>
         {drafts.length > 0 && <label>Resume draft
