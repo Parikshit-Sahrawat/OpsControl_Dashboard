@@ -118,6 +118,18 @@ try {
  await page.setViewportSize({width:1440,height:1000});
  await modal.getByRole('button',{name:'Cancel',exact:true}).click();
  checks.push('Browser template V1 pin survives V2; invalid JSON field error; override save/reload deterministic; stale edit409 preserves unsaved text');
+ phase='coordinated child source browser configuration';
+ const childApi=await api('unified/resources/api','POST',{organization_id:f.organization_id,name:'Coordinated API child',environment:'DEV',dns:'child-controlled.invalid',protocol:'HTTPS',linked_vm_resource_id:resource.id},201);
+ const adopted=await page.request.post(base+'/api/v1/monitoring/data-sources/'+childApi.data_source_id+'/configuration/commands',{headers:{...headers,'Idempotency-Key':globalThis.crypto.randomUUID()},data:{expected_revision:0,attachments:[]}});assert.equal(adopted.status(),201);
+ await page.getByRole('button',{name:'Refresh',exact:true}).click();
+ await page.getByRole('row').filter({hasText:'002C browser A'}).getByRole('button',{name:'Edit',exact:true}).click();
+ modal=page.getByRole('region',{name:'Edit Compute Instance',exact:true});
+ await modal.getByLabel(/^Environment/).selectOption('QA');
+ await modal.getByRole('button',{name:'Save resource identity',exact:true}).click();await modal.waitFor({state:'hidden'});
+ assert.equal((await api('unified/resources/'+resource.id)).environment,'QA');
+ assert.equal((await api('unified/resources/'+childApi.id)).environment,'QA');
+ assert.equal((await api('monitoring/data-sources/'+childApi.data_source_id+'/configuration')).revision,2);
+ checks.push('Actual UI coordinates revisioned parent/child API environment in one committed transaction; persisted child source revision2');
  phase='tenant A/B delayed inventory';
  await page.getByLabel('Search resources',{exact:true}).fill('002C browser');
  await page.getByLabel('Resource customer filter',{exact:true}).selectOption(f.organization_id);
