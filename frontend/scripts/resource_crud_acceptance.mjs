@@ -1,5 +1,6 @@
 import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import { scopeHeaders } from "./explicit_scope.mjs";
+import { holdBrowserResponses } from "./browser_response_gate.mjs";
 // Actual browser forms and authenticated backend; no mocked API responses.
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -297,18 +298,7 @@ try {
   phase="keyboard-only resource edit";
   // Hold the real authorized response, not a fabricated revision, to exercise
   // keyboard reachability while the mandatory snapshot is still pending.
-  let releaseContext;
-  const contextGate = new Promise(resolve => { releaseContext = resolve; });
-  let contextInFlight = 0, contextCompleted = 0;
-  await page.route("**/configuration-context", async route => {
-    contextInFlight++;
-    try {
-      const response = await route.fetch();
-      await contextGate;
-      await route.fulfill({response});
-      contextCompleted++;
-    } finally { contextInFlight--; }
-  });
+  const contextGate = await holdBrowserResponses(page, "/configuration-context");
   const mutations = [];
   page.on("request", request => {
     if(request.method()==="PUT" && /\/unified\/resources\/[^/]+$/.test(new URL(request.url()).pathname)) mutations.push(request.postDataJSON());
@@ -327,12 +317,12 @@ try {
   await modal.getByRole("alert").filter({hasText:"Wait for the configuration revision snapshot"}).waitFor();
   assert.equal(mutations.length, 0, "no write without authorized revisions");
   assert.equal(await nameInput.inputValue(), "Wizard keyboard persisted");
-  releaseContext();
-  // A response event can precede completion of route.fulfill(). Plain unroute
-  // lets Playwright auto-handle that request a second time. Drain, don't ignore.
-  await page.unrouteAll({behavior:"wait"});
-  assert.equal(contextInFlight,0);
-  assert.ok(contextCompleted > 0);
+  await page.waitForFunction(() => window.__opscontrolResponseGate.state.pending > 0);
+  const heldContext = await contextGate.state();
+  assert.ok(heldContext.pending > 0, "a genuine authorized HTTP response is held before delivery");
+  const contextState = await contextGate.release();
+  assert.equal(contextState.pending,0);
+  assert.ok(contextState.completed > 0);
   await page.waitForFunction(() => document.querySelector('button[form][aria-disabled="false"]'));
   assert.equal(await keyboardSave.evaluate(el=>el===document.activeElement), true, "snapshot arrival preserves keyboard focus");
   await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
@@ -358,7 +348,7 @@ try {
   await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
   await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
   await page.screenshot({path:process.env.RELEASE_EVIDENCE_DIR+"/resource-keyboard-desktop.png",fullPage:true});
-  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/keyboard-regression.json",JSON.stringify({status:"PASS",pending_snapshot_writes:0,committed_commands:mutations.length,revision_increased:true,focus_preserved:true,enter_button:true,enter_input:true,reload_persisted:true,route_handlers_drained:contextInFlight===0,completed_real_context_responses:contextCompleted},null,2));
+  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/keyboard-regression.json",JSON.stringify({status:"PASS",pending_snapshot_writes:0,committed_commands:mutations.length,revision_increased:true,focus_preserved:true,enter_button:true,enter_input:true,reload_persisted:true,native_response_gate_drained:contextState.pending===0,completed_real_context_responses:contextState.completed},null,2));
   await page.setViewportSize({ width:390, height:844 });
   await page.keyboard.press("Tab");
   assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");

@@ -3835,6 +3835,21 @@
       "disposition": "RUN",
       "reason": "Retain until assertion-level review; no filename exclusions"
     },
+    "frontend/scripts/browser_response_gate.test.mjs::two genuine cross-origin responses stay held while unrelated requests and headers remain native": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "OC-S1-CI-006 real browser/native HTTP response-delay transparency, cross-origin denial, status/header preservation and repeated cleanup; executed by disposable recovery browser runner, not provider certification"
+    },
+    "frontend/scripts/browser_response_gate.test.mjs::repeated gates and idempotent release preserve forbidden status and restore native fetch": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "OC-S1-CI-006 real browser/native HTTP response-delay transparency, cross-origin denial, status/header preservation and repeated cleanup; executed by disposable recovery browser runner, not provider certification"
+    },
+    "frontend/scripts/browser_response_gate.test.mjs::native CORS denial and transport failure propagate without fabricated responses": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "OC-S1-CI-006 real browser/native HTTP response-delay transparency, cross-origin denial, status/header preservation and repeated cleanup; executed by disposable recovery browser runner, not provider certification"
+    },
     "frontend/scripts/etl_filters.test.mjs::ETL Clear filters resets all four selectors to their unfiltered defaults": {
       "classification": "UNKNOWN",
       "disposition": "RUN",
