@@ -38,7 +38,7 @@ try{
    if(kind==='api')apiResource=await response.json();
  }
  await preparePrimaryNavigation(page);
- await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+ await page.getByRole('button',{name:'Compute Instances',exact:true}).click();
  for(const name of ['scope-linux','scope-windows','scope-ec2']){
    await page.getByLabel('Search resources',{exact:true}).fill(name);
    const row=page.getByRole('row').filter({hasText:name});await row.waitFor();

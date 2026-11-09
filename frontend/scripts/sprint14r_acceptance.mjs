@@ -78,7 +78,7 @@ try {
   await page.reload();
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   await page
-    .getByRole("button", { name: "Data Sources / Resources", exact: true })
+    .getByRole("button", { name: "Compute Instances", exact: true })
     .click();
   const inventory = page.getByRole("region", {
     name: "Compute Instances records",

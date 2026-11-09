@@ -12,7 +12,7 @@ try{
   await page.getByLabel("Password").fill("testing-only-StrongPassword-123!");
   await page.getByRole("button",{name:"Sign in"}).click();
   await preparePrimaryNavigation(page);
-  await page.getByRole("button",{name:"Data Sources / Resources",exact:true}).click();
+  await page.getByRole("button",{name:"Compute Instances",exact:true}).click();
   await page.getByRole("tab",{name:"API Endpoints",exact:true}).click();
   await page.locator(".resource-name-link").first().click();
   await page.getByRole("button",{name:"Open legacy monitoring configuration",exact:true}).click();

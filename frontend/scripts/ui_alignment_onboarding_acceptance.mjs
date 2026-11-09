@@ -23,7 +23,7 @@ try {
   await page.getByRole("button", { name: "Sign in" }).click();
   await page.getByText("Signed in as demo-admin").waitFor();
   const nav = page.getByRole("navigation", { name: "Primary navigation" });
-  await nav.getByRole("button", { name: "Data Sources / Resources", exact: true }).click();
+  await nav.getByRole("button", { name: "Compute Instances", exact: true }).click();
   await page.getByRole("button", { name: "Create Compute Instance" }).click();
   const workspace = page.getByRole("region", { name: "Create Compute Instance" });
   await workspace.waitFor();

@@ -11,7 +11,7 @@ try {
  await page.getByLabel('Username').fill('v16-api-admin');await page.getByLabel('Password').fill(f.password);
  await page.getByRole('button',{name:'Sign in',exact:true}).click();
  await page.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();const loginMs=performance.now()-start;
- const nav=performance.now();await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+ const nav=performance.now();await page.getByRole('button',{name:'Compute Instances',exact:true}).click();
  await page.getByRole('button',{name:'Create Compute Instance',exact:true}).waitFor();const navigationMs=performance.now()-nav;
  const lag=await page.evaluate(async()=>{const t=performance.now();await new Promise(r=>setTimeout(r,50));return performance.now()-t-50;});
  assert.equal(errors,0);

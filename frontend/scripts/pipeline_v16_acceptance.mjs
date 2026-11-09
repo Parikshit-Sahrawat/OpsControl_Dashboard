@@ -44,7 +44,7 @@ async function navigate(target = page) {
   await preparePrimaryNavigation(target);
   await target
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: "Data Sources / Resources", exact: true })
+    .getByRole("button", { name: "Compute Instances", exact: true })
     .click();
   await target
     .getByRole("tab", { name: "Data Pipelines", exact: true })

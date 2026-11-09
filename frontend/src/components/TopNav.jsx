@@ -1,3 +1,4 @@
+import { resourceSectionForDomain } from "../navigation.js";
 import { useEffect, useRef, useState } from "react";
 import { administrationPage } from "../permissions";
 import { FEATURE_GROUPS as sections } from "../featureDirectory.js";
@@ -258,7 +259,7 @@ export default function TopNav({
           )}
         </div>
       )}
-      <GlobalResourceSearch key={user.id+user.authorization_revision+organizationIds.join(",")+JSON.stringify(environment)} user={user} organizationIds={organizationIds} environment={environment} onSelect={resource => onChange("Resource Management", { section: "resources", resourceId: resource.id, resourceDomain: resource.domain, resourceOrganizationId: resource.organization_id })} />
+      <GlobalResourceSearch key={user.id+user.authorization_revision+organizationIds.join(",")+JSON.stringify(environment)} user={user} organizationIds={organizationIds} environment={environment} onSelect={resource => onChange("Resource Management", { section: resourceSectionForDomain(resource.domain), resourceId: resource.id, resourceDomain: resource.domain, resourceOrganizationId: resource.organization_id })} />
       <details ref={preferencePanel} className="utility-preferences"><summary aria-label="Display preferences">Display</summary><div className="utility-preference-panel"><div className="utility-clock"><WorldClock /></div><label className="density-selector"><span>Density</span><select aria-label="Display density" value={density} onChange={e => setDensity(e.target.value)}><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></label></div></details>
       <div className="workspace-role" aria-label="Workspace permissions">{configMode ? "Configuration access" : "Operations view"}</div>
       <div className="personal-workspace-actions">

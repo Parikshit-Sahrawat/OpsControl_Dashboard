@@ -5,12 +5,14 @@ import { canOpenSection } from './navigation.js';
 export const FEATURE_GROUPS = [
   { name: 'Overview', items: [['Overview', 'Dashboard']] },
   { name: 'Operations', items: [
-    ['Data Pipeline Monitoring', 'Data Pipelines'], ['Compute Health', 'Compute Instances'],
-    ['API Endpoint Monitoring', 'API Endpoints'], ['Alerts', 'Alerts'], ['Reports', 'Reports'],
+    ['Data Pipeline Monitoring', 'Data Pipeline Monitoring'], ['Compute Health', 'Compute Health'],
+    ['API Endpoint Monitoring', 'API Endpoint Monitoring'], ['Alerts', 'Alerts'], ['Reports', 'Reports'],
   ] },
   { name: 'Resource Management', items: [
     ['Resource Management', 'Organizations', 'organizations'],
-    ['Resource Management', 'Data Sources / Resources', 'resources'],
+    ['Resource Management', 'Compute Instances', 'compute-instances'],
+    ['Resource Management', 'Data Pipelines', 'data-pipelines'],
+    ['Resource Management', 'APIs', 'apis'],
     ['Resource Management', 'Collectors', 'collectors'],
     ['Resource Management', 'Monitoring Templates', 'templates'],
     ['Resource Management', 'Event Parameters', 'parameters'],

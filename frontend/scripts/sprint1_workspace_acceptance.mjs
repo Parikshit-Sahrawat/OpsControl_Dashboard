@@ -37,13 +37,13 @@ try {
  phase='feature directory';
  const category=p.getByRole('button',{name:'Resource Management navigation',exact:true});
  if(await category.getAttribute('aria-expanded')!=='true')await category.click();
- const nested=p.getByRole('button',{name:'Resource Management workspace navigation',exact:true});
- if(await nested.getAttribute('aria-expanded')==='true')await nested.click();
- await nested.focus();await p.keyboard.press('ArrowRight');assert.equal(await nested.getAttribute('aria-expanded'),'true');
+ await category.focus();await p.keyboard.press('ArrowLeft');assert.equal(await category.getAttribute('aria-expanded'),'false');
+ await p.keyboard.press('ArrowRight');assert.equal(await category.getAttribute('aria-expanded'),'true');
+ assert.equal(await p.getByRole('button',{name:'Resource Management workspace navigation',exact:true}).count(),0,'Resource destinations expand directly in the approved category');
  const operations=p.getByRole('button',{name:'Operations navigation',exact:true});if(await operations.getAttribute('aria-expanded')!=='true')await operations.click();
  assert.equal(await category.getAttribute('aria-expanded'),'true','Multiple categories stay expanded');
  assert.equal(await p.locator('#feature-directory-flyout').count(),0);
- await nested.focus();await p.keyboard.press('End');assert.ok(await p.evaluate(()=>document.activeElement.tagName==='BUTTON'));
+ await category.focus();await p.keyboard.press('End');assert.ok(await p.evaluate(()=>document.activeElement.tagName==='BUTTON'));
  await category.focus();await p.keyboard.press('ArrowLeft');assert.equal(await category.getAttribute('aria-expanded'),'false');
  await p.keyboard.press('ArrowRight');assert.equal(await category.getAttribute('aria-expanded'),'true');
  await p.screenshot({path:out+'/feature-directory-desktop.png',fullPage:false});checks.push('Approved single-panel category/subcategory/leaf navigation, multiple expansions, keyboard arrows/Home/End and no flyout');
@@ -133,3 +133,5 @@ try {
  checks.push('Controlled auth transport failure withholds protected UI without destroying token; real backend re-verification restores UI; actual server logout/revocation causes401 and removes stale token');
  await writeFile(out+'/workspace-ui.json',JSON.stringify({status:'PASS',checks,screenshots:shots,trace,source_scope:'Resource Management/shared shell only; no later telemetry implementation or synthetic health',visual_comparison:'Text and supplied image reviewed; not pixel-identical; operator-specific owner visual acceptance pending'},null,2));console.log('SPRINT1 WORKSPACE BROWSER PASS '+checks.length+' groups');
 } catch(e){await inspected?.screenshot({path:out+'/workspace-ui-failure.png',fullPage:true});await writeFile(out+'/workspace-ui-failure.json',JSON.stringify({phase,type:e.name,trace},null,2));throw e;}finally{await browser.close();}
+
+if(process.env.RESOURCE_NAV_ACCEPTANCE === "1") await import("./resource_navigation_acceptance.mjs");
