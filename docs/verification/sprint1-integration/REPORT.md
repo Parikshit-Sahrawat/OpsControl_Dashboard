@@ -1,5 +1,7 @@
 # Sprint 1 integration and CI recovery report — 2026-11-08
 
+> Latest2026-11-09: [OC-S1-CI-003 results](ci003-2026-11-09/REPORT.md) and [current blockers](ci003-2026-11-09/REMAINING_BLOCKERS.md). Earlier dated results below remain historical; current coordinated-child and catalogue-CAS evidence supersedes those earlier implementation gaps.
+
 > This report records the4081fc7 handoff. See the [subsequent closure follow-up](closure-followup-2026-11-08/REPORT.md) for new commits, tests and current blockers.
 
 **Result: PARTIAL / BLOCKED; Sprint1 NOT COMPLETE.** Semantic integration is delivered; controlled tests below passed. Source-context writer cutover and remaining configuration UX/contracts are explicitly incomplete. Ruleset changes were refused403. Image/licence findings are unresolved. No merge, deployment or release approval.

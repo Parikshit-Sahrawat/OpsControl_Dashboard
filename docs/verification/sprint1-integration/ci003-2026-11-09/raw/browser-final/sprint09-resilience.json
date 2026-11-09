@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "measurements": [
+    {
+      "scenario": "test_two_actual_database_sessions_cannot_both_own_source",
+      "dataset": "one source; two competing PostgreSQL sessions",
+      "iterations": 3,
+      "internal_concurrency": 2,
+      "duration_seconds": 0.4603,
+      "throughput_scenarios_per_second": 6.517,
+      "p50_ms": 119.219,
+      "p95_ms": 231.147,
+      "p99_ms": 231.147,
+      "failures": 0,
+      "skips": 0
+    },
+    {
+      "scenario": "test_duplicate_observations_keep_raw_records_but_not_duplicate_attempts_revisions",
+      "dataset": "one source; repeated accepted native observation",
+      "iterations": 3,
+      "internal_concurrency": 1,
+      "duration_seconds": 1.0158,
+      "throughput_scenarios_per_second": 2.953,
+      "p50_ms": 318.682,
+      "p95_ms": 378.448,
+      "p99_ms": 378.448,
+      "failures": 0,
+      "skips": 0
+    },
+    {
+      "scenario": "test_worker_restart_resumes_retained_recovery_without_reprocessing",
+      "dataset": "two retained events; two fresh worker sessions; one-row recovery batches",
+      "iterations": 3,
+      "internal_concurrency": 1,
+      "duration_seconds": 1.4024,
+      "throughput_scenarios_per_second": 2.139,
+      "p50_ms": 456.51,
+      "p95_ms": 489.459,
+      "p99_ms": 489.459,
+      "failures": 0,
+      "skips": 0
+    }
+  ],
+  "limits": "Three samples per scenario include fixture setup; p95/p99 reported as observed maximum. No OS crash, remote failover or genuine runtime certification.",
+  "production_scale_certification": false,
+  "genuine_runtime_acceptance": false
+}

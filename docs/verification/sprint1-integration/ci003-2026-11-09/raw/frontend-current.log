@@ -1,0 +1,96 @@
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/monitoring_settings.test.mjs scripts/template_attachment.test.mjs scripts/etl_filters.test.mjs scripts/workflow_configuration.test.mjs scripts/workspace_filters.test.mjs scripts/feature_directory.test.mjs
+
+✔ ETL Clear filters resets all four selectors to their unfiltered defaults (1.369116ms)
+✔ ETL environment filter includes an all-environments option (0.279714ms)
+✔ owned browser clients explicitly select a UUID snapshot and empty stays empty (1.501002ms)
+✔ failed customer lookup cannot fall back to unrestricted operational requests (1.440492ms)
+✔ directory uses unique existing destinations and excludes retired capabilities (1.606578ms)
+✔ directory permission filtering fails closed and reacts to revocation (1.04017ms)
+✔ authorized active collector restores all editable settings and pinned selections without copying credentials (1.760406ms)
+✔ legacy default GET settings remain explicit and optional assertions empty (0.280705ms)
+✔ NOT_CONFIGURED does not fetch or restore a historical collector (0.373463ms)
+✔ DISABLED does not fetch or restore a historical collector (0.118826ms)
+✔ disabled collector resets controls; a collector belonging to another source fails closed (0.731823ms)
+✔ out-of-order source fetch cannot replace the selected source or organization (0.290961ms)
+✔ pending hydration preserves actual user edits and invalidates an in-flight preview (8.799394ms)
+✔ source switch cancels a real pending settings read and no stale state or error is applied (0.859762ms)
+✔ permission failures propagate instead of silently exposing an editable default configuration (0.793444ms)
+✔ saved selections are applied before controls become ready (1.005067ms)
+✔ excluded source aliases cannot become monitoring selections (0.455874ms)
+✔ VM and application types and generic telemetry terms stay supported (0.145816ms)
+✔ approved child hashes open only existing authorized sections (4.864289ms)
+✔ organizational access is an access view, never a customer grant (0.230261ms)
+✔ configuration sections have stable guarded routes (0.203351ms)
+Pagination traversal, duplicate, mutation, incomplete and scope-change regressions passed
+✔ scripts/pagination.test.mjs (51.463766ms)
+✔ navigation and customer actions default deny (4.749539ms)
+✔ administrative pages use independent filters (0.220256ms)
+✔ revocation replaces UI affordances; platform capability is explicit (0.115591ms)
+✔ malformed cached customer preferences cannot corrupt selector state (0.967352ms)
+✔ retired navigation cannot be enabled by cached permissions (0.32465ms)
+✔ retired incident UI cannot be opened even with incident permission (0.14185ms)
+✔ only authoritative authentication rejection invalidates a token; transport remains fail-closed (0.185675ms)
+✔ five monitoring pages retain seven background incident states (0.988654ms)
+✔ pending retry remains nonterminal despite failed attempt (0.133848ms)
+✔ scheduler or process success cannot imply verified native success (0.458598ms)
+✔ scheduler retry and manual recovery preserve original failure (0.103653ms)
+✔ explicit customer scope never expands to ALL (0.297471ms)
+✔ old success or failure is invalidated on customer switch (0.159396ms)
+✔ native workload classifications remain distinct (0.147027ms)
+✔ persisted schedule authority and incomplete coverage stay explicit (0.156752ms)
+✔ review actions require category and verified completion (0.975784ms)
+✔ independent recovery confirmation and confirmed-only reversal (0.190522ms)
+✔ timestamps use explicit UTC (0.504727ms)
+✔ capabilities follow bound methods only (0.287766ms)
+✔ revision and authorization errors are explicit (0.238784ms)
+✔ resource restriction affordances do not become grants (0.793354ms)
+✔ existing pin survives a newer published template (1.70248ms)
+✔ new attachment selects current published version (0.184293ms)
+✔ malformed persisted pin cannot silently select latest (0.377799ms)
+✔ persisted calendar windows and SLA restore without inventing recurrence (16.049245ms)
+✔ new workflows use explicit organization, paired optional windows and no invented activation (1.184152ms)
+✔ late customer/workflow responses cannot pass the current selection generation (0.193366ms)
+✔ dependency validation excludes self and duplicates and delegates cycle authority (0.20921ms)
+✔ timezone validation identifies the field without relaxing backend redaction (0.349327ms)
+✔ a post-save refresh retains its selection ticket and cannot overwrite a newer Workflow (0.159326ms)
+✔ resource URL round trip includes only known non-secret filter keys (2.019459ms)
+✔ forged bookmark never silently broadens customer scope (1.095171ms)
+✔ configuration affordance derives from selected customer permissions (0.172826ms)
+ℹ tests 55
+ℹ suites 0
+ℹ pass 55
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 308.007384
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------
+ℹ file                             | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------
+ℹ scripts                          |        |          |         | 
+ℹ  explicit_scope.mjs              | 100.00 |   100.00 |  100.00 | 
+ℹ src                              |        |          |         | 
+ℹ  excludedPlatforms.js            | 100.00 |    85.71 |  100.00 | 
+ℹ  featureDirectory.js             | 100.00 |   100.00 |  100.00 | 
+ℹ  monitoringSettings.js           | 100.00 |    92.11 |   92.31 | 
+ℹ  navigation.js                   |  97.83 |    93.55 |  100.00 | 36
+ℹ  pagination.js                   | 100.00 |   100.00 |  100.00 | 
+ℹ  permissions.js                  | 100.00 |    93.33 |  100.00 | 
+ℹ  pipelines                       |        |          |         | 
+ℹ   contracts.js                   |  95.65 |    80.28 |   77.78 | 87 121-126 151
+ℹ  sessionVerification.js          | 100.00 |   100.00 |  100.00 | 
+ℹ  templateAttachmentSelection.js  | 100.00 |   100.00 |  100.00 | 
+ℹ  workflowConfiguration.js        | 100.00 |    77.14 |  100.00 | 
+ℹ  workspaceFilters.js             | 100.00 |    72.41 |  100.00 | 
+ℹ ---------------------------------------------------------------------------------
+ℹ all files                        |  98.34 |    86.85 |   91.46 | 
+ℹ ---------------------------------------------------------------------------------
+ℹ end of coverage report
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

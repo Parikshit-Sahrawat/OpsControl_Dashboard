@@ -1,0 +1,648 @@
+{
+  "source": "Actual registered Pydantic schemas, not provider certification",
+  "methods": {
+    "HOST_METRICS": {
+      "additionalProperties": false,
+      "properties": {
+        "interval_seconds": {
+          "default": 30,
+          "maximum": 3600,
+          "minimum": 5,
+          "title": "Interval Seconds",
+          "type": "integer"
+        },
+        "scrapers": {
+          "items": {
+            "enum": [
+              "cpu",
+              "memory",
+              "disk",
+              "filesystem",
+              "network",
+              "load",
+              "paging",
+              "process",
+              "processes"
+            ],
+            "type": "string"
+          },
+          "maxItems": 9,
+          "minItems": 1,
+          "title": "Scrapers",
+          "type": "array"
+        }
+      },
+      "title": "HostMetrics",
+      "type": "object"
+    },
+    "SERVICES": {
+      "additionalProperties": false,
+      "properties": {
+        "services": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Services",
+          "type": "array"
+        },
+        "processes": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Processes",
+          "type": "array"
+        },
+        "interval_seconds": {
+          "default": 30,
+          "maximum": 3600,
+          "minimum": 5,
+          "title": "Interval Seconds",
+          "type": "integer"
+        }
+      },
+      "title": "Services",
+      "type": "object"
+    },
+    "FILE_LOG": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "default": "FILE",
+          "enum": [
+            "FILE",
+            "JOURNALD",
+            "WINDOWS_EVENT"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "paths": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Paths",
+          "type": "array"
+        },
+        "exclusions": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Exclusions",
+          "type": "array"
+        },
+        "format": {
+          "default": "TEXT",
+          "enum": [
+            "TEXT",
+            "JSON"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "multiline_pattern": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Multiline Pattern"
+        },
+        "channel": {
+          "default": "Application",
+          "title": "Channel",
+          "type": "string"
+        },
+        "start_at": {
+          "default": "end",
+          "enum": [
+            "beginning",
+            "end"
+          ],
+          "title": "Start At",
+          "type": "string"
+        }
+      },
+      "title": "FileLog",
+      "type": "object"
+    },
+    "METRIC_SCRAPE": {
+      "additionalProperties": false,
+      "properties": {
+        "targets": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Targets",
+          "type": "array"
+        },
+        "interval_seconds": {
+          "default": 30,
+          "maximum": 3600,
+          "minimum": 5,
+          "title": "Interval Seconds",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 10,
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "path": {
+          "default": "/metrics",
+          "title": "Path",
+          "type": "string"
+        },
+        "tls": {
+          "default": false,
+          "title": "Tls",
+          "type": "boolean"
+        },
+        "ca_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ca File"
+        },
+        "server_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Server Name"
+        },
+        "metric_include": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Metric Include",
+          "type": "array"
+        },
+        "metric_exclude": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Metric Exclude",
+          "type": "array"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 30,
+          "title": "Labels",
+          "type": "object"
+        },
+        "credential_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credential Ref"
+        }
+      },
+      "required": [
+        "targets"
+      ],
+      "title": "MetricScrape",
+      "type": "object"
+    },
+    "OTLP_RECEIVER": {
+      "additionalProperties": false,
+      "properties": {
+        "bind": {
+          "default": "127.0.0.1",
+          "title": "Bind",
+          "type": "string"
+        },
+        "protocol": {
+          "default": "HTTP",
+          "enum": [
+            "HTTP",
+            "GRPC"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "port": {
+          "default": 4318,
+          "maximum": 65535,
+          "minimum": 1024,
+          "title": "Port",
+          "type": "integer"
+        },
+        "signals": {
+          "items": {
+            "enum": [
+              "Logs",
+              "Metrics",
+              "Traces"
+            ],
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Signals",
+          "type": "array"
+        },
+        "allow_remote": {
+          "default": false,
+          "title": "Allow Remote",
+          "type": "boolean"
+        },
+        "tls_certificate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tls Certificate"
+        },
+        "tls_key_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tls Key Ref"
+        },
+        "credential_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Credential Ref"
+        }
+      },
+      "required": [
+        "signals"
+      ],
+      "title": "OTLPReceiver",
+      "type": "object"
+    },
+    "SYSLOG_RECEIVER": {
+      "additionalProperties": false,
+      "properties": {
+        "bind": {
+          "default": "127.0.0.1",
+          "title": "Bind",
+          "type": "string"
+        },
+        "port": {
+          "default": 1514,
+          "maximum": 65535,
+          "minimum": 1024,
+          "title": "Port",
+          "type": "integer"
+        },
+        "protocol": {
+          "default": "TCP",
+          "enum": [
+            "TCP",
+            "UDP"
+          ],
+          "title": "Protocol",
+          "type": "string"
+        },
+        "format": {
+          "default": "RFC5424",
+          "enum": [
+            "RFC5424",
+            "RFC3164"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "allow_remote": {
+          "default": false,
+          "title": "Allow Remote",
+          "type": "boolean"
+        },
+        "tls_certificate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tls Certificate"
+        },
+        "tls_key_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tls Key Ref"
+        },
+        "client_ca": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Client Ca"
+        }
+      },
+      "title": "SyslogReceiver",
+      "type": "object"
+    }
+  },
+  "host_template": {
+    "$defs": {
+      "MethodInput": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "method_type": {
+            "enum": [
+              "HOST_METRICS",
+              "SERVICES",
+              "FILE_LOG",
+              "METRIC_SCRAPE",
+              "OTLP_RECEIVER",
+              "SYSLOG_RECEIVER"
+            ],
+            "title": "Method Type",
+            "type": "string"
+          },
+          "configuration": {
+            "additionalProperties": true,
+            "title": "Configuration",
+            "type": "object"
+          },
+          "enabled": {
+            "default": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "expected_revision": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Expected Revision"
+          }
+        },
+        "required": [
+          "name",
+          "method_type",
+          "configuration"
+        ],
+        "title": "MethodInput",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "family": {
+        "const": "HOST",
+        "default": "HOST",
+        "title": "Family",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": 1,
+        "title": "Schema Version",
+        "type": "integer"
+      },
+      "source_types": {
+        "items": {
+          "enum": [
+            "LINUX",
+            "LINUX_HOST",
+            "WINDOWS",
+            "WINDOWS_HOST",
+            "VM"
+          ],
+          "type": "string"
+        },
+        "maxItems": 5,
+        "minItems": 1,
+        "title": "Source Types",
+        "type": "array"
+      },
+      "os": {
+        "items": {
+          "enum": [
+            "Windows",
+            "Linux"
+          ],
+          "type": "string"
+        },
+        "maxItems": 2,
+        "minItems": 1,
+        "title": "Os",
+        "type": "array"
+      },
+      "methods": {
+        "items": {
+          "$ref": "#/$defs/MethodInput"
+        },
+        "maxItems": 30,
+        "minItems": 1,
+        "title": "Methods",
+        "type": "array"
+      },
+      "collector_override_fields": {
+        "items": {
+          "enum": [
+            "interval_seconds",
+            "interval"
+          ],
+          "type": "string"
+        },
+        "title": "Collector Override Fields",
+        "type": "array"
+      },
+      "override_components": {
+        "items": {
+          "enum": [
+            "attributes",
+            "metrics",
+            "alerts",
+            "logs"
+          ],
+          "type": "string"
+        },
+        "title": "Override Components",
+        "type": "array"
+      }
+    },
+    "required": [
+      "schema_version",
+      "source_types",
+      "os",
+      "methods"
+    ],
+    "title": "Applicability",
+    "type": "object"
+  },
+  "api_template": {
+    "$defs": {
+      "APIMethod": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "method_type": {
+            "const": "HTTPS",
+            "title": "Method Type",
+            "type": "string"
+          },
+          "configuration": {
+            "additionalProperties": true,
+            "title": "Configuration",
+            "type": "object"
+          }
+        },
+        "required": [
+          "name",
+          "method_type",
+          "configuration"
+        ],
+        "title": "APIMethod",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": 1,
+        "title": "Schema Version",
+        "type": "integer"
+      },
+      "family": {
+        "const": "API",
+        "title": "Family",
+        "type": "string"
+      },
+      "source_types": {
+        "items": {
+          "enum": [
+            "HTTP",
+            "HTTPS",
+            "API",
+            "API_ENDPOINT"
+          ],
+          "type": "string"
+        },
+        "minItems": 1,
+        "title": "Source Types",
+        "type": "array"
+      },
+      "methods": {
+        "items": {
+          "$ref": "#/$defs/APIMethod"
+        },
+        "maxItems": 1,
+        "minItems": 1,
+        "title": "Methods",
+        "type": "array"
+      },
+      "collector_override_fields": {
+        "items": {
+          "enum": [
+            "interval_seconds",
+            "interval"
+          ],
+          "type": "string"
+        },
+        "title": "Collector Override Fields",
+        "type": "array"
+      },
+      "override_components": {
+        "items": {
+          "enum": [
+            "attributes",
+            "metrics",
+            "alerts",
+            "logs"
+          ],
+          "type": "string"
+        },
+        "title": "Override Components",
+        "type": "array"
+      }
+    },
+    "required": [
+      "schema_version",
+      "family",
+      "source_types",
+      "methods"
+    ],
+    "title": "APIApplicability",
+    "type": "object"
+  },
+  "collector_pin": "0.123.0",
+  "genuine_provider_qualification": "BLOCKED_NO_AUTHORIZED_TARGET"
+}

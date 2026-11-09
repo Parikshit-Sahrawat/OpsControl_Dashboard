@@ -1,5 +1,7 @@
 # Source-owned configuration contract — integration candidate
 
+> Latest2026-11-09: [OC-S1-CI-003 results](ci003-2026-11-09/REPORT.md) and [current blockers](ci003-2026-11-09/REMAINING_BLOCKERS.md). Earlier dated results below remain historical; current coordinated-child and catalogue-CAS evidence supersedes those earlier implementation gaps.
+
 > Historical snapshot at PR head4081fc7. The [current closure follow-up](closure-followup-2026-11-08/REPORT.md) and [remaining blockers](closure-followup-2026-11-08/REMAINING_BLOCKERS.md) supersede the single-source writer, history-UX and documented fault-test status below; earlier evidence remains preserved.
 
 Owner authority: the four contracts in INTEGRATION_LEDGER.md and the explicit PR89 implementation task. The earlier detailed S01 design remains a proposal for exact details, not an independent approval signature. No second configuration authority is introduced.

@@ -1,4 +1,8 @@
-# Owner visual review — PENDING, not accepted
+# Owner visual review —54f26e5 baseline accepted; subsequent changes need review
+
+2026-11-09: [Issue90](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/issues/90) records the owner's explicit acceptance of PR89 Resource Management visual candidate at54f26e51106469e285dd747dd6b8afd09ca43ce6. This does not approve typography choice/scale, later interaction changes, independent PR approval, UAT or release. Prior candidate observations below are retained as historical evidence.
+
+## Historical candidate review at the earlier handoff
 
 The actual [supplied reference](../../design/references/OpsControl_Approved_UI_Admin_Reference.png) and its original/provenance remain unchanged. Both the reference and current desktop capture were visually inspected. No pixel-equivalence or owner signoff is asserted. The earlier Sprint1 visual candidate was owner-REJECTED; no approval is inferred for this revised candidate.
 

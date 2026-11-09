@@ -1,5 +1,7 @@
 # Sprint 1 consolidated integration — owner review candidate
 
+> Latest2026-11-09: [OC-S1-CI-003 results](ci003-2026-11-09/REPORT.md) and [current blockers](ci003-2026-11-09/REMAINING_BLOCKERS.md). Earlier dated results below remain historical; current coordinated-child and catalogue-CAS evidence supersedes those earlier implementation gaps.
+
 Latest: [closure follow-up, actual fault/browser tests and image remediation](closure-followup-2026-11-08/REPORT.md). [Current remaining blockers](closure-followup-2026-11-08/REMAINING_BLOCKERS.md). Earlier report/source identities remain historical snapshots.
 
 Repository: Parikshit-Sahrawat/OpsControl_Dashboard · draft PR [#89](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89). Branch: `integration/sprint1-pr80-81-82-83-84-86`.
