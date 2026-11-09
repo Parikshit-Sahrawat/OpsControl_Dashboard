@@ -32,3 +32,7 @@ Approved single-panel navigation replaces the inherited flyout; real admin/opera
 CI names/coverage are mapped without retiring any legacy enforced check. All28 workflows are validated. Ruleset additive update was **refused403** by the integration despite the repository-admin flag; re-read proved the original13 contexts, strictness and independent approval remain unchanged. See RULESET_UPDATE_RESULT.json. Security/image/licence policy failures remain enforced. Hosted final-HEAD results must be reported as pending until actually available; no historical green run qualifies this candidate.
 
 Sprint1 NOT COMPLETE. Owner visual acceptance and independent PR approval remain prerequisites to any future merge. CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.
+
+## 2026-11-09 — CI005 followed by owner-approved issue95
+
+CI005 source30bbd43/db11098 and evidence dffb766 repair stale native-form assertions, drain delayed real Playwright routes and reconcile scope inventory with fail-closed omission diagnostics. [Actual results and retained failures](ci005-2026-11-09/REPORT.md). Then, sequentially, [issue95](arch95-2026-11-09/REPORT.md) maps7 bounded workflows, records8 reference ideas and adds an integrity guard without runtime changes. [Architecture delta](../../architecture/SPRINT1_E2E_ALIGNMENT.md). Owner visual54f26e5 baseline preserved; independent review still required. No merge, deployment, gate promotion or Sprint2.

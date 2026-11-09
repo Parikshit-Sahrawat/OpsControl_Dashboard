@@ -27,3 +27,7 @@ No CI retirement or release promotion. SECURITY BLOCKED · RELEASE NO-GO.
 ## 2026-11-09 exact-head recovery follow-up
 
 [Access/keyboard corrections and evidence](required-recovery-2026-11-09/REPORT.md) are locally verified within their recorded boundaries. The full local Access Docker build remains BLOCKED by owned-daemon backing-store capacity; final hosted checks are pending. All seven [image-security/licence failures](required-recovery-2026-11-09/IMAGE_FAILURE_REVIEW.md) remain unresolved. No branch-protection, release, provider, owner visual or independent-review gate is cleared.
+
+## CI005 / issue95 handoff
+
+Locally reproduced ARCH native validation mismatch and missing scope records are corrected with real-component evidence; final hosted results remain pending. [CI005](ci005-2026-11-09/REPORT.md) retains the same-SHA intermittent route failure and its drain regression. The [E2E matrix](E2E_WORKFLOW_MATRIX.md) keeps6 PARTIAL/1 BLOCKED whole paths, genuine provider/D07/D08/history aggregation/older-writer/external notification gaps. All7 image roles, legal/NOTICE and independent security/reliability gates remain blocked. No implication of owner acceptance for later interactions.

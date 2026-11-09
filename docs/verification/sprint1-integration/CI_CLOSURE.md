@@ -27,3 +27,7 @@ RULESET_ADDITIVE_PROPOSAL.json preserves every existing rule/context/approval an
 5. Independent PR approval, owner visual acceptance and formal UAT/provider qualification remain separate. No merge, deployment or release promotion.
 
 CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO · Sprint1 NOT COMPLETE.
+
+## CI005 plus sequential issue95
+
+[Exact72382ad failures and local recovery](ci005-2026-11-09/REPORT.md) distinguish actual subprocess failure, controlled runtime PASS and missing historical private stderr. Scope now includes814 reviewed/retained entries;786 UNKNOWN still RUN. [Issue95 guard](arch95-2026-11-09/REPORT.md) adds only explicit exact-ID provenance preparation to the2 existing root-test workflows. All28 workflow definitions and13 required check identities remain intact. Final18 PR-safe workflows are triggered on the new combined SHA and handed off RESULT PENDING under Trigger-and-Exit. No live provider/publisher/UAT workflow is authorized.

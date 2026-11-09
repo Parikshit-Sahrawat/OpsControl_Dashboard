@@ -1,0 +1,308 @@
+{
+  "schema": 1,
+  "mode": "SPRINT1_CONTROLLED_ONLY",
+  "authority": "Issue95 owner authorization and comment6736751070; snapshot in ci005-2026-11-09/ISSUE95_AUTHORITY.json; parent Issue92",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "workflows": [
+    {
+      "workflow_id": "S1-E2E-01",
+      "source_to_ui_journey": "Organization \u2192 Data Source \u2192 pinned typed template \u2192 source-owned CAS ledger/history/diff/rollback \u2192 authorized Resource Management UI",
+      "owner": "Resource/configuration engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/services/source_configuration.py",
+        "backend/app/api/source_configuration.py",
+        "frontend/src/components/ResourceTemplateConfiguration.jsx",
+        "backend/app/unified/api.py"
+      ],
+      "exact_test_command_job": "S01_EVIDENCE_DIR=<owned> backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py; resource-workspace.yml/authenticated-workspace",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/required-recovery-2026-11-09/configuration-1/authenticated-contracts.log",
+          "commit_sha": "72382ad1535c2d5a84d1e55fc19f692c351197a4",
+          "sha256": "e33ffa506deface972faafade6a459157e515386487fdf1c6efc9deb417c64b7"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/required-recovery-2026-11-09/configuration-1/context-fence-preservation.json",
+          "commit_sha": "72382ad1535c2d5a84d1e55fc19f692c351197a4",
+          "sha256": "bd0b0f746934041a005f15bf20788c5e0487b76ed92cb3012dbeaf6f63899703"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/required-recovery-2026-11-09/configuration-1/backup-restore.json",
+          "commit_sha": "72382ad1535c2d5a84d1e55fc19f692c351197a4",
+          "sha256": "b0234c203bd731568eea66cc9f2e65aafc4c630e497bfbc74e7a8f973213716c"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-browser-final/identity-validation.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "6bc02b77d83f39d63a5057e17c508c1ee5e324e2d1c128dc57f55de9c958e696"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": false,
+      "verified_boundaries": [],
+      "blockers": [
+        "Controlled source CAS/history/security and browser identity subpaths passed at their recorded SHAs; whole cross-client/older-writer configuration-to-collector cutover is not certified",
+        "Saved/pinned configuration remains non-operational; provider applicability and live activation need separate evidence"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-02",
+      "source_to_ui_journey": "Tenant-owned host/process/service methods \u2192 enrolled Agent/Contrib \u2192 verified-TLS ingestion \u2192 PG receipts/current metrics \u2192 authorized host UI",
+      "owner": "Collector/host engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "agent/opscontrol_agent.py",
+        "backend/app/telemetry/ingestion.py",
+        "backend/app/telemetry/api.py",
+        "frontend/src/pages/VMHealth.jsx"
+      ],
+      "exact_test_command_job": "ARCH001_API_ACCEPTANCE=1 ARCH001_ENGINE_ACCEPTANCE=1 ARCH001_RUNTIME_ACCEPTANCE=1 OPSCONTROL_OTEL_BINARY=<pinned0.123.0> backend/.venv/bin/python scripts/arch001-acceptance.py; arch001-native-monitoring.yml/native-monitoring",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-runtime/runtime.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "28490c7c7dd7f7bbe6a78c3e5fe3e6ee4cacb777b156236b06c95c5e23ef4d4c"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-runtime/performance.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "805c97d3fa6e702b31e64ff15046fd405c1160469f7da72274702e219fae525e"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-browser-final/browser.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "95400d4cc9efb1ef21d0b995305c02e2c8fb21f6d0313ebf839e3ac1ed0db510"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": true,
+      "verified_boundaries": [],
+      "blockers": [
+        "Real Agent/pinned Contrib transport is controlled Linux fixture evidence; no exact genuine Windows/Linux native provider build qualification",
+        "CHK-001 accepted loss and CHK-002 rollback remain unresolved; receipt persistence does not prove pre-admission delivery"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-03",
+      "source_to_ui_journey": "Tenant API endpoint \u2192 permitted HTTPS GET/HEAD worker \u2192 persisted status/latency evidence \u2192 alert/recovery \u2192 operator API view",
+      "owner": "API/worker engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/api/activation.py",
+        "backend/app/api/remote_protocol.py",
+        "backend/app/worker/collector_runtime.py",
+        "frontend/src/pages/APIs.jsx"
+      ],
+      "exact_test_command_job": "RELEASE_BROWSER_ACCEPTANCE=1 backend/.venv/bin/python scripts/release-acceptance.py; release-reliability.yml/restore-retention-tls and private-https-acceptance.yml/private-https",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/remote-telemetry.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "566ef6170d78cf32e7853dcf79d8c023dc462d30849856af2b3604e52b49e0d8"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/remote_protocol_probe.log",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "1e58650f900802913e0f3a7c475872d04a51e805ee5c1cbb8851ba8cbedb1552"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/report.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "9904834be8efa83d04e74eaa3165a0cfbc76ad6509d4fb9b1f60443ea1eeeb6b"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": true,
+      "verified_boundaries": [],
+      "blockers": [
+        "HTTPS fixtures/negative TLS/auth/egress and UI subpaths are verified; the complete API evidence-to-selected-UI chain was not independently reconciled as one new qualification run",
+        "No authorized genuine customer/external endpoint certification"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-04",
+      "source_to_ui_journey": "Read-only native ETL identity/source generation \u2192 signed authority/binding \u2192 start/attempt/completion evidence \u2192 schedule/NO_RUN projection \u2192 ETL UI",
+      "owner": "ETL/provider engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/pipeline_adapters/pentaho_carte.py",
+        "backend/app/unified/pentaho_execution.py",
+        "backend/app/unified/pentaho_schedule.py",
+        "frontend/src/pages/ETLJobs.jsx"
+      ],
+      "exact_test_command_job": "ARCH001_ENGINE_ACCEPTANCE=1 ARCH001_BROWSER_ACCEPTANCE=1 ARCH001_API_ACCEPTANCE=1 backend/.venv/bin/python scripts/arch001-acceptance.py; pipeline-v16.yml/pipeline-contracts",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-runtime/engines.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "8963e7d9ae00b9d7905f8a0f8638f2b9806c699c4ddec0cb8e6cf92250b0d014"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-browser-final/browser.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "95400d4cc9efb1ef21d0b995305c02e2c8fb21f6d0313ebf839e3ac1ed0db510"
+        }
+      ],
+      "last_result": "BLOCKED",
+      "status_classification": "BLOCKED",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": true,
+      "verified_boundaries": [],
+      "blockers": [
+        "Genuine exact-build Pentaho Server schedule authority/Carte read-only qualification BLOCKED; synthetic engine outcomes are not provider certification",
+        "D07/D08 remain pending; schedule/NO_RUN certainty must not be invented from missing metrics or generic collector health"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-05",
+      "source_to_ui_journey": "Persisted admitted metric/log \u2192 rule evaluation \u2192 background alert/correlation/recovery \u2192 durable notification lease/outbox \u2192 authorized operator notification",
+      "owner": "Alert/notification engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/worker/alert_engine.py",
+        "backend/app/unified/engines.py",
+        "backend/app/native_incidents/service.py",
+        "backend/app/worker/notifications.py",
+        "backend/app/telemetry/inbox.py"
+      ],
+      "exact_test_command_job": "ARCH001_ENGINE_ACCEPTANCE=1 ARCH001_API_ACCEPTANCE=1 backend/.venv/bin/python scripts/arch001-acceptance.py; RELEASE_BROWSER_ACCEPTANCE=1 backend/.venv/bin/python scripts/release-acceptance.py",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-runtime/native-incidents.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "d07c89eb1e99f21d35319be789e8fb0e8a8544858c542611ff1fe7382a022d8e"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-runtime/notifications.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "4012e42762ff933cc0959c63c5039dd45b9ed47a1e883995619a4bc659362995"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/report.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "9904834be8efa83d04e74eaa3165a0cfbc76ad6509d4fb9b1f60443ea1eeeb6b"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": true,
+      "verified_boundaries": [],
+      "blockers": [
+        "Controlled metric/native alert and in-app notification paths passed; full independent SMTP/PagerDuty receipt and failure/retry certification absent",
+        "External connector outcomes must distinguish assumed closure from provider-verified closure (AUTH-491=B / AUTH-495=C); no Incidents management UI"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-06",
+      "source_to_ui_journey": "Authenticated user/session \u2192 effective roles/customer grants/revocation \u2192 tenant-scoped configuration/API \u2192 customer switching and authorized UI",
+      "owner": "Access/security engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/security/scope.py",
+        "backend/app/security/access_control.py",
+        "backend/app/security/resource_scope.py",
+        "frontend/src/controlPlane.js"
+      ],
+      "exact_test_command_job": "ACCESS_BROWSER_ACCEPTANCE=1 backend/.venv/bin/python scripts/access-acceptance.py; ARCH001_BROWSER_ACCEPTANCE=1 ARCH001_API_ACCEPTANCE=1 ARCH001_ENGINE_ACCEPTANCE=1 backend/.venv/bin/python scripts/arch001-acceptance.py; access-architecture.yml/access-rbac",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/required-recovery-2026-11-09/access-1/security.json",
+          "commit_sha": "72382ad1535c2d5a84d1e55fc19f692c351197a4",
+          "sha256": "f252b0edd533bfa363dc334bb58a953803a78a96abb33e5793e03851ba52f794"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/required-recovery-2026-11-09/access-1/browser.json",
+          "commit_sha": "72382ad1535c2d5a84d1e55fc19f692c351197a4",
+          "sha256": "fd3ae4364edab7d929a30059f53c4702f093b347d36c1f7499922d61b3b0d3a4"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-browser-final/access-v15-browser.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "81c10255a6a222e41d2c373416521ad229381f7e250f40b4cd4d4ba628f12448"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/deep_tenant_security_probe.log",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "2c7b8782e3c7ca3eb077476034d1b150a38823a969a82e9fe25a3e1b0527e541"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": false,
+      "verified_boundaries": [],
+      "blockers": [
+        "Controlled tenant/RBAC/revocation/UI subpaths passed; no blanket certification of every legacy writer/role and concurrent revocation boundary",
+        "Independent security review and nine owner acceptance selections remain pending; historical controlled approvals retained"
+      ]
+    },
+    {
+      "workflow_id": "S1-E2E-07",
+      "source_to_ui_journey": "Persisted historical metric/evidence \u2192 tenant-scoped time-range/frequency/aggregation query \u2192 authorized browser chart/report/drilldown",
+      "owner": "Operational UI/report engineering; accountable named assignee PENDING",
+      "environment": "Task-owned PostgreSQL17.11 + loopback FastAPI/React/Playwright; controlled TLS/source fixtures only",
+      "source_sha": "db1109801c76977fd77cd41b24f0ac4cec21a575",
+      "source_paths": [
+        "backend/app/unified/api.py",
+        "frontend/src/pages/DomainReports.jsx",
+        "frontend/src/pages/Reports.jsx",
+        "frontend/src/pages/UnifiedOverview.jsx"
+      ],
+      "exact_test_command_job": "ARCH001_API_ACCEPTANCE=1 ARCH001_ENGINE_ACCEPTANCE=1 ARCH001_BROWSER_ACCEPTANCE=1 backend/.venv/bin/python scripts/arch001-acceptance.py; operational-acceptance.yml/noc",
+      "evidence": [
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-arch-browser-final/browser.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "95400d4cc9efb1ef21d0b995305c02e2c8fb21f6d0313ebf839e3ac1ed0db510"
+        },
+        {
+          "path": "docs/verification/sprint1-integration/ci005-2026-11-09/local-recovery-1/pagination.json",
+          "commit_sha": "dffb7668e3609847b9817a2c500d39e979cd9da9",
+          "sha256": "733459cb74db606e589e70386e595bc27ea27bfffa357fdd22733eceb015d522"
+        }
+      ],
+      "last_result": "PARTIAL",
+      "status_classification": "PARTIAL",
+      "evidence_level": "IMPLEMENTED",
+      "certification_authority": "CONTROLLED_ENGINEERING_ONLY",
+      "provider_certification": false,
+      "collector_required": false,
+      "verified_boundaries": [],
+      "blockers": [
+        "Browser report/navigation/pagination exists; full range/frequency/aggregation correctness against independently inventoried metric series is NOT TESTED in this patch",
+        "No new retention, aggregation, timezone/calendar or frontend redesign semantics approved here"
+      ]
+    }
+  ]
+}

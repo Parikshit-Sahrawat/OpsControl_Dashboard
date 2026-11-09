@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "rows": 7,
+  "whole_paths": {
+    "PARTIAL": 6,
+    "BLOCKED": 1,
+    "CONTROLLED_E2E_VERIFIED": 0,
+    "GENUINE_PROVIDER_VERIFIED": 0,
+    "INDEPENDENTLY_ACCEPTED": 0,
+    "RELEASE_ELIGIBLE": 0
+  },
+  "guard_tests": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "all_repository_unit_tests": {
+    "passed": 112,
+    "failed": 0,
+    "skipped": 0
+  },
+  "scope_records": 814,
+  "unknown_records_still_run": 786,
+  "actionlint_exit": 0,
+  "workflow_files_validated": 28,
+  "required_contexts_unchanged": 13,
+  "history_prep": "Exact commit-ID read-only fetch in two root-test jobs; real shallow local Git regression passed; no checkout/ref advancement",
+  "limits": [
+    "Static evidence integrity cannot independently prove execution or signoff",
+    "All 7 whole workflows remain incomplete/blocked; passing subpaths retain original scope",
+    "Provider, security, legal, durability, UAT and release qualification not established",
+    "Final hosted CI to be triggered then handed off pending without polling"
+  ],
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "SPRINT1": "NOT_COMPLETE"
+  },
+  "documentation_checks": {
+    "local_links": 7,
+    "strict_json_documents": 116,
+    "raw_json_literal_newline_exceptions_preserved": [
+      "ci005-2026-11-09/local-recovery-1/eks.json",
+      "ci005-2026-11-09/recovery/eks.json"
+    ],
+    "no_private_key_jwt_literals": true
+  }
+}
