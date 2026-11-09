@@ -36,6 +36,10 @@ def request(path, method="GET", payload=None, token=None, expected=200):
         source_id = path.split("/")[2]
         head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
         headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
+    if path.startswith("monitoring/templates/") and len(path.split("/"))==3 and token:
+        if method=="PATCH" and "expected_version" not in (payload or {}):
+            payload={**(payload or {}),"expected_version":request(path,token=token)["version"]}
+        if method=="DELETE":headers["Expected-Version"]=str(request(path,token=token)["version"])
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"
@@ -57,7 +61,7 @@ def request(path, method="GET", payload=None, token=None, expected=200):
             if status != 500 or expected != 500:
                 raise
             data = {"detail": "Expected injected server failure (non-JSON response)"}
-    if status != expected:
+    if status not in ((expected,) if isinstance(expected,int) else expected):
         (private / "api-error.json").write_text(
             json.dumps(
                 {
@@ -68,7 +72,7 @@ def request(path, method="GET", payload=None, token=None, expected=200):
                 }
             )
         )
-    assert status == expected, (path, status, expected)
+    assert status in ((expected,) if isinstance(expected,int) else expected), (path, status, expected)
     return data
 
 
@@ -571,9 +575,11 @@ other_source=request("resource-management/data-sources","POST",{"organization_id
 request(f"monitoring/data-sources/{other_source['id']}/templates", "POST", {"template_id":tid,"template_version":1},viewer,403)
 from concurrent.futures import ThreadPoolExecutor as TemplatePool
 with TemplatePool(max_workers=2) as pool:
-    jobs=[pool.submit(request,f"monitoring/templates/{tid}","PATCH",{"package_config":{"collector":{"type":"HTTP","interval_seconds":interval}}},admin) for interval in (40,50)]
-    committed=[future.result()["version"] for future in jobs]
-assert set(committed)=={3,4}
+    jobs=[pool.submit(request,f"monitoring/templates/{tid}","PATCH",{"expected_version":2,"package_config":{"collector":{"type":"HTTP","interval_seconds":interval}}},admin,(200,409)) for interval in (40,50)]
+    committed=[future.result() for future in jobs]
+assert sum(value.get("version")==3 for value in committed)==1
+assert sum(value.get("detail",{}).get("code")=="STALE_CATALOGUE_VERSION" for value in committed)==1
+assert request(f"monitoring/templates/{tid}","PATCH",{"expected_version":3,"description":"Explicit retry after conflict"},admin)["version"]==4
 assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)["templates"][0]["version"]==1
 checks.append("Template immutable v1 pin survives v2 commit; required attributes and source overrides resolve; original versions retained; viewer mutation and disabled-parent legacy creation denied")
 # Role edits revoke prior sessions; stale callers cannot mutate a resource.

@@ -123,8 +123,8 @@ export const updateMonitoringTemplate = (id, payload) =>
   });
 export const fetchMonitoringTemplateVersions = (id) =>
   request("/api/v1/monitoring/templates/" + id + "/versions");
-export const disableMonitoringTemplate = (id) =>
-  request("/api/v1/monitoring/templates/" + id, { method: "DELETE" });
+export const disableMonitoringTemplate = (id, version) =>
+  request("/api/v1/monitoring/templates/" + id, { method: "DELETE", headers: {"Expected-Version":String(version)} });
 
 export const fetchDataSourceTemplates = (id) =>
   request("/api/v1/monitoring/data-sources/" + id + "/templates");
@@ -151,3 +151,5 @@ export const commitSourceConfiguration = (id, payload, key) => request(
   "/api/v1/monitoring/data-sources/" + id + "/configuration/commands",
   { method: "POST", body: JSON.stringify(payload), headers: {"Idempotency-Key": key} },
 );
+
+export const fetchMonitoringTemplate = id => request("/api/v1/monitoring/templates/"+id);

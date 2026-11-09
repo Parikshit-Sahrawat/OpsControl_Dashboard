@@ -38,6 +38,11 @@ out = Path(
     os.getenv("ACCESS_DOCKER_EVIDENCE_DIR", "/tmp/opscontrol-access-docker-evidence")
 )
 passed = False
+# A runtime-only public trust bundle; never disable TLS or bake it into layers.
+trust = Path(os.getenv("OPSCONTROL_BUILD_CA_FILE", "/etc/ssl/certs/ca-certificates.crt")).resolve()
+import ssl
+ssl.create_default_context(cafile=str(trust))
+if not trust.is_file(): raise RuntimeError("Readable build CA bundle required")
 
 
 def port():
@@ -78,13 +83,18 @@ db_password = secrets.token_urlsafe(36)
 (private / "admin-password").write_text(password)
 (private / "admin-password").chmod(0o600)
 (private / "override.yml").write_text(
-    f"""services:
+    f"""secrets:
+  proxy_ca:
+    file: {trust}
+services:
   postgres:
     image: postgres:17-alpine
     volumes: !override []
     environment:
       POSTGRES_PASSWORD: {db_password}
   api:
+    build:
+      secrets: [proxy_ca]
     environment:
       DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
       CORS_ORIGINS: http://127.0.0.1:{ui_port}
@@ -94,6 +104,8 @@ db_password = secrets.token_urlsafe(36)
     volumes: !override
       - "{private}/admin-password:/run/secrets/demo_admin_password:ro"
   worker:
+    build:
+      secrets: [proxy_ca]
     environment:
       DATABASE_URL: postgresql+psycopg://opscontrol:{db_password}@postgres:5432/opscontrol
   ingestion-gateway:
@@ -105,6 +117,7 @@ db_password = secrets.token_urlsafe(36)
       - "{private}/gateway/tls.key:/etc/opscontrol/tls/tls.key:ro"
   frontend:
     build:
+      secrets: [proxy_ca]
       args:
         VITE_API_BASE_URL: http://127.0.0.1:{api_port}
     ports: !override
@@ -157,7 +170,7 @@ try:
     if env.get("OPSCONTROL_DOCKER_RECOVER_BUILD_CACHE") == "1":
         # VFS hosts retain full build snapshots. Release unused, rebuildable
         # cache before allocating the five runtime filesystems; never prune data.
-        run(["docker", "builder", "prune", "--all", "--force"])
+        raise RuntimeError("Broad Docker cache cleanup is forbidden; provision an owned runner with adequate storage")
     run(compose + ["up", "--no-build", "--detach"])
     print("Owned five-service Docker demo built", flush=True)
     image_paths = sorted(
@@ -365,7 +378,12 @@ finally:
         stderr=subprocess.DEVNULL,
         timeout=90,
     )
-    if passed:
-        shutil.rmtree(private)
-    else:
-        print("Private Docker diagnostics retained:", private)
+    # Hosted runners are ephemeral: retain redacted diagnostics on failures,
+    # not an inaccessible private path or synthetic passwords/keys.
+    out.mkdir(parents=True, exist_ok=True)
+    for file in private.glob("*.log"):
+        content = file.read_text(errors="replace").replace(password,"[REDACTED]").replace(db_password,"[REDACTED]")
+        (out/file.name).write_text(content)
+    fingerprints = {file.name:hashlib.sha256(file.read_bytes()).hexdigest() for file in private.iterdir() if file.is_file()}
+    shutil.rmtree(private)
+    (out/"cleanup.json").write_text(json.dumps({"project":project,"passed":passed,"private_removed":not private.exists(),"fixture_hashes":fingerprints,"scope":"Only allocated Compose project, volumes and private directory; no broad cleanup"},indent=2))

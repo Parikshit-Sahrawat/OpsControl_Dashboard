@@ -482,6 +482,8 @@ class MonitoringTemplateCreate(BaseModel):
         return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    expected_version: int | None = Field(default=None, ge=1)
     @field_validator("name", "scope", check_fields=False)
     @classmethod
     def reject_null_required_fields(cls, value):

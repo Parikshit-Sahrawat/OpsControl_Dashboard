@@ -575,7 +575,12 @@ def commit_monitoring_template(
     item = db.get(MonitoringTemplate, item_id, with_for_update=True)
     if item is None:
         raise HTTPException(404, "Monitoring template not found")
+    if payload.expected_version is None:
+        raise HTTPException(428, "Expected catalogue version required")
+    if payload.expected_version != item.version:
+        raise HTTPException(409, dict(code="STALE_CATALOGUE_VERSION", current_version=item.version))
     values = payload.model_dump(exclude_unset=True)
+    values.pop("expected_version", None)
     package = values.pop("package_config", None)
     values.pop("committed_by", None)
     from app.security.scope import current_principal
@@ -583,29 +588,36 @@ def commit_monitoring_template(
     for key, value in values.items():
         setattr(item, key, value)
 
-    if package is not None:
-        next_version = int(item.version) + 1
-        item.version = next_version
-        item.status = "COMMITTED"
-        item.package_config = package
-        item.committed_at = datetime.utcnow()
-        item.committed_by = committed_by
-        db.add(MonitoringTemplateVersion(
-            template_id=item.id,
-            version=next_version,
-            status="COMMITTED",
-            package_config=package,
-            committed_at=item.committed_at,
-            committed_by=committed_by,
-        ))
+    next_version = int(item.version) + 1
+    item.version = next_version
+    item.status = "COMMITTED" if package is not None else item.status
+    item.package_config = package if package is not None else item.package_config
+    item.committed_at = datetime.utcnow()
+    item.committed_by = committed_by
+    db.add(MonitoringTemplateVersion(
+        template_id=item.id,
+        version=next_version,
+        status=item.status,
+        package_config=item.package_config,
+        committed_at=item.committed_at,
+        committed_by=committed_by,
+    ))
     db.commit()
     db.refresh(item)
     return item
 
 
 @router.delete("/templates/{item_id}", status_code=204)
-def disable_monitoring_template(item_id: UUID, db: Session = Depends(get_db)):
-    item = _get_or_404(MonitoringTemplate, item_id, db, "Monitoring template")
+def disable_monitoring_template(item_id: UUID, db: Session = Depends(get_db), expected_version: int | None = Header(default=None, ge=1)):
+    item = db.get(MonitoringTemplate, item_id, with_for_update=True)
+    if not item: raise HTTPException(404,"Monitoring template not found")
+    if expected_version is None: raise HTTPException(428,"Expected catalogue version required")
+    if expected_version != item.version: raise HTTPException(409,dict(code="STALE_CATALOGUE_VERSION",current_version=item.version))
+    from app.security.scope import current_principal
+    item.version += 1
+    item.committed_by = current_principal.get().username
+    item.committed_at = datetime.utcnow()
+    db.add(MonitoringTemplateVersion(template_id=item.id,version=item.version,status="DISABLED",package_config=item.package_config,committed_at=item.committed_at,committed_by=item.committed_by))
     item.status = "DISABLED"
     db.commit()
 

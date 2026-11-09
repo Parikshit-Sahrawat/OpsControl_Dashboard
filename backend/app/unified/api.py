@@ -319,9 +319,19 @@ def output(db, r, projection=None):
     )
     setup = (r.configuration or {}).get("alert_setup") or {}
     inherited = binding(db, r, projection)
-    source = (projection["sources"].get(r.data_source_id) if projection is not None else db.get(DataSource, r.data_source_id)) if r.data_source_id else None
+    source = (
+        (
+            projection["sources"].get(r.data_source_id)
+            if projection is not None
+            else db.get(DataSource, r.data_source_id)
+        )
+        if r.data_source_id
+        else None
+    )
     return {
-        "source_configuration_revision": source.configuration_revision if source else None,
+        "source_configuration_revision": (
+            source.configuration_revision if source else None
+        ),
         **document(r),
         "event_parameters_configured": bool(parameters),
         "alerting_configured": bool(setup.get("enabled")),
@@ -798,10 +808,40 @@ def create_api(payload: APICreate, db=Depends(get_db)):
     return output(db, r)
 
 
+@router.get("/resources/{id}/configuration-context")
+def configuration_context(id: uuid.UUID, db=Depends(get_db)):
+    r = resource(db, id, "resources.view")
+    sources = {}
+    children = {}
+    if r.data_source_id:
+        source = db.get(DataSource, r.data_source_id)
+        if source:
+            sources[str(source.id)] = source.configuration_revision
+    if r.domain == "VM":
+        for child in db.scalars(
+            select(MonitoringResource).where(MonitoringResource.linked_vm_id == r.vm_id)
+        ):
+            if child.organization_id != r.organization_id:
+                raise HTTPException(409, "Child ownership conflicts with parent")
+            if child.domain == "API" and child.data_source_id:
+                source = db.get(DataSource, child.data_source_id)
+                if source and source.configuration_revision:
+                    resource(db, child.id, "resources.view")
+                    sources[str(source.id)] = source.configuration_revision
+                    children[str(child.id)] = child.revision
+    return dict(
+        resource_revision=r.revision, source_revisions=sources, child_revisions=children
+    )
+
+
 class ResourceEdit(Strict):
     expected_revision: int = Field(ge=1)
     expected_source_revision: int | None = Field(default=None, ge=0)
     configuration_command_key: uuid.UUID | None = None
+    expected_child_source_revisions: dict[uuid.UUID, int] = Field(default_factory=dict)
+    expected_child_resource_revisions: dict[uuid.UUID, int] = Field(
+        default_factory=dict
+    )
     name: str = Field(min_length=1, max_length=200)
     environment: Environment
     configuration: dict
@@ -813,7 +853,18 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
     r = resource(db, id, "resources.update", True)
     if payload.expected_revision != r.revision:
         raise HTTPException(409, "Resource changed; reload before editing")
-    source_command = None
+    source_commands = []
+    if (
+        payload.expected_child_source_revisions
+        or payload.expected_child_resource_revisions
+    ):
+        permitted = configuration_context(id, db)
+        if set(map(str, payload.expected_child_source_revisions)) - set(
+            permitted["source_revisions"]
+        ) or set(map(str, payload.expected_child_resource_revisions)) - set(
+            permitted["child_revisions"]
+        ):
+            raise HTTPException(422, "Unexpected coordinated configuration reference")
     config = dict(payload.configuration)
     # Alert setup has a separate permission/revision contract. A generic edit
     # may echo it unchanged but must never create, change or erase it.
@@ -867,15 +918,39 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
                 raise HTTPException(
                     409, "Changing an enrolled host OS requires deliberate migration"
                 )
-            context = dict(endpoint=typed.address, connection_config={
-                **(source.connection_config or {}),
-                "opscontrol": {**(source.connection_config or {}).get("opscontrol", {}), "environment": payload.environment, "visible_name": payload.name},
-            })
+            context = dict(
+                endpoint=typed.address,
+                connection_config={
+                    **(source.connection_config or {}),
+                    "opscontrol": {
+                        **(source.connection_config or {}).get("opscontrol", {}),
+                        "environment": payload.environment,
+                        "visible_name": payload.name,
+                    },
+                },
+            )
             if source.configuration_revision:
-                if payload.expected_source_revision is None or payload.configuration_command_key is None:
-                    raise HTTPException(428, "Source revision and configuration command key required; reload resource")
+                if (
+                    payload.expected_source_revision is None
+                    or payload.configuration_command_key is None
+                ):
+                    raise HTTPException(
+                        428,
+                        "Source revision and configuration command key required; reload resource",
+                    )
                 from app.services import source_configuration as source_service
-                source_command = (source.id, source_service.Command(expected_revision=payload.expected_source_revision, attachments=source_service.members(db, source.id), source_context=context), payload.configuration_command_key)
+
+                source_commands.append(
+                    (
+                        source.id,
+                        source_service.Command(
+                            expected_revision=payload.expected_source_revision,
+                            attachments=source_service.members(db, source.id),
+                            source_context=context,
+                        ),
+                        payload.configuration_command_key,
+                    )
+                )
             else:
                 source.endpoint = context["endpoint"]
                 source.connection_config = context["connection_config"]
@@ -902,15 +977,59 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
                     )
                 if child.domain == "API" and child.data_source_id:
                     cs = db.get(DataSource, child.data_source_id)
-                    if cs.configuration_revision and payload.environment != (cs.connection_config or {}).get("opscontrol", {}).get("environment"):
-                        raise HTTPException(409, "Revisioned child source requires explicit coordinated context update")
-                    cs.connection_config = {
+                    context = {
                         **(cs.connection_config or {}),
                         "opscontrol": {
                             **(cs.connection_config or {}).get("opscontrol", {}),
                             "environment": payload.environment,
                         },
                     }
+                    if cs.configuration_revision:
+                        require_permission("resources.update", child.organization_id)
+                        if (
+                            child.organization_id != r.organization_id
+                            or cs.organization_id != r.organization_id
+                        ):
+                            raise HTTPException(
+                                409, "Child source ownership conflicts with parent"
+                            )
+                        # Resource revision was incremented above; compare the
+                        # client's original version before any flushed mutation.
+                        expected = payload.expected_child_resource_revisions.get(
+                            child.id
+                        )
+                        if (
+                            expected is None
+                            or cs.id not in payload.expected_child_source_revisions
+                            or payload.configuration_command_key is None
+                        ):
+                            raise HTTPException(
+                                428,
+                                "Coordinated child source/resource revisions and command key required",
+                            )
+                        if expected != child.revision - 1:
+                            raise HTTPException(
+                                409, "Child resource changed; reload before editing"
+                            )
+                        from app.services import source_configuration as source_service
+
+                        source_commands.append(
+                            (
+                                cs.id,
+                                source_service.Command(
+                                    expected_revision=payload.expected_child_source_revisions[
+                                        cs.id
+                                    ],
+                                    attachments=source_service.members(db, cs.id),
+                                    source_context={"connection_config": context},
+                                ),
+                                uuid.uuid5(
+                                    payload.configuration_command_key, str(cs.id)
+                                ),
+                            )
+                        )
+                    else:
+                        cs.connection_config = context
     elif r.domain == "ETL":
         parent = (
             db.scalar(
@@ -1036,7 +1155,7 @@ def edit(id: uuid.UUID, payload: ResourceEdit, db=Depends(get_db)):
         if r.job_order_id:
             db.get(JobOrder, r.job_order_id).monitoring_enabled = False
     audit(db, r, "ARCH_RESOURCE_UPDATE")
-    if source_command:
+    for source_command in sorted(source_commands, key=lambda command: str(command[0])):
         source_service.commit(db, *source_command, finalize=False)
     commit(db)
     return output(db, r)

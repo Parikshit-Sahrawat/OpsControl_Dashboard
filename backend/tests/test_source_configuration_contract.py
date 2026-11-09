@@ -169,6 +169,132 @@ class SourceConfigurationContract(unittest.TestCase):
         self.assertEqual(code, status, body)
         return body
 
+    def test_catalogue_concurrent_publication_and_stale_retirement(self):
+        path = f"monitoring/templates/{self.tid}"
+        self.assertEqual(
+            self.call("PATCH", path, {"name": "missing precondition"})[0], 428
+        )
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            outcomes = list(
+                pool.map(
+                    lambda n: self.call(
+                        "PATCH",
+                        path,
+                        {"expected_version": 1, "description": f"Publisher {n}"},
+                    )[0],
+                    range(2),
+                )
+            )
+        self.assertEqual(sorted(outcomes), [200, 409])
+        self.assertEqual(self.call("GET", path)[1]["version"], 2)
+        self.assertEqual(
+            self.call("PATCH", path, {"expected_version": 1, "description": "stale"})[
+                0
+            ],
+            409,
+        )
+        self.assertEqual(
+            self.call(
+                "PATCH",
+                path,
+                {"expected_version": 2, "description": "viewer"},
+                token=self.viewer,
+            )[0],
+            403,
+        )
+        versions = self.call("GET", path + "/versions")[1]
+        self.assertEqual({v["version"] for v in versions}, {1, 2})
+        self.assertEqual(self.call("DELETE", path)[0], 428)
+
+    def test_coordinated_child_sources_are_atomic_and_revision_checked(self):
+        code, vm = self.call(
+            "POST",
+            "unified/resources/vm",
+            dict(
+                organization_id=self.org,
+                name="Parent " + uuid4().hex,
+                environment="DEV",
+                hostname=uuid4().hex + ".invalid",
+                address="203.0.113.67",
+                os_type="Linux",
+            ),
+        )
+        self.assertEqual(code, 201, vm)
+        code, child = self.call(
+            "POST",
+            "unified/resources/api",
+            dict(
+                organization_id=self.org,
+                name="Child " + uuid4().hex,
+                environment="DEV",
+                dns="controlled.invalid",
+                protocol="HTTPS",
+                linked_vm_resource_id=vm["id"],
+            ),
+        )
+        self.assertEqual(code, 201, child)
+        for source in (vm["data_source_id"], child["data_source_id"]):
+            self.assertEqual(
+                self.call(
+                    "POST",
+                    f"monitoring/data-sources/{source}/configuration/commands",
+                    dict(expected_revision=0, attachments=[]),
+                    key=uuid4(),
+                )[0],
+                201,
+            )
+        path = f"unified/resources/{vm['id']}"
+        snapshot = self.call("GET", path + "/configuration-context")[1]
+        current = self.call("GET", path)[1]
+        payload = dict(
+            expected_revision=current["revision"],
+            expected_source_revision=1,
+            configuration_command_key=str(uuid4()),
+            expected_child_source_revisions=snapshot["source_revisions"],
+            expected_child_resource_revisions=snapshot["child_revisions"],
+            name=current["name"],
+            environment="QA",
+            configuration=current["configuration"],
+            active=True,
+        )
+        # Force a child CAS conflict after the snapshot; parent/source changes
+        # must roll back even if a preceding source command was flushed.
+        childpath = f"monitoring/data-sources/{child['data_source_id']}/configuration"
+        self.assertEqual(
+            self.call(
+                "POST",
+                childpath + "/commands",
+                dict(expected_revision=1, attachments=[]),
+                key=uuid4(),
+            )[0],
+            201,
+        )
+        self.assertEqual(self.call("PUT", path, payload)[0], 409)
+        self.assertEqual(self.call("GET", path)[1]["environment"], "DEV")
+        self.assertEqual(
+            self.call(
+                "GET", f"monitoring/data-sources/{vm['data_source_id']}/configuration"
+            )[1]["revision"],
+            1,
+        )
+        payload["expected_child_source_revisions"] = self.call(
+            "GET", path + "/configuration-context"
+        )[1]["source_revisions"]
+        code, result = self.call("PUT", path, payload)
+        self.assertEqual(code, 200, result)
+        self.assertEqual(result["environment"], "QA")
+        self.assertEqual(
+            self.call("GET", f"unified/resources/{child['id']}")[1]["environment"], "QA"
+        )
+        self.assertEqual(self.call("GET", childpath)[1]["revision"], 3)
+        self.assertEqual(
+            self.call(
+                "GET", f"monitoring/data-sources/{vm['data_source_id']}/configuration"
+            )[1]["revision"],
+            2,
+        )
+        self.assertEqual(self.call("PUT", path, payload, token=self.viewer)[0], 403)
+
     def test_unified_resource_edit_and_source_revision_commit_together(self):
         code, resource = self.call(
             "POST",

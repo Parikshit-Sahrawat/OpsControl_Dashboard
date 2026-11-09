@@ -23,6 +23,7 @@ jobs:
       - name: Build backend locally on hosted runner (no push)
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
+          secret-files: proxy_ca=/etc/ssl/certs/ca-certificates.crt
           context: ./backend
           file: ./backend/Dockerfile.uat
           load: true
@@ -31,6 +32,7 @@ jobs:
       - name: Build frontend locally on hosted runner (no push)
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
+          secret-files: proxy_ca=/etc/ssl/certs/ca-certificates.crt
           context: ./frontend
           file: ./frontend/Dockerfile.demo
           load: true

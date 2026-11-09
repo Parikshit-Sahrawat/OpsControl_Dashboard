@@ -12,7 +12,7 @@ import {
   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
   fetchDataSources, createDataSource, updateDataSource, disableDataSource,
   fetchCollectors, createCollector, updateCollector, disableCollector,
-  fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
+  fetchMonitoringTemplates, fetchMonitoringTemplate, createMonitoringTemplate, updateMonitoringTemplate,
   fetchMonitoringTemplateVersions, disableMonitoringTemplate,
   fetchDataSourceTemplates, commitSourceConfiguration, fetchEffectiveDataSourceConfiguration,
 } from "../resourceApi";
@@ -113,6 +113,8 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
   const [tab, setTab] = useState("general");
   const [errors, setErrors] = useState([]);
   const [history, setHistory] = useState([]);
+  const [catalogueConflict,setCatalogueConflict] = useState(false);
+  const [reviewedCatalogue,setReviewedCatalogue] = useState(null);
   const [newAttr, setNewAttr] = useState({ name: "", key: "", type: "TEXT", value_source: "DATA_SOURCE", required: false, defaultValue: "", description: "", example: "", allowedValues: [] });
   const [newMetric, setNewMetric] = useState({ name: "", metric: "", resource: "VM", method: "HOST_METRIC", unit: "", interval: 30, aggregation: "avg", window: 60, dimensions: [], enabled: true });
   const [newAlert, setNewAlert] = useState({ name: "", domain: "VM", signal: "", condition: "GT", threshold: 80, threshold_type: "NUMBER", duration: 300, recovery: "", severity: "WARNING", channels: ["EMAIL"], deduplication: "organization+data_source+rule", enabled: true });
@@ -144,9 +146,9 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
     catch { setErrors(["Applicability must be valid JSON. Use null only for an explicitly unverified legacy package."]); return; }
     const p = { ...clone(draft), applicability }; delete p.id; delete p.version; delete p.status; delete p.committed_at;
     try {
-    const result = draft.id ? await updateMonitoringTemplate(draft.id, { name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
+    const result = draft.id ? await updateMonitoringTemplate(draft.id, { expected_version: saved.version, name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
     const next = normalizeTemplate(result); setDraft(clone(next)); setSaved(clone(next)); setErrors([]); onSaved(next);
-    } catch (error) { setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
+    } catch (error) { setCatalogueConflict(error.status===409); setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
   };
   const loadHistory = async () => { try { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); } catch(error) { setErrors([error.message]); } };
   const add = (section, value, reset) => { setDraft(d => ({ ...d, [section]: [...d[section], clone(value)] })); reset(); };
@@ -195,6 +197,8 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
 
   const tabs = [["general", "General"], ["attributes", "Attributes"], ["collector", "Collector / Agent"], ["metrics", "Metrics"], ["alerts", "Alert Rules"], ["logs", "Log Collection"]];
   return <Modal title={draft.id ? "Edit Monitoring Template" : "Create Monitoring Template"} wide onClose={onClose}>
+    {catalogueConflict && <section aria-label="Catalogue version conflict"><p role="alert">Catalogue changed. Your unsaved package is retained. Review the latest version before an explicit retry.</p><button type="button" onClick={async()=>{try{setReviewedCatalogue(normalizeTemplate(await fetchMonitoringTemplate(draft.id)));}catch(e){setErrors([e.message]);}}}>Review latest catalogue version</button>{reviewedCatalogue && <><pre>{JSON.stringify(reviewedCatalogue,null,2)}</pre><button type="button" onClick={()=>{setSaved(clone(reviewedCatalogue));setCatalogueConflict(false);setReviewedCatalogue(null);setErrors([]);}}>Use reviewed version for next save</button></>}</section>}
+
     <div className="template-editor-header"><div><div className="template-editor-name-row"><h3>{draft.name}</h3><span className={dirty ? "template-draft-badge dirty" : "template-draft-badge"}>{dirty ? "UNSAVED CHANGES" : draft.status}</span><span className="template-version-badge">v{draft.version}</span></div><small className="muted">Design → Validate → Apply &amp; Commit</small></div><button className="filter-button" type="button" onClick={loadHistory}>Version History</button></div>
     {history.length > 0 && <div className="template-history-panel"><b>Version History</b>{history.map(v => <div className="template-history-row" key={v.id}><span>v{v.version}</span><b>{v.status}</b><span>{new Date(v.committed_at).toLocaleString("en-IN")}</span><span>{v.committed_by || "Admin"}</span></div>)}</div>}
     <div className="template-editor-layout"><aside className="template-editor-side-tabs">{tabs.map(([k, label]) => <button type="button" key={k} className={tab === k ? "template-side-tab active" : "template-side-tab"} onClick={() => setTab(k)}>{label}<span>{k === "attributes" ? draft.attributes.length : k === "metrics" ? draft.metrics.length : k === "alerts" ? draft.alerts.length : k === "logs" ? draft.logs.length : ""}</span></button>)}</aside><section className="template-editor-content">
@@ -345,7 +349,7 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
       if (generation === reloadGeneration.current) setError(e.message || "Unable to load saved Data Source settings");
     }
   };
-  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
+  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id, item.version); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
   const selectedOrganizations = organizations.filter(o =>
     (!organizationIds.length || organizationIds.includes(o.id)) &&
     (!query || [o.name, o.code, o.id].join(" ").toLowerCase().includes(query.toLowerCase().trim())));

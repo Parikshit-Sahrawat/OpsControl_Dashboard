@@ -899,6 +899,8 @@ export function Verification({ data }) {
 }
 function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
   const draftSelection = useRef(0);
+  const [contextSnapshot, setContextSnapshot] = useState(null);
+  const [contextFailure, setContextFailure] = useState("");
   const [form, setForm] = useState(
       item
         ? {
@@ -930,6 +932,12 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
     [error, setError] = useState(""),
     [imported, setImported] = useState(null),
     [fileName, setFileName] = useState("");
+  useEffect(() => {
+    let live = true;
+    setContextSnapshot(null); setContextFailure("");
+    if (created?.id) control(base+"/resources/"+created.id+"/configuration-context").then(result=>{if(live)setContextSnapshot(result);}).catch(error=>{if(live)setContextFailure(error.message);});
+    return ()=>{live=false;};
+  }, [created?.id, form.organization_id, user.authorization_revision]);
   useEffect(() => {
     let live = true;
     if (domain !== "VM")
@@ -1074,6 +1082,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       delete payload.legacy_template_attachments;
       let r = created;
       if (item || created) {
+        if (!contextSnapshot) throw new Error(contextFailure || "Wait for the configuration revision snapshot before saving");
         const existing = item || created;
         const config = { ...form };
         for (const key of [
@@ -1086,7 +1095,9 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           delete config[key];
         r = await control(base + "/resources/" + existing.id, "PUT", {
           expected_revision: existing.revision,
-          expected_source_revision: existing.source_configuration_revision ?? null,
+          expected_source_revision: contextSnapshot?.source_revisions[existing.data_source_id] ?? existing.source_configuration_revision ?? null,
+          expected_child_source_revisions: contextSnapshot?.source_revisions || {},
+          expected_child_resource_revisions: contextSnapshot?.child_revisions || {},
           configuration_command_key: window.crypto.randomUUID(),
           name: form.name,
           environment: form.environment,
