@@ -1,0 +1,58 @@
+{
+  "status": "PASS_LOCAL_BOUNDED_VALIDATION_ONLY",
+  "tested_base_commit": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "tested_patch": "Changed paths and content hashes in SOURCE_HASHES.json, then committed without runtime changes",
+  "commands": [
+    {
+      "command": "backend/.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v",
+      "exit": 0,
+      "passed": 112,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "root CI/security/controller unit regressions; not full backend or runtime acceptance",
+      "log": "raw/root-tests.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/policy.py",
+      "exit": 0,
+      "log": "raw/ci-policy.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/e2e_alignment.py",
+      "exit": 0,
+      "log": "raw/e2e-integrity.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "raw/diff-check.log"
+    },
+    {
+      "command": "backend/.venv/bin/python docs/verification/sec001-r02/validate_qualification.py",
+      "exit": 0,
+      "finding_rows": 35,
+      "closed": 0,
+      "log": "raw/validation.log"
+    },
+    {
+      "command": "backend/.venv/bin/python docs/verification/sec001-r02/inspect_binary.py QUARANTINED_GOSU OUTPUT.json; compare against retained binary-inspection.json",
+      "exit": 0,
+      "log": "raw/binary-reproduction.log"
+    },
+    {
+      "command": "gpg --homedir OWNED_QUARANTINE --status-fd 1 --verify gosu-amd64.asc gosu-amd64",
+      "exit": 0,
+      "scope": "detached signature verification only; unknown identity trust retained",
+      "log": "raw/gpg-verification.log"
+    }
+  ],
+  "fresh_image_scans": "NOT RUN locally; CI PENDING",
+  "runtime_database_browser_tests": "NOT RUN \u2014 no runtime changes authorized/required by these bounded contracts",
+  "ci": "TRIGGER ON DRAFT PR; RESULT PENDING; do not poll",
+  "security": "BLOCKED",
+  "chk001": "FAIL",
+  "chk002": "BLOCKED",
+  "release": "NO-GO",
+  "collector": "0.123.0 unchanged",
+  "cleanup": "No Docker resources created, no database started, no broad cleanup. R02 quarantined non-executable public binary and owned GPG home removed after static verification; public signature/key retained."
+}
