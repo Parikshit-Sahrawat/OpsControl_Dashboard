@@ -672,7 +672,9 @@ request(attachment_path,"PATCH",{"enabled":False},admin)
 request(attachment_path,"PATCH",{"enabled":True},admin,409)
 request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid,"template_version":1},admin,409)
 assert not request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]["enabled"]
-assert {v["version"] for v in request(f"monitoring/templates/{tid}/versions",token=admin)}=={1,2,3,4}
+retained_versions=request(f"monitoring/templates/{tid}/versions",token=admin)
+assert {v["version"] for v in retained_versions}=={1,2,3,4,5}
+assert next(v for v in retained_versions if v["version"]==5)["status"]=="DISABLED"
 checks.append("002C attachment concurrent expected-revision writes produce200/409; injected PostgreSQL failure rolls back state; disabled template cannot re-enable or attach; pinned versions preserved")
 
 # Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
