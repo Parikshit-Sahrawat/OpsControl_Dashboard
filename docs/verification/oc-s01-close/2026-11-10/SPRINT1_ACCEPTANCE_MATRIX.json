@@ -1,0 +1,166 @@
+{
+  "application_sha": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "contracts": [
+    {
+      "id": "S01-C01",
+      "contract": "OS/method applicability",
+      "status": "PASS_CONTROLLED",
+      "source": "source_configuration.evaluate; template_applicability.applicability; METHOD_SCHEMAS",
+      "tests": "test_invalid_os_methods_overrides_missing_revision_and_secret; test_method_schema_and_ambiguous_priorities_fail_without_history",
+      "limits": "Explicit source family, Windows/Linux, real schemas, HTTPS GET/HEAD negatives; unknown legacy/provider schemas stay unverified."
+    },
+    {
+      "id": "S01-C02",
+      "contract": "Pins/overrides/effective preview",
+      "status": "PASS_CONTROLLED",
+      "source": "template_resolution.resolve_data_source_configuration; source_configuration.evaluate",
+      "tests": "test_attach_reload_history_rollback_and_detach; resource browser9groups",
+      "limits": "Pinned immutable package content and validated overrides persist/reload; save is not collector application."
+    },
+    {
+      "id": "S01-C03",
+      "contract": "Append-only source ledger",
+      "status": "PASS_CONTROLLED",
+      "source": "SourceConfigurationRevision; migration0042_source_configuration",
+      "tests": "test_history_immutable_hash_and_atomic_failure; test_source_history_foreign_key_and_actor_are_not_client_controlled",
+      "limits": "Actor/time,parent/new revision,canonical hash/safe snapshot retained; privileged DB owner remains trust boundary."
+    },
+    {
+      "id": "S01-C04",
+      "contract": "Atomic commit/revision/idempotency",
+      "status": "PASS_CONTROLLED",
+      "source": "source_configuration.commit; source_configuration.commands",
+      "tests": "test_concurrent_stale_commands_and_idempotent_retry; test_database_connection_termination_rolls_back_full_command",
+      "limits": "Stale409,missing428,wrong key/body409; projection/head/history commit atomically in tested paths."
+    },
+    {
+      "id": "S01-C05",
+      "contract": "Current legacy writer adapters",
+      "status": "PASS_CONTROLLED",
+      "source": "monitoring.py; resource_management.py; unified/api.py; migration0043_source_context_fence",
+      "tests": "test_atomic_context_revalidation_and_legacy_writer_preconditions; test_old_metadata_and_auth_writers_cannot_bypass_revision_history",
+      "limits": "Current POST/PATCH/DELETE/context writers fenced. This does not certify every older binary/direct SQL/DB owner."
+    },
+    {
+      "id": "S01-C06",
+      "contract": "Coordinated child sources/catalogue CAS",
+      "status": "PASS_CONTROLLED",
+      "source": "unified/api.py expected_child_source_revisions; template_packages.py",
+      "tests": "test_coordinated_child_sources_are_atomic_and_revision_checked; test_catalogue_concurrent_publication_and_stale_retirement",
+      "limits": "Tenant/context/source heads coordinate; stale clients retain edits and explicitly adopt newer version."
+    },
+    {
+      "id": "S01-C07",
+      "contract": "History/detail/diff/detach/rollback",
+      "status": "PASS_CONTROLLED",
+      "source": "api/source_configuration.py; ResourceTemplateConfiguration.jsx",
+      "tests": "test_attach_reload_history_rollback_and_detach; resource-security.json; workspace-ui.json",
+      "limits": "Paginated reads,reviewed detach,diff and rollback append a new revision; no secrets/checkpoints/activation restored."
+    },
+    {
+      "id": "S01-C08",
+      "contract": "Non-operational staging/failed saves",
+      "status": "PASS_CONTROLLED",
+      "source": "ResourceTemplateConfiguration.jsx",
+      "tests": "resource-security.json; template-stale-edit-preserved.png",
+      "limits": "Browser-memory preview/discard; stale conflict retains inputs. Durable drafts not claimed/approved by this result."
+    },
+    {
+      "id": "S01-C09",
+      "contract": "RBAC/tenant/revocation",
+      "status": "PASS_CONTROLLED",
+      "source": "security/scope.py; source_configuration.source_row/commit",
+      "tests": "test_revocation_commits_before_waiting_command_authorization; test_tenant_viewer_and_stale_session_denied; workspace-ui.json",
+      "limits": "Authenticated APIs,actual advisory-lock revocation and delayed tenant responses; tested unauthorized mutation denied."
+    },
+    {
+      "id": "S01-C10",
+      "contract": "Resource create/edit/reload/lifecycle",
+      "status": "PASS_CONTROLLED",
+      "source": "ResourceManagementV2.jsx; UnifiedResourceManagement.jsx; unified/api.py",
+      "tests": "test_sprint_resource_lifecycle;15HTTPgroups;9resource-security browsergroups",
+      "limits": "Supported create/edit/reload/environment/collector relationships exercised; no invented provider health."
+    },
+    {
+      "id": "S01-C11",
+      "contract": "Migration/preservation/restore",
+      "status": "PASS_CONTROLLED",
+      "source": "migrations0039\u20130043; db/etl_rollback.py; scripts/ci/postgres_restore.py",
+      "tests": "runtime/configuration/backup-restore.json; runtime/browser/restore.json",
+      "limits": "PG17.11,108tables,refused unsafe rollback,full-dump equality,source/schema/rows restore checked."
+    },
+    {
+      "id": "S01-C12",
+      "contract": "Interrupted save/replay",
+      "status": "PASS_CONTROLLED",
+      "source": "source_configuration_restart_probe.py",
+      "tests": "api-sigkill-before-ledger;api-restart-recover;api-restart-postcommit-replay logs",
+      "limits": "Selected pre-ledger/postcommit cuts only; tmpfs fixture is not disk/power-loss or CHK001 qualification."
+    },
+    {
+      "id": "S01-C13",
+      "contract": "ETL integration/DAG/binding fences",
+      "status": "PASS_CONTROLLED",
+      "source": "backend/app/api/etl.py; backend/app/etl_bindings/{api,service,authority,writer}.py; backend/app/security/scope.py",
+      "tests": "117ETL cases including actual Workflow/browser,PG,DAG concurrency and older-writer negative tests",
+      "limits": "Monitoring-only qualified structural/negative contract; synthetic authority fixtures do not establish genuine provider certification."
+    },
+    {
+      "id": "S01-C14",
+      "contract": "Desktop navigation/theme/accessibility",
+      "status": "PASS_CONTROLLED",
+      "source": "FeatureDirectory.jsx; TopNav.jsx; desktop-workspace.css",
+      "tests": "15workspace groups;desktop admin/operator 1920/1440/1366 screenshots",
+      "limits": "Single-panel three-level sidebar,keyboard/search/tenant/theme and targeted semantics. Not complete WCAG or owner acceptance."
+    },
+    {
+      "id": "S01-C15",
+      "contract": "Excluded incident UI",
+      "status": "PASS_CONTROLLED",
+      "source": "App.jsx;FeatureDirectory.jsx;ci_scope_acceptance.mjs",
+      "tests": "workspace-ui.json;ci-scope.json;protective test remains",
+      "limits": "No management navigation/direct route; background processing/history preserved."
+    },
+    {
+      "id": "S01-C16",
+      "contract": "Supported-writer/config-consumer compatibility boundary",
+      "status": "BLOCKED_TESTING",
+      "source": "source/configuration DB fences;PR80 authority writer;current command adapters",
+      "tests": "Existing negative tests are bounded,not all deployment versions",
+      "limits": "Need explicit supported writer/client/version inventory,collector consumption provenance and independent mixed-version qualification; no older rollout authorized."
+    },
+    {
+      "id": "S01-C17",
+      "contract": "Provider-specific positive applicability/activation",
+      "status": "BLOCKED_EXTERNAL",
+      "source": "existing method schemas;ETL authority proof;activation prerequisites",
+      "tests": "Negative/synthetic cases PASS;genuine providers NOT TESTED",
+      "limits": "Exact authorized Windows/Linux/EC2/Pentaho build/target evidence absent; no source qualification or green health fabricated."
+    },
+    {
+      "id": "S01-C18",
+      "contract": "Owner visual/interactions and independent review",
+      "status": "PENDING_OWNER",
+      "source": "Issue90 owner decision;PR89 reviews[]",
+      "tests": "New desktop screenshots in runtime/browser",
+      "limits": "54f26e5 visual baseline accepted;latest interactions require review.Independent reviewer not supplied;typography decision separate."
+    },
+    {
+      "id": "S01-C19",
+      "contract": "Security/licence/durability release gates",
+      "status": "BLOCKED_INDEPENDENT",
+      "source": "exact-head seven-image evidence;Issues96/97/98;queue/checkpoint decisions",
+      "tests": "984unchanged findings;41C/371H/4Unknown;all licence reviewers null",
+      "limits": "Not a Sprint1 UI defect and not waived by development success. SECURITY BLOCKED,CHK001FAIL,CHK002BLOCKED."
+    },
+    {
+      "id": "S01-C20",
+      "contract": "Retention/hold/legacy authority",
+      "status": "PENDING_DECISION",
+      "source": "source ledger retention;AUTH694,D07/D08",
+      "tests": "All history retained;no destructive purge",
+      "limits": "One-year baseline is planning only,legal hold/erasure policy needs accountable approval;uncertain legacy facts remain unverified."
+    }
+  ],
+  "scope_note": "PASS_CONTROLLED is bounded development verification, not independent acceptance or release readiness."
+}

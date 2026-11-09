@@ -1,0 +1,20 @@
+Traceback (most recent call last):
+  File "/tmp/oc_close_metadata.py", line 21, in <module>
+    old=git('show',sha+':'+f,ok=False);now=git('show',integ+':'+f,ok=False)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc_close_metadata.py", line 6, in git
+    p=subprocess.run(['git',*args],cwd=root,capture_output=True,text=True)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 550, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1209, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 2153, in _communicate
+    stdout = self._translate_newlines(stdout,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 1086, in _translate_newlines
+    data = data.decode(encoding, errors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte
