@@ -1,0 +1,192 @@
+diff --git a/frontend/src/pages/ResourceManagementV2.jsx b/frontend/src/pages/ResourceManagementV2.jsx
+index 863e02a..27a4e23 100644
+--- a/frontend/src/pages/ResourceManagementV2.jsx
++++ b/frontend/src/pages/ResourceManagementV2.jsx
+@@ -12,7 +12,7 @@ import {
+   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
+   fetchDataSources, createDataSource, updateDataSource, disableDataSource,
+   fetchCollectors, createCollector, updateCollector, disableCollector,
+-  fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
++  fetchMonitoringTemplates, fetchMonitoringTemplate, createMonitoringTemplate, updateMonitoringTemplate,
+   fetchMonitoringTemplateVersions, disableMonitoringTemplate,
+   fetchDataSourceTemplates, commitSourceConfiguration, fetchEffectiveDataSourceConfiguration,
+ } from "../resourceApi";
+@@ -113,6 +113,8 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
+   const [tab, setTab] = useState("general");
+   const [errors, setErrors] = useState([]);
+   const [history, setHistory] = useState([]);
++  const [catalogueConflict,setCatalogueConflict] = useState(false);
++  const [reviewedCatalogue,setReviewedCatalogue] = useState(null);
+   const [newAttr, setNewAttr] = useState({ name: "", key: "", type: "TEXT", value_source: "DATA_SOURCE", required: false, defaultValue: "", description: "", example: "", allowedValues: [] });
+   const [newMetric, setNewMetric] = useState({ name: "", metric: "", resource: "VM", method: "HOST_METRIC", unit: "", interval: 30, aggregation: "avg", window: 60, dimensions: [], enabled: true });
+   const [newAlert, setNewAlert] = useState({ name: "", domain: "VM", signal: "", condition: "GT", threshold: 80, threshold_type: "NUMBER", duration: 300, recovery: "", severity: "WARNING", channels: ["EMAIL"], deduplication: "organization+data_source+rule", enabled: true });
+@@ -144,9 +146,9 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
+     catch { setErrors(["Applicability must be valid JSON. Use null only for an explicitly unverified legacy package."]); return; }
+     const p = { ...clone(draft), applicability }; delete p.id; delete p.version; delete p.status; delete p.committed_at;
+     try {
+-    const result = draft.id ? await updateMonitoringTemplate(draft.id, { name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
++    const result = draft.id ? await updateMonitoringTemplate(draft.id, { expected_version: saved.version, name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
+     const next = normalizeTemplate(result); setDraft(clone(next)); setSaved(clone(next)); setErrors([]); onSaved(next);
+-    } catch (error) { setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
++    } catch (error) { setCatalogueConflict(error.status===409); setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
+   };
+   const loadHistory = async () => { try { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); } catch(error) { setErrors([error.message]); } };
+   const add = (section, value, reset) => { setDraft(d => ({ ...d, [section]: [...d[section], clone(value)] })); reset(); };
+@@ -195,6 +197,8 @@ export function TemplateEditor({ value, onClose, onSaved, user }) {
+ 
+   const tabs = [["general", "General"], ["attributes", "Attributes"], ["collector", "Collector / Agent"], ["metrics", "Metrics"], ["alerts", "Alert Rules"], ["logs", "Log Collection"]];
+   return <Modal title={draft.id ? "Edit Monitoring Template" : "Create Monitoring Template"} wide onClose={onClose}>
++    {catalogueConflict && <section aria-label="Catalogue version conflict"><p role="alert">Catalogue changed. Your unsaved package is retained. Review the latest version before an explicit retry.</p><button type="button" onClick={async()=>{try{setReviewedCatalogue(normalizeTemplate(await fetchMonitoringTemplate(draft.id)));}catch(e){setErrors([e.message]);}}}>Review latest catalogue version</button>{reviewedCatalogue && <><pre>{JSON.stringify(reviewedCatalogue,null,2)}</pre><button type="button" onClick={()=>{setSaved(clone(reviewedCatalogue));setCatalogueConflict(false);setReviewedCatalogue(null);setErrors([]);}}>Use reviewed version for next save</button></>}</section>}
++
+     <div className="template-editor-header"><div><div className="template-editor-name-row"><h3>{draft.name}</h3><span className={dirty ? "template-draft-badge dirty" : "template-draft-badge"}>{dirty ? "UNSAVED CHANGES" : draft.status}</span><span className="template-version-badge">v{draft.version}</span></div><small className="muted">Design → Validate → Apply &amp; Commit</small></div><button className="filter-button" type="button" onClick={loadHistory}>Version History</button></div>
+     {history.length > 0 && <div className="template-history-panel"><b>Version History</b>{history.map(v => <div className="template-history-row" key={v.id}><span>v{v.version}</span><b>{v.status}</b><span>{new Date(v.committed_at).toLocaleString("en-IN")}</span><span>{v.committed_by || "Admin"}</span></div>)}</div>}
+     <div className="template-editor-layout"><aside className="template-editor-side-tabs">{tabs.map(([k, label]) => <button type="button" key={k} className={tab === k ? "template-side-tab active" : "template-side-tab"} onClick={() => setTab(k)}>{label}<span>{k === "attributes" ? draft.attributes.length : k === "metrics" ? draft.metrics.length : k === "alerts" ? draft.alerts.length : k === "logs" ? draft.logs.length : ""}</span></button>)}</aside><section className="template-editor-content">
+@@ -345,7 +349,7 @@ export default function ResourceManagementV2({ user, section, embedded = false,
+       if (generation === reloadGeneration.current) setError(e.message || "Unable to load saved Data Source settings");
+     }
+   };
+-  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
++  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id, item.version); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
+   const selectedOrganizations = organizations.filter(o =>
+     (!organizationIds.length || organizationIds.includes(o.id)) &&
+     (!query || [o.name, o.code, o.id].join(" ").toLowerCase().includes(query.toLowerCase().trim())));
+diff --git a/frontend/src/pages/UnifiedResourceManagement.jsx b/frontend/src/pages/UnifiedResourceManagement.jsx
+index 42d9fe3..fa41403 100644
+--- a/frontend/src/pages/UnifiedResourceManagement.jsx
++++ b/frontend/src/pages/UnifiedResourceManagement.jsx
+@@ -1,5 +1,5 @@
+ import { setAdministrativeCustomers } from "../auth";
+-import { useEffect, useRef, useState } from "react";
++import { useEffect, useId, useRef, useState } from "react";
+ import { control, control as scopedControl, downloadPackage } from "../controlPlane";
+ import { hasPermission } from "../permissions";
+ import { canOpenSection } from "../navigation";
+@@ -898,7 +898,11 @@ export function Verification({ data }) {
+   );
+ }
+ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
++  const identityFormId = useId();
++  const saveInFlight = useRef(false);
+   const draftSelection = useRef(0);
++  const [contextSnapshot, setContextSnapshot] = useState(null);
++  const [contextFailure, setContextFailure] = useState("");
+   const [form, setForm] = useState(
+       item
+         ? {
+@@ -930,6 +934,12 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+     [error, setError] = useState(""),
+     [imported, setImported] = useState(null),
+     [fileName, setFileName] = useState("");
++  useEffect(() => {
++    let live = true;
++    setContextSnapshot(null); setContextFailure("");
++    if (created?.id) control(base+"/resources/"+created.id+"/configuration-context").then(result=>{if(live)setContextSnapshot(result);}).catch(error=>{if(live)setContextFailure(error.message);});
++    return ()=>{live=false;};
++  }, [created?.id, form.organization_id, user.authorization_revision]);
+   useEffect(() => {
+     let live = true;
+     if (domain !== "VM")
+@@ -1045,8 +1055,16 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+       setBusy(false);
+     }
+   };
+-  const save = () =>
+-    action(async () => {
++  const save = () => {
++    if (saveInFlight.current || busy) return;
++    // A blocked keyboard submission must not briefly disable the focused
++    // button: native disabled controls lose focus before revisions arrive.
++    if ((item || created) && !contextSnapshot) {
++      setError(contextFailure || "Wait for the configuration revision snapshot before saving");
++      return;
++    }
++    saveInFlight.current = true;
++    return action(async () => {
+       if (!form.name.trim()) throw Error("Resource name required");
+       if (!item && !inline && !form.organization_id)
+         throw Error("Select a monitored customer organization before saving the resource");
+@@ -1074,6 +1092,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+       delete payload.legacy_template_attachments;
+       let r = created;
+       if (item || created) {
++        if (!contextSnapshot) throw new Error(contextFailure || "Wait for the configuration revision snapshot before saving");
+         const existing = item || created;
+         const config = { ...form };
+         for (const key of [
+@@ -1086,7 +1105,9 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+           delete config[key];
+         r = await control(base + "/resources/" + existing.id, "PUT", {
+           expected_revision: existing.revision,
+-          expected_source_revision: existing.source_configuration_revision ?? null,
++          expected_source_revision: contextSnapshot?.source_revisions[existing.data_source_id] ?? existing.source_configuration_revision ?? null,
++          expected_child_source_revisions: contextSnapshot?.source_revisions || {},
++          expected_child_resource_revisions: contextSnapshot?.child_revisions || {},
+           configuration_command_key: window.crypto.randomUUID(),
+           name: form.name,
+           environment: form.environment,
+@@ -1111,7 +1132,8 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+       // Compute identity creation is a standalone save. Resume the approved
+       // agent-first onboarding from the saved resource's collector workspace.
+       onClose();
+-    });
++    }).finally(() => { saveInFlight.current = false; });
++  };
+   const chooseVM = (id) => {
+     const vm = vms.find((r) => r.id === id);
+     update(
+@@ -1180,6 +1202,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+         )}
+       <div className="resource-onboarding-content">
+       {error && <p className="error-banner" role="alert">{error}</p>}
++      {(item || created) && !contextSnapshot && <p role="status">{contextFailure ? "Configuration revisions unavailable: "+contextFailure+". Close and reopen this workspace to retry." : "Loading authorized configuration revisions before saving…"}</p>}
+       {!item && <div className="heading-actions">
+         <button disabled={busy} onClick={saveDraft}>Save draft</button>
+         {drafts.length > 0 && <label>Resume draft
+@@ -1190,7 +1213,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+         </label>}
+       </div>}
+       {visibleStep === 1 && (
+-        <>
++        <form id={identityFormId} aria-label="Resource identity" onSubmit={(event) => { event.preventDefault(); save(); }}>
+           <DynamicConfigurationForm
+             definition={domain}
+             value={form}
+@@ -1377,7 +1400,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+               </Field>
+             </>
+           )}
+-        </>
++        </form>
+       )}
+       {domain !== "VM" && visibleStep === 2 && (
+         <>
+@@ -1620,7 +1643,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+           </Field>
+           <div className="form-footer">
+             <button onClick={onClose}>Cancel</button>
+-            <button className="primary-button" disabled={busy} onClick={save}>
++            <button className="primary-button" type={visibleStep === 1 ? "submit" : "button"} form={visibleStep === 1 ? identityFormId : undefined} disabled={busy} aria-disabled={Boolean((item || created) && !contextSnapshot)} onClick={visibleStep === 1 ? undefined : save}>
+               {busy
+                 ? "Saving…"
+                 : item
+diff --git a/frontend/src/resourceApi.js b/frontend/src/resourceApi.js
+index 2da7da8..595a143 100644
+--- a/frontend/src/resourceApi.js
++++ b/frontend/src/resourceApi.js
+@@ -123,8 +123,8 @@ export const updateMonitoringTemplate = (id, payload) =>
+   });
+ export const fetchMonitoringTemplateVersions = (id) =>
+   request("/api/v1/monitoring/templates/" + id + "/versions");
+-export const disableMonitoringTemplate = (id) =>
+-  request("/api/v1/monitoring/templates/" + id, { method: "DELETE" });
++export const disableMonitoringTemplate = (id, version) =>
++  request("/api/v1/monitoring/templates/" + id, { method: "DELETE", headers: {"Expected-Version":String(version)} });
+ 
+ export const fetchDataSourceTemplates = (id) =>
+   request("/api/v1/monitoring/data-sources/" + id + "/templates");
+@@ -151,3 +151,5 @@ export const commitSourceConfiguration = (id, payload, key) => request(
+   "/api/v1/monitoring/data-sources/" + id + "/configuration/commands",
+   { method: "POST", body: JSON.stringify(payload), headers: {"Idempotency-Key": key} },
+ );
++
++export const fetchMonitoringTemplate = id => request("/api/v1/monitoring/templates/"+id);

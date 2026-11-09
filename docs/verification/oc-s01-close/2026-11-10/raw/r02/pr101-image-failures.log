@@ -1,0 +1,18 @@
+security-sbom	Run python scripts/ci/require_success.py	﻿2026-11-09T19:55:25.8198312Z ##[group]Run python scripts/ci/require_success.py
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.8198820Z [36;1mpython scripts/ci/require_success.py[0m
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.8223051Z shell: /usr/bin/bash -e {0}
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.8223433Z env:
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.8223819Z   NEEDS_JSON: {
+security-sbom	Run python scripts/ci/require_success.py	  "image-evidence": {
+security-sbom	Run python scripts/ci/require_success.py	    "result": "failure",
+security-sbom	Run python scripts/ci/require_success.py	    "outputs": {}
+security-sbom	Run python scripts/ci/require_success.py	  }
+security-sbom	Run python scripts/ci/require_success.py	}
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.8224257Z ##[endgroup]
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9273735Z Traceback (most recent call last):
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9275180Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/require_success.py", line 21, in <module>
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9283893Z     validate(json.loads(os.environ["NEEDS_JSON"]))
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9285749Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/require_success.py", line 16, in validate
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9287851Z     raise ValueError("Required verification did not succeed: " + str(bad))
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9289222Z ValueError: Required verification did not succeed: {'image-evidence': 'failure'}
+security-sbom	Run python scripts/ci/require_success.py	2026-11-09T19:55:25.9433019Z ##[error]Process completed with exit code 1.

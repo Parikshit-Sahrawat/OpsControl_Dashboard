@@ -1,0 +1,31 @@
+{
+  "checks": 66,
+  "per_pr": {
+    "89": {
+      "success": 25,
+      "failure": 8
+    },
+    "101": {
+      "PENDING": 1,
+      "success": 24,
+      "failure": 8
+    }
+  },
+  "no_workflows_rerun": true,
+  "no_completion_polling": true,
+  "required_checks": [
+    "access-rbac",
+    "contracts",
+    "frontend-build",
+    "frontend-dependency-audit",
+    "image-validation",
+    "noc",
+    "pipeline-contracts",
+    "private-https",
+    "python-dependency-audit",
+    "restore-retention-tls",
+    "secret-history-scan",
+    "staging-smoke",
+    "verification"
+  ]
+}
