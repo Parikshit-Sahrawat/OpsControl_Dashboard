@@ -295,6 +295,19 @@ try {
     reloads.push({iteration,before_hash:new URL(beforeUrl).hash,after_hash:new URL(page.url()).hash,elapsed_ms:Date.now()-started,status:"PASS"});
   }
   phase="keyboard-only resource edit";
+  // Hold the real authorized response, not a fabricated revision, to exercise
+  // keyboard reachability while the mandatory snapshot is still pending.
+  let releaseContext;
+  const contextGate = new Promise(resolve => { releaseContext = resolve; });
+  await page.route("**/configuration-context", async route => {
+    const response = await route.fetch();
+    await contextGate;
+    await route.fulfill({response});
+  });
+  const mutations = [];
+  page.on("request", request => {
+    if(request.method()==="PUT" && /\/unified\/resources\/[^/]+$/.test(new URL(request.url()).pathname)) mutations.push(request.postDataJSON());
+  });
   row=page.getByRole("row").filter({hasText:"Wizard sequence refreshed"});
   await keyboardTo(row.getByRole("button",{name:"Edit",exact:true}));
   await page.keyboard.press("Enter");
@@ -303,12 +316,40 @@ try {
   await keyboardTo(nameInput);await page.keyboard.press("ControlOrMeta+A");
   await page.keyboard.type("Wizard keyboard persisted");
   await keyboardTo(modal.getByRole("button",{name:"Save resource",exact:true}));
+  const keyboardSave = modal.getByRole("button",{name:"Save resource",exact:true});
+  assert.equal(await keyboardSave.getAttribute("aria-disabled"), "true");
+  await page.keyboard.press("Enter");
+  await modal.getByRole("alert").filter({hasText:"Wait for the configuration revision snapshot"}).waitFor();
+  assert.equal(mutations.length, 0, "no write without authorized revisions");
+  assert.equal(await nameInput.inputValue(), "Wizard keyboard persisted");
+  releaseContext();
+  await page.waitForFunction(() => document.querySelector('button[form][aria-disabled="false"]'));
+  await page.unroute("**/configuration-context");
+  assert.equal(await keyboardSave.evaluate(el=>el===document.activeElement), true, "snapshot arrival preserves keyboard focus");
   await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
+  assert.equal(mutations.length, 1, "one Enter commits one command");
+  assert.ok(Number.isInteger(mutations[0].expected_revision));
+  assert.ok(mutations[0].expected_child_source_revisions);
   await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
   await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
   await page.reload();
   await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
   await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
+  // Native Enter submission from a text field, followed by persisted reload.
+  row=page.getByRole("row").filter({hasText:"Wizard keyboard persisted"});
+  await keyboardTo(row.getByRole("button",{name:"Edit",exact:true}));
+  await page.keyboard.press("Enter");
+  modal=page.getByRole("region",{name:"Edit Compute Instance",exact:true});
+  await page.waitForFunction(() => document.querySelector('button[form][aria-disabled="false"]'));
+  await keyboardTo(modal.getByLabel("Resource name",{exact:true}));
+  await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
+  assert.equal(mutations.length, 2);
+  assert.ok(mutations[1].expected_revision > mutations[0].expected_revision);
+  await page.reload();
+  await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
+  await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
+  await page.screenshot({path:process.env.RELEASE_EVIDENCE_DIR+"/resource-keyboard-desktop.png",fullPage:true});
+  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/keyboard-regression.json",JSON.stringify({status:"PASS",pending_snapshot_writes:0,committed_commands:mutations.length,revision_increased:true,focus_preserved:true,enter_button:true,enter_input:true,reload_persisted:true},null,2));
   await page.setViewportSize({ width:390, height:844 });
   await page.keyboard.press("Tab");
   assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");

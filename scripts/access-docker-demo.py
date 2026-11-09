@@ -7,6 +7,7 @@ from urllib.request import Request, urlopen
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 from scripts.acceptance_scope import probe_headers
+from ci.compose_build import build_with_trust
 
 source_commit = subprocess.check_output(
     ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
@@ -166,7 +167,7 @@ def call(path, method="GET", body=None, token=None):
 
 
 try:
-    run(compose + ["build"])
+    build_with_trust(compose, trust, private, run)
     if env.get("OPSCONTROL_DOCKER_RECOVER_BUILD_CACHE") == "1":
         # VFS hosts retain full build snapshots. Release unused, rebuildable
         # cache before allocating the five runtime filesystems; never prune data.

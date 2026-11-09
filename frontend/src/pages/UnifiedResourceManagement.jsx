@@ -1,5 +1,5 @@
 import { setAdministrativeCustomers } from "../auth";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { control, control as scopedControl, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
 import { canOpenSection } from "../navigation";
@@ -898,6 +898,8 @@ export function Verification({ data }) {
   );
 }
 function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
+  const identityFormId = useId();
+  const saveInFlight = useRef(false);
   const draftSelection = useRef(0);
   const [contextSnapshot, setContextSnapshot] = useState(null);
   const [contextFailure, setContextFailure] = useState("");
@@ -1053,8 +1055,10 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       setBusy(false);
     }
   };
-  const save = () =>
-    action(async () => {
+  const save = () => {
+    if (saveInFlight.current || busy) return;
+    saveInFlight.current = true;
+    return action(async () => {
       if (!form.name.trim()) throw Error("Resource name required");
       if (!item && !inline && !form.organization_id)
         throw Error("Select a monitored customer organization before saving the resource");
@@ -1122,7 +1126,8 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
       // Compute identity creation is a standalone save. Resume the approved
       // agent-first onboarding from the saved resource's collector workspace.
       onClose();
-    });
+    }).finally(() => { saveInFlight.current = false; });
+  };
   const chooseVM = (id) => {
     const vm = vms.find((r) => r.id === id);
     update(
@@ -1202,7 +1207,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
         </label>}
       </div>}
       {visibleStep === 1 && (
-        <>
+        <form id={identityFormId} aria-label="Resource identity" onSubmit={(event) => { event.preventDefault(); save(); }}>
           <DynamicConfigurationForm
             definition={domain}
             value={form}
@@ -1389,7 +1394,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
               </Field>
             </>
           )}
-        </>
+        </form>
       )}
       {domain !== "VM" && visibleStep === 2 && (
         <>
@@ -1632,7 +1637,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </Field>
           <div className="form-footer">
             <button onClick={onClose}>Cancel</button>
-            <button className="primary-button" disabled={busy || Boolean((item || created) && !contextSnapshot)} onClick={save}>
+            <button className="primary-button" type={visibleStep === 1 ? "submit" : "button"} form={visibleStep === 1 ? identityFormId : undefined} disabled={busy} aria-disabled={Boolean((item || created) && !contextSnapshot)} onClick={visibleStep === 1 ? undefined : save}>
               {busy
                 ? "Saving…"
                 : item
