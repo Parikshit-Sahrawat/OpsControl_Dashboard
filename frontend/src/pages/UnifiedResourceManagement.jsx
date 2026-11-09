@@ -1057,6 +1057,12 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
   };
   const save = () => {
     if (saveInFlight.current || busy) return;
+    // A blocked keyboard submission must not briefly disable the focused
+    // button: native disabled controls lose focus before revisions arrive.
+    if ((item || created) && !contextSnapshot) {
+      setError(contextFailure || "Wait for the configuration revision snapshot before saving");
+      return;
+    }
     saveInFlight.current = true;
     return action(async () => {
       if (!form.name.trim()) throw Error("Resource name required");
