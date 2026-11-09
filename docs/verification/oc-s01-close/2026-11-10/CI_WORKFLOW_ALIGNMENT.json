@@ -1,0 +1,1080 @@
+{
+  "source_sha": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "workflow_count": 28,
+  "note": "Category labels are reporting only; mixed jobs retain every command, protective exclusion/history/security coverage. No check is disabled or renamed.",
+  "workflows": [
+    {
+      "path": ".github/workflows/access-architecture.yml",
+      "sha256": "379a623f82b1a5f2f1b8cd5a0b164f95f4009c04da850b7c33aa210feb015299",
+      "name": "OC Dev - Tier B - Customer Ownership and Access",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "access-rbac",
+          "display_name": "access-rbac",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/access-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/access-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\n",
+            "backend/.venv/bin/python scripts/access-acceptance.py",
+            "backend/.venv/bin/python scripts/access-docker-demo.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/agent-packaging.yml",
+      "sha256": "ff9be112ef1e771c3c5ba5396dae91f5718295e5677e0ee495761078d56fab2d",
+      "name": "OC Dev - Tier D - Windows and Linux Agent Packaging - Manual",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "linux_runtime_url": {
+              "description": "Approved HTTPS Linux x64 runtime archive URL (Contrib 0.123.0)",
+              "required": "true"
+            },
+            "windows_runtime_url": {
+              "description": "Approved HTTPS Windows x64 runtime archive URL (Contrib 0.123.0)",
+              "required": "true"
+            },
+            "windows_archive_sha256": {
+              "description": "Independently verified Windows archive SHA-256",
+              "required": "true"
+            },
+            "linux_archive_sha256": {
+              "description": "Independently verified Linux archive SHA-256",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "job_id": "package",
+          "display_name": "package",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "${{ matrix.os }}",
+          "matrix": {
+            "os": [
+              "ubuntu-24.04",
+              "windows-2022"
+            ]
+          },
+          "commands": [
+            "[[ \"$RUNTIME_URL\" == https://* ]] || exit 1\n[[ \"$ARCHIVE_SHA\" =~ ^[0-9a-fA-F]{64}$ ]] || exit 1\ncurl --fail --proto '=https' --tlsv1.2 \"$RUNTIME_URL\" -o /tmp/runtime.tar.gz\necho \"$ARCHIVE_SHA  /tmp/runtime.tar.gz\" | sha256sum -c -\nmkdir /tmp/runtime\ntar -xzf /tmp/runtime.tar.gz -C /tmp/runtime\npython scripts/build-agent-package.py --os linux --runtime /tmp/runtime/otelcol-contrib --sha256 \"$(sha256sum /tmp/runtime/otelcol-contrib | cut -d' ' -f1)\" --output opscontrol-agent-linux.zip\nbash -n agent/install-linux.sh agent/uninstall-linux.sh\n",
+            "if (-not $env:RUNTIME_URL.StartsWith('https://')) { throw 'HTTPS required' }\nif ($env:ARCHIVE_SHA -notmatch '^[0-9a-fA-F]{64}$') { throw 'SHA-256 required' }\nInvoke-WebRequest $env:RUNTIME_URL -OutFile \"$env:TEMP\\runtime.tar.gz\"\nif ((Get-FileHash \"$env:TEMP\\runtime.tar.gz\" -Algorithm SHA256).Hash.ToLowerInvariant() -ne $env:ARCHIVE_SHA.ToLowerInvariant()) { throw 'Archive checksum mismatch' }\nNew-Item -ItemType Directory \"$env:TEMP\\runtime\"\ntar -xzf \"$env:TEMP\\runtime.tar.gz\" -C \"$env:TEMP\\runtime\"\nif (-not (Test-Path \"${env:ProgramFiles(x86)}\\Inno Setup 6\\ISCC.exe\")) { choco install innosetup --yes --no-progress; if ($LASTEXITCODE) { throw \"Inno Setup installation failed\" } }\n$runtime = \"$env:TEMP\\runtime\\otelcol-contrib.exe\"\n& agent/packaging/build-windows.ps1 -Runtime $runtime -RuntimeSha256 (Get-FileHash $runtime -Algorithm SHA256).Hash\n",
+            "foreach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {\n  $tokens=$null; $errors=$null\n  [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null\n  if ($errors.Count) { throw \"PowerShell parse failed: $file\" }\n}\n& agent/packaging/stage/OpsControlService.exe --help\nif (-not (Test-Path agent/packaging/output/OpsControlAgent-1.5.0-Windows-x64.exe)) { throw 'Compiled installer missing' }\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/arch001-native-monitoring.yml",
+      "sha256": "92f5be08e5116b9f41e144558e466506fd919c6120aa7de9f3c7f8df9ac71746",
+      "name": "OC Dev - Tier B - Native Monitoring Contracts",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "native-monitoring",
+          "display_name": "native-monitoring",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/arch-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/arch-browser/node_modules/.bin/playwright\" install --with-deps chromium\ndocker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker create --name arch-runtime --network none otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker cp arch-runtime:/otelcol-contrib \"$RUNNER_TEMP/otelcol-contrib\"\ndocker rm arch-runtime\n",
+            "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\n",
+            "backend/.venv/bin/python scripts/arch001-acceptance.py",
+            "backend/.venv/bin/python scripts/arch001-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/aws-ec2-live-acceptance.yml",
+      "sha256": "91580c0bfd2e83e129f100e0fcaaced8d1da7135357b2654e9b53adbcb86c8bb",
+      "name": "OC Dev - Tier D - EC2 Read-Only Provider Qualification - Manual",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "aws_account_id": {
+              "description": "Authorized 12-digit disposable sandbox AWS account",
+              "required": "true"
+            },
+            "aws_region": {
+              "description": "Region containing a disposable test instance",
+              "required": "true",
+              "default": "ap-south-1"
+            },
+            "instance_id": {
+              "description": "Authorized sandbox EC2 instance ID",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "job_id": "read-only-ec2",
+          "display_name": "read-only-ec2",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-latest",
+          "matrix": null,
+          "commands": [
+            "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install 'boto3>=1.35,<2'\nPYTHONPATH=. python scripts/aws_live_acceptance.py \\\n  --account \"$APPROVED_ACCOUNT\" \\\n  --region \"$APPROVED_REGION\" \\\n  --instance-id \"$APPROVED_INSTANCE\" \\\n  --evidence-output \"$RUNNER_TEMP/aws-evidence.json\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ci-policy.yml",
+      "sha256": "b2a7ba2d3fb92e4de3e478ab638712c9157318e2c418a4c18d177af27e071b88",
+      "name": "OC Dev - Tier A - Scope and Workflow Integrity",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "scope-policy",
+          "display_name": "scope-policy",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m pip install PyYAML==6.0.2",
+            "bash scripts/check-workflows.sh\npython scripts/ci/policy.py\npython scripts/ci/e2e_alignment.py --prepare-history\npython -m unittest discover -s tests -p 'test_ci_*.py' -v\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/consolidated-uat.yml",
+      "sha256": "f77dbb92008ed30b539e12d8530b8a651eab16d41b3a118114b957e7468bd96a",
+      "name": "OC Dev - Tier D - Controlled Integrated Monitoring - Manual",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "managed-telemetry-uat",
+          "display_name": "managed-telemetry-uat",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/uat-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/uat-browser/node_modules/.bin/playwright\" install --with-deps chromium\ndocker pull otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker create --name uat-binary --network none otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2\ndocker cp uat-binary:/otelcol-contrib \"$RUNNER_TEMP/otelcol-contrib\"\ndocker rm uat-binary\n",
+            "(cd backend && .venv/bin/python -m unittest discover -s tests -v)\nnpm test --prefix frontend\nnpm run build --prefix frontend\nbash -n agent/install-linux.sh\n",
+            "backend/.venv/bin/python scripts/uat/acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/demo-smoke.yml",
+      "sha256": "57615d2910a89d634e544c3fa9b12d96c512277a58f2ad6118e5a320449335dc",
+      "name": "OC Dev - Tier D - Disposable Installation Smoke - Manual",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "demo-localhost",
+          "display_name": "demo-localhost",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-latest",
+          "matrix": null,
+          "commands": [
+            "bash scripts/demo-up.sh",
+            "python3 - <<'PY'\nimport json,time,urllib.request,urllib.error,pathlib\napi='http://127.0.0.1:8000'\nui='http://127.0.0.1:5173'\nfor n in range(75):\n    try:\n        urllib.request.urlopen(api+'/openapi.json',timeout=3).close()\n        urllib.request.urlopen(ui+'/',timeout=3).close()\n        break\n    except Exception:\n        time.sleep(2)\nelse:raise AssertionError('Demo frontend/API never became healthy')\npassword=pathlib.Path('.demo-private/admin-password').read_text().strip()\nassert len(password)>=20 and password!='admin'\nbody=json.dumps({'username':'demo-admin','password':password}).encode()\nreq=urllib.request.Request(api+'/api/v1/auth/login',body,\n    {'Content-Type':'application/json'},method='POST')\nwith urllib.request.urlopen(req,timeout=10) as response:\n    token=json.load(response)['access_token']\nreq=urllib.request.Request(api+'/api/v1/auth/me',\n    headers={'Authorization':'Bearer '+token})\nwith urllib.request.urlopen(req,timeout=10) as response:\n    identity=json.load(response)\nassert identity['all_customers_authorized'], 'Demo administrator lacks explicit ALL authority'\nreq=urllib.request.Request(api+'/api/v1/organizations',\n    headers={'Authorization':'Bearer '+token,\n             'X-OpsControl-Customers':'ALL'})\nwith urllib.request.urlopen(req,timeout=10) as response:\n    orgs=json.load(response)\nassert any(x['code']=='DEMO-LAB' for x in orgs),orgs\nassert all('example' in x['name'].lower() or 'fictional' in x['name'].lower() for x in orgs),orgs\nprint('PUBLIC-SAFE LOCALHOST DEMO SMOKE PASSED')\nPY\n",
+            "python3 - <<'PY'\nimport json,subprocess\nconfig=json.loads(subprocess.check_output([\n    'docker','compose','-f','docker-compose.demo.yml','config','--format','json']))\nassert not config['services']['postgres'].get('ports'), 'Database publishes a host port'\nfor name in ('api','frontend'):\n    ports=config['services'][name].get('ports',[])\n    assert ports and all(p.get('host_ip')=='127.0.0.1' for p in ports),(name,ports)\nprint('Demo exposed only on loopback; PostgreSQL private.')\nPY\n",
+            "docker compose -f docker-compose.demo.yml logs --tail=50 || true\ndocker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true\nrm -rf .demo-private\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/development-gates.yml",
+      "sha256": "90e1c9c9209c3e8fea18f35d62889373d66b444ac344091c93d21f7126ab7856",
+      "name": "OC Dev - Tier B - PostgreSQL API and Browser Integration",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "real-postgres-migration",
+          "display_name": "real-postgres-migration",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+            "backend/.venv/bin/python scripts/v16-acceptance.py"
+          ]
+        },
+        {
+          "job_id": "app-api-browser",
+          "display_name": "app-api-browser",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\n",
+            "echo \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/ci-browser\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/ci-browser/node_modules/.bin/playwright\" install --with-deps chromium\necho \"PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e \"import {chromium} from '$RUNNER_TEMP/ci-browser/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())\")\" >> \"$GITHUB_ENV\"\n",
+            "backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py",
+            "backend/.venv/bin/python scripts/v16-acceptance.py"
+          ]
+        },
+        {
+          "job_id": "sprint-evidence",
+          "display_name": "sprint-evidence",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [
+            "real-postgres-migration",
+            "app-api-browser"
+          ],
+          "if": "always()",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python scripts/ci/require_success.py",
+            "python docs/verification/sprint1-integration/validate_evidence.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/egress-firewall-smoke.yml",
+      "sha256": "1f0007fd294aec18be770050e1a76fd8e9988d24e96b093ae3f8e065dbceaca6",
+      "name": "OC Dev - Tier C - Network Egress Isolation",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "isolated-docker-bridge",
+          "display_name": "isolated-docker-bridge",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-latest",
+          "matrix": null,
+          "commands": [
+            "bash scripts/verify-firewall-docker.sh",
+            "test -f deploy/examples/remote-agent-networkpolicy.yaml\ngrep -q 'policyTypes:' deploy/examples/remote-agent-networkpolicy.yaml\necho \"Manifest inspection is not a live CNI enforcement test.\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/etl-acceptance.yml",
+      "sha256": "787ba86f1de15b5d065b926db6215425350a74cf0f309dda65137ded51c44a86",
+      "name": "OC Dev - Tier D - Read-Only Pentaho Integration - Manual",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "etl",
+          "display_name": "etl",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/etl-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/etl-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "(cd backend && .venv/bin/python -m scripts.etl_unit_probe)\n(cd backend && .venv/bin/python -m scripts.provider_unit_probe)\nnpm run build --prefix frontend\n",
+            "backend/.venv/bin/python scripts/etl-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/http-golden-path.yml",
+      "sha256": "262bd424a415d133f9f8daf70df31e77af6338446d57ab13e89d6ced2c8f143e",
+      "name": "OC Dev - Tier D - HTTP Monitoring Golden Path - Manual",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "golden-path",
+          "display_name": "golden-path",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "cd frontend\nnpm ci --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/golden-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/golden-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "scripts/http-golden-path.sh"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/infrastructure-acceptance.yml",
+      "sha256": "7e88efe17108cc2016f901364b0548069de2aa96eeaf8e505a021843c4b55582",
+      "name": "OC Dev - Tier D - Host Monitoring Integration - Manual",
+      "triggers": {
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "infrastructure",
+          "display_name": "infrastructure",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/infra-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/infra-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            ".venv/bin/python -m scripts.infrastructure_unit_probe\n.venv/bin/python -m scripts.provider_unit_probe\n.venv/bin/python -m scripts.deep_checks_probe\nnpm run build --prefix ../frontend\n",
+            "backend/.venv/bin/python scripts/infrastructure-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/live-http-alert-recovery.yml",
+      "sha256": "c762fd8a527603cf974b73d805bfb7cc84f7f9cd5ac4f11f2d786cde3af466e6",
+      "name": "OC Dev - Tier B - Controlled HTTPS Alert Recovery",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "real-tls-evidence-alert",
+          "display_name": "real-tls-evidence-alert",
+          "classification": "RELIABILITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-latest",
+          "matrix": null,
+          "commands": [
+            "set -euo pipefail\nmkdir -p .demo-private\nchmod 700 .demo-private\numask 077\npython3 - <<'PY'\nimport pathlib,secrets\npathlib.Path(\".demo-private/admin-password\").write_text(secrets.token_urlsafe(32))\nPY\nif ! docker pull public.ecr.aws/docker/library/postgres:17; then\n  # Public ECR occasionally rate-limits anonymous CI. Use the same\n  # official PostgreSQL 17 image from Docker Hub for this disposable lab.\n  docker pull postgres:17\n  docker tag postgres:17 public.ecr.aws/docker/library/postgres:17\nfi\ndocker compose -f docker-compose.demo.yml up --build -d postgres api\nfor i in {1..75}; do\n  if curl -fsS http://127.0.0.1:8000/openapi.json >/dev/null; then break; fi\n  sleep 2\ndone\ncurl -fsS http://127.0.0.1:8000/openapi.json >/dev/null\n",
+            "set -euo pipefail\nmkdir -p /tmp/opscontrol-fixture\nopenssl req -x509 -newkey rsa:2048 -nodes -days 1 \\\n  -keyout /tmp/opscontrol-fixture/tls.key -out /tmp/opscontrol-fixture/tls.crt \\\n  -subj '/CN=portal.example.test' -addext 'subjectAltName=DNS:portal.example.test' >/dev/null 2>&1\nchmod 600 /tmp/opscontrol-fixture/tls.key\necho healthy >/tmp/opscontrol-fixture/state\ndocker network create --internal --subnet 172.28.77.0/24 opscontrol-fixture-target-net\ndocker network create --internal --subnet 172.28.78.0/24 opscontrol-fixture-control-net\napi_id=\"$(docker compose -f docker-compose.demo.yml ps -q api)\"\ndocker network connect --alias opscontrol-control opscontrol-fixture-control-net \"$api_id\"\ndocker run -d --name opscontrol-private-fixture --network opscontrol-fixture-target-net \\\n  --ip 172.28.77.10 --network-alias portal.example.test \\\n  -v /tmp/opscontrol-fixture:/fixture:ro \\\n  -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\" \\\n  python:3.12-alpine python /app.py\ndocker run -d --name opscontrol-private-agent --network opscontrol-fixture-target-net \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e SSL_CERT_FILE=/fixture/ca.crt -e PYTHONPATH=/src \\\n  python:3.12-alpine sleep 3600\ndocker network connect opscontrol-fixture-control-net opscontrol-private-agent\nfor i in {1..20}; do\n  if docker exec opscontrol-private-fixture python -c \\\n      'import socket;socket.create_connection((\"127.0.0.1\",443),1).close()' 2>/dev/null; then break; fi\n  sleep 1\ndone\n",
+            "set -euo pipefail\napi_id=\"$(docker compose -f docker-compose.demo.yml ps -q api)\"\ntoken=\"$(docker exec \"$api_id\" python -m scripts.live_https_acceptance setup)\"\ntest -n \"$token\"\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance healthy\necho failed >/tmp/opscontrol-fixture/state\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance schedule\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance failed\necho healthy >/tmp/opscontrol-fixture/state\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance schedule\ndocker exec -e OPSCONTROL_WORKER_TOKEN=\"$token\" opscontrol-private-agent python /tests/agent_cycle.py\ndocker exec \"$api_id\" python -m scripts.live_https_acceptance recovered\n",
+            "set -euo pipefail\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-target-net)\" = true\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-fixture-control-net)\" = true\ndocker exec opscontrol-private-agent python -c 'import socket\ns=socket.socket();s.settimeout(2)\ntry:\n    s.connect((\"1.1.1.1\",443))\n    raise AssertionError(\"Unapproved internet egress unexpectedly allowed\")\nexcept (OSError,TimeoutError):\n    print(\"PASS: private agent has no public network egress\")'\n",
+            "docker rm -f opscontrol-private-agent opscontrol-private-fixture || true\ndocker network rm opscontrol-fixture-target-net opscontrol-fixture-control-net || true\ndocker compose -f docker-compose.demo.yml logs --tail=80 api || true\ndocker compose -f docker-compose.demo.yml down --volumes --remove-orphans || true\nrm -rf /tmp/opscontrol-fixture .demo-private\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/local-uat-auto-deploy.yml",
+      "sha256": "b74d06e0c44a3d0e5a6e1231b78342338dde2ed46256bb4db8b1b327ac1a26c6",
+      "name": "OC Dev - Tier F - Approved UAT Release Publication - Manual Gated",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "source_sha": {
+              "description": "Approved immutable main SHA",
+              "required": "true",
+              "type": "string"
+            },
+            "approval_ref": {
+              "description": "Committed release authorization record ID",
+              "required": "true",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "job_id": "publish",
+          "display_name": "publish",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [],
+          "if": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.OC_UAT_PUBLISH_ENABLED == 'true'",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "set -euo pipefail\ncurrent=$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq '.commit.sha')\ntest \"$current\" = \"$GITHUB_SHA\"\ntest \"$APPROVED_SHA\" = \"$GITHUB_SHA\"\npython3 scripts/ci/release_authorization.py --sha \"$APPROVED_SHA\" --record \"$APPROVAL_REF\" --operation publish\npython3 scripts/uat/verify_publish.py \"$GITHUB_SHA\"\n",
+            "echo \"prefix=ghcr.io/${GITHUB_REPOSITORY,,}\" >> \"$GITHUB_OUTPUT\"",
+            "python3 scripts/uat/create_release.py",
+            "set -euo pipefail\ntest \"$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq '.commit.sha')\" = \"$GITHUB_SHA\"\ngh release create \"uat-$GITHUB_SHA\" release.json --repo \"$GITHUB_REPOSITORY\" \\\n  --target \"$GITHUB_SHA\" --title \"UAT release $GITHUB_SHA\" --notes 'Signed UAT release manifest; deployment controlled by local policy.'\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/local-uat-image-validation.yml",
+      "sha256": "ee905ad1b4e13ef719583c8f3f87ddf95a216a6c51c26f5e677280a576e73f09",
+      "name": "OC Dev - Tier C - Application Image and Worker Validation - No Deploy",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "image-validation",
+          "display_name": "image-validation",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m pip install PyYAML==6.0.2",
+            "python3 scripts/ci/e2e_alignment.py --prepare-history\npython3 -m unittest discover -s tests -v\n",
+            "set -euo pipefail\ndocker run --rm --entrypoint /usr/local/bin/otelcol-contrib opscontrol-uat-backend:validation --version | tee /tmp/collector-version.txt\ngrep -F '0.123.0' /tmp/collector-version.txt\ndocker run --rm --entrypoint python opscontrol-uat-backend:validation -c '\nimport os, importlib, pathlib\nassert os.environ[\"OPSCONTROL_OTEL_BINARY\"] == \"/usr/local/bin/otelcol-contrib\"\nassert pathlib.Path(os.environ[\"OPSCONTROL_OTEL_BINARY\"]).is_file()\nimportlib.import_module(\"scripts.run_api\")\nimportlib.import_module(\"scripts.run_collector_worker\")\nprint(\"PASS: API and worker entrypoint modules import\")\n'\ndocker run --rm --entrypoint nginx opscontrol-uat-frontend:validation -t\n",
+            "docker tag opscontrol-uat-backend:validation opscontrol-uat-api:latest\npython3 scripts/uat/disposable_worker_acceptance.py\n",
+            "echo \"PASS: hosted runner only; build push=false; no deployment job or self-hosted runner.\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/operational-acceptance.yml",
+      "sha256": "0a51162a26a1b9b6048d506b19ae339790a2991cbd16dd923ada977a1d06871e",
+      "name": "OC Dev - Tier B - Operational Dashboard Integration",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "noc",
+          "display_name": "noc",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/noc-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/noc-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "(cd backend && .venv/bin/python -m scripts.etl_unit_probe)\n(cd backend && .venv/bin/python -m scripts.infrastructure_unit_probe)\n(cd backend && .venv/bin/python -m scripts.provider_unit_probe)\n(cd backend && .venv/bin/python -m scripts.deep_checks_probe)\nnpm run build --prefix frontend\n",
+            "backend/.venv/bin/python scripts/operational-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/phase1-staging.yml",
+      "sha256": "2baeb18ed9f8bdeefa6b9b5d768c2d9902bb28e58a11d803c65f1b6beaa33e72",
+      "name": "OC Dev - Tier B - PostgreSQL Migration and Authorization",
+      "triggers": {
+        "push": {
+          "branches": [
+            "docs/sdlc-phase-1"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "staging-smoke",
+          "display_name": "staging-smoke",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install -r backend/requirements.txt",
+            "python -m compileall -q app migrations\npython -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('mapper/app import OK')\"\n",
+            "# Exercise reversible revisions before the protected access upgrade.\n# The populated preservation probe in the next step applies HEAD.\nalembic upgrade 0024_notification_leases\nalembic current\nalembic downgrade 0023_worker_heartbeat\nalembic upgrade 0024_notification_leases\nalembic current\npython - <<'PY'\nfrom sqlalchemy import inspect\nfrom app.db.session import engine\ntables = set(inspect(engine).get_table_names())\nrequired = {\"organizations\", \"data_sources\", \"collectors\", \"metric_definitions\", \"monitoring_templates\", \"monitoring_template_attachments\", \"metric_samples\"}\nrequired |= {\"users\", \"access_sessions\", \"organization_memberships\", \"auth_throttle_buckets\", \"security_audit_events\", \"worker_identities\", \"remote_probe_jobs\", \"remote_probe_evidence\", \"monitoring_rule_catalogs\", \"monitoring_rule_versions\", \"monitoring_activations\", \"monitoring_rule_bindings\"}\nassert required <= tables, f\"Missing tables: {required - tables}\"\nprint(f\"Migration smoke OK; {len(tables)} tables\")\nPY\n",
+            "python scripts/existing_database_upgrade_probe.py",
+            "uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/opscontrol-api.log 2>&1 &\necho $! > /tmp/opscontrol-api.pid\npython - <<'PY'\nimport json, time, urllib.request\nfor i in range(30):\n    try:\n        with urllib.request.urlopen(\"http://127.0.0.1:8000/openapi.json\", timeout=2) as r:\n            payload=json.load(r)\n            assert \"/api/v1/organizations\" in payload[\"paths\"]\n            print(\"API startup/OpenAPI OK\")\n            break\n    except Exception:\n        if i == 29: raise\n        time.sleep(1)\nPY\n",
+            "python scripts/auth_tenant_probe.py",
+            "python scripts/deep_tenant_security_probe.py",
+            "python scripts/security_release_probe.py",
+            "python scripts/test_remote_egress.py",
+            "python scripts/remote_protocol_probe.py",
+            "python scripts/provider_unit_probe.py",
+            "python scripts/phase2_pentaho_persistence_probe.py",
+            "python scripts/secrets_provider_probe.py",
+            "python scripts/deep_checks_probe.py",
+            "python scripts/phase2_activation_probe.py",
+            "python -m scripts.prune_security_sessions",
+            "npm ci --no-audit --no-fund\nnpm run dev -- --host 127.0.0.1 --port 5173 > /tmp/opscontrol-vite.log 2>&1 &\necho $! > /tmp/opscontrol-vite.pid\n",
+            "npm install --no-save --no-audit --no-fund playwright@1.56.1\nnpx playwright install --with-deps chromium\nnode scripts/capture_phase1_ui.mjs\n",
+            "node scripts/test_world_clock.mjs",
+            "node scripts/test_monitoring_setup.mjs",
+            "node scripts/test_access_management.mjs"
+          ]
+        },
+        {
+          "job_id": "frontend-build",
+          "display_name": "frontend-build",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "npm ci --no-audit --no-fund\nnpm run build\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/pipeline-v16.yml",
+      "sha256": "bb4ef8cde5e4b79d8ce443c0ccd6e6e80ea9cfb7b6320ac880e46eeab4887079",
+      "name": "OC Dev - Tier B - ETL Ownership and Monitoring Contracts",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "pipeline-contracts",
+          "display_name": "pipeline-contracts",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "git cat-file -e a915322b5c5c80b0d37dea71f6b7f70237082340:backend/app/main.py\ngit cat-file -e a061bdbabe7e250fe7141861c193ca837ef14dbe:backend/app/main.py\n",
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\n",
+            "npm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/etl004-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/etl004-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "backend/.venv/bin/black --check backend/app/data_pipelines backend/migrations/versions/0032_pipeline_ownership.py\nbackend/.venv/bin/ruff check backend/app/data_pipelines\nmake test-pipeline-v16\n",
+            "backend/.venv/bin/python scripts/etl-scope-acceptance.py",
+            ".venv/bin/python -m unittest tests.test_unified_monitoring tests.test_unified_v15_contracts tests.test_pipeline_runtime_v15 tests.test_pipeline_adapters tests.test_native_incidents_v15 tests.test_access_control tests.test_remote_auth -v\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/private-https-acceptance.yml",
+      "sha256": "ff21d6dde5d98f8bbb122952f35c386ba07f2bb3957747b7cef3c37d03d31424",
+      "name": "OC Dev - Tier B - Private HTTPS Monitoring",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "private-https",
+          "display_name": "private-https",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-latest",
+          "matrix": null,
+          "commands": [
+            "set -euo pipefail\nmkdir -p /tmp/opscontrol-fixture\nopenssl req -x509 -newkey rsa:2048 -nodes -days 1             -keyout /tmp/opscontrol-fixture/tls.key             -out /tmp/opscontrol-fixture/tls.crt             -subj \"/CN=portal.example.test\"             -addext \"subjectAltName=DNS:portal.example.test\" >/dev/null 2>&1\nchmod 600 /tmp/opscontrol-fixture/tls.key\necho healthy > /tmp/opscontrol-fixture/state\ndocker network create --driver bridge --internal --subnet 172.28.77.0/24 opscontrol-private-fixture\ndocker run -d --name opscontrol-private-target             --network opscontrol-private-fixture             --ip 172.28.77.10 --network-alias portal.example.test             -v /tmp/opscontrol-fixture:/fixture:ro             -v \"$PWD/deploy/fixtures/private_https_target.py:/app.py:ro\"             python:3.12-alpine python /app.py\n",
+            "set -euo pipefail\nfor i in {1..20}; do\n  if docker exec opscontrol-private-target python -c 'import socket;socket.create_connection((\"127.0.0.1\",443),1).close()' 2>/dev/null; then break; fi\n  sleep 1\ndone\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py ASSERTION_FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture             -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\"             -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro             -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt             python:3.12-alpine python /tests/probe_private_https.py SUCCESS\n",
+            "set -euo pipefail\necho running > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py RUNNING\necho failed > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py FAILED\necho healthy > /tmp/opscontrol-fixture/state\ndocker run --rm --network opscontrol-private-fixture \\\n  -v \"$PWD/backend:/src:ro\" -v \"$PWD/deploy/fixtures:/tests:ro\" \\\n  -v /tmp/opscontrol-fixture/tls.crt:/fixture/ca.crt:ro \\\n  -e PYTHONPATH=/src -e SSL_CERT_FILE=/fixture/ca.crt \\\n  python:3.12-alpine python /tests/probe_private_carte.py UNKNOWN\n",
+            "set -euo pipefail\ntest \"$(docker network inspect -f '{{.Internal}}' opscontrol-private-fixture)\" = true\ndocker run --rm --network opscontrol-private-fixture python:3.12-alpine             python -c 'import socket\ns=socket.socket();s.settimeout(2)\ntry:\n    s.connect((\"1.1.1.1\",443))\n    raise AssertionError(\"Outside-network egress unexpectedly permitted\")\nexcept (OSError,TimeoutError):\n    print(\"PASS: external egress blocked at Docker network layer\")'\n",
+            "docker rm -f opscontrol-private-target || true\ndocker network rm opscontrol-private-fixture || true\nrm -rf /tmp/opscontrol-fixture\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/release-readiness.yml",
+      "sha256": "95a89bfda78d74725e2bb41027b631af27bcd88ab03a93ba103a9f63c851efd1",
+      "name": "OC Dev - Tier F - Independent Release Readiness - Manual Gated",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "source_sha": {
+              "type": "string",
+              "required": "true"
+            },
+            "approval_ref": {
+              "type": "string",
+              "required": "true"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "job_id": "release-readiness",
+          "display_name": "release-readiness",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "test \"$GITHUB_REF\" = refs/heads/main\ntest \"$PHASE\" = SPRINT10_APPROVED\npython scripts/ci/release_authorization.py --sha \"$SOURCE_SHA\" --record \"$APPROVAL_REF\" --operation release-readiness\npython scripts/uat/verify_publish.py \"$SOURCE_SHA\"\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/release-reliability.yml",
+      "sha256": "e84f6745b1bc1b48691afed0760f6a2278ad0ff1303180a81d5bcde86beed7b2",
+      "name": "OC Dev - Tier B - Disposable Reliability and Recovery",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "restore-retention-tls",
+          "display_name": "restore-retention-tls",
+          "classification": "RELIABILITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/release-tools\" --no-audit --no-fund playwright@1.56.1\n\"$RUNNER_TEMP/release-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "(cd backend && .venv/bin/python -m unittest discover -s tests -v)",
+            "chmod -R go-rwx backend/app backend/scripts\ndocker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt -f backend/Dockerfile.runtime -t opscontrol-runtime:acceptance backend\ndocker run --rm --network none --read-only --entrypoint python opscontrol-runtime:acceptance -c 'import os; from app.core.config import settings; import scripts.run_api; assert os.geteuid()==10001; print(\"Non-root read-only runtime imports PASS\")'\n",
+            "backend/.venv/bin/python scripts/release-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/resource-workspace.yml",
+      "sha256": "9931908b68fe458f5432e7161cef03f74d17ddaf92f6cbe9cf957097b5132b0f",
+      "name": "OC Dev - Tier B - Sprint 1 Resource Workspace",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "authenticated-workspace",
+          "display_name": "authenticated-workspace",
+          "classification": "SPRINT_FUNCTIONALITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m venv backend/.venv\nbackend/.venv/bin/python backend/bootstrap_pip.py\nbackend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix frontend --no-save --package-lock=false playwright@1.56.1\nfrontend/node_modules/.bin/playwright install --with-deps chromium\necho \"PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e \"import {chromium} from './frontend/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())\")\" >> \"$GITHUB_ENV\"\n",
+            "npm test --prefix frontend\nnpm run lint --prefix frontend\nnpm run build --prefix frontend\n",
+            "backend/.venv/bin/python scripts/v16-acceptance.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/security-artifacts.yml",
+      "sha256": "42811f8c5d64023242212b35ccdd6ccbf1142b0d23bfc9ab8afb3e0842229935",
+      "name": "OC Dev - Tier C - Image SBOM Vulnerabilities and Licenses",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "image-evidence",
+          "display_name": "image-evidence",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": {
+            "include": [
+              {
+                "role": "backend-runtime",
+                "context": "backend",
+                "file": "backend/Dockerfile.runtime",
+                "target": "runtime"
+              },
+              {
+                "role": "backend-migration",
+                "context": "backend",
+                "file": "backend/Dockerfile.runtime",
+                "target": "migration"
+              },
+              {
+                "role": "uat-backend",
+                "context": "backend",
+                "file": "backend/Dockerfile.uat",
+                "target": ""
+              },
+              {
+                "role": "frontend",
+                "context": "frontend",
+                "file": "frontend/Dockerfile.demo",
+                "target": ""
+              },
+              {
+                "role": "postgres",
+                "context": ".",
+                "file": "deploy/release/Dockerfile.postgres",
+                "target": ""
+              },
+              {
+                "role": "ingestion-gateway",
+                "context": ".",
+                "file": "deploy/release/Dockerfile.gateway",
+                "target": ""
+              },
+              {
+                "role": "otel-contrib",
+                "image": "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+              }
+            ]
+          },
+          "commands": [
+            "python scripts/ci/install_scanners.py \"$RUNNER_TEMP/scanners\"",
+            "set -euo pipefail\nif [[ -n \"$IMAGE\" ]]; then\n  docker pull \"$IMAGE\"\n  docker tag \"$IMAGE\" \"opscontrol-ci-$ROLE:scan\"\nelse\n  args=()\n  if [[ -n \"$TARGET\" ]]; then args+=(--target \"$TARGET\"); fi\n  docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt \"${args[@]}\" -f \"$DOCKERFILE\" -t \"opscontrol-ci-$ROLE:scan\" \"$CONTEXT\"\nfi\n",
+            "python scripts/ci/scan_image.py \"opscontrol-ci-$ROLE:scan\" \"$RUNNER_TEMP/image-evidence\" \"$RUNNER_TEMP/scanners\""
+          ]
+        },
+        {
+          "job_id": "security-sbom",
+          "display_name": "security-sbom",
+          "classification": "SECURITY",
+          "needs": [
+            "image-evidence"
+          ],
+          "if": "always()",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python scripts/ci/require_success.py"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/security-validation.yml",
+      "sha256": "1186f37ca95b94ca1dad2caddf0acf9a33f4818808843b8bd2686d1bd8ba092a",
+      "name": "OC Dev - Tier C - Secrets and Dependency Security",
+      "triggers": {
+        "pull_request": "",
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "python-dependency-audit",
+          "display_name": "python-dependency-audit",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && python -m pip install \"pip-audit>=2.9,<3\"",
+            "mkdir -p /tmp/python-audit\nresult=0\npython -m pip_audit -r backend/requirements-providers.txt -r backend/requirements-hosts.txt --strict --format json --output /tmp/python-audit/runtime.json || result=1\npython -m pip_audit -r backend/requirements-dev.txt --strict --format json --output /tmp/python-audit/development.json || result=1\nexit \"$result\"\n"
+          ]
+        },
+        {
+          "job_id": "frontend-dependency-audit",
+          "display_name": "frontend-dependency-audit",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "npm ci --no-audit --no-fund",
+            "mkdir -p /tmp/npm-audit\nresult=0\nnpm audit --omit=dev --audit-level=moderate --json > /tmp/npm-audit/runtime.json || result=1\nnpm audit --audit-level=moderate --json > /tmp/npm-audit/all.json || result=1\nexit \"$result\"\n"
+          ]
+        },
+        {
+          "job_id": "secret-history-scan",
+          "display_name": "secret-history-scan",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": []
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/stage-b-uat.yml",
+      "sha256": "6231dd4054086cef9543bde0628f056f1e1c60b7d0e9c74a4825117c9e950950",
+      "name": "OC Dev - Tier F - Privileged UAT Operations - Manual Gated",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "operation": {
+              "description": "record_main, deploy_feature, release, deploy_main, feature_mode, maintenance",
+              "type": "choice",
+              "required": "true",
+              "options": [
+                "record_main",
+                "deploy_feature",
+                "release",
+                "deploy_main",
+                "feature_mode",
+                "maintenance"
+              ]
+            },
+            "source_branch": {
+              "description": "Exact reviewed feature branch (deploy_feature only)",
+              "type": "string"
+            },
+            "source_sha": {
+              "description": "Immutable 40-character commit SHA; latest branch tip",
+              "type": "string"
+            },
+            "approval_ref": {
+              "description": "Approved UAT change record",
+              "type": "string",
+              "required": "true"
+            },
+            "migration_review_ref": {
+              "description": "Independent migration review record, when migrations differ",
+              "type": "string"
+            },
+            "migration_approver": {
+              "description": "Independent migration reviewer, when migrations differ",
+              "type": "string"
+            },
+            "backup_path": {
+              "description": "UAT-owned verified backup path, when migrations differ",
+              "type": "string"
+            }
+          }
+        }
+      },
+      "jobs": [
+        {
+          "job_id": "authorize",
+          "display_name": "authorize",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [],
+          "if": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true'",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python3 scripts/ci/release_authorization.py --sha \"$SOURCE_SHA\" --record \"$APPROVAL_REF\" --operation \"$OPERATION\"\npython3 scripts/uat/verify_publish.py \"$SOURCE_SHA\"\n"
+          ]
+        },
+        {
+          "job_id": "build",
+          "display_name": "build",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": "authorize",
+          "if": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true' && (inputs.operation == 'deploy_feature' || inputs.operation == 'deploy_main')",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "test \"$ENABLED\" = true\n[[ \"$SOURCE_SHA\" =~ ^[0-9a-f]{40}$ ]]\nif [[ \"$OPERATION\" = deploy_main ]]; then\n  branch=main\nelse\n  branch=\"$SOURCE_BRANCH\"\n  [[ \"$branch\" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]{0,127}$ ]]\n  [[ \"$branch\" != main && \"$branch\" != *..* && \"$branch\" != *//* ]]\nfi\nremote=$(gh api \"repos/$GITHUB_REPOSITORY/git/ref/heads/$branch\" --jq .object.sha)\ntest \"$remote\" = \"$SOURCE_SHA\"\ngh api --paginate --slurp \"repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/check-suites?per_page=100\" > \"$RUNNER_TEMP/stage-b-check-suites.json\"\npython3 - \"$RUNNER_TEMP/stage-b-check-suites.json\" <<'PY'\nimport json\nimport sys\nitems=[item for page in json.load(open(sys.argv[1])) for item in page['check_suites']]\nif not items or any(item['status']!='completed' or item['conclusion']!='success' for item in items):\n    raise SystemExit('Source SHA requires completed successful GitHub check suites')\nPY\n",
+            "test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"\necho \"prefix=ghcr.io/${GITHUB_REPOSITORY,,}\" >> \"$GITHUB_OUTPUT\"\n",
+            "test -f backend/Dockerfile.uat\ntest -f frontend/Dockerfile.demo\nhash=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d' ' -f1)\necho \"hash=$hash\" >> \"$GITHUB_OUTPUT\"\n"
+          ]
+        },
+        {
+          "job_id": "operate",
+          "display_name": "operate",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [
+            "authorize",
+            "build"
+          ],
+          "if": "github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && vars.OC_RELEASE_PHASE == 'SPRINT10_APPROVED' && vars.STAGE_B_UAT_ENABLED == 'true' && needs.authorize.result == 'success' && always() && (needs.build.result == 'success' || (needs.build.result == 'skipped' && inputs.operation != 'deploy_feature' && inputs.operation != 'deploy_main'))",
+          "runs_on": [
+            "self-hosted",
+            "Linux",
+            "X64",
+            "opscontrol-stage-b-uat"
+          ],
+          "matrix": null,
+          "commands": [
+            "test \"$ENABLED\" = true\ntest \"$RUNNER_MARKER\" = opscontrol-stage-b-uat\ntest -f /etc/opscontrol/stage-b-runner-approved\ntest -n \"$STAGE_B_UAT_BASE_COMPOSE\"\ntest -n \"$STAGE_B_UAT_STATE_DIR\"\ntest -n \"$STAGE_B_UAT_PROJECT\"\n",
+            "reviewers=$(gh api \"repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration\" --jq '[.protection_rules[]? | select(.type == \"required_reviewers\")] | length')\ntest \"$reviewers\" -ge 1\nself_review=$(gh api \"repos/$GITHUB_REPOSITORY/environments/stage-b-uat-migration\" --jq '.prevent_self_review')\ntest \"$self_review\" = true\n",
+            "current=$(gh api \"repos/$GITHUB_REPOSITORY/branches/main\" --jq .commit.sha)\ntest \"$(git rev-parse HEAD)\" = \"$current\"\n",
+            "set -euo pipefail\nexport STAGE_B_AUTH_SMOKE=\"$GITHUB_WORKSPACE/scripts/uat/stage_b_smoke.py\"\nargs=(--state-dir \"$STAGE_B_UAT_STATE_DIR\" --approval-ref \"$APPROVAL_REF\" --request \"$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT\")\ncase \"$OPERATION\" in\n  record_main) python3 scripts/uat/stage_b_deploy.py record-main \"${args[@]}\" --sha \"$SOURCE_SHA\" ;;\n  release) python3 scripts/uat/stage_b_deploy.py release \"${args[@]}\" ;;\n  feature_mode) python3 scripts/uat/stage_b_deploy.py feature-mode \"${args[@]}\" ;;\n  maintenance) python3 scripts/uat/stage_b_deploy.py maintenance \"${args[@]}\" ;;\n  deploy_feature|deploy_main)\n    branch=\"$SOURCE_BRANCH\"\n    if [[ \"$OPERATION\" = deploy_main ]]; then branch=main; fi\n    docker_config=$(mktemp -d)\n    chmod 700 \"$docker_config\"\n    trap 'rm -rf -- \"$docker_config\"' EXIT\n    export DOCKER_CONFIG=\"$docker_config\"\n    printf '%s' \"$GH_TOKEN\" | docker login ghcr.io --username \"$GITHUB_ACTOR\" --password-stdin >/dev/null\n    python3 scripts/uat/stage_b_deploy.py deploy \"${args[@]}\" \\\n      --project \"$STAGE_B_UAT_PROJECT\" --base-compose \"$STAGE_B_UAT_BASE_COMPOSE\" \\\n      --branch \"$branch\" --sha \"$SOURCE_SHA\" \\\n      --backend-image \"$IMAGE_PREFIX-backend@$BACKEND_DIGEST\" \\\n      --frontend-image \"$IMAGE_PREFIX-frontend@$FRONTEND_DIGEST\" \\\n      --migration-hash \"$MIGRATION_HASH\" \\\n      --migration-review-ref \"$MIGRATION_REVIEW_REF\" \\\n      --migration-approver \"$MIGRATION_APPROVER\" \\\n      --backup \"$BACKUP_PATH\" --backup-root \"$STAGE_B_UAT_BACKUP_ROOT\" \\\n      --api-url \"$STAGE_B_UAT_API_URL\" --frontend-url \"$STAGE_B_UAT_FRONTEND_URL\"\n    ;;\n  *) exit 2 ;;\nesac\n",
+            "if [[ -n \"${STAGE_B_STATE_DIR:-}\" && -f \"$STAGE_B_STATE_DIR/state.json\" ]]; then\n  python3 - \"$STAGE_B_STATE_DIR/state.json\" \"$RUNNER_TEMP/stage-b-status.json\" <<'PY'\nimport json,sys\nstate=json.load(open(sys.argv[1]))\nfor field in ('failed_attempt','inflight'):\n    state.pop(field,None)\nwith open(sys.argv[2],'w') as out: json.dump(state,out)\nPY\nfi\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/stage-b-validation.yml",
+      "sha256": "0b7b352e92be2343ca01bdb4aeaacc53fa8bb49eca73b7993e5e59c30f974eed",
+      "name": "OC Dev - Tier A - UAT Controller Safety Contracts - No Deploy",
+      "triggers": {
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "contracts",
+          "display_name": "contracts",
+          "classification": "RELEASE_QUALIFICATION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python -m unittest discover -s scripts/uat -p test_stage_b.py -v",
+            "python -m compileall -q scripts/uat/stage_b_state.py scripts/uat/stage_b_deploy.py scripts/uat/stage_b_smoke.py\ngit diff --check\n",
+            "bash scripts/check-workflows.sh"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/v15-quality.yml",
+      "sha256": "162bf0440d05e549fd81acee8aa7285f9d9b3517d7386173229a1d0023699b85",
+      "name": "OC Dev - Tier B - Integrated Quality Regression",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "verification",
+          "display_name": "verification",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "echo \"OPSCONTROL_TEST_EVIDENCE_DIR=$RUNNER_TEMP/v15-quality\" >> \"$GITHUB_ENV\"\necho \"PRETTIER_BIN=$RUNNER_TEMP/v15-tools/node_modules/.bin/prettier\" >> \"$GITHUB_ENV\"\necho \"PLAYWRIGHT_MODULE=$RUNNER_TEMP/v15-tools/node_modules/playwright/index.mjs\" >> \"$GITHUB_ENV\"\necho \"OPSCONTROL_OTEL_BINARY=$RUNNER_TEMP/otelcol-contrib\" >> \"$GITHUB_ENV\"\n",
+            "bash scripts/check-workflows.sh",
+            "python -m venv backend/.venv\nbackend/.venv/bin/python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && backend/.venv/bin/python -m pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt\nnpm ci --prefix frontend --no-audit --no-fund\nnpm install --prefix \"$RUNNER_TEMP/v15-tools\" --no-audit --no-fund prettier@3.5.3 playwright@1.56.1\n\"$RUNNER_TEMP/v15-tools/node_modules/.bin/playwright\" install --with-deps chromium\n",
+            "python verification/dev052/provision_contrib.py --output \"$OPSCONTROL_OTEL_BINARY\"\n",
+            "bash scripts/build-demo-agent.sh",
+            "make test-quality",
+            "make test-unit\nmake test-agent\n",
+            "make test-e2e",
+            "make test-pentaho",
+            "bash scripts/test-quality.sh compatibility",
+            "make test-security",
+            "cat > \"$RUNNER_TEMP/v15-build-cache.yml\" <<'CACHE'\nservices:\n  api:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  worker:\n    build:\n      cache_from: [opscontrol-v15-backend-cache:latest]\n  frontend:\n    build:\n      cache_from: [opscontrol-v15-frontend-cache:latest]\nCACHE\n",
+            "make test-docker",
+            "make test-coverage"
+          ]
+        },
+        {
+          "job_id": "windows-source-checks",
+          "display_name": "windows-source-checks",
+          "classification": "SECURITY",
+          "needs": [],
+          "if": null,
+          "runs_on": "windows-2022",
+          "matrix": null,
+          "commands": [
+            "python -m compileall -q agent\nif ($LASTEXITCODE) { throw 'Agent Python compilation failed' }\nforeach ($file in @('agent/install-windows.ps1','agent/uninstall-windows.ps1','agent/packaging/build-windows.ps1')) {\n  $tokens=$null; $errors=$null\n  [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file),[ref]$tokens,[ref]$errors) | Out-Null\n  if ($errors.Count) { throw \"PowerShell parse failed: $file\" }\n}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/validation.yml",
+      "sha256": "37e690911ebe166722b3aebf762ffaac6e1508d77aec31c1eb9d0039a75c6910",
+      "name": "OC Dev - Tier A - Source Tests Lint and Build",
+      "triggers": {
+        "push": {
+          "branches": [
+            "main"
+          ]
+        },
+        "pull_request": "",
+        "workflow_dispatch": ""
+      },
+      "jobs": [
+        {
+          "job_id": "backend-validation",
+          "display_name": "backend-validation",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && pip install -r requirements-providers.txt -r requirements-hosts.txt",
+            "python ../scripts/check-ci-roadmap.py",
+            "python -m compileall -q app migrations",
+            "python -m unittest discover -s tests -v",
+            "python -m scripts.export_api_inventory /tmp/opscontrol-api-inventory.json",
+            "python -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('SQLAlchemy mapper validation passed')\""
+          ]
+        },
+        {
+          "job_id": "frontend-validation",
+          "display_name": "frontend-validation",
+          "classification": "REGRESSION",
+          "needs": [],
+          "if": null,
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "npm ci",
+            "npm test",
+            "npm run lint",
+            "npm run build"
+          ]
+        },
+        {
+          "job_id": "unit-and-build",
+          "display_name": "unit-and-build",
+          "classification": "REGRESSION",
+          "needs": [
+            "backend-validation",
+            "frontend-validation"
+          ],
+          "if": "always()",
+          "runs_on": "ubuntu-24.04",
+          "matrix": null,
+          "commands": [
+            "python scripts/ci/require_success.py"
+          ]
+        }
+      ]
+    }
+  ]
+}

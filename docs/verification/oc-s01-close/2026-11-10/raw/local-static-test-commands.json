@@ -1,0 +1,80 @@
+[
+  {
+    "name": "frontend-tests",
+    "command": [
+      "npm",
+      "--prefix",
+      "frontend",
+      "test"
+    ],
+    "exit": 0,
+    "log": "frontend-tests.log"
+  },
+  {
+    "name": "frontend-lint",
+    "command": [
+      "npm",
+      "--prefix",
+      "frontend",
+      "run",
+      "lint"
+    ],
+    "exit": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "frontend-build",
+    "command": [
+      "npm",
+      "--prefix",
+      "frontend",
+      "run",
+      "build"
+    ],
+    "exit": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "root-unit",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "log": "root-unit.log"
+  },
+  {
+    "name": "ci-policy",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/ci/policy.py"
+    ],
+    "exit": 0,
+    "log": "ci-policy.log"
+  },
+  {
+    "name": "e2e-integrity",
+    "command": [
+      "backend/.venv/bin/python",
+      "scripts/ci/e2e_alignment.py"
+    ],
+    "exit": 0,
+    "log": "e2e-integrity.log"
+  },
+  {
+    "name": "authority",
+    "command": [
+      "backend/.venv/bin/python",
+      "docs/planning/authority/validate_records.py"
+    ],
+    "exit": 0,
+    "log": "authority.log"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/821de79a-78d7-4a2a-91fb-adaad8670a30/jobs/81e533ab-bfc0-4fdc-87f1-bfda737a4201/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/821de79a-78d7-4a2a-91fb-adaad8670a30/jobs/81e533ab-bfc0-4fdc-87f1-bfda737a4201/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_IN_FLIGHT_WAIT_FOR_REVIEWED_HANDOFF"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/821de79a-78d7-4a2a-91fb-adaad8670a30/jobs/81e533ab-bfc0-4fdc-87f1-bfda737a4201/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_RETENTION_OR_CONTINUITY_HOLD"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/821de79a-78d7-4a2a-91fb-adaad8670a30/jobs/81e533ab-bfc0-4fdc-87f1-bfda737a4201/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "SOURCE_GENERATION_CHANGED_REFRESH"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/821de79a-78d7-4a2a-91fb-adaad8670a30/readiness",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}
