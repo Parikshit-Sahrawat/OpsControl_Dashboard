@@ -1,0 +1,24 @@
+test_complete_fixture_coverage_does_not_clear_vulnerability_or_legal_gates (tests.test_ci_image_coverage.ImageCoverageTests.test_complete_fixture_coverage_does_not_clear_vulnerability_or_legal_gates) ... ok
+test_each_sbom_or_scan_digest_mismatch_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_each_sbom_or_scan_digest_mismatch_is_failure) ... FAIL
+test_missing_production_image_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_missing_production_image_is_failure) ... ok
+test_missing_required_scan_report_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_missing_required_scan_report_is_failure) ... ok
+test_repository_workflow_has_all_six_production_and_seven_legacy_roles (tests.test_ci_image_coverage.ImageCoverageTests.test_repository_workflow_has_all_six_production_and_seven_legacy_roles) ... ok
+test_stale_source_commit_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_stale_source_commit_is_failure) ... ok
+test_swapped_role_artifact_is_failure_even_if_hashes_are_consistent (tests.test_ci_image_coverage.ImageCoverageTests.test_swapped_role_artifact_is_failure_even_if_hashes_are_consistent) ... ok
+test_tampered_or_missing_binding_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_tampered_or_missing_binding_is_failure) ... ok
+test_workflow_matrix_drift_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_workflow_matrix_drift_is_failure) ... ok
+test_wrong_build_target_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_wrong_build_target_is_failure) ... ok
+
+======================================================================
+FAIL: test_each_sbom_or_scan_digest_mismatch_is_failure (tests.test_ci_image_coverage.ImageCoverageTests.test_each_sbom_or_scan_digest_mismatch_is_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/sec001-r01/tests/test_ci_image_coverage.py", line 150, in test_each_sbom_or_scan_digest_mismatch_is_failure
+    with self.assertRaises(ValueError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.141s
+
+FAILED (failures=1)
