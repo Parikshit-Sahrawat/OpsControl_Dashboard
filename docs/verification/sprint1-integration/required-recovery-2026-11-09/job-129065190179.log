@@ -1,0 +1,456 @@
+﻿2026-11-09T08:51:02.4869438Z Current runner version: '2.338.2'
+2026-11-09T08:51:02.4896482Z ##[group]Runner Image Provisioner
+2026-11-09T08:51:02.4897384Z Hosted Compute Agent
+2026-11-09T08:51:02.4898102Z Version: 20261028.624
+2026-11-09T08:51:02.4898832Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-09T08:51:02.4899581Z Build Date: 2026-10-28T21:51:42Z
+2026-11-09T08:51:02.4900356Z Worker ID: {dcd8ccac-9557-4ebf-ac9c-96212adf2b94}
+2026-11-09T08:51:02.4901119Z Region: westus3
+2026-11-09T08:51:02.4901682Z Cloud: Azure
+2026-11-09T08:51:02.4902335Z ##[endgroup]
+2026-11-09T08:51:02.4904272Z ##[group]Operating System
+2026-11-09T08:51:02.4905059Z Ubuntu
+2026-11-09T08:51:02.4905630Z 24.04.5
+2026-11-09T08:51:02.4906160Z LTS
+2026-11-09T08:51:02.4906820Z ##[endgroup]
+2026-11-09T08:51:02.4907440Z ##[group]Runner Image
+2026-11-09T08:51:02.4908108Z Image: ubuntu-24.04
+2026-11-09T08:51:02.4908718Z Version: 20261101.360.1
+2026-11-09T08:51:02.4910136Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-09T08:51:02.4911714Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-09T08:51:02.4912726Z ##[endgroup]
+2026-11-09T08:51:02.4914156Z ##[group]GITHUB_TOKEN Permissions
+2026-11-09T08:51:02.4916302Z Contents: read
+2026-11-09T08:51:02.4916963Z Metadata: read
+2026-11-09T08:51:02.4917538Z ##[endgroup]
+2026-11-09T08:51:02.4919709Z Secret source: Actions
+2026-11-09T08:51:02.4920793Z Cache mode: write
+2026-11-09T08:51:02.4921896Z Prepare workflow directory
+2026-11-09T08:51:02.5290116Z Prepare all required actions
+2026-11-09T08:51:02.5339840Z Getting action download info
+2026-11-09T08:51:02.8862876Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-09T08:51:03.0131779Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-09T08:51:03.1202251Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-09T08:51:03.3813173Z Complete job name: image-evidence (frontend, frontend, frontend/Dockerfile.demo)
+2026-11-09T08:51:03.4790107Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-09T08:51:03.4791194Z with:
+2026-11-09T08:51:03.4791671Z   persist-credentials: false
+2026-11-09T08:51:03.4792298Z   repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T08:51:03.4796188Z   token: ***
+2026-11-09T08:51:03.4796646Z   ssh-strict: true
+2026-11-09T08:51:03.4797095Z   ssh-user: git
+2026-11-09T08:51:03.4797521Z   clean: true
+2026-11-09T08:51:03.4797978Z   sparse-checkout-cone-mode: true
+2026-11-09T08:51:03.4798511Z   fetch-depth: 1
+2026-11-09T08:51:03.4798939Z   fetch-tags: false
+2026-11-09T08:51:03.4799652Z   show-progress: true
+2026-11-09T08:51:03.4800131Z   lfs: false
+2026-11-09T08:51:03.4800545Z   submodules: false
+2026-11-09T08:51:03.4801031Z   set-safe-directory: true
+2026-11-09T08:51:03.4801548Z   allow-unsafe-pr-checkout: false
+2026-11-09T08:51:03.4802389Z ##[endgroup]
+2026-11-09T08:51:04.1073490Z Syncing repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T08:51:04.1076055Z ##[group]Getting Git version info
+2026-11-09T08:51:04.1077040Z Working directory is '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-09T08:51:04.1078280Z [command]/usr/bin/git version
+2026-11-09T08:51:04.1555265Z git version 2.56.0
+2026-11-09T08:51:04.1582284Z ##[endgroup]
+2026-11-09T08:51:04.1599566Z Temporarily overriding HOME='/home/runner/work/_temp/b45c71ca-8be9-466f-91bc-7e8fba5253d8' before making global git config changes
+2026-11-09T08:51:04.1606745Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T08:51:04.1608332Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T08:51:04.1678406Z Deleting the contents of '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-09T08:51:04.1682005Z ##[group]Initializing the repository
+2026-11-09T08:51:04.1688395Z [command]/usr/bin/git init /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T08:51:04.2067384Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-09T08:51:04.2069404Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-09T08:51:04.2071182Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-09T08:51:04.2072163Z hint: call:
+2026-11-09T08:51:04.2072676Z hint:
+2026-11-09T08:51:04.2073324Z hint: 	git config --global init.defaultBranch <name>
+2026-11-09T08:51:04.2074440Z hint:
+2026-11-09T08:51:04.2075191Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-09T08:51:04.2076385Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-09T08:51:04.2077333Z hint:
+2026-11-09T08:51:04.2077884Z hint: 	git branch -m <name>
+2026-11-09T08:51:04.2078497Z hint:
+2026-11-09T08:51:04.2079293Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-09T08:51:04.2082280Z Initialized empty Git repository in /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/.git/
+2026-11-09T08:51:04.2095068Z [command]/usr/bin/git remote add origin https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T08:51:04.2158264Z ##[endgroup]
+2026-11-09T08:51:04.2159289Z ##[group]Disabling automatic garbage collection
+2026-11-09T08:51:04.2162777Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-09T08:51:04.2203404Z ##[endgroup]
+2026-11-09T08:51:04.2204642Z ##[group]Setting up auth
+2026-11-09T08:51:04.2211850Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T08:51:04.2259666Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T08:51:04.3025367Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T08:51:04.3075563Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T08:51:04.3327540Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T08:51:04.3371768Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T08:51:04.3614095Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-09T08:51:04.3670019Z ##[endgroup]
+2026-11-09T08:51:04.3671014Z ##[group]Fetching the repository
+2026-11-09T08:51:04.3682571Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d63b00432f11990cc810fc9f697335c5c24e5000:refs/remotes/pull/89/merge
+2026-11-09T08:51:11.0573616Z From https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T08:51:11.0576464Z  * [new ref]         d63b00432f11990cc810fc9f697335c5c24e5000 -> pull/89/merge
+2026-11-09T08:51:11.0580150Z ##[endgroup]
+2026-11-09T08:51:11.0581299Z ##[group]Determining the checkout info
+2026-11-09T08:51:11.0582526Z ##[endgroup]
+2026-11-09T08:51:11.0588615Z [command]/usr/bin/git sparse-checkout disable
+2026-11-09T08:51:11.0656357Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-09T08:51:11.0698696Z ##[group]Checking out the ref
+2026-11-09T08:51:11.0715016Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/89/merge
+2026-11-09T08:51:12.1142119Z Updating files:  33% (3704/11060)
+2026-11-09T08:51:12.1318185Z Updating files:  34% (3761/11060)
+2026-11-09T08:51:12.1533778Z Updating files:  35% (3871/11060)
+2026-11-09T08:51:12.1774287Z Updating files:  36% (3982/11060)
+2026-11-09T08:51:12.2034387Z Updating files:  37% (4093/11060)
+2026-11-09T08:51:12.2258939Z Updating files:  38% (4203/11060)
+2026-11-09T08:51:12.2687604Z Updating files:  39% (4314/11060)
+2026-11-09T08:51:12.3078887Z Updating files:  40% (4424/11060)
+2026-11-09T08:51:12.3302765Z Updating files:  41% (4535/11060)
+2026-11-09T08:51:12.3385984Z Updating files:  42% (4646/11060)
+2026-11-09T08:51:12.3637211Z Updating files:  43% (4756/11060)
+2026-11-09T08:51:12.3824487Z Updating files:  44% (4867/11060)
+2026-11-09T08:51:12.4051664Z Updating files:  45% (4977/11060)
+2026-11-09T08:51:12.4113443Z Updating files:  46% (5088/11060)
+2026-11-09T08:51:12.4221318Z Updating files:  47% (5199/11060)
+2026-11-09T08:51:12.4331187Z Updating files:  48% (5309/11060)
+2026-11-09T08:51:12.4449241Z Updating files:  49% (5420/11060)
+2026-11-09T08:51:12.4605982Z Updating files:  50% (5530/11060)
+2026-11-09T08:51:12.4792850Z Updating files:  51% (5641/11060)
+2026-11-09T08:51:12.5050292Z Updating files:  52% (5752/11060)
+2026-11-09T08:51:12.5158025Z Updating files:  53% (5862/11060)
+2026-11-09T08:51:12.5389505Z Updating files:  54% (5973/11060)
+2026-11-09T08:51:12.5532820Z Updating files:  55% (6083/11060)
+2026-11-09T08:51:12.5760118Z Updating files:  56% (6194/11060)
+2026-11-09T08:51:12.5921399Z Updating files:  57% (6305/11060)
+2026-11-09T08:51:12.6141618Z Updating files:  58% (6415/11060)
+2026-11-09T08:51:12.6369800Z Updating files:  59% (6526/11060)
+2026-11-09T08:51:12.6566776Z Updating files:  60% (6636/11060)
+2026-11-09T08:51:12.6750044Z Updating files:  61% (6747/11060)
+2026-11-09T08:51:12.6971106Z Updating files:  62% (6858/11060)
+2026-11-09T08:51:12.7189155Z Updating files:  63% (6968/11060)
+2026-11-09T08:51:12.7529416Z Updating files:  64% (7079/11060)
+2026-11-09T08:51:12.7764287Z Updating files:  65% (7189/11060)
+2026-11-09T08:51:12.7984214Z Updating files:  66% (7300/11060)
+2026-11-09T08:51:12.8219682Z Updating files:  67% (7411/11060)
+2026-11-09T08:51:12.8472001Z Updating files:  68% (7521/11060)
+2026-11-09T08:51:12.8928309Z Updating files:  69% (7632/11060)
+2026-11-09T08:51:12.9303939Z Updating files:  70% (7742/11060)
+2026-11-09T08:51:12.9569280Z Updating files:  71% (7853/11060)
+2026-11-09T08:51:13.0088921Z Updating files:  72% (7964/11060)
+2026-11-09T08:51:13.0520168Z Updating files:  73% (8074/11060)
+2026-11-09T08:51:13.0823999Z Updating files:  74% (8185/11060)
+2026-11-09T08:51:13.0855985Z Updating files:  75% (8295/11060)
+2026-11-09T08:51:13.0945233Z Updating files:  75% (8311/11060)
+2026-11-09T08:51:13.1058407Z Updating files:  76% (8406/11060)
+2026-11-09T08:51:13.1396133Z Updating files:  77% (8517/11060)
+2026-11-09T08:51:13.1856664Z Updating files:  78% (8627/11060)
+2026-11-09T08:51:13.2296048Z Updating files:  79% (8738/11060)
+2026-11-09T08:51:13.2735344Z Updating files:  80% (8848/11060)
+2026-11-09T08:51:13.3246523Z Updating files:  81% (8959/11060)
+2026-11-09T08:51:13.3285322Z Updating files:  82% (9070/11060)
+2026-11-09T08:51:13.3402960Z Updating files:  83% (9180/11060)
+2026-11-09T08:51:13.3641374Z Updating files:  84% (9291/11060)
+2026-11-09T08:51:13.3860963Z Updating files:  85% (9401/11060)
+2026-11-09T08:51:13.4307114Z Updating files:  86% (9512/11060)
+2026-11-09T08:51:13.4368359Z Updating files:  87% (9623/11060)
+2026-11-09T08:51:13.4547063Z Updating files:  88% (9733/11060)
+2026-11-09T08:51:13.4782224Z Updating files:  89% (9844/11060)
+2026-11-09T08:51:13.5036453Z Updating files:  90% (9954/11060)
+2026-11-09T08:51:13.5598573Z Updating files:  91% (10065/11060)
+2026-11-09T08:51:13.5857196Z Updating files:  92% (10176/11060)
+2026-11-09T08:51:13.6005809Z Updating files:  93% (10286/11060)
+2026-11-09T08:51:13.6346067Z Updating files:  94% (10397/11060)
+2026-11-09T08:51:13.6677154Z Updating files:  95% (10507/11060)
+2026-11-09T08:51:13.6984907Z Updating files:  96% (10618/11060)
+2026-11-09T08:51:13.7131746Z Updating files:  97% (10729/11060)
+2026-11-09T08:51:13.7205470Z Updating files:  98% (10839/11060)
+2026-11-09T08:51:13.7267815Z Updating files:  99% (10950/11060)
+2026-11-09T08:51:13.7268284Z Updating files: 100% (11060/11060)
+2026-11-09T08:51:13.7268984Z Updating files: 100% (11060/11060), done.
+2026-11-09T08:51:13.7374840Z Note: switching to 'refs/remotes/pull/89/merge'.
+2026-11-09T08:51:13.7375273Z 
+2026-11-09T08:51:13.7375626Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-09T08:51:13.7376325Z changes and commit them, and you can discard any commits you make in this
+2026-11-09T08:51:13.7377014Z state without impacting any branches by switching back to a branch.
+2026-11-09T08:51:13.7377419Z 
+2026-11-09T08:51:13.7377686Z If you want to create a new branch to retain commits you create, you may
+2026-11-09T08:51:13.7378329Z do so (now or later) by using -c with the switch command. Example:
+2026-11-09T08:51:13.7378702Z 
+2026-11-09T08:51:13.7378844Z   git switch -c <new-branch-name>
+2026-11-09T08:51:13.7379090Z 
+2026-11-09T08:51:13.7379226Z Or undo this operation with:
+2026-11-09T08:51:13.7379456Z 
+2026-11-09T08:51:13.7379573Z   git switch -
+2026-11-09T08:51:13.7379753Z 
+2026-11-09T08:51:13.7380054Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-09T08:51:13.7380499Z 
+2026-11-09T08:51:13.7381403Z HEAD is now at d63b004 Merge 874c481a2446022b693e6660c59af15f03c5476c into 2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a
+2026-11-09T08:51:13.7539179Z ##[endgroup]
+2026-11-09T08:51:13.7596978Z [command]/usr/bin/git log -1 --format=%H
+2026-11-09T08:51:13.7632854Z d63b00432f11990cc810fc9f697335c5c24e5000
+2026-11-09T08:51:13.7644652Z ##[group]Removing auth
+2026-11-09T08:51:13.7649181Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T08:51:13.7690136Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T08:51:13.7949713Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T08:51:13.7987434Z http.https://github.com/.extraheader
+2026-11-09T08:51:13.7998636Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-09T08:51:13.8049439Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T08:51:13.8314930Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T08:51:13.8359173Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T08:51:13.8638457Z ##[endgroup]
+2026-11-09T08:51:13.8911632Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-09T08:51:13.8912057Z with:
+2026-11-09T08:51:13.8912260Z   python-version: 3.12
+2026-11-09T08:51:13.8912489Z   check-latest: false
+2026-11-09T08:51:13.8914988Z   token: ***
+2026-11-09T08:51:13.8915209Z   update-environment: true
+2026-11-09T08:51:13.8915474Z   allow-prereleases: false
+2026-11-09T08:51:13.8915704Z   freethreaded: false
+2026-11-09T08:51:13.8915918Z ##[endgroup]
+2026-11-09T08:51:14.0382221Z ##[group]Installed versions
+2026-11-09T08:51:14.0486236Z (node:2427) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-09T08:51:14.0487090Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-09T08:51:14.0487642Z Successfully set up CPython (3.12.16)
+2026-11-09T08:51:14.0488391Z ##[endgroup]
+2026-11-09T08:51:14.0696977Z ##[group]Run python scripts/ci/install_scanners.py "$RUNNER_TEMP/scanners"
+2026-11-09T08:51:14.0697927Z [36;1mpython scripts/ci/install_scanners.py "$RUNNER_TEMP/scanners"[0m
+2026-11-09T08:51:14.0743899Z shell: /usr/bin/bash -e {0}
+2026-11-09T08:51:14.0744329Z env:
+2026-11-09T08:51:14.0744767Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:14.0745568Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T08:51:14.0746589Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:14.0747257Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:14.0747937Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:14.0748603Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T08:51:14.0749169Z ##[endgroup]
+2026-11-09T08:51:16.5804188Z ##[group]Run set -euo pipefail
+2026-11-09T08:51:16.5804553Z [36;1mset -euo pipefail[0m
+2026-11-09T08:51:16.5804809Z [36;1mif [[ -n "$IMAGE" ]]; then[0m
+2026-11-09T08:51:16.5805073Z [36;1m  docker pull "$IMAGE"[0m
+2026-11-09T08:51:16.5805376Z [36;1m  docker tag "$IMAGE" "opscontrol-ci-$ROLE:scan"[0m
+2026-11-09T08:51:16.5805692Z [36;1melse[0m
+2026-11-09T08:51:16.5805883Z [36;1m  args=()[0m
+2026-11-09T08:51:16.5806157Z [36;1m  if [[ -n "$TARGET" ]]; then args+=(--target "$TARGET"); fi[0m
+2026-11-09T08:51:16.5806853Z [36;1m  docker build --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt "${args[@]}" -f "$DOCKERFILE" -t "opscontrol-ci-$ROLE:scan" "$CONTEXT"[0m
+2026-11-09T08:51:16.5807490Z [36;1mfi[0m
+2026-11-09T08:51:16.5828796Z shell: /usr/bin/bash -e {0}
+2026-11-09T08:51:16.5829048Z env:
+2026-11-09T08:51:16.5829315Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:16.5829789Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T08:51:16.5830243Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:16.5830638Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:16.5831035Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:16.5831443Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T08:51:16.5831779Z   ROLE: frontend
+2026-11-09T08:51:16.5831974Z   CONTEXT: frontend
+2026-11-09T08:51:16.5832194Z   DOCKERFILE: frontend/Dockerfile.demo
+2026-11-09T08:51:16.5832454Z   TARGET: 
+2026-11-09T08:51:16.5832632Z   IMAGE: 
+2026-11-09T08:51:16.5832813Z ##[endgroup]
+2026-11-09T08:51:17.2463251Z #0 building with "default" instance using docker driver
+2026-11-09T08:51:17.2464040Z 
+2026-11-09T08:51:17.2464399Z #1 [internal] load build definition from Dockerfile.demo
+2026-11-09T08:51:17.2465117Z #1 transferring dockerfile: 767B done
+2026-11-09T08:51:17.2465643Z #1 DONE 0.0s
+2026-11-09T08:51:17.2465879Z 
+2026-11-09T08:51:17.2466794Z #2 [internal] load metadata for docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-09T08:51:17.4272256Z #2 ...
+2026-11-09T08:51:17.4272448Z 
+2026-11-09T08:51:17.4272672Z #3 [auth] library/node:pull token for registry-1.docker.io
+2026-11-09T08:51:17.4273095Z #3 DONE 0.0s
+2026-11-09T08:51:17.4273327Z 
+2026-11-09T08:51:17.4273596Z #4 [auth] library/nginx:pull token for registry-1.docker.io
+2026-11-09T08:51:17.4274424Z #4 DONE 0.0s
+2026-11-09T08:51:17.5775261Z 
+2026-11-09T08:51:17.5775900Z #5 [internal] load metadata for docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-09T08:51:17.8390936Z #5 DONE 0.7s
+2026-11-09T08:51:17.8391527Z 
+2026-11-09T08:51:17.8392141Z #2 [internal] load metadata for docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-09T08:51:17.9652146Z #2 DONE 0.7s
+2026-11-09T08:51:17.9652878Z 
+2026-11-09T08:51:17.9653421Z #6 [internal] load .dockerignore
+2026-11-09T08:51:17.9655182Z #6 transferring context: 76B done
+2026-11-09T08:51:17.9655624Z #6 DONE 0.0s
+2026-11-09T08:51:17.9655823Z 
+2026-11-09T08:51:17.9655998Z #7 [internal] load build context
+2026-11-09T08:51:17.9656483Z #7 transferring context: 1.29MB 0.0s done
+2026-11-09T08:51:17.9656982Z #7 DONE 0.0s
+2026-11-09T08:51:17.9657188Z 
+2026-11-09T08:51:17.9657883Z #8 [build 1/6] FROM docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-09T08:51:17.9659545Z #8 resolve docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 0.0s done
+2026-11-09T08:51:17.9662946Z #8 extracting sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788
+2026-11-09T08:51:18.0770268Z #8 extracting sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 0.1s done
+2026-11-09T08:51:18.0771890Z #8 sha256:f0a5c9e3ce7dcc7fca3a816f70b3d42bc5324066b627223af466eff9030e171f 1.26MB 0.2s
+2026-11-09T08:51:18.0773312Z #8 sha256:109c2f814f468711ac666fb9494ce76528e972ee8636468ad822267a0af959e5 443B / 443B 0.2s done
+2026-11-09T08:51:18.0774680Z #8 sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 3.87kB / 3.87kB done
+2026-11-09T08:51:18.0775350Z #8 sha256:1200d815de24f8dcca745fbf7651d166034a35adbcad8860a8538ffff44f1420 1.72kB / 1.72kB done
+2026-11-09T08:51:18.0778486Z #8 sha256:fecf2188af16d8979528abb79909513c78971103c52f677d69584e93c3a0ffcf 6.68kB / 6.68kB done
+2026-11-09T08:51:18.0781973Z #8 sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 3.85MB / 3.85MB 0.1s done
+2026-11-09T08:51:18.0791696Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 18.87MB / 57.37MB 0.2s
+2026-11-09T08:51:18.1848734Z #8 sha256:f0a5c9e3ce7dcc7fca3a816f70b3d42bc5324066b627223af466eff9030e171f 1.26MB / 1.26MB 0.2s done
+2026-11-09T08:51:18.1850287Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 42.99MB / 57.37MB 0.3s
+2026-11-09T08:51:18.2869017Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 57.37MB / 57.37MB 0.4s done
+2026-11-09T08:51:18.2870136Z #8 extracting sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b
+2026-11-09T08:51:19.8478009Z #8 extracting sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 1.4s done
+2026-11-09T08:51:21.3605996Z #8 extracting sha256:f0a5c9e3ce7dcc7fca3a816f70b3d42bc5324066b627223af466eff9030e171f 0.1s done
+2026-11-09T08:51:21.3607862Z #8 extracting sha256:109c2f814f468711ac666fb9494ce76528e972ee8636468ad822267a0af959e5 done
+2026-11-09T08:51:21.3609235Z #8 DONE 3.5s
+2026-11-09T08:51:21.3609707Z 
+2026-11-09T08:51:21.3609908Z #9 [build 2/6] WORKDIR /src
+2026-11-09T08:51:21.3610336Z #9 DONE 0.0s
+2026-11-09T08:51:21.3610509Z 
+2026-11-09T08:51:21.3611197Z #10 [stage-1 1/4] FROM docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-09T08:51:21.3612760Z #10 resolve docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311 0.0s done
+2026-11-09T08:51:21.3615870Z #10 sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311 10.32kB / 10.32kB done
+2026-11-09T08:51:21.3617119Z #10 sha256:bb8f722b4be005fcd7827816a136ab779fd40185d85b5171be915cc7fc0575c7 2.49kB / 2.49kB done
+2026-11-09T08:51:21.3617788Z #10 sha256:1390db6b01a8b0c865b157c7f036b0772534418b1701f598737de546d208b6e4 12.30kB / 12.30kB done
+2026-11-09T08:51:21.3618976Z #10 sha256:881fc932939efef04ca120ad44bbd2c0917851eb247aa4995428afb1e80ede17 3.85MB / 3.85MB 0.3s done
+2026-11-09T08:51:21.3619800Z #10 sha256:52eb9c26a93672fd16d692befd22944ee26a59772beff8c775b37c684b0da36f 1.88MB / 1.88MB 0.3s done
+2026-11-09T08:51:21.3620618Z #10 extracting sha256:881fc932939efef04ca120ad44bbd2c0917851eb247aa4995428afb1e80ede17 0.1s done
+2026-11-09T08:51:21.3621934Z #10 sha256:89fcb8c382892a31f2b913ee3e11af133e228ec75e84351e4f848d6f83c0b56e 627B / 627B 0.4s done
+2026-11-09T08:51:21.3623082Z #10 sha256:0e13a8a92b02d6d710028ebada164686467e25ddff8907ae28a80bafc26bbee4 403B / 403B 0.4s done
+2026-11-09T08:51:21.3624299Z #10 sha256:c12ffff18732349750d8928e649e2333d19363a2a201978b1876c80f38aaf292 1.21kB / 1.21kB 0.4s done
+2026-11-09T08:51:21.3625486Z #10 sha256:163ee6b178c7d7aa60ef7115424399a0ccb8f293e43f6b35cd6df8f152698c6a 964B / 964B 0.4s done
+2026-11-09T08:51:21.3626185Z #10 sha256:d04b4ed66a450f2c2675e1c80127ba32721eeda72aaac8709d6ff707ccf90070 1.40kB / 1.40kB 0.5s done
+2026-11-09T08:51:21.3627319Z #10 extracting sha256:52eb9c26a93672fd16d692befd22944ee26a59772beff8c775b37c684b0da36f 0.1s done
+2026-11-09T08:51:21.3629252Z #10 sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d 20.32MB / 20.32MB 0.6s done
+2026-11-09T08:51:21.3630817Z #10 extracting sha256:89fcb8c382892a31f2b913ee3e11af133e228ec75e84351e4f848d6f83c0b56e done
+2026-11-09T08:51:21.3632371Z #10 extracting sha256:163ee6b178c7d7aa60ef7115424399a0ccb8f293e43f6b35cd6df8f152698c6a done
+2026-11-09T08:51:21.3634147Z #10 extracting sha256:0e13a8a92b02d6d710028ebada164686467e25ddff8907ae28a80bafc26bbee4 done
+2026-11-09T08:51:21.3635495Z #10 extracting sha256:c12ffff18732349750d8928e649e2333d19363a2a201978b1876c80f38aaf292 done
+2026-11-09T08:51:21.3636800Z #10 extracting sha256:d04b4ed66a450f2c2675e1c80127ba32721eeda72aaac8709d6ff707ccf90070 done
+2026-11-09T08:51:21.4708621Z #10 ...
+2026-11-09T08:51:21.4709392Z 
+2026-11-09T08:51:21.4709949Z #11 [build 3/6] COPY package*.json ./
+2026-11-09T08:51:21.4710614Z #11 DONE 0.0s
+2026-11-09T08:51:21.4710832Z 
+2026-11-09T08:51:21.4711646Z #10 [stage-1 1/4] FROM docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-09T08:51:21.4713054Z #10 extracting sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d 0.1s
+2026-11-09T08:51:21.7886995Z #10 extracting sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d 0.4s done
+2026-11-09T08:51:21.9021284Z #10 DONE 4.0s
+2026-11-09T08:51:21.9021705Z 
+2026-11-09T08:51:21.9023571Z #12 [build 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --ignore-scripts --no-audit --no-fund
+2026-11-09T08:51:22.6348925Z #12 ...
+2026-11-09T08:51:22.6349205Z 
+2026-11-09T08:51:22.6349939Z #13 [stage-1 2/4] RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+2026-11-09T08:51:22.6351018Z #13 0.534 (1/1) Upgrading zlib (1.3.2-r1 -> 1.4-r0)
+2026-11-09T08:51:22.6351568Z #13 0.540 OK: 59.1 MiB in 71 packages
+2026-11-09T08:51:22.6352044Z #13 DONE 0.6s
+2026-11-09T08:51:22.7856008Z 
+2026-11-09T08:51:22.7857275Z #12 [build 4/6] RUN --mount=type=secret,id=proxy_ca,required=true NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca npm ci --strict-ssl=true --ignore-scripts --no-audit --no-fund
+2026-11-09T08:51:24.2450455Z #12 2.872 
+2026-11-09T08:51:24.2451427Z #12 2.872 added 141 packages in 3s
+2026-11-09T08:51:24.3988382Z #12 2.875 npm notice
+2026-11-09T08:51:24.3989067Z #12 2.875 npm notice New major version of npm available! 11.19.1 -> 12.2.2
+2026-11-09T08:51:24.3989840Z #12 2.875 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+2026-11-09T08:51:24.3990527Z #12 2.875 npm notice To update run: npm install -g npm@12.2.2
+2026-11-09T08:51:24.3990873Z #12 2.875 npm notice
+2026-11-09T08:51:24.4313094Z #12 DONE 3.1s
+2026-11-09T08:51:24.6095124Z 
+2026-11-09T08:51:24.6095791Z #14 [build 5/6] COPY . .
+2026-11-09T08:51:24.6096338Z #14 DONE 0.0s
+2026-11-09T08:51:24.6096608Z 
+2026-11-09T08:51:24.6096852Z #15 [build 6/6] RUN npm run build
+2026-11-09T08:51:24.7154495Z #15 0.257 
+2026-11-09T08:51:24.7155549Z #15 0.257 > opscontrol-frontend@0.1.0 build
+2026-11-09T08:51:24.7156922Z #15 0.257 > vite build
+2026-11-09T08:51:24.7157559Z #15 0.257 
+2026-11-09T08:51:24.9645618Z #15 0.505 vite v7.3.7 building client environment for production...
+2026-11-09T08:51:25.1869040Z #15 0.578 transforming...
+2026-11-09T08:51:26.6825140Z #15 2.224 ✓ 98 modules transformed.
+2026-11-09T08:51:26.9650823Z #15 2.506 rendering chunks...
+2026-11-09T08:51:27.0808546Z #15 2.519 computing gzip size...
+2026-11-09T08:51:27.0809746Z #15 2.537 dist/index.html                   0.93 kB │ gzip:   0.51 kB
+2026-11-09T08:51:27.0811243Z #15 2.537 dist/assets/index-PfcGl6Uy.css  104.97 kB │ gzip:  18.55 kB
+2026-11-09T08:51:27.0812240Z #15 2.537 dist/assets/index-BpHrGRQk.js   621.95 kB │ gzip: 172.01 kB
+2026-11-09T08:51:27.0812890Z #15 2.538 
+2026-11-09T08:51:27.0813427Z #15 2.538 (!) Some chunks are larger than 500 kB after minification. Consider:
+2026-11-09T08:51:27.0815651Z #15 2.538 - Using dynamic import() to code-split the application
+2026-11-09T08:51:27.0817330Z #15 2.538 - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2026-11-09T08:51:27.0818921Z #15 2.538 - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2026-11-09T08:51:27.0819798Z #15 2.538 ✓ built in 2.00s
+2026-11-09T08:51:27.0820451Z #15 DONE 2.6s
+2026-11-09T08:51:27.3269370Z 
+2026-11-09T08:51:27.3270088Z #16 [stage-1 3/4] COPY --from=build /src/dist /usr/share/nginx/html
+2026-11-09T08:51:27.3270754Z #16 DONE 0.0s
+2026-11-09T08:51:27.3270898Z 
+2026-11-09T08:51:27.3271125Z #17 [stage-1 4/4] COPY nginx.demo.conf /etc/nginx/conf.d/default.conf
+2026-11-09T08:51:27.3271551Z #17 DONE 0.0s
+2026-11-09T08:51:27.3271690Z 
+2026-11-09T08:51:27.3271798Z #18 exporting to image
+2026-11-09T08:51:27.3272062Z #18 exporting layers
+2026-11-09T08:51:28.0104811Z #18 exporting layers 0.8s done
+2026-11-09T08:51:28.0311956Z #18 writing image sha256:fbcfdf0cb577891c6d128cb3a595a1ab20d71c4f7fe1fe2ee8afae16cce20506 done
+2026-11-09T08:51:28.0313042Z #18 naming to docker.io/library/opscontrol-ci-frontend:scan done
+2026-11-09T08:51:28.0313832Z #18 DONE 0.8s
+2026-11-09T08:51:28.0418822Z ##[group]Run python scripts/ci/scan_image.py "opscontrol-ci-$ROLE:scan" "$RUNNER_TEMP/image-evidence" "$RUNNER_TEMP/scanners"
+2026-11-09T08:51:28.0419713Z [36;1mpython scripts/ci/scan_image.py "opscontrol-ci-$ROLE:scan" "$RUNNER_TEMP/image-evidence" "$RUNNER_TEMP/scanners"[0m
+2026-11-09T08:51:28.0440728Z shell: /usr/bin/bash -e {0}
+2026-11-09T08:51:28.0440974Z env:
+2026-11-09T08:51:28.0441236Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:28.0441673Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T08:51:28.0442114Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:28.0442522Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:28.0442921Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:51:28.0443308Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T08:51:28.0443625Z   ROLE: frontend
+2026-11-09T08:51:28.0444158Z ##[endgroup]
+2026-11-09T08:52:36.9551195Z Traceback (most recent call last):
+2026-11-09T08:52:36.9559956Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/scan_image.py", line 113, in <module>
+2026-11-09T08:52:36.9561032Z     scan(sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3]))
+2026-11-09T08:52:36.9562032Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/scan_image.py", line 109, in scan
+2026-11-09T08:52:36.9574717Z     print(json.dumps(validate(output), indent=2))
+2026-11-09T08:52:36.9575296Z                      ^^^^^^^^^^^^^^^^
+2026-11-09T08:52:36.9576140Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/security_manifest.py", line 67, in validate
+2026-11-09T08:52:36.9576885Z     raise ValueError(
+2026-11-09T08:52:36.9577311Z ValueError: License/NOTICE review pending; inventory is not legal approval
+2026-11-09T08:52:36.9689089Z ##[error]Process completed with exit code 1.
+2026-11-09T08:52:36.9794209Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-09T08:52:36.9794650Z with:
+2026-11-09T08:52:36.9794866Z   name: image-evidence-frontend
+2026-11-09T08:52:36.9795336Z   path: /home/runner/work/_temp/image-evidence
+!/home/runner/work/_temp/image-evidence/grype-cache/**
+
+2026-11-09T08:52:36.9795820Z   if-no-files-found: error
+2026-11-09T08:52:36.9796050Z   compression-level: 6
+2026-11-09T08:52:36.9796261Z   overwrite: false
+2026-11-09T08:52:36.9796467Z   include-hidden-files: false
+2026-11-09T08:52:36.9796691Z env:
+2026-11-09T08:52:36.9796935Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:52:36.9797406Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T08:52:36.9797835Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:52:36.9798424Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:52:36.9798841Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T08:52:36.9799227Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T08:52:36.9799547Z ##[endgroup]
+2026-11-09T08:52:37.1534773Z (node:2882) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-09T08:52:37.1535811Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-09T08:52:37.1648199Z With the provided path, there will be 15 files uploaded
+2026-11-09T08:52:37.1650306Z Artifact name is valid!
+2026-11-09T08:52:37.1651164Z Root directory input is valid!
+2026-11-09T08:52:37.5277546Z Beginning upload of artifact content to blob storage
+2026-11-09T08:52:37.6069209Z (node:2882) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-09T08:52:37.9921891Z Uploaded bytes 297094
+2026-11-09T08:52:38.0533917Z Finished uploading artifact content to blob storage!
+2026-11-09T08:52:38.0534774Z SHA256 digest of uploaded artifact zip is d6597ef74a21e98400fffd28ed9e4bc6ca962b87212344a813072d9ae34ad9dc
+2026-11-09T08:52:38.0542134Z Finalizing artifact upload
+2026-11-09T08:52:38.4890082Z Artifact image-evidence-frontend.zip successfully finalized. Artifact ID 13660442237
+2026-11-09T08:52:38.4891773Z Artifact image-evidence-frontend has been successfully uploaded! Final size is 297094 bytes. Artifact ID is 13660442237
+2026-11-09T08:52:38.4899185Z Artifact download URL: https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42588850637/artifacts/13660442237
+2026-11-09T08:52:38.5125696Z Post job cleanup.
+2026-11-09T08:52:38.6046725Z [command]/usr/bin/git version
+2026-11-09T08:52:38.6098239Z git version 2.56.0
+2026-11-09T08:52:38.6144789Z Temporarily overriding HOME='/home/runner/work/_temp/b77293da-e31d-40d9-88ec-5097795d0a42' before making global git config changes
+2026-11-09T08:52:38.6145870Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T08:52:38.6154976Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T08:52:38.6207860Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T08:52:38.6274515Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T08:52:38.6588864Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T08:52:38.6629270Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T08:52:38.6933120Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T08:52:38.6996204Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T08:52:38.7473249Z Cleaning up orphan processes
+2026-11-09T08:52:38.7927931Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

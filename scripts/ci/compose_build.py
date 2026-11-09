@@ -3,6 +3,7 @@
 Compose's implicit Bake delegation cannot grant a file outside its contexts.
 Do not disable Bake entitlement checks or TLS to work around that rejection.
 """
+
 import json
 import ssl
 from pathlib import Path
@@ -21,7 +22,14 @@ def build_with_trust(compose, trust, private, run):
     path = Path(private) / "compose-bake.json"
     path.write_text(json.dumps(plan))
     path.chmod(0o600)
-    return run([
-        "docker", "buildx", "bake", "--file", str(path),
-        "--allow=fs.read=" + str(trust), "--load",
-    ])
+    return run(
+        [
+            "docker",
+            "buildx",
+            "bake",
+            "--file",
+            str(path),
+            "--allow=fs.read=" + str(trust),
+            "--load",
+        ]
+    )

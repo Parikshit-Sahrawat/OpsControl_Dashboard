@@ -23,3 +23,7 @@ Sprint1 **NOT COMPLETE**; no owner visual acceptance or independent PR approval 
 Formal UAT, genuine Windows/Linux/EC2/Pentaho certification, D07/D08 decisions and nine owner-acceptance selections remain **PENDING/BLOCKED** where previously recorded. Historical controlled-scope approvals are preserved. They are not new signatures for this work. Sprint2 is not started.
 
 No CI retirement or release promotion. SECURITY BLOCKED · RELEASE NO-GO.
+
+## 2026-11-09 exact-head recovery follow-up
+
+[Access/keyboard corrections and evidence](required-recovery-2026-11-09/REPORT.md) are locally verified within their recorded boundaries. The full local Access Docker build remains BLOCKED by owned-daemon backing-store capacity; final hosted checks are pending. All seven [image-security/licence failures](required-recovery-2026-11-09/IMAGE_FAILURE_REVIEW.md) remain unresolved. No branch-protection, release, provider, owner visual or independent-review gate is cleared.

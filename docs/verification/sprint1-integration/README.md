@@ -24,3 +24,5 @@ Repository: Parikshit-Sahrawat/OpsControl_Dashboard · draft PR [#89](https://gi
 Final hosted CI is triggered after the evidence commit and reported **RESULT PENDING**, under owner Trigger-and-Exit policy. The final commit and available run URLs are recorded in the PR89 handoff; no polling or release certification is inferred.
 
 **CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.** Formal UAT/provider qualification and nine owner-acceptance selections remain pending. Independent review and owner visual acceptance are required before any future merge.
+
+Latest scoped follow-up: [exact-head Access/keyboard recovery](required-recovery-2026-11-09/REPORT.md), [retained seven-role security failures](required-recovery-2026-11-09/IMAGE_FAILURE_REVIEW.md), and [machine-readable validation](required-recovery-2026-11-09/VALIDATION.json). Hosted final-head results remain pending; historical evidence is preserved.

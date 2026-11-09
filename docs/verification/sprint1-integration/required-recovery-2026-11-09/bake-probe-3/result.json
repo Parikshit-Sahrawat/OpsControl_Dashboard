@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "negative_without_entitlement": "REJECTED",
+  "positive_exact_file": "PASS",
+  "secret_absent_from_runtime": "PASS",
+  "steps": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "oc-ca-proof-cd998050",
+        "-f",
+        "/tmp/oc-ca-proof-cd9980504fwfttoc/compose.json",
+        "build",
+        "--print"
+      ],
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "command": [
+        "docker",
+        "buildx",
+        "bake",
+        "-f",
+        "/tmp/oc-ca-proof-cd9980504fwfttoc/initial.json",
+        "--load"
+      ],
+      "exit": 1,
+      "expected": null
+    },
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "oc-ca-proof-cd998050",
+        "-f",
+        "/tmp/oc-ca-proof-cd9980504fwfttoc/compose.json",
+        "build",
+        "--print"
+      ],
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "command": [
+        "docker",
+        "buildx",
+        "bake",
+        "--file",
+        "/tmp/oc-ca-proof-cd9980504fwfttoc/compose-bake.json",
+        "--allow=fs.read=/etc/ssl/certs/ca-certificates.crt",
+        "--load"
+      ],
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "oc-ca-proof-cd998050:proof",
+        "python",
+        "-c",
+        "from pathlib import Path; assert not Path(\"/run/secrets/proxy_ca\").exists()"
+      ],
+      "exit": 0,
+      "expected": 0
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "inspect",
+        "oc-ca-proof-cd998050:proof",
+        "--format",
+        "{{.Id}}"
+      ],
+      "exit": 0,
+      "expected": 0
+    }
+  ]
+}

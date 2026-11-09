@@ -1,0 +1,19 @@
+PASS 200 GET /api/v1/monitoring/metrics
+PASS 200 GET /api/v1/monitoring/logs
+PASS 200 GET /api/v1/monitoring/alert-rules
+PASS 200 GET /api/v1/monitoring/alerts
+PASS 200 GET /api/v1/monitoring/metrics
+PASS 404 GET /api/v1/monitoring/metrics/0a27d8ab-37fb-46ae-9b08-13ed5a4bffba
+PASS 404 GET /api/v1/monitoring/logs/0713a044-96b6-4537-be99-038e9cfa2c1d
+PASS 404 GET /api/v1/monitoring/alert-rules/c97b21e0-1b8f-4f42-81f6-672d7b77400f
+PASS 404 GET /api/v1/monitoring/alerts/2d53ad3b-9719-4a4b-8df4-4129000d2f66
+PASS 404 GET /api/v1/monitoring/metrics/0a27d8ab-37fb-46ae-9b08-13ed5a4bffba/samples
+PASS 404 GET /api/v1/monitoring/logs/0713a044-96b6-4537-be99-038e9cfa2c1d/events
+PASS 404 GET /api/v1/monitoring/alerts/2d53ad3b-9719-4a4b-8df4-4129000d2f66/notifications
+PASS 404 PATCH /api/v1/monitoring/metrics/0a27d8ab-37fb-46ae-9b08-13ed5a4bffba
+PASS 404 DELETE /api/v1/monitoring/alert-rules/c97b21e0-1b8f-4f42-81f6-672d7b77400f
+PASS 404 PATCH /api/v1/monitoring/logs/0713a044-96b6-4537-be99-038e9cfa2c1d
+PASS 403 POST /api/v1/monitoring/metrics
+PASS 200 GET /api/v1/monitoring/metrics
+DEEP TENANT SECURITY NEGATIVE TESTS PASS
+

@@ -1,0 +1,35 @@
+{
+  "group": {
+    "default": {
+      "targets": [
+        "proof"
+      ]
+    }
+  },
+  "target": {
+    "proof": {
+      "context": "/tmp/oc-ca-proof-8a2b7a7b6ryp_etz/context",
+      "dockerfile": "/tmp/oc-ca-proof-8a2b7a7b6ryp_etz/context/Dockerfile",
+      "args": {
+        "HTTPS_PROXY": "http://172.31.2.253:8080",
+        "HTTP_PROXY": "http://172.31.2.253:8080",
+        "NO_PROXY": "localhost,127.0.0.1,::1"
+      },
+      "labels": {
+        "com.docker.compose.project": "oc-ca-proof-8a2b7a7b",
+        "com.docker.compose.service": "proof",
+        "com.docker.compose.version": "2.40.3"
+      },
+      "tags": [
+        "oc-ca-proof-8a2b7a7b:proof"
+      ],
+      "secret": [
+        "id=proxy_ca,type=file,src=/etc/ssl/certs/ca-certificates.crt"
+      ],
+      "output": [
+        "type=docker"
+      ]
+    }
+  }
+}
+

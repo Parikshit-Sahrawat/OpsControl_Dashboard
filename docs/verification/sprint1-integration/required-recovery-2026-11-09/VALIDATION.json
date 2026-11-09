@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "scope": "Exact-head Access build and keyboard-only recovery; historical image-failure retention",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "SPRINT1": "NOT_COMPLETE"
+  },
+  "merge_authorized": false,
+  "tests": {
+    "repository_unit": {
+      "passed": 100,
+      "failed": 0,
+      "skipped": 0
+    },
+    "focused_build_tests_subset": {
+      "passed": 5,
+      "failed": 0,
+      "new_tests": 3
+    },
+    "backend_baseline": {
+      "passed": 374,
+      "failed": 0,
+      "skipped": 296
+    },
+    "frontend_unit": {
+      "passed": 55,
+      "failed": 0,
+      "skipped": 0
+    },
+    "postgres_http_contracts": {
+      "passed": 46,
+      "failed": 0,
+      "skipped": 0
+    },
+    "access_http_groups": 25,
+    "access_browser_groups": 8,
+    "recovery_top_level_groups": 13,
+    "resource_crud_nested_groups": 8,
+    "keyboard_regression": "PASS",
+    "initial_local_recovery_attempt": "FAIL_FOCUS_ASSERTION_RETAINED",
+    "tiny_buildkit_positive": "PASS",
+    "tiny_buildkit_without_entitlement": "EXPECTED_REJECTION",
+    "full_local_access_docker_build": "BLOCKED_STORAGE_NOT_RUN",
+    "frontend_lint_exit": 0,
+    "frontend_build_exit": 0,
+    "workflow_validation_exit": 0,
+    "workflows_validated": 28,
+    "ci_policy_subset": {
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "security": {
+    "roles": 7,
+    "matches": 984,
+    "critical": 41,
+    "high": 371,
+    "licence_review": "PENDING_ACCOUNTABLE_REVIEW",
+    "artifact_archive_hashes_verified": 9
+  },
+  "checks": {
+    "runtime_browser_source_matches_successful_test_commit": true,
+    "private_key_or_jwt_literal_scan": "PASS",
+    "ruleset_required_checks_preserved": 13,
+    "json": {
+      "strict_documents": 121,
+      "raw_format_exceptions": [
+        {
+          "path": "release-2/eks.json",
+          "format": "raw JSON object followed by literal backslash-n; retained unchanged",
+          "object_decodes": true,
+          "single_json_document": false
+        },
+        {
+          "path": "release-1/eks.json",
+          "format": "raw JSON object followed by literal backslash-n; retained unchanged",
+          "object_decodes": true,
+          "single_json_document": false
+        },
+        {
+          "path": "hosted/release-reliability-evidence/eks.json",
+          "format": "raw JSON object followed by literal backslash-n; retained unchanged",
+          "object_decodes": true,
+          "single_json_document": false
+        }
+      ]
+    },
+    "new_document_local_links": 6
+  },
+  "ci": "TRIGGER_ON_FINAL_PUSH_THEN_EXIT_RESULT_PENDING",
+  "limitations": [
+    "No final-head hosted conclusion yet",
+    "Full application Docker rebuild not run locally due storage",
+    "No live provider certification or independent security/legal/owner signoff",
+    "No release/durability gate changed",
+    "Backend baseline skips are not PASS; actual owned PostgreSQL runners reported separately",
+    "Three raw eks.json artifacts append a literal backslash-n, not valid JSON whitespace; retained unchanged, object/suffix independently checked"
+  ]
+}
