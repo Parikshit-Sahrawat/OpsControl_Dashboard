@@ -1,0 +1,3364 @@
+[
+  {
+    "finding_id": "SEC001-F0245",
+    "advisory": "GO-2026-4341",
+    "cves": [
+      "CVE-2025-61726"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.12",
+      "1.25.6"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.12",
+      "1.25.6"
+    ],
+    "affected_stdlib_paths": [
+      "net/url"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/url",
+        "symbols": [
+          "ParseQuery",
+          "URL.Query",
+          "parseQuery"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/0",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4341.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0256",
+    "advisory": "GO-2026-5026",
+    "cves": [
+      "CVE-2026-39821"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Get",
+          "Head",
+          "Post",
+          "PostForm",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.RoundTrip",
+          "http2RoundTripper.RoundTrip",
+          "idnaASCII"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "Transport.AddConn",
+          "Transport.RoundTrip",
+          "Transport.RoundTripOpt",
+          "authorityAddr"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/1",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-5026.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0020",
+    "advisory": "GO-2026-4337",
+    "cves": [
+      "CVE-2025-68121"
+    ],
+    "severity_unchanged": "Critical",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.13",
+      "1.25.7",
+      "1.26.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.13",
+      "1.25.7",
+      "1.26.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/tls"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/tls",
+        "symbols": [
+          "Conn.Handshake",
+          "Conn.HandshakeContext",
+          "Conn.Read",
+          "Conn.Write",
+          "Conn.handshakeContext",
+          "Dial",
+          "DialWithDialer",
+          "Dialer.Dial",
+          "Dialer.DialContext",
+          "QUICConn.Start"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/2",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4337.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0022",
+    "advisory": "GO-2026-6612",
+    "cves": [
+      "CVE-2026-78663"
+    ],
+    "severity_unchanged": "Critical",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "CanonicalHeaderKey",
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Cookie.String",
+          "Cookie.Valid",
+          "CrossOriginProtection.AddInsecureBypassPattern",
+          "CrossOriginProtection.AddTrustedOrigin",
+          "CrossOriginProtection.Check",
+          "Dir.Open",
+          "Error",
+          "Get",
+          "Handle",
+          "HandleFunc",
+          "HandlerFunc.ServeHTTP",
+          "Head",
+          "Header.Add",
+          "Header.Del",
+          "Header.Get",
+          "Header.Set",
+          "Header.Values",
+          "Header.Write",
+          "Header.WriteSubset",
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "NewRequest",
+          "NewRequestWithContext",
+          "NotFound",
+          "ParseCookie",
+          "ParseSetCookie",
+          "ParseTime",
+          "Post",
+          "PostForm",
+          "ProxyFromEnvironment",
+          "ReadRequest",
+          "ReadResponse",
+          "Redirect",
+          "Request.AddCookie",
+          "Request.BasicAuth",
+          "Request.Cookie",
+          "Request.Cookies",
+          "Request.CookiesNamed",
+          "Request.FormFile",
+          "Request.FormValue",
+          "Request.MultipartReader",
+          "Request.ParseForm",
+          "Request.ParseMultipartForm",
+          "Request.PostFormValue",
+          "Request.Referer",
+          "Request.SetBasicAuth",
+          "Request.UserAgent",
+          "Request.Write",
+          "Request.WriteProxy",
+          "Response.Cookies",
+          "Response.Location",
+          "Response.Write",
+          "ResponseController.EnableFullDuplex",
+          "ResponseController.Flush",
+          "ResponseController.Hijack",
+          "ResponseController.SetReadDeadline",
+          "ResponseController.SetWriteDeadline",
+          "Serve",
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "ServeMux.Handle",
+          "ServeMux.HandleFunc",
+          "ServeMux.ServeHTTP",
+          "ServeTLS",
+          "Server.Close",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "Server.SetKeepAlivesEnabled",
+          "Server.Shutdown",
+          "SetCookie",
+          "Transport.CancelRequest",
+          "Transport.Clone",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "body.Close",
+          "body.Read",
+          "bodyEOFSignal.Close",
+          "bodyEOFSignal.Read",
+          "bodyLocked.Read",
+          "bufioFlushWriter.Write",
+          "cancelTimerBody.Close",
+          "cancelTimerBody.Read",
+          "checkConnErrorWriter.Write",
+          "chunkWriter.Write",
+          "connReader.Read",
+          "connectMethodKey.String",
+          "expectContinueReader.Close",
+          "expectContinueReader.Read",
+          "extraHeader.Write",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "globalOptionsHandler.ServeHTTP",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.Close",
+          "http2ClientConn.Ping",
+          "http2ClientConn.RoundTrip",
+          "http2ClientConn.Shutdown",
+          "http2ConnectionError.Error",
+          "http2ErrCode.String",
+          "http2FrameHeader.String",
+          "http2FrameType.String",
+          "http2FrameWriteRequest.String",
+          "http2Framer.ReadFrame",
+          "http2Framer.ReadFrameForHeader",
+          "http2Framer.ReadFrameHeader",
+          "http2Framer.WriteContinuation",
+          "http2Framer.WriteData",
+          "http2Framer.WriteDataPadded",
+          "http2Framer.WriteGoAway",
+          "http2Framer.WriteHeaders",
+          "http2Framer.WritePing",
+          "http2Framer.WritePriority",
+          "http2Framer.WritePushPromise",
+          "http2Framer.WriteRSTStream",
+          "http2Framer.WriteRawFrame",
+          "http2Framer.WriteSettings",
+          "http2Framer.WriteSettingsAck",
+          "http2Framer.WriteWindowUpdate",
+          "http2GoAwayError.Error",
+          "http2Server.ServeConn",
+          "http2Setting.String",
+          "http2SettingID.String",
+          "http2SettingsFrame.ForeachSetting",
+          "http2StreamError.Error",
+          "http2Transport.CloseIdleConnections",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2bufferedWriter.Flush",
+          "http2bufferedWriter.Write",
+          "http2bufferedWriterTimeoutWriter.Write",
+          "http2chunkWriter.Write",
+          "http2clientConnPool.GetClientConn",
+          "http2connError.Error",
+          "http2dataBuffer.Read",
+          "http2duplicatePseudoHeaderError.Error",
+          "http2gzipReader.Close",
+          "http2gzipReader.Read",
+          "http2headerFieldNameError.Error",
+          "http2headerFieldValueError.Error",
+          "http2netHTTPClientConn.Close",
+          "http2netHTTPClientConn.RoundTrip",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2pipe.Read",
+          "http2priorityWriteSchedulerRFC7540.CloseStream",
+          "http2priorityWriteSchedulerRFC7540.OpenStream",
+          "http2priorityWriteSchedulerRFC9218.OpenStream",
+          "http2pseudoHeaderError.Error",
+          "http2requestBody.Close",
+          "http2requestBody.Read",
+          "http2responseWriter.Flush",
+          "http2responseWriter.FlushError",
+          "http2responseWriter.Push",
+          "http2responseWriter.SetReadDeadline",
+          "http2responseWriter.SetWriteDeadline",
+          "http2responseWriter.Write",
+          "http2responseWriter.WriteHeader",
+          "http2responseWriter.WriteString",
+          "http2roundRobinWriteScheduler.OpenStream",
+          "http2serverConn.CloseConn",
+          "http2serverConn.Flush",
+          "http2serverConn.closeStream",
+          "http2serverConn.handlerDone",
+          "http2serverConn.newWriterAndRequest",
+          "http2serverConn.newWriterAndRequestNoBody",
+          "http2serverConn.noteBodyRead",
+          "http2serverConn.processHeaders",
+          "http2serverConn.runHandler",
+          "http2serverConn.scheduleHandler",
+          "http2stickyErrWriter.Write",
+          "http2transportResponseBody.Close",
+          "http2transportResponseBody.Read",
+          "http2unencryptedTransport.RoundTrip",
+          "http2writeData.String",
+          "initALPNRequest.ServeHTTP",
+          "loggingConn.Close",
+          "loggingConn.Read",
+          "loggingConn.Write",
+          "maxBytesReader.Close",
+          "maxBytesReader.Read",
+          "onceCloseListener.Close",
+          "persistConn.Read",
+          "persistConnWriter.ReadFrom",
+          "persistConnWriter.Write",
+          "populateResponse.Write",
+          "populateResponse.WriteHeader",
+          "readTrackingBody.Close",
+          "readTrackingBody.Read",
+          "readWriteCloserBody.CloseWrite",
+          "readWriteCloserBody.Read",
+          "redirectHandler.ServeHTTP",
+          "response.Flush",
+          "response.FlushError",
+          "response.Hijack",
+          "response.ReadFrom",
+          "response.Write",
+          "response.WriteHeader",
+          "response.WriteString",
+          "serverHandler.ServeHTTP",
+          "socksDialer.DialWithConn",
+          "socksUsernamePassword.Authenticate",
+          "stringWriter.WriteString",
+          "timeoutHandler.ServeHTTP",
+          "timeoutWriter.Write",
+          "timeoutWriter.WriteHeader",
+          "transportReadFromServerError.Error",
+          "unencryptedHTTP2Request.ServeHTTP"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "Server.ServeConn",
+          "requestBody.Close",
+          "requestBody.Read",
+          "serverConn.closeStream",
+          "serverConn.handlerDone",
+          "serverConn.newWriterAndRequest",
+          "serverConn.newWriterAndRequestNoBody",
+          "serverConn.noteBodyRead",
+          "serverConn.processHeaders",
+          "serverConn.runHandler",
+          "serverConn.scheduleHandler"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/3",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6612.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0252",
+    "advisory": "GO-2026-4981",
+    "cves": [
+      "CVE-2026-33811"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "affected_stdlib_paths": [
+      "net"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net",
+        "symbols": [
+          "LookupCNAME",
+          "Resolver.LookupCNAME",
+          "cgoResSearch"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/4",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4981.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0265",
+    "advisory": "GO-2026-6603",
+    "cves": [
+      "CVE-2026-78659"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "CanonicalHeaderKey",
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Cookie.String",
+          "Cookie.Valid",
+          "CrossOriginProtection.AddInsecureBypassPattern",
+          "CrossOriginProtection.AddTrustedOrigin",
+          "CrossOriginProtection.Check",
+          "Dir.Open",
+          "Error",
+          "Get",
+          "Handle",
+          "HandleFunc",
+          "HandlerFunc.ServeHTTP",
+          "Head",
+          "Header.Add",
+          "Header.Del",
+          "Header.Get",
+          "Header.Set",
+          "Header.Values",
+          "Header.Write",
+          "Header.WriteSubset",
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "NewRequest",
+          "NewRequestWithContext",
+          "NotFound",
+          "ParseCookie",
+          "ParseSetCookie",
+          "ParseTime",
+          "Post",
+          "PostForm",
+          "ProxyFromEnvironment",
+          "ReadRequest",
+          "ReadResponse",
+          "Redirect",
+          "Request.AddCookie",
+          "Request.BasicAuth",
+          "Request.Cookie",
+          "Request.Cookies",
+          "Request.CookiesNamed",
+          "Request.FormFile",
+          "Request.FormValue",
+          "Request.MultipartReader",
+          "Request.ParseForm",
+          "Request.ParseMultipartForm",
+          "Request.PostFormValue",
+          "Request.Referer",
+          "Request.SetBasicAuth",
+          "Request.UserAgent",
+          "Request.Write",
+          "Request.WriteProxy",
+          "Response.Cookies",
+          "Response.Location",
+          "Response.Write",
+          "ResponseController.EnableFullDuplex",
+          "ResponseController.Flush",
+          "ResponseController.Hijack",
+          "ResponseController.SetReadDeadline",
+          "ResponseController.SetWriteDeadline",
+          "Serve",
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "ServeMux.Handle",
+          "ServeMux.HandleFunc",
+          "ServeMux.ServeHTTP",
+          "ServeTLS",
+          "Server.Close",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "Server.SetKeepAlivesEnabled",
+          "Server.Shutdown",
+          "SetCookie",
+          "Transport.CancelRequest",
+          "Transport.Clone",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "body.Close",
+          "body.Read",
+          "bodyEOFSignal.Close",
+          "bodyEOFSignal.Read",
+          "bodyLocked.Read",
+          "bufioFlushWriter.Write",
+          "cancelTimerBody.Close",
+          "cancelTimerBody.Read",
+          "checkConnErrorWriter.Write",
+          "chunkWriter.Write",
+          "connReader.Read",
+          "connectMethodKey.String",
+          "expectContinueReader.Close",
+          "expectContinueReader.Read",
+          "extraHeader.Write",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "globalOptionsHandler.ServeHTTP",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.Close",
+          "http2ClientConn.Ping",
+          "http2ClientConn.RoundTrip",
+          "http2ClientConn.Shutdown",
+          "http2ConnectionError.Error",
+          "http2ErrCode.String",
+          "http2FrameHeader.String",
+          "http2FrameType.String",
+          "http2FrameWriteRequest.String",
+          "http2Framer.ReadFrame",
+          "http2Framer.ReadFrameForHeader",
+          "http2Framer.ReadFrameHeader",
+          "http2Framer.WriteContinuation",
+          "http2Framer.WriteData",
+          "http2Framer.WriteDataPadded",
+          "http2Framer.WriteGoAway",
+          "http2Framer.WriteHeaders",
+          "http2Framer.WritePing",
+          "http2Framer.WritePriority",
+          "http2Framer.WritePushPromise",
+          "http2Framer.WriteRSTStream",
+          "http2Framer.WriteRawFrame",
+          "http2Framer.WriteSettings",
+          "http2Framer.WriteSettingsAck",
+          "http2Framer.WriteWindowUpdate",
+          "http2Framer.readMetaFrame",
+          "http2GoAwayError.Error",
+          "http2Server.ServeConn",
+          "http2Setting.String",
+          "http2SettingID.String",
+          "http2SettingsFrame.ForeachSetting",
+          "http2StreamError.Error",
+          "http2Transport.CloseIdleConnections",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2bufferedWriter.Flush",
+          "http2bufferedWriter.Write",
+          "http2bufferedWriterTimeoutWriter.Write",
+          "http2chunkWriter.Write",
+          "http2clientConnPool.GetClientConn",
+          "http2connError.Error",
+          "http2dataBuffer.Read",
+          "http2duplicatePseudoHeaderError.Error",
+          "http2gzipReader.Close",
+          "http2gzipReader.Read",
+          "http2headerFieldNameError.Error",
+          "http2headerFieldValueError.Error",
+          "http2netHTTPClientConn.Close",
+          "http2netHTTPClientConn.RoundTrip",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2pipe.Read",
+          "http2priorityWriteSchedulerRFC7540.CloseStream",
+          "http2priorityWriteSchedulerRFC7540.OpenStream",
+          "http2priorityWriteSchedulerRFC9218.OpenStream",
+          "http2pseudoHeaderError.Error",
+          "http2requestBody.Close",
+          "http2requestBody.Read",
+          "http2responseWriter.Flush",
+          "http2responseWriter.FlushError",
+          "http2responseWriter.Push",
+          "http2responseWriter.SetReadDeadline",
+          "http2responseWriter.SetWriteDeadline",
+          "http2responseWriter.Write",
+          "http2responseWriter.WriteHeader",
+          "http2responseWriter.WriteString",
+          "http2roundRobinWriteScheduler.OpenStream",
+          "http2serverConn.CloseConn",
+          "http2serverConn.Flush",
+          "http2stickyErrWriter.Write",
+          "http2transportResponseBody.Close",
+          "http2transportResponseBody.Read",
+          "http2unencryptedTransport.RoundTrip",
+          "http2writeData.String",
+          "initALPNRequest.ServeHTTP",
+          "loggingConn.Close",
+          "loggingConn.Read",
+          "loggingConn.Write",
+          "maxBytesReader.Close",
+          "maxBytesReader.Read",
+          "onceCloseListener.Close",
+          "persistConn.Read",
+          "persistConnWriter.ReadFrom",
+          "persistConnWriter.Write",
+          "populateResponse.Write",
+          "populateResponse.WriteHeader",
+          "readTrackingBody.Close",
+          "readTrackingBody.Read",
+          "readWriteCloserBody.CloseWrite",
+          "readWriteCloserBody.Read",
+          "redirectHandler.ServeHTTP",
+          "response.Flush",
+          "response.FlushError",
+          "response.Hijack",
+          "response.ReadFrom",
+          "response.Write",
+          "response.WriteHeader",
+          "response.WriteString",
+          "serverHandler.ServeHTTP",
+          "socksDialer.DialWithConn",
+          "socksUsernamePassword.Authenticate",
+          "stringWriter.WriteString",
+          "timeoutHandler.ServeHTTP",
+          "timeoutWriter.Write",
+          "timeoutWriter.WriteHeader",
+          "transportReadFromServerError.Error",
+          "unencryptedHTTP2Request.ServeHTTP"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "ClientConn.Close",
+          "ClientConn.Ping",
+          "ClientConn.RoundTrip",
+          "ClientConn.Shutdown",
+          "Framer.ReadFrame",
+          "Framer.ReadFrameForHeader",
+          "Framer.ReadFrameHeader",
+          "Framer.WriteContinuation",
+          "Framer.WriteData",
+          "Framer.WriteDataPadded",
+          "Framer.WriteGoAway",
+          "Framer.WriteHeaders",
+          "Framer.WritePing",
+          "Framer.WritePriority",
+          "Framer.WritePriorityUpdate",
+          "Framer.WritePushPromise",
+          "Framer.WriteRSTStream",
+          "Framer.WriteRawFrame",
+          "Framer.WriteSettings",
+          "Framer.WriteSettingsAck",
+          "Framer.WriteWindowUpdate",
+          "Framer.readMetaFrame",
+          "NetHTTPClientConn.Close",
+          "NetHTTPClientConn.Ping",
+          "NetHTTPClientConn.RoundTrip",
+          "ReadFrameHeader",
+          "Server.GracefulShutdown",
+          "Server.ServeConn",
+          "SettingsFrame.ForeachSetting",
+          "Transport.AddConn",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "Transport.RoundTripOpt",
+          "bufferedWriter.Flush",
+          "bufferedWriter.Write",
+          "bufferedWriterTimeoutWriter.Write",
+          "chunkWriter.Write",
+          "clientConnPool.GetClientConn",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "noDialClientConnPool.GetClientConn",
+          "requestBody.Close",
+          "responseWriter.Flush",
+          "responseWriter.FlushError",
+          "responseWriter.Push",
+          "responseWriter.Write",
+          "responseWriter.WriteHeader",
+          "responseWriter.WriteString",
+          "serve400Handler.ServeHTTP",
+          "serverConn.Flush",
+          "stickyErrWriter.Write",
+          "transportResponseBody.Close",
+          "transportResponseBody.Read"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/5",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6603.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0268",
+    "advisory": "GO-2026-6611",
+    "cves": [
+      "CVE-2026-78669"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "CanonicalHeaderKey",
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Cookie.String",
+          "Cookie.Valid",
+          "CrossOriginProtection.AddInsecureBypassPattern",
+          "CrossOriginProtection.AddTrustedOrigin",
+          "CrossOriginProtection.Check",
+          "Dir.Open",
+          "Error",
+          "Get",
+          "Handle",
+          "HandleFunc",
+          "HandlerFunc.ServeHTTP",
+          "Head",
+          "Header.Add",
+          "Header.Del",
+          "Header.Get",
+          "Header.Set",
+          "Header.Values",
+          "Header.Write",
+          "Header.WriteSubset",
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "NewRequest",
+          "NewRequestWithContext",
+          "NotFound",
+          "ParseCookie",
+          "ParseSetCookie",
+          "ParseTime",
+          "Post",
+          "PostForm",
+          "ProxyFromEnvironment",
+          "ReadRequest",
+          "ReadResponse",
+          "Redirect",
+          "Request.AddCookie",
+          "Request.BasicAuth",
+          "Request.Cookie",
+          "Request.Cookies",
+          "Request.CookiesNamed",
+          "Request.FormFile",
+          "Request.FormValue",
+          "Request.MultipartReader",
+          "Request.ParseForm",
+          "Request.ParseMultipartForm",
+          "Request.PostFormValue",
+          "Request.Referer",
+          "Request.SetBasicAuth",
+          "Request.UserAgent",
+          "Request.Write",
+          "Request.WriteProxy",
+          "Response.Cookies",
+          "Response.Location",
+          "Response.Write",
+          "ResponseController.EnableFullDuplex",
+          "ResponseController.Flush",
+          "ResponseController.Hijack",
+          "ResponseController.SetReadDeadline",
+          "ResponseController.SetWriteDeadline",
+          "Serve",
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "ServeMux.Handle",
+          "ServeMux.HandleFunc",
+          "ServeMux.ServeHTTP",
+          "ServeTLS",
+          "Server.Close",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "Server.SetKeepAlivesEnabled",
+          "Server.Shutdown",
+          "SetCookie",
+          "Transport.CancelRequest",
+          "Transport.Clone",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "body.Close",
+          "body.Read",
+          "bodyEOFSignal.Close",
+          "bodyEOFSignal.Read",
+          "bodyLocked.Read",
+          "bufioFlushWriter.Write",
+          "cancelTimerBody.Close",
+          "cancelTimerBody.Read",
+          "checkConnErrorWriter.Write",
+          "chunkWriter.Write",
+          "connReader.Read",
+          "connectMethodKey.String",
+          "expectContinueReader.Close",
+          "expectContinueReader.Read",
+          "extraHeader.Write",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "globalOptionsHandler.ServeHTTP",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.Close",
+          "http2ClientConn.Ping",
+          "http2ClientConn.RoundTrip",
+          "http2ClientConn.Shutdown",
+          "http2ClientConn.addStreamLocked",
+          "http2ConnectionError.Error",
+          "http2ErrCode.String",
+          "http2FrameHeader.String",
+          "http2FrameType.String",
+          "http2FrameWriteRequest.Consume",
+          "http2FrameWriteRequest.String",
+          "http2Framer.ReadFrame",
+          "http2Framer.ReadFrameForHeader",
+          "http2Framer.ReadFrameHeader",
+          "http2Framer.WriteContinuation",
+          "http2Framer.WriteData",
+          "http2Framer.WriteDataPadded",
+          "http2Framer.WriteGoAway",
+          "http2Framer.WriteHeaders",
+          "http2Framer.WritePing",
+          "http2Framer.WritePriority",
+          "http2Framer.WritePushPromise",
+          "http2Framer.WriteRSTStream",
+          "http2Framer.WriteRawFrame",
+          "http2Framer.WriteSettings",
+          "http2Framer.WriteSettingsAck",
+          "http2Framer.WriteWindowUpdate",
+          "http2GoAwayError.Error",
+          "http2Server.ServeConn",
+          "http2Server.serveConn",
+          "http2Setting.String",
+          "http2SettingID.String",
+          "http2SettingsFrame.ForeachSetting",
+          "http2StreamError.Error",
+          "http2Transport.CloseIdleConnections",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2Transport.newClientConn",
+          "http2bufferedWriter.Flush",
+          "http2bufferedWriter.Write",
+          "http2bufferedWriterTimeoutWriter.Write",
+          "http2chunkWriter.Write",
+          "http2clientConnPool.GetClientConn",
+          "http2clientConnReadLoop.processSettingsNoWrite",
+          "http2clientConnReadLoop.processWindowUpdate",
+          "http2clientConnReadLoop.streamByID",
+          "http2clientStream.awaitFlowControl",
+          "http2clientStream.cleanupWriteRequest",
+          "http2connError.Error",
+          "http2dataBuffer.Read",
+          "http2duplicatePseudoHeaderError.Error",
+          "http2gzipReader.Close",
+          "http2gzipReader.Read",
+          "http2headerFieldNameError.Error",
+          "http2headerFieldValueError.Error",
+          "http2netHTTPClientConn.Close",
+          "http2netHTTPClientConn.RoundTrip",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2outflow.add",
+          "http2outflow.available",
+          "http2outflow.setConnFlow",
+          "http2outflow.take",
+          "http2pipe.Read",
+          "http2priorityWriteSchedulerRFC7540.CloseStream",
+          "http2priorityWriteSchedulerRFC7540.OpenStream",
+          "http2priorityWriteSchedulerRFC7540.Pop",
+          "http2priorityWriteSchedulerRFC9218.OpenStream",
+          "http2priorityWriteSchedulerRFC9218.Pop",
+          "http2pseudoHeaderError.Error",
+          "http2randomWriteScheduler.Pop",
+          "http2requestBody.Close",
+          "http2requestBody.Read",
+          "http2responseWriter.Flush",
+          "http2responseWriter.FlushError",
+          "http2responseWriter.Push",
+          "http2responseWriter.SetReadDeadline",
+          "http2responseWriter.SetWriteDeadline",
+          "http2responseWriter.Write",
+          "http2responseWriter.WriteHeader",
+          "http2responseWriter.WriteString",
+          "http2roundRobinWriteScheduler.OpenStream",
+          "http2roundRobinWriteScheduler.Pop",
+          "http2serverConn.CloseConn",
+          "http2serverConn.Flush",
+          "http2serverConn.newStream",
+          "http2serverConn.processSettingInitialWindowSize",
+          "http2serverConn.processWindowUpdate",
+          "http2serverConn.scheduleFrameWrite",
+          "http2stickyErrWriter.Write",
+          "http2transportResponseBody.Close",
+          "http2transportResponseBody.Read",
+          "http2unencryptedTransport.RoundTrip",
+          "http2writeData.String",
+          "initALPNRequest.ServeHTTP",
+          "loggingConn.Close",
+          "loggingConn.Read",
+          "loggingConn.Write",
+          "maxBytesReader.Close",
+          "maxBytesReader.Read",
+          "onceCloseListener.Close",
+          "persistConn.Read",
+          "persistConnWriter.ReadFrom",
+          "persistConnWriter.Write",
+          "populateResponse.Write",
+          "populateResponse.WriteHeader",
+          "readTrackingBody.Close",
+          "readTrackingBody.Read",
+          "readWriteCloserBody.CloseWrite",
+          "readWriteCloserBody.Read",
+          "redirectHandler.ServeHTTP",
+          "response.Flush",
+          "response.FlushError",
+          "response.Hijack",
+          "response.ReadFrom",
+          "response.Write",
+          "response.WriteHeader",
+          "response.WriteString",
+          "serverHandler.ServeHTTP",
+          "socksDialer.DialWithConn",
+          "socksUsernamePassword.Authenticate",
+          "stringWriter.WriteString",
+          "timeoutHandler.ServeHTTP",
+          "timeoutWriter.Write",
+          "timeoutWriter.WriteHeader",
+          "transportReadFromServerError.Error",
+          "unencryptedHTTP2Request.ServeHTTP"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "ClientConn.Close",
+          "ClientConn.Ping",
+          "ClientConn.RoundTrip",
+          "ClientConn.Shutdown",
+          "ClientConn.addStreamLocked",
+          "FrameWriteRequest.Consume",
+          "Framer.ReadFrame",
+          "Framer.ReadFrameForHeader",
+          "Framer.ReadFrameHeader",
+          "Framer.WriteContinuation",
+          "Framer.WriteData",
+          "Framer.WriteDataPadded",
+          "Framer.WriteGoAway",
+          "Framer.WriteHeaders",
+          "Framer.WritePing",
+          "Framer.WritePriority",
+          "Framer.WritePriorityUpdate",
+          "Framer.WritePushPromise",
+          "Framer.WriteRSTStream",
+          "Framer.WriteRawFrame",
+          "Framer.WriteSettings",
+          "Framer.WriteSettingsAck",
+          "Framer.WriteWindowUpdate",
+          "NetHTTPClientConn.Close",
+          "NetHTTPClientConn.Ping",
+          "NetHTTPClientConn.RoundTrip",
+          "ReadFrameHeader",
+          "Server.GracefulShutdown",
+          "Server.ServeConn",
+          "Server.serveConn",
+          "SettingsFrame.ForeachSetting",
+          "Transport.AddConn",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "Transport.RoundTripOpt",
+          "Transport.newClientConn",
+          "bufferedWriter.Flush",
+          "bufferedWriter.Write",
+          "bufferedWriterTimeoutWriter.Write",
+          "chunkWriter.Write",
+          "clientConnPool.GetClientConn",
+          "clientConnReadLoop.processSettingsNoWrite",
+          "clientConnReadLoop.processWindowUpdate",
+          "clientConnReadLoop.streamByID",
+          "clientStream.awaitFlowControl",
+          "clientStream.cleanupWriteRequest",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "noDialClientConnPool.GetClientConn",
+          "outflow.add",
+          "outflow.available",
+          "outflow.setConnFlow",
+          "outflow.take",
+          "priorityWriteSchedulerRFC9218.Pop",
+          "requestBody.Close",
+          "responseWriter.Flush",
+          "responseWriter.FlushError",
+          "responseWriter.Push",
+          "responseWriter.Write",
+          "responseWriter.WriteHeader",
+          "responseWriter.WriteString",
+          "roundRobinWriteScheduler.Pop",
+          "serve400Handler.ServeHTTP",
+          "serverConn.Flush",
+          "serverConn.newStream",
+          "serverConn.processSettingInitialWindowSize",
+          "serverConn.processWindowUpdate",
+          "serverConn.scheduleFrameWrite",
+          "stickyErrWriter.Write",
+          "transportResponseBody.Close",
+          "transportResponseBody.Read"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/6",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6611.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0253",
+    "advisory": "GO-2026-4918",
+    "cves": [
+      "CVE-2026-33814"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "affected_stdlib_paths": [
+      "net/http"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Get",
+          "Head",
+          "Post",
+          "PostForm",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2clientConnPool.GetClientConn",
+          "http2clientConnReadLoop.processSettingsNoWrite",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2unencryptedTransport.RoundTrip"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/7",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4918.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0247",
+    "advisory": "GO-2026-4601",
+    "cves": [
+      "CVE-2026-25679"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.8",
+      "1.26.1"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.8",
+      "1.26.1"
+    ],
+    "affected_stdlib_paths": [
+      "net/url"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/url",
+        "symbols": [
+          "JoinPath",
+          "Parse",
+          "ParseRequestURI",
+          "URL.Parse",
+          "URL.UnmarshalBinary",
+          "parseHost"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/8",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4601.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0259",
+    "advisory": "GO-2026-4977",
+    "cves": [
+      "CVE-2026-42499"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "affected_stdlib_paths": [
+      "net/mail"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/mail",
+        "symbols": [
+          "AddressParser.Parse",
+          "AddressParser.ParseList",
+          "Header.AddressList",
+          "ParseAddress",
+          "ParseAddressList",
+          "addrParser.consumePhrase"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/9",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4977.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0255",
+    "advisory": "GO-2026-4986",
+    "cves": [
+      "CVE-2026-39820"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "affected_stdlib_paths": [
+      "net/mail"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/mail",
+        "symbols": [
+          "AddressParser.Parse",
+          "AddressParser.ParseList",
+          "Header.AddressList",
+          "Header.Date",
+          "ParseAddress",
+          "ParseAddressList",
+          "ParseDate",
+          "addrParser.consumeComment"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/10",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4986.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0271",
+    "advisory": "GO-2026-6607",
+    "cves": [
+      "CVE-2026-97031"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/tls"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/tls",
+        "symbols": [
+          "Conn.Handshake",
+          "Conn.HandshakeContext",
+          "Conn.Read",
+          "Conn.Write",
+          "Dial",
+          "DialWithDialer",
+          "Dialer.Dial",
+          "Dialer.DialContext",
+          "QUICConn.Start",
+          "decodeInnerClientHello"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/11",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6607.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0270",
+    "advisory": "GO-2026-6608",
+    "cves": [
+      "CVE-2026-94440"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "mime/multipart",
+      "net/textproto"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/textproto",
+        "symbols": [
+          "Reader.ReadContinuedLine",
+          "Reader.ReadContinuedLineBytes",
+          "Reader.ReadMIMEHeader",
+          "Reader.readContinuedLineSlice",
+          "readMIMEHeader"
+        ]
+      },
+      {
+        "path": "mime/multipart",
+        "symbols": [
+          "Part.populateHeaders",
+          "Reader.NextPart",
+          "Reader.NextRawPart",
+          "Reader.ReadForm",
+          "Reader.readForm"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/12",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6608.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0021",
+    "advisory": "GO-2026-6604",
+    "cves": [
+      "CVE-2026-56857"
+    ],
+    "severity_unchanged": "Critical",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "internal/syscall/windows",
+      "os"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "os",
+        "goos": [
+          "windows"
+        ],
+        "symbols": [
+          "Root.Chmod",
+          "Root.Chown",
+          "Root.Chtimes",
+          "Root.Lchown",
+          "Root.Link",
+          "Root.Mkdir",
+          "Root.MkdirAll",
+          "Root.Remove",
+          "Root.RemoveAll",
+          "Root.Rename",
+          "Root.Symlink",
+          "doInRoot",
+          "rootMkdirAll"
+        ]
+      },
+      {
+        "path": "internal/syscall/windows",
+        "goos": [
+          "windows"
+        ],
+        "symbols": [
+          "Mkdirat"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [
+      "os"
+    ],
+    "platform_comparison": "WINDOWS_ONLY_ADVISORY_VS_LINUX_AMD64_BINARY",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Independent security review of explicit platform discrepancy; no suppression applied",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/13",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6604.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0272",
+    "advisory": "GO-2026-6617",
+    "cves": [
+      "CVE-2026-97032"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "CanonicalHeaderKey",
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Cookie.String",
+          "Cookie.Valid",
+          "CrossOriginProtection.AddInsecureBypassPattern",
+          "CrossOriginProtection.AddTrustedOrigin",
+          "CrossOriginProtection.Check",
+          "Dir.Open",
+          "Error",
+          "Get",
+          "Handle",
+          "HandleFunc",
+          "HandlerFunc.ServeHTTP",
+          "Head",
+          "Header.Add",
+          "Header.Del",
+          "Header.Get",
+          "Header.Set",
+          "Header.Values",
+          "Header.Write",
+          "Header.WriteSubset",
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "NewRequest",
+          "NewRequestWithContext",
+          "NotFound",
+          "ParseCookie",
+          "ParseSetCookie",
+          "ParseTime",
+          "Post",
+          "PostForm",
+          "ProxyFromEnvironment",
+          "ReadRequest",
+          "ReadResponse",
+          "Redirect",
+          "Request.AddCookie",
+          "Request.BasicAuth",
+          "Request.Cookie",
+          "Request.Cookies",
+          "Request.CookiesNamed",
+          "Request.FormFile",
+          "Request.FormValue",
+          "Request.MultipartReader",
+          "Request.ParseForm",
+          "Request.ParseMultipartForm",
+          "Request.PostFormValue",
+          "Request.Referer",
+          "Request.SetBasicAuth",
+          "Request.UserAgent",
+          "Request.Write",
+          "Request.WriteProxy",
+          "Response.Cookies",
+          "Response.Location",
+          "Response.Write",
+          "ResponseController.EnableFullDuplex",
+          "ResponseController.Flush",
+          "ResponseController.Hijack",
+          "ResponseController.SetReadDeadline",
+          "ResponseController.SetWriteDeadline",
+          "Serve",
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "ServeMux.Handle",
+          "ServeMux.HandleFunc",
+          "ServeMux.ServeHTTP",
+          "ServeTLS",
+          "Server.Close",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "Server.SetKeepAlivesEnabled",
+          "Server.Shutdown",
+          "SetCookie",
+          "Transport.CancelRequest",
+          "Transport.Clone",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "body.Close",
+          "body.Read",
+          "bodyEOFSignal.Close",
+          "bodyEOFSignal.Read",
+          "bodyLocked.Read",
+          "bufioFlushWriter.Write",
+          "cancelTimerBody.Close",
+          "cancelTimerBody.Read",
+          "checkConnErrorWriter.Write",
+          "chunkWriter.Write",
+          "connReader.Read",
+          "connectMethodKey.String",
+          "expectContinueReader.Close",
+          "expectContinueReader.Read",
+          "extraHeader.Write",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "globalOptionsHandler.ServeHTTP",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.Close",
+          "http2ClientConn.Ping",
+          "http2ClientConn.RoundTrip",
+          "http2ClientConn.Shutdown",
+          "http2ConnectionError.Error",
+          "http2ErrCode.String",
+          "http2FrameHeader.String",
+          "http2FrameType.String",
+          "http2FrameWriteRequest.String",
+          "http2Framer.ReadFrame",
+          "http2Framer.ReadFrameForHeader",
+          "http2Framer.ReadFrameHeader",
+          "http2Framer.WriteContinuation",
+          "http2Framer.WriteData",
+          "http2Framer.WriteDataPadded",
+          "http2Framer.WriteGoAway",
+          "http2Framer.WriteHeaders",
+          "http2Framer.WritePing",
+          "http2Framer.WritePriority",
+          "http2Framer.WritePushPromise",
+          "http2Framer.WriteRSTStream",
+          "http2Framer.WriteRawFrame",
+          "http2Framer.WriteSettings",
+          "http2Framer.WriteSettingsAck",
+          "http2Framer.WriteWindowUpdate",
+          "http2GoAwayError.Error",
+          "http2Server.ServeConn",
+          "http2Setting.String",
+          "http2SettingID.String",
+          "http2SettingsFrame.ForeachSetting",
+          "http2StreamError.Error",
+          "http2Transport.CloseIdleConnections",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2bufferedWriter.Flush",
+          "http2bufferedWriter.Write",
+          "http2bufferedWriterTimeoutWriter.Write",
+          "http2chunkWriter.Write",
+          "http2clientConnPool.GetClientConn",
+          "http2connError.Error",
+          "http2dataBuffer.Read",
+          "http2duplicatePseudoHeaderError.Error",
+          "http2gzipReader.Close",
+          "http2gzipReader.Read",
+          "http2headerFieldNameError.Error",
+          "http2headerFieldValueError.Error",
+          "http2netHTTPClientConn.Close",
+          "http2netHTTPClientConn.RoundTrip",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2pipe.Read",
+          "http2priorityWriteSchedulerRFC7540.CloseStream",
+          "http2priorityWriteSchedulerRFC7540.OpenStream",
+          "http2priorityWriteSchedulerRFC9218.OpenStream",
+          "http2pseudoHeaderError.Error",
+          "http2requestBody.Close",
+          "http2requestBody.Read",
+          "http2responseWriter.Flush",
+          "http2responseWriter.FlushError",
+          "http2responseWriter.Push",
+          "http2responseWriter.SetReadDeadline",
+          "http2responseWriter.SetWriteDeadline",
+          "http2responseWriter.Write",
+          "http2responseWriter.WriteHeader",
+          "http2responseWriter.WriteString",
+          "http2roundRobinWriteScheduler.OpenStream",
+          "http2serverConn.CloseConn",
+          "http2serverConn.Flush",
+          "http2serverConn.processSetting",
+          "http2serverConn.startFrameWrite",
+          "http2stickyErrWriter.Write",
+          "http2transportResponseBody.Close",
+          "http2transportResponseBody.Read",
+          "http2unencryptedTransport.RoundTrip",
+          "http2writeData.String",
+          "initALPNRequest.ServeHTTP",
+          "loggingConn.Close",
+          "loggingConn.Read",
+          "loggingConn.Write",
+          "maxBytesReader.Close",
+          "maxBytesReader.Read",
+          "onceCloseListener.Close",
+          "persistConn.Read",
+          "persistConnWriter.ReadFrom",
+          "persistConnWriter.Write",
+          "populateResponse.Write",
+          "populateResponse.WriteHeader",
+          "readTrackingBody.Close",
+          "readTrackingBody.Read",
+          "readWriteCloserBody.CloseWrite",
+          "readWriteCloserBody.Read",
+          "redirectHandler.ServeHTTP",
+          "response.Flush",
+          "response.FlushError",
+          "response.Hijack",
+          "response.ReadFrom",
+          "response.Write",
+          "response.WriteHeader",
+          "response.WriteString",
+          "serverHandler.ServeHTTP",
+          "socksDialer.DialWithConn",
+          "socksUsernamePassword.Authenticate",
+          "stringWriter.WriteString",
+          "timeoutHandler.ServeHTTP",
+          "timeoutWriter.Write",
+          "timeoutWriter.WriteHeader",
+          "transportReadFromServerError.Error",
+          "unencryptedHTTP2Request.ServeHTTP"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "ClientConn.Close",
+          "ClientConn.Ping",
+          "ClientConn.RoundTrip",
+          "ClientConn.Shutdown",
+          "Framer.ReadFrame",
+          "Framer.ReadFrameForHeader",
+          "Framer.ReadFrameHeader",
+          "Framer.WriteContinuation",
+          "Framer.WriteData",
+          "Framer.WriteDataPadded",
+          "Framer.WriteGoAway",
+          "Framer.WriteHeaders",
+          "Framer.WritePing",
+          "Framer.WritePriority",
+          "Framer.WritePriorityUpdate",
+          "Framer.WritePushPromise",
+          "Framer.WriteRSTStream",
+          "Framer.WriteRawFrame",
+          "Framer.WriteSettings",
+          "Framer.WriteSettingsAck",
+          "Framer.WriteWindowUpdate",
+          "NetHTTPClientConn.Close",
+          "NetHTTPClientConn.Ping",
+          "NetHTTPClientConn.RoundTrip",
+          "ReadFrameHeader",
+          "Server.GracefulShutdown",
+          "Server.ServeConn",
+          "SettingsFrame.ForeachSetting",
+          "Transport.AddConn",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "Transport.RoundTripOpt",
+          "bufferedWriter.Flush",
+          "bufferedWriter.Write",
+          "bufferedWriterTimeoutWriter.Write",
+          "chunkWriter.Write",
+          "clientConnPool.GetClientConn",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "noDialClientConnPool.GetClientConn",
+          "requestBody.Close",
+          "responseWriter.Flush",
+          "responseWriter.FlushError",
+          "responseWriter.Push",
+          "responseWriter.Write",
+          "responseWriter.WriteHeader",
+          "responseWriter.WriteString",
+          "serve400Handler.ServeHTTP",
+          "serverConn.Flush",
+          "serverConn.processSetting",
+          "serverConn.startFrameWrite",
+          "stickyErrWriter.Write",
+          "transportResponseBody.Close",
+          "transportResponseBody.Read"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/14",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6617.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0267",
+    "advisory": "GO-2026-6609",
+    "cves": [
+      "CVE-2026-78667"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "parseRange"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/15",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6609.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0243",
+    "advisory": "GO-2025-4009",
+    "cves": [
+      "CVE-2025-61723"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "affected_stdlib_paths": [
+      "encoding/pem"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "encoding/pem",
+        "symbols": [
+          "Decode",
+          "getLine"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/16",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2025-4009.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0244",
+    "advisory": "GO-2025-4006",
+    "cves": [
+      "CVE-2025-61725"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/mail"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/mail",
+        "symbols": [
+          "AddressParser.Parse",
+          "AddressParser.ParseList",
+          "Header.AddressList",
+          "ParseAddress",
+          "ParseAddressList",
+          "addrParser.consumeDomainLiteral"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/17",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2025-4006.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0258",
+    "advisory": "GO-2026-4971",
+    "cves": [
+      "CVE-2026-39836"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.10",
+      "1.26.3"
+    ],
+    "affected_stdlib_paths": [
+      "net"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net",
+        "symbols": [
+          "Dial",
+          "DialTimeout",
+          "Dialer.Dial",
+          "Dialer.DialContext",
+          "Listen",
+          "ListenConfig.Listen",
+          "ListenConfig.ListenPacket",
+          "ListenPacket",
+          "LookupAddr",
+          "LookupCNAME",
+          "LookupHost",
+          "LookupIP",
+          "LookupMX",
+          "LookupNS",
+          "LookupPort",
+          "LookupSRV",
+          "LookupTXT",
+          "ResolveIPAddr",
+          "ResolveTCPAddr",
+          "ResolveUDPAddr",
+          "Resolver.LookupAddr",
+          "Resolver.LookupCNAME",
+          "Resolver.LookupHost",
+          "Resolver.LookupIP",
+          "Resolver.LookupIPAddr",
+          "Resolver.LookupMX",
+          "Resolver.LookupNS",
+          "Resolver.LookupNetIP",
+          "Resolver.LookupPort",
+          "Resolver.LookupSRV",
+          "Resolver.LookupTXT",
+          "Resolver.lookupAddr",
+          "Resolver.lookupMX",
+          "Resolver.lookupNS",
+          "Resolver.lookupPort",
+          "Resolver.lookupSRV",
+          "Resolver.lookupTXT"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/18",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4971.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0251",
+    "advisory": "GO-2026-4870",
+    "cves": [
+      "CVE-2026-32283"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/tls"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/tls",
+        "symbols": [
+          "Conn.Handshake",
+          "Conn.HandshakeContext",
+          "Conn.Read",
+          "Conn.Write",
+          "Conn.handleKeyUpdate",
+          "Dial",
+          "DialWithDialer",
+          "Dialer.Dial",
+          "Dialer.DialContext",
+          "QUICConn.HandleData",
+          "QUICConn.Start",
+          "clientHandshakeStateTLS13.establishHandshakeKeys",
+          "clientHandshakeStateTLS13.readServerFinished",
+          "serverHandshakeStateTLS13.readClientFinished",
+          "serverHandshakeStateTLS13.sendServerParameters"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/19",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4870.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0249",
+    "advisory": "GO-2026-4947",
+    "cves": [
+      "CVE-2026-32280"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "Certificate.Verify",
+          "Certificate.buildChains"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/20",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4947.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0264",
+    "advisory": "GO-2026-6605",
+    "cves": [
+      "CVE-2026-56866"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/httputil"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Get",
+          "Head",
+          "Post",
+          "PostForm",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "persistConn.readLoop"
+        ]
+      },
+      {
+        "path": "net/http/httputil",
+        "symbols": [
+          "DumpRequestOut",
+          "ReverseProxy.ServeHTTP"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/21",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6605.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0248",
+    "advisory": "GO-2026-5037",
+    "cves": [
+      "CVE-2026-27145"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.11",
+      "1.26.4"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.11",
+      "1.26.4"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "Certificate.Verify",
+          "Certificate.VerifyHostname",
+          "HostnameError.Error",
+          "matchHostnames"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/22",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-5037.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0254",
+    "advisory": "GO-2026-5972",
+    "cves": [
+      "CVE-2026-33818"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "encoding/asn1"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "encoding/asn1",
+        "symbols": [
+          "Unmarshal",
+          "UnmarshalWithParams",
+          "parseField",
+          "parseSequenceOf"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/23",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-5972.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0261",
+    "advisory": "GO-2026-6089",
+    "cves": [
+      "CVE-2026-56853"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "net/http"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "Serve",
+          "ServeTLS",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "conn.readRequest",
+          "conn.serve"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/24",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6089.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0262",
+    "advisory": "GO-2026-6088",
+    "cves": [
+      "CVE-2026-56859"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "encoding/xml"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "encoding/xml",
+        "symbols": [
+          "Decoder.Decode",
+          "Decoder.DecodeElement",
+          "Decoder.RawToken",
+          "Decoder.Skip",
+          "Decoder.Token",
+          "Decoder.pop",
+          "Decoder.push",
+          "Decoder.unmarshal",
+          "Decoder.unmarshalPath",
+          "Unmarshal"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/25",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6088.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0263",
+    "advisory": "GO-2026-6090",
+    "cves": [
+      "CVE-2026-56862"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.13",
+      "1.26.6",
+      "1.27.0-rc.3"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/tls"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/tls",
+        "symbols": [
+          "Conn.Handshake",
+          "Conn.HandshakeContext",
+          "Conn.Read",
+          "Conn.Write",
+          "Conn.readRecordOrCCS",
+          "Dial",
+          "DialWithDialer",
+          "Dialer.Dial",
+          "Dialer.DialContext",
+          "QUICConn.HandleData",
+          "QUICConn.Start"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/26",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6090.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0260",
+    "advisory": "GO-2026-5038",
+    "cves": [
+      "CVE-2026-42504"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.11",
+      "1.26.4"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.11",
+      "1.26.4"
+    ],
+    "affected_stdlib_paths": [
+      "mime"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "mime",
+        "symbols": [
+          "WordDecoder.DecodeHeader"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/28",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-5038.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0266",
+    "advisory": "GO-2026-6610",
+    "cves": [
+      "CVE-2026-78660"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http",
+      "net/http/internal/http2"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Get",
+          "Head",
+          "Post",
+          "PostForm",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2Transport.NewClientConn",
+          "http2Transport.RoundTrip",
+          "http2Transport.RoundTripOpt",
+          "http2clientConnPool.GetClientConn",
+          "http2clientConnReadLoop.handleResponse",
+          "http2noDialClientConnPool.GetClientConn",
+          "http2noDialH2RoundTripper.NewClientConn",
+          "http2noDialH2RoundTripper.RoundTrip",
+          "http2unencryptedTransport.RoundTrip"
+        ]
+      },
+      {
+        "path": "net/http/internal/http2",
+        "symbols": [
+          "Transport.AddConn",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "Transport.RoundTripOpt",
+          "clientConnPool.GetClientConn",
+          "clientConnReadLoop.handleResponse",
+          "noDialClientConnPool.GetClientConn"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/29",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6610.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0269",
+    "advisory": "GO-2026-6613",
+    "cves": [
+      "CVE-2026-94439"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.26.9",
+      "1.27.2"
+    ],
+    "affected_stdlib_paths": [
+      "net/http"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "net/http",
+        "symbols": [
+          "CanonicalHeaderKey",
+          "Client.CloseIdleConnections",
+          "Client.Do",
+          "Client.Get",
+          "Client.Head",
+          "Client.Post",
+          "Client.PostForm",
+          "ClientConn.Close",
+          "ClientConn.RoundTrip",
+          "Cookie.String",
+          "Cookie.Valid",
+          "CrossOriginProtection.AddInsecureBypassPattern",
+          "CrossOriginProtection.AddTrustedOrigin",
+          "CrossOriginProtection.Check",
+          "Dir.Open",
+          "Error",
+          "Get",
+          "Handle",
+          "HandleFunc",
+          "HandlerFunc.ServeHTTP",
+          "Head",
+          "Header.Add",
+          "Header.Del",
+          "Header.Get",
+          "Header.Set",
+          "Header.Values",
+          "Header.Write",
+          "Header.WriteSubset",
+          "ListenAndServe",
+          "ListenAndServeTLS",
+          "NewRequest",
+          "NewRequestWithContext",
+          "NotFound",
+          "ParseCookie",
+          "ParseSetCookie",
+          "ParseTime",
+          "Post",
+          "PostForm",
+          "ProxyFromEnvironment",
+          "ReadRequest",
+          "ReadResponse",
+          "Redirect",
+          "Request.AddCookie",
+          "Request.BasicAuth",
+          "Request.Cookie",
+          "Request.Cookies",
+          "Request.CookiesNamed",
+          "Request.FormFile",
+          "Request.FormValue",
+          "Request.MultipartReader",
+          "Request.ParseForm",
+          "Request.ParseMultipartForm",
+          "Request.PostFormValue",
+          "Request.Referer",
+          "Request.SetBasicAuth",
+          "Request.UserAgent",
+          "Request.Write",
+          "Request.WriteProxy",
+          "Response.Cookies",
+          "Response.Location",
+          "Response.Write",
+          "ResponseController.EnableFullDuplex",
+          "ResponseController.Flush",
+          "ResponseController.Hijack",
+          "ResponseController.SetReadDeadline",
+          "ResponseController.SetWriteDeadline",
+          "Serve",
+          "ServeContent",
+          "ServeFile",
+          "ServeFileFS",
+          "ServeMux.Handle",
+          "ServeMux.HandleFunc",
+          "ServeMux.ServeHTTP",
+          "ServeTLS",
+          "Server.Close",
+          "Server.ListenAndServe",
+          "Server.ListenAndServeTLS",
+          "Server.Serve",
+          "Server.ServeTLS",
+          "Server.SetKeepAlivesEnabled",
+          "Server.Shutdown",
+          "SetCookie",
+          "Transport.CancelRequest",
+          "Transport.Clone",
+          "Transport.CloseIdleConnections",
+          "Transport.NewClientConn",
+          "Transport.RoundTrip",
+          "body.Close",
+          "body.Read",
+          "bodyEOFSignal.Close",
+          "bodyEOFSignal.Read",
+          "bodyLocked.Read",
+          "bufioFlushWriter.Write",
+          "cancelTimerBody.Close",
+          "cancelTimerBody.Read",
+          "checkConnErrorWriter.Write",
+          "chunkWriter.Write",
+          "chunkWriter.writeHeader",
+          "connReader.Read",
+          "connectMethodKey.String",
+          "expectContinueReader.Close",
+          "expectContinueReader.Read",
+          "extraHeader.Write",
+          "fileHandler.ServeHTTP",
+          "fileTransport.RoundTrip",
+          "globalOptionsHandler.ServeHTTP",
+          "gzipReader.Close",
+          "gzipReader.Read",
+          "http1ClientConn.Close",
+          "http1ClientConn.RoundTrip",
+          "http2ClientConn.RoundTrip",
+          "http2Handler.ServeHTTP",
+          "http2ResponseWriter.Flush",
+          "http2ResponseWriter.FlushError",
+          "http2ResponseWriter.Push",
+          "http2RoundTripper.RoundTrip",
+          "http3ServerHandler.ServeHTTP",
+          "initALPNRequest.ServeHTTP",
+          "loggingConn.Close",
+          "loggingConn.Read",
+          "loggingConn.Write",
+          "maxBytesReader.Close",
+          "maxBytesReader.Read",
+          "onceCloseListener.Close",
+          "persistConn.Read",
+          "persistConnWriter.ReadFrom",
+          "persistConnWriter.Write",
+          "populateResponse.Write",
+          "populateResponse.WriteHeader",
+          "readTrackingBody.Close",
+          "readTrackingBody.Read",
+          "readWriteCloserBody.CloseWrite",
+          "readWriteCloserBody.Read",
+          "redirectHandler.ServeHTTP",
+          "response.Flush",
+          "response.FlushError",
+          "response.Hijack",
+          "response.ReadFrom",
+          "response.Write",
+          "response.WriteHeader",
+          "response.WriteString",
+          "serverHandler.ServeHTTP",
+          "socksDialer.DialWithConn",
+          "socksUsernamePassword.Authenticate",
+          "stringWriter.WriteString",
+          "timeoutHandler.ServeHTTP",
+          "timeoutWriter.Write",
+          "timeoutWriter.WriteHeader",
+          "transportReadFromServerError.Error",
+          "unencryptedHTTP2Request.ServeHTTP"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/30",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-6613.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0246",
+    "advisory": "GO-2025-4155",
+    "cves": [
+      "CVE-2025-61729"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.11",
+      "1.25.5"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.11",
+      "1.25.5"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "Certificate.Verify",
+          "Certificate.VerifyHostname"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/31",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2025-4155.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0241",
+    "advisory": "GO-2025-4007",
+    "cves": [
+      "CVE-2025-58187"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.9",
+      "1.25.3"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.9",
+      "1.25.3"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "CertPool.AppendCertsFromPEM",
+          "Certificate.CheckCRLSignature",
+          "Certificate.CheckSignature",
+          "Certificate.CheckSignatureFrom",
+          "Certificate.CreateCRL",
+          "Certificate.Verify",
+          "CertificateRequest.CheckSignature",
+          "CreateCertificate",
+          "CreateCertificateRequest",
+          "CreateRevocationList",
+          "DecryptPEMBlock",
+          "EncryptPEMBlock",
+          "MarshalECPrivateKey",
+          "MarshalPKCS1PrivateKey",
+          "MarshalPKCS1PublicKey",
+          "MarshalPKCS8PrivateKey",
+          "MarshalPKIXPublicKey",
+          "ParseCRL",
+          "ParseCertificate",
+          "ParseCertificateRequest",
+          "ParseCertificates",
+          "ParseDERCRL",
+          "ParseECPrivateKey",
+          "ParsePKCS1PrivateKey",
+          "ParsePKCS1PublicKey",
+          "ParsePKCS8PrivateKey",
+          "ParsePKIXPublicKey",
+          "ParseRevocationList",
+          "RevocationList.CheckSignatureFrom",
+          "SetFallbackRoots",
+          "SystemCertPool",
+          "domainToReverseLabels",
+          "parseSANExtension"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/32",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2025-4007.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0242",
+    "advisory": "GO-2025-4013",
+    "cves": [
+      "CVE-2025-58188"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.24.8",
+      "1.25.2"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "Certificate.Verify",
+          "alreadyInChain"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/37",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2025-4013.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0250",
+    "advisory": "GO-2026-4946",
+    "cves": [
+      "CVE-2026-32281"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.9",
+      "1.26.2"
+    ],
+    "affected_stdlib_paths": [
+      "crypto/x509"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "crypto/x509",
+        "symbols": [
+          "Certificate.Verify",
+          "policiesValid"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/38",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4946.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  },
+  {
+    "finding_id": "SEC001-F0257",
+    "advisory": "GO-2026-4970",
+    "cves": [
+      "CVE-2026-39822"
+    ],
+    "severity_unchanged": "High",
+    "image_config_digest": "sha256:a7d2ca3526ce25d3036f8c403504a77af1d05448708074dfaf2817f4f3be54e8",
+    "approved_registry_manifest_digest": null,
+    "component": "/usr/local/bin/gosu",
+    "gosu_module_version": "v1.19.0 (embedded metadata)",
+    "binary_sha256": "52c8749d0142edd234e9d6bd5237dff2d81e71f43537e2f4f66f75dd4b243dd0",
+    "package_or_module": "stdlib",
+    "installed_version": "go1.24.6",
+    "scanner_fixed_versions": [
+      "1.25.12",
+      "1.26.5",
+      "1.27.0-rc.2"
+    ],
+    "authoritative_stdlib_fixed_events": [
+      "1.25.12",
+      "1.26.5",
+      "1.27.0-rc.2"
+    ],
+    "affected_stdlib_paths": [
+      "os"
+    ],
+    "upstream_import_constraints": [
+      {
+        "path": "os",
+        "symbols": [
+          "OpenInRoot",
+          "Root.Create",
+          "Root.Open",
+          "Root.OpenFile",
+          "Root.OpenRoot",
+          "Root.ReadFile",
+          "Root.WriteFile",
+          "openRootInRoot",
+          "rootFS.Open",
+          "rootFS.ReadDir",
+          "rootFS.ReadFile",
+          "rootOpenFileNolog"
+        ]
+      }
+    ],
+    "final_image_presence": "VERIFIED_DIGEST_BOUND_SBOM_AND_EQUIVALENT_SIGNED_RELEASE_BYTES",
+    "pclntab_matching_listed_symbols": [],
+    "observed_affected_packages": [
+      "os"
+    ],
+    "platform_comparison": "No exclusive platform mismatch established",
+    "reachability": "INCONCLUSIVE; no listed symbol observed in pclntab, but inlining/dynamic/compiler paths not ruled out",
+    "proposed_mitigation": "Evaluate an official supported PG17 image with a demonstrably fixed compiled gosu; do not substitute latest tag or custom binary",
+    "compatibility_risk": "Preserve PG17 format, entrypoint/UID/GID, locale/ICU/extensions, TLS/auth, existing volumes/migrations/restore; candidate not qualified",
+    "qualification_status": "PARTIAL_STATIC_EVIDENCE; BLOCKED_FIXED_CANDIDATE; PENDING_ACCOUNTABLE_REVIEW",
+    "finding_disposition": "UNRESOLVED",
+    "reviewer": null,
+    "evidence": [
+      "docs/verification/sprint1-integration/sec001-2026-11-09/raw/image-evidence-postgres/grype.json#/matches/51",
+      "docs/verification/sec001-r02/raw/go-advisories/GO-2026-4970.json",
+      "docs/verification/sec001-r02/raw/binary-inspection.json",
+      "docs/verification/sec001-r02/raw/gpg-verification.log"
+    ]
+  }
+]
