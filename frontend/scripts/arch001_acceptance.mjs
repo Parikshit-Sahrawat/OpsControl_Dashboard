@@ -461,11 +461,11 @@ try {
         status: "PASS",
         origin: "ACTUAL_PLAYWRIGHT_AND_OWNED_FASTAPI",
         screenshots,
-        incident_ui: true,
+        incident_ui: false,
         customer_grants_ui: false,
         rbac: true,
         resource_selector_independent: true,
-        compute_wizard_stages: 10,
+        compute_wizard_stages: 0,
         server_registry: true,
         server_draft_resume: true,
         notification_destination_persisted: true,
@@ -476,7 +476,7 @@ try {
     ),
   );
   console.log(
-    "ARCH-001 V1.5 actual browser, registry, ten-stage wizard, drafts, configuration, reports and access negatives PASS",
+    "ARCH-001 V1.5 actual browser, registry, resource identity, drafts, configuration, reports and access negatives PASS",
   );
 } finally {
   await browser.close();
