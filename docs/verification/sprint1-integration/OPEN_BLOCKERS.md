@@ -35,3 +35,7 @@ Locally reproduced ARCH native validation mismatch and missing scope records are
 ## CI006 — hosted recovery acceptance pending
 
 [CI006](ci006-2026-11-09/REPORT.md) replaces only the delayed-response test instrumentation;2 hosted failures preserved, exact local exception NOT REPRODUCED.2 full candidate recoveries pass with original keyboard/revision/security checks. Historical verification at41cfb377 SUCCESS; new final-head results pending. Seven image/licence roles, CHK-001/CHK-002, provider/UAT and independent-review gates remain open.
+
+## OC-S1-SEC-001 — assessment, not remediation
+
+[Exact-head security plan](sec001-2026-11-09/REMEDIATION_PLAN.md) and [owner decisions](sec001-2026-11-09/OWNER_DECISIONS.md): all7 image roles remain failed, with416 High/Critical/Unknown image-scoped matches and independent legal/NOTICE review pending. Keep0.123.0 pinned; no qualified fixed collector/PostgreSQL-gosu/base replacement established. Latest gosu1.20 alone is not a stdlib fix. Resolve final frontend/UAT-vs-production coverage, named reviewers, missing metadata/source obligations and separately approved compatibility work before implementation. No waiver or release promotion.

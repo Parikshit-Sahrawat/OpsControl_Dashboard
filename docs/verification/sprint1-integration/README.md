@@ -30,3 +30,5 @@ Latest scoped follow-up: [exact-head Access/keyboard recovery](required-recovery
 Latest sequential work: [CI005 exact-head recovery](ci005-2026-11-09/REPORT.md), [issue95 architecture/evidence guard](arch95-2026-11-09/REPORT.md), and [bounded E2E workflow matrix](E2E_WORKFLOW_MATRIX.md). All7 whole workflows remain partial/blocked; subpath evidence is preserved.
 
 Latest [CI006 recovery evidence](ci006-2026-11-09/REPORT.md) retains2 exact-head hosted route failures, explicit local non-reproduction,2 passing native-response-gate recovery candidates and #95 revalidation. Final hosted status remains pending; no gate promotion.
+
+[SEC001 exact-b1e645f image-security/licence assessment](sec001-2026-11-09/REPORT.md) retains7 coherent exact-head image packages,984 image-scoped findings/428 cross-image remediation groups,2451 pending component reviews and a proposed owner-assigned test plan. No risky upgrades or gate changes were implemented.

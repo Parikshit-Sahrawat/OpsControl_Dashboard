@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "mode": "ASSESSMENT_ONLY",
+  "baseline_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+  "evidence_workflow_run": 42608765516,
+  "downloads_verified": 7,
+  "provenance_packages_verified": 7,
+  "raw_matches": 984,
+  "image_scoped_unique": 984,
+  "cross_image_groups": 428,
+  "high_critical_groups": 194,
+  "primary_and_canonical_vulnerabilities": 252,
+  "severity": {
+    "Critical": 41,
+    "High": 371,
+    "Medium": 356,
+    "Low": 62,
+    "Negligible": 150,
+    "Unknown": 4
+  },
+  "unchanged_policy_blocking_matches": 416,
+  "all_7_image_policy_results": "EXPECTED_REJECTION_NOT_REMEDIATED",
+  "legal_component_records": 2451,
+  "legal_metadata_empty_unknown": 1876,
+  "copyleft_review_flags": 283,
+  "legal_approval": "NOT_GRANTED",
+  "accountable_reviewers": null,
+  "checks": {
+    "offline_aggregation_fixtures": 6,
+    "raw_records_csv_json_consistency": "PASS",
+    "upstream_hash_and_lossless_gzip_proof": "PASS",
+    "root_unit_pass": 112,
+    "root_unit_fail": 0,
+    "root_unit_skip": 0,
+    "scope_entries": 817,
+    "workflows": 28,
+    "required_status_checks": 13,
+    "e2e_matrix_rows": 7,
+    "whole_path_certifications": 0
+  },
+  "not_executed": [
+    "image rebuild or fresh vulnerability scan",
+    "database/runtime/provider/browser qualification",
+    "legal/NOTICE signoff",
+    "publication/deployment/merge"
+  ],
+  "changes_authorized": "Assessment documents and offline analysis only; all proposed upgrades NOT IMPLEMENTED",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "SPRINT1": "NOT_COMPLETE"
+  },
+  "documentation_checks": {
+    "strict_json_before_manifests": 78,
+    "local_links": 42
+  }
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "role": "backend-runtime",
+    "dockerfile": "backend/Dockerfile.runtime",
+    "target": "runtime",
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "1d88210ee4b64293bc06b5e11752202de737c927f5dad3cee9eb2135edceb6e9",
+    "declared_FROM_inputs": [
+      "python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS dependencies",
+      "python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS runtime_base",
+      "runtime_base AS migration",
+      "runtime_base AS runtime"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "backend-migration",
+    "dockerfile": "backend/Dockerfile.runtime",
+    "target": "migration",
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "1d88210ee4b64293bc06b5e11752202de737c927f5dad3cee9eb2135edceb6e9",
+    "declared_FROM_inputs": [
+      "python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS dependencies",
+      "python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS runtime_base",
+      "runtime_base AS migration",
+      "runtime_base AS runtime"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "uat-backend",
+    "dockerfile": "backend/Dockerfile.uat",
+    "target": null,
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "76f6c242aa7f0d40ecae751ac545558aaf02f45aa85dde121e027ddeb33438db",
+    "declared_FROM_inputs": [
+      "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2 AS telemetryruntime",
+      "python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "frontend",
+    "dockerfile": "frontend/Dockerfile.demo",
+    "target": null,
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "fcbe8237f27b33cf29310d0b55edf8e602aff0fc01a32ff697f1f54faaf7f360",
+    "declared_FROM_inputs": [
+      "node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 AS build",
+      "nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "postgres",
+    "dockerfile": "deploy/release/Dockerfile.postgres",
+    "target": null,
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "712695db01068ca310d851afe5fcddb50c75128f5613f6510e2aeea5c09d2c14",
+    "declared_FROM_inputs": [
+      "postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "ingestion-gateway",
+    "dockerfile": "deploy/release/Dockerfile.gateway",
+    "target": null,
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": "ead00fa5f726ebd935b17f0b1b65b055889e9f673c7723400e45591a35d9d19f",
+    "declared_FROM_inputs": [
+      "nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311"
+    ],
+    "upstream_image": null,
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  },
+  {
+    "role": "otel-contrib",
+    "dockerfile": null,
+    "target": null,
+    "source_sha": "b1e645f342be5bc84141f314a12a81d3c38f621b",
+    "file_sha256": null,
+    "declared_FROM_inputs": [],
+    "upstream_image": "otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2",
+    "material_limit": "Declared source inputs; no full build/material attestation or registry approval implied"
+  }
+]
