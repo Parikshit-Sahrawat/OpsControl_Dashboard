@@ -1,0 +1,46 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/42fef629-7f98-4146-97f8-913a5098662d/jobs/97c2e704-54d2-4a8e-b1eb-dc5b32bf0799/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_EXPIRED_OR_CLOCK_INVALID"
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_SIGNATURE_INVALID"
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_ISSUER_UNAVAILABLE"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/42fef629-7f98-4146-97f8-913a5098662d/jobs/97c2e704-54d2-4a8e-b1eb-dc5b32bf0799/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}

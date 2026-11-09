@@ -36,8 +36,24 @@ def run(args, cwd=root):
         text=True,
         timeout=180,
     )
+    if "unittest" in [str(arg) for arg in args]:
+        # Preserve executed counts and skips from the actual owned-DB suite.
+        # Never print command arguments, connection URLs or fixture credentials.
+        test_log = (result.stdout + "\n" + result.stderr).replace(password, "[REDACTED]")
+        (out / "unittest.log").write_text(test_log)
+        for line in result.stderr.splitlines():
+            if line.startswith(("Ran ", "OK", "FAILED")):
+                print(line, flush=True)
     if result.returncode:
         (private / "failure.log").write_text(result.stdout + "\n" + result.stderr)
+        # Print only the failing probe module, not arguments or connection URLs.
+        safe_probe = next(
+            (str(args[i + 1]) for i, arg in enumerate(args[:-1])
+             if str(arg) == "-m" and str(args[i + 1]).startswith("scripts.")),
+            None,
+        )
+        if safe_probe:
+            print("V16_FAILED_PROBE " + safe_probe, flush=True)
         for line in (result.stdout + "\n" + result.stderr).splitlines():
             if line.startswith(
                 (
@@ -332,7 +348,7 @@ try:
                     str(python),
                     "-m",
                     "uvicorn",
-                    "app.main:app",
+                    "scripts.sprint1_instrumented_app:app" if os.getenv("V16_EXTENDED_LOAD") == "1" else "app.main:app",
                     "--host",
                     "127.0.0.1",
                     "--port",
@@ -355,6 +371,8 @@ try:
                     time.sleep(0.2)
             else:
                 raise RuntimeError("Owned V1.6 API readiness failed")
+            env["V16_API_PID"] = str(api.pid)
+            env["V16_DB_CONTAINER"] = name
             print(run([python, "-m", "scripts.v16_api_probe"], root / "backend"))
             if os.getenv("V16_PENTAHO_R1_ACCEPTANCE") == "1":
                 print(
@@ -435,6 +453,14 @@ try:
                         time.sleep(0.2)
                 else:
                     raise RuntimeError("Owned V1.6 UI readiness failed")
+                if os.getenv("V16_EXTENDED_LOAD") == "1":
+                    print(run([python, "-m", "scripts.sprint1_representative_load"], root / "backend"))
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+                if os.getenv("V16_PERFORMANCE_PROBE") == "1":
+                    print(run([python, "-m", "scripts.sprint1_otlp_load"], root / "backend"))
+                if os.getenv("V16_SPRINT1_UI") == "1":
+                    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+                    print(run(["node", "frontend/scripts/sprint1_workspace_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ONLY") != "1":
                     print(run(["node", "frontend/scripts/pipeline_v16_acceptance.mjs"]))
                 if os.getenv("V16_SPRINT07_ACCEPTANCE") == "1":
@@ -459,6 +485,14 @@ try:
             api.terminate()
             api.wait(timeout=15)
     # Populated V1.6 downgrade must fail before dropping even one new table.
+    # Logical dump covers data, schema, constraints and alembic_version.
+    # PostgreSQL 17 randomizes restriction keys; normalize those alone.
+    def preservation_dump():
+        dump = run(["docker", "exec", name, "pg_dump", "-U", "opscontrol", "--no-owner", "--no-privileges", "opscontrol"])
+        return "\n".join(line for line in dump.splitlines()
+                         if not line.startswith(("\\restrict ", "\\unrestrict ")))
+
+    before_refusal = preservation_dump()
     result = subprocess.run(
         [str(python), "-m", "alembic", "downgrade", "0031_in_app_notifications"],
         cwd=root / "backend",
@@ -466,19 +500,22 @@ try:
         capture_output=True,
         text=True,
     )
-    assert result.returncode != 0 and any(
-        message in result.stderr
-        for message in (
-            "V1.6 identities/evidence/checkpoints exist",
-            "Pentaho attempts/identity/evidence/recovery exist",
-            "Pentaho evidence review/decisions exist",
-            "Pentaho schedule/replay/notification evidence exists",
-            "Native incident recovery evidence exists",
-            "Access boundaries or decisions exist",
-            "Canonical cluster or association evidence exists",
-        )
-    )
+    (out / "populated-downgrade-refusal.log").write_text(result.stdout + "\n" + result.stderr)
+    assert result.returncode != 0
+    for fragment in ("Unsafe populated ETL downgrade blocked before DDL", "verified full backup", "isolated restoration"):
+        assert fragment in result.stderr, fragment
+    after_refusal = preservation_dump()
+    assert before_refusal == after_refusal, "Refused downgrade changed data/schema/revision"
+    import hashlib
+    (out / "preservation.json").write_text(json.dumps({
+        "before_sha256": hashlib.sha256(before_refusal.encode()).hexdigest(),
+        "after_sha256": hashlib.sha256(after_refusal.encode()).hexdigest(),
+        "exit_code": result.returncode, "unchanged": True,
+    }, indent=2) + "\n")
     run([python, "-m", "alembic", "check"], root / "backend")
+    env["V16_OWNED_CONTAINER"] = name
+    env["V16_EVIDENCE_DIR"] = str(out)
+    run([python, "-m", "scripts.sprint1_restore_probe"], root / "backend")
     (out / "report.json").write_text(
         json.dumps(
             {

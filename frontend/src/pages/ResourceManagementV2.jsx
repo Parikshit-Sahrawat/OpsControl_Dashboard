@@ -1,3 +1,4 @@
+import { attachmentVersion } from "../templateAttachmentSelection.js";
 import { isExcludedPlatform } from "../excludedPlatforms.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import useDialogFocus from "../components/useDialogFocus";
@@ -11,10 +12,9 @@ import {
   fetchOrganizations, createOrganization, updateOrganization, disableOrganization,
   fetchDataSources, createDataSource, updateDataSource, disableDataSource,
   fetchCollectors, createCollector, updateCollector, disableCollector,
-  fetchMonitoringTemplates, createMonitoringTemplate, updateMonitoringTemplate,
+  fetchMonitoringTemplates, fetchMonitoringTemplate, createMonitoringTemplate, updateMonitoringTemplate,
   fetchMonitoringTemplateVersions, disableMonitoringTemplate,
-  fetchDataSourceTemplates, attachDataSourceTemplate, updateDataSourceTemplate,
-  detachDataSourceTemplate, fetchEffectiveDataSourceConfiguration,
+  fetchDataSourceTemplates, commitSourceConfiguration, fetchEffectiveDataSourceConfiguration,
 } from "../resourceApi";
 
 const NAV = [
@@ -67,6 +67,7 @@ function normalizeTemplate(raw) {
     collector: { type: "OTEL", interval: 30, protocol: "OTLP/gRPC", port: 4317, tls: true, telemetry: [], ...(p.collector || {}) },
     metrics: Array.isArray(p.metrics) ? p.metrics : [],
     alerts: Array.isArray(p.alerts) ? p.alerts : [],
+    applicability: p.applicability || null,
     logs: Array.isArray(p.logs) ? p.logs : [],
   };
 }
@@ -104,24 +105,28 @@ function OrgModal({ item, onClose, onSaved }) {
   </Modal>;
 }
 
-function TemplateEditor({ value, onClose, onSaved }) {
+export function TemplateEditor({ value, onClose, onSaved, user }) {
   const initial = normalizeTemplate(value || {});
   const [draft, setDraft] = useState(initial);
+  const [applicabilityText, setApplicabilityText] = useState(JSON.stringify(initial.applicability, null, 2));
   const [saved, setSaved] = useState(clone(initial));
   const [tab, setTab] = useState("general");
   const [errors, setErrors] = useState([]);
   const [history, setHistory] = useState([]);
+  const [catalogueConflict,setCatalogueConflict] = useState(false);
+  const [reviewedCatalogue,setReviewedCatalogue] = useState(null);
   const [newAttr, setNewAttr] = useState({ name: "", key: "", type: "TEXT", value_source: "DATA_SOURCE", required: false, defaultValue: "", description: "", example: "", allowedValues: [] });
   const [newMetric, setNewMetric] = useState({ name: "", metric: "", resource: "VM", method: "HOST_METRIC", unit: "", interval: 30, aggregation: "avg", window: 60, dimensions: [], enabled: true });
   const [newAlert, setNewAlert] = useState({ name: "", domain: "VM", signal: "", condition: "GT", threshold: 80, threshold_type: "NUMBER", duration: 300, recovery: "", severity: "WARNING", channels: ["EMAIL"], deduplication: "organization+data_source+rule", enabled: true });
   const [newLog, setNewLog] = useState({ name: "", source: "FILE", path: "", mode: "TAIL", parser: "TEXT", timestamp_format: "", multiline: false, include_patterns: [], exclude_patterns: [], interval: 30, retention: 30, enabled: true });
-  const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(saved) || applicabilityText !== JSON.stringify(saved.applicability, null, 2);
   const update = patch => setDraft(d => ({ ...d, ...patch }));
   const row = (section, i, patch) => setDraft(d => ({ ...d, [section]: d[section].map((x, n) => n === i ? { ...x, ...patch } : x) }));
   const remove = (section, i) => setDraft(d => ({ ...d, [section]: d[section].filter((_, n) => n !== i) }));
 
   const validate = () => {
     const e = [];
+    try { JSON.parse(applicabilityText); } catch { e.push("Applicability must be valid JSON."); }
     if (!draft.name.trim()) e.push("Template name is required.");
     if (!draft.scope.trim()) e.push("Template scope is required.");
     if (!Number(draft.collector.interval) || draft.collector.interval < 5) e.push("Collector interval must be at least 5 seconds.");
@@ -136,11 +141,16 @@ function TemplateEditor({ value, onClose, onSaved }) {
   };
   const commit = async () => {
     if (validate().length) return;
-    const p = clone(draft); delete p.id; delete p.version; delete p.status; delete p.committed_at;
-    const result = draft.id ? await updateMonitoringTemplate(draft.id, { name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: "Admin" });
+    let applicability;
+    try { applicability = JSON.parse(applicabilityText); }
+    catch { setErrors(["Applicability must be valid JSON. Use null only for an explicitly unverified legacy package."]); return; }
+    const p = { ...clone(draft), applicability }; delete p.id; delete p.version; delete p.status; delete p.committed_at;
+    try {
+    const result = draft.id ? await updateMonitoringTemplate(draft.id, { expected_version: saved.version, name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" }) : await createMonitoringTemplate({ name: draft.name, description: draft.description, scope: draft.scope, package_config: p, committed_by: user?.username || "Admin" });
     const next = normalizeTemplate(result); setDraft(clone(next)); setSaved(clone(next)); setErrors([]); onSaved(next);
+    } catch (error) { setCatalogueConflict(error.status===409); setErrors([typeof error.message === "string" ? error.message : "Template save failed. Review the package and try again."]); }
   };
-  const loadHistory = async () => { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); };
+  const loadHistory = async () => { try { if (draft.id) setHistory(await fetchMonitoringTemplateVersions(draft.id)); } catch(error) { setErrors([error.message]); } };
   const add = (section, value, reset) => { setDraft(d => ({ ...d, [section]: [...d[section], clone(value)] })); reset(); };
 
   const renderAttributes = <div className="template-editor-panel">
@@ -187,18 +197,20 @@ function TemplateEditor({ value, onClose, onSaved }) {
 
   const tabs = [["general", "General"], ["attributes", "Attributes"], ["collector", "Collector / Agent"], ["metrics", "Metrics"], ["alerts", "Alert Rules"], ["logs", "Log Collection"]];
   return <Modal title={draft.id ? "Edit Monitoring Template" : "Create Monitoring Template"} wide onClose={onClose}>
+    {catalogueConflict && <section aria-label="Catalogue version conflict"><p role="alert">Catalogue changed. Your unsaved package is retained. Review the latest version before an explicit retry.</p><button type="button" onClick={async()=>{try{setReviewedCatalogue(normalizeTemplate(await fetchMonitoringTemplate(draft.id)));}catch(e){setErrors([e.message]);}}}>Review latest catalogue version</button>{reviewedCatalogue && <><pre>{JSON.stringify(reviewedCatalogue,null,2)}</pre><button type="button" onClick={()=>{setSaved(clone(reviewedCatalogue));setCatalogueConflict(false);setReviewedCatalogue(null);setErrors([]);}}>Use reviewed version for next save</button></>}</section>}
+
     <div className="template-editor-header"><div><div className="template-editor-name-row"><h3>{draft.name}</h3><span className={dirty ? "template-draft-badge dirty" : "template-draft-badge"}>{dirty ? "UNSAVED CHANGES" : draft.status}</span><span className="template-version-badge">v{draft.version}</span></div><small className="muted">Design → Validate → Apply &amp; Commit</small></div><button className="filter-button" type="button" onClick={loadHistory}>Version History</button></div>
     {history.length > 0 && <div className="template-history-panel"><b>Version History</b>{history.map(v => <div className="template-history-row" key={v.id}><span>v{v.version}</span><b>{v.status}</b><span>{new Date(v.committed_at).toLocaleString("en-IN")}</span><span>{v.committed_by || "Admin"}</span></div>)}</div>}
     <div className="template-editor-layout"><aside className="template-editor-side-tabs">{tabs.map(([k, label]) => <button type="button" key={k} className={tab === k ? "template-side-tab active" : "template-side-tab"} onClick={() => setTab(k)}>{label}<span>{k === "attributes" ? draft.attributes.length : k === "metrics" ? draft.metrics.length : k === "alerts" ? draft.alerts.length : k === "logs" ? draft.logs.length : ""}</span></button>)}</aside><section className="template-editor-content">
       {tab === "general" && <div className="template-editor-panel"><div className="form-grid"><Field label="Template Name"><input value={draft.name} onChange={e => update({ name: e.target.value })} /></Field><Field label="Scope"><input value={draft.scope} onChange={e => update({ scope: e.target.value })} /></Field></div><Field label="Description"><textarea value={draft.description} onChange={e => update({ description: e.target.value })} /></Field><div className="template-general-summary">{[["Attributes", draft.attributes.length], ["Metrics", draft.metrics.length], ["Alerts", draft.alerts.length], ["Logs", draft.logs.length], ["Collector signals", draft.collector.telemetry.length]].map(x => <div key={x[0]}><span>{x[0]}</span><b>{x[1]}</b></div>)}</div></div>}
       {tab === "attributes" && renderAttributes}
-      {tab === "collector" && <div className="template-editor-panel"><div className="info-box">Collector defaults belong to the template; installation/registration belongs to Data Source onboarding.</div><div className="form-grid"><Field label="Type"><select value={draft.collector.type} onChange={e => update({ collector: { ...draft.collector, type: e.target.value } })}><option>OTEL</option><option>WINDOWS</option><option>LINUX</option><option>PENTAHO</option></select></Field><Field label="Interval (sec)"><input type="number" min="5" value={draft.collector.interval} onChange={e => update({ collector: { ...draft.collector, interval: Number(e.target.value) } })} /></Field></div><div className="form-grid"><Field label="Protocol"><select value={draft.collector.protocol} onChange={e => update({ collector: { ...draft.collector, protocol: e.target.value } })}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field><Field label="Port"><input type="number" min="1" max="65535" value={draft.collector.port} onChange={e => update({ collector: { ...draft.collector, port: Number(e.target.value) } })} /></Field></div><label className="toggle"><input type="checkbox" checked={!!draft.collector.tls} onChange={e => update({ collector: { ...draft.collector, tls: e.target.checked } })} /><span>TLS enabled</span></label><Field label="Telemetry capabilities"><div className="check-grid">{TELEMETRY.map(x => <label className="check-option" key={x}><input type="checkbox" checked={(draft.collector.telemetry || []).includes(x)} onChange={() => update({ collector: { ...draft.collector, telemetry: (draft.collector.telemetry || []).includes(x) ? draft.collector.telemetry.filter(v => v !== x) : [...(draft.collector.telemetry || []), x] } })} /><span>{x}</span></label>)}</div></Field></div>}
+      {tab === "collector" && <div className="template-editor-panel"><Field label="Versioned OS and method applicability (JSON)"><textarea rows={8} value={applicabilityText} onChange={e => setApplicabilityText(e.target.value)} /></Field><p>Explicit schema_version 1 and source_types are required. Host manifests declare Windows/Linux os and actual method schemas; API manifests declare family API and HTTPS settings. null preserves a legacy package as UNVERIFIED. This declaration does not certify provider connectivity.</p><div className="info-box">Collector defaults belong to the template; installation/registration belongs to Data Source onboarding.</div><div className="form-grid"><Field label="Type"><select value={draft.collector.type} onChange={e => update({ collector: { ...draft.collector, type: e.target.value } })}><option>OTEL</option><option>WINDOWS</option><option>LINUX</option><option>HTTP</option><option>PENTAHO</option></select></Field><Field label="Interval (sec)"><input type="number" min="5" value={draft.collector.interval} onChange={e => update({ collector: { ...draft.collector, interval: Number(e.target.value) } })} /></Field></div><div className="form-grid"><Field label="Protocol"><select value={draft.collector.protocol} onChange={e => update({ collector: { ...draft.collector, protocol: e.target.value } })}><option>OTLP/gRPC</option><option>OTLP/HTTP</option></select></Field><Field label="Port"><input type="number" min="1" max="65535" value={draft.collector.port} onChange={e => update({ collector: { ...draft.collector, port: Number(e.target.value) } })} /></Field></div><label className="toggle"><input type="checkbox" checked={!!draft.collector.tls} onChange={e => update({ collector: { ...draft.collector, tls: e.target.checked } })} /><span>TLS enabled</span></label><Field label="Telemetry capabilities"><div className="check-grid">{TELEMETRY.map(x => <label className="check-option" key={x}><input type="checkbox" checked={(draft.collector.telemetry || []).includes(x)} onChange={() => update({ collector: { ...draft.collector, telemetry: (draft.collector.telemetry || []).includes(x) ? draft.collector.telemetry.filter(v => v !== x) : [...(draft.collector.telemetry || []), x] } })} /><span>{x}</span></label>)}</div></Field></div>}
       {tab === "metrics" && renderMetrics}
       {tab === "alerts" && renderAlerts}
       {tab === "logs" && renderLogs}
     </section></div>
     {errors.length > 0 && <div className="template-validation-panel"><b>Validation failed</b>{errors.map((x, i) => <div key={i}>• {x}</div>)}</div>}
-    <div className="form-footer template-commit-footer"><div><span className={dirty ? "template-change-indicator dirty" : "template-change-indicator"}>{dirty ? "● Unsaved changes" : "✓ No unsaved changes"}</span></div><div><button type="button" className="filter-button" onClick={validate}>Validate</button><button type="button" className="filter-button" disabled={!dirty} onClick={() => { setDraft(clone(saved)); setErrors([]); }}>Discard</button><button type="button" className="primary-button" disabled={!dirty} onClick={commit}>Apply &amp; Commit Changes</button></div></div>
+    <div className="form-footer template-commit-footer"><div><span className={dirty ? "template-change-indicator dirty" : "template-change-indicator"}>{dirty ? "● Unsaved changes" : "✓ No unsaved changes"}</span></div><div><button type="button" className="filter-button" onClick={validate}>Validate</button><button type="button" className="filter-button" disabled={!dirty} onClick={() => { setDraft(clone(saved)); setApplicabilityText(JSON.stringify(saved.applicability, null, 2)); setErrors([]); }}>Discard</button><button type="button" className="primary-button" disabled={!dirty} onClick={commit}>Apply &amp; Commit Changes</button></div></div>
   </Modal>;
 }
 
@@ -207,6 +219,8 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(initial || { organization_id: organizations.find(o => o.active)?.id || "", name: "", visible_name: "", hostname: "", environment: "PROD", os_type: "Windows", workload_roles: ["Application"], product_family: "Operations", product: "Application Platform", host_groups: ["PROD"], templates: [], description: "" });
+  const savedSource = useRef(null);
+  const pendingCommand = useRef(null);
   const [agent, setAgent] = useState(() => ({name: initial?.agent_registration?.name || ""}));
   const [orgEditor, setOrgEditor] = useState(null);
   const update = patch => setForm(v => ({ ...v, ...patch }));
@@ -217,15 +231,17 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
     try {
       const chosen = templates.filter(t => form.templates.includes(t.id));
       const config = { opscontrol: { ...meta(initial), visible_name: form.visible_name || form.name, hostname: form.hostname, environment: form.environment, workload_roles: form.workload_roles, server_type: form.workload_roles.length > 1 ? "Multi-role" : form.workload_roles[0], os_type: form.os_type, product_family: form.product_family, product: form.product, host_groups: form.host_groups, template_ids: form.templates, templates: chosen.map(t => t.name) } };
-      const source = initial?.id ? await updateDataSource(initial.id, { name: form.name || form.hostname, endpoint: form.hostname, description: form.description || null, connection_config: { ...(initial.connection_config || {}), ...config } }) : await createDataSource({ organization_id: form.organization_id, name: form.name || form.hostname, source_type: form.os_type.toUpperCase(), endpoint: form.hostname, description: form.description || null, auth_type: "SECRET_REFERENCE", connection_config: config, enabled: true });
-      const existing = await fetchDataSourceTemplates(source.id).catch(() => []);
-      const wanted = new Set(form.templates);
-      for (const a of existing) if (!wanted.has(a.template_id)) await detachDataSourceTemplate(source.id, a.template_id);
-      for (const t of chosen) {
-        const current = existing.find(a => a.template_id === t.id);
-        if (current) await updateDataSourceTemplate(source.id, t.id, { template_version: Number(t.version || current.template_version), priority: current.priority, overrides: current.overrides || null, enabled: true });
-        else await attachDataSourceTemplate(source.id, { template_id: t.id, template_version: Number(t.version || 1), priority: 100, overrides: null });
-      }
+      const context = { name: form.name || form.hostname, source_type: form.os_type.toUpperCase(), endpoint: form.hostname, description: form.description || null, connection_config: { ...(initial?.connection_config || {}), ...config } };
+      const source = initial || savedSource.current || await createDataSource({ organization_id: form.organization_id, ...context, auth_type: "SECRET_REFERENCE", enabled: true });
+      savedSource.current = source;
+      const existing = initial?.template_attachments || [];
+      if (source.configuration_revision || chosen.length || existing.length) {
+        const attachments = chosen.map((t, i) => { const current = existing.find(a => a.template_id === t.id); return {template_id:t.id, template_version:attachmentVersion(t,current), priority:(i+1)*100, overrides:current?.overrides || {}, enabled:true}; });
+        const payload = {expected_revision:source.configuration_revision || 0, attachments, source_context:context};
+        const encoded = JSON.stringify(payload);
+        if (pendingCommand.current?.encoded !== encoded) pendingCommand.current = {encoded, key:window.crypto.randomUUID()};
+        await commitSourceConfiguration(source.id, payload, pendingCommand.current.key);
+      } else if (initial) await updateDataSource(initial.id, context);
       // A Collector is configuration, not a process. Host-agent enrollment and
       // explicit configuration application start telemetry. Reconcile edits
       // without modifying an operational HTTP/infrastructure collector.
@@ -244,7 +260,7 @@ function DataSourceWizard({ organizations, templates, initial, onClose, onSaved,
 
   return <Modal title={initial?.id ? "Edit Data Source" : "Add Data Source"} wide onClose={() => !saving && onClose()}>
     <div className="onboarding-steps">{["Organization", "Data Source", "Templates", "Collector Configuration", "Review"].map((x, i) => <div key={x} className={step === i + 1 ? "onboarding-step active" : step > i + 1 ? "onboarding-step complete" : "onboarding-step"}><span>{step > i + 1 ? "✓" : i + 1}</span>{x}</div>)}</div>
-    {step === 1 && <div className="resource-form"><div className="info-box">Start with the customer boundary. Organizations can be created or edited without leaving onboarding.</div><Field label="Organization"><select value={form.organization_id} onChange={e => update({ organization_id: e.target.value })}>{organizations.filter(o => o.active || o.id === form.organization_id).map(o => <option key={o.id} value={o.id}>{o.name} ({o.code})</option>)}</select></Field><div className="heading-actions"><button type="button" className="filter-button" onClick={() => setOrgEditor({})}>+ Create Organization</button>{form.organization_id && <button type="button" className="filter-button" onClick={() => setOrgEditor(organizations.find(o => o.id === form.organization_id))}>Edit Selected Organization</button>}</div><div className="form-footer"><span className="muted small">Step 1 of 5</span><button type="button" className="primary-button" disabled={!form.organization_id} onClick={() => setStep(2)}>Next: Data Source →</button></div>{orgEditor && <OrgModal item={orgEditor.id ? orgEditor : null} onClose={() => setOrgEditor(null)} onSaved={saved => { setOrgEditor(null); setForm(v => ({ ...v, organization_id: saved.id })); onOrganizationSaved?.(saved); }} />}</div>}
+    {step === 1 && <div className="resource-form"><div className="info-box">Start with the customer boundary. Organizations can be created or edited without leaving onboarding.</div><Field label="Organization"><select disabled={Boolean(initial?.id)} value={form.organization_id} onChange={e => update({ organization_id: e.target.value })}>{organizations.filter(o => o.active || o.id === form.organization_id).map(o => <option key={o.id} value={o.id}>{o.name} ({o.code})</option>)}</select></Field><div className="heading-actions"><button type="button" className="filter-button" onClick={() => setOrgEditor({})}>+ Create Organization</button>{form.organization_id && <button type="button" className="filter-button" onClick={() => setOrgEditor(organizations.find(o => o.id === form.organization_id))}>Edit Selected Organization</button>}</div><div className="form-footer"><span className="muted small">Step 1 of 5</span><button type="button" className="primary-button" disabled={!form.organization_id} onClick={() => setStep(2)}>Next: Data Source →</button></div>{orgEditor && <OrgModal item={orgEditor.id ? orgEditor : null} onClose={() => setOrgEditor(null)} onSaved={saved => { setOrgEditor(null); setForm(v => ({ ...v, organization_id: saved.id })); onOrganizationSaved?.(saved); }} />}</div>}
     {step === 2 && <div className="resource-form"><div className="info-box">A Data Source is an organization VM/machine. Workload Roles are multi-select, so a VM can be both ETL and Application.</div><div className="form-grid"><Field label="Host Name"><input required value={form.hostname} onChange={e => update({ hostname: e.target.value, name: form.name || e.target.value })} /></Field><Field label="Visible Name"><input value={form.visible_name} onChange={e => update({ visible_name: e.target.value })} /></Field></div><div className="form-grid"><Field label="Environment"><select value={form.environment} onChange={e => update({ environment: e.target.value })}>{ENVIRONMENTS.map(x => <option key={x}>{x}</option>)}</select></Field><Field label="OS Type"><select value={form.os_type} onChange={e => update({ os_type: e.target.value })}>{OS_TYPES.map(x => <option key={x}>{x}</option>)}</select></Field></div><Field label="Workload Roles"><div className="check-grid">{ROLES.map(x => <label className="check-option" key={x}><input type="checkbox" checked={form.workload_roles.includes(x)} onChange={() => toggle("workload_roles", x)} /><span>{x}</span></label>)}</div></Field><div className="form-grid"><Field label="Product Family"><input value={form.product_family} onChange={e => update({ product_family: e.target.value })} /></Field><Field label="Product"><select value={form.product} onChange={e => update({ product: e.target.value })}>{PRODUCTS.map(x => <option key={x}>{x}</option>)}</select></Field></div><Field label="Host Groups"><div className="check-grid">{HOST_GROUPS.map(x => <label className="check-option" key={x}><input type="checkbox" checked={form.host_groups.includes(x)} onChange={() => toggle("host_groups", x)} /><span>{x}</span></label>)}</div></Field><Field label="Description"><textarea value={form.description} onChange={e => update({ description: e.target.value })} /></Field><div className="form-footer"><button className="filter-button" type="button" onClick={() => setStep(1)}>← Organization</button><button className="primary-button" type="button" disabled={!form.hostname || !form.workload_roles.length} onClick={() => setStep(3)}>Next: Templates →</button></div></div>}
     {step === 3 && <div className="resource-form"><div className="info-box">Select one or more policy packages. The effective configuration is resolved from pinned template versions plus Data Source overrides.</div><div className="template-grid">{templates.filter(t => t.status !== "DISABLED").map(t => <button type="button" className={form.templates.includes(t.id) ? "template-card selected" : "template-card"} key={t.id} onClick={() => toggle("templates", t.id)}><div className="template-card-head"><div><b>{t.name}</b><small>{t.scope} · v{t.version}</small></div><span className="template-check">{form.templates.includes(t.id) ? "✓" : "+"}</span></div><p>{t.description}</p><div className="template-example-list"><span>{t.metrics.length} metrics</span><span>{t.alerts.length} alerts</span><span>{t.logs.length} log rules</span></div></button>)}</div><div className="form-footer"><button className="filter-button" type="button" onClick={() => setStep(2)}>← Data Source</button><button className="primary-button" type="button" onClick={() => setStep(4)}>Next: Collector Configuration →</button></div></div>}
     {step===4&&<div className="resource-form"><h3>Collector Details</h3><Field label="Collector name"><input value={agent.name} onChange={e=>setAgent(v=>({...v,name:e.target.value}))}/></Field><p>OS Type inherited from Data Source: {form.os_type}. Add Collection Methods and enroll the OpsControl Agent after saving.</p><div className="form-footer"><button type="button" onClick={()=>setStep(3)}>Back</button><button type="button" onClick={()=>setStep(5)}>Review</button></div></div>}
@@ -293,7 +309,7 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
     } catch (e) { if (generation === reloadGeneration.current) setError(e.message || "Unable to load Resource Management"); }
     finally { if (generation === reloadGeneration.current) setLoading(false); }
   };
-  useEffect(() => { setDataSources([]); setCollectors([]); reload(); return () => { reloadGeneration.current++; }; }, [customerFilter, user?.authorization_revision]);
+  useEffect(() => { setWizard(null); setCollectorEditor(null); setDataSources([]); setCollectors([]); reload(); return () => { reloadGeneration.current++; }; }, [customerFilter, user?.authorization_revision]);
   useEffect(() => { if (section) { setTab(section); setQuery(""); setPage(0); if (section === "organizations") setOrganizationFilter(""); } }, [section]);
   // Resolve a Compute Instance's collector against the authorized inventory.
   // Never open a collector by ID alone without checking its source scope.
@@ -328,12 +344,12 @@ export default function ResourceManagementV2({ user, section, embedded = false, 
         fetchDataSourceTemplates(source.id), fetchCollectors({ data_source_id: source.id }),
       ]);
       if (generation !== reloadGeneration.current) return;
-      setWizard({ initial: { ...source, agent_registration: registrations.find(c => c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: sourceOS(source), workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "Operations", product: m.product || "Application Platform", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
+      setWizard({ initial: { ...source, template_attachments: a, agent_registration: registrations.find(c => c.collector_type === "OTEL"), organization_id: source.organization_id, name: source.name, visible_name: m.visible_name || source.name, hostname: m.hostname || source.endpoint || "", environment: m.environment || "PROD", os_type: sourceOS(source), workload_roles: m.workload_roles || (m.server_type ? [m.server_type] : ["Application"]), product_family: m.product_family || "Operations", product: m.product || "Application Platform", host_groups: m.host_groups || [], templates: a.filter(x => x.enabled).map(x => x.template_id), description: source.description || "" } });
     } catch (e) {
       if (generation === reloadGeneration.current) setError(e.message || "Unable to load saved Data Source settings");
     }
   };
-  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
+  const disable = async (fn, item) => { if (!window.confirm("Disable " + (item.name || "this resource") + "?")) return; try { await fn(item.id, item.version); await reload(); } catch (e) { setError(e.message || "Unable to disable resource"); } };
   const selectedOrganizations = organizations.filter(o =>
     (!organizationIds.length || organizationIds.includes(o.id)) &&
     (!query || [o.name, o.code, o.id].join(" ").toLowerCase().includes(query.toLowerCase().trim())));

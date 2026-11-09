@@ -140,6 +140,7 @@ try:
         ui = subprocess.Popen(['node','node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',str(ui_port),'--strictPort'],cwd=ROOT/'frontend',env=ui_environment,stdout=ui_log,stderr=subprocess.STDOUT)
         processes.append(ui); wait_url(ui_environment['RELEASE_UI_BASE'])
         run(['node','frontend/scripts/release_pagination_acceptance.mjs'],env=ui_environment)
+        run(['node','--test','frontend/scripts/browser_response_gate.test.mjs'],env=ui_environment)
         run(['node','frontend/scripts/resource_crud_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/scope_removal_acceptance.mjs'],env=ui_environment)
         run(['node','frontend/scripts/full_closure_acceptance.mjs'],env=ui_environment)

@@ -1,0 +1,93 @@
+{
+  "schema": 1,
+  "status": "LOCAL_CANDIDATE_VERIFIED_HOSTED_PENDING",
+  "original_failure": {
+    "artifact_id": 13666480538,
+    "assertion": null,
+    "exception": "route.fulfill: Route is already handled!",
+    "source_location": "frontend/scripts/resource_crud_acceptance.mjs:308",
+    "hosted_occurrences": 2,
+    "local_exact_exception_reproduced": false,
+    "local_unchanged_full_recovery_exit": 0,
+    "local_old_route_probe_iterations": 40,
+    "local_old_route_probe_exceptions": 0,
+    "upstream_internal_double_handling_cause": "NOT_ESTABLISHED; no upstream/library fix claimed"
+  },
+  "tests": {
+    "root_unit": {
+      "passed": 112,
+      "failed": 0,
+      "skipped": 0
+    },
+    "frontend_unit": {
+      "passed": 55,
+      "failed": 0,
+      "skipped": 0
+    },
+    "new_real_browser_gate_cases": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "repeat_cycles_in_cleanup_case": 10
+    },
+    "first_draft_gate_tests": {
+      "passed": 2,
+      "failed": 1,
+      "retained": true,
+      "cause": "Gate reinstallation checked state at wrong nesting level; corrected before source commit"
+    },
+    "candidate_full_recovery_attempts": [
+      {
+        "attempt": 1,
+        "exit": 0,
+        "top_level_groups": 13
+      },
+      {
+        "attempt": 2,
+        "exit": 0,
+        "top_level_groups": 13
+      }
+    ],
+    "arch_browser_exit": 0,
+    "arch_invalid_native_fields": 2,
+    "arch_access_checks": 5,
+    "frontend_lint_exit": 0,
+    "frontend_build_exit": 0,
+    "actionlint_exit": 0,
+    "workflow_definitions": 28,
+    "scope_records": 817,
+    "unknown_still_run": 786,
+    "e2e_guard_tests_passed": 8,
+    "e2e_rows": 7,
+    "whole_path_verified": 0
+  },
+  "required_checks_preserved": 13,
+  "image_role_failures_preserved": 7,
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "SPRINT1": "NOT_COMPLETE"
+  },
+  "independent_review": "PENDING; owner visual54f26e5 baseline retained, no broader signoff",
+  "limitations": [
+    "Exact original failure did not reproduce locally; repeated hosted evidence retained",
+    "This replaces test-only route-based delay, not an OpenTelemetry/browser upstream implementation",
+    "Final-head hosted checks to be triggered and handed off pending without polling",
+    "No provider, security/legal, durability, UAT or release certification",
+    "Full local image build/scan blocked by Docker backing-store capacity; no broad cleanup"
+  ],
+  "documentation": {
+    "strict_json_pre_manifest_documents": 78,
+    "retained_raw_eks_literal_newline_suffixes": [
+      "fixed-recovery-2/eks.json",
+      "fixed-recovery-1/eks.json",
+      "baseline-recovery/eks.json",
+      "dispatch-recovery/eks.json",
+      "recovery/eks.json"
+    ],
+    "local_links": 37,
+    "no_private_key_jwt_literals": true
+  }
+}

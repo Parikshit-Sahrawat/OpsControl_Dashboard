@@ -1,0 +1,86 @@
+test_access_administrator_defaults_have_no_operational_permission (test_access_control.AccessPolicyTests.test_access_administrator_defaults_have_no_operational_permission) ... ok
+test_agent_transport_keeps_its_separate_handler_authentication (test_access_control.AccessPolicyTests.test_agent_transport_keeps_its_separate_handler_authentication) ... ok
+test_default_deny_and_customer_action_scope (test_access_control.AccessPolicyTests.test_default_deny_and_customer_action_scope) ... ok
+test_every_existing_http_route_has_an_explicit_policy (test_access_control.AccessPolicyTests.test_every_existing_http_route_has_an_explicit_policy) ... ok
+test_mass_assignment_and_weak_password_rejected (test_access_control.AccessPolicyTests.test_mass_assignment_and_weak_password_rejected) ... ok
+test_transaction_denial_releases_session_and_authorization_lock (test_access_control.AccessPolicyTests.test_transaction_denial_releases_session_and_authorization_lock) ... ok
+test_unknown_routes_are_denied (test_access_control.AccessPolicyTests.test_unknown_routes_are_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.212s
+
+OK
+test_production_legacy_api_fails_before_secret_or_network_access (test_release_hardening.AsyncSecurityTests.test_production_legacy_api_fails_before_secret_or_network_access) ... ok
+test_slow_identity_database_does_not_block_asgi_event_loop (test_release_hardening.AsyncSecurityTests.test_slow_identity_database_does_not_block_asgi_event_loop) ... ok
+test_finite_threshold_is_preserved (test_release_hardening.ReleaseSecurityTests.test_finite_threshold_is_preserved) ... ok
+test_invalid_environment_fails_closed (test_release_hardening.ReleaseSecurityTests.test_invalid_environment_fails_closed) ... ok
+test_mixed_case_and_other_url_credentials_are_rejected_and_redacted (test_release_hardening.ReleaseSecurityTests.test_mixed_case_and_other_url_credentials_are_rejected_and_redacted) ... ok
+test_nonfinite_thresholds_are_rejected_on_all_write_paths (test_release_hardening.ReleaseSecurityTests.test_nonfinite_thresholds_are_rejected_on_all_write_paths) ... ok
+test_production_loaded_from_dotenv_denies_environment_credentials (test_release_hardening.ReleaseSecurityTests.test_production_loaded_from_dotenv_denies_environment_credentials) ... ok
+test_proxy_trust_rejects_wildcards_and_unbounded_networks (test_release_hardening.ReleaseSecurityTests.test_proxy_trust_rejects_wildcards_and_unbounded_networks) ... ok
+test_short_user_password_is_validation_error (test_release_hardening.ReleaseSecurityTests.test_short_user_password_is_validation_error) ... ok
+test_url_without_credentials_is_preserved (test_release_hardening.ReleaseSecurityTests.test_url_without_credentials_is_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.149s
+
+OK
+test_approved_reference_sends_basic_only_to_pinned_verified_transport (test_remote_auth.RemoteBasicAuthTests.test_approved_reference_sends_basic_only_to_pinned_verified_transport) ... ok
+test_colon_account_rejected_before_transport (test_remote_auth.RemoteBasicAuthTests.test_colon_account_rejected_before_transport) ... ok
+test_reference_validation_never_resolves_credentials (test_remote_auth.RemoteBasicAuthTests.test_reference_validation_never_resolves_credentials) ... ok
+test_unapproved_reference_is_denied_before_secret_retrieval_and_transport (test_remote_auth.RemoteBasicAuthTests.test_unapproved_reference_is_denied_before_secret_retrieval_and_transport) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/__main__.py", line 8, in <module>
+    audit()
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/_cli.py", line 441, in audit
+    service = args.vulnerability_service.to_service(args.timeout, args.cache_dir)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/_cli.py", line 107, in to_service
+    return PyPIService(cache_dir, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/_service/pypi.py", line 46, in __init__
+    self.session = caching_session(cache_dir)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/_cache.py", line 177, in caching_session
+    cache=_SafeFileCache(_get_cache_dir(cache_dir, use_pip=use_pip)),
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/pip_audit/_cache.py", line 66, in _get_cache_dir
+    pip_audit_cache_dir = user_cache_path("pip-audit", appauthor=False, ensure_exists=True)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/__init__.py", line 690, in user_cache_path
+    ).user_cache_path
+      ^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/api.py", line 354, in user_cache_path
+    return Path(self.user_cache_dir)
+                ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/unix.py", line 241, in user_cache_dir
+    return self.site_cache_dir if self._use_site else super().user_cache_dir
+                                                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/_xdg.py", line 58, in user_cache_dir
+    return super().user_cache_dir
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/unix.py", line 60, in user_cache_dir
+    return self._append_app_name_and_version(_expand_user("~/.cache"), private=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/api.py", line 136, in _append_app_name_and_version
+    self._optionally_create_directory(path, private=private)
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/api.py", line 152, in _optionally_create_directory
+    _make_private_directories(Path(path))
+  File "/tmp/oc-sprint1-integration/backend/.venv/lib/python3.12/site-packages/platformdirs/api.py", line 718, in _make_private_directories
+    path.mkdir(mode=0o700, exist_ok=True)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1311, in mkdir
+    os.mkdir(self, mode)
+OSError: [Errno 30] Read-only file system: '/home/agent/.cache/pip-audit'
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+Dependency audit failed: pip=1 npm=0. See /tmp/oc-s1-ci003/security reports.

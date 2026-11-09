@@ -14,8 +14,9 @@ import {
   binding,
   errorMessage,
 } from "../src/pipelines/contracts.js";
-test("six pages and seven existing incident states", () => {
-  assert.equal(Object.keys(PAGES).length, 6);
+test("five monitoring pages retain seven background incident states", () => {
+  assert.equal(Object.keys(PAGES).length, 5);
+  assert.equal(Object.hasOwn(PAGES, "incidents"), false);
   assert.equal(Object.keys(INCIDENT_TRANSITIONS).length, 7);
 });
 test("pending retry remains nonterminal despite failed attempt", () =>

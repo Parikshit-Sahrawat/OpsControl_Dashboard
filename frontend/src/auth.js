@@ -50,11 +50,16 @@ export async function signIn(username, password) {
   storeToken(body.access_token);
   return body;
 }
-export async function sessionUser() {
+export async function sessionUser(signal) {
   const response = await fetch(API_BASE + "/api/v1/auth/me", {
+    signal,
     headers: authHeaders(),
   });
-  if (!response.ok) throw new Error("Session expired or access denied");
+  if (!response.ok) {
+    const error = new Error("Session expired or access denied");
+    error.status = response.status;
+    throw error;
+  }
   return response.json();
 }
 export async function signOut() {

@@ -41,7 +41,16 @@ def _merge_named_rows(rows: list[dict], incoming: list[dict], identity: str) -> 
 
 def _apply_package(effective: dict, package: dict) -> dict:
     package = package or {}
-    effective["collector"] = _deep_merge(effective.get("collector", {}), package.get("collector", {}))
+    from app.services.template_packages import require_template_package
+    try:
+        require_template_package(package)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from None
+    collector = deepcopy(package.get("collector", {}))
+    manifest = package.get("applicability") or {}
+    if manifest.get("family") == "API":
+        collector = _deep_merge(collector, manifest["methods"][0]["configuration"])
+    effective["collector"] = _deep_merge(effective.get("collector", {}), collector)
     effective["attributes"] = _merge_named_rows(effective.get("attributes", []), package.get("attributes", []), "key")
     effective["metrics"] = _merge_named_rows(effective.get("metrics", []), package.get("metrics", []), "metric")
     effective["alerts"] = _merge_named_rows(effective.get("alerts", []), package.get("alerts", []), "name")
@@ -84,6 +93,13 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
     if not source:
         raise HTTPException(status_code=404, detail="Data source not found")
 
+    excluded = False
+    try:
+        require_supported_source(source)
+    except HTTPException as exc:
+        if exc.status_code != 422:
+            raise
+        excluded = True  # Read-only historical visibility never grants eligibility.
     attachments = list_template_attachments(db, data_source_id, enabled_only=True)
     effective = {
         "data_source_id": str(source.id),
@@ -95,10 +111,15 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
         "logs": [],
         "conflicts": [],
         "valid": True,
+        "applicability_reasons": ([{"code":"EXCLUDED_SOURCE", "path":"source"}] if excluded else []),
     }
 
     for attachment in attachments:
         template, version = _template_version(db, attachment)
+        from app.services.template_applicability import applicability
+        effective.setdefault("applicability_reasons", []).extend(applicability(source, version.package_config or {}, attachment.overrides or {}))
+        if template.status != "COMMITTED":
+            effective.setdefault("applicability_reasons", []).append({"code":"DEPENDENCY_RETIRED", "template_id":str(template.id)})
         before = deepcopy(effective)
         _apply_package(effective, version.package_config or {})
         if attachment.overrides:
@@ -142,7 +163,7 @@ def resolve_data_source_configuration(db: Session, data_source_id: UUID) -> dict
         if item.get("required") and item.get("defaultValue") in (None, "")
         and opscontrol.get("attributes", {}).get(item.get("key")) in (None, "")
     ]
-    effective["valid"] = not bool(effective["missing_required_attributes"])
+    effective["valid"] = not bool(effective["missing_required_attributes"] or effective.get("applicability_reasons"))
     return effective
 
 
@@ -154,13 +175,15 @@ def attach_template(
     priority: int = 100,
     overrides: dict | None = None,
 ):
-    source = db.get(DataSource, data_source_id)
+    source = db.get(DataSource, data_source_id, with_for_update=True)
     if not source:
         raise HTTPException(status_code=404, detail="Data source not found")
     require_supported_source(source)
     template = db.get(MonitoringTemplate, template_id)
     if not template:
         raise HTTPException(status_code=404, detail="Monitoring template not found")
+    if template.status != "COMMITTED":
+        raise HTTPException(409, "Cannot attach an inactive monitoring template")
     if source.organization_id and template.scope is None:
         raise HTTPException(status_code=409, detail="Template scope is invalid")
 
@@ -211,6 +234,7 @@ def attach_template(
 
 
 def detach_template(db: Session, data_source_id: UUID, template_id: UUID):
+    require_supported_source(db.get(DataSource, data_source_id, with_for_update=True))
     attachment = db.scalar(
         select(MonitoringTemplateAttachment).where(
             MonitoringTemplateAttachment.data_source_id == data_source_id,

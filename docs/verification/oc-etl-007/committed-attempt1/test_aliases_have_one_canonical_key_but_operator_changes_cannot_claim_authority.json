@@ -1,0 +1,39 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/035cdc7e-4781-416d-9930-fc14ec9f54dd/jobs/16974981-ca25-43f7-8d11-fbf89128e8ac/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_BINDING_SCOPE_OR_ALIAS_MISMATCH"
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_SCOPE_MISMATCH"
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "NATIVE_AUTHORITY_METHOD_OR_GENERATION_CHANGED"
+    }
+  ]
+}

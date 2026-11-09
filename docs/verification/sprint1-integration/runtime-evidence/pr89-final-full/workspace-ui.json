@@ -1,0 +1,381 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Real scoped environment/configuration/name filters, chips, counts, apply and URL reload persistence",
+    "Approved single-panel category/subcategory/leaf navigation, multiple expansions, keyboard arrows/Home/End and no flyout",
+    "Targeted accessible names, unique IDs, valid control references and keyboard focus checks",
+    "Keyboard global search queries actual selected tenant and opens exact resource; foreign-tenant zero results and Escape focus recovery",
+    "Delayed real tenant-A HTTP response cannot overwrite tenant-B inventory after switching; both responses originate from authenticated backend",
+    "Working density/timezone preferences and collapse/expand sidebar; retained dark theme at desktop and mobile",
+    "Actual admin template create/client validation/backend commit/reloaded immutable version history",
+    "Actual operator membership account: desktop screenshots at all3 resolutions, no create action and authenticated resource mutation403",
+    "Same dataset/components in operator layout; no create/edit/incident UI controls; keyboard search and read-only exact resource selection",
+    "Forged foreign bookmark fails closed with actionable reset; never falls back silently to broader tenant scope",
+    "Responsive mobile drawer opens, traps focus and closes with Escape",
+    "Retired incident route cannot render management UI; viewer mutation still403 on actual API",
+    "Controlled auth transport failure withholds protected UI without destroying token; real backend re-verification restores UI; actual server logout/revocation causes401 and removes stale token"
+  ],
+  "screenshots": [
+    "admin-resources-1366.png",
+    "admin-resources-1440.png",
+    "admin-resources-1920.png",
+    "admin-resources-768.png",
+    "admin-resources-390.png",
+    "admin-resources-dark-1366.png",
+    "admin-resources-dark-390.png",
+    "operator-resources-1366.png",
+    "operator-resources-768.png"
+  ],
+  "trace": [
+    {
+      "phase": "seed",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "at": 1794160186553
+    },
+    {
+      "phase": "seed",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160186574
+    },
+    {
+      "phase": "seed",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160186704
+    },
+    {
+      "phase": "seed",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160186787
+    },
+    {
+      "phase": "seed",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160186981
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160187770
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160187866
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160188010
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160188083
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160188154
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160188235
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160188371
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160188496
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160188628
+    },
+    {
+      "phase": "resource filtering",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160188781
+    },
+    {
+      "phase": "global resource search",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160190255
+    },
+    {
+      "phase": "global resource search",
+      "path": "/api/v1/unified/resources/b1d52630-5d07-48c1-b274-791489cdfec7",
+      "status": 200,
+      "at": 1794160190844
+    },
+    {
+      "phase": "global resource search",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160190991
+    },
+    {
+      "phase": "global resource search",
+      "path": "/api/v1/unified/resources/b1d52630-5d07-48c1-b274-791489cdfec7",
+      "status": 200,
+      "at": 1794160191026
+    },
+    {
+      "phase": "global resource search",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160191276
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160191391
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160191573
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160191809
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160192355
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160192642
+    },
+    {
+      "phase": "delayed tenant response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160193042
+    },
+    {
+      "phase": "catalogue package workflow",
+      "path": "/api/v1/monitoring/templates",
+      "status": 200,
+      "at": 1794160193691
+    },
+    {
+      "phase": "catalogue package workflow",
+      "path": "/api/v1/monitoring/templates",
+      "status": 201,
+      "at": 1794160193906
+    },
+    {
+      "phase": "catalogue package workflow",
+      "path": "/api/v1/monitoring/templates",
+      "status": 200,
+      "at": 1794160193948
+    },
+    {
+      "phase": "catalogue package workflow",
+      "path": "/api/v1/monitoring/templates/cf12fb97-0240-4f93-b3c8-5f2e1bc8ef46/versions",
+      "status": 200,
+      "at": 1794160194083
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "at": 1794160194484
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160194506
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160194571
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160194612
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160194670
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160194924
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160195733
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160196361
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources/b1d52630-5d07-48c1-b274-791489cdfec7",
+      "status": 200,
+      "at": 1794160196405
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160197730
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources/b1d52630-5d07-48c1-b274-791489cdfec7",
+      "status": 200,
+      "at": 1794160197732
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160198056
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "at": 1794160198223
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160198246
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160198323
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160198356
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160198432
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160198653
+    },
+    {
+      "phase": "viewer scope",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160199580
+    },
+    {
+      "phase": "forged URL scope",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160199629
+    },
+    {
+      "phase": "forged URL scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160199670
+    },
+    {
+      "phase": "forged URL scope",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160199687
+    },
+    {
+      "phase": "forged URL scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160199817
+    },
+    {
+      "phase": "forged URL scope",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794160200076
+    },
+    {
+      "phase": "mobile keyboard drawer",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160200667
+    },
+    {
+      "phase": "session transport fault and authoritative revocation",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794160200821
+    },
+    {
+      "phase": "session transport fault and authoritative revocation",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794160200900
+    },
+    {
+      "phase": "session transport fault and authoritative revocation",
+      "path": "/api/v1/auth/me",
+      "status": 401,
+      "at": 1794160201062
+    }
+  ],
+  "source_scope": "Resource Management/shared shell only; no later telemetry implementation or synthetic health",
+  "visual_comparison": "Text and supplied image reviewed; not pixel-identical; operator-specific owner visual acceptance pending"
+}

@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 // Actual Chromium + authenticated owned API; no route mocking or source searches.
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
@@ -36,6 +37,7 @@ try{
    assert.equal(response.status(),201,await response.text());
    if(kind==='api')apiResource=await response.json();
  }
+ await preparePrimaryNavigation(page);
  await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
  for(const name of ['scope-linux','scope-windows','scope-ec2']){
    await page.getByLabel('Search resources',{exact:true}).fill(name);
@@ -57,7 +59,8 @@ try{
  await absentControls();checks.push('Persisted API resource visible; excluded selectors absent');
  const templates=await (await page.request.get(base+'/api/v1/monitoring/templates',{headers})).json();
  const template=templates.find(t=>t.name==='scope-supported-template');assert.ok(template);
- const attached=await page.request.post(base+'/api/v1/monitoring/data-sources/'+apiResource.data_source_id+'/templates',{headers,data:{template_id:template.id}});
+ const head=await (await page.request.get(base+'/api/v1/monitoring/data-sources/'+apiResource.data_source_id+'/configuration',{headers})).json();
+ const attached=await page.request.post(base+'/api/v1/monitoring/data-sources/'+apiResource.data_source_id+'/templates',{headers:{...headers,'Expected-Revision':String(head.revision),'Idempotency-Key':globalThis.crypto.randomUUID()},data:{template_id:template.id,template_version:1}});
  assert.equal(attached.status(),201,await attached.text());
  await page.getByRole('button',{name:'scope-api',exact:true}).click();
  await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();

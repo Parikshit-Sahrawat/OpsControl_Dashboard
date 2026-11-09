@@ -1,0 +1,26 @@
+{
+  "base_head": "4081fc75117afbd43e1fc4489925a2d65d744551",
+  "current_code_sha": "62403de273545d094d81e4c3de3a46d73349a3ff",
+  "hosted_noc": {
+    "run": 42513541861,
+    "job": 128831533710,
+    "exception": "EACCES errno13 at Python socket.bind",
+    "original_host_expression": "socket.gethostbyname(socket.gethostname())",
+    "original_numeric_host": "NOT_RECORDED_IN_HOSTED_LOG_OR_ARTIFACT",
+    "configured_https_port": 443,
+    "attribution": "Only privileged port among preflight candidates; old generic error omits address/port. Numeric hosted address cannot be independently recovered."
+  },
+  "corrected_local_binding": {
+    "address": "172.26.91.251",
+    "host_port": 443,
+    "container_port": 443,
+    "scheme": "https",
+    "certificate_verification": true
+  },
+  "negative_tests": {
+    "real_occupied_tcp_listener": "PASS",
+    "injected_os_EACCES": "PASS_DETERMINISTIC_UNIT_INJECTION_NOT_GENUINE_HOST_POLICY",
+    "high_port_candidate": "FAIL_RETAINED_422_FIXED_WORKER_PORT_CONTRACT",
+    "production_egress_tls_unchanged": true
+  }
+}

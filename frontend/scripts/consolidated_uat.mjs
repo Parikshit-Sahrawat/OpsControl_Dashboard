@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -35,14 +36,7 @@ page.on("response", (response) => {
 });
 page.on("pageerror", (e) => errors.push(e.message));
 page.on("dialog", (dialog) => dialog.accept());
-const nav = async (name) => {
-  if (await page.evaluate(() => window.innerWidth < 768))
-    await page.getByRole("button", { name: "Open navigation" }).click();
-  await page
-    .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: name === "Resource Management" ? "Data Sources / Resources" : name === "Access Management" ? "Employees" : name, exact: true })
-    .click();
-};
+const nav = (name) => navigatePrimary(page,name);
 const waitFor = async (fn, label = "condition") => {
   for (let i = 0; i < 100; i++) {
     if (await fn()) return;
@@ -102,7 +96,7 @@ try {
   });
   await page.getByRole("button", { name: "Dark theme", exact: true }).click();
   checks.push(
-    "Compute compact table, customer selector independence, official terminology and native Incidents navigation",
+    "Compute compact table, customer selector independence, official terminology and excluded incident UI rejection",
   );
   assert(
     ["localhost", "127.0.0.1"].includes(new URL(apiOrigin).hostname),

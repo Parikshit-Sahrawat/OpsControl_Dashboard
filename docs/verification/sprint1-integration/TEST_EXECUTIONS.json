@@ -1,0 +1,112 @@
+{
+  "executions": [
+    {
+      "id": "broad-pg-http-browser",
+      "source_sha": "89f8a554aa4656d0f5f0c02e13729224b855e1d7",
+      "command": "OPSCONTROL_TEST_EVIDENCE_DIR=/tmp/pr89-consolidated-full V16_SCOPE_ACCEPTANCE=1 V16_SPRINT1_UI=1 OPSCONTROL_OTEL_BINARY=/tmp/oc-closure-tools/otelcol-contrib PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome bash scripts/test-quality.sh pentaho",
+      "status": "PASS_CONTROLLED_SCOPE",
+      "tests": 662,
+      "passed": 594,
+      "failed": 0,
+      "skipped": 68,
+      "evidence": "runtime-evidence/pr89-consolidated-full",
+      "limits": "The68 skips are executed in separate owned suites; no genuine provider or queue certification"
+    },
+    {
+      "id": "etl-pg-http-browser",
+      "source_sha": "89f8a554aa4656d0f5f0c02e13729224b855e1d7",
+      "command": "ETL_SCOPE_EVIDENCE_DIR=/tmp/pr89-consolidated-etl ETL_WORKFLOW_UI_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/etl-scope-acceptance.py",
+      "status": "PASS",
+      "passed": 117,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "runtime-evidence/pr89-consolidated-etl",
+      "exit_evidence": "RESULTS.json records each command exit0"
+    },
+    {
+      "id": "configuration-final",
+      "source_sha": "917da636670524f656d7db74e9324435eb5e9721",
+      "command": "S01_EVIDENCE_DIR=/tmp/pr89-final-configuration-closure backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py",
+      "status": "PASS",
+      "passed": 38,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "runtime-evidence/pr89-final-configuration-closure",
+      "exit_evidence": "authenticated-contracts exit0 and unittest log; migration/schema/restore commands exit0"
+    },
+    {
+      "id": "frontend",
+      "source_sha": "89f8a554aa4656d0f5f0c02e13729224b855e1d7",
+      "command": "npm --prefix frontend test; npm --prefix frontend run lint; actual Vite build in broad harness",
+      "status": "PASS",
+      "passed": 55,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "logs/consolidated-frontend.log"
+    },
+    {
+      "id": "ci-policy-integrity",
+      "source_sha": "25cd3bfad8c575e59acfa5b82f7d99ccd44b9dab",
+      "command": "python -m unittest discover -s tests -p 'test_ci_*.py' -v; python scripts/ci/policy.py; bash scripts/check-workflows.sh",
+      "status": "PASS",
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "workflow_definitions": 28,
+      "scope_records": 785,
+      "unknown_still_run": 772,
+      "evidence": "logs/ci-evidence-regressions.log"
+    },
+    {
+      "id": "operational-theme",
+      "source_sha": "76c53e9f2ea91510509fb06e6500b2e11090526c",
+      "command": "OPERATIONAL_EVIDENCE_DIR=/tmp/pr89-operational-fixed OPSCONTROL_UI_THEME_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/operational-acceptance.py",
+      "status": "PASS_CONTROLLED_SCOPE",
+      "theme_checks": 13,
+      "contrast_measurements": 6,
+      "page_errors": 0,
+      "server_errors": 0,
+      "evidence": "runtime-evidence/pr89-operational-fixed",
+      "limits": "Synthetic Carte/provider/transport; not genuine qualification"
+    },
+    {
+      "id": "full-http-browser-restore-tls",
+      "source_sha": "76c53e9f2ea91510509fb06e6500b2e11090526c",
+      "command": "RELEASE_EVIDENCE_DIR=/tmp/pr89-consolidated-release RELEASE_BROWSER_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/release-acceptance.py",
+      "status": "PASS_CONTROLLED_SCOPE",
+      "top_level_groups": 13,
+      "scope_http": 67,
+      "scope_browser_groups": 17,
+      "closure_browser_groups": 7,
+      "evidence": "runtime-evidence/pr89-consolidated-release",
+      "limits": "Isolated production-mode application settings only; no production infrastructure"
+    },
+    {
+      "id": "historical-image-policy",
+      "command": "python scripts/ci/security_manifest.py docs/verification/sprint1-integration/hosted-baseline/images/<role>",
+      "status": "FAIL",
+      "roles_failed": 7,
+      "evidence": "IMAGE_POLICY_RESULTS.json",
+      "limits": "Historical exact image identities; not new final candidates"
+    },
+    {
+      "id": "ruleset-write",
+      "command": "gh api --method PUT repos/Parikshit-Sahrawat/OpsControl_Dashboard/rulesets/26082467 --input <strictly-additive-request.json>",
+      "status": "BLOCKED",
+      "http_status": 403,
+      "evidence": "RULESET_UPDATE_RESULT.json"
+    },
+    {
+      "id": "fresh-final-head-ci",
+      "status": "TRIGGER_AFTER_FINAL_COMMIT_RESULT_PENDING",
+      "evidence": "PR89 handoff",
+      "limits": "Trigger-and-Exit; do not use old green runs"
+    }
+  ],
+  "shared_browser_environment": {
+    "PLAYWRIGHT_MODULE": "/tmp/oc-closure-tools/node_modules/playwright/index.mjs",
+    "PLAYWRIGHT_CHROMIUM_EXECUTABLE": "/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome"
+  },
+  "exit_code_limit": "Older outer shell wrappers returned tail status; no PASS is inferred from that. Internal command records, explicit exit logs and actual result summaries establish outcomes.",
+  "count_policy": "Suites overlap.642 unique backend unittest IDs have execution evidence; see reconciliation. Earlier failed attempts preserved, never rewritten as PASS."
+}

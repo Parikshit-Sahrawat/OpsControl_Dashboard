@@ -1,0 +1,14 @@
+F841 Local variable `editor_job` is assigned to but never used
+   --> backend/tests/test_etl_native_binding_contract.py:435:9
+    |
+433 |             admin,
+434 |         )
+435 |         editor_job = req(
+    |         ^^^^^^^^^^
+436 |             prefix + "/jobs",
+437 |             "POST",
+    |
+help: Remove assignment to unused variable `editor_job`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

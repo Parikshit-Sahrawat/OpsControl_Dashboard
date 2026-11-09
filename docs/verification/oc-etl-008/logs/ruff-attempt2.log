@@ -1,0 +1,14 @@
+F401 [*] `sqlalchemy.engine.Engine` imported but unused
+  --> scripts/pentaho-qualification-offline.py:13:31
+   |
+11 | import unittest
+12 | from unittest.mock import patch
+13 | from sqlalchemy.engine import Engine
+   |                               ^^^^^^
+14 |
+15 | ROOT = Path(__file__).resolve().parents[1]
+   |
+help: Remove unused import: `sqlalchemy.engine.Engine`
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.

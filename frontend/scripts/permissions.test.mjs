@@ -67,10 +67,18 @@ test("retired navigation cannot be enabled by cached permissions", () => {
   );
 });
 
-test("native incident visibility requires its backend permission", () => {
+test("retired incident UI cannot be opened even with incident permission", () => {
+  assert.equal(canNavigate({ platform_admin: true }, "Incidents"), false);
   assert.equal(canNavigate({}, "Incidents"), false);
   assert.equal(
     canNavigate({ permissions: ["incidents.view"] }, "Incidents"),
-    true,
+    false,
   );
+});
+
+import { sessionWasRejected } from "../src/sessionVerification.js";
+test("only authoritative authentication rejection invalidates a token; transport remains fail-closed", () => {
+  assert.equal(sessionWasRejected({status:401}), true);
+  assert.equal(sessionWasRejected({status:403}), true);
+  for (const error of [{name:"AbortError"},{status:500},new TypeError("network unavailable"),null]) assert.equal(sessionWasRejected(error),false);
 });

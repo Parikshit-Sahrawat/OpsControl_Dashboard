@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import WorldClock from "../components/WorldClock";
 import { control } from "../controlPlane";
 import { hasPermission } from "../permissions";
 export const query = (ids, environment, extra = {}) => {
@@ -68,7 +67,6 @@ export default function UnifiedOverview({
           <h1>Dashboard</h1>
         </div>
         <div className="overview-header-controls">
-          <WorldClock />
           <button onClick={refresh}>Refresh</button>
         </div>
       </div>

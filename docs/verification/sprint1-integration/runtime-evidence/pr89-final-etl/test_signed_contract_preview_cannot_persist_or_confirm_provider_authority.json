@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/3c6d4268-8051-460e-9a35-e112c92c137b/jobs/7038345e-2ef7-4062-983f-49fe1a10cd6f/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/attestations",
+      "expected": 409,
+      "actual": 409,
+      "detail": "CONTRACT_TEST_ENVELOPE_CANNOT_QUALIFY_PROVIDER"
+    },
+    {
+      "method": "POST",
+      "path": "etl/native-authority/validate-envelope",
+      "expected": 409,
+      "actual": 409,
+      "detail": "TEST_ISSUER_CANNOT_QUALIFY_PROVIDER"
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/3c6d4268-8051-460e-9a35-e112c92c137b/jobs/7038345e-2ef7-4062-983f-49fe1a10cd6f/native-bindings",
+      "expected": 403,
+      "actual": 403,
+      "detail": "INDEPENDENT_BINDING_REVIEWER_REQUIRED"
+    }
+  ]
+}

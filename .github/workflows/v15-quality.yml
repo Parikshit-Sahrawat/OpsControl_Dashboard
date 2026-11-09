@@ -67,6 +67,7 @@ jobs:
       - name: Cache backend Docker build layers
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
+          secret-files: proxy_ca=/etc/ssl/certs/ca-certificates.crt
           context: backend
           file: backend/Dockerfile.demo
           load: true
@@ -78,6 +79,7 @@ jobs:
       - name: Cache frontend Docker build layers
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
+          secret-files: proxy_ca=/etc/ssl/certs/ca-certificates.crt
           context: frontend
           file: frontend/Dockerfile.demo
           load: true
@@ -122,6 +124,7 @@ jobs:
             ${{ runner.temp }}/v15-quality/npm-audit.json
             ${{ runner.temp }}/v15-quality/owned-lab-runtime
             ${{ runner.temp }}/v15-quality/owned-lab-browser
+            ${{ runner.temp }}/v15-quality/pentaho-postgres
             ${{ runner.temp }}/v15-quality/docker-smoke
           if-no-files-found: warn
 

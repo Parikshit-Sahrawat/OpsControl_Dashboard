@@ -1,0 +1,226 @@
+E701 Multiple statements on one line (colon)
+   --> backend/app/api/monitoring.py:503:23
+    |
+501 | def list_alert_rules(organization_id: UUID | None = None, metric_definition_id: UUID | None = None, enabled: bool | None = None, limi…
+502 |     stmt = select(AlertRule).order_by(AlertRule.name).limit(limit)
+503 |     if organization_id: stmt = stmt.where(AlertRule.organization_id == organization_id)
+    |                       ^
+504 |     if metric_definition_id: stmt = stmt.where(AlertRule.metric_definition_id == metric_definition_id)
+505 |     if enabled is not None: stmt = stmt.where(AlertRule.enabled == enabled)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> backend/app/api/monitoring.py:504:28
+    |
+502 |     stmt = select(AlertRule).order_by(AlertRule.name).limit(limit)
+503 |     if organization_id: stmt = stmt.where(AlertRule.organization_id == organization_id)
+504 |     if metric_definition_id: stmt = stmt.where(AlertRule.metric_definition_id == metric_definition_id)
+    |                            ^
+505 |     if enabled is not None: stmt = stmt.where(AlertRule.enabled == enabled)
+506 |     return db.scalars(stmt).all()
+    |
+
+E701 Multiple statements on one line (colon)
+   --> backend/app/api/monitoring.py:505:27
+    |
+503 |     if organization_id: stmt = stmt.where(AlertRule.organization_id == organization_id)
+504 |     if metric_definition_id: stmt = stmt.where(AlertRule.metric_definition_id == metric_definition_id)
+505 |     if enabled is not None: stmt = stmt.where(AlertRule.enabled == enabled)
+    |                           ^
+506 |     return db.scalars(stmt).all()
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> backend/app/api/monitoring.py:518:17
+    |
+516 |         raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+517 |     item = AlertRule(**payload.model_dump())
+518 |     db.add(item); db.commit(); db.refresh(item)
+    |                 ^
+519 |     return item
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> backend/app/api/monitoring.py:518:30
+    |
+516 |         raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+517 |     item = AlertRule(**payload.model_dump())
+518 |     db.add(item); db.commit(); db.refresh(item)
+    |                              ^
+519 |     return item
+    |
+
+E701 Multiple statements on one line (colon)
+   --> backend/app/api/monitoring.py:529:37
+    |
+527 |         if metric.organization_id != item.organization_id:
+528 |             raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+529 |     for key, value in values.items(): setattr(item, key, value)
+    |                                     ^
+530 |     db.commit(); db.refresh(item)
+531 |     return item
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> backend/app/api/monitoring.py:530:16
+    |
+528 |             raise HTTPException(status_code=409, detail="Metric definition belongs to a different organization")
+529 |     for key, value in values.items(): setattr(item, key, value)
+530 |     db.commit(); db.refresh(item)
+    |                ^
+531 |     return item
+    |
+
+F401 [*] `typing.Literal` imported but unused
+ --> backend/app/api/resource_management.py:4:20
+  |
+2 | from app.services.excluded_platforms import require_supported_source, require_supported_collector
+3 | from uuid import UUID
+4 | from typing import Literal
+  |                    ^^^^^^^
+5 |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+  |
+help: Remove unused import: `typing.Literal`
+
+F401 [*] `sqlalchemy.and_` imported but unused
+ --> backend/app/api/resource_management.py:7:24
+  |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+7 | from sqlalchemy import and_, false, func, or_, select, true
+  |                        ^^^^
+8 | from sqlalchemy.exc import IntegrityError
+9 | from sqlalchemy.orm import Session
+  |
+help: Remove unused import
+
+F401 [*] `sqlalchemy.false` imported but unused
+ --> backend/app/api/resource_management.py:7:30
+  |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+7 | from sqlalchemy import and_, false, func, or_, select, true
+  |                              ^^^^^
+8 | from sqlalchemy.exc import IntegrityError
+9 | from sqlalchemy.orm import Session
+  |
+help: Remove unused import
+
+F401 [*] `sqlalchemy.func` imported but unused
+ --> backend/app/api/resource_management.py:7:37
+  |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+7 | from sqlalchemy import and_, false, func, or_, select, true
+  |                                     ^^^^
+8 | from sqlalchemy.exc import IntegrityError
+9 | from sqlalchemy.orm import Session
+  |
+help: Remove unused import
+
+F401 [*] `sqlalchemy.or_` imported but unused
+ --> backend/app/api/resource_management.py:7:43
+  |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+7 | from sqlalchemy import and_, false, func, or_, select, true
+  |                                           ^^^
+8 | from sqlalchemy.exc import IntegrityError
+9 | from sqlalchemy.orm import Session
+  |
+help: Remove unused import
+
+F401 [*] `sqlalchemy.true` imported but unused
+ --> backend/app/api/resource_management.py:7:56
+  |
+6 | from fastapi import APIRouter, Depends, HTTPException, Query
+7 | from sqlalchemy import and_, false, func, or_, select, true
+  |                                                        ^^^^
+8 | from sqlalchemy.exc import IntegrityError
+9 | from sqlalchemy.orm import Session
+  |
+help: Remove unused import
+
+F401 [*] `pydantic.BaseModel` imported but unused
+  --> backend/app/api/resource_management.py:10:22
+   |
+ 8 | from sqlalchemy.exc import IntegrityError
+ 9 | from sqlalchemy.orm import Session
+10 | from pydantic import BaseModel, ConfigDict, Field
+   |                      ^^^^^^^^^
+11 |
+12 | from app.db.session import get_db
+   |
+help: Remove unused import
+
+F401 [*] `pydantic.ConfigDict` imported but unused
+  --> backend/app/api/resource_management.py:10:33
+   |
+ 8 | from sqlalchemy.exc import IntegrityError
+ 9 | from sqlalchemy.orm import Session
+10 | from pydantic import BaseModel, ConfigDict, Field
+   |                                 ^^^^^^^^^^
+11 |
+12 | from app.db.session import get_db
+   |
+help: Remove unused import
+
+F401 [*] `pydantic.Field` imported but unused
+  --> backend/app/api/resource_management.py:10:45
+   |
+ 8 | from sqlalchemy.exc import IntegrityError
+ 9 | from sqlalchemy.orm import Session
+10 | from pydantic import BaseModel, ConfigDict, Field
+   |                                             ^^^^^
+11 |
+12 | from app.db.session import get_db
+   |
+help: Remove unused import
+
+F401 [*] `app.security.scope.current_principal` imported but unused
+  --> backend/app/api/resource_management.py:17:32
+   |
+15 |     Collector, DataSource, Organization,
+16 | )
+17 | from app.security.scope import current_principal
+   |                                ^^^^^^^^^^^^^^^^^
+18 | from app.security.boundaries import permits, relevant
+19 | from app.schemas.monitoring import (
+   |
+help: Remove unused import: `app.security.scope.current_principal`
+
+F401 [*] `app.security.boundaries.permits` imported but unused
+  --> backend/app/api/resource_management.py:18:37
+   |
+16 | )
+17 | from app.security.scope import current_principal
+18 | from app.security.boundaries import permits, relevant
+   |                                     ^^^^^^^
+19 | from app.schemas.monitoring import (
+20 |     CollectorCreate,
+   |
+help: Remove unused import
+
+F401 [*] `app.security.boundaries.relevant` imported but unused
+  --> backend/app/api/resource_management.py:18:46
+   |
+16 | )
+17 | from app.security.scope import current_principal
+18 | from app.security.boundaries import permits, relevant
+   |                                              ^^^^^^^^
+19 | from app.schemas.monitoring import (
+20 |     CollectorCreate,
+   |
+help: Remove unused import
+
+E401 [*] Multiple imports on one line
+ --> backend/tests/test_sprint08_rbac.py:3:1
+  |
+1 | """Owned PostgreSQL scope, preservation and delegation regressions."""
+2 |
+3 | import os, unittest, uuid
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^
+4 | from contextlib import contextmanager
+5 | from dataclasses import replace
+  |
+help: Split imports
+
+Found 20 errors.
+[*] 13 fixable with the `--fix` option.

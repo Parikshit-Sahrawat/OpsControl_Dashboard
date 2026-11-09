@@ -1,0 +1,139 @@
+{
+  "audit_status": "READY_FOR_REVIEW; NOT DEVELOPMENT/RELEASE ACCEPTANCE",
+  "main_sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+  "pr80_sha": "958193f266c89302b2f1919e3703faece591e0af",
+  "counts": {
+    "main_sha": "ffe5ac285ab8aef33a1139bce6f3da79be3d6d33",
+    "pr80_sha": "958193f266c89302b2f1919e3703faece591e0af",
+    "canonical_ids": 158,
+    "classification_counts": {
+      "IMPLEMENTED_AUTOMATED_VERIFIED": 14,
+      "PARTIALLY_IMPLEMENTED": 27,
+      "IMPLEMENTED_TEST_GAP": 13,
+      "REQUIREMENT_AUTHORITY_PENDING": 31,
+      "BLOCKED_EXTERNAL_DEPENDENCY": 5,
+      "SUPERSEDED_OR_EXCLUDED": 4,
+      "SOURCE_NOT_RECOVERED": 62,
+      "NOT_IMPLEMENTED": 2
+    },
+    "requirements_by_primary_module": {
+      "Resources": 12,
+      "Access": 6,
+      "Settings": 6,
+      "Telemetry": 4,
+      "VM": 3,
+      "NativeBinding": 2,
+      "API": 2,
+      "Excluded": 2,
+      "Topology": 1,
+      "Operations": 6,
+      "Deployment": 4,
+      "Templates": 2,
+      "ETL": 19,
+      "Incidents": 1,
+      "Authority": 18,
+      "HistoricalAuthority": 62,
+      "Licensing": 8
+    },
+    "requirements_by_proposed_priority": {
+      "P1": 60,
+      "P2": 88,
+      "P0": 10
+    },
+    "backlog_items": 55,
+    "backlog_by_type": {
+      "CODING": 33,
+      "VERIFICATION": 6,
+      "DECISION": 8,
+      "EXTERNAL_QUALIFICATION": 6,
+      "FORMAL_UAT": 2
+    },
+    "backlog_by_priority": {
+      "P0": 16,
+      "P1": 36,
+      "P2": 3
+    },
+    "backlog_by_module": {
+      "Telemetry": 3,
+      "Runtime": 5,
+      "Access": 2,
+      "Settings": 5,
+      "Resources": 3,
+      "Templates": 1,
+      "Signals": 1,
+      "Operations": 4,
+      "API": 1,
+      "VM": 1,
+      "Notifications": 2,
+      "Topology": 2,
+      "Retention": 2,
+      "Deployment": 4,
+      "Security": 2,
+      "Licensing": 2,
+      "ETL": 7,
+      "NativeBinding": 4,
+      "Authority": 1,
+      "Acceptance": 2,
+      "Performance": 1
+    },
+    "coverage_mapping_counts": {
+      "HISTORICAL_BOUNDED_PASS; no complete-current-case crosswalk": 13,
+      "CURRENT_BOUNDED_FILE_SUITE_PASS": 4,
+      "DEFINITION_OR_ADJACENT_MODULE_ONLY": 54,
+      "NO_SPECIFIC_AUTOMATION_MAPPING": 87
+    },
+    "unrecovered_historical_ids": 62,
+    "unrecovered_numbered_journeys_separate_dimension": 30,
+    "included_journeys": 31,
+    "no_double_counting": "158 registered IDs, not158 approved features; journeys/defects/tasks are not added to requirements count",
+    "source_index_counts": {
+      "main": {
+        "files": 565,
+        "declared_routes": 287,
+        "table_declarations": 99,
+        "python_test_definitions": 655,
+        "frontend_test_markers": 42,
+        "workflow_files": 23
+      },
+      "pr80": {
+        "files": 596,
+        "declared_routes": 304,
+        "table_declarations": 106,
+        "python_test_definitions": 741,
+        "frontend_test_markers": 51,
+        "workflow_files": 23
+      }
+    },
+    "dependency_graph_cycle_free": true,
+    "main_check_counts": {
+      "skipped": 3,
+      "success": 8,
+      "failure": 1
+    },
+    "pr80_check_counts": {
+      "success": 18
+    }
+  },
+  "documentation_validation": "PASS \u2014 see logs/validation-attempt2.log",
+  "bounded_test_execution": "PASS; see TEST_EXECUTIONS.json, counts overlap",
+  "new_product_code_or_migration_changes": false,
+  "new_runtime_pg_browser_load_formal_uat_provider_tests": "NOT RUN",
+  "main_ci": "8 success /3 skipped /1 failed publish preflight; not fixed or rerun",
+  "pr80_ci": "18/18 SUCCESS observed snapshot, no rerun",
+  "historical_defects": "39 source records retained; no new reproduction/closure",
+  "failed_audit_attempts": [
+    "matrix-attempt1.log: nonexistent remote_worker.py citation; replaced with actual source paths",
+    "validation-attempt1.log: audit validator incorrectly rejected empty dependency arrays on root items; fixed validator, no scope relaxation"
+  ],
+  "cleanup": "No runtime resources created; original PR80 worktree untouched; audit worktree/branch retained as deliverable",
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "nine_owner_selections": "Pending; prior controlled approvals preserved",
+  "D07_D08": "Pending",
+  "genuine_pentaho": "BLOCKED",
+  "OC_DEV_002": "NOT STARTED / NOT AUTHORIZED"
+}

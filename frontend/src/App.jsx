@@ -21,7 +21,6 @@ import {
   fetchAuthorizedCustomers,
 } from "./api";
 import ResourceManagement from "./pages/UnifiedResourceManagement";
-import NativeIncidents from "./pages/NativeIncidents";
 import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
 import PipelineWorkspace from "./pipelines/PipelineWorkspace";
@@ -521,6 +520,8 @@ export default function App({ user }) {
             onSectionChange={(section) =>
               navigate("Resource Management", { section })
             }
+            onResourceSelectionHandled={() => setTarget(previous => ({...previous,resourceId:undefined}))}
+            resourceSelection={target.resourceId ? { id: target.resourceId, domain: target.resourceDomain, organizationId: target.resourceOrganizationId } : null}
             onCustomerCreated={() => setCustomerRefresh((v) => v + 1)}
           />
         )}
@@ -551,13 +552,6 @@ export default function App({ user }) {
             environment={environment}
             user={user}
             initialFilter={target}
-          />
-        )}
-        {scopeReady && active === "Incidents" && (
-          <NativeIncidents
-            organizationIds={organizationIds}
-            environment={environment}
-            user={user}
           />
         )}
         {scopeReady && active === "Reports" && (

@@ -1,0 +1,1318 @@
+{
+  "status": "PASS",
+  "postgres_version": "17.11",
+  "before": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_boundary_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_sessions": {
+        "rows": 33,
+        "sha256": "ed4c7cac348fcc1257648c14d918488feb4db11174e6dda9f28d4308c47af2ec"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "95009a356f036a835441e868b40a181609c445e5c679d9a251c2bbcc379dff06"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "d6edffe9c32d288c4436ffec0d51c1424f36834941657e4a131e2c4a9837bee3"
+      },
+      "auth_throttle_buckets": {
+        "rows": 33,
+        "sha256": "7791ebc9d537b42bf1c6a865440e83eb3ed72af32d163d2b0539a299b8af6a75"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 2,
+        "sha256": "8a3dfe9f1400d86c0e37d30255203d3b1ba9245c253572c4879def074e753520"
+      },
+      "data_sources": {
+        "rows": 22,
+        "sha256": "20ad596fd7288977a7af98e145c1980299fb3b64ec00fe89bebae0fcd7c48669"
+      },
+      "department_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "department_role_assignments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "departments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_authority_revocations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_qualifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_attestations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_workflow_dependencies": {
+        "rows": 17,
+        "sha256": "c9401eb327dd62f197bd9f170aff548b300705dfcae1c5e21e7e0a4bb3aebcf8"
+      },
+      "etl_workflows": {
+        "rows": 81,
+        "sha256": "24dc8256b78227a45b6319773e48b99a16349a9a149d75255d97eafbc91dee93"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_orders": {
+        "rows": 111,
+        "sha256": "da9c3f14fa1c292bf75d85b27f8ab02876192694ec4c68c308c281bdb16a9a51"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 113,
+        "sha256": "3ac8be44799073c727f914c74822c1cdd9ad970bcb928c1a63a44fafcdcb71f5"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 7,
+        "sha256": "c8d8b13276d7c5428f558c4bd227771569fea33c271380f9452e756568041107"
+      },
+      "monitoring_template_versions": {
+        "rows": 12,
+        "sha256": "47ede5ae9e93f1aa9d9f9b8de149caa9cb4807cf58fb18ab033471e2cf87f618"
+      },
+      "monitoring_templates": {
+        "rows": 11,
+        "sha256": "6b4525c1709732cc06a61f923f3db03c2e4cbd4b4a731ea00d2ea44612547acd"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_failures": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_recovery_assessments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "normalized_telemetry_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 11,
+        "sha256": "ab6ced0c7e1b1fbf767b498912a2eb8ef4b7b4078d484f92d387a8428e5a2c00"
+      },
+      "organizations": {
+        "rows": 74,
+        "sha256": "e3b7f472051fecbb47012a33c64ae25d1cc27b71f91a39030c7349ccbd77f454"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_capabilities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_connections": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_holds": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_integrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_operations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_dependencies": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 133,
+        "sha256": "76cb096347176d24e1932d3040a7c6c80a746a68aba3c70701fe78a781e2ae15"
+      },
+      "roles": {
+        "rows": 10,
+        "sha256": "b26c892cb80194680df73d95952a5c6617f940c63c8fd9288da024411c63b561"
+      },
+      "security_audit_events": {
+        "rows": 126,
+        "sha256": "086b721e8af7a945dda5dc4129ea97e845335b220c581604eeaa9c09cb885794"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "source_configuration_revisions": {
+        "rows": 13,
+        "sha256": "ad31768517c3633571350369d4d120b16f7cd85d279cfb95607a8495253058cd"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 2,
+        "sha256": "c26b4f6fef791ad40032a15941e2385bd56fda1fde882f2c9aa0aed4f3e79065"
+      },
+      "users": {
+        "rows": 50,
+        "sha256": "0b8504d30194da525340c42944abc9a1be796be1a88fa223bdeea45d965e0c7f"
+      },
+      "vms": {
+        "rows": 2,
+        "sha256": "19ed0965584584c6fc01f9c3dcd8d076a419dc936be54466896c4e88bdc45b7c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "114a5c639e83580da0e6466828d2c0142dc036c519696d4eeeb17da41394fab1"
+  },
+  "restored": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_boundary_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_sessions": {
+        "rows": 33,
+        "sha256": "ed4c7cac348fcc1257648c14d918488feb4db11174e6dda9f28d4308c47af2ec"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "95009a356f036a835441e868b40a181609c445e5c679d9a251c2bbcc379dff06"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "d6edffe9c32d288c4436ffec0d51c1424f36834941657e4a131e2c4a9837bee3"
+      },
+      "auth_throttle_buckets": {
+        "rows": 33,
+        "sha256": "7791ebc9d537b42bf1c6a865440e83eb3ed72af32d163d2b0539a299b8af6a75"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 2,
+        "sha256": "8a3dfe9f1400d86c0e37d30255203d3b1ba9245c253572c4879def074e753520"
+      },
+      "data_sources": {
+        "rows": 22,
+        "sha256": "20ad596fd7288977a7af98e145c1980299fb3b64ec00fe89bebae0fcd7c48669"
+      },
+      "department_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "department_role_assignments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "departments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_authority_revocations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_qualifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_attestations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_workflow_dependencies": {
+        "rows": 17,
+        "sha256": "c9401eb327dd62f197bd9f170aff548b300705dfcae1c5e21e7e0a4bb3aebcf8"
+      },
+      "etl_workflows": {
+        "rows": 81,
+        "sha256": "24dc8256b78227a45b6319773e48b99a16349a9a149d75255d97eafbc91dee93"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_orders": {
+        "rows": 111,
+        "sha256": "da9c3f14fa1c292bf75d85b27f8ab02876192694ec4c68c308c281bdb16a9a51"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 113,
+        "sha256": "3ac8be44799073c727f914c74822c1cdd9ad970bcb928c1a63a44fafcdcb71f5"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 7,
+        "sha256": "c8d8b13276d7c5428f558c4bd227771569fea33c271380f9452e756568041107"
+      },
+      "monitoring_template_versions": {
+        "rows": 12,
+        "sha256": "47ede5ae9e93f1aa9d9f9b8de149caa9cb4807cf58fb18ab033471e2cf87f618"
+      },
+      "monitoring_templates": {
+        "rows": 11,
+        "sha256": "6b4525c1709732cc06a61f923f3db03c2e4cbd4b4a731ea00d2ea44612547acd"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_failures": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_recovery_assessments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "normalized_telemetry_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 11,
+        "sha256": "ab6ced0c7e1b1fbf767b498912a2eb8ef4b7b4078d484f92d387a8428e5a2c00"
+      },
+      "organizations": {
+        "rows": 74,
+        "sha256": "e3b7f472051fecbb47012a33c64ae25d1cc27b71f91a39030c7349ccbd77f454"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_capabilities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_connections": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_holds": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_integrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_operations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_dependencies": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 133,
+        "sha256": "76cb096347176d24e1932d3040a7c6c80a746a68aba3c70701fe78a781e2ae15"
+      },
+      "roles": {
+        "rows": 10,
+        "sha256": "b26c892cb80194680df73d95952a5c6617f940c63c8fd9288da024411c63b561"
+      },
+      "security_audit_events": {
+        "rows": 126,
+        "sha256": "086b721e8af7a945dda5dc4129ea97e845335b220c581604eeaa9c09cb885794"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "source_configuration_revisions": {
+        "rows": 13,
+        "sha256": "ad31768517c3633571350369d4d120b16f7cd85d279cfb95607a8495253058cd"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 2,
+        "sha256": "c26b4f6fef791ad40032a15941e2385bd56fda1fde882f2c9aa0aed4f3e79065"
+      },
+      "users": {
+        "rows": 50,
+        "sha256": "0b8504d30194da525340c42944abc9a1be796be1a88fa223bdeea45d965e0c7f"
+      },
+      "vms": {
+        "rows": 2,
+        "sha256": "19ed0965584584c6fc01f9c3dcd8d076a419dc936be54466896c4e88bdc45b7c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "114a5c639e83580da0e6466828d2c0142dc036c519696d4eeeb17da41394fab1"
+  },
+  "original_after": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_boundary_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "access_sessions": {
+        "rows": 33,
+        "sha256": "ed4c7cac348fcc1257648c14d918488feb4db11174e6dda9f28d4308c47af2ec"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "95009a356f036a835441e868b40a181609c445e5c679d9a251c2bbcc379dff06"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "d6edffe9c32d288c4436ffec0d51c1424f36834941657e4a131e2c4a9837bee3"
+      },
+      "auth_throttle_buckets": {
+        "rows": 33,
+        "sha256": "7791ebc9d537b42bf1c6a865440e83eb3ed72af32d163d2b0539a299b8af6a75"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 2,
+        "sha256": "8a3dfe9f1400d86c0e37d30255203d3b1ba9245c253572c4879def074e753520"
+      },
+      "data_sources": {
+        "rows": 22,
+        "sha256": "20ad596fd7288977a7af98e145c1980299fb3b64ec00fe89bebae0fcd7c48669"
+      },
+      "department_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "department_role_assignments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "departments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_authority_revocations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_qualifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_binding_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_attestations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_native_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "etl_workflow_dependencies": {
+        "rows": 17,
+        "sha256": "c9401eb327dd62f197bd9f170aff548b300705dfcae1c5e21e7e0a4bb3aebcf8"
+      },
+      "etl_workflows": {
+        "rows": 81,
+        "sha256": "24dc8256b78227a45b6319773e48b99a16349a9a149d75255d97eafbc91dee93"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_orders": {
+        "rows": 111,
+        "sha256": "da9c3f14fa1c292bf75d85b27f8ab02876192694ec4c68c308c281bdb16a9a51"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 113,
+        "sha256": "3ac8be44799073c727f914c74822c1cdd9ad970bcb928c1a63a44fafcdcb71f5"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 7,
+        "sha256": "c8d8b13276d7c5428f558c4bd227771569fea33c271380f9452e756568041107"
+      },
+      "monitoring_template_versions": {
+        "rows": 12,
+        "sha256": "47ede5ae9e93f1aa9d9f9b8de149caa9cb4807cf58fb18ab033471e2cf87f618"
+      },
+      "monitoring_templates": {
+        "rows": 11,
+        "sha256": "6b4525c1709732cc06a61f923f3db03c2e4cbd4b4a731ea00d2ea44612547acd"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_failures": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_recovery_assessments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "normalized_telemetry_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 11,
+        "sha256": "ab6ced0c7e1b1fbf767b498912a2eb8ef4b7b4078d484f92d387a8428e5a2c00"
+      },
+      "organizations": {
+        "rows": 74,
+        "sha256": "e3b7f472051fecbb47012a33c64ae25d1cc27b71f91a39030c7349ccbd77f454"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_capabilities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_connections": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_holds": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_integrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_operations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pipeline_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_dependencies": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 133,
+        "sha256": "76cb096347176d24e1932d3040a7c6c80a746a68aba3c70701fe78a781e2ae15"
+      },
+      "roles": {
+        "rows": 10,
+        "sha256": "b26c892cb80194680df73d95952a5c6617f940c63c8fd9288da024411c63b561"
+      },
+      "security_audit_events": {
+        "rows": 126,
+        "sha256": "086b721e8af7a945dda5dc4129ea97e845335b220c581604eeaa9c09cb885794"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "source_configuration_revisions": {
+        "rows": 13,
+        "sha256": "ad31768517c3633571350369d4d120b16f7cd85d279cfb95607a8495253058cd"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 2,
+        "sha256": "c26b4f6fef791ad40032a15941e2385bd56fda1fde882f2c9aa0aed4f3e79065"
+      },
+      "users": {
+        "rows": 50,
+        "sha256": "0b8504d30194da525340c42944abc9a1be796be1a88fa223bdeea45d965e0c7f"
+      },
+      "vms": {
+        "rows": 2,
+        "sha256": "19ed0965584584c6fc01f9c3dcd8d076a419dc936be54466896c4e88bdc45b7c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "114a5c639e83580da0e6466828d2c0142dc036c519696d4eeeb17da41394fab1"
+  },
+  "dump_sha256": "f42c1da1636e5fb297c8c9b4d35db838b48f5b927b1605d62d16b6ae15a7c271",
+  "dump_retention": "Synthetic credential-bearing dump erased after verification; hashes only retained",
+  "isolated_restore_database_removed": true
+}

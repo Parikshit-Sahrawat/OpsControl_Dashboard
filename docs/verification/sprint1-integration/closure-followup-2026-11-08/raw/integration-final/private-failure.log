@@ -1,0 +1,10 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/pr89-operational-check/backend/scripts/v16_api_probe.py", line 587, in <module>
+    request(f"resource-management/data-sources/{sid}", "PATCH", {"description":"authorized before revocation"}, writer)
+  File "/tmp/pr89-operational-check/backend/scripts/v16_api_probe.py", line 67, in request
+    assert status == expected, (path, status, expected)
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: ('resource-management/data-sources/069a2ec2-5010-46e3-ab88-01126b2017fb', 428, 200)

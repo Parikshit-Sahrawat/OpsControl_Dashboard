@@ -1,0 +1,323 @@
+{
+  "origin": "SYNTHETIC_TLS_HTTP_AND_CARTE_WITH_LIVE_LINUX_HOST",
+  "genuine_providers": "PENDING",
+  "configured": "PASS",
+  "services_configured": {
+    "services": [
+      {
+        "id": "850026e5-c65c-425e-a59a-c89c5e4e3ff6",
+        "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+        "name": "Disabled NOC Service",
+        "health": "DISABLED",
+        "collectors": [],
+        "open_alert_count": 0,
+        "alerts": []
+      },
+      {
+        "id": "778e8ef4-3243-4922-a988-8667c1a7f026",
+        "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+        "name": "Fictional NOC HTTPS Portal",
+        "health": "HEALTHY",
+        "collectors": [
+          {
+            "id": "94e726c9-11aa-5ed8-9af5-c8c5086ce6f3",
+            "name": "opscontrol-http",
+            "enabled": true,
+            "status": "SUCCESS",
+            "freshness": "CURRENT",
+            "latest_run": {
+              "id": "fd7ba905-7133-4f1b-addd-172488626e32",
+              "collector_id": "94e726c9-11aa-5ed8-9af5-c8c5086ce6f3",
+              "observed_at": "2026-11-08T18:11:17.193511+00:00",
+              "ended_at": "2026-11-08T18:11:17.198179+00:00",
+              "status": "SUCCESS",
+              "outcome": "SUCCESS",
+              "http_status": 200,
+              "response_time_ms": 4
+            }
+          }
+        ],
+        "open_alert_count": 0,
+        "alerts": []
+      },
+      {
+        "id": "ff556b4d-4957-45a1-9d31-a71990120697",
+        "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+        "name": "Unobserved NOC Service",
+        "health": "UNKNOWN",
+        "collectors": [
+          {
+            "id": "ea9e4ced-1ac1-4c3c-9ae2-c95a7225ae97",
+            "name": "not-yet-observed",
+            "enabled": true,
+            "status": "STOPPED",
+            "freshness": "NO_EVIDENCE",
+            "latest_run": null
+          }
+        ],
+        "open_alert_count": 0,
+        "alerts": []
+      }
+    ],
+    "total": 3,
+    "offset": 0,
+    "limit": 200,
+    "has_more": false,
+    "truncated": false,
+    "summary_scope": "page",
+    "summary": {
+      "HEALTHY": 1,
+      "CRITICAL": 0,
+      "UNKNOWN": 1,
+      "DISABLED": 1
+    }
+  },
+  "failed": {
+    "alerts": {
+      "alerts": [
+        {
+          "id": "b6b71e9e-b6f5-4110-bcc7-36d7649b5ee1",
+          "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+          "alert_rule_id": "45afc85f-7b79-506b-8504-81de98ffb091",
+          "metric_definition_id": "9c415a5e-af81-5ada-b2ec-9ea1fa2f0668",
+          "status": "OPEN",
+          "severity": "CRITICAL",
+          "first_triggered_at": "2026-11-08T18:11:53.394771+00:00",
+          "last_evaluated_at": "2026-11-08T18:11:53.394771+00:00",
+          "resolved_at": null,
+          "acknowledged_at": null,
+          "acknowledged_by": null,
+          "last_value": 0.0,
+          "breach_count": 1,
+          "message": "778e8ef4-3243-4922-a988-8667c1a7f026:noc-http-unavailable: metric value 0 LT threshold 0.5; severity=CRITICAL",
+          "external_references": null,
+          "created_at": "2026-11-08T18:11:53.419409+00:00",
+          "updated_at": "2026-11-08T18:11:53.419410+00:00",
+          "data_source_id": "778e8ef4-3243-4922-a988-8667c1a7f026",
+          "metric_name": "probe_up"
+        },
+        {
+          "id": "13660c40-3107-4a70-933e-f1761d5b7c35",
+          "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+          "alert_rule_id": "85ef20c7-94d2-5e51-8c68-e59209b5852a",
+          "metric_definition_id": "8603ccb6-2966-5b63-9f05-8a0294016171",
+          "status": "OPEN",
+          "severity": "CRITICAL",
+          "first_triggered_at": "2026-11-08T18:11:44.479340+00:00",
+          "last_evaluated_at": "2026-11-08T18:11:44.479340+00:00",
+          "resolved_at": null,
+          "acknowledged_at": null,
+          "acknowledged_by": null,
+          "last_value": 0.0,
+          "breach_count": 1,
+          "message": "4592b66a-a3a0-4307-a098-7676a2b35473:etl-host-health: metric value 0 LT threshold 0.5; severity=CRITICAL",
+          "external_references": null,
+          "created_at": "2026-11-08T18:11:44.625796+00:00",
+          "updated_at": "2026-11-08T18:11:44.625799+00:00",
+          "data_source_id": "4592b66a-a3a0-4307-a098-7676a2b35473",
+          "metric_name": "infrastructure_up"
+        }
+      ],
+      "summary": {
+        "OPEN": 2,
+        "RESOLVED": 0
+      }
+    },
+    "reports": {
+      "generated_at": "2026-11-08T18:11:53.498146+00:00",
+      "window_start": "2026-11-01T18:11:53.498146+00:00",
+      "window_end": "2026-11-08T18:11:53.498146+00:00",
+      "days": 7,
+      "methodology": {
+        "http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
+        "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."
+      },
+      "services": [
+        {
+          "id": "778e8ef4-3243-4922-a988-8667c1a7f026",
+          "name": "Fictional NOC HTTPS Portal",
+          "observations": 2,
+          "success": 1,
+          "failed": 1,
+          "unknown": 0,
+          "sample_success_percent": 50.0,
+          "mean_response_time_ms": 3.5,
+          "first_observed_at": "2026-11-08T18:11:17.193511+00:00",
+          "last_observed_at": "2026-11-08T18:11:53.394771+00:00"
+        }
+      ],
+      "etl": [
+        {
+          "id": "3bad4ff6-b490-408a-9b58-95aa5e795883",
+          "name": "Fictional Daily Warehouse",
+          "executions": 4,
+          "success": 0,
+          "failed": 1,
+          "no_run": 0,
+          "sla_met": 1,
+          "sla_breached": 0,
+          "sla_excluded": 3,
+          "runtime_sla_percent": 100.0
+        }
+      ]
+    }
+  },
+  "recovered": {
+    "alerts": {
+      "alerts": [
+        {
+          "id": "b6b71e9e-b6f5-4110-bcc7-36d7649b5ee1",
+          "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+          "alert_rule_id": "45afc85f-7b79-506b-8504-81de98ffb091",
+          "metric_definition_id": "9c415a5e-af81-5ada-b2ec-9ea1fa2f0668",
+          "status": "RESOLVED",
+          "severity": "CRITICAL",
+          "first_triggered_at": "2026-11-08T18:11:53.394771+00:00",
+          "last_evaluated_at": "2026-11-08T18:12:11.781105+00:00",
+          "resolved_at": "2026-11-08T18:12:11.781105+00:00",
+          "acknowledged_at": null,
+          "acknowledged_by": null,
+          "last_value": 1.0,
+          "breach_count": 0,
+          "message": "Resolved: 778e8ef4-3243-4922-a988-8667c1a7f026:noc-http-unavailable; metric value recovered to 1",
+          "external_references": null,
+          "created_at": "2026-11-08T18:11:53.419409+00:00",
+          "updated_at": "2026-11-08T18:12:11.802763+00:00",
+          "data_source_id": "778e8ef4-3243-4922-a988-8667c1a7f026",
+          "metric_name": "probe_up"
+        },
+        {
+          "id": "13660c40-3107-4a70-933e-f1761d5b7c35",
+          "organization_id": "fd13c702-65f2-4de5-8f4d-778627df5120",
+          "alert_rule_id": "85ef20c7-94d2-5e51-8c68-e59209b5852a",
+          "metric_definition_id": "8603ccb6-2966-5b63-9f05-8a0294016171",
+          "status": "RESOLVED",
+          "severity": "CRITICAL",
+          "first_triggered_at": "2026-11-08T18:11:44.479340+00:00",
+          "last_evaluated_at": "2026-11-08T18:12:04.502225+00:00",
+          "resolved_at": "2026-11-08T18:12:04.502225+00:00",
+          "acknowledged_at": null,
+          "acknowledged_by": null,
+          "last_value": 1.0,
+          "breach_count": 0,
+          "message": "Resolved: 4592b66a-a3a0-4307-a098-7676a2b35473:etl-host-health; metric value recovered to 1",
+          "external_references": null,
+          "created_at": "2026-11-08T18:11:44.625796+00:00",
+          "updated_at": "2026-11-08T18:12:04.647993+00:00",
+          "data_source_id": "4592b66a-a3a0-4307-a098-7676a2b35473",
+          "metric_name": "infrastructure_up"
+        }
+      ],
+      "summary": {
+        "OPEN": 0,
+        "RESOLVED": 2
+      }
+    },
+    "reports": {
+      "generated_at": "2026-11-08T18:12:11.881007+00:00",
+      "window_start": "2026-11-01T18:12:11.881007+00:00",
+      "window_end": "2026-11-08T18:12:11.881007+00:00",
+      "days": 7,
+      "methodology": {
+        "http": "Successful probes / completed success or failed probes. Sample based, not time-weighted uptime. Unknown statuses excluded.",
+        "etl": "Terminal executions meeting runtime SLA / terminal executions with a known SLA result. Running, No Run and unknown timing excluded. Job success is separate."
+      },
+      "services": [
+        {
+          "id": "778e8ef4-3243-4922-a988-8667c1a7f026",
+          "name": "Fictional NOC HTTPS Portal",
+          "observations": 3,
+          "success": 2,
+          "failed": 1,
+          "unknown": 0,
+          "sample_success_percent": 66.67,
+          "mean_response_time_ms": 3.33,
+          "first_observed_at": "2026-11-08T18:11:17.193511+00:00",
+          "last_observed_at": "2026-11-08T18:12:11.781105+00:00"
+        }
+      ],
+      "etl": [
+        {
+          "id": "3bad4ff6-b490-408a-9b58-95aa5e795883",
+          "name": "Fictional Daily Warehouse",
+          "executions": 5,
+          "success": 1,
+          "failed": 1,
+          "no_run": 0,
+          "sla_met": 2,
+          "sla_breached": 0,
+          "sla_excluded": 3,
+          "runtime_sla_percent": 100.0
+        }
+      ]
+    }
+  },
+  "report_denominator_negatives": "PASS",
+  "security": "PASS",
+  "relapse_and_resolution": "PASS",
+  "stale_evidence": "PASS",
+  "retired_itsm_api": "PASS",
+  "audit_event_count": 239,
+  "browser_checks": [
+    {
+      "status": "PASS",
+      "checks": [
+        "Actual service evidence, health and search filter",
+        "Independent monitoring alerts render; reader cannot acknowledge",
+        "Real sampled reports and export remain usable without incident data",
+        "Data pipeline execution screen remains functional"
+      ],
+      "page_errors": []
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "Actual service evidence, health and search filter",
+        "Independent monitoring alerts render; reader cannot acknowledge",
+        "Scoped ETL report count matches persisted executions without a false No Run",
+        "Real sampled reports and export remain usable without incident data",
+        "Data pipeline execution screen remains functional"
+      ],
+      "page_errors": []
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "Actual service evidence, health and search filter",
+        "Independent monitoring alerts render; reader cannot acknowledge",
+        "Scoped ETL report count matches persisted executions without a false No Run",
+        "Real sampled reports and export remain usable without incident data",
+        "Data pipeline execution screen remains functional"
+      ],
+      "page_errors": []
+    }
+  ],
+  "populated_migration_backfill": "PASS",
+  "http_fixture_requests": [
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 503
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "status": 200
+    }
+  ]
+}

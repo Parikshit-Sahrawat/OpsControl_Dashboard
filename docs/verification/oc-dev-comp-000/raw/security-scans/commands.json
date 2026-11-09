@@ -1,0 +1,30 @@
+[
+  {
+    "name": "pip-audit",
+    "command": [
+      "backend/.venv/bin/python",
+      "-m",
+      "pip_audit",
+      "--format",
+      "json",
+      "--output",
+      "/tmp/occomp000-baseline/security-scans/pip-audit.json",
+      "--progress-spinner",
+      "off",
+      "--cache-dir",
+      "/tmp/occomp000-pip-audit-cache"
+    ],
+    "exit": 1
+  },
+  {
+    "name": "npm-audit",
+    "command": [
+      "npm",
+      "audit",
+      "--json",
+      "--prefix",
+      "frontend"
+    ],
+    "exit": 1
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/0fef9243-5bef-47da-836e-c3346ce834a6/jobs/b3107db6-4d9c-4e10-9023-b1d221037cf0/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "GET",
+      "path": "access/roles/f2663b3e-b919-44c8-b94b-203b53983064",
+      "expected": 200,
+      "actual": 405,
+      "detail": "Method Not Allowed"
+    }
+  ]
+}

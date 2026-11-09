@@ -1,0 +1,57 @@
+name: "OC Dev - Tier B - Sprint 1 Resource Workspace"
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: resource-workspace-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  authenticated-workspace:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ENV: test
+      V16_TEST_TARGETS: tests.test_pipeline_ownership_v16,tests.test_sprint_resource_lifecycle,tests.test_sprint_template_configuration,tests.test_sprint_monitoring_only
+      V16_STAGING_PRESERVATION: '1'
+      V16_API_ACCEPTANCE: '1'
+      V16_BROWSER_ACCEPTANCE: '1'
+      V16_SPRINT1_UI: '1'
+      V16_SPRINT08_ACCEPTANCE: '1'
+      V16_EVIDENCE_DIR: /tmp/resource-workspace-evidence
+      PLAYWRIGHT_MODULE: ${{ github.workspace }}/frontend/node_modules/playwright/index.mjs
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install existing dependencies and pinned browser harness
+        run: |
+          python -m venv backend/.venv
+          backend/.venv/bin/python backend/bootstrap_pip.py
+          backend/.venv/bin/pip install -r backend/requirements-providers.txt -r backend/requirements-hosts.txt -r backend/requirements-dev.txt
+          npm ci --prefix frontend --no-audit --no-fund
+          npm install --prefix frontend --no-save --package-lock=false playwright@1.56.1
+          frontend/node_modules/.bin/playwright install --with-deps chromium
+          echo "PLAYWRIGHT_CHROMIUM_EXECUTABLE=$(node --input-type=module -e "import {chromium} from './frontend/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())")" >> "$GITHUB_ENV"
+      - name: Frontend helpers, lint and build
+        run: |
+          npm test --prefix frontend
+          npm run lint --prefix frontend
+          npm run build --prefix frontend
+      - name: Actual PostgreSQL, authenticated API, fault and browser contracts
+        run: backend/.venv/bin/python scripts/v16-acceptance.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: resource-workspace-evidence
+          path: /tmp/resource-workspace-evidence
+          if-no-files-found: error

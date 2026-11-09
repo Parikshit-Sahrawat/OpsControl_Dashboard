@@ -1,0 +1,13 @@
+E731 Do not assign a `lambda` expression, use a `def`
+  --> backend/tests/test_pentaho_qualification_offline.py:93:9
+   |
+92 |     def envelope(self):
+93 |         uid = lambda n: str(UUID(int=n))
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+94 |         body = {
+95 |             "schema_version": 1,
+   |
+help: Rewrite `uid` as a `def`
+
+Found 1 error.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

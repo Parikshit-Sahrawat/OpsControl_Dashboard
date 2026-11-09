@@ -1,0 +1,80 @@
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/template_attachment.test.mjs scripts/monitoring_settings.test.mjs scripts/workspace_filters.test.mjs scripts/feature_directory.test.mjs
+
+✔ owned browser clients explicitly select a UUID snapshot and empty stays empty (3.6079ms)
+✔ failed customer lookup cannot fall back to unrestricted operational requests (0.902821ms)
+✔ directory uses unique existing destinations and excludes retired capabilities (1.325374ms)
+✔ directory permission filtering fails closed and reacts to revocation (1.514447ms)
+✔ authorized active collector restores all editable settings and pinned selections without copying credentials (3.517531ms)
+✔ legacy default GET settings remain explicit and optional assertions empty (0.402415ms)
+✔ NOT_CONFIGURED does not fetch or restore a historical collector (0.543709ms)
+✔ DISABLED does not fetch or restore a historical collector (0.217117ms)
+✔ disabled collector resets controls; a collector belonging to another source fails closed (1.411956ms)
+✔ out-of-order source fetch cannot replace the selected source or organization (0.476002ms)
+✔ pending hydration preserves actual user edits and invalidates an in-flight preview (13.323705ms)
+✔ source switch cancels a real pending settings read and no stale state or error is applied (1.143443ms)
+✔ permission failures propagate instead of silently exposing an editable default configuration (0.430988ms)
+✔ saved selections are applied before controls become ready (0.969085ms)
+✔ excluded source aliases cannot become monitoring selections (0.766807ms)
+✔ VM and application types and generic telemetry terms stay supported (0.207719ms)
+✔ approved child hashes open only existing authorized sections (2.190535ms)
+✔ organizational access is an access view, never a customer grant (0.334947ms)
+✔ configuration sections have stable guarded routes (0.280064ms)
+Pagination traversal, duplicate, mutation, incomplete and scope-change regressions passed
+✔ scripts/pagination.test.mjs (61.03646ms)
+✔ navigation and customer actions default deny (1.878671ms)
+✔ administrative pages use independent filters (0.251762ms)
+✔ revocation replaces UI affordances; platform capability is explicit (0.254828ms)
+✔ malformed cached customer preferences cannot corrupt selector state (1.50509ms)
+✔ retired navigation cannot be enabled by cached permissions (0.230402ms)
+✔ incident-management UI remains excluded even with retained backend permission (0.183985ms)
+✔ five monitoring pages and seven retained internal background states (1.366941ms)
+✔ pending retry remains nonterminal despite failed attempt (0.196748ms)
+✔ scheduler or process success cannot imply verified native success (0.21338ms)
+✔ scheduler retry and manual recovery preserve original failure (0.202549ms)
+✔ explicit customer scope never expands to ALL (0.56535ms)
+✔ old success or failure is invalidated on customer switch (0.387636ms)
+✔ native workload classifications remain distinct (0.211737ms)
+✔ persisted schedule authority and incomplete coverage stay explicit (0.214742ms)
+✔ review actions require category and verified completion (2.728493ms)
+✔ independent recovery confirmation and confirmed-only reversal (0.255319ms)
+✔ timestamps use explicit UTC (0.436618ms)
+✔ capabilities follow bound methods only (0.491901ms)
+✔ revision and authorization errors are explicit (0.358321ms)
+✔ resource restriction affordances do not become grants (2.890977ms)
+✔ existing pin survives a newer published template (3.229251ms)
+✔ new attachment selects current published version (0.187952ms)
+✔ malformed persisted pin cannot silently select latest (0.506989ms)
+✔ resource URL round trip includes only known non-secret filter keys (3.033594ms)
+✔ forged bookmark never silently broadens customer scope (0.333735ms)
+✔ configuration affordance derives from selected customer permissions (0.239138ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 315.245364
+ℹ start of coverage report
+ℹ ---------------------------------------------------------------------------------
+ℹ file                             | line % | branch % | funcs % | uncovered lines
+ℹ ---------------------------------------------------------------------------------
+ℹ scripts                          |        |          |         | 
+ℹ  explicit_scope.mjs              | 100.00 |   100.00 |  100.00 | 
+ℹ src                              |        |          |         | 
+ℹ  excludedPlatforms.js            | 100.00 |    85.71 |  100.00 | 
+ℹ  featureDirectory.js             | 100.00 |   100.00 |  100.00 | 
+ℹ  monitoringSettings.js           | 100.00 |    92.11 |   92.31 | 
+ℹ  navigation.js                   |  97.83 |    93.55 |  100.00 | 36
+ℹ  pagination.js                   | 100.00 |   100.00 |  100.00 | 
+ℹ  permissions.js                  | 100.00 |    93.33 |  100.00 | 
+ℹ  pipelines                       |        |          |         | 
+ℹ   contracts.js                   |  95.65 |    80.28 |   77.78 | 87 121-126 151
+ℹ  templateAttachmentSelection.js  | 100.00 |   100.00 |  100.00 | 
+ℹ  workspaceFilters.js             | 100.00 |    72.41 |  100.00 | 
+ℹ ---------------------------------------------------------------------------------
+ℹ all files                        |  98.06 |    87.95 |   90.28 | 
+ℹ ---------------------------------------------------------------------------------
+ℹ end of coverage report

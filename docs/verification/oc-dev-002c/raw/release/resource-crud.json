@@ -1,0 +1,1044 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Browser create/read/update/disable/re-enable and reload persisted",
+    "Narrow viewport and keyboard-only edit/save persisted",
+    "Five exact repeated reloads preserve resource route and persisted records",
+    "Duplicate source returns 409",
+    "Logical OTEL configuration creates no polling CollectorRun",
+    "Edit preserves Collector ID and updates its configuration name",
+    "Other tenant cannot read registration or mutate source",
+    "Older authenticated inventory refresh cannot overwrite newer persisted state"
+  ],
+  "reloads": [
+    {
+      "iteration": 0,
+      "before_hash": "#/resources/data-resources",
+      "after_hash": "#/resources/data-resources",
+      "elapsed_ms": 381,
+      "status": "PASS"
+    },
+    {
+      "iteration": 1,
+      "before_hash": "#/resources/data-resources",
+      "after_hash": "#/resources/data-resources",
+      "elapsed_ms": 349,
+      "status": "PASS"
+    },
+    {
+      "iteration": 2,
+      "before_hash": "#/resources/data-resources",
+      "after_hash": "#/resources/data-resources",
+      "elapsed_ms": 365,
+      "status": "PASS"
+    },
+    {
+      "iteration": 3,
+      "before_hash": "#/resources/data-resources",
+      "after_hash": "#/resources/data-resources",
+      "elapsed_ms": 339,
+      "status": "PASS"
+    },
+    {
+      "iteration": 4,
+      "before_hash": "#/resources/data-resources",
+      "after_hash": "#/resources/data-resources",
+      "elapsed_ms": 401,
+      "status": "PASS"
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "",
+      "at": 1794076872274
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/login",
+      "status": 200,
+      "at": 1794076872597
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076872614
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076872675
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076872686
+    },
+    {
+      "kind": "requestfailed",
+      "path": "/api/v1/unified/overview",
+      "error": "net::ERR_ABORTED",
+      "at": 1794076872725
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076872773
+    },
+    {
+      "kind": "requestfailed",
+      "path": "/api/v1/unified/overview",
+      "error": "net::ERR_ABORTED",
+      "at": 1794076872811
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/etl/executions",
+      "status": 200,
+      "at": 1794076872841
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076872930
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076872933
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/resource-drafts",
+      "status": 200,
+      "at": 1794076872990
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076873004
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076873010
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076873059
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/resource-drafts",
+      "status": 200,
+      "at": 1794076873088
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076873093
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076873121
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/vm",
+      "status": 201,
+      "at": 1794076873578
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076873652
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076873734
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076873760
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076873764
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076873781
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076873821
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076874104
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076874307
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076874334
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/agent-control/packages/availability",
+      "status": 200,
+      "at": 1794076874379
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/agent-control/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076874438
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/agent-control/packages/availability",
+      "status": 200,
+      "at": 1794076874449
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/agent-control/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076874494
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/resource-management/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076874734
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/agent-control/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076874781
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076874821
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875161
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076875199
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875228
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875310
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875355
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076875533
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875625
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875857
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076875884
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875913
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076875952
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076876050
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076876765
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076876782
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076876782
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076876836
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076876850
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076876852
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076876935
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076877013
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076877136
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076877147
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076877150
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076877172
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076877257
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076877735
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076877755
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076877763
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076877793
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076877807
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076877864
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076877882
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076877912
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878001
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878084
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878115
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076878128
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878143
+    },
+    {
+      "kind": "requestfailed",
+      "path": "/api/v1/unified/resources",
+      "error": "net::ERR_ABORTED",
+      "at": 1794076878192
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076878192
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076878296
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076878312
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878357
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878368
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878387
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878412
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878421
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878431
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878461
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878493
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076878615
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076878729
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076878755
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878811
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878811
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878865
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878865
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878871
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878880
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076878896
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076878942
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076878984
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879061
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879086
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879116
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879138
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879182
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879182
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879195
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879206
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879231
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879265
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076879336
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879431
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879459
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879501
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879501
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879554
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879579
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879580
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879591
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879609
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879645
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076879700
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879781
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076879806
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879840
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879857
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879875
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879896
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879929
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879932
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076879962
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076879999
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076880036
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076880170
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076880185
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076880223
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076880247
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076880273
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076880283
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076880308
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076880316
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076880341
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076880378
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076880565
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076880566
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076880566
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/collectors/84dfa0b5-e615-47eb-8a24-386712f931f2",
+      "status": 200,
+      "at": 1794076880614
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/attribute-registry",
+      "status": 200,
+      "at": 1794076880614
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/monitoring/data-sources/d2095479-28cc-4c91-b7ac-8d7cc5a2a898",
+      "status": 200,
+      "at": 1794076880651
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076880832
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076880944
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076880977
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources/500bb80c-4209-48be-91c3-114d7664d341",
+      "status": 200,
+      "at": 1794076881396
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076881398
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076881438
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076881462
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076881505
+    },
+    {
+      "kind": "navigation",
+      "path": "/",
+      "hash": "#/resources/data-resources",
+      "at": 1794076881765
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076881865
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/me",
+      "status": 200,
+      "at": 1794076881900
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076881922
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076881952
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076881985
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076881985
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076882015
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076882022
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200,
+      "at": 1794076882038
+    },
+    {
+      "kind": "response",
+      "path": "/api/v1/unified/resources",
+      "status": 200,
+      "at": 1794076882075
+    }
+  ],
+  "page_errors": [],
+  "server_errors": []
+}

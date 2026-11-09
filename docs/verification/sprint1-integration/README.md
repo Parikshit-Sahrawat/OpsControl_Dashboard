@@ -1,0 +1,34 @@
+# Sprint 1 consolidated integration — owner review candidate
+
+> Latest2026-11-09: [OC-S1-CI-003 results](ci003-2026-11-09/REPORT.md) and [current blockers](ci003-2026-11-09/REMAINING_BLOCKERS.md). Earlier dated results below remain historical; current coordinated-child and catalogue-CAS evidence supersedes those earlier implementation gaps.
+
+Latest: [closure follow-up, actual fault/browser tests and image remediation](closure-followup-2026-11-08/REPORT.md). [Current remaining blockers](closure-followup-2026-11-08/REMAINING_BLOCKERS.md). Earlier report/source identities remain historical snapshots.
+
+Repository: Parikshit-Sahrawat/OpsControl_Dashboard · draft PR [#89](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89). Branch: `integration/sprint1-pr80-81-82-83-84-86`.
+
+**Disposition: PARTIAL / BLOCKED; Sprint1 NOT COMPLETE.** All six pinned branches are integrated by three-way merge. Implemented configuration safeguards and controlled regression evidence are reviewable. Remaining configuration cutover/UX work, security findings, GitHub permission limits and owner/independent acceptance prevent closure. No main merge or deployment.
+
+- [Report and exact test counts](REPORT.md)
+- [Original ledger and execution update](INTEGRATION_LEDGER.md)
+- [Conflict decisions](MERGE_RESOLUTIONS.md), [reproducible merge provenance](MERGE_PROVENANCE.json)
+- [Configuration ownership/API/security contract and limits](CONFIGURATION_CONTRACT.md)
+- [CI audit, check equivalence and genuine blockers](CI_CLOSURE.md)
+- [Actual ruleset update outcome: HTTP403, unchanged13 checks](RULESET_UPDATE_RESULT.json)
+- [Open acceptance blockers](OPEN_BLOCKERS.md)
+- [Desktop visual review](VISUAL_ACCEPTANCE.md)
+- [Test execution register](TEST_EXECUTIONS.json), [deduplicated backend identities](BACKEND_TEST_RECONCILIATION.json)
+- [Source hashes](TESTED_SOURCE_SHA256.json), [validation](VALIDATION.json), [artifact hashes](ARTIFACT_SHA256.json)
+
+`runtime-evidence/` contains current and failed controlled runs, screenshots and cleanup. `hosted-baseline/` contains immutable historical hosted evidence, including all seven raw image SBOM/Grype/licence packages. Historical source/image identities are retained; these scans do not qualify the new final image candidates. `source-evidence/` retains conflicting historical branch blobs without inventing new PASS results.
+
+Final hosted CI is triggered after the evidence commit and reported **RESULT PENDING**, under owner Trigger-and-Exit policy. The final commit and available run URLs are recorded in the PR89 handoff; no polling or release certification is inferred.
+
+**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.** Formal UAT/provider qualification and nine owner-acceptance selections remain pending. Independent review and owner visual acceptance are required before any future merge.
+
+Latest scoped follow-up: [exact-head Access/keyboard recovery](required-recovery-2026-11-09/REPORT.md), [retained seven-role security failures](required-recovery-2026-11-09/IMAGE_FAILURE_REVIEW.md), and [machine-readable validation](required-recovery-2026-11-09/VALIDATION.json). Hosted final-head results remain pending; historical evidence is preserved.
+
+Latest sequential work: [CI005 exact-head recovery](ci005-2026-11-09/REPORT.md), [issue95 architecture/evidence guard](arch95-2026-11-09/REPORT.md), and [bounded E2E workflow matrix](E2E_WORKFLOW_MATRIX.md). All7 whole workflows remain partial/blocked; subpath evidence is preserved.
+
+Latest [CI006 recovery evidence](ci006-2026-11-09/REPORT.md) retains2 exact-head hosted route failures, explicit local non-reproduction,2 passing native-response-gate recovery candidates and #95 revalidation. Final hosted status remains pending; no gate promotion.
+
+[SEC001 exact-b1e645f image-security/licence assessment](sec001-2026-11-09/REPORT.md) retains7 coherent exact-head image packages,984 image-scoped findings/428 cross-image remediation groups,2451 pending component reviews and a proposed owner-assigned test plan. No risky upgrades or gate changes were implemented.

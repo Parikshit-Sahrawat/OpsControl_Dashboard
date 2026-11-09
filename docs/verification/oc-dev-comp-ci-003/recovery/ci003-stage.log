@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/ci003-stage.py", line 27, in <module>
+    for script in ['capture_phase1_ui','test_world_clock','test_monitoring_setup','test_access_management']:run(['node',root/'frontend/scripts'/f'{script}.mjs'],b)
+                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ci003-stage.py", line 7, in run
+    if p.returncode:raise RuntimeError(str(args))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: ['node', PosixPath('/tmp/oc-dev-comp-001/frontend/scripts/test_world_clock.mjs')]

@@ -1,0 +1,22 @@
+✔ two genuine cross-origin responses stay held while unrelated requests and headers remain native (736.598167ms)
+✖ repeated gates and idempotent release preserve forbidden status and restore native fetch (116.854852ms)
+✔ native CORS denial and transport failure propagate without fabricated responses (115.824416ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1097.6405
+
+✖ failing tests:
+
+test at frontend/scripts/browser_response_gate.test.mjs:64:1
+✖ repeated gates and idempotent release preserve forbidden status and restore native fetch (116.854852ms)
+  page.evaluate: Error: Response gate already installed
+      at eval (eval at evaluate (:290:30), <anonymous>:3:53)
+      at UtilityScript.evaluate (<anonymous>:292:16)
+      at UtilityScript.<anonymous> (<anonymous>:1:44)
+      at holdBrowserResponses (/tmp/oc-sprint1-integration/frontend/scripts/browser_response_gate.mjs:4:14)
+      at TestContext.<anonymous> (/tmp/oc-sprint1-integration/frontend/scripts/browser_response_gate.test.mjs:68:24)

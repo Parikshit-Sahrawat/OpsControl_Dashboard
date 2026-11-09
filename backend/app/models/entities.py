@@ -147,8 +147,47 @@ class PentahoInstance(Base):
     vm: Mapped["VM"] = relationship(back_populates="pentaho_instances")
 
 
+class ETLWorkflow(Base):
+    """Monitoring expectation only; never dispatches scheduler jobs."""
+
+    __tablename__ = "etl_workflows"
+    organization: Mapped["Organization"] = relationship(viewonly=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id"), nullable=False, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    environment: Mapped[str] = mapped_column(String(50), nullable=False, default="PROD")
+    schedule: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
+    expected_window_start: Mapped[str | None] = mapped_column(String(10))
+    expected_window_end: Mapped[str | None] = mapped_column(String(10))
+    expected_duration_seconds: Mapped[int | None] = mapped_column(Integer)
+    sla_seconds: Mapped[int | None] = mapped_column(Integer)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    __table_args__ = (
+        UniqueConstraint("organization_id", "environment", "name", name="uq_etl_workflow_scope"),
+        CheckConstraint("expected_duration_seconds IS NULL OR expected_duration_seconds > 0", name="ck_etl_workflow_duration"),
+        CheckConstraint("sla_seconds IS NULL OR sla_seconds > 0", name="ck_etl_workflow_sla"),
+    )
+
+
+class ETLWorkflowDependency(Base):
+    """Directed predecessor -> successor dependency within a workflow."""
+
+    __tablename__ = "etl_workflow_dependencies"
+    workflow: Mapped["ETLWorkflow"] = relationship(viewonly=True)
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    workflow_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("etl_workflows.id", ondelete="RESTRICT"), nullable=False, index=True)
+    predecessor_job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_orders.id", ondelete="RESTRICT"), nullable=False)
+    successor_job_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("job_orders.id", ondelete="RESTRICT"), nullable=False)
+    __table_args__ = (
+        UniqueConstraint("workflow_id", "predecessor_job_id", "successor_job_id", name="uq_etl_workflow_dependency"),
+        CheckConstraint("predecessor_job_id <> successor_job_id", name="ck_etl_dependency_no_self"),
+    )
+
+
 class JobOrder(Base):
     __tablename__ = "job_orders"
+    workflow_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("etl_workflows.id", ondelete="RESTRICT"), nullable=True, index=True)
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
@@ -596,6 +635,7 @@ class DataSource(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
+    configuration_revision: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"), default=0)
     organization_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("organizations.id"), nullable=False, index=True
     )
@@ -631,6 +671,7 @@ class DataSource(Base):
         back_populates="data_source", cascade="all, delete-orphan"
     )
     __table_args__ = (
+        UniqueConstraint("id", "organization_id", name="uq_data_source_configuration_owner"),
         UniqueConstraint("organization_id", "name", name="uq_data_source_org_name"),
         UniqueConstraint(
             "organization_id",
@@ -1170,4 +1211,34 @@ class KubernetesClusterAssociationDecision(Base):
     __table_args__ = (
         UniqueConstraint("association_id", "revision", name="uq_k8s_association_decision_revision"),
         CheckConstraint("revision > 0", name="ck_k8s_decision_revision"),
+    )
+
+
+class SourceConfigurationRevision(Base):
+    """Append-only source intent, independent of collector deployment/evidence."""
+    __tablename__ = "source_configuration_revisions"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    organization_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("organizations.id", ondelete="RESTRICT"), nullable=False)
+    data_source_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    previous_revision: Mapped[int | None] = mapped_column(Integer)
+    restores_revision: Mapped[int | None] = mapped_column(Integer)
+    kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    actor_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    actor_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    command_key: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    request_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    content_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    canonical_document: Mapped[str] = mapped_column(Text, nullable=False)
+    document: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=text("CURRENT_TIMESTAMP"), nullable=False)
+    data_source: Mapped["DataSource"] = relationship(foreign_keys=[data_source_id, organization_id], overlaps="organization")
+    organization: Mapped["Organization"] = relationship(foreign_keys=[organization_id], overlaps="data_source")
+    __table_args__ = (
+        ForeignKeyConstraint(["data_source_id", "organization_id"], ["data_sources.id", "data_sources.organization_id"], ondelete="RESTRICT", name="fk_source_revision_owner"),
+        UniqueConstraint("data_source_id", "revision", name="uq_source_configuration_revision"),
+        UniqueConstraint("data_source_id", "actor_id", "command_key", name="uq_source_configuration_command"),
+        ForeignKeyConstraint(["data_source_id", "previous_revision"], ["source_configuration_revisions.data_source_id", "source_configuration_revisions.revision"], name="fk_source_revision_previous", deferrable=True, initially="DEFERRED"),
+        ForeignKeyConstraint(["data_source_id", "restores_revision"], ["source_configuration_revisions.data_source_id", "source_configuration_revisions.revision"], name="fk_source_revision_restore", deferrable=True, initially="DEFERRED"),
+        CheckConstraint("revision > 0 AND (previous_revision IS NULL OR previous_revision = revision - 1)", name="ck_source_revision_sequence"),
     )

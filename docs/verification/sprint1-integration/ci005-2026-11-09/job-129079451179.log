@@ -1,0 +1,255 @@
+﻿2026-11-09T09:25:42.3891908Z Current runner version: '2.338.2'
+2026-11-09T09:25:42.3929765Z ##[group]Runner Image Provisioner
+2026-11-09T09:25:42.3931758Z Hosted Compute Agent
+2026-11-09T09:25:42.3932870Z Version: 20261028.624
+2026-11-09T09:25:42.3934153Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-09T09:25:42.3935466Z Build Date: 2026-10-28T21:51:42Z
+2026-11-09T09:25:42.3936702Z Worker ID: {d3746f38-fba5-40bb-b08a-396cdc73e958}
+2026-11-09T09:25:42.3938125Z Region: centralus
+2026-11-09T09:25:42.3939188Z Cloud: Azure
+2026-11-09T09:25:42.3940381Z ##[endgroup]
+2026-11-09T09:25:42.3943162Z ##[group]Operating System
+2026-11-09T09:25:42.3944393Z Ubuntu
+2026-11-09T09:25:42.3945386Z 24.04.5
+2026-11-09T09:25:42.3946410Z LTS
+2026-11-09T09:25:42.3947515Z ##[endgroup]
+2026-11-09T09:25:42.3948579Z ##[group]Runner Image
+2026-11-09T09:25:42.3949700Z Image: ubuntu-24.04
+2026-11-09T09:25:42.3950932Z Version: 20261101.360.1
+2026-11-09T09:25:42.3953491Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-09T09:25:42.3956494Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-09T09:25:42.3958314Z ##[endgroup]
+2026-11-09T09:25:42.3960556Z ##[group]GITHUB_TOKEN Permissions
+2026-11-09T09:25:42.3963941Z Contents: read
+2026-11-09T09:25:42.3965128Z Metadata: read
+2026-11-09T09:25:42.3966052Z ##[endgroup]
+2026-11-09T09:25:42.3969583Z Secret source: Actions
+2026-11-09T09:25:42.3971335Z Cache mode: write
+2026-11-09T09:25:42.3972978Z Prepare workflow directory
+2026-11-09T09:25:42.4350961Z Prepare all required actions
+2026-11-09T09:25:42.4406397Z Getting action download info
+2026-11-09T09:25:42.7281393Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-09T09:25:42.8528961Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-09T09:25:43.0454851Z Complete job name: scope-policy
+2026-11-09T09:25:43.1341444Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-09T09:25:43.1342593Z with:
+2026-11-09T09:25:43.1343073Z   persist-credentials: false
+2026-11-09T09:25:43.1343699Z   repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T09:25:43.1347535Z   token: ***
+2026-11-09T09:25:43.1347988Z   ssh-strict: true
+2026-11-09T09:25:43.1348445Z   ssh-user: git
+2026-11-09T09:25:43.1348884Z   clean: true
+2026-11-09T09:25:43.1349347Z   sparse-checkout-cone-mode: true
+2026-11-09T09:25:43.1349901Z   fetch-depth: 1
+2026-11-09T09:25:43.1350343Z   fetch-tags: false
+2026-11-09T09:25:43.1350811Z   show-progress: true
+2026-11-09T09:25:43.1351475Z   lfs: false
+2026-11-09T09:25:43.1351902Z   submodules: false
+2026-11-09T09:25:43.1352366Z   set-safe-directory: true
+2026-11-09T09:25:43.1352884Z   allow-unsafe-pr-checkout: false
+2026-11-09T09:25:43.1353684Z ##[endgroup]
+2026-11-09T09:25:43.4087770Z Syncing repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T09:25:43.4091505Z ##[group]Getting Git version info
+2026-11-09T09:25:43.4093286Z Working directory is '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-09T09:25:43.4095856Z [command]/usr/bin/git version
+2026-11-09T09:25:43.4202922Z git version 2.56.0
+2026-11-09T09:25:43.4238411Z ##[endgroup]
+2026-11-09T09:25:43.4274131Z Temporarily overriding HOME='/home/runner/work/_temp/80774f8d-38f4-42f1-bdb4-b2338b92f405' before making global git config changes
+2026-11-09T09:25:43.4276889Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T09:25:43.4279383Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T09:25:43.4356324Z Deleting the contents of '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-09T09:25:43.4367860Z ##[group]Initializing the repository
+2026-11-09T09:25:43.4373074Z [command]/usr/bin/git init /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T09:25:43.4515636Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-09T09:25:43.4518307Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-09T09:25:43.4520249Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-09T09:25:43.4522560Z hint: call:
+2026-11-09T09:25:43.4523472Z hint:
+2026-11-09T09:25:43.4524736Z hint: 	git config --global init.defaultBranch <name>
+2026-11-09T09:25:43.4526173Z hint:
+2026-11-09T09:25:43.4527433Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-09T09:25:43.4529449Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-09T09:25:43.4530988Z hint:
+2026-11-09T09:25:43.4532491Z hint: 	git branch -m <name>
+2026-11-09T09:25:43.4533632Z hint:
+2026-11-09T09:25:43.4535041Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-09T09:25:43.4537740Z Initialized empty Git repository in /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/.git/
+2026-11-09T09:25:43.4550419Z [command]/usr/bin/git remote add origin https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T09:25:43.4619383Z ##[endgroup]
+2026-11-09T09:25:43.4621220Z ##[group]Disabling automatic garbage collection
+2026-11-09T09:25:43.4625873Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-09T09:25:43.4703728Z ##[endgroup]
+2026-11-09T09:25:43.4705048Z ##[group]Setting up auth
+2026-11-09T09:25:43.4710857Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T09:25:43.4776081Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T09:25:43.5234309Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T09:25:43.5286573Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T09:25:43.5549078Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T09:25:43.5598585Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T09:25:43.5868952Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-09T09:25:43.5922348Z ##[endgroup]
+2026-11-09T09:25:43.5923603Z ##[group]Fetching the repository
+2026-11-09T09:25:43.5936406Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +72382ad1535c2d5a84d1e55fc19f692c351197a4:refs/remotes/origin/integration/sprint1-pr80-81-82-83-84-86
+2026-11-09T09:25:58.9602622Z From https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-09T09:25:58.9603704Z  * [new ref]         72382ad1535c2d5a84d1e55fc19f692c351197a4 -> origin/integration/sprint1-pr80-81-82-83-84-86
+2026-11-09T09:25:58.9607405Z ##[endgroup]
+2026-11-09T09:25:58.9608367Z ##[group]Determining the checkout info
+2026-11-09T09:25:58.9610347Z ##[endgroup]
+2026-11-09T09:25:58.9616686Z [command]/usr/bin/git sparse-checkout disable
+2026-11-09T09:25:58.9680558Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-09T09:25:58.9722795Z ##[group]Checking out the ref
+2026-11-09T09:25:58.9728090Z [command]/usr/bin/git checkout --progress --force -B integration/sprint1-pr80-81-82-83-84-86 refs/remotes/origin/integration/sprint1-pr80-81-82-83-84-86
+2026-11-09T09:25:59.9966983Z Updating files:  33% (3781/11377)
+2026-11-09T09:26:00.0183719Z Updating files:  34% (3869/11377)
+2026-11-09T09:26:00.0441912Z Updating files:  35% (3982/11377)
+2026-11-09T09:26:00.0690031Z Updating files:  36% (4096/11377)
+2026-11-09T09:26:00.0896554Z Updating files:  37% (4210/11377)
+2026-11-09T09:26:00.1371839Z Updating files:  38% (4324/11377)
+2026-11-09T09:26:00.1771591Z Updating files:  39% (4438/11377)
+2026-11-09T09:26:00.1918631Z Updating files:  40% (4551/11377)
+2026-11-09T09:26:00.2016738Z Updating files:  41% (4665/11377)
+2026-11-09T09:26:00.2263978Z Updating files:  42% (4779/11377)
+2026-11-09T09:26:00.2579921Z Updating files:  43% (4893/11377)
+2026-11-09T09:26:00.2671922Z Updating files:  44% (5006/11377)
+2026-11-09T09:26:00.2744362Z Updating files:  45% (5120/11377)
+2026-11-09T09:26:00.2868117Z Updating files:  46% (5234/11377)
+2026-11-09T09:26:00.2942211Z Updating files:  47% (5348/11377)
+2026-11-09T09:26:00.3105738Z Updating files:  48% (5461/11377)
+2026-11-09T09:26:00.3288962Z Updating files:  49% (5575/11377)
+2026-11-09T09:26:00.3438261Z Updating files:  50% (5689/11377)
+2026-11-09T09:26:00.3688335Z Updating files:  51% (5803/11377)
+2026-11-09T09:26:00.3868557Z Updating files:  52% (5917/11377)
+2026-11-09T09:26:00.4056727Z Updating files:  53% (6030/11377)
+2026-11-09T09:26:00.4235287Z Updating files:  54% (6144/11377)
+2026-11-09T09:26:00.4470612Z Updating files:  55% (6258/11377)
+2026-11-09T09:26:00.4672596Z Updating files:  56% (6372/11377)
+2026-11-09T09:26:00.4878017Z Updating files:  57% (6485/11377)
+2026-11-09T09:26:00.5126638Z Updating files:  58% (6599/11377)
+2026-11-09T09:26:00.5332902Z Updating files:  59% (6713/11377)
+2026-11-09T09:26:00.5507305Z Updating files:  60% (6827/11377)
+2026-11-09T09:26:00.5691581Z Updating files:  61% (6940/11377)
+2026-11-09T09:26:00.5926948Z Updating files:  62% (7054/11377)
+2026-11-09T09:26:00.6259030Z Updating files:  63% (7168/11377)
+2026-11-09T09:26:00.6503566Z Updating files:  64% (7282/11377)
+2026-11-09T09:26:00.6756778Z Updating files:  65% (7396/11377)
+2026-11-09T09:26:00.7029237Z Updating files:  66% (7509/11377)
+2026-11-09T09:26:00.7510470Z Updating files:  67% (7623/11377)
+2026-11-09T09:26:00.7886990Z Updating files:  68% (7737/11377)
+2026-11-09T09:26:00.8158904Z Updating files:  69% (7851/11377)
+2026-11-09T09:26:00.8705294Z Updating files:  70% (7964/11377)
+2026-11-09T09:26:00.9152208Z Updating files:  71% (8078/11377)
+2026-11-09T09:26:00.9458306Z Updating files:  72% (8192/11377)
+2026-11-09T09:26:00.9575041Z Updating files:  73% (8306/11377)
+2026-11-09T09:26:00.9708762Z Updating files:  74% (8419/11377)
+2026-11-09T09:26:00.9879035Z Updating files:  75% (8533/11377)
+2026-11-09T09:26:01.0059846Z Updating files:  75% (8598/11377)
+2026-11-09T09:26:01.0609245Z Updating files:  76% (8647/11377)
+2026-11-09T09:26:01.1054039Z Updating files:  77% (8761/11377)
+2026-11-09T09:26:01.1582538Z Updating files:  78% (8875/11377)
+2026-11-09T09:26:01.1900429Z Updating files:  79% (8988/11377)
+2026-11-09T09:26:01.2018816Z Updating files:  80% (9102/11377)
+2026-11-09T09:26:01.2289034Z Updating files:  81% (9216/11377)
+2026-11-09T09:26:01.2651873Z Updating files:  82% (9330/11377)
+2026-11-09T09:26:01.2852878Z Updating files:  83% (9443/11377)
+2026-11-09T09:26:01.3131952Z Updating files:  84% (9557/11377)
+2026-11-09T09:26:01.3243115Z Updating files:  85% (9671/11377)
+2026-11-09T09:26:01.3669109Z Updating files:  86% (9785/11377)
+2026-11-09T09:26:01.3838654Z Updating files:  87% (9898/11377)
+2026-11-09T09:26:01.3967266Z Updating files:  88% (10012/11377)
+2026-11-09T09:26:01.4206907Z Updating files:  89% (10126/11377)
+2026-11-09T09:26:01.4528153Z Updating files:  90% (10240/11377)
+2026-11-09T09:26:01.4982338Z Updating files:  91% (10354/11377)
+2026-11-09T09:26:01.5363543Z Updating files:  92% (10467/11377)
+2026-11-09T09:26:01.5440955Z Updating files:  93% (10581/11377)
+2026-11-09T09:26:01.5784233Z Updating files:  94% (10695/11377)
+2026-11-09T09:26:01.6118043Z Updating files:  95% (10809/11377)
+2026-11-09T09:26:01.6428766Z Updating files:  96% (10922/11377)
+2026-11-09T09:26:01.6641615Z Updating files:  97% (11036/11377)
+2026-11-09T09:26:01.6717982Z Updating files:  98% (11150/11377)
+2026-11-09T09:26:01.6783780Z Updating files:  99% (11264/11377)
+2026-11-09T09:26:01.6784730Z Updating files: 100% (11377/11377)
+2026-11-09T09:26:01.6785607Z Updating files: 100% (11377/11377), done.
+2026-11-09T09:26:01.6908085Z Switched to a new branch 'integration/sprint1-pr80-81-82-83-84-86'
+2026-11-09T09:26:01.6912038Z branch 'integration/sprint1-pr80-81-82-83-84-86' set up to track 'origin/integration/sprint1-pr80-81-82-83-84-86'.
+2026-11-09T09:26:01.7082077Z ##[endgroup]
+2026-11-09T09:26:01.7171960Z [command]/usr/bin/git log -1 --format=%H
+2026-11-09T09:26:01.7195299Z 72382ad1535c2d5a84d1e55fc19f692c351197a4
+2026-11-09T09:26:01.7212338Z ##[group]Removing auth
+2026-11-09T09:26:01.7216024Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T09:26:01.7267568Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T09:26:01.7544752Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T09:26:01.7580941Z http.https://github.com/.extraheader
+2026-11-09T09:26:01.7592920Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-09T09:26:01.7669886Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T09:26:01.7920464Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T09:26:01.7982562Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T09:26:01.8248912Z ##[endgroup]
+2026-11-09T09:26:01.8523012Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-09T09:26:01.8523450Z with:
+2026-11-09T09:26:01.8523667Z   python-version: 3.12
+2026-11-09T09:26:01.8523904Z   check-latest: false
+2026-11-09T09:26:01.8526323Z   token: ***
+2026-11-09T09:26:01.8526542Z   update-environment: true
+2026-11-09T09:26:01.8526808Z   allow-prereleases: false
+2026-11-09T09:26:01.8527045Z   freethreaded: false
+2026-11-09T09:26:01.8527261Z ##[endgroup]
+2026-11-09T09:26:02.0064251Z ##[group]Installed versions
+2026-11-09T09:26:02.0160979Z (node:2427) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-09T09:26:02.0162537Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-09T09:26:02.0163324Z Successfully set up CPython (3.12.16)
+2026-11-09T09:26:02.0164082Z ##[endgroup]
+2026-11-09T09:26:02.0345056Z ##[group]Run python -m pip install PyYAML==6.0.2
+2026-11-09T09:26:02.0345503Z [36;1mpython -m pip install PyYAML==6.0.2[0m
+2026-11-09T09:26:02.0444022Z shell: /usr/bin/bash -e {0}
+2026-11-09T09:26:02.0444527Z env:
+2026-11-09T09:26:02.0444970Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:02.0445722Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T09:26:02.0446478Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:02.0447128Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:02.0447769Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:02.0448407Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T09:26:02.0448927Z ##[endgroup]
+2026-11-09T09:26:05.2100491Z Collecting PyYAML==6.0.2
+2026-11-09T09:26:05.2794087Z   Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-11-09T09:26:05.2947846Z Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (767 kB)
+2026-11-09T09:26:05.3896366Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 767.5/767.5 kB 10.2 MB/s  0:00:00
+2026-11-09T09:26:05.5286148Z Installing collected packages: PyYAML
+2026-11-09T09:26:05.5886451Z Successfully installed PyYAML-6.0.2
+2026-11-09T09:26:05.5895570Z 
+2026-11-09T09:26:05.5896292Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-09T09:26:05.5897173Z [notice] To update, run: pip install --upgrade pip
+2026-11-09T09:26:05.6480225Z ##[group]Run bash scripts/check-workflows.sh
+2026-11-09T09:26:05.6480654Z [36;1mbash scripts/check-workflows.sh[0m
+2026-11-09T09:26:05.6480965Z [36;1mpython scripts/ci/policy.py[0m
+2026-11-09T09:26:05.6481783Z [36;1mpython -m unittest discover -s tests -p 'test_ci_*.py' -v[0m
+2026-11-09T09:26:05.6504175Z shell: /usr/bin/bash -e {0}
+2026-11-09T09:26:05.6504433Z env:
+2026-11-09T09:26:05.6504714Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:05.6505165Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-09T09:26:05.6505619Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:05.6506009Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:05.6506401Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-09T09:26:05.6506806Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-09T09:26:05.6507163Z ##[endgroup]
+2026-11-09T09:26:06.3112540Z Traceback (most recent call last):
+2026-11-09T09:26:06.3119968Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/policy.py", line 179, in <module>
+2026-11-09T09:26:06.3120590Z     print(json.dumps(validate(), indent=2))
+2026-11-09T09:26:06.3120903Z                      ^^^^^^^^^^
+2026-11-09T09:26:06.3121928Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/policy.py", line 91, in validate
+2026-11-09T09:26:06.3122532Z     raise ValueError(
+2026-11-09T09:26:06.3122966Z ValueError: Test scope inventory changed: review and regenerate manifest, never silently omit tests
+2026-11-09T09:26:06.3198422Z ##[error]Process completed with exit code 1.
+2026-11-09T09:26:06.3347329Z Post job cleanup.
+2026-11-09T09:26:06.4231363Z [command]/usr/bin/git version
+2026-11-09T09:26:06.4280330Z git version 2.56.0
+2026-11-09T09:26:06.4323243Z Temporarily overriding HOME='/home/runner/work/_temp/8c51fdb4-8683-46d4-b440-242e525acdd7' before making global git config changes
+2026-11-09T09:26:06.4324649Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T09:26:06.4329043Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-09T09:26:06.4377246Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T09:26:06.4429641Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T09:26:06.4722516Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T09:26:06.4757862Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T09:26:06.5087822Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T09:26:06.5149984Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T09:26:06.5636427Z Cleaning up orphan processes
+2026-11-09T09:26:06.6018141Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

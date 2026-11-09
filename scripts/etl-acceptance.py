@@ -2,6 +2,7 @@
 """Disposable Sprint 3 controlled HTTPS Carte lifecycle and real browser gate."""
 import json, os, secrets, shutil, socket, subprocess, sys, tempfile, time, urllib.request
 from pathlib import Path
+from fixture_ports import claim_port
 ROOT=Path(__file__).resolve().parents[1];PYTHON=str(ROOT/'backend/.venv/bin/python')
 OUT=Path(os.getenv('ETL_EVIDENCE_DIR',str(ROOT/'docs/screenshots/etl')))
 private=Path(tempfile.mkdtemp(prefix='opscontrol-etl-'));private.chmod(0o700)
@@ -46,6 +47,17 @@ def noc_browser(phase):
 def target():return start([PYTHON,'-c','import time;time.sleep(3600)'],label='linux-target')
 
 try:
+    # Fail closed on occupied/denied ports. A failed Docker bind also aborts;
+    # no request is ever redirected to a pre-existing service.
+    for address, port in [('127.0.0.1',11432),('127.0.0.1',18800),('127.0.0.1',15174)]:
+        claim_port(address, port)
+    # Worker protocol deliberately requires443. Only the Docker daemon claims
+    # this privileged port; unprivileged Python must not pre-bind it. Docker
+    # publishes exclusively and fails closed if another service owns it.
+    fixture_port = 443
+    env['ETL_FIXTURE_PORT'] = '443'
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT/'fixture-binding.json').write_text(json.dumps({'address':host, 'host_port':fixture_port, 'container_port':443, 'scheme':'https', 'certificate_verification':True}, indent=2))
     import ipaddress
     if ipaddress.ip_address(host).is_loopback:raise RuntimeError('Controlled fixture needs an actual private interface address')
     for name in ('admin-password','carte-password'):
@@ -53,11 +65,15 @@ try:
     env['OPSCONTROL_CREDENTIAL_ETL_FIXTURE_PASSWORD']=(private/'carte-password').read_text().strip()
     (private/'phase').write_text('no-run')
     run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',str(private/'tls.key'),'-out',str(private/'tls.crt'),'-days','1','-subj','/CN='+host,'-addext','subjectAltName=IP:'+host])
-    run(['docker','run','-d','--name',container,'-p','127.0.0.1:11432:5432','-e','POSTGRES_USER=opscontrol','-e','POSTGRES_PASSWORD=etl-local-only','-e','POSTGRES_DB=opscontrol','postgres:17-alpine'])
+    run(['docker','run','-d','--name',container,'--tmpfs','/var/lib/postgresql/data','-p','127.0.0.1:11432:5432','-e','POSTGRES_USER=opscontrol','-e','POSTGRES_PASSWORD=etl-local-only','-e','POSTGRES_DB=opscontrol','postgres:17-alpine'])
     for _ in range(100):
         if subprocess.run(['docker','exec',container,'pg_isready','-U','opscontrol'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:break
         time.sleep(.3)
-    else:raise RuntimeError('Disposable PostgreSQL not ready')
+    else:
+        OUT.mkdir(parents=True,exist_ok=True)
+        diagnostic=subprocess.run(['docker','logs',container],capture_output=True,text=True)
+        (OUT/'postgres-readiness-failure.log').write_text((diagnostic.stdout+'\n'+diagnostic.stderr).replace('etl-local-only','[REDACTED]'))
+        raise RuntimeError('Disposable PostgreSQL not ready; redacted container log retained')
     run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
     run([PYTHON,'-m','alembic','downgrade','0019_infrastructure_evidence'],ROOT/'backend')
     run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
@@ -68,10 +84,26 @@ try:
         for iteration in range(2):
             run([PYTHON,'-m','alembic','upgrade','0024_notification_leases'],ROOT/'backend')
             run([PYTHON,'-m','scripts.operations_migration_probe','verify'],ROOT/'backend')
-            if iteration==0:run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],ROOT/'backend')
+            if iteration==0:
+                # Backfilled incident history is now protected. Repeated upgrade
+                # must be idempotent without dropping that history to recreate it.
+                def dump_state():
+                    dump=subprocess.check_output(['docker','exec',container,'pg_dump','-U','opscontrol','--no-owner','--no-privileges','opscontrol'],text=True)
+                    return '\n'.join(line for line in dump.splitlines() if not line.startswith(('\\restrict ','\\unrestrict ')))
+                before=dump_state()
+                refusal=subprocess.run([PYTHON,'-m','alembic','downgrade','0020_etl_monitoring_evidence'],cwd=ROOT/'backend',env=env,capture_output=True,text=True)
+                assert refusal.returncode != 0
+                for marker in ('Unsafe populated ETL downgrade blocked before DDL','verified full backup','isolated restoration'):
+                    assert marker in refusal.stderr,marker
+                after=dump_state()
+                assert before==after,'Refused downgrade changed incident rows/schema/revision'
+                import hashlib
+                OUT.mkdir(parents=True,exist_ok=True)
+                (OUT/'populated-migration-preservation.json').write_text(json.dumps({'exit_code':refusal.returncode,'before_sha256':hashlib.sha256(before.encode()).hexdigest(),'after_sha256':hashlib.sha256(after.encode()).hexdigest(),'unchanged':True},indent=2))
+                (OUT/'populated-downgrade-refusal.log').write_text(refusal.stderr)
     run([PYTHON,'-m','alembic','upgrade','head'],ROOT/'backend')
     linux=target();env['LINUX_TARGET_PID']=str(linux.pid)
-    run(['docker','run','-d','--name',fixture,'-p',host+':443:443','-e','ETL_FIXTURE_BIND=0.0.0.0',
+    run(['docker','run','-d','--name',fixture,'-p',host+':'+str(fixture_port)+':443','-e','ETL_FIXTURE_BIND=0.0.0.0',
         '-v',str(private)+':/fixture','-v',str(ROOT/'deploy/fixtures/pentaho_carte_api.py')+':/app.py:ro',
         'python:3.12-alpine','python','/app.py','/fixture',host])
     start([PYTHON,'-m','uvicorn','app.main:app','--host','127.0.0.1','--port','18800','--no-access-log'],ROOT/'backend','api')
@@ -102,4 +134,28 @@ finally:
             try:process.wait(timeout=5)
             except subprocess.TimeoutExpired:process.kill();process.wait()
     subprocess.run(['docker','rm','-f','-v',fixture,container],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    if passed:shutil.rmtree(private)
+    # Preserve redacted failure/success logs, not synthetic credentials or keys.
+    import re, hashlib
+    OUT.mkdir(parents=True,exist_ok=True)
+    redactions=['etl-local-only']
+    def secrets_from(value):
+        if isinstance(value,dict):
+            for key,item in value.items():
+                if any(word in key.lower() for word in ('password','token','secret')) and isinstance(item,str) and len(item)>6:redactions.append(item)
+                else:secrets_from(item)
+        elif isinstance(value,list):
+            for item in value:secrets_from(item)
+    for file in private.glob('*.json'):
+        try:secrets_from(json.loads(file.read_text()))
+        except (ValueError,OSError):pass
+    for filename in ('admin-password','carte-password'):
+        if (private/filename).exists():redactions.append((private/filename).read_text().strip())
+    for file in private.glob('*.log'):
+        content=file.read_text(errors='replace')
+        for secret in redactions:content=content.replace(secret,'[REDACTED]')
+        content=re.sub(r'(?i)(Bearer|Basic) [A-Za-z0-9_.+/=-]+',r'\1 [REDACTED]',content)
+        (OUT/('private-'+file.name)).write_text(content)
+    fingerprints={file.name:hashlib.sha256(file.read_bytes()).hexdigest() for file in private.iterdir() if file.is_file()}
+    remaining={name:subprocess.run(['docker','inspect','--type','container',name],capture_output=True).returncode==0 for name in (fixture,container)}
+    shutil.rmtree(private)
+    (OUT/'cleanup.json').write_text(json.dumps({'containers_absent':not any(remaining.values()),'remaining':remaining,'processes_stopped':all(process.poll() is not None for process in processes),'private_removed':not private.exists(),'fixture_hashes':fingerprints,'scope':'Only allocated fixture/container/processes/private directory; no shared UAT or production'},indent=2))

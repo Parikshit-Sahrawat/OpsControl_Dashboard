@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/9876d7d6-42c5-4104-a96b-6391108e2dcb/jobs/a3b2c87f-ef6d-464d-beda-5ffdbeba818d/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/job-orders/a3b2c87f-ef6d-464d-beda-5ffdbeba818d/executions",
+      "expected": 409,
+      "actual": 409,
+      "detail": "Authority-aware writer required for opted-in ETL Job; retain schema/history"
+    }
+  ]
+}

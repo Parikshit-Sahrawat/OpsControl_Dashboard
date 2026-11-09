@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import App from "../App";
+import { sessionWasRejected } from "../sessionVerification";
 import ThemeToggle from "./ThemeToggle";
 import { readToken, sessionUser, signIn, signOut, clearToken } from "../auth";
 
@@ -9,15 +10,26 @@ export default function AuthGate() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    if (!readToken()) return;
-    sessionUser().then(setUser).catch(() => { clearToken(); setUser(null); }).finally(() => setLoading(false));
+    const token = readToken();
+    if (!token) return;
+    let live = true;
+    const controller = new AbortController();
+    sessionUser(controller.signal).then(next => {
+      if (live && readToken() === token) setUser(next);
+    }).catch(error => {
+      if (!live || readToken() !== token) return;
+      if (sessionWasRejected(error)) clearToken();
+      setUser(null); // Fail closed: an unverifiable session never renders App.
+      setError(sessionWasRejected(error) ? "Session expired or access denied" : "Session verification unavailable. Reload to retry or sign in.");
+    }).finally(() => { if (live) setLoading(false); });
+    return () => { live = false; controller.abort(); };
   }, []);
   useEffect(() => {
     if (!user) return;
     let live=true,pending=false;
     const refresh=async()=>{if(pending)return;pending=true;const token=readToken();
       try{const next=await sessionUser();if(live&&readToken()===token)setUser(current=>current?.authorization_revision===next.authorization_revision?current:next);}
-      catch {if(live&&readToken()===token){clearToken();setUser(null);}}
+      catch(error) {if(live&&readToken()===token){if(sessionWasRejected(error))clearToken();setUser(null);setError("Session could not be verified. Reload to retry or sign in.");}}
       finally{pending=false;}
     };
     const timer=setInterval(refresh,5000);window.addEventListener("focus",refresh);

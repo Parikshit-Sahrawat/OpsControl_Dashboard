@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -353,42 +354,20 @@ try {
   checks.push(
     "Independent confirmation and reversal preserve original FAILED execution",
   );
-  await route(page, "incidents");
-  await page
-    .getByRole("region", { name: "Native incident correlation" })
-    .getByRole("row")
-    .filter({ hasText: f.incident })
-    .getByRole("button")
-    .click();
-  await page
-    .getByRole("navigation", { name: "Incident detail sections" })
-    .getByRole("button", { name: "Recovery", exact: true })
-    .click();
-  await page
-    .getByText("Restoration is not verified.", { exact: false })
-    .waitFor();
-  await decide(page, "Record recovery assessment");
-  await page
-    .getByRole("navigation", { name: "Incident detail sections" })
-    .getByRole("button", { name: "Recovery", exact: true })
-    .click();
-  await page
-    .getByRole("region", { name: "Recovery assessment history" })
-    .getByRole("row")
-    .nth(1)
-    .waitFor();
-  await screenshot(page, "incident-recovery");
-  assert.equal(
-    await page
-      .getByRole("button", { name: "Validate recovery evidence", exact: true })
-      .count(),
-    0,
-  );
-  await close(page);
-  await screenshot(page, "incidents");
-  checks.push(
-    "Assessment records failed validation without declaring restoration",
-  );
+  // AUTH-694/program scope excludes incident-management UI. Retain and
+  // independently inspect the background correlation record via authenticated API.
+  assert.equal(await page.getByRole("link", { name: "Incident Correlation", exact: true }).count(), 0);
+  await page.goto(process.env.V16_UI_URL + "/#/pipelines/incidents");
+  await page.getByRole("heading", { name: pages.inventory, exact: true }).waitFor();
+  assert.equal(await page.getByRole("region", { name: "Native incident correlation" }).count(), 0);
+  const incidentToken = await page.evaluate(() => sessionStorage.getItem("opscontrol.sessionToken"));
+  const background = await page.request.get(process.env.V16_API_URL + "/api/v1/native-incidents/" + f.incident, {
+    headers: { Authorization: "Bearer " + incidentToken, "X-OpsControl-Customers": f.organization },
+  });
+  assert.equal(background.status(), 200);
+  assert.equal((await background.json()).id, f.incident);
+  await screenshot(page, "excluded-incident-ui");
+  checks.push("Excluded incident UI/direct route cannot expose controls; background correlation identity remains available through the authenticated internal API");
   await route(page, "inventory");
   let release, seen;
   const delayed = new Promise((resolve) => {
@@ -498,6 +477,7 @@ try {
   await page
     .getByRole("button", { name: "Expand sidebar", exact: true })
     .click();
+  await preparePrimaryNavigation(page);
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Organizations", exact: true })
@@ -507,6 +487,7 @@ try {
     .getByRole("table")
     .getByText("Sprint 07 Alpha", { exact: true })
     .waitFor();
+  await preparePrimaryNavigation(page);
   await page
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Employees", exact: true })

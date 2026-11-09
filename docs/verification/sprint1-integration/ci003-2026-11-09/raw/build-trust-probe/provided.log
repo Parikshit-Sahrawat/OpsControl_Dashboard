@@ -1,0 +1,27 @@
+
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 312B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [stage-0 1/2] FROM docker.io/library/python:3.12-alpine
+#4 CACHED
+
+#5 [stage-0 2/2] RUN --network=none --mount=type=secret,id=proxy_ca,required=true python -c "import ssl; c=ssl.create_default_context(cafile='/run/secrets/proxy_ca'); assert c.verify_mode == ssl.CERT_REQUIRED and c.check_hostname; print('TLS trust mount verified')"
+#5 0.349 TLS trust mount verified
+#5 DONE 0.4s
+
+#6 exporting to image
+#6 exporting layers
+#6 exporting layers 0.4s done
+#6 writing image sha256:a1c4efb1083b4a88ce1df273ed1b99b8e8f8e2b1ea01532b648c9e088ab78656 done
+#6 naming to docker.io/library/opscontrol-ci003-trust:84c3b290 done
+#6 DONE 0.4s

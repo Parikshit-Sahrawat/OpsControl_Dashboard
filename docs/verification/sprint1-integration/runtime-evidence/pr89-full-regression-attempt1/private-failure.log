@@ -1,0 +1,13 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/oc-sprint1-integration/backend/scripts/v16_api_probe.py", line 567, in <module>
+    request(f"monitoring/data-sources/{other_source['id']}/templates", "POST", {"template_id":tid,"template_version":1},viewer,403)
+  File "/tmp/oc-sprint1-integration/backend/scripts/v16_api_probe.py", line 33, in request
+    head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/oc-sprint1-integration/backend/scripts/v16_api_probe.py", line 67, in request
+    assert status == expected, (path, status, expected)
+           ^^^^^^^^^^^^^^^^^^
+AssertionError: ('monitoring/data-sources/c4245087-42db-442a-9c0c-57785606a2de/configuration', 404, 200)

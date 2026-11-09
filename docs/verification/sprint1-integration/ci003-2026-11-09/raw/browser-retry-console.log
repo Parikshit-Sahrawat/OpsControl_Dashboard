@@ -1,0 +1,20 @@
+Sprint 08 existing authorization/history/holds preservation PASS
+Ran 98 tests in 19.704s
+OK
+{"status": "PASS", "scenario_status": {"REC-01": "PASS", "REC-02": "PASS", "REC-03": "PASS", "REC-04": "PASS", "REC-05": "PASS", "REC-06": "PASS"}, "source_bytes": 20747955, "restored_bytes": 18233011, "backup_bytes": 795220, "backup_sha256": "ac879ea5e95fa3cc5711e38c3922ed90e1eb98e37f020b87da072eabd9969942", "backup_seconds": 0.266, "restore_seconds": 0.688, "migration_head": "0043_source_context_fence", "restored_alembic_drift": false, "restored_populated_downgrade_refused": true, "table_counts": {"organizations": 105, "users": 143, "roles": 32, "customer_access_grants": 23, "data_sources": 53, "collectors": 48, "collector_methods": 1, "pipeline_sources": 100, "pipeline_evidence": 144, "pipeline_holds": 12, "job_order_histories": 38, "operational_incidents": 22, "incident_activities": 54, "security_audit_events": 420}, "critical_projection_equal": true, "corrupt_artifact_rejected": true, "production_rpo_rto_certified": false}
+V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 15 groups
+Pentaho Sprint 03 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 04 actual HTTP acceptance PASS: 5 groups
+Pentaho Sprint 05 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 06 actual HTTP acceptance PASS: 5 groups
+Sprint 08 real authenticated HTTP authorization PASS: 14 groups
+Sprint 09 authenticated archive, compatibility and resilience PASS: 6 groups
+Sprint 09 measured PostgreSQL ownership/duplicate/restart resilience PASS: 9 scenarios
+Sprint 07 controlled fixtures ready; no vendor runtime accessed
+Traceback (most recent call last):
+  File "/tmp/pr89-operational-check/scripts/v16-acceptance.py", line 462, in <module>
+    print(run(["node", "frontend/scripts/sprint1_resource_security.mjs"]))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pr89-operational-check/scripts/v16-acceptance.py", line 71, in run
+    raise RuntimeError(
+RuntimeError: Owned V1.6 check failed; private diagnostics: /tmp/opscontrol-v16-5x9c01i5

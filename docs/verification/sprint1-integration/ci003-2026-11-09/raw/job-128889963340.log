@@ -1,0 +1,2109 @@
+﻿2026-11-08T22:55:37.1845326Z Current runner version: '2.338.2'
+2026-11-08T22:55:37.1868783Z ##[group]Runner Image Provisioner
+2026-11-08T22:55:37.1869527Z Hosted Compute Agent
+2026-11-08T22:55:37.1870117Z Version: 20261028.624
+2026-11-08T22:55:37.1870728Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T22:55:37.1871377Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T22:55:37.1871968Z Worker ID: {723bf7f7-5eb4-4392-ac64-74af602b02ab}
+2026-11-08T22:55:37.1872554Z Region: eastus
+2026-11-08T22:55:37.1873204Z Cloud: Azure
+2026-11-08T22:55:37.1873706Z ##[endgroup]
+2026-11-08T22:55:37.1875092Z ##[group]Operating System
+2026-11-08T22:55:37.1875670Z Ubuntu
+2026-11-08T22:55:37.1876135Z 24.04.5
+2026-11-08T22:55:37.1876629Z LTS
+2026-11-08T22:55:37.1877165Z ##[endgroup]
+2026-11-08T22:55:37.1877668Z ##[group]Runner Image
+2026-11-08T22:55:37.1878216Z Image: ubuntu-24.04
+2026-11-08T22:55:37.1878719Z Version: 20261101.360.1
+2026-11-08T22:55:37.1879980Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-08T22:55:37.1881259Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-08T22:55:37.1882080Z ##[endgroup]
+2026-11-08T22:55:37.1882988Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T22:55:37.1884692Z Contents: read
+2026-11-08T22:55:37.1885534Z Metadata: read
+2026-11-08T22:55:37.1886092Z ##[endgroup]
+2026-11-08T22:55:37.1887834Z Secret source: Actions
+2026-11-08T22:55:37.1888747Z Cache mode: write
+2026-11-08T22:55:37.1889346Z Prepare workflow directory
+2026-11-08T22:55:37.2161499Z Prepare all required actions
+2026-11-08T22:55:37.2200701Z Getting action download info
+2026-11-08T22:55:37.4178826Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T22:55:37.5349392Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-08T22:55:37.6478801Z Download action repository 'docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f' (SHA:8d2750c68a42422c14e847fe6c8ac0403b4cbd6f)
+2026-11-08T22:55:37.9340802Z Download action repository 'docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8' (SHA:10e90e3645eae34f1e60eeb005ba3a3d33f178e8)
+2026-11-08T22:55:38.2801894Z Complete job name: image-validation
+2026-11-08T22:55:38.3639648Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-08T22:55:38.3640455Z with:
+2026-11-08T22:55:38.3640821Z   persist-credentials: false
+2026-11-08T22:55:38.3641299Z   repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:55:38.3644430Z   token: ***
+2026-11-08T22:55:38.3644969Z   ssh-strict: true
+2026-11-08T22:55:38.3645330Z   ssh-user: git
+2026-11-08T22:55:38.3645672Z   clean: true
+2026-11-08T22:55:38.3646031Z   sparse-checkout-cone-mode: true
+2026-11-08T22:55:38.3646454Z   fetch-depth: 1
+2026-11-08T22:55:38.3646801Z   fetch-tags: false
+2026-11-08T22:55:38.3647175Z   show-progress: true
+2026-11-08T22:55:38.3647570Z   lfs: false
+2026-11-08T22:55:38.3647905Z   submodules: false
+2026-11-08T22:55:38.3648271Z   set-safe-directory: true
+2026-11-08T22:55:38.3648676Z   allow-unsafe-pr-checkout: false
+2026-11-08T22:55:38.3649253Z ##[endgroup]
+2026-11-08T22:55:38.5970252Z Syncing repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:55:38.5972367Z ##[group]Getting Git version info
+2026-11-08T22:55:38.5973638Z Working directory is '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T22:55:38.5975590Z [command]/usr/bin/git version
+2026-11-08T22:55:38.6055606Z git version 2.56.0
+2026-11-08T22:55:38.6072854Z ##[endgroup]
+2026-11-08T22:55:38.6090693Z Temporarily overriding HOME='/home/runner/work/_temp/1f6d180e-7f8f-46a1-a338-87e263127001' before making global git config changes
+2026-11-08T22:55:38.6092698Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T22:55:38.6095950Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:55:38.6161985Z Deleting the contents of '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T22:55:38.6169898Z ##[group]Initializing the repository
+2026-11-08T22:55:38.6174241Z [command]/usr/bin/git init /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:55:38.6289763Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T22:55:38.6291395Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T22:55:38.6292593Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T22:55:38.6293549Z hint: call:
+2026-11-08T22:55:38.6293957Z hint:
+2026-11-08T22:55:38.6294471Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T22:55:38.6295179Z hint:
+2026-11-08T22:55:38.6295741Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T22:55:38.6296602Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T22:55:38.6297304Z hint:
+2026-11-08T22:55:38.6297711Z hint: 	git branch -m <name>
+2026-11-08T22:55:38.6298178Z hint:
+2026-11-08T22:55:38.6298759Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T22:55:38.6310679Z Initialized empty Git repository in /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/.git/
+2026-11-08T22:55:38.6321481Z [command]/usr/bin/git remote add origin https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:55:38.6369523Z ##[endgroup]
+2026-11-08T22:55:38.6370730Z ##[group]Disabling automatic garbage collection
+2026-11-08T22:55:38.6373852Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T22:55:38.6408111Z ##[endgroup]
+2026-11-08T22:55:38.6409593Z ##[group]Setting up auth
+2026-11-08T22:55:38.6415557Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:55:38.6458783Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:55:38.6817682Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:55:38.6856058Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:55:38.7059978Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:55:38.7097375Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:55:38.7301939Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T22:55:38.7345369Z ##[endgroup]
+2026-11-08T22:55:38.7354955Z ##[group]Fetching the repository
+2026-11-08T22:55:38.7357008Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +aecf3f8ad1615898e4eb8098739b4f0c4f7d1908:refs/remotes/pull/89/merge
+2026-11-08T22:55:58.4601526Z From https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:55:58.4602415Z  * [new ref]         aecf3f8ad1615898e4eb8098739b4f0c4f7d1908 -> pull/89/merge
+2026-11-08T22:55:58.4604647Z ##[endgroup]
+2026-11-08T22:55:58.4605531Z ##[group]Determining the checkout info
+2026-11-08T22:55:58.4607062Z ##[endgroup]
+2026-11-08T22:55:58.4611775Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T22:55:58.4664369Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T22:55:58.4699383Z ##[group]Checking out the ref
+2026-11-08T22:55:58.4699835Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/89/merge
+2026-11-08T22:55:59.4896474Z Updating files:  43% (4557/10479)
+2026-11-08T22:55:59.4957236Z Updating files:  44% (4611/10479)
+2026-11-08T22:55:59.5165034Z Updating files:  45% (4716/10479)
+2026-11-08T22:55:59.5202608Z Updating files:  46% (4821/10479)
+2026-11-08T22:55:59.5473776Z Updating files:  47% (4926/10479)
+2026-11-08T22:55:59.5538533Z Updating files:  48% (5030/10479)
+2026-11-08T22:55:59.5594106Z Updating files:  49% (5135/10479)
+2026-11-08T22:55:59.5693419Z Updating files:  50% (5240/10479)
+2026-11-08T22:55:59.5751136Z Updating files:  51% (5345/10479)
+2026-11-08T22:55:59.5840955Z Updating files:  52% (5450/10479)
+2026-11-08T22:55:59.5980064Z Updating files:  53% (5554/10479)
+2026-11-08T22:55:59.6146787Z Updating files:  54% (5659/10479)
+2026-11-08T22:55:59.6330267Z Updating files:  55% (5764/10479)
+2026-11-08T22:55:59.6438541Z Updating files:  56% (5869/10479)
+2026-11-08T22:55:59.6635086Z Updating files:  57% (5974/10479)
+2026-11-08T22:55:59.6750664Z Updating files:  58% (6078/10479)
+2026-11-08T22:55:59.6931020Z Updating files:  59% (6183/10479)
+2026-11-08T22:55:59.7069266Z Updating files:  60% (6288/10479)
+2026-11-08T22:55:59.7211588Z Updating files:  61% (6393/10479)
+2026-11-08T22:55:59.7398941Z Updating files:  62% (6497/10479)
+2026-11-08T22:55:59.7544424Z Updating files:  63% (6602/10479)
+2026-11-08T22:55:59.7741268Z Updating files:  64% (6707/10479)
+2026-11-08T22:55:59.7896941Z Updating files:  65% (6812/10479)
+2026-11-08T22:55:59.8036136Z Updating files:  66% (6917/10479)
+2026-11-08T22:55:59.8182773Z Updating files:  67% (7021/10479)
+2026-11-08T22:55:59.8487304Z Updating files:  68% (7126/10479)
+2026-11-08T22:55:59.8640135Z Updating files:  69% (7231/10479)
+2026-11-08T22:55:59.8830407Z Updating files:  70% (7336/10479)
+2026-11-08T22:55:59.9019756Z Updating files:  71% (7441/10479)
+2026-11-08T22:55:59.9432788Z Updating files:  72% (7545/10479)
+2026-11-08T22:55:59.9570318Z Updating files:  73% (7650/10479)
+2026-11-08T22:55:59.9599569Z Updating files:  74% (7755/10479)
+2026-11-08T22:55:59.9728957Z Updating files:  75% (7860/10479)
+2026-11-08T22:56:00.0202727Z Updating files:  76% (7965/10479)
+2026-11-08T22:56:00.0632679Z Updating files:  77% (8069/10479)
+2026-11-08T22:56:00.1012897Z Updating files:  78% (8174/10479)
+2026-11-08T22:56:00.1398539Z Updating files:  79% (8279/10479)
+2026-11-08T22:56:00.1735415Z Updating files:  80% (8384/10479)
+2026-11-08T22:56:00.1762470Z Updating files:  81% (8488/10479)
+2026-11-08T22:56:00.1832181Z Updating files:  82% (8593/10479)
+2026-11-08T22:56:00.2056891Z Updating files:  83% (8698/10479)
+2026-11-08T22:56:00.2145632Z Updating files:  84% (8803/10479)
+2026-11-08T22:56:00.2520640Z Updating files:  85% (8908/10479)
+2026-11-08T22:56:00.2647949Z Updating files:  86% (9012/10479)
+2026-11-08T22:56:00.2752076Z Updating files:  87% (9117/10479)
+2026-11-08T22:56:00.2881009Z Updating files:  88% (9222/10479)
+2026-11-08T22:56:00.3104160Z Updating files:  89% (9327/10479)
+2026-11-08T22:56:00.3500198Z Updating files:  90% (9432/10479)
+2026-11-08T22:56:00.3884088Z Updating files:  91% (9536/10479)
+2026-11-08T22:56:00.3978234Z Updating files:  92% (9641/10479)
+2026-11-08T22:56:00.4139873Z Updating files:  93% (9746/10479)
+2026-11-08T22:56:00.4411565Z Updating files:  94% (9851/10479)
+2026-11-08T22:56:00.4630954Z Updating files:  95% (9956/10479)
+2026-11-08T22:56:00.4805399Z Updating files:  96% (10060/10479)
+2026-11-08T22:56:00.4935470Z Updating files:  96% (10130/10479)
+2026-11-08T22:56:00.5003058Z Updating files:  97% (10165/10479)
+2026-11-08T22:56:00.5068385Z Updating files:  98% (10270/10479)
+2026-11-08T22:56:00.5112722Z Updating files:  99% (10375/10479)
+2026-11-08T22:56:00.5113224Z Updating files: 100% (10479/10479)
+2026-11-08T22:56:00.5121112Z Updating files: 100% (10479/10479), done.
+2026-11-08T22:56:00.5197654Z Note: switching to 'refs/remotes/pull/89/merge'.
+2026-11-08T22:56:00.5197943Z 
+2026-11-08T22:56:00.5198114Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-08T22:56:00.5198492Z changes and commit them, and you can discard any commits you make in this
+2026-11-08T22:56:00.5198964Z state without impacting any branches by switching back to a branch.
+2026-11-08T22:56:00.5199575Z 
+2026-11-08T22:56:00.5199796Z If you want to create a new branch to retain commits you create, you may
+2026-11-08T22:56:00.5200335Z do so (now or later) by using -c with the switch command. Example:
+2026-11-08T22:56:00.5200675Z 
+2026-11-08T22:56:00.5200802Z   git switch -c <new-branch-name>
+2026-11-08T22:56:00.5201018Z 
+2026-11-08T22:56:00.5201152Z Or undo this operation with:
+2026-11-08T22:56:00.5201353Z 
+2026-11-08T22:56:00.5201461Z   git switch -
+2026-11-08T22:56:00.5201599Z 
+2026-11-08T22:56:00.5201772Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-08T22:56:00.5202001Z 
+2026-11-08T22:56:00.5202276Z HEAD is now at aecf3f8 Merge 54f26e51106469e285dd747dd6b8afd09ca43ce6 into 2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a
+2026-11-08T22:56:00.5319618Z ##[endgroup]
+2026-11-08T22:56:00.5366625Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T22:56:00.5397213Z aecf3f8ad1615898e4eb8098739b4f0c4f7d1908
+2026-11-08T22:56:00.5405775Z ##[group]Removing auth
+2026-11-08T22:56:00.5408611Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:56:00.5441151Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:56:00.5657691Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:56:00.5688619Z http.https://github.com/.extraheader
+2026-11-08T22:56:00.5695474Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T22:56:00.5733328Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:56:00.5955772Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:56:00.5995199Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:56:00.6227172Z ##[endgroup]
+2026-11-08T22:56:00.6452535Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-08T22:56:00.6452848Z with:
+2026-11-08T22:56:00.6453022Z   python-version: 3.12
+2026-11-08T22:56:00.6453208Z   check-latest: false
+2026-11-08T22:56:00.6455341Z   token: ***
+2026-11-08T22:56:00.6455518Z   update-environment: true
+2026-11-08T22:56:00.6455714Z   allow-prereleases: false
+2026-11-08T22:56:00.6455908Z   freethreaded: false
+2026-11-08T22:56:00.6456149Z ##[endgroup]
+2026-11-08T22:56:00.7634102Z ##[group]Installed versions
+2026-11-08T22:56:00.7710191Z (node:2227) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:56:00.7711081Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:56:00.7711614Z Successfully set up CPython (3.12.16)
+2026-11-08T22:56:00.7712186Z ##[endgroup]
+2026-11-08T22:56:00.7874565Z ##[group]Run python -m pip install PyYAML==6.0.2
+2026-11-08T22:56:00.7875229Z [36;1mpython -m pip install PyYAML==6.0.2[0m
+2026-11-08T22:56:00.7912509Z shell: /usr/bin/bash -e {0}
+2026-11-08T22:56:00.7912734Z env:
+2026-11-08T22:56:00.7912973Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:00.7913355Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T22:56:00.7913714Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:00.7914014Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:00.7914318Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:00.7914619Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T22:56:00.7915108Z ##[endgroup]
+2026-11-08T22:56:02.7075298Z Collecting PyYAML==6.0.2
+2026-11-08T22:56:02.8506141Z   Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+2026-11-08T22:56:02.8910859Z Downloading PyYAML-6.0.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (767 kB)
+2026-11-08T22:56:03.0376107Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 767.5/767.5 kB 9.4 MB/s  0:00:00
+2026-11-08T22:56:03.0815934Z Installing collected packages: PyYAML
+2026-11-08T22:56:03.1281129Z Successfully installed PyYAML-6.0.2
+2026-11-08T22:56:03.1288145Z 
+2026-11-08T22:56:03.1288344Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-08T22:56:03.1288812Z [notice] To update, run: pip install --upgrade pip
+2026-11-08T22:56:03.1703102Z ##[group]Run python3 -m unittest discover -s tests -v
+2026-11-08T22:56:03.1703457Z [36;1mpython3 -m unittest discover -s tests -v[0m
+2026-11-08T22:56:03.1722705Z shell: /usr/bin/bash -e {0}
+2026-11-08T22:56:03.1722915Z env:
+2026-11-08T22:56:03.1723137Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.1723485Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T22:56:03.1723850Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.1724157Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.1724447Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.1725031Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T22:56:03.1725295Z ##[endgroup]
+2026-11-08T22:56:03.4726147Z test_shared_or_uat_targets_rejected_before_docker_access (test_ci_contracts.BackupBoundaryTests.test_shared_or_uat_targets_rejected_before_docker_access) ... ok
+2026-11-08T22:56:03.4748784Z test_bounded_fixture (test_ci_contracts.ImageEvidenceTests.test_bounded_fixture) ... ok
+2026-11-08T22:56:03.4770148Z test_digest_mismatch (test_ci_contracts.ImageEvidenceTests.test_digest_mismatch) ... ok
+2026-11-08T22:56:03.4839637Z test_high_critical_unknown_rejected (test_ci_contracts.ImageEvidenceTests.test_high_critical_unknown_rejected) ... ok
+2026-11-08T22:56:03.4867834Z test_inventory_is_not_legal_clearance (test_ci_contracts.ImageEvidenceTests.test_inventory_is_not_legal_clearance) ... ok
+2026-11-08T22:56:03.4894002Z test_stale_database (test_ci_contracts.ImageEvidenceTests.test_stale_database) ... ok
+2026-11-08T22:56:03.4906083Z test_tamper (test_ci_contracts.ImageEvidenceTests.test_tamper) ... ok
+2026-11-08T22:56:03.4907897Z test_complete_unit_fixture_only (test_ci_contracts.ReleaseTests.test_complete_unit_fixture_only) ... ok
+2026-11-08T22:56:03.4908922Z test_current_gates_cannot_authorize_release (test_ci_contracts.ReleaseTests.test_current_gates_cannot_authorize_release) ... ok
+2026-11-08T22:56:03.4910299Z test_expiry_and_reviewers (test_ci_contracts.ReleaseTests.test_expiry_and_reviewers) ... ok
+2026-11-08T22:56:03.4911124Z test_sha_replay_and_operation (test_ci_contracts.ReleaseTests.test_sha_replay_and_operation) ... ok
+2026-11-08T22:56:03.4911859Z test_all_success (test_ci_contracts.ResultTests.test_all_success) ... ok
+2026-11-08T22:56:03.4912580Z test_missing_failed_skipped_cancelled (test_ci_contracts.ResultTests.test_missing_failed_skipped_cancelled) ... ok
+2026-11-08T22:56:03.4917269Z test_equivalent_enum_array_cast_only (test_ci_contracts.SchemaNormalizationTests.test_equivalent_enum_array_cast_only) ... ok
+2026-11-08T22:56:03.4918787Z test_only_generated_restrict_keys_are_ignored (test_ci_contracts.SchemaNormalizationTests.test_only_generated_restrict_keys_are_ignored) ... ok
+2026-11-08T22:56:03.5849173Z test_current_structure (test_ci_contracts.WorkflowTests.test_current_structure) ... ok
+2026-11-08T22:56:03.6019236Z test_hidden_failure_rejected (test_ci_contracts.WorkflowTests.test_hidden_failure_rejected) ... ok
+2026-11-08T22:56:03.6186932Z test_path_filter_prohibited_for_all_prs (test_ci_contracts.WorkflowTests.test_path_filter_prohibited_for_all_prs) ... ok
+2026-11-08T22:56:03.6353716Z test_privileged_pr_rejected (test_ci_contracts.WorkflowTests.test_privileged_pr_rejected) ... ok
+2026-11-08T22:56:03.7361313Z test_required_context_removal_rejected (test_ci_contracts.WorkflowTests.test_required_context_removal_rejected) ... ok
+2026-11-08T22:56:03.7532728Z test_target_trigger_prohibited (test_ci_contracts.WorkflowTests.test_target_trigger_prohibited) ... ok
+2026-11-08T22:56:03.7571127Z test_test_omission_rejected (test_ci_contracts.WorkflowTests.test_test_omission_rejected) ... ok
+2026-11-08T22:56:03.7735616Z test_unpinned_action_rejected (test_ci_contracts.WorkflowTests.test_unpinned_action_rejected) ... ok
+2026-11-08T22:56:03.7756825Z test_tampering_and_traversal_cannot_pass_evidence_gate (test_ci_evidence.EvidenceIntegrityTests.test_tampering_and_traversal_cannot_pass_evidence_gate) ... ok
+2026-11-08T22:56:03.7757567Z test_no_privileged_fallback (test_ci_fixture_ports.FixturePorts.test_no_privileged_fallback) ... ok
+2026-11-08T22:56:03.7758918Z test_occupied_port_is_never_adopted (test_ci_fixture_ports.FixturePorts.test_occupied_port_is_never_adopted) ... ok
+2026-11-08T22:56:03.7760140Z test_permission_denied_retains_endpoint_and_errno (test_ci_fixture_ports.FixturePorts.test_permission_denied_retains_endpoint_and_errno) ... ok
+2026-11-08T22:56:03.7761030Z test_unprivileged_dynamic_https (test_ci_fixture_ports.FixturePorts.test_unprivileged_dynamic_https) ... ok
+2026-11-08T22:56:03.7768147Z test_app_only_commands (test_local_auto_deploy.DeployTests.test_app_only_commands) ... ok
+2026-11-08T22:56:03.7784614Z test_atomic_last_known_good (test_local_auto_deploy.DeployTests.test_atomic_last_known_good) ... ok
+2026-11-08T22:56:03.7787584Z test_no_build_allowed (test_local_auto_deploy.DeployTests.test_no_build_allowed) ... ok
+2026-11-08T22:56:03.7791198Z test_unexpected_service_image_rejected (test_local_auto_deploy.DeployTests.test_unexpected_service_image_rejected) ... ok
+2026-11-08T22:56:03.7802943Z test_atomic_json (test_pull_release.PolicyTests.test_atomic_json) ... ok
+2026-11-08T22:56:03.7805402Z test_failed_ci (test_pull_release.PolicyTests.test_failed_ci) ... ok
+2026-11-08T22:56:03.7806160Z test_malformed_digest (test_pull_release.PolicyTests.test_malformed_digest) ... ok
+2026-11-08T22:56:03.7807772Z test_missing_approval (test_pull_release.PolicyTests.test_missing_approval) ... ok
+2026-11-08T22:56:03.7808536Z test_missing_migration (test_pull_release.PolicyTests.test_missing_migration) ... ok
+2026-11-08T22:56:03.7809226Z test_replay (test_pull_release.PolicyTests.test_replay) ... ok
+2026-11-08T22:56:03.7809842Z test_unknown_service (test_pull_release.PolicyTests.test_unknown_service) ... ok
+2026-11-08T22:56:03.7810552Z test_valid_manifest (test_pull_release.PolicyTests.test_valid_manifest) ... ok
+2026-11-08T22:56:03.7811209Z test_wrong_main (test_pull_release.PolicyTests.test_wrong_main) ... ok
+2026-11-08T22:56:03.7811791Z test_wrong_ref (test_pull_release.PolicyTests.test_wrong_ref) ... ok
+2026-11-08T22:56:03.7812435Z test_wrong_repository (test_pull_release.PolicyTests.test_wrong_repository) ... ok
+2026-11-08T22:56:03.7813117Z test_wrong_workflow (test_pull_release.PolicyTests.test_wrong_workflow) ... ok
+2026-11-08T22:56:03.7817011Z test_authoritative_run_and_attempt (test_sec01_attestation.AttestationBindingTests.test_authoritative_run_and_attempt) ... ok
+2026-11-08T22:56:03.7821188Z test_failed_attempt_rejected (test_sec01_attestation.AttestationBindingTests.test_failed_attempt_rejected) ... ok
+2026-11-08T22:56:03.7824475Z test_missing_certificate_run_binding (test_sec01_attestation.AttestationBindingTests.test_missing_certificate_run_binding) ... ok
+2026-11-08T22:56:03.7827243Z test_no_attestation (test_sec01_attestation.AttestationBindingTests.test_no_attestation) ... ok
+2026-11-08T22:56:03.7830571Z test_verified_certificate_and_subject (test_sec01_attestation.AttestationBindingTests.test_verified_certificate_and_subject) ... ok
+2026-11-08T22:56:03.7833601Z test_wrong_run_attempt_in_certificate (test_sec01_attestation.AttestationBindingTests.test_wrong_run_attempt_in_certificate) ... ok
+2026-11-08T22:56:03.7837819Z test_wrong_run_attempt_rejected (test_sec01_attestation.AttestationBindingTests.test_wrong_run_attempt_rejected) ... ok
+2026-11-08T22:56:03.7841882Z test_wrong_source_sha_rejected (test_sec01_attestation.AttestationBindingTests.test_wrong_source_sha_rejected) ... ok
+2026-11-08T22:56:03.7844979Z test_wrong_subject_digest (test_sec01_attestation.AttestationBindingTests.test_wrong_subject_digest) ... ok
+2026-11-08T22:56:03.7849254Z test_admin_bypass (test_sec02_authorization.AuthorizationTests.test_admin_bypass) ... ok
+2026-11-08T22:56:03.7852046Z test_ambiguous_pr (test_sec02_authorization.AuthorizationTests.test_ambiguous_pr) ... ok
+2026-11-08T22:56:03.7856513Z test_duplicate_check (test_sec02_authorization.AuthorizationTests.test_duplicate_check) ... ok
+2026-11-08T22:56:03.7860890Z test_failed_check (test_sec02_authorization.AuthorizationTests.test_failed_check) ... ok
+2026-11-08T22:56:03.7864303Z test_fake_actions_app (test_sec02_authorization.AuthorizationTests.test_fake_actions_app) ... ok
+2026-11-08T22:56:03.7867565Z test_incomplete_check_pagination (test_sec02_authorization.AuthorizationTests.test_incomplete_check_pagination) ... ok
+2026-11-08T22:56:03.7871659Z test_last_push_approval_not_required (test_sec02_authorization.AuthorizationTests.test_last_push_approval_not_required) ... ok
+2026-11-08T22:56:03.7873417Z test_missing_protection (test_sec02_authorization.AuthorizationTests.test_missing_protection) ... ok
+2026-11-08T22:56:03.7876587Z test_requested_changes (test_sec02_authorization.AuthorizationTests.test_requested_changes) ... ok
+2026-11-08T22:56:03.7879163Z test_ruleset_requires_audit (test_sec02_authorization.AuthorizationTests.test_ruleset_requires_audit) ... ok
+2026-11-08T22:56:03.7882458Z test_self_approval (test_sec02_authorization.AuthorizationTests.test_self_approval) ... ok
+2026-11-08T22:56:03.7885014Z test_stale_review_commit (test_sec02_authorization.AuthorizationTests.test_stale_review_commit) ... ok
+2026-11-08T22:56:03.7886945Z test_stale_reviews_allowed (test_sec02_authorization.AuthorizationTests.test_stale_reviews_allowed) ... ok
+2026-11-08T22:56:03.7888607Z test_unapproved_mapping (test_sec02_authorization.AuthorizationTests.test_unapproved_mapping) ... ok
+2026-11-08T22:56:03.7893664Z test_valid_fixture (test_sec02_authorization.AuthorizationTests.test_valid_fixture) ... ok
+2026-11-08T22:56:03.7897576Z test_wrong_check_sha (test_sec02_authorization.AuthorizationTests.test_wrong_check_sha) ... ok
+2026-11-08T22:56:03.7900915Z test_wrong_workflow (test_sec02_authorization.AuthorizationTests.test_wrong_workflow) ... ok
+2026-11-08T22:56:03.7903571Z test_wrong_workflow_event (test_sec02_authorization.AuthorizationTests.test_wrong_workflow_event) ... ok
+2026-11-08T22:56:03.7941731Z test_concurrent_replay_exactly_one_wins (test_sec03_handoff.HandoffTests.test_concurrent_replay_exactly_one_wins) ... ok
+2026-11-08T22:56:03.7949791Z test_env_only_cannot_bypass (test_sec03_handoff.HandoffTests.test_env_only_cannot_bypass) ... ok
+2026-11-08T22:56:03.7953694Z test_expired (test_sec03_handoff.HandoffTests.test_expired) ... ok
+2026-11-08T22:56:03.7957403Z test_future (test_sec03_handoff.HandoffTests.test_future) ... ok
+2026-11-08T22:56:03.7960774Z test_key_symlink (test_sec03_handoff.HandoffTests.test_key_symlink) ... ok
+2026-11-08T22:56:03.7968054Z test_missing_fd (test_sec03_handoff.HandoffTests.test_missing_fd) ... ok
+2026-11-08T22:56:03.7970526Z test_missing_key (test_sec03_handoff.HandoffTests.test_missing_key) ... ok
+2026-11-08T22:56:03.7972960Z test_oversize (test_sec03_handoff.HandoffTests.test_oversize) ... ok
+2026-11-08T22:56:03.7989923Z test_replay (test_sec03_handoff.HandoffTests.test_replay) ... ok
+2026-11-08T22:56:03.7993885Z test_tamper_image (test_sec03_handoff.HandoffTests.test_tamper_image) ... ok
+2026-11-08T22:56:03.7997441Z test_tamper_run (test_sec03_handoff.HandoffTests.test_tamper_run) ... ok
+2026-11-08T22:56:03.8000599Z test_tamper_sha (test_sec03_handoff.HandoffTests.test_tamper_sha) ... ok
+2026-11-08T22:56:03.8011155Z test_valid (test_sec03_handoff.HandoffTests.test_valid) ... ok
+2026-11-08T22:56:03.8014218Z test_weak_key_permissions (test_sec03_handoff.HandoffTests.test_weak_key_permissions) ... ok
+2026-11-08T22:56:03.8017002Z test_root_execution_rejected (test_sec04_isolation.IsolationTests.test_root_execution_rejected) ... ok
+2026-11-08T22:56:03.8019406Z test_symlink_rejected (test_sec04_isolation.IsolationTests.test_symlink_rejected) ... ok
+2026-11-08T22:56:03.8021083Z test_untrusted_owner_rejected (test_sec04_isolation.IsolationTests.test_untrusted_owner_rejected) ... ok
+2026-11-08T22:56:03.8023907Z test_worker_exec_is_independent (test_sec05_worker.ReadinessTests.test_worker_exec_is_independent) ... ok
+2026-11-08T22:56:03.8026145Z test_worker_failure_propagates (test_sec05_worker.ReadinessTests.test_worker_failure_propagates) ... ok
+2026-11-08T22:56:03.8054632Z test_failed_rollback_preserves_baseline (test_sec06_recovery.RecoveryTests.test_failed_rollback_preserves_baseline) ... ok
+2026-11-08T22:56:03.8082047Z test_failure_rolls_back_and_preserves_baseline (test_sec06_recovery.RecoveryTests.test_failure_rolls_back_and_preserves_baseline) ... ok
+2026-11-08T22:56:03.8116469Z test_recovery_records_new_baseline (test_sec06_recovery.RecoveryTests.test_recovery_records_new_baseline) ... ok
+2026-11-08T22:56:03.8117402Z test_hosted_only (test_workflow_static.WorkflowTests.test_hosted_only) ... ok
+2026-11-08T22:56:03.8118234Z test_timer_not_enabled_by_default (test_workflow_static.WorkflowTests.test_timer_not_enabled_by_default) ... ok
+2026-11-08T22:56:03.8118794Z 
+2026-11-08T22:56:03.8119046Z ----------------------------------------------------------------------
+2026-11-08T22:56:03.8119488Z Ran 95 tests in 0.341s
+2026-11-08T22:56:03.8119671Z 
+2026-11-08T22:56:03.8119765Z OK
+2026-11-08T22:56:03.8121178Z {"sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "backend_image": "ghcr.io/parikshit-sahrawat/opscontrol_dashboard-backend@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "frontend_image": "ghcr.io/parikshit-sahrawat/opscontrol_dashboard-frontend@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "verified_at": 1794178563, "result": "PASS"}
+2026-11-08T22:56:03.8357536Z ##[group]Run docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+2026-11-08T22:56:03.8357880Z with:
+2026-11-08T22:56:03.8358057Z   driver: docker-container
+2026-11-08T22:56:03.8358250Z   use: true
+2026-11-08T22:56:03.8358409Z   keep-state: false
+2026-11-08T22:56:03.8358587Z   cache-binary: true
+2026-11-08T22:56:03.8358766Z   cleanup: true
+2026-11-08T22:56:03.8358940Z   install: false
+2026-11-08T22:56:03.8359104Z env:
+2026-11-08T22:56:03.8359320Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.8359670Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T22:56:03.8360003Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.8360304Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.8360599Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:03.8360898Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T22:56:03.8361201Z ##[endgroup]
+2026-11-08T22:56:04.0498719Z (node:2271) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:56:04.0499649Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:56:04.0585620Z ##[group]Docker info
+2026-11-08T22:56:04.0612989Z [command]/usr/bin/docker version
+2026-11-08T22:56:04.1866964Z Client: Docker Engine - Community
+2026-11-08T22:56:04.1867645Z  Version:           28.0.4
+2026-11-08T22:56:04.1869384Z  API version:       1.48
+2026-11-08T22:56:04.1870035Z  Go version:        go1.23.7
+2026-11-08T22:56:04.1870504Z  Git commit:        b8034c0
+2026-11-08T22:56:04.1870805Z  Built:             Tue Mar 25 15:07:16 2025
+2026-11-08T22:56:04.1871318Z  OS/Arch:           linux/amd64
+2026-11-08T22:56:04.1871621Z  Context:           default
+2026-11-08T22:56:04.1871799Z 
+2026-11-08T22:56:04.1872044Z Server: Docker Engine - Community
+2026-11-08T22:56:04.1872350Z  Engine:
+2026-11-08T22:56:04.1872607Z   Version:          28.0.4
+2026-11-08T22:56:04.1873369Z   API version:      1.48 (minimum version 1.24)
+2026-11-08T22:56:04.1873871Z   Go version:       go1.23.7
+2026-11-08T22:56:04.1874157Z   Git commit:       6430e49
+2026-11-08T22:56:04.1874569Z   Built:            Tue Mar 25 15:07:16 2025
+2026-11-08T22:56:04.1875128Z   OS/Arch:          linux/amd64
+2026-11-08T22:56:04.1875431Z   Experimental:     false
+2026-11-08T22:56:04.1875848Z  containerd:
+2026-11-08T22:56:04.1876083Z   Version:          v2.4.2
+2026-11-08T22:56:04.1876560Z   GitCommit:        b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:56:04.1876962Z  runc:
+2026-11-08T22:56:04.1877317Z   Version:          1.5.2
+2026-11-08T22:56:04.1877605Z   GitCommit:        v1.5.2-0-g29dd3dc2
+2026-11-08T22:56:04.1877926Z  docker-init:
+2026-11-08T22:56:04.1878302Z   Version:          0.19.0
+2026-11-08T22:56:04.1878576Z   GitCommit:        de40ad0
+2026-11-08T22:56:04.1922647Z [command]/usr/bin/docker info
+2026-11-08T22:56:07.0073762Z Client: Docker Engine - Community
+2026-11-08T22:56:07.0074499Z  Version:    28.0.4
+2026-11-08T22:56:07.0088988Z  Context:    default
+2026-11-08T22:56:07.0089480Z  Debug Mode: false
+2026-11-08T22:56:07.0089758Z  Plugins:
+2026-11-08T22:56:07.0090038Z   buildx: Docker Buildx (Docker Inc.)
+2026-11-08T22:56:07.0090396Z     Version:  v0.38.1
+2026-11-08T22:56:07.0090775Z     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+2026-11-08T22:56:07.0091215Z   compose: Docker Compose (Docker Inc.)
+2026-11-08T22:56:07.0091558Z     Version:  v2.38.2
+2026-11-08T22:56:07.0091894Z     Path:     /usr/libexec/docker/cli-plugins/docker-compose
+2026-11-08T22:56:07.0092191Z 
+2026-11-08T22:56:07.0092285Z Server:
+2026-11-08T22:56:07.0092507Z  Containers: 0
+2026-11-08T22:56:07.0092741Z   Running: 0
+2026-11-08T22:56:07.0092975Z   Paused: 0
+2026-11-08T22:56:07.0093139Z   Stopped: 0
+2026-11-08T22:56:07.0093296Z  Images: 6
+2026-11-08T22:56:07.0093458Z  Server Version: 28.0.4
+2026-11-08T22:56:07.0093712Z  Storage Driver: overlay2
+2026-11-08T22:56:07.0094592Z   Backing Filesystem: extfs
+2026-11-08T22:56:07.0095151Z   Supports d_type: true
+2026-11-08T22:56:07.0095339Z   Using metacopy: false
+2026-11-08T22:56:07.0095514Z   Native Overlay Diff: false
+2026-11-08T22:56:07.0095705Z   userxattr: false
+2026-11-08T22:56:07.0095883Z  Logging Driver: json-file
+2026-11-08T22:56:07.0096085Z  Cgroup Driver: systemd
+2026-11-08T22:56:07.0096261Z  Cgroup Version: 2
+2026-11-08T22:56:07.0096445Z  Plugins:
+2026-11-08T22:56:07.0096596Z   Volume: local
+2026-11-08T22:56:07.0096809Z   Network: bridge host ipvlan macvlan null overlay
+2026-11-08T22:56:07.0097148Z   Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+2026-11-08T22:56:07.0097459Z  Swarm: inactive
+2026-11-08T22:56:07.0097644Z  Runtimes: io.containerd.runc.v2 runc
+2026-11-08T22:56:07.0097877Z  Default Runtime: runc
+2026-11-08T22:56:07.0098061Z  Init Binary: docker-init
+2026-11-08T22:56:07.0098433Z  containerd version: b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:56:07.0098763Z  runc version: v1.5.2-0-g29dd3dc2
+2026-11-08T22:56:07.0098978Z  init version: de40ad0
+2026-11-08T22:56:07.0099174Z  Security Options:
+2026-11-08T22:56:07.0099342Z   apparmor
+2026-11-08T22:56:07.0099493Z   seccomp
+2026-11-08T22:56:07.0099647Z    Profile: builtin
+2026-11-08T22:56:07.0099808Z   cgroupns
+2026-11-08T22:56:07.0099984Z  Kernel Version: 7.0.0-1017-azure
+2026-11-08T22:56:07.0100198Z  Operating System: Ubuntu 24.04.5 LTS
+2026-11-08T22:56:07.0100416Z  OSType: linux
+2026-11-08T22:56:07.0100589Z  Architecture: x86_64
+2026-11-08T22:56:07.0100778Z  CPUs: 4
+2026-11-08T22:56:07.0100933Z  Total Memory: 15.61GiB
+2026-11-08T22:56:07.0101112Z  Name: runnervm7aw5e
+2026-11-08T22:56:07.0101306Z  ID: aeba5083-36f4-4ab3-a6cd-5185eccc7a63
+2026-11-08T22:56:07.0101612Z  Docker Root Dir: /var/lib/docker
+2026-11-08T22:56:07.0101880Z  Debug Mode: false
+2026-11-08T22:56:07.0102053Z  Username: githubactions
+2026-11-08T22:56:07.0102255Z  Experimental: false
+2026-11-08T22:56:07.0102430Z  Insecure Registries:
+2026-11-08T22:56:07.0102656Z   ::1/128
+2026-11-08T22:56:07.0102966Z   127.0.0.0/8
+2026-11-08T22:56:07.0103156Z  Live Restore Enabled: false
+2026-11-08T22:56:07.0103280Z 
+2026-11-08T22:56:07.0104201Z ##[endgroup]
+2026-11-08T22:56:07.1152903Z ##[group]Buildx version
+2026-11-08T22:56:07.1178072Z [command]/usr/bin/docker buildx version
+2026-11-08T22:56:07.3164592Z github.com/docker/buildx v0.38.1 0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+2026-11-08T22:56:07.3202833Z ##[endgroup]
+2026-11-08T22:56:07.3365461Z ##[group]Inspecting default docker context
+2026-11-08T22:56:07.3529028Z [
+2026-11-08T22:56:07.3529346Z   {
+2026-11-08T22:56:07.3529629Z     "Name": "default",
+2026-11-08T22:56:07.3529946Z     "Metadata": {},
+2026-11-08T22:56:07.3530225Z     "Endpoints": {
+2026-11-08T22:56:07.3530507Z       "docker": {
+2026-11-08T22:56:07.3530799Z         "Host": "unix:///var/run/docker.sock",
+2026-11-08T22:56:07.3531185Z         "SkipTLSVerify": false
+2026-11-08T22:56:07.3531482Z       }
+2026-11-08T22:56:07.3531710Z     },
+2026-11-08T22:56:07.3532024Z     "TLSMaterial": {},
+2026-11-08T22:56:07.3532290Z     "Storage": {
+2026-11-08T22:56:07.3532540Z       "MetadataPath": "<IN MEMORY>",
+2026-11-08T22:56:07.3532920Z       "TLSPath": "<IN MEMORY>"
+2026-11-08T22:56:07.3533210Z     }
+2026-11-08T22:56:07.3533423Z   }
+2026-11-08T22:56:07.3533662Z ]
+2026-11-08T22:56:07.3534256Z ##[endgroup]
+2026-11-08T22:56:07.3534941Z ##[group]Creating a new builder instance
+2026-11-08T22:56:07.6147171Z [command]/usr/bin/docker buildx create --name builder-988f1427-9ab5-44ad-85d5-9a06e5861395 --driver docker-container --buildkitd-flags --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host --use
+2026-11-08T22:56:07.6839854Z builder-988f1427-9ab5-44ad-85d5-9a06e5861395
+2026-11-08T22:56:07.6883841Z ##[endgroup]
+2026-11-08T22:56:07.6884383Z ##[group]Booting builder
+2026-11-08T22:56:07.6909946Z [command]/usr/bin/docker buildx inspect --bootstrap --builder builder-988f1427-9ab5-44ad-85d5-9a06e5861395
+2026-11-08T22:56:07.7480986Z #1 [internal] booting buildkit
+2026-11-08T22:56:07.8986772Z #1 pulling image moby/buildkit:buildx-stable-1
+2026-11-08T22:56:15.8308092Z #1 pulling image moby/buildkit:buildx-stable-1 8.1s done
+2026-11-08T22:56:15.9828489Z #1 creating container buildx_buildkit_builder-988f1427-9ab5-44ad-85d5-9a06e58613950
+2026-11-08T22:56:16.3535662Z #1 creating container buildx_buildkit_builder-988f1427-9ab5-44ad-85d5-9a06e58613950 0.5s done
+2026-11-08T22:56:16.3892628Z #1 DONE 8.6s
+2026-11-08T22:56:16.4289125Z Name:          builder-988f1427-9ab5-44ad-85d5-9a06e5861395
+2026-11-08T22:56:16.4289640Z Driver:        docker-container
+2026-11-08T22:56:16.4289965Z Last Activity: 2026-11-08 22:56:07 +0000 UTC
+2026-11-08T22:56:16.4290202Z 
+2026-11-08T22:56:16.4290300Z Nodes:
+2026-11-08T22:56:16.4290700Z Name:                  builder-988f1427-9ab5-44ad-85d5-9a06e58613950
+2026-11-08T22:56:16.4291056Z Endpoint:              unix:///var/run/docker.sock
+2026-11-08T22:56:16.4291354Z Status:                running
+2026-11-08T22:56:16.4291831Z BuildKit daemon flags: --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
+2026-11-08T22:56:16.4292313Z BuildKit version:      v0.34.2
+2026-11-08T22:56:16.4292633Z Platforms:             linux/amd64, linux/amd64/v2, linux/amd64/v3, linux/amd64/v4, linux/386
+2026-11-08T22:56:16.4292993Z Labels:
+2026-11-08T22:56:16.4293244Z  org.mobyproject.buildkit.worker.executor:         oci
+2026-11-08T22:56:16.4293655Z  org.mobyproject.buildkit.worker.hostname:         c56ecc6fa2c4
+2026-11-08T22:56:16.4294022Z  org.mobyproject.buildkit.worker.network:          host
+2026-11-08T22:56:16.4294365Z  org.mobyproject.buildkit.worker.oci.process-mode: sandbox
+2026-11-08T22:56:16.4294927Z  org.mobyproject.buildkit.worker.selinux.enabled:  false
+2026-11-08T22:56:16.4295303Z  org.mobyproject.buildkit.worker.snapshotter:      overlayfs
+2026-11-08T22:56:16.4295594Z GC Policy rule#0:
+2026-11-08T22:56:16.4295780Z  All:            false
+2026-11-08T22:56:16.4296069Z  Filters:        type==source.local type==exec.cachemount type==source.git.checkout
+2026-11-08T22:56:16.4296784Z  Keep Duration:  48h0m0s
+2026-11-08T22:56:16.4298759Z  Max Used Space: 488.3MiB
+2026-11-08T22:56:16.4299072Z GC Policy rule#1:
+2026-11-08T22:56:16.4299317Z  All:            false
+2026-11-08T22:56:16.4299586Z  Keep Duration:  1440h0m0s
+2026-11-08T22:56:16.4299861Z  Reserved Space: 9.313GiB
+2026-11-08T22:56:16.4300128Z  Max Used Space: 93.13GiB
+2026-11-08T22:56:16.4300385Z  Min Free Space: 27.01GiB
+2026-11-08T22:56:16.4300634Z GC Policy rule#2:
+2026-11-08T22:56:16.4300890Z  All:            false
+2026-11-08T22:56:16.4301135Z  Reserved Space: 9.313GiB
+2026-11-08T22:56:16.4301393Z  Max Used Space: 93.13GiB
+2026-11-08T22:56:16.4301654Z  Min Free Space: 27.01GiB
+2026-11-08T22:56:16.4301906Z GC Policy rule#3:
+2026-11-08T22:56:16.4302132Z  All:            true
+2026-11-08T22:56:16.4302386Z  Reserved Space: 9.313GiB
+2026-11-08T22:56:16.4302650Z  Max Used Space: 93.13GiB
+2026-11-08T22:56:16.4302905Z  Min Free Space: 27.01GiB
+2026-11-08T22:56:16.4349074Z ##[endgroup]
+2026-11-08T22:56:16.5252269Z ##[group]Inspect builder
+2026-11-08T22:56:16.5303492Z {
+2026-11-08T22:56:16.5303756Z   "nodes": [
+2026-11-08T22:56:16.5303930Z     {
+2026-11-08T22:56:16.5304172Z       "name": "builder-988f1427-9ab5-44ad-85d5-9a06e58613950",
+2026-11-08T22:56:16.5304487Z       "endpoint": "unix:///var/run/docker.sock",
+2026-11-08T22:56:16.5304865Z       "status": "running",
+2026-11-08T22:56:16.5305405Z       "buildkitd-flags": "--allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host",
+2026-11-08T22:56:16.5305827Z       "buildkit": "v0.34.2",
+2026-11-08T22:56:16.5306172Z       "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/amd64/v4,linux/386",
+2026-11-08T22:56:16.5306668Z       "features": {
+2026-11-08T22:56:16.5307057Z         "Automatically load images to the Docker Engine image store": true,
+2026-11-08T22:56:16.5307552Z         "Cache export": true,
+2026-11-08T22:56:16.5307849Z         "Direct push": true,
+2026-11-08T22:56:16.5308424Z         "Docker exporter": true,
+2026-11-08T22:56:16.5308781Z         "Multi-platform build": true,
+2026-11-08T22:56:16.5309126Z         "OCI exporter": true
+2026-11-08T22:56:16.5309395Z       },
+2026-11-08T22:56:16.5309564Z       "labels": {
+2026-11-08T22:56:16.5309787Z         "org.mobyproject.buildkit.worker.executor": "oci",
+2026-11-08T22:56:16.5310123Z         "org.mobyproject.buildkit.worker.hostname": "c56ecc6fa2c4",
+2026-11-08T22:56:16.5310458Z         "org.mobyproject.buildkit.worker.network": "host",
+2026-11-08T22:56:16.5310786Z         "org.mobyproject.buildkit.worker.oci.process-mode": "sandbox",
+2026-11-08T22:56:16.5311132Z         "org.mobyproject.buildkit.worker.selinux.enabled": "false",
+2026-11-08T22:56:16.5311468Z         "org.mobyproject.buildkit.worker.snapshotter": "overlayfs"
+2026-11-08T22:56:16.5311731Z       },
+2026-11-08T22:56:16.5311925Z       "gcPolicy": [
+2026-11-08T22:56:16.5312085Z         {
+2026-11-08T22:56:16.5312241Z           "all": false,
+2026-11-08T22:56:16.5312422Z           "filter": [
+2026-11-08T22:56:16.5312722Z             "type==source.local type==exec.cachemount type==source.git.checkout"
+2026-11-08T22:56:16.5313018Z           ],
+2026-11-08T22:56:16.5313181Z           "keepDuration": "48h0m0s",
+2026-11-08T22:56:16.5313412Z           "maxUsedSpace": "488.3MiB"
+2026-11-08T22:56:16.5313603Z         },
+2026-11-08T22:56:16.5313748Z         {
+2026-11-08T22:56:16.5313897Z           "all": false,
+2026-11-08T22:56:16.5314078Z           "keepDuration": "1440h0m0s",
+2026-11-08T22:56:16.5314291Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:16.5314496Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:16.5314707Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:16.5315216Z         },
+2026-11-08T22:56:16.5315380Z         {
+2026-11-08T22:56:16.5315559Z           "all": false,
+2026-11-08T22:56:16.5315769Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:16.5315983Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:16.5316186Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:16.5316547Z         },
+2026-11-08T22:56:16.5316712Z         {
+2026-11-08T22:56:16.5316865Z           "all": true,
+2026-11-08T22:56:16.5317051Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:16.5317250Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:16.5317472Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:16.5317686Z         }
+2026-11-08T22:56:16.5317833Z       ]
+2026-11-08T22:56:16.5317993Z     }
+2026-11-08T22:56:16.5318137Z   ],
+2026-11-08T22:56:16.5318348Z   "name": "builder-988f1427-9ab5-44ad-85d5-9a06e5861395",
+2026-11-08T22:56:16.5318634Z   "driver": "docker-container",
+2026-11-08T22:56:16.5318873Z   "lastActivity": "2026-11-08T22:56:07.000Z"
+2026-11-08T22:56:16.5319100Z }
+2026-11-08T22:56:16.5319478Z ##[endgroup]
+2026-11-08T22:56:16.5319777Z ##[group]BuildKit version
+2026-11-08T22:56:16.5320035Z builder-988f1427-9ab5-44ad-85d5-9a06e58613950: v0.34.2
+2026-11-08T22:56:16.5320392Z ##[endgroup]
+2026-11-08T22:56:16.5500410Z ##[group]Run docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+2026-11-08T22:56:16.5500752Z with:
+2026-11-08T22:56:16.5500919Z   context: ./backend
+2026-11-08T22:56:16.5501104Z   file: ./backend/Dockerfile.uat
+2026-11-08T22:56:16.5501308Z   load: true
+2026-11-08T22:56:16.5501464Z   push: false
+2026-11-08T22:56:16.5501650Z   tags: opscontrol-uat-backend:validation
+2026-11-08T22:56:16.5501872Z   no-cache: false
+2026-11-08T22:56:16.5502035Z   pull: false
+2026-11-08T22:56:16.5503908Z   github-token: ***
+2026-11-08T22:56:16.5504076Z env:
+2026-11-08T22:56:16.5504293Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:16.5504624Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T22:56:16.5505171Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:16.5505469Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:16.5505797Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:56:16.5506107Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T22:56:16.5506367Z ##[endgroup]
+2026-11-08T22:56:16.7473647Z (node:2753) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:56:16.7474567Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:56:16.7489861Z ##[group]GitHub Actions runtime token ACs
+2026-11-08T22:56:16.7495363Z refs/pull/89/merge: read/write
+2026-11-08T22:56:16.7495959Z refs/heads/main: read
+2026-11-08T22:56:16.7496710Z ##[endgroup]
+2026-11-08T22:56:16.7497298Z ##[group]Docker info
+2026-11-08T22:56:16.7531330Z [command]/usr/bin/docker version
+2026-11-08T22:56:16.7760392Z Client: Docker Engine - Community
+2026-11-08T22:56:16.7775266Z  Version:           28.0.4
+2026-11-08T22:56:16.7785476Z  API version:       1.48
+2026-11-08T22:56:16.7801826Z  Go version:        go1.23.7
+2026-11-08T22:56:16.7822336Z  Git commit:        b8034c0
+2026-11-08T22:56:16.7847485Z  Built:             Tue Mar 25 15:07:16 2025
+2026-11-08T22:56:16.7875742Z  OS/Arch:           linux/amd64
+2026-11-08T22:56:16.7876216Z  Context:           default
+2026-11-08T22:56:16.7876622Z 
+2026-11-08T22:56:16.7877048Z Server: Docker Engine - Community
+2026-11-08T22:56:16.7877480Z  Engine:
+2026-11-08T22:56:16.7877839Z   Version:          28.0.4
+2026-11-08T22:56:16.7878234Z   API version:      1.48 (minimum version 1.24)
+2026-11-08T22:56:16.7878671Z   Go version:       go1.23.7
+2026-11-08T22:56:16.7879040Z   Git commit:       6430e49
+2026-11-08T22:56:16.7879403Z   Built:            Tue Mar 25 15:07:16 2025
+2026-11-08T22:56:16.7879828Z   OS/Arch:          linux/amd64
+2026-11-08T22:56:16.7880159Z   Experimental:     false
+2026-11-08T22:56:16.7880715Z  containerd:
+2026-11-08T22:56:16.7881071Z   Version:          v2.4.2
+2026-11-08T22:56:16.7881481Z   GitCommit:        b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:56:16.7881939Z  runc:
+2026-11-08T22:56:16.7882246Z   Version:          1.5.2
+2026-11-08T22:56:16.7882572Z   GitCommit:        v1.5.2-0-g29dd3dc2
+2026-11-08T22:56:16.7883298Z  docker-init:
+2026-11-08T22:56:16.7883654Z   Version:          0.19.0
+2026-11-08T22:56:16.7883965Z   GitCommit:        de40ad0
+2026-11-08T22:56:16.7884944Z [command]/usr/bin/docker info
+2026-11-08T22:56:16.8511890Z Client: Docker Engine - Community
+2026-11-08T22:56:16.8527779Z  Version:    28.0.4
+2026-11-08T22:56:16.8528204Z  Context:    default
+2026-11-08T22:56:16.8528708Z  Debug Mode: false
+2026-11-08T22:56:16.8529205Z  Plugins:
+2026-11-08T22:56:16.8529655Z   buildx: Docker Buildx (Docker Inc.)
+2026-11-08T22:56:16.8530138Z     Version:  v0.38.1
+2026-11-08T22:56:16.8530630Z     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+2026-11-08T22:56:16.8531240Z   compose: Docker Compose (Docker Inc.)
+2026-11-08T22:56:16.8531701Z     Version:  v2.38.2
+2026-11-08T22:56:16.8532190Z     Path:     /usr/libexec/docker/cli-plugins/docker-compose
+2026-11-08T22:56:16.8532601Z 
+2026-11-08T22:56:16.8533327Z Server:
+2026-11-08T22:56:16.8533722Z  Containers: 1
+2026-11-08T22:56:16.8534142Z   Running: 1
+2026-11-08T22:56:16.8534541Z   Paused: 0
+2026-11-08T22:56:16.8535143Z   Stopped: 0
+2026-11-08T22:56:16.8535531Z  Images: 7
+2026-11-08T22:56:16.8535947Z  Server Version: 28.0.4
+2026-11-08T22:56:16.8536383Z  Storage Driver: overlay2
+2026-11-08T22:56:16.8536875Z   Backing Filesystem: extfs
+2026-11-08T22:56:16.8537335Z   Supports d_type: true
+2026-11-08T22:56:16.8537786Z   Using metacopy: false
+2026-11-08T22:56:16.8538268Z   Native Overlay Diff: false
+2026-11-08T22:56:16.8538743Z   userxattr: false
+2026-11-08T22:56:16.8539183Z  Logging Driver: json-file
+2026-11-08T22:56:16.8539624Z  Cgroup Driver: systemd
+2026-11-08T22:56:16.8540089Z  Cgroup Version: 2
+2026-11-08T22:56:16.8540493Z  Plugins:
+2026-11-08T22:56:16.8540853Z   Volume: local
+2026-11-08T22:56:16.8541312Z   Network: bridge host ipvlan macvlan null overlay
+2026-11-08T22:56:16.8542019Z   Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+2026-11-08T22:56:16.8542682Z  Swarm: inactive
+2026-11-08T22:56:16.8543135Z  Runtimes: runc io.containerd.runc.v2
+2026-11-08T22:56:16.8543682Z  Default Runtime: runc
+2026-11-08T22:56:16.8544182Z  Init Binary: docker-init
+2026-11-08T22:56:16.8545151Z  containerd version: b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:56:16.8545808Z  runc version: v1.5.2-0-g29dd3dc2
+2026-11-08T22:56:16.8546324Z  init version: de40ad0
+2026-11-08T22:56:16.8546809Z  Security Options:
+2026-11-08T22:56:16.8547209Z   apparmor
+2026-11-08T22:56:16.8547593Z   seccomp
+2026-11-08T22:56:16.8547975Z    Profile: builtin
+2026-11-08T22:56:16.8548453Z   cgroupns
+2026-11-08T22:56:16.8548917Z  Kernel Version: 7.0.0-1017-azure
+2026-11-08T22:56:16.8549257Z  Operating System: Ubuntu 24.04.5 LTS
+2026-11-08T22:56:16.8549603Z  OSType: linux
+2026-11-08T22:56:16.8549866Z  Architecture: x86_64
+2026-11-08T22:56:16.8550121Z  CPUs: 4
+2026-11-08T22:56:16.8550350Z  Total Memory: 15.61GiB
+2026-11-08T22:56:16.8550620Z  Name: runnervm7aw5e
+2026-11-08T22:56:16.8550916Z  ID: aeba5083-36f4-4ab3-a6cd-5185eccc7a63
+2026-11-08T22:56:16.8551257Z  Docker Root Dir: /var/lib/docker
+2026-11-08T22:56:16.8551563Z  Debug Mode: false
+2026-11-08T22:56:16.8551818Z  Username: githubactions
+2026-11-08T22:56:16.8552101Z  Experimental: false
+2026-11-08T22:56:16.8552308Z  Insecure Registries:
+2026-11-08T22:56:16.8552524Z   ::1/128
+2026-11-08T22:56:16.8552673Z   127.0.0.0/8
+2026-11-08T22:56:16.8552843Z  Live Restore Enabled: false
+2026-11-08T22:56:16.8552971Z 
+2026-11-08T22:56:16.8553278Z ##[endgroup]
+2026-11-08T22:56:16.8553594Z ##[group]Proxy configuration
+2026-11-08T22:56:16.8553801Z No proxy configuration found
+2026-11-08T22:56:16.8554089Z ##[endgroup]
+2026-11-08T22:56:16.9128714Z ##[group]Buildx version
+2026-11-08T22:56:16.9153740Z [command]/usr/bin/docker buildx version
+2026-11-08T22:56:16.9659571Z github.com/docker/buildx v0.38.1 0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+2026-11-08T22:56:16.9698648Z ##[endgroup]
+2026-11-08T22:56:16.9699008Z ##[group]Builder info
+2026-11-08T22:56:17.0651411Z {
+2026-11-08T22:56:17.0651903Z   "nodes": [
+2026-11-08T22:56:17.0652259Z     {
+2026-11-08T22:56:17.0653424Z       "name": "builder-988f1427-9ab5-44ad-85d5-9a06e58613950",
+2026-11-08T22:56:17.0654042Z       "endpoint": "unix:///var/run/docker.sock",
+2026-11-08T22:56:17.0654445Z       "status": "running",
+2026-11-08T22:56:17.0655289Z       "buildkitd-flags": "--allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host",
+2026-11-08T22:56:17.0655970Z       "buildkit": "v0.34.2",
+2026-11-08T22:56:17.0656446Z       "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/amd64/v4,linux/386",
+2026-11-08T22:56:17.0656969Z       "features": {
+2026-11-08T22:56:17.0657409Z         "Automatically load images to the Docker Engine image store": true,
+2026-11-08T22:56:17.0657894Z         "Cache export": true,
+2026-11-08T22:56:17.0658212Z         "Direct push": true,
+2026-11-08T22:56:17.0658523Z         "Docker exporter": true,
+2026-11-08T22:56:17.0660980Z         "Multi-platform build": true,
+2026-11-08T22:56:17.0661410Z         "OCI exporter": true
+2026-11-08T22:56:17.0661732Z       },
+2026-11-08T22:56:17.0661974Z       "labels": {
+2026-11-08T22:56:17.0662340Z         "org.mobyproject.buildkit.worker.executor": "oci",
+2026-11-08T22:56:17.0662869Z         "org.mobyproject.buildkit.worker.hostname": "c56ecc6fa2c4",
+2026-11-08T22:56:17.0663400Z         "org.mobyproject.buildkit.worker.network": "host",
+2026-11-08T22:56:17.0663954Z         "org.mobyproject.buildkit.worker.oci.process-mode": "sandbox",
+2026-11-08T22:56:17.0664562Z         "org.mobyproject.buildkit.worker.selinux.enabled": "false",
+2026-11-08T22:56:17.0665905Z         "org.mobyproject.buildkit.worker.snapshotter": "overlayfs"
+2026-11-08T22:56:17.0666428Z       },
+2026-11-08T22:56:17.0666688Z       "gcPolicy": [
+2026-11-08T22:56:17.0667005Z         {
+2026-11-08T22:56:17.0667242Z           "all": false,
+2026-11-08T22:56:17.0667520Z           "filter": [
+2026-11-08T22:56:17.0667966Z             "type==source.local type==exec.cachemount type==source.git.checkout"
+2026-11-08T22:56:17.0668433Z           ],
+2026-11-08T22:56:17.0668702Z           "keepDuration": "48h0m0s",
+2026-11-08T22:56:17.0669060Z           "maxUsedSpace": "488.3MiB"
+2026-11-08T22:56:17.0669371Z         },
+2026-11-08T22:56:17.0669593Z         {
+2026-11-08T22:56:17.0669829Z           "all": false,
+2026-11-08T22:56:17.0670120Z           "keepDuration": "1440h0m0s",
+2026-11-08T22:56:17.0670426Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:17.0670762Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:17.0671116Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:17.0671434Z         },
+2026-11-08T22:56:17.0671668Z         {
+2026-11-08T22:56:17.0671930Z           "all": false,
+2026-11-08T22:56:17.0672213Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:17.0672551Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:17.0672879Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:17.0673170Z         },
+2026-11-08T22:56:17.0673397Z         {
+2026-11-08T22:56:17.0673633Z           "all": true,
+2026-11-08T22:56:17.0673916Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:56:17.0674261Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:56:17.0674628Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:56:17.0675311Z         }
+2026-11-08T22:56:17.0675561Z       ]
+2026-11-08T22:56:17.0675780Z     }
+2026-11-08T22:56:17.0675999Z   ],
+2026-11-08T22:56:17.0676311Z   "name": "builder-988f1427-9ab5-44ad-85d5-9a06e5861395",
+2026-11-08T22:56:17.0676736Z   "driver": "docker-container",
+2026-11-08T22:56:17.0677070Z   "lastActivity": "2026-11-08T22:56:07.000Z"
+2026-11-08T22:56:17.0677404Z }
+2026-11-08T22:56:17.0677992Z ##[endgroup]
+2026-11-08T22:56:17.2210357Z [command]/usr/bin/docker buildx build --file ./backend/Dockerfile.uat --iidfile /home/runner/work/_temp/docker-actions-toolkit-FnvbfI/build-iidfile-3251f64d88.txt --tag opscontrol-uat-backend:validation --load --metadata-file /home/runner/work/_temp/docker-actions-toolkit-FnvbfI/build-metadata-bdfceecda2.json ./backend
+2026-11-08T22:56:17.4686691Z 2026/11/08 22:56:17 http2: server connection error from localhost: connection error: PROTOCOL_ERROR
+2026-11-08T22:56:18.6463302Z #0 building with "builder-988f1427-9ab5-44ad-85d5-9a06e5861395" instance using docker-container driver
+2026-11-08T22:56:18.6463673Z 
+2026-11-08T22:56:18.6463799Z #1 [internal] load build definition from Dockerfile.uat
+2026-11-08T22:56:18.9861035Z #1 transferring dockerfile:
+2026-11-08T22:56:19.1750379Z #1 transferring dockerfile: 1.44kB 0.0s done
+2026-11-08T22:56:19.1750828Z #1 DONE 0.5s
+2026-11-08T22:56:19.1750957Z 
+2026-11-08T22:56:19.1751203Z #2 [auth] otel/opentelemetry-collector-contrib:pull token for registry-1.docker.io
+2026-11-08T22:56:19.1751548Z #2 DONE 0.0s
+2026-11-08T22:56:19.1751646Z 
+2026-11-08T22:56:19.1751779Z #3 [auth] library/python:pull token for registry-1.docker.io
+2026-11-08T22:56:19.1752032Z #3 DONE 0.0s
+2026-11-08T22:56:19.1752127Z 
+2026-11-08T22:56:19.1752905Z #4 [internal] load metadata for docker.io/otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+2026-11-08T22:56:19.3303352Z #4 DONE 0.3s
+2026-11-08T22:56:19.3303594Z 
+2026-11-08T22:56:19.3304041Z #5 [internal] load metadata for docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+2026-11-08T22:56:19.4958632Z #5 DONE 0.3s
+2026-11-08T22:56:19.4959198Z 
+2026-11-08T22:56:19.4959410Z #6 [internal] load .dockerignore
+2026-11-08T22:56:19.4959782Z #6 transferring context: 101B done
+2026-11-08T22:56:19.4960113Z #6 DONE 0.0s
+2026-11-08T22:56:19.4960274Z 
+2026-11-08T22:56:19.4960403Z #7 [internal] load build context
+2026-11-08T22:56:19.4960735Z #7 transferring context: 2.70MB 0.1s done
+2026-11-08T22:56:19.4961070Z #7 DONE 0.1s
+2026-11-08T22:56:19.4961208Z 
+2026-11-08T22:56:19.4961727Z #8 [stage-1  1/11] FROM docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+2026-11-08T22:56:19.4962887Z #8 resolve docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b done
+2026-11-08T22:56:19.4963883Z #8 sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b 248B / 248B 0.0s done
+2026-11-08T22:56:19.4964684Z #8 sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 1.29MB / 1.29MB 0.0s done
+2026-11-08T22:56:19.6227717Z #8 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 12.12MB / 12.12MB 0.1s done
+2026-11-08T22:56:19.6228875Z #8 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 29.86MB / 29.86MB 0.2s
+2026-11-08T22:56:19.8677495Z #8 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 29.86MB / 29.86MB 0.2s done
+2026-11-08T22:56:19.8678841Z #8 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41
+2026-11-08T22:56:20.3550394Z #8 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 0.5s done
+2026-11-08T22:56:20.3551591Z #8 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9
+2026-11-08T22:56:20.4394700Z #8 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 0.3s done
+2026-11-08T22:56:20.4395683Z #8 DONE 1.1s
+2026-11-08T22:56:20.4396039Z 
+2026-11-08T22:56:20.4396907Z #9 [telemetryruntime 1/1] FROM docker.io/otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+2026-11-08T22:56:20.4398474Z #9 resolve docker.io/otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2 done
+2026-11-08T22:56:20.4399766Z #9 sha256:2f6df36b11f59026fa920a9a8783386d6b7acafbec0d53aa0e3c1689fc78f67a 730B / 730B 0.1s done
+2026-11-08T22:56:20.4400820Z #9 sha256:b3bf60c8c8242fc4207a147b1331acf599706689a1ec94decf92e22c01e85cd7 86.08MB / 86.08MB 0.8s done
+2026-11-08T22:56:20.4401980Z #9 sha256:6bbeea405980f9d6d4c58b45c00aa96853cead9bbcd363560a3b9863c3b1eabf 128.30kB / 128.30kB 0.1s done
+2026-11-08T22:56:20.4402914Z #9 extracting sha256:6bbeea405980f9d6d4c58b45c00aa96853cead9bbcd363560a3b9863c3b1eabf 0.0s done
+2026-11-08T22:56:20.4404484Z #9 extracting sha256:b3bf60c8c8242fc4207a147b1331acf599706689a1ec94decf92e22c01e85cd7
+2026-11-08T22:56:20.9392239Z #9 ...
+2026-11-08T22:56:20.9392682Z 
+2026-11-08T22:56:20.9395832Z #8 [stage-1  1/11] FROM docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+2026-11-08T22:56:20.9397126Z #8 extracting sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 0.5s done
+2026-11-08T22:56:20.9397847Z #8 DONE 1.6s
+2026-11-08T22:56:21.0956162Z 
+2026-11-08T22:56:21.0957148Z #8 [stage-1  1/11] FROM docker.io/library/python:3.12.16-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+2026-11-08T22:56:21.0958125Z #8 extracting sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b done
+2026-11-08T22:56:21.0958699Z #8 DONE 1.6s
+2026-11-08T22:56:21.0959149Z 
+2026-11-08T22:56:21.0959731Z #9 [telemetryruntime 1/1] FROM docker.io/otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+2026-11-08T22:56:21.1844922Z #9 extracting sha256:b3bf60c8c8242fc4207a147b1331acf599706689a1ec94decf92e22c01e85cd7 1.0s done
+2026-11-08T22:56:21.1845581Z #9 DONE 1.8s
+2026-11-08T22:56:21.3379693Z 
+2026-11-08T22:56:21.3380820Z #9 [telemetryruntime 1/1] FROM docker.io/otel/opentelemetry-collector-contrib:0.123.0@sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2
+2026-11-08T22:56:21.3381539Z #9 extracting sha256:2f6df36b11f59026fa920a9a8783386d6b7acafbec0d53aa0e3c1689fc78f67a done
+2026-11-08T22:56:21.3381893Z #9 DONE 1.8s
+2026-11-08T22:56:21.4130467Z 
+2026-11-08T22:56:21.4131683Z #10 [stage-1  2/11] COPY --from=telemetryruntime /otelcol-contrib /usr/local/bin/otelcol-contrib
+2026-11-08T22:56:26.0491832Z #10 DONE 4.6s
+2026-11-08T22:56:26.2429731Z 
+2026-11-08T22:56:26.2430347Z #11 [stage-1  3/11] WORKDIR /app
+2026-11-08T22:56:26.2430733Z #11 DONE 0.0s
+2026-11-08T22:56:26.2430877Z 
+2026-11-08T22:56:26.2431185Z #12 [stage-1  4/11] COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+2026-11-08T22:56:26.2431698Z #12 DONE 0.0s
+2026-11-08T22:56:26.2431842Z 
+2026-11-08T22:56:26.2432882Z #13 [stage-1  5/11] RUN --mount=type=secret,id=proxy_ca     if [ -f /run/secrets/proxy_ca ]; then export PIP_CERT=/run/secrets/proxy_ca; fi;     python bootstrap_pip.py && python -m pip install --no-cache-dir -r requirements-providers.txt -r requirements-hosts.txt
+2026-11-08T22:56:27.9034985Z #13 1.810 Processing /tmp/opscontrol-pip-bootstrap-vrhgu1d3/pip-26.2-py3-none-any.whl
+2026-11-08T22:56:28.0091472Z #13 1.887 Installing collected packages: pip
+2026-11-08T22:56:28.0091904Z #13 1.887   Attempting uninstall: pip
+2026-11-08T22:56:28.0092209Z #13 1.889     Found existing installation: pip 25.0.1
+2026-11-08T22:56:28.0092473Z #13 1.916     Uninstalling pip-25.0.1:
+2026-11-08T22:56:28.2338661Z #13 1.990       Successfully uninstalled pip-25.0.1
+2026-11-08T22:56:28.7214321Z #13 2.628 Successfully installed pip-26.2
+2026-11-08T22:56:28.8721422Z #13 2.629 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2026-11-08T22:56:28.9028844Z #13 2.810 {"version": "26.2", "wheel_sha256": "931c303696af6fa3417112103b1cad26890e5a07eccb5b99783700e33f2b8aad", "old_pip_executed": false, "installation_index_access": false}
+2026-11-08T22:56:29.3738646Z #13 3.281 Collecting fastapi==0.143.0 (from -r /app/requirements.txt (line 1))
+2026-11-08T22:56:29.5110857Z #13 3.418   Downloading fastapi-0.143.0-py3-none-any.whl.metadata (26 kB)
+2026-11-08T22:56:29.6162648Z #13 3.460 Collecting starlette==1.4.1 (from -r /app/requirements.txt (line 2))
+2026-11-08T22:56:29.6163156Z #13 3.523   Downloading starlette-1.4.1-py3-none-any.whl.metadata (6.4 kB)
+2026-11-08T22:56:29.8361200Z #13 3.554 Collecting uvicorn==0.36.0 (from uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:29.8362060Z #13 3.592   Downloading uvicorn-0.36.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-08T22:56:29.9502185Z #13 3.857 Collecting sqlalchemy==2.0.43 (from -r /app/requirements.txt (line 4))
+2026-11-08T22:56:30.0536835Z #13 3.895   Downloading sqlalchemy-2.0.43-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.6 kB)
+2026-11-08T22:56:30.0537896Z #13 3.923 Collecting psycopg==3.2.10 (from psycopg[binary]==3.2.10->-r /app/requirements.txt (line 5))
+2026-11-08T22:56:30.0538640Z #13 3.960   Downloading psycopg-3.2.10-py3-none-any.whl.metadata (4.6 kB)
+2026-11-08T22:56:30.1823858Z #13 3.989 Collecting alembic==1.16.5 (from -r /app/requirements.txt (line 6))
+2026-11-08T22:56:30.1826636Z #13 4.028   Downloading alembic-1.16.5-py3-none-any.whl.metadata (7.3 kB)
+2026-11-08T22:56:30.1827471Z #13 4.051 Collecting pydantic-settings==2.10.1 (from -r /app/requirements.txt (line 7))
+2026-11-08T22:56:30.1828200Z #13 4.089   Downloading pydantic_settings-2.10.1-py3-none-any.whl.metadata (3.4 kB)
+2026-11-08T22:56:30.2829859Z #13 4.127 Collecting PyYAML==6.0.3 (from -r /app/requirements.txt (line 8))
+2026-11-08T22:56:30.2830490Z #13 4.165   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+2026-11-08T22:56:30.2831061Z #13 4.190 Collecting opentelemetry-proto==1.38.0 (from -r /app/requirements.txt (line 9))
+2026-11-08T22:56:30.3915144Z #13 4.229   Downloading opentelemetry_proto-1.38.0-py3-none-any.whl.metadata (2.3 kB)
+2026-11-08T22:56:30.3915892Z #13 4.261 Collecting croniter==6.0.0 (from -r /app/requirements.txt (line 10))
+2026-11-08T22:56:30.3916334Z #13 4.299   Downloading croniter-6.0.0-py2.py3-none-any.whl.metadata (32 kB)
+2026-11-08T22:56:30.7048393Z #13 4.612 Collecting regex==2025.11.3 (from -r /app/requirements.txt (line 11))
+2026-11-08T22:56:30.8874447Z #13 4.655   Downloading regex-2025.11.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (40 kB)
+2026-11-08T22:56:30.8875566Z #13 4.794 Collecting cryptography==50.0.2 (from -r /app/requirements.txt (line 14))
+2026-11-08T22:56:31.0757392Z #13 4.832   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.4 kB)
+2026-11-08T22:56:31.0860830Z #13 4.993 Collecting boto3<2,>=1.35 (from -r requirements-providers.txt (line 3))
+2026-11-08T22:56:31.2192886Z #13 5.030   Downloading boto3-1.43.126-py3-none-any.whl.metadata (6.6 kB)
+2026-11-08T22:56:31.2193462Z #13 5.089 Collecting psutil==7.1.0 (from -r requirements-hosts.txt (line 3))
+2026-11-08T22:56:31.2194109Z #13 5.126   Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (23 kB)
+2026-11-08T22:56:31.3342321Z #13 5.241 Collecting pydantic>=2.9.0 (from fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:31.4455784Z #13 5.279   Downloading pydantic-2.14.3-py3-none-any.whl.metadata (141 kB)
+2026-11-08T22:56:31.4456875Z #13 5.353 Collecting typing-extensions>=4.8.0 (from fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:31.5618414Z #13 5.390   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-08T22:56:31.5619102Z #13 5.410 Collecting typing-inspection>=0.4.2 (from fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:31.5619700Z #13 5.448   Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+2026-11-08T22:56:31.5620238Z #13 5.469 Collecting annotated-doc>=0.0.2 (from fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:31.6864175Z #13 5.506   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+2026-11-08T22:56:31.6865411Z #13 5.531 Collecting opentelemetry-api>=1.44.0 (from fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:31.6866652Z #13 5.568   Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+2026-11-08T22:56:31.6867807Z #13 5.594 Collecting anyio<5,>=3.6.2 (from starlette==1.4.1->-r /app/requirements.txt (line 2))
+2026-11-08T22:56:31.7902754Z #13 5.632   Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+2026-11-08T22:56:31.7903963Z #13 5.658 Collecting click>=7.0 (from uvicorn==0.36.0->uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:31.7904951Z #13 5.697   Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+2026-11-08T22:56:31.9631232Z #13 5.718 Collecting h11>=0.8 (from uvicorn==0.36.0->uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:31.9632106Z #13 5.756   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+2026-11-08T22:56:31.9632879Z #13 5.870 Collecting greenlet>=1 (from sqlalchemy==2.0.43->-r /app/requirements.txt (line 4))
+2026-11-08T22:56:32.0695682Z #13 5.908   Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+2026-11-08T22:56:32.0696887Z #13 5.938 Collecting Mako (from alembic==1.16.5->-r /app/requirements.txt (line 6))
+2026-11-08T22:56:32.0697652Z #13 5.976   Downloading mako-1.4.3-py3-none-any.whl.metadata (2.9 kB)
+2026-11-08T22:56:32.2482951Z #13 6.004 Collecting python-dotenv>=0.21.0 (from pydantic-settings==2.10.1->-r /app/requirements.txt (line 7))
+2026-11-08T22:56:32.2483781Z #13 6.042   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+2026-11-08T22:56:32.2484556Z #13 6.155 Collecting protobuf<7.0,>=5.0 (from opentelemetry-proto==1.38.0->-r /app/requirements.txt (line 9))
+2026-11-08T22:56:32.3839066Z #13 6.194   Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2026-11-08T22:56:32.3839660Z #13 6.216 Collecting python-dateutil (from croniter==6.0.0->-r /app/requirements.txt (line 10))
+2026-11-08T22:56:32.3840162Z #13 6.254   Downloading python_dateutil-4.0.0-py3-none-any.whl.metadata (7.3 kB)
+2026-11-08T22:56:32.3840603Z #13 6.291 Collecting pytz>2021.1 (from croniter==6.0.0->-r /app/requirements.txt (line 10))
+2026-11-08T22:56:32.5119648Z #13 6.329   Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+2026-11-08T22:56:32.5120554Z #13 6.419 Collecting cffi>=2.0.0 (from cryptography==50.0.2->-r /app/requirements.txt (line 14))
+2026-11-08T22:56:32.7018499Z #13 6.458   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+2026-11-08T22:56:32.7047813Z #13 6.612 Collecting psycopg-binary==3.2.10 (from psycopg[binary]==3.2.10->-r /app/requirements.txt (line 5))
+2026-11-08T22:56:32.8254083Z #13 6.657   Downloading psycopg_binary-3.2.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (3.0 kB)
+2026-11-08T22:56:32.8255292Z #13 6.695 Collecting httptools>=0.6.3 (from uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:32.8256377Z #13 6.732   Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (3.5 kB)
+2026-11-08T22:56:32.9740708Z #13 6.773 Collecting uvloop>=0.15.1 (from uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:32.9741909Z #13 6.810   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (5.1 kB)
+2026-11-08T22:56:32.9742961Z #13 6.881 Collecting watchfiles>=0.13 (from uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:33.1112580Z #13 6.919   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+2026-11-08T22:56:33.1113767Z #13 7.018 Collecting websockets>=10.4 (from uvicorn[standard]==0.36.0->-r /app/requirements.txt (line 3))
+2026-11-08T22:56:33.2994710Z #13 7.056   Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (6.3 kB)
+2026-11-08T22:56:33.3155600Z #13 7.223 Collecting botocore<1.44.0,>=1.43.126 (from boto3<2,>=1.35->-r requirements-providers.txt (line 3))
+2026-11-08T22:56:33.4374369Z #13 7.260   Downloading botocore-1.43.126-py3-none-any.whl.metadata (5.6 kB)
+2026-11-08T22:56:33.4375511Z #13 7.282 Collecting jmespath<2.0.0,>=0.7.1 (from boto3<2,>=1.35->-r requirements-providers.txt (line 3))
+2026-11-08T22:56:33.4376242Z #13 7.319   Downloading jmespath-1.1.0-py3-none-any.whl.metadata (7.6 kB)
+2026-11-08T22:56:33.4376923Z #13 7.344 Collecting s3transfer<0.20.0,>=0.19.0 (from boto3<2,>=1.35->-r requirements-providers.txt (line 3))
+2026-11-08T22:56:33.5426137Z #13 7.383   Downloading s3transfer-0.19.3-py3-none-any.whl.metadata (1.7 kB)
+2026-11-08T22:56:33.5426681Z #13 7.407 Collecting idna>=2.8 (from anyio<5,>=3.6.2->starlette==1.4.1->-r /app/requirements.txt (line 2))
+2026-11-08T22:56:33.5427144Z #13 7.448   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+2026-11-08T22:56:33.6593268Z #13 7.454 Collecting python-dateutil (from croniter==6.0.0->-r /app/requirements.txt (line 10))
+2026-11-08T22:56:33.6594107Z #13 7.492   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2026-11-08T22:56:33.6595290Z #13 7.566 Collecting urllib3!=2.2.0,<3,>=1.25.4 (from botocore<1.44.0,>=1.43.126->boto3<2,>=1.35->-r requirements-providers.txt (line 3))
+2026-11-08T22:56:33.7673753Z #13 7.611   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+2026-11-08T22:56:33.7675002Z #13 7.635 Collecting six>=1.5 (from python-dateutil->croniter==6.0.0->-r /app/requirements.txt (line 10))
+2026-11-08T22:56:33.7675691Z #13 7.674   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2026-11-08T22:56:33.8728972Z #13 7.711 Collecting pycparser (from cffi>=2.0.0->cryptography==50.0.2->-r /app/requirements.txt (line 14))
+2026-11-08T22:56:33.8729798Z #13 7.755   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+2026-11-08T22:56:33.8730623Z #13 7.780 Collecting annotated-types>=0.6.0 (from pydantic>=2.9.0->fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:34.0620961Z #13 7.818   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+2026-11-08T22:56:34.4594082Z #13 8.366 Collecting pydantic-core==2.50.4 (from pydantic>=2.9.0->fastapi==0.143.0->-r /app/requirements.txt (line 1))
+2026-11-08T22:56:34.5959413Z #13 8.405   Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
+2026-11-08T22:56:34.5960352Z #13 8.461 Collecting MarkupSafe>=2.0 (from Mako->alembic==1.16.5->-r /app/requirements.txt (line 6))
+2026-11-08T22:56:34.5960967Z #13 8.503   Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-08T22:56:34.7350420Z #13 8.548 Downloading fastapi-0.143.0-py3-none-any.whl (144 kB)
+2026-11-08T22:56:34.7350989Z #13 8.600 Downloading starlette-1.4.1-py3-none-any.whl (74 kB)
+2026-11-08T22:56:34.7351657Z #13 8.642 Downloading uvicorn-0.36.0-py3-none-any.whl (67 kB)
+2026-11-08T22:56:34.9076541Z #13 8.691 Downloading sqlalchemy-2.0.43-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.3 MB)
+2026-11-08T22:56:34.9078947Z #13 8.815    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.3/3.3 MB 28.3 MB/s  0:00:00
+2026-11-08T22:56:35.0316676Z #13 8.858 Downloading psycopg-3.2.10-py3-none-any.whl (206 kB)
+2026-11-08T22:56:35.0317374Z #13 8.898 Downloading alembic-1.16.5-py3-none-any.whl (247 kB)
+2026-11-08T22:56:35.0318037Z #13 8.939 Downloading pydantic_settings-2.10.1-py3-none-any.whl (45 kB)
+2026-11-08T22:56:35.1503648Z #13 8.978 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (807 kB)
+2026-11-08T22:56:35.1504623Z #13 8.982    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 807.9/807.9 kB 320.7 MB/s  0:00:00
+2026-11-08T22:56:35.1505227Z #13 9.020 Downloading opentelemetry_proto-1.38.0-py3-none-any.whl (72 kB)
+2026-11-08T22:56:35.1505682Z #13 9.057 Downloading croniter-6.0.0-py2.py3-none-any.whl (25 kB)
+2026-11-08T22:56:35.2711998Z #13 9.095 Downloading regex-2025.11.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (803 kB)
+2026-11-08T22:56:35.2713512Z #13 9.099    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 803.5/803.5 kB 253.0 MB/s  0:00:00
+2026-11-08T22:56:35.2714300Z #13 9.137 Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+2026-11-08T22:56:35.3877164Z #13 9.178    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 114.8 MB/s  0:00:00
+2026-11-08T22:56:35.3877802Z #13 9.218 Downloading psutil-7.1.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (291 kB)
+2026-11-08T22:56:35.3878565Z #13 9.262 Downloading psycopg_binary-3.2.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.4 MB)
+2026-11-08T22:56:35.5065624Z #13 9.295    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 136.8 MB/s  0:00:00
+2026-11-08T22:56:35.5066527Z #13 9.333 Downloading boto3-1.43.126-py3-none-any.whl (140 kB)
+2026-11-08T22:56:35.5067697Z #13 9.372 Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+2026-11-08T22:56:35.5068290Z #13 9.413 Downloading botocore-1.43.126-py3-none-any.whl (16.2 MB)
+2026-11-08T22:56:35.6183010Z #13 9.486    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.2/16.2 MB 227.5 MB/s  0:00:00
+2026-11-08T22:56:35.6184315Z #13 9.525 Downloading jmespath-1.1.0-py3-none-any.whl (20 kB)
+2026-11-08T22:56:35.7326684Z #13 9.563 Downloading protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+2026-11-08T22:56:35.7327680Z #13 9.601 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2026-11-08T22:56:35.7328435Z #13 9.640 Downloading s3transfer-0.19.3-py3-none-any.whl (90 kB)
+2026-11-08T22:56:35.8450059Z #13 9.677 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+2026-11-08T22:56:35.8451111Z #13 9.715 Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+2026-11-08T22:56:35.8452102Z #13 9.752 Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+2026-11-08T22:56:35.9606621Z #13 9.790 Downloading click-8.5.1-py3-none-any.whl (126 kB)
+2026-11-08T22:56:35.9607742Z #13 9.827 Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+2026-11-08T22:56:35.9609093Z #13 9.829    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 744.8 MB/s  0:00:00
+2026-11-08T22:56:35.9609597Z #13 9.868 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+2026-11-08T22:56:36.0755638Z #13 9.906 Downloading httptools-0.9.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (552 kB)
+2026-11-08T22:56:36.0756943Z #13 9.908    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 552.8/552.8 kB 907.2 MB/s  0:00:00
+2026-11-08T22:56:36.0757379Z #13 9.945 Downloading idna-3.20-py3-none-any.whl (69 kB)
+2026-11-08T22:56:36.0757730Z #13 9.983 Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+2026-11-08T22:56:36.1933750Z #13 10.02 Downloading pydantic-2.14.3-py3-none-any.whl (494 kB)
+2026-11-08T22:56:36.1934657Z #13 10.06 Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
+2026-11-08T22:56:36.1936158Z #13 10.06    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 609.0 MB/s  0:00:00
+2026-11-08T22:56:36.1936881Z #13 10.10 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+2026-11-08T22:56:36.3111236Z #13 10.14 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+2026-11-08T22:56:36.3112157Z #13 10.18 Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+2026-11-08T22:56:36.3113136Z #13 10.22 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2026-11-08T22:56:36.4231378Z #13 10.26 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-08T22:56:36.4232642Z #13 10.29 Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+2026-11-08T22:56:36.4234496Z #13 10.33 Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (4.5 MB)
+2026-11-08T22:56:36.5235350Z #13 10.35    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.5/4.5 MB 199.0 MB/s  0:00:00
+2026-11-08T22:56:36.5236182Z #13 10.39 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (458 kB)
+2026-11-08T22:56:36.5238027Z #13 10.43 Downloading websockets-17.4-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (226 kB)
+2026-11-08T22:56:36.6359965Z #13 10.47 Downloading mako-1.4.3-py3-none-any.whl (80 kB)
+2026-11-08T22:56:36.6361708Z #13 10.51 Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-08T22:56:36.6362492Z #13 10.54 Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+2026-11-08T22:56:36.8199368Z #13 10.73 Installing collected packages: pytz, websockets, uvloop, urllib3, typing-extensions, six, regex, PyYAML, python-dotenv, pycparser, psycopg-binary, psutil, protobuf, MarkupSafe, jmespath, idna, httptools, h11, greenlet, click, annotated-types, annotated-doc, uvicorn, typing-inspection, sqlalchemy, python-dateutil, pydantic-core, psycopg, opentelemetry-proto, opentelemetry-api, Mako, cffi, anyio, watchfiles, starlette, pydantic, cryptography, croniter, botocore, alembic, s3transfer, pydantic-settings, fastapi, boto3
+2026-11-08T22:56:40.5752538Z #13 14.48 
+2026-11-08T22:56:40.7303473Z #13 14.49 Successfully installed Mako-1.4.3 MarkupSafe-3.0.4 PyYAML-6.0.3 alembic-1.16.5 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.16.0 boto3-1.43.126 botocore-1.43.126 cffi-2.1.1 click-8.5.1 croniter-6.0.0 cryptography-50.0.2 fastapi-0.143.0 greenlet-3.5.6 h11-0.16.0 httptools-0.9.0 idna-3.20 jmespath-1.1.0 opentelemetry-api-1.45.2 opentelemetry-proto-1.38.0 protobuf-6.33.6 psutil-7.1.0 psycopg-3.2.10 psycopg-binary-3.2.10 pycparser-3.12 pydantic-2.14.3 pydantic-core-2.50.4 pydantic-settings-2.10.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 pytz-2026.6 regex-2025.11.3 s3transfer-0.19.3 six-1.17.0 sqlalchemy-2.0.43 starlette-1.4.1 typing-extensions-4.16.0 typing-inspection-0.4.5 urllib3-2.8.0 uvicorn-0.36.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.4
+2026-11-08T22:56:40.7307080Z #13 14.49 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2026-11-08T22:56:40.7308104Z #13 14.49 
+2026-11-08T22:56:40.7308332Z #13 14.49 [notice] A new release of pip is available: 26.2 -> 26.3
+2026-11-08T22:56:40.7308656Z #13 14.49 [notice] To update, run: pip install --upgrade pip
+2026-11-08T22:56:41.9368042Z #13 DONE 15.8s
+2026-11-08T22:56:42.0796212Z 
+2026-11-08T22:56:42.0797919Z #14 [stage-1  6/11] RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*     && python -m pip uninstall -y pip && rm -rf /usr/local/lib/python3.12/ensurepip /root/.cache/pip     && rm -f /usr/local/bin/pip /usr/local/bin/pip3 /usr/local/bin/pip3.12
+2026-11-08T22:56:42.0799302Z #14 0.141 Hit:1 http://deb.debian.org/debian trixie InRelease
+2026-11-08T22:56:42.0799877Z #14 0.141 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+2026-11-08T22:56:42.2845857Z #14 0.143 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+2026-11-08T22:56:42.2846650Z #14 0.155 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]
+2026-11-08T22:56:42.2847348Z #14 0.196 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [1108 B]
+2026-11-08T22:56:42.2848116Z #14 0.196 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [301 kB]
+2026-11-08T22:56:42.6879250Z #14 0.750 Fetched 10.1 MB in 1s (15.9 MB/s)
+2026-11-08T22:56:43.1054567Z #14 0.750 Reading package lists...
+2026-11-08T22:56:43.5265488Z #14 1.186 Reading package lists...
+2026-11-08T22:56:43.6469661Z #14 1.600 Building dependency tree...
+2026-11-08T22:56:43.6470122Z #14 1.710 Reading state information...
+2026-11-08T22:56:43.8118436Z #14 1.741 Calculating upgrade...
+2026-11-08T22:56:43.8118950Z #14 1.874 The following packages will be upgraded:
+2026-11-08T22:56:43.8119337Z #14 1.874   zlib1g
+2026-11-08T22:56:43.9329935Z #14 1.907 1 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+2026-11-08T22:56:43.9330405Z #14 1.907 Need to get 88.7 kB of archives.
+2026-11-08T22:56:43.9330921Z #14 1.907 After this operation, 1024 B disk space will be freed.
+2026-11-08T22:56:43.9333386Z #14 1.907 Get:1 http://deb.debian.org/debian-security trixie-security/main amd64 zlib1g amd64 1:1.3.dfsg+really1.3.1-1+deb13u1 [88.7 kB]
+2026-11-08T22:56:43.9334087Z #14 1.995 debconf: unable to initialize frontend: Dialog
+2026-11-08T22:56:43.9334540Z #14 1.995 debconf: (TERM is not set, so the dialog frontend is not usable.)
+2026-11-08T22:56:43.9335104Z #14 1.995 debconf: falling back to frontend: Readline
+2026-11-08T22:56:44.0883125Z #14 1.996 debconf: unable to initialize frontend: Readline
+2026-11-08T22:56:44.0885804Z #14 1.996 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 1.)
+2026-11-08T22:56:44.0887261Z #14 1.996 debconf: falling back to frontend: Teletype
+2026-11-08T22:56:44.0887666Z #14 2.000 debconf: unable to initialize frontend: Teletype
+2026-11-08T22:56:44.0888070Z #14 2.000 debconf: (This frontend requires a controlling tty.)
+2026-11-08T22:56:44.0888475Z #14 2.000 debconf: falling back to frontend: Noninteractive
+2026-11-08T22:56:44.3908543Z #14 2.453 Fetched 88.7 kB in 0s (3502 kB/s)
+2026-11-08T22:56:44.5871770Z #14 2.465 (Reading database ... 
+2026-11-08T22:56:44.5872072Z (Reading database ... 5%
+2026-11-08T22:56:44.5872288Z (Reading database ... 10%
+2026-11-08T22:56:44.5872481Z (Reading database ... 15%
+2026-11-08T22:56:44.5872713Z (Reading database ... 20%
+2026-11-08T22:56:44.5872906Z (Reading database ... 25%
+2026-11-08T22:56:44.5873114Z (Reading database ... 30%
+2026-11-08T22:56:44.5873294Z (Reading database ... 35%
+2026-11-08T22:56:44.5873485Z (Reading database ... 40%
+2026-11-08T22:56:44.5873665Z (Reading database ... 45%
+2026-11-08T22:56:44.5873842Z (Reading database ... 50%
+2026-11-08T22:56:44.5874014Z (Reading database ... 55%
+2026-11-08T22:56:44.5874192Z (Reading database ... 60%
+2026-11-08T22:56:44.5874378Z (Reading database ... 65%
+2026-11-08T22:56:44.5874553Z (Reading database ... 70%
+2026-11-08T22:56:44.5874905Z (Reading database ... 75%
+2026-11-08T22:56:44.5875098Z (Reading database ... 80%
+2026-11-08T22:56:44.5875278Z (Reading database ... 85%
+2026-11-08T22:56:44.5875457Z (Reading database ... 90%
+2026-11-08T22:56:44.5875633Z (Reading database ... 95%
+2026-11-08T22:56:44.5875810Z (Reading database ... 100%
+2026-11-08T22:56:44.5876079Z (Reading database ... 5658 files and directories currently installed.)
+2026-11-08T22:56:44.5876495Z #14 2.471 Preparing to unpack .../zlib1g_1%3a1.3.dfsg+really1.3.1-1+deb13u1_amd64.deb ...
+2026-11-08T22:56:44.5876993Z #14 2.473 Unpacking zlib1g:amd64 (1:1.3.dfsg+really1.3.1-1+deb13u1) over (1:1.3.dfsg+really1.3.1-1+b1) ...
+2026-11-08T22:56:44.5877419Z #14 2.491 Setting up zlib1g:amd64 (1:1.3.dfsg+really1.3.1-1+deb13u1) ...
+2026-11-08T22:56:44.5877749Z #14 2.499 Processing triggers for libc-bin (2.41-12+deb13u4) ...
+2026-11-08T22:56:44.6706856Z #14 2.733 Found existing installation: pip 26.2
+2026-11-08T22:56:44.8446581Z #14 2.763 Uninstalling pip-26.2:
+2026-11-08T22:56:44.8447038Z #14 2.906   Successfully uninstalled pip-26.2
+2026-11-08T22:56:44.9440273Z #14 2.928 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+2026-11-08T22:56:44.9442035Z #14 DONE 3.0s
+2026-11-08T22:56:44.9442501Z 
+2026-11-08T22:56:44.9442646Z #15 [stage-1  7/11] COPY alembic.ini .
+2026-11-08T22:56:44.9442866Z #15 DONE 0.0s
+2026-11-08T22:56:44.9443034Z 
+2026-11-08T22:56:44.9443196Z #16 [stage-1  8/11] COPY migrations/ migrations/
+2026-11-08T22:56:44.9443511Z #16 DONE 0.0s
+2026-11-08T22:56:44.9443648Z 
+2026-11-08T22:56:44.9443788Z #17 [stage-1  9/11] COPY app/ app/
+2026-11-08T22:56:44.9444050Z #17 DONE 0.0s
+2026-11-08T22:56:45.1083067Z 
+2026-11-08T22:56:45.1083678Z #18 [stage-1 10/11] COPY scripts/ scripts/
+2026-11-08T22:56:45.1084119Z #18 DONE 0.0s
+2026-11-08T22:56:45.1084284Z 
+2026-11-08T22:56:45.1084872Z #19 [stage-1 11/11] RUN chmod -R a+rX /app/app /app/scripts /app/migrations && useradd --uid 10001 --no-create-home app
+2026-11-08T22:56:45.1339102Z #19 DONE 0.2s
+2026-11-08T22:56:45.2860309Z 
+2026-11-08T22:56:45.2860954Z #20 exporting to docker image format
+2026-11-08T22:56:45.2862024Z #20 exporting layers
+2026-11-08T22:56:53.7623695Z #20 exporting layers 8.6s done
+2026-11-08T22:56:53.9180355Z #20 exporting manifest sha256:8f2f09637e3bb673bfa7ffd921826fad6936dab3bf1c30691f189e036c19f952 done
+2026-11-08T22:56:53.9188170Z #20 exporting config sha256:c91c2976354ab2aed3e1114b72040807abae54d0541a35bec895d95607a66c8e done
+2026-11-08T22:56:53.9192119Z #20 sending tarball
+2026-11-08T22:56:54.4684192Z #20 ...
+2026-11-08T22:56:54.4684882Z 
+2026-11-08T22:56:54.4685183Z #21 importing to docker
+2026-11-08T22:56:54.6196190Z #21 loading layer dd57f90311a2 327.68kB / 29.86MB
+2026-11-08T22:56:55.1606522Z #21 loading layer 3dc3efdf0110 32.77kB / 1.29MB
+2026-11-08T22:56:56.7089867Z #21 loading layer 96a69f98ae07 131.07kB / 12.12MB
+2026-11-08T22:56:57.3847427Z #21 loading layer 340931a1d986 248B / 248B
+2026-11-08T22:56:57.5547225Z #21 loading layer d5ab62bcdbbb 557.06kB / 86.09MB
+2026-11-08T22:57:00.1136008Z #21 loading layer 5ee1e5ae0677 93B / 93B
+2026-11-08T22:57:00.2927330Z #21 loading layer bf23f35311bf 2.07kB / 2.07kB
+2026-11-08T22:57:00.2927681Z #21 loading layer 8d4e498ce36b 557.06kB / 57.27MB
+2026-11-08T22:57:03.0768617Z #21 loading layer 4de5b71b3e11 32.77kB / 137.56kB
+2026-11-08T22:57:03.1786497Z #21 loading layer 198c1c11db1f 439B / 439B
+2026-11-08T22:57:03.1786973Z #21 loading layer f0fa95d7018f 32.77kB / 51.21kB
+2026-11-08T22:57:03.1787380Z #21 loading layer fa72f41ea4a7 32.77kB / 332.70kB
+2026-11-08T22:57:03.2850583Z #21 loading layer dd57f90311a2 29.86MB / 29.86MB 8.8s done
+2026-11-08T22:57:03.2852242Z #21 loading layer 3dc3efdf0110 1.29MB / 1.29MB 8.1s done
+2026-11-08T22:57:03.2853010Z #21 loading layer 96a69f98ae07 12.12MB / 12.12MB 6.6s done
+2026-11-08T22:57:03.2853671Z #21 loading layer 340931a1d986 248B / 248B 5.9s done
+2026-11-08T22:57:03.2854203Z #21 loading layer d5ab62bcdbbb 86.09MB / 86.09MB 5.9s done
+2026-11-08T22:57:03.2854654Z #21 loading layer 5ee1e5ae0677 93B / 93B 3.2s done
+2026-11-08T22:57:03.2856290Z #21 loading layer bf23f35311bf 2.07kB / 2.07kB 3.1s done
+2026-11-08T22:57:03.2857652Z #21 loading layer 8d4e498ce36b 57.27MB / 57.27MB 3.1s done
+2026-11-08T22:57:03.2858231Z #21 loading layer 4de5b71b3e11 137.56kB / 137.56kB 0.2s done
+2026-11-08T22:57:03.2858666Z #21 loading layer 198c1c11db1f 439B / 439B 0.1s done
+2026-11-08T22:57:03.2859064Z #21 loading layer f0fa95d7018f 51.21kB / 51.21kB 0.1s done
+2026-11-08T22:57:03.2859489Z #21 loading layer fa72f41ea4a7 332.70kB / 332.70kB 0.1s done
+2026-11-08T22:57:03.2859924Z #21 loading layer 68823c7a2ae2 153.53kB / 153.53kB 0.0s done
+2026-11-08T22:57:03.2860361Z #21 loading layer a7c66e7741da 1.17kB / 1.17kB 0.0s done
+2026-11-08T22:57:03.2860740Z #21 DONE 8.8s
+2026-11-08T22:57:03.2860891Z 
+2026-11-08T22:57:03.2861026Z #20 exporting to docker image format
+2026-11-08T22:57:03.2861414Z #20 sending tarball 9.5s done
+2026-11-08T22:57:03.2861726Z #20 DONE 18.1s
+2026-11-08T22:57:03.2861818Z 
+2026-11-08T22:57:03.2861971Z #22 resolving provenance for metadata file
+2026-11-08T22:57:03.2954396Z #22 DONE 0.0s
+2026-11-08T22:57:03.3062749Z ##[group]ImageID
+2026-11-08T22:57:03.3063188Z sha256:c91c2976354ab2aed3e1114b72040807abae54d0541a35bec895d95607a66c8e
+2026-11-08T22:57:03.3064143Z ##[endgroup]
+2026-11-08T22:57:03.3064580Z ##[group]Digest
+2026-11-08T22:57:03.3065110Z sha256:8f2f09637e3bb673bfa7ffd921826fad6936dab3bf1c30691f189e036c19f952
+2026-11-08T22:57:03.3065710Z ##[endgroup]
+2026-11-08T22:57:03.3065997Z ##[group]Metadata
+2026-11-08T22:57:03.3069269Z {
+2026-11-08T22:57:03.3069531Z   "buildx.build.provenance": {
+2026-11-08T22:57:03.3069924Z     "builder": {
+2026-11-08T22:57:03.3070266Z       "id": ""
+2026-11-08T22:57:03.3070598Z     },
+2026-11-08T22:57:03.3070981Z     "buildType": "https://mobyproject.org/buildkit@v1",
+2026-11-08T22:57:03.3071246Z     "materials": [
+2026-11-08T22:57:03.3071412Z       {
+2026-11-08T22:57:03.3072164Z         "uri": "pkg:docker/python@3.12.16-slim?digest=sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b&platform=linux%2Famd64",
+2026-11-08T22:57:03.3072961Z         "digest": {
+2026-11-08T22:57:03.3073673Z           "sha256": "5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b"
+2026-11-08T22:57:03.3074220Z         }
+2026-11-08T22:57:03.3074448Z       },
+2026-11-08T22:57:03.3075031Z       {
+2026-11-08T22:57:03.3075953Z         "uri": "pkg:docker/otel/opentelemetry-collector-contrib@0.123.0?digest=sha256:e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2&platform=linux%2Famd64",
+2026-11-08T22:57:03.3076906Z         "digest": {
+2026-11-08T22:57:03.3077390Z           "sha256": "e39311df1f3d941923c00da79ac7ba6269124a870ee87e3c3ad24d60f8aee4d2"
+2026-11-08T22:57:03.3077900Z         }
+2026-11-08T22:57:03.3078116Z       }
+2026-11-08T22:57:03.3078318Z     ],
+2026-11-08T22:57:03.3078527Z     "invocation": {
+2026-11-08T22:57:03.3078777Z       "configSource": {
+2026-11-08T22:57:03.3079087Z         "entryPoint": "Dockerfile.uat"
+2026-11-08T22:57:03.3079487Z       },
+2026-11-08T22:57:03.3079707Z       "parameters": {
+2026-11-08T22:57:03.3079975Z         "frontend": "dockerfile.v0",
+2026-11-08T22:57:03.3080294Z         "secrets": [
+2026-11-08T22:57:03.3080538Z           {
+2026-11-08T22:57:03.3080764Z             "id": "proxy_ca",
+2026-11-08T22:57:03.3081047Z             "optional": true
+2026-11-08T22:57:03.3081291Z           }
+2026-11-08T22:57:03.3081484Z         ],
+2026-11-08T22:57:03.3081682Z         "locals": [
+2026-11-08T22:57:03.3081893Z           {
+2026-11-08T22:57:03.3082114Z             "name": "context"
+2026-11-08T22:57:03.3082368Z           },
+2026-11-08T22:57:03.3082516Z           {
+2026-11-08T22:57:03.3082675Z             "name": "dockerfile"
+2026-11-08T22:57:03.3082875Z           }
+2026-11-08T22:57:03.3083021Z         ],
+2026-11-08T22:57:03.3083189Z         "root": {
+2026-11-08T22:57:03.3083362Z           "configSource": {
+2026-11-08T22:57:03.3083623Z             "path": "Dockerfile.uat"
+2026-11-08T22:57:03.3083925Z           },
+2026-11-08T22:57:03.3084160Z           "request": {
+2026-11-08T22:57:03.3084417Z             "args": {
+2026-11-08T22:57:03.3084692Z               "vcs:localdir:context": "backend",
+2026-11-08T22:57:03.3085161Z               "vcs:localdir:dockerfile": "backend",
+2026-11-08T22:57:03.3085459Z               "vcs:revision": "aecf3f8ad1615898e4eb8098739b4f0c4f7d1908",
+2026-11-08T22:57:03.3085857Z               "vcs:source": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard"
+2026-11-08T22:57:03.3086163Z             }
+2026-11-08T22:57:03.3086319Z           }
+2026-11-08T22:57:03.3086478Z         },
+2026-11-08T22:57:03.3086661Z         "compatibilityVersion": 30
+2026-11-08T22:57:03.3086857Z       },
+2026-11-08T22:57:03.3087091Z       "environment": {
+2026-11-08T22:57:03.3087386Z         "dockerfileVersion": "1.28.0",
+2026-11-08T22:57:03.3087738Z         "github_actor": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3088077Z         "github_actor_id": "45139666",
+2026-11-08T22:57:03.3088414Z         "github_event_name": "pull_request",
+2026-11-08T22:57:03.3088736Z         "github_event_payload": {
+2026-11-08T22:57:03.3089031Z           "action": "synchronize",
+2026-11-08T22:57:03.3089380Z           "after": "54f26e51106469e285dd747dd6b8afd09ca43ce6",
+2026-11-08T22:57:03.3090019Z           "before": "4081fc75117afbd43e1fc4489925a2d65d744551",
+2026-11-08T22:57:03.3090373Z           "number": 89,
+2026-11-08T22:57:03.3090627Z           "pull_request": {
+2026-11-08T22:57:03.3090890Z             "_links": {
+2026-11-08T22:57:03.3091139Z               "comments": {
+2026-11-08T22:57:03.3091698Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/89/comments"
+2026-11-08T22:57:03.3092283Z               },
+2026-11-08T22:57:03.3092530Z               "commits": {
+2026-11-08T22:57:03.3093052Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89/commits"
+2026-11-08T22:57:03.3093626Z               },
+2026-11-08T22:57:03.3093882Z               "html": {
+2026-11-08T22:57:03.3094319Z                 "href": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89"
+2026-11-08T22:57:03.3095668Z               },
+2026-11-08T22:57:03.3095945Z               "issue": {
+2026-11-08T22:57:03.3096458Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/89"
+2026-11-08T22:57:03.3097011Z               },
+2026-11-08T22:57:03.3097266Z               "review_comment": {
+2026-11-08T22:57:03.3097882Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/comments{/number}"
+2026-11-08T22:57:03.3098498Z               },
+2026-11-08T22:57:03.3098754Z               "review_comments": {
+2026-11-08T22:57:03.3099311Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89/comments"
+2026-11-08T22:57:03.3099837Z               },
+2026-11-08T22:57:03.3100076Z               "self": {
+2026-11-08T22:57:03.3100567Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89"
+2026-11-08T22:57:03.3100976Z               },
+2026-11-08T22:57:03.3101148Z               "statuses": {
+2026-11-08T22:57:03.3101583Z                 "href": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/statuses/54f26e51106469e285dd747dd6b8afd09ca43ce6"
+2026-11-08T22:57:03.3102210Z               }
+2026-11-08T22:57:03.3102364Z             },
+2026-11-08T22:57:03.3102536Z             "active_lock_reason": null,
+2026-11-08T22:57:03.3102754Z             "additions": 2461542,
+2026-11-08T22:57:03.3102962Z             "assignee": null,
+2026-11-08T22:57:03.3103155Z             "assignees": [],
+2026-11-08T22:57:03.3103353Z             "author_association": "OWNER",
+2026-11-08T22:57:03.3103569Z             "auto_merge": null,
+2026-11-08T22:57:03.3103761Z             "base": {
+2026-11-08T22:57:03.3103958Z               "label": "Parikshit-Sahrawat:main",
+2026-11-08T22:57:03.3104200Z               "ref": "main",
+2026-11-08T22:57:03.3104401Z               "repo": {
+2026-11-08T22:57:03.3104893Z                 "allow_auto_merge": false,
+2026-11-08T22:57:03.3105229Z                 "allow_forking": true,
+2026-11-08T22:57:03.3105475Z                 "allow_merge_commit": true,
+2026-11-08T22:57:03.3105720Z                 "allow_rebase_merge": true,
+2026-11-08T22:57:03.3105929Z                 "allow_squash_merge": true,
+2026-11-08T22:57:03.3106146Z                 "allow_update_branch": false,
+2026-11-08T22:57:03.3106590Z                 "archive_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/{archive_format}{/ref}",
+2026-11-08T22:57:03.3107033Z                 "archived": false,
+2026-11-08T22:57:03.3107460Z                 "assignees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/assignees{/user}",
+2026-11-08T22:57:03.3108016Z                 "blobs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/blobs{/sha}",
+2026-11-08T22:57:03.3108561Z                 "branches_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/branches{/branch}",
+2026-11-08T22:57:03.3109072Z                 "clone_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3109876Z                 "collaborators_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/collaborators{/collaborator}",
+2026-11-08T22:57:03.3110534Z                 "comments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/comments{/number}",
+2026-11-08T22:57:03.3111113Z                 "commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/commits{/sha}",
+2026-11-08T22:57:03.3111692Z                 "compare_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/compare/{base}...{head}",
+2026-11-08T22:57:03.3112284Z                 "contents_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contents/{+path}",
+2026-11-08T22:57:03.3112858Z                 "contributors_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contributors",
+2026-11-08T22:57:03.3113462Z                 "created_at": "2026-10-07T21:41:46Z",
+2026-11-08T22:57:03.3113725Z                 "default_branch": "main",
+2026-11-08T22:57:03.3113988Z                 "delete_branch_on_merge": false,
+2026-11-08T22:57:03.3114414Z                 "deployments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/deployments",
+2026-11-08T22:57:03.3114979Z                 "description": null,
+2026-11-08T22:57:03.3115217Z                 "disabled": false,
+2026-11-08T22:57:03.3115596Z                 "downloads_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/downloads",
+2026-11-08T22:57:03.3116104Z                 "events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/events",
+2026-11-08T22:57:03.3116452Z                 "fork": false,
+2026-11-08T22:57:03.3116645Z                 "forks": 1,
+2026-11-08T22:57:03.3116839Z                 "forks_count": 1,
+2026-11-08T22:57:03.3117208Z                 "forks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/forks",
+2026-11-08T22:57:03.3117603Z                 "full_name": "Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3118054Z                 "git_commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/commits{/sha}",
+2026-11-08T22:57:03.3118601Z                 "git_refs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/refs{/sha}",
+2026-11-08T22:57:03.3119167Z                 "git_tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/tags{/sha}",
+2026-11-08T22:57:03.3119710Z                 "git_url": "git://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3120089Z                 "has_discussions": false,
+2026-11-08T22:57:03.3120349Z                 "has_downloads": false,
+2026-11-08T22:57:03.3120586Z                 "has_issues": true,
+2026-11-08T22:57:03.3120804Z                 "has_pages": false,
+2026-11-08T22:57:03.3121030Z                 "has_projects": true,
+2026-11-08T22:57:03.3121260Z                 "has_pull_requests": true,
+2026-11-08T22:57:03.3121481Z                 "has_wiki": true,
+2026-11-08T22:57:03.3121695Z                 "homepage": null,
+2026-11-08T22:57:03.3122044Z                 "hooks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/hooks",
+2026-11-08T22:57:03.3122551Z                 "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3122944Z                 "id": 1409408069,
+2026-11-08T22:57:03.3123166Z                 "is_template": false,
+2026-11-08T22:57:03.3123615Z                 "issue_comment_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/comments{/number}",
+2026-11-08T22:57:03.3124257Z                 "issue_events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/events{/number}",
+2026-11-08T22:57:03.3125100Z                 "issues_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues{/number}",
+2026-11-08T22:57:03.3125785Z                 "keys_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/keys{/key_id}",
+2026-11-08T22:57:03.3126336Z                 "labels_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/labels{/name}",
+2026-11-08T22:57:03.3126731Z                 "language": "Python",
+2026-11-08T22:57:03.3127107Z                 "languages_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/languages",
+2026-11-08T22:57:03.3127530Z                 "license": null,
+2026-11-08T22:57:03.3127770Z                 "merge_commit_message": "PR_TITLE",
+2026-11-08T22:57:03.3128041Z                 "merge_commit_title": "MERGE_MESSAGE",
+2026-11-08T22:57:03.3128430Z                 "merges_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/merges",
+2026-11-08T22:57:03.3129100Z                 "milestones_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/milestones{/number}",
+2026-11-08T22:57:03.3129547Z                 "mirror_url": null,
+2026-11-08T22:57:03.3129775Z                 "name": "OpsControl_Dashboard",
+2026-11-08T22:57:03.3130028Z                 "node_id": "R_kgDOVAHcRQ",
+2026-11-08T22:57:03.3130532Z                 "notifications_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/notifications{?since,all,participating}",
+2026-11-08T22:57:03.3131034Z                 "open_issues": 27,
+2026-11-08T22:57:03.3131258Z                 "open_issues_count": 27,
+2026-11-08T22:57:03.3131469Z                 "owner": {
+2026-11-08T22:57:03.3131760Z                   "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3132211Z                   "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3132675Z                   "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3133149Z                   "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3133645Z                   "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3134027Z                   "gravatar_id": "",
+2026-11-08T22:57:03.3134304Z                   "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3134581Z                   "id": 45139666,
+2026-11-08T22:57:03.3135044Z                   "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3135324Z                   "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3135685Z                   "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3136177Z                   "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3136650Z                   "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3136972Z                   "site_admin": false,
+2026-11-08T22:57:03.3137345Z                   "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3137851Z                   "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3138216Z                   "type": "User",
+2026-11-08T22:57:03.3138516Z                   "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3138833Z                   "user_view_type": "public"
+2026-11-08T22:57:03.3139061Z                 },
+2026-11-08T22:57:03.3139246Z                 "private": false,
+2026-11-08T22:57:03.3139466Z                 "pull_request_creation_policy": "all",
+2026-11-08T22:57:03.3139924Z                 "pulls_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls{/number}",
+2026-11-08T22:57:03.3140348Z                 "pushed_at": "2026-11-08T22:55:25Z",
+2026-11-08T22:57:03.3140759Z                 "releases_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/releases{/id}",
+2026-11-08T22:57:03.3141325Z                 "size": 331718,
+2026-11-08T22:57:03.3141580Z                 "squash_merge_commit_message": "COMMIT_MESSAGES",
+2026-11-08T22:57:03.3141887Z                 "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+2026-11-08T22:57:03.3142240Z                 "ssh_url": "git@github.com:Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3142574Z                 "stargazers_count": 1,
+2026-11-08T22:57:03.3142977Z                 "stargazers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/stargazers",
+2026-11-08T22:57:03.3143540Z                 "statuses_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/statuses/{sha}",
+2026-11-08T22:57:03.3144108Z                 "subscribers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscribers",
+2026-11-08T22:57:03.3144973Z                 "subscription_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscription",
+2026-11-08T22:57:03.3145544Z                 "svn_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3146007Z                 "tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/tags",
+2026-11-08T22:57:03.3146515Z                 "teams_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/teams",
+2026-11-08T22:57:03.3146894Z                 "topics": [],
+2026-11-08T22:57:03.3147279Z                 "trees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/trees{/sha}",
+2026-11-08T22:57:03.3147712Z                 "updated_at": "2026-11-08T15:05:42Z",
+2026-11-08T22:57:03.3148077Z                 "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3148463Z                 "use_squash_pr_title_as_default": false,
+2026-11-08T22:57:03.3148705Z                 "visibility": "public",
+2026-11-08T22:57:03.3148915Z                 "watchers": 1,
+2026-11-08T22:57:03.3149115Z                 "watchers_count": 1,
+2026-11-08T22:57:03.3149352Z                 "web_commit_signoff_required": false
+2026-11-08T22:57:03.3149568Z               },
+2026-11-08T22:57:03.3149785Z               "sha": "2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a",
+2026-11-08T22:57:03.3150035Z               "user": {
+2026-11-08T22:57:03.3150299Z                 "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3150726Z                 "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3151245Z                 "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3151960Z                 "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3152571Z                 "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3152923Z                 "gravatar_id": "",
+2026-11-08T22:57:03.3153164Z                 "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3153422Z                 "id": 45139666,
+2026-11-08T22:57:03.3153669Z                 "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3153944Z                 "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3154296Z                 "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3154925Z                 "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3155420Z                 "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3155720Z                 "site_admin": false,
+2026-11-08T22:57:03.3156054Z                 "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3156517Z                 "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3157065Z                 "type": "User",
+2026-11-08T22:57:03.3157321Z                 "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3157601Z                 "user_view_type": "public"
+2026-11-08T22:57:03.3157840Z               }
+2026-11-08T22:57:03.3158003Z             },
+2026-11-08T22:57:03.3189217Z             "body": "## Consolidated implementation handoff — 2026-11-08\n\nFinal HEAD: `4081fc75117afbd43e1fc4489925a2d65d744551`. Main baseline: `2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a`. PR remains **draft; PARTIAL/BLOCKED; Sprint 1 NOT COMPLETE**.\n\nAll six pinned source heads (#80, #81, #82, #83, #84, #86) are ancestors through proper three-way merges; main already contains #85. Source branches and main were not modified. Semantic conflicts preserve ETL, ownership/RBAC, migration guards, policy, workspace/theme and Incidents UI retirement.\n\n### Changes and evidence\n\n- Additive migration 0042, immutable tenant-scoped source revision ledger, actor/time/hash/provenance, source expected-revision/idempotency commands and transactional legacy attachment adapters.\n- Typed host OS/method and explicit HTTPS applicability; unverified/incompatible/excluded configurations fail closed. New-revision rollback revalidates and never activates collectors or restores secrets/checkpoints.\n- Approved single-panel three-level navigation, tenant/session reload safeguards, actual API/browser configuration tests and desktop captures.\n- Preserve all 28 workflows and 13 required checks; no retired coverage. Source configuration acceptance and tamper-resistant evidence checks added.\n- [Report and commands](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/REPORT.md), [merge decisions](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/MERGE_RESOLUTIONS.md), [changed files](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/CONSOLIDATED_CHANGED_FILES.txt), [source identities](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/TESTED_SOURCE_SHA256.json).\n- [1,273 artifact checksums](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/ARTIFACT_SHA256.json), manifest SHA-256 `37c06b2fda5a6e8fc67fde957334a80c0badee2f121947b430b0209c503ccc88`.\n\n### Actual local results — overlapping suites, not additive\n\n| Suite | Result |\n|---|---|\n|Broad PostgreSQL discovery|662 executions: 594 PASS, 0 FAIL, 68 SKIPPED|\n|Owned ETL PostgreSQL/HTTP/browser|117 PASS, 0 FAIL/SKIP|\n|Final source configuration/ETL subset|38 PASS, 0 FAIL/SKIP|\n|Frontend|55 PASS; lint and production build PASS|\n|CI regression and workflow validation|24 PASS; all 28 workflows valid|\n|Full controlled HTTP/browser/restore/TLS|13 top-level groups PASS; 67 scope HTTP checks, 17 scope-browser groups, 7 closure-browser groups|\n|Operational/theme|PASS; 13 theme checks, 6 contrast measurements, no page/server errors|\n|Historical image policy|7 roles FAIL; unresolved vulnerabilities and pending licence review|\n\n642 unique backend unittest identities have PASS execution evidence after deduplication; 68 discovery skips remain skips and have separate owned execution evidence. Full suites tested 89f8a55; operational/release harness 76c53e9; final product follow-up 917da63; CI implementation 25cd3bf. Exact per-suite SHAs, failed attempts, raw logs, restore comparisons and scoped cleanup are retained. Documentation-only final commits do not relabel older hosted runs as final passes.\n\n### CI TRIGGERED — RESULT PENDING\n\nOne trigger snapshot only; no polling or completion monitoring. All runs below identify this exact final HEAD. Owner/reviewer must inspect actual final conclusions and uploaded evidence.\n\n- [OC Dev - Tier C - Network Egress Isolation — 42513541951](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541951) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier A - Scope and Workflow Integrity — 42513541968](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541968) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Integrated Quality Regression — 42513541735](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541735) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier C - Application Image and Worker Validation - No Deploy — 42513541704](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541704) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier C - Image SBOM Vulnerabilities and Licenses — 42513541762](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541762) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Disposable Reliability and Recovery — 42513541886](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541886) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Operational Dashboard Integration — 42513541861](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541861) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier A - Source Tests Lint and Build — 42513541860](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541860) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Controlled HTTPS Alert Recovery — 42513541794](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541794) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Native Monitoring Contracts — 42513541869](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541869) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Sprint 1 Resource Workspace — 42513541827](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541827) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier C - Secrets and Dependency Security — 42513541772](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541772) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier A - UAT Controller Safety Contracts - No Deploy — 42513541795](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541795) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - PostgreSQL Migration and Authorization — 42513541856](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541856) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Customer Ownership and Access — 42513541838](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541838) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - PostgreSQL API and Browser Integration — 42513541859](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541859) — in_progress at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - ETL Ownership and Monitoring Contracts — 42513541771](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541771) — queued at trigger snapshot; result PENDING.\n- [OC Dev - Tier B - Private HTTPS Monitoring — 42513541866](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42513541866) — queued at trigger snapshot; result PENDING.\n\n### Remaining blockers / decisions\n\n- Ruleset 26082467 additive update refused HTTP 403 “Resource not accessible by integration”; reread confirms original 13 checks, strictness, approvals and bypass actors unchanged. Minimum prerequisite: authorised GitHub App/token with repository Administration write, followed by drift and exact check-identity validation. No bypass or required-check removal.\n- All seven historical image roles retain security policy failures and pending accountable per-component licence/NOTICE/source-offer review. No suppression, threshold reduction, digest replacement or waiver. Fresh final images/scans await hosted evidence; local Docker build backing storage is insufficient.\n- [Open configuration gaps](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/OPEN_BLOCKERS.md): atomic resource-context/legacy writer cutover, full history/diff/detach/staged-draft UI, catalogue publication concurrency, exact command crash/revocation/application-provenance cases and provider-specific qualification.\n- **Owner visual acceptance requested** for [admin/operator desktop captures and deviations](https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/tree/4081fc75117afbd43e1fc4489925a2d65d744551/docs/verification/sprint1-integration/VISUAL_ACCEPTANCE.md); prior rejected candidate is not treated as approved. **Independent engineering PR approval requested** before any merge decision.\n- Nine owner-acceptance selections, D07/D08, independent UAT and genuine-provider certification remain pending. No Sprint 2, merge, deployment, release approval, collector upgrade or changes to unrelated durability work.\n\n**CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO.**\n\n<details>\n<summary>Previous PR description (historical context)</summary>\n\nOwner-approved consolidation against post-#85 main. Initial commit is an integration ledger only; **NO source branches merged yet**. Preserve ETL, resource lifecycle, tenant/RBAC, PostgreSQL, scope and security gates. Pending semantic conflict resolution, template contracts, full authenticated/PostgreSQL CI, owner visual acceptance, and independent review. Do not merge this draft until all gates pass. See docs/verification/sprint1-integration/INTEGRATION_LEDGER.md.\n</details>\n",
+2026-11-08T22:57:03.3223430Z             "changed_files": 6573,
+2026-11-08T22:57:03.3223678Z             "closed_at": null,
+2026-11-08T22:57:03.3223881Z             "comments": 3,
+2026-11-08T22:57:03.3224282Z             "comments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/89/comments",
+2026-11-08T22:57:03.3224699Z             "commits": 145,
+2026-11-08T22:57:03.3225448Z             "commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89/commits",
+2026-11-08T22:57:03.3225867Z             "created_at": "2026-11-08T15:19:01Z",
+2026-11-08T22:57:03.3226099Z             "deletions": 1389,
+2026-11-08T22:57:03.3226421Z             "diff_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89.diff",
+2026-11-08T22:57:03.3226764Z             "draft": true,
+2026-11-08T22:57:03.3226942Z             "head": {
+2026-11-08T22:57:03.3227215Z               "label": "Parikshit-Sahrawat:integration/sprint1-pr80-81-82-83-84-86",
+2026-11-08T22:57:03.3227548Z               "ref": "integration/sprint1-pr80-81-82-83-84-86",
+2026-11-08T22:57:03.3227799Z               "repo": {
+2026-11-08T22:57:03.3227987Z                 "allow_auto_merge": false,
+2026-11-08T22:57:03.3228206Z                 "allow_forking": true,
+2026-11-08T22:57:03.3228419Z                 "allow_merge_commit": true,
+2026-11-08T22:57:03.3228632Z                 "allow_rebase_merge": true,
+2026-11-08T22:57:03.3228847Z                 "allow_squash_merge": true,
+2026-11-08T22:57:03.3229066Z                 "allow_update_branch": false,
+2026-11-08T22:57:03.3229474Z                 "archive_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/{archive_format}{/ref}",
+2026-11-08T22:57:03.3229871Z                 "archived": false,
+2026-11-08T22:57:03.3230242Z                 "assignees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/assignees{/user}",
+2026-11-08T22:57:03.3230775Z                 "blobs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/blobs{/sha}",
+2026-11-08T22:57:03.3231535Z                 "branches_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/branches{/branch}",
+2026-11-08T22:57:03.3232077Z                 "clone_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3232612Z                 "collaborators_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/collaborators{/collaborator}",
+2026-11-08T22:57:03.3233205Z                 "comments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/comments{/number}",
+2026-11-08T22:57:03.3233736Z                 "commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/commits{/sha}",
+2026-11-08T22:57:03.3234276Z                 "compare_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/compare/{base}...{head}",
+2026-11-08T22:57:03.3235090Z                 "contents_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contents/{+path}",
+2026-11-08T22:57:03.3235654Z                 "contributors_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contributors",
+2026-11-08T22:57:03.3236069Z                 "created_at": "2026-10-07T21:41:46Z",
+2026-11-08T22:57:03.3236303Z                 "default_branch": "main",
+2026-11-08T22:57:03.3236529Z                 "delete_branch_on_merge": false,
+2026-11-08T22:57:03.3236915Z                 "deployments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/deployments",
+2026-11-08T22:57:03.3237293Z                 "description": null,
+2026-11-08T22:57:03.3237500Z                 "disabled": false,
+2026-11-08T22:57:03.3237850Z                 "downloads_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/downloads",
+2026-11-08T22:57:03.3238347Z                 "events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/events",
+2026-11-08T22:57:03.3238696Z                 "fork": false,
+2026-11-08T22:57:03.3238887Z                 "forks": 1,
+2026-11-08T22:57:03.3239075Z                 "forks_count": 1,
+2026-11-08T22:57:03.3239405Z                 "forks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/forks",
+2026-11-08T22:57:03.3239790Z                 "full_name": "Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3240230Z                 "git_commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/commits{/sha}",
+2026-11-08T22:57:03.3240770Z                 "git_refs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/refs{/sha}",
+2026-11-08T22:57:03.3241288Z                 "git_tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/tags{/sha}",
+2026-11-08T22:57:03.3241740Z                 "git_url": "git://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3242054Z                 "has_discussions": false,
+2026-11-08T22:57:03.3242275Z                 "has_downloads": false,
+2026-11-08T22:57:03.3242487Z                 "has_issues": true,
+2026-11-08T22:57:03.3242684Z                 "has_pages": false,
+2026-11-08T22:57:03.3242886Z                 "has_projects": true,
+2026-11-08T22:57:03.3243095Z                 "has_pull_requests": true,
+2026-11-08T22:57:03.3243310Z                 "has_wiki": true,
+2026-11-08T22:57:03.3243504Z                 "homepage": null,
+2026-11-08T22:57:03.3243846Z                 "hooks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/hooks",
+2026-11-08T22:57:03.3244277Z                 "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3244574Z                 "id": 1409408069,
+2026-11-08T22:57:03.3244902Z                 "is_template": false,
+2026-11-08T22:57:03.3245320Z                 "issue_comment_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/comments{/number}",
+2026-11-08T22:57:03.3246066Z                 "issue_events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/events{/number}",
+2026-11-08T22:57:03.3246620Z                 "issues_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues{/number}",
+2026-11-08T22:57:03.3247133Z                 "keys_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/keys{/key_id}",
+2026-11-08T22:57:03.3247636Z                 "labels_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/labels{/name}",
+2026-11-08T22:57:03.3248005Z                 "language": "Python",
+2026-11-08T22:57:03.3248362Z                 "languages_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/languages",
+2026-11-08T22:57:03.3248723Z                 "license": null,
+2026-11-08T22:57:03.3249038Z                 "merge_commit_message": "PR_TITLE",
+2026-11-08T22:57:03.3249291Z                 "merge_commit_title": "MERGE_MESSAGE",
+2026-11-08T22:57:03.3249662Z                 "merges_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/merges",
+2026-11-08T22:57:03.3250215Z                 "milestones_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/milestones{/number}",
+2026-11-08T22:57:03.3250608Z                 "mirror_url": null,
+2026-11-08T22:57:03.3250823Z                 "name": "OpsControl_Dashboard",
+2026-11-08T22:57:03.3251053Z                 "node_id": "R_kgDOVAHcRQ",
+2026-11-08T22:57:03.3251510Z                 "notifications_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/notifications{?since,all,participating}",
+2026-11-08T22:57:03.3251973Z                 "open_issues": 27,
+2026-11-08T22:57:03.3252178Z                 "open_issues_count": 27,
+2026-11-08T22:57:03.3252384Z                 "owner": {
+2026-11-08T22:57:03.3252670Z                   "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3253079Z                   "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3253512Z                   "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3253958Z                   "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3254401Z                   "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3254722Z                   "gravatar_id": "",
+2026-11-08T22:57:03.3255135Z                   "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3255405Z                   "id": 45139666,
+2026-11-08T22:57:03.3255626Z                   "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3255875Z                   "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3256212Z                   "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3256664Z                   "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3257092Z                   "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3257394Z                   "site_admin": false,
+2026-11-08T22:57:03.3257727Z                   "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3258194Z                   "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3258530Z                   "type": "User",
+2026-11-08T22:57:03.3258781Z                   "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3259057Z                   "user_view_type": "public"
+2026-11-08T22:57:03.3259266Z                 },
+2026-11-08T22:57:03.3259427Z                 "private": false,
+2026-11-08T22:57:03.3259651Z                 "pull_request_creation_policy": "all",
+2026-11-08T22:57:03.3260161Z                 "pulls_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls{/number}",
+2026-11-08T22:57:03.3260543Z                 "pushed_at": "2026-11-08T22:55:25Z",
+2026-11-08T22:57:03.3260936Z                 "releases_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/releases{/id}",
+2026-11-08T22:57:03.3261307Z                 "size": 331718,
+2026-11-08T22:57:03.3261534Z                 "squash_merge_commit_message": "COMMIT_MESSAGES",
+2026-11-08T22:57:03.3261822Z                 "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+2026-11-08T22:57:03.3262150Z                 "ssh_url": "git@github.com:Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3262452Z                 "stargazers_count": 1,
+2026-11-08T22:57:03.3262910Z                 "stargazers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/stargazers",
+2026-11-08T22:57:03.3263440Z                 "statuses_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/statuses/{sha}",
+2026-11-08T22:57:03.3263977Z                 "subscribers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscribers",
+2026-11-08T22:57:03.3264522Z                 "subscription_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscription",
+2026-11-08T22:57:03.3265220Z                 "svn_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3265649Z                 "tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/tags",
+2026-11-08T22:57:03.3266112Z                 "teams_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/teams",
+2026-11-08T22:57:03.3266457Z                 "topics": [],
+2026-11-08T22:57:03.3266809Z                 "trees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/trees{/sha}",
+2026-11-08T22:57:03.3267251Z                 "updated_at": "2026-11-08T15:05:42Z",
+2026-11-08T22:57:03.3267571Z                 "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3267909Z                 "use_squash_pr_title_as_default": false,
+2026-11-08T22:57:03.3268142Z                 "visibility": "public",
+2026-11-08T22:57:03.3268347Z                 "watchers": 1,
+2026-11-08T22:57:03.3268537Z                 "watchers_count": 1,
+2026-11-08T22:57:03.3268753Z                 "web_commit_signoff_required": false
+2026-11-08T22:57:03.3268970Z               },
+2026-11-08T22:57:03.3269183Z               "sha": "54f26e51106469e285dd747dd6b8afd09ca43ce6",
+2026-11-08T22:57:03.3269425Z               "user": {
+2026-11-08T22:57:03.3269691Z                 "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3270101Z                 "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3270530Z                 "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3270977Z                 "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3271417Z                 "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3271733Z                 "gravatar_id": "",
+2026-11-08T22:57:03.3271986Z                 "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3272237Z                 "id": 45139666,
+2026-11-08T22:57:03.3272444Z                 "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3272687Z                 "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3273016Z                 "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3273456Z                 "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3273875Z                 "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3274301Z                 "site_admin": false,
+2026-11-08T22:57:03.3274633Z                 "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3275269Z                 "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3275602Z                 "type": "User",
+2026-11-08T22:57:03.3275847Z                 "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3276120Z                 "user_view_type": "public"
+2026-11-08T22:57:03.3276322Z               }
+2026-11-08T22:57:03.3276476Z             },
+2026-11-08T22:57:03.3276749Z             "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89",
+2026-11-08T22:57:03.3277064Z             "id": 5212496445,
+2026-11-08T22:57:03.3277508Z             "issue_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/89",
+2026-11-08T22:57:03.3277858Z             "labels": [],
+2026-11-08T22:57:03.3278043Z             "locked": false,
+2026-11-08T22:57:03.3278261Z             "maintainer_can_modify": false,
+2026-11-08T22:57:03.3278538Z             "merge_commit_sha": "05e505d802a956131d837b53e1805f1116c263b3",
+2026-11-08T22:57:03.3278804Z             "mergeable": null,
+2026-11-08T22:57:03.3279000Z             "mergeable_state": "unknown",
+2026-11-08T22:57:03.3279211Z             "merged": false,
+2026-11-08T22:57:03.3279393Z             "merged_at": null,
+2026-11-08T22:57:03.3279573Z             "merged_by": null,
+2026-11-08T22:57:03.3279754Z             "milestone": null,
+2026-11-08T22:57:03.3279967Z             "node_id": "PR_kwDOVAHcRc8AAAABNrBiPQ",
+2026-11-08T22:57:03.3280194Z             "number": 89,
+2026-11-08T22:57:03.3280516Z             "patch_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/pull/89.patch",
+2026-11-08T22:57:03.3280855Z             "rebaseable": null,
+2026-11-08T22:57:03.3281056Z             "requested_reviewers": [],
+2026-11-08T22:57:03.3281270Z             "requested_teams": [],
+2026-11-08T22:57:03.3281676Z             "review_comment_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/comments{/number}",
+2026-11-08T22:57:03.3282087Z             "review_comments": 0,
+2026-11-08T22:57:03.3282470Z             "review_comments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89/comments",
+2026-11-08T22:57:03.3282861Z             "state": "open",
+2026-11-08T22:57:03.3283303Z             "statuses_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/statuses/54f26e51106469e285dd747dd6b8afd09ca43ce6",
+2026-11-08T22:57:03.3283843Z             "title": "draft: Sprint 1 six-PR integration (#80 #81 #82 #83 #84 #86)",
+2026-11-08T22:57:03.3284144Z             "updated_at": "2026-11-08T22:55:26Z",
+2026-11-08T22:57:03.3284488Z             "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls/89",
+2026-11-08T22:57:03.3284904Z             "user": {
+2026-11-08T22:57:03.3285166Z               "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3285568Z               "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3285985Z               "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3286430Z               "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3286863Z               "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3287173Z               "gravatar_id": "",
+2026-11-08T22:57:03.3287416Z               "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3287694Z               "id": 45139666,
+2026-11-08T22:57:03.3287904Z               "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3288141Z               "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3288585Z               "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3289028Z               "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3289450Z               "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3289741Z               "site_admin": false,
+2026-11-08T22:57:03.3290057Z               "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3290503Z               "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3290831Z               "type": "User",
+2026-11-08T22:57:03.3291065Z               "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3291336Z               "user_view_type": "public"
+2026-11-08T22:57:03.3291633Z             }
+2026-11-08T22:57:03.3291798Z           },
+2026-11-08T22:57:03.3291953Z           "repository": {
+2026-11-08T22:57:03.3292142Z             "allow_forking": true,
+2026-11-08T22:57:03.3292528Z             "archive_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/{archive_format}{/ref}",
+2026-11-08T22:57:03.3292922Z             "archived": false,
+2026-11-08T22:57:03.3293278Z             "assignees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/assignees{/user}",
+2026-11-08T22:57:03.3293809Z             "blobs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/blobs{/sha}",
+2026-11-08T22:57:03.3294333Z             "branches_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/branches{/branch}",
+2026-11-08T22:57:03.3294984Z             "clone_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3295548Z             "collaborators_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/collaborators{/collaborator}",
+2026-11-08T22:57:03.3296154Z             "comments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/comments{/number}",
+2026-11-08T22:57:03.3296681Z             "commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/commits{/sha}",
+2026-11-08T22:57:03.3297217Z             "compare_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/compare/{base}...{head}",
+2026-11-08T22:57:03.3297765Z             "contents_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contents/{+path}",
+2026-11-08T22:57:03.3298308Z             "contributors_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/contributors",
+2026-11-08T22:57:03.3298693Z             "created_at": "2026-10-07T21:41:46Z",
+2026-11-08T22:57:03.3298919Z             "default_branch": "main",
+2026-11-08T22:57:03.3299287Z             "deployments_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/deployments",
+2026-11-08T22:57:03.3299665Z             "description": null,
+2026-11-08T22:57:03.3299861Z             "disabled": false,
+2026-11-08T22:57:03.3300200Z             "downloads_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/downloads",
+2026-11-08T22:57:03.3300689Z             "events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/events",
+2026-11-08T22:57:03.3301041Z             "fork": false,
+2026-11-08T22:57:03.3301221Z             "forks": 1,
+2026-11-08T22:57:03.3301399Z             "forks_count": 1,
+2026-11-08T22:57:03.3301712Z             "forks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/forks",
+2026-11-08T22:57:03.3302095Z             "full_name": "Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3302529Z             "git_commits_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/commits{/sha}",
+2026-11-08T22:57:03.3303065Z             "git_refs_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/refs{/sha}",
+2026-11-08T22:57:03.3303757Z             "git_tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/tags{/sha}",
+2026-11-08T22:57:03.3304210Z             "git_url": "git://github.com/Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3304511Z             "has_discussions": false,
+2026-11-08T22:57:03.3304721Z             "has_downloads": false,
+2026-11-08T22:57:03.3305121Z             "has_issues": true,
+2026-11-08T22:57:03.3305313Z             "has_pages": false,
+2026-11-08T22:57:03.3305502Z             "has_projects": true,
+2026-11-08T22:57:03.3305704Z             "has_pull_requests": true,
+2026-11-08T22:57:03.3305904Z             "has_wiki": true,
+2026-11-08T22:57:03.3306092Z             "homepage": null,
+2026-11-08T22:57:03.3306545Z             "hooks_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/hooks",
+2026-11-08T22:57:03.3307133Z             "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3307432Z             "id": 1409408069,
+2026-11-08T22:57:03.3307616Z             "is_template": false,
+2026-11-08T22:57:03.3308013Z             "issue_comment_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/comments{/number}",
+2026-11-08T22:57:03.3308602Z             "issue_events_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues/events{/number}",
+2026-11-08T22:57:03.3309149Z             "issues_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/issues{/number}",
+2026-11-08T22:57:03.3309651Z             "keys_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/keys{/key_id}",
+2026-11-08T22:57:03.3310156Z             "labels_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/labels{/name}",
+2026-11-08T22:57:03.3310518Z             "language": "Python",
+2026-11-08T22:57:03.3310862Z             "languages_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/languages",
+2026-11-08T22:57:03.3311227Z             "license": null,
+2026-11-08T22:57:03.3311545Z             "merges_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/merges",
+2026-11-08T22:57:03.3312060Z             "milestones_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/milestones{/number}",
+2026-11-08T22:57:03.3312448Z             "mirror_url": null,
+2026-11-08T22:57:03.3312648Z             "name": "OpsControl_Dashboard",
+2026-11-08T22:57:03.3312880Z             "node_id": "R_kgDOVAHcRQ",
+2026-11-08T22:57:03.3313335Z             "notifications_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/notifications{?since,all,participating}",
+2026-11-08T22:57:03.3313795Z             "open_issues": 27,
+2026-11-08T22:57:03.3313989Z             "open_issues_count": 27,
+2026-11-08T22:57:03.3314190Z             "owner": {
+2026-11-08T22:57:03.3314450Z               "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3315010Z               "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3315433Z               "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3315963Z               "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3316405Z               "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3316718Z               "gravatar_id": "",
+2026-11-08T22:57:03.3316961Z               "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3317207Z               "id": 45139666,
+2026-11-08T22:57:03.3317461Z               "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3317892Z               "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3318232Z               "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3318831Z               "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3319247Z               "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3319539Z               "site_admin": false,
+2026-11-08T22:57:03.3319868Z               "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3320314Z               "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3320650Z               "type": "User",
+2026-11-08T22:57:03.3320888Z               "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3321157Z               "user_view_type": "public"
+2026-11-08T22:57:03.3321363Z             },
+2026-11-08T22:57:03.3321617Z             "private": false,
+2026-11-08T22:57:03.3321825Z             "pull_request_creation_policy": "all",
+2026-11-08T22:57:03.3322209Z             "pulls_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/pulls{/number}",
+2026-11-08T22:57:03.3322583Z             "pushed_at": "2026-11-08T22:55:25Z",
+2026-11-08T22:57:03.3322953Z             "releases_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/releases{/id}",
+2026-11-08T22:57:03.3323315Z             "size": 331718,
+2026-11-08T22:57:03.3323587Z             "ssh_url": "git@github.com:Parikshit-Sahrawat/OpsControl_Dashboard.git",
+2026-11-08T22:57:03.3323891Z             "stargazers_count": 1,
+2026-11-08T22:57:03.3324289Z             "stargazers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/stargazers",
+2026-11-08T22:57:03.3324964Z             "statuses_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/statuses/{sha}",
+2026-11-08T22:57:03.3325509Z             "subscribers_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscribers",
+2026-11-08T22:57:03.3326045Z             "subscription_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/subscription",
+2026-11-08T22:57:03.3326499Z             "svn_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3326907Z             "tags_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/tags",
+2026-11-08T22:57:03.3327360Z             "teams_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/teams",
+2026-11-08T22:57:03.3327709Z             "topics": [],
+2026-11-08T22:57:03.3328035Z             "trees_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/git/trees{/sha}",
+2026-11-08T22:57:03.3328408Z             "updated_at": "2026-11-08T15:05:42Z",
+2026-11-08T22:57:03.3328720Z             "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3329042Z             "visibility": "public",
+2026-11-08T22:57:03.3329251Z             "watchers": 1,
+2026-11-08T22:57:03.3329449Z             "watchers_count": 1,
+2026-11-08T22:57:03.3329663Z             "web_commit_signoff_required": false
+2026-11-08T22:57:03.3329883Z           },
+2026-11-08T22:57:03.3330049Z           "sender": {
+2026-11-08T22:57:03.3330309Z             "avatar_url": "https://avatars.githubusercontent.com/u/45139666?v=4",
+2026-11-08T22:57:03.3330715Z             "events_url": "https://api.github.com/users/Parikshit-Sahrawat/events{/privacy}",
+2026-11-08T22:57:03.3331134Z             "followers_url": "https://api.github.com/users/Parikshit-Sahrawat/followers",
+2026-11-08T22:57:03.3331571Z             "following_url": "https://api.github.com/users/Parikshit-Sahrawat/following{/other_user}",
+2026-11-08T22:57:03.3332011Z             "gists_url": "https://api.github.com/users/Parikshit-Sahrawat/gists{/gist_id}",
+2026-11-08T22:57:03.3332323Z             "gravatar_id": "",
+2026-11-08T22:57:03.3332563Z             "html_url": "https://github.com/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3332938Z             "id": 45139666,
+2026-11-08T22:57:03.3333137Z             "login": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3333370Z             "node_id": "MDQ6VXNlcjQ1MTM5NjY2",
+2026-11-08T22:57:03.3333692Z             "organizations_url": "https://api.github.com/users/Parikshit-Sahrawat/orgs",
+2026-11-08T22:57:03.3334125Z             "received_events_url": "https://api.github.com/users/Parikshit-Sahrawat/received_events",
+2026-11-08T22:57:03.3334532Z             "repos_url": "https://api.github.com/users/Parikshit-Sahrawat/repos",
+2026-11-08T22:57:03.3335008Z             "site_admin": false,
+2026-11-08T22:57:03.3335328Z             "starred_url": "https://api.github.com/users/Parikshit-Sahrawat/starred{/owner}{/repo}",
+2026-11-08T22:57:03.3335793Z             "subscriptions_url": "https://api.github.com/users/Parikshit-Sahrawat/subscriptions",
+2026-11-08T22:57:03.3336118Z             "type": "User",
+2026-11-08T22:57:03.3336454Z             "url": "https://api.github.com/users/Parikshit-Sahrawat",
+2026-11-08T22:57:03.3336728Z             "user_view_type": "public"
+2026-11-08T22:57:03.3336927Z           }
+2026-11-08T22:57:03.3337074Z         },
+2026-11-08T22:57:03.3337241Z         "github_job": "image-validation",
+2026-11-08T22:57:03.3337463Z         "github_ref": "refs/pull/89/merge",
+2026-11-08T22:57:03.3337685Z         "github_ref_name": "89/merge",
+2026-11-08T22:57:03.3337894Z         "github_ref_protected": "false",
+2026-11-08T22:57:03.3338120Z         "github_ref_type": "branch",
+2026-11-08T22:57:03.3338392Z         "github_repository": "Parikshit-Sahrawat/OpsControl_Dashboard",
+2026-11-08T22:57:03.3338675Z         "github_repository_id": "1409408069",
+2026-11-08T22:57:03.3338929Z         "github_repository_owner": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3339187Z         "github_repository_owner_id": "45139666",
+2026-11-08T22:57:03.3339415Z         "github_run_attempt": "1",
+2026-11-08T22:57:03.3339627Z         "github_run_id": "42532627312",
+2026-11-08T22:57:03.3339830Z         "github_run_number": "86",
+2026-11-08T22:57:03.3340031Z         "github_runner_arch": "X64",
+2026-11-08T22:57:03.3340366Z         "github_runner_environment": "github-hosted",
+2026-11-08T22:57:03.3340686Z         "github_runner_image_os": "ubuntu24",
+2026-11-08T22:57:03.3341297Z         "github_runner_image_version": "20261101.360.1",
+2026-11-08T22:57:03.3356902Z         "github_runner_name": "GitHub Actions 1000007406",
+2026-11-08T22:57:03.3357270Z         "github_runner_os": "Linux",
+2026-11-08T22:57:03.3357594Z         "github_runner_tracking_id": "github_41653181-e583-43e0-a04e-30aac0a5e5ac",
+2026-11-08T22:57:03.3357937Z         "github_server_url": "https://github.com",
+2026-11-08T22:57:03.3358229Z         "github_triggering_actor": "Parikshit-Sahrawat",
+2026-11-08T22:57:03.3358609Z         "github_workflow": "OC Dev - Tier C - Application Image and Worker Validation - No Deploy",
+2026-11-08T22:57:03.3359221Z         "github_workflow_ref": "Parikshit-Sahrawat/OpsControl_Dashboard/.github/workflows/local-uat-image-validation.yml@refs/pull/89/merge",
+2026-11-08T22:57:03.3359774Z         "github_workflow_sha": "aecf3f8ad1615898e4eb8098739b4f0c4f7d1908",
+2026-11-08T22:57:03.3360061Z         "platform": "linux/amd64"
+2026-11-08T22:57:03.3360252Z       }
+2026-11-08T22:57:03.3360400Z     }
+2026-11-08T22:57:03.3360542Z   },
+2026-11-08T22:57:03.3360972Z   "buildx.build.ref": "builder-988f1427-9ab5-44ad-85d5-9a06e5861395/builder-988f1427-9ab5-44ad-85d5-9a06e58613950/kougvhw79kertswipy4prs6v6",
+2026-11-08T22:57:03.3361623Z   "containerimage.config.digest": "sha256:c91c2976354ab2aed3e1114b72040807abae54d0541a35bec895d95607a66c8e",
+2026-11-08T22:57:03.3362012Z   "containerimage.descriptor": {
+2026-11-08T22:57:03.3362277Z     "mediaType": "application/vnd.oci.image.manifest.v1+json",
+2026-11-08T22:57:03.3362666Z     "digest": "sha256:8f2f09637e3bb673bfa7ffd921826fad6936dab3bf1c30691f189e036c19f952",
+2026-11-08T22:57:03.3362981Z     "size": 2957,
+2026-11-08T22:57:03.3363144Z     "annotations": {
+2026-11-08T22:57:03.3363374Z       "org.opencontainers.image.created": "2026-11-08T22:56:53Z"
+2026-11-08T22:57:03.3363874Z     },
+2026-11-08T22:57:03.3364024Z     "platform": {
+2026-11-08T22:57:03.3364200Z       "architecture": "amd64",
+2026-11-08T22:57:03.3364388Z       "os": "linux"
+2026-11-08T22:57:03.3364543Z     }
+2026-11-08T22:57:03.3364688Z   },
+2026-11-08T22:57:03.3365119Z   "containerimage.digest": "sha256:8f2f09637e3bb673bfa7ffd921826fad6936dab3bf1c30691f189e036c19f952",
+2026-11-08T22:57:03.3365562Z   "image.name": "docker.io/library/opscontrol-uat-backend:validation"
+2026-11-08T22:57:03.3365830Z }
+2026-11-08T22:57:03.3366205Z ##[endgroup]
+2026-11-08T22:57:03.3366499Z ##[group]Reference
+2026-11-08T22:57:03.3366933Z builder-988f1427-9ab5-44ad-85d5-9a06e5861395/builder-988f1427-9ab5-44ad-85d5-9a06e58613950/kougvhw79kertswipy4prs6v6
+2026-11-08T22:57:03.3367452Z ##[endgroup]
+2026-11-08T22:57:03.3367729Z ##[group]Check build summary support
+2026-11-08T22:57:03.3368154Z Build summary supported!
+2026-11-08T22:57:03.3368441Z ##[endgroup]
+2026-11-08T22:57:03.3467888Z ##[group]Run docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8
+2026-11-08T22:57:03.3468458Z with:
+2026-11-08T22:57:03.3468713Z   context: ./frontend
+2026-11-08T22:57:03.3469013Z   file: ./frontend/Dockerfile.demo
+2026-11-08T22:57:03.3469334Z   load: true
+2026-11-08T22:57:03.3469578Z   push: false
+2026-11-08T22:57:03.3469864Z   tags: opscontrol-uat-frontend:validation
+2026-11-08T22:57:03.3470312Z   build-args: VITE_API_BASE_URL=http://127.0.0.1:8000
+
+2026-11-08T22:57:03.3470728Z   no-cache: false
+2026-11-08T22:57:03.3470987Z   pull: false
+2026-11-08T22:57:03.3474153Z   github-token: ***
+2026-11-08T22:57:03.3474429Z env:
+2026-11-08T22:57:03.3474986Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:57:03.3475534Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-08T22:57:03.3476064Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:57:03.3476582Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:57:03.3477061Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-08T22:57:03.3477530Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-08T22:57:03.3477913Z ##[endgroup]
+2026-11-08T22:57:03.5432601Z (node:3333) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:57:03.5433552Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:57:03.5448401Z ##[group]GitHub Actions runtime token ACs
+2026-11-08T22:57:03.5455533Z refs/pull/89/merge: read/write
+2026-11-08T22:57:03.5455894Z refs/heads/main: read
+2026-11-08T22:57:03.5456543Z ##[endgroup]
+2026-11-08T22:57:03.5456863Z ##[group]Docker info
+2026-11-08T22:57:03.5488570Z [command]/usr/bin/docker version
+2026-11-08T22:57:03.5729987Z Client: Docker Engine - Community
+2026-11-08T22:57:03.5731705Z  Version:           28.0.4
+2026-11-08T22:57:03.5732022Z  API version:       1.48
+2026-11-08T22:57:03.5732355Z  Go version:        go1.23.7
+2026-11-08T22:57:03.5732670Z  Git commit:        b8034c0
+2026-11-08T22:57:03.5732980Z  Built:             Tue Mar 25 15:07:16 2025
+2026-11-08T22:57:03.5733332Z  OS/Arch:           linux/amd64
+2026-11-08T22:57:03.5733643Z  Context:           default
+2026-11-08T22:57:03.5733819Z 
+2026-11-08T22:57:03.5733954Z Server: Docker Engine - Community
+2026-11-08T22:57:03.5734367Z  Engine:
+2026-11-08T22:57:03.5734606Z   Version:          28.0.4
+2026-11-08T22:57:03.5735115Z   API version:      1.48 (minimum version 1.24)
+2026-11-08T22:57:03.5735537Z   Go version:       go1.23.7
+2026-11-08T22:57:03.5735880Z   Git commit:       6430e49
+2026-11-08T22:57:03.5736242Z   Built:            Tue Mar 25 15:07:16 2025
+2026-11-08T22:57:03.5736631Z   OS/Arch:          linux/amd64
+2026-11-08T22:57:03.5736980Z   Experimental:     false
+2026-11-08T22:57:03.5737273Z  containerd:
+2026-11-08T22:57:03.5737563Z   Version:          v2.4.2
+2026-11-08T22:57:03.5737975Z   GitCommit:        b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:57:03.5738944Z  runc:
+2026-11-08T22:57:03.5739187Z   Version:          1.5.2
+2026-11-08T22:57:03.5739533Z   GitCommit:        v1.5.2-0-g29dd3dc2
+2026-11-08T22:57:03.5739901Z  docker-init:
+2026-11-08T22:57:03.5740154Z   Version:          0.19.0
+2026-11-08T22:57:03.5740496Z   GitCommit:        de40ad0
+2026-11-08T22:57:03.5777254Z [command]/usr/bin/docker info
+2026-11-08T22:57:03.6317239Z Client: Docker Engine - Community
+2026-11-08T22:57:03.6318303Z  Version:    28.0.4
+2026-11-08T22:57:03.6318589Z  Context:    default
+2026-11-08T22:57:03.6318857Z  Debug Mode: false
+2026-11-08T22:57:03.6319119Z  Plugins:
+2026-11-08T22:57:03.6319393Z   buildx: Docker Buildx (Docker Inc.)
+2026-11-08T22:57:03.6319731Z     Version:  v0.38.1
+2026-11-08T22:57:03.6320088Z     Path:     /usr/libexec/docker/cli-plugins/docker-buildx
+2026-11-08T22:57:03.6320536Z   compose: Docker Compose (Docker Inc.)
+2026-11-08T22:57:03.6320876Z     Version:  v2.38.2
+2026-11-08T22:57:03.6321743Z     Path:     /usr/libexec/docker/cli-plugins/docker-compose
+2026-11-08T22:57:03.6322075Z 
+2026-11-08T22:57:03.6322169Z Server:
+2026-11-08T22:57:03.6322412Z  Containers: 1
+2026-11-08T22:57:03.6322660Z   Running: 1
+2026-11-08T22:57:03.6322943Z   Paused: 0
+2026-11-08T22:57:03.6323206Z   Stopped: 0
+2026-11-08T22:57:03.6323446Z  Images: 8
+2026-11-08T22:57:03.6323699Z  Server Version: 28.0.4
+2026-11-08T22:57:03.6323999Z  Storage Driver: overlay2
+2026-11-08T22:57:03.6324307Z   Backing Filesystem: extfs
+2026-11-08T22:57:03.6324622Z   Supports d_type: true
+2026-11-08T22:57:03.6325039Z   Using metacopy: false
+2026-11-08T22:57:03.6325324Z   Native Overlay Diff: false
+2026-11-08T22:57:03.6325627Z   userxattr: false
+2026-11-08T22:57:03.6325876Z  Logging Driver: json-file
+2026-11-08T22:57:03.6326139Z  Cgroup Driver: systemd
+2026-11-08T22:57:03.6326384Z  Cgroup Version: 2
+2026-11-08T22:57:03.6326608Z  Plugins:
+2026-11-08T22:57:03.6326821Z   Volume: local
+2026-11-08T22:57:03.6327117Z   Network: bridge host ipvlan macvlan null overlay
+2026-11-08T22:57:03.6327647Z   Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+2026-11-08T22:57:03.6328127Z  Swarm: inactive
+2026-11-08T22:57:03.6328412Z  Runtimes: io.containerd.runc.v2 runc
+2026-11-08T22:57:03.6328766Z  Default Runtime: runc
+2026-11-08T22:57:03.6329061Z  Init Binary: docker-init
+2026-11-08T22:57:03.6329468Z  containerd version: b7a25261e029d68978bbf290df0a62fc819b3c51
+2026-11-08T22:57:03.6329935Z  runc version: v1.5.2-0-g29dd3dc2
+2026-11-08T22:57:03.6330257Z  init version: de40ad0
+2026-11-08T22:57:03.6330525Z  Security Options:
+2026-11-08T22:57:03.6330784Z   apparmor
+2026-11-08T22:57:03.6331016Z   seccomp
+2026-11-08T22:57:03.6331252Z    Profile: builtin
+2026-11-08T22:57:03.6331506Z   cgroupns
+2026-11-08T22:57:03.6331765Z  Kernel Version: 7.0.0-1017-azure
+2026-11-08T22:57:03.6332108Z  Operating System: Ubuntu 24.04.5 LTS
+2026-11-08T22:57:03.6332473Z  OSType: linux
+2026-11-08T22:57:03.6332734Z  Architecture: x86_64
+2026-11-08T22:57:03.6332994Z  CPUs: 4
+2026-11-08T22:57:03.6333163Z  Total Memory: 15.61GiB
+2026-11-08T22:57:03.6333360Z  Name: runnervm7aw5e
+2026-11-08T22:57:03.6333663Z  ID: aeba5083-36f4-4ab3-a6cd-5185eccc7a63
+2026-11-08T22:57:03.6333950Z  Docker Root Dir: /var/lib/docker
+2026-11-08T22:57:03.6334160Z  Debug Mode: false
+2026-11-08T22:57:03.6334406Z  Username: githubactions
+2026-11-08T22:57:03.6334681Z  Experimental: false
+2026-11-08T22:57:03.6335287Z  Insecure Registries:
+2026-11-08T22:57:03.6335574Z   ::1/128
+2026-11-08T22:57:03.6335785Z   127.0.0.0/8
+2026-11-08T22:57:03.6336033Z  Live Restore Enabled: false
+2026-11-08T22:57:03.6336222Z 
+2026-11-08T22:57:03.6355790Z ##[endgroup]
+2026-11-08T22:57:03.6356521Z ##[group]Proxy configuration
+2026-11-08T22:57:03.6358104Z No proxy configuration found
+2026-11-08T22:57:03.6358944Z ##[endgroup]
+2026-11-08T22:57:03.6937125Z ##[group]Buildx version
+2026-11-08T22:57:03.6963258Z [command]/usr/bin/docker buildx version
+2026-11-08T22:57:03.7465590Z github.com/docker/buildx v0.38.1 0dbe87f36ed472fe36b6796c3f70b4210a731fc5
+2026-11-08T22:57:03.7500282Z ##[endgroup]
+2026-11-08T22:57:03.7501003Z ##[group]Builder info
+2026-11-08T22:57:03.8457484Z {
+2026-11-08T22:57:03.8457810Z   "nodes": [
+2026-11-08T22:57:03.8458072Z     {
+2026-11-08T22:57:03.8458432Z       "name": "builder-988f1427-9ab5-44ad-85d5-9a06e58613950",
+2026-11-08T22:57:03.8458895Z       "endpoint": "unix:///var/run/docker.sock",
+2026-11-08T22:57:03.8459271Z       "status": "running",
+2026-11-08T22:57:03.8459946Z       "buildkitd-flags": "--allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host",
+2026-11-08T22:57:03.8460658Z       "buildkit": "v0.34.2",
+2026-11-08T22:57:03.8461156Z       "platforms": "linux/amd64,linux/amd64/v2,linux/amd64/v3,linux/amd64/v4,linux/386",
+2026-11-08T22:57:03.8461662Z       "features": {
+2026-11-08T22:57:03.8462074Z         "Automatically load images to the Docker Engine image store": true,
+2026-11-08T22:57:03.8462552Z         "Cache export": true,
+2026-11-08T22:57:03.8462895Z         "Direct push": true,
+2026-11-08T22:57:03.8463512Z         "Docker exporter": true,
+2026-11-08T22:57:03.8463869Z         "Multi-platform build": true,
+2026-11-08T22:57:03.8464206Z         "OCI exporter": true
+2026-11-08T22:57:03.8464442Z       },
+2026-11-08T22:57:03.8464657Z       "labels": {
+2026-11-08T22:57:03.8465166Z         "org.mobyproject.buildkit.worker.executor": "oci",
+2026-11-08T22:57:03.8465660Z         "org.mobyproject.buildkit.worker.hostname": "c56ecc6fa2c4",
+2026-11-08T22:57:03.8466181Z         "org.mobyproject.buildkit.worker.network": "host",
+2026-11-08T22:57:03.8466727Z         "org.mobyproject.buildkit.worker.oci.process-mode": "sandbox",
+2026-11-08T22:57:03.8467338Z         "org.mobyproject.buildkit.worker.selinux.enabled": "false",
+2026-11-08T22:57:03.8467922Z         "org.mobyproject.buildkit.worker.snapshotter": "overlayfs"
+2026-11-08T22:57:03.8468345Z       },
+2026-11-08T22:57:03.8468578Z       "gcPolicy": [
+2026-11-08T22:57:03.8468826Z         {
+2026-11-08T22:57:03.8469060Z           "all": false,
+2026-11-08T22:57:03.8469348Z           "filter": [
+2026-11-08T22:57:03.8469772Z             "type==source.local type==exec.cachemount type==source.git.checkout"
+2026-11-08T22:57:03.8470233Z           ],
+2026-11-08T22:57:03.8470488Z           "keepDuration": "48h0m0s",
+2026-11-08T22:57:03.8470818Z           "maxUsedSpace": "488.3MiB"
+2026-11-08T22:57:03.8471117Z         },
+2026-11-08T22:57:03.8471341Z         {
+2026-11-08T22:57:03.8471602Z           "all": false,
+2026-11-08T22:57:03.8471886Z           "keepDuration": "1440h0m0s",
+2026-11-08T22:57:03.8472225Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:57:03.8472575Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:57:03.8472903Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:57:03.8473200Z         },
+2026-11-08T22:57:03.8473417Z         {
+2026-11-08T22:57:03.8473668Z           "all": false,
+2026-11-08T22:57:03.8473944Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:57:03.8474275Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:57:03.8474631Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:57:03.8475412Z         },
+2026-11-08T22:57:03.8475641Z         {
+2026-11-08T22:57:03.8475878Z           "all": true,
+2026-11-08T22:57:03.8476145Z           "reservedSpace": "9.313GiB",
+2026-11-08T22:57:03.8476482Z           "maxUsedSpace": "93.13GiB",
+2026-11-08T22:57:03.8476809Z           "minFreeSpace": "27.01GiB"
+2026-11-08T22:57:03.8477105Z         }
+2026-11-08T22:57:03.8477324Z       ]
+2026-11-08T22:57:03.8477572Z     }
+2026-11-08T22:57:03.8477789Z   ],
+2026-11-08T22:57:03.8478095Z   "name": "builder-988f1427-9ab5-44ad-85d5-9a06e5861395",
+2026-11-08T22:57:03.8478507Z   "driver": "docker-container",
+2026-11-08T22:57:03.8478854Z   "lastActivity": "2026-11-08T22:56:17.000Z"
+2026-11-08T22:57:03.8479191Z }
+2026-11-08T22:57:03.8479747Z ##[endgroup]
+2026-11-08T22:57:04.0040711Z [command]/usr/bin/docker buildx build --build-arg VITE_API_BASE_URL=http://127.0.0.1:8000 --file ./frontend/Dockerfile.demo --iidfile /home/runner/work/_temp/docker-actions-toolkit-5NHY6R/build-iidfile-9f5879906d.txt --tag opscontrol-uat-frontend:validation --load --metadata-file /home/runner/work/_temp/docker-actions-toolkit-5NHY6R/build-metadata-cda8e6b100.json ./frontend
+2026-11-08T22:57:04.2767888Z #0 building with "builder-988f1427-9ab5-44ad-85d5-9a06e5861395" instance using docker-container driver
+2026-11-08T22:57:04.2768465Z 
+2026-11-08T22:57:04.2768643Z #1 [internal] load build definition from Dockerfile.demo
+2026-11-08T22:57:04.2768922Z #1 transferring dockerfile: 767B done
+2026-11-08T22:57:04.2769135Z #1 DONE 0.0s
+2026-11-08T22:57:04.2769271Z 
+2026-11-08T22:57:04.2769398Z #2 [auth] library/node:pull token for registry-1.docker.io
+2026-11-08T22:57:04.2769651Z #2 DONE 0.0s
+2026-11-08T22:57:04.2769750Z 
+2026-11-08T22:57:04.2769878Z #3 [auth] library/nginx:pull token for registry-1.docker.io
+2026-11-08T22:57:04.2770131Z #3 DONE 0.0s
+2026-11-08T22:57:04.2770215Z 
+2026-11-08T22:57:04.2770981Z #4 [internal] load metadata for docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-08T22:57:04.3881465Z #4 ...
+2026-11-08T22:57:04.3882060Z 
+2026-11-08T22:57:04.3882672Z #5 [internal] load metadata for docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-08T22:57:04.3884038Z #5 DONE 0.3s
+2026-11-08T22:57:04.5106704Z 
+2026-11-08T22:57:04.5108510Z #4 [internal] load metadata for docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-08T22:57:04.5109511Z #4 DONE 0.3s
+2026-11-08T22:57:04.5110373Z 
+2026-11-08T22:57:04.5110632Z #6 [internal] load .dockerignore
+2026-11-08T22:57:04.5111247Z #6 transferring context: 76B done
+2026-11-08T22:57:04.5111696Z #6 DONE 0.0s
+2026-11-08T22:57:04.5111959Z 
+2026-11-08T22:57:04.5112207Z #7 [internal] load build context
+2026-11-08T22:57:04.5112670Z #7 transferring context: 1.28MB 0.0s done
+2026-11-08T22:57:04.5113126Z #7 DONE 0.0s
+2026-11-08T22:57:04.5113398Z 
+2026-11-08T22:57:04.5114053Z #8 [build 1/6] FROM docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-08T22:57:04.5115424Z #8 resolve docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53 done
+2026-11-08T22:57:04.5116497Z #8 sha256:109c2f814f468711ac666fb9494ce76528e972ee8636468ad822267a0af959e5 443B / 443B 0.0s done
+2026-11-08T22:57:04.5117509Z #8 sha256:f0a5c9e3ce7dcc7fca3a816f70b3d42bc5324066b627223af466eff9030e171f 1.26MB / 1.26MB 0.0s done
+2026-11-08T22:57:04.5118540Z #8 sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 3.85MB / 3.85MB 0.0s done
+2026-11-08T22:57:04.5119461Z #8 extracting sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788
+2026-11-08T22:57:04.6208053Z #8 extracting sha256:7b229517ed222597277036d94892173207d01a731ab3a88eeb1de2e963a2c788 0.1s done
+2026-11-08T22:57:04.6210179Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 40.89MB / 57.37MB 0.2s
+2026-11-08T22:57:04.7431579Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 57.37MB / 57.37MB 0.3s
+2026-11-08T22:57:04.9500575Z #8 sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 57.37MB / 57.37MB 0.4s done
+2026-11-08T22:57:04.9501441Z #8 extracting sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b
+2026-11-08T22:57:05.0528412Z #8 ...
+2026-11-08T22:57:05.0536057Z 
+2026-11-08T22:57:05.0536925Z #9 [stage-1 1/4] FROM docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-08T22:57:05.0538556Z #9 resolve docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311 done
+2026-11-08T22:57:05.0540360Z #9 sha256:d04b4ed66a450f2c2675e1c80127ba32721eeda72aaac8709d6ff707ccf90070 1.40kB / 1.40kB 0.0s done
+2026-11-08T22:57:05.0547085Z #9 sha256:c12ffff18732349750d8928e649e2333d19363a2a201978b1876c80f38aaf292 1.21kB / 1.21kB 0.0s done
+2026-11-08T22:57:05.0548079Z #9 sha256:163ee6b178c7d7aa60ef7115424399a0ccb8f293e43f6b35cd6df8f152698c6a 964B / 964B 0.0s done
+2026-11-08T22:57:05.0549211Z #9 sha256:89fcb8c382892a31f2b913ee3e11af133e228ec75e84351e4f848d6f83c0b56e 627B / 627B 0.0s done
+2026-11-08T22:57:05.0550072Z #9 sha256:0e13a8a92b02d6d710028ebada164686467e25ddff8907ae28a80bafc26bbee4 403B / 403B 0.0s done
+2026-11-08T22:57:05.0550961Z #9 sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d 20.32MB / 20.32MB 0.2s done
+2026-11-08T22:57:05.0551877Z #9 sha256:52eb9c26a93672fd16d692befd22944ee26a59772beff8c775b37c684b0da36f 1.88MB / 1.88MB 0.1s done
+2026-11-08T22:57:05.0552476Z #9 sha256:881fc932939efef04ca120ad44bbd2c0917851eb247aa4995428afb1e80ede17 3.85MB / 3.85MB 0.1s done
+2026-11-08T22:57:05.0552996Z #9 extracting sha256:881fc932939efef04ca120ad44bbd2c0917851eb247aa4995428afb1e80ede17 0.1s done
+2026-11-08T22:57:05.0553517Z #9 extracting sha256:52eb9c26a93672fd16d692befd22944ee26a59772beff8c775b37c684b0da36f 0.1s done
+2026-11-08T22:57:05.0554144Z #9 extracting sha256:89fcb8c382892a31f2b913ee3e11af133e228ec75e84351e4f848d6f83c0b56e done
+2026-11-08T22:57:05.0554614Z #9 extracting sha256:163ee6b178c7d7aa60ef7115424399a0ccb8f293e43f6b35cd6df8f152698c6a done
+2026-11-08T22:57:05.0555447Z #9 extracting sha256:0e13a8a92b02d6d710028ebada164686467e25ddff8907ae28a80bafc26bbee4 done
+2026-11-08T22:57:05.0556192Z #9 extracting sha256:c12ffff18732349750d8928e649e2333d19363a2a201978b1876c80f38aaf292 done
+2026-11-08T22:57:05.0556944Z #9 extracting sha256:d04b4ed66a450f2c2675e1c80127ba32721eeda72aaac8709d6ff707ccf90070 done
+2026-11-08T22:57:05.0557491Z #9 DONE 0.6s
+2026-11-08T22:57:05.2042846Z 
+2026-11-08T22:57:05.2046253Z #9 [stage-1 1/4] FROM docker.io/library/nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-08T22:57:05.2047472Z #9 extracting sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d
+2026-11-08T22:57:05.4046973Z #9 extracting sha256:4fd2a979a136065b9518cac19c8f3d11f2251813831dc2d18a4edb1d1b26374d 0.4s done
+2026-11-08T22:57:05.4050155Z #9 DONE 1.0s
+2026-11-08T22:57:05.4050318Z 
+2026-11-08T22:57:05.4050821Z #8 [build 1/6] FROM docker.io/library/node:24-alpine@sha256:06d7adf3e0ef61a13f1d28682726366f97a15aa1888c934d3ecec86c33918b53
+2026-11-08T22:57:05.4430877Z #8 extracting sha256:15577f11e05afbda845cbd2903e55f0a3da41dc2a576435999474e7a2654651b 0.5s done
+2026-11-08T22:57:05.4431515Z #8 DONE 1.0s
+2026-11-08T22:57:05.4431674Z 
+2026-11-08T22:57:05.4432099Z #10 [stage-1 2/4] RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+2026-11-08T22:57:05.4432800Z #10 ERROR: secret proxy_ca: not found
+2026-11-08T22:57:05.4433081Z 
+2026-11-08T22:57:05.4433208Z #11 [build 2/6] WORKDIR /src
+2026-11-08T22:57:05.4433450Z #11 CANCELED
+2026-11-08T22:57:05.4433691Z ------
+2026-11-08T22:57:05.4434177Z  > [stage-1 2/4] RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache:
+2026-11-08T22:57:05.4434649Z ------
+2026-11-08T22:57:05.4446474Z Dockerfile.demo:10
+2026-11-08T22:57:05.4451001Z --------------------
+2026-11-08T22:57:05.4451432Z    8 |     RUN npm run build
+2026-11-08T22:57:05.4452252Z    9 |     FROM nginx:stable-alpine@sha256:583b7f2fce1cdb8da5ad5c39ebd3c33b98b87d493190e548bdee1fa8c619c311
+2026-11-08T22:57:05.4453296Z   10 | >>> RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+2026-11-08T22:57:05.4454180Z   11 |     COPY --from=build /src/dist /usr/share/nginx/html
+2026-11-08T22:57:05.4454874Z   12 |     COPY nginx.demo.conf /etc/nginx/conf.d/default.conf
+2026-11-08T22:57:05.4455383Z --------------------
+2026-11-08T22:57:05.4455911Z ERROR: failed to build: failed to solve: secret proxy_ca: not found
+2026-11-08T22:57:05.4521181Z ##[group]Reference
+2026-11-08T22:57:05.5426899Z builder-988f1427-9ab5-44ad-85d5-9a06e5861395/builder-988f1427-9ab5-44ad-85d5-9a06e58613950/af8xqi4czj7lumyl6s6xb309x
+2026-11-08T22:57:05.5428248Z ##[endgroup]
+2026-11-08T22:57:05.5428761Z ##[group]Check build summary support
+2026-11-08T22:57:05.5430166Z Build summary supported!
+2026-11-08T22:57:05.5430945Z ##[endgroup]
+2026-11-08T22:57:05.5450772Z ##[error]buildx failed with: ERROR: failed to build: failed to solve: secret proxy_ca: not found
+2026-11-08T22:57:05.5650963Z Post job cleanup.
+2026-11-08T22:57:05.7586573Z ##[group]Generating build summary
+2026-11-08T22:57:05.7590803Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-ZSnXqP/export
+2026-11-08T22:57:05.7603051Z (node:3725) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:57:05.7603926Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:57:05.9362336Z [command]/usr/bin/docker buildx history export --builder builder-988f1427-9ab5-44ad-85d5-9a06e5861395 --output /home/runner/work/_temp/docker-actions-toolkit-ZSnXqP/export/Parikshit-Sahrawat~OpsControl_Dashboard~AF8XQI.dockerbuild af8xqi4czj7lumyl6s6xb309x --finalize
+2026-11-08T22:57:06.0948393Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-ZSnXqP/export/Parikshit-Sahrawat~OpsControl_Dashboard~AF8XQI.dockerbuild (28.73 KB)
+2026-11-08T22:57:06.0971093Z Uploading Parikshit-Sahrawat~OpsControl_Dashboard~AF8XQI.dockerbuild to blob storage
+2026-11-08T22:57:06.2983336Z Beginning upload of artifact content to blob storage
+2026-11-08T22:57:06.3057153Z (node:3725) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-08T22:57:06.3063350Z Uploaded bytes 29422
+2026-11-08T22:57:06.3567617Z Finished uploading artifact content to blob storage!
+2026-11-08T22:57:06.3571001Z SHA256 hash of uploaded artifact is 7b73f1b68143941ad6b973e14e14103a3256a3153fb20e0ef5c59108e7a1f642
+2026-11-08T22:57:06.3572199Z Finalizing artifact upload
+2026-11-08T22:57:06.7698177Z Artifact successfully finalized (13638311319)
+2026-11-08T22:57:06.7699333Z Artifact download URL: https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42532627312/artifacts/13638311319
+2026-11-08T22:57:06.7720271Z Writing summary
+2026-11-08T22:57:06.7730577Z ##[endgroup]
+2026-11-08T22:57:06.7731239Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-5NHY6R
+2026-11-08T22:57:06.7732690Z ##[endgroup]
+2026-11-08T22:57:06.7733217Z ##[group]Post cache
+2026-11-08T22:57:06.7734166Z State not set
+2026-11-08T22:57:06.7734624Z ##[endgroup]
+2026-11-08T22:57:06.7920899Z Post job cleanup.
+2026-11-08T22:57:06.9895987Z ##[group]Generating build summary
+2026-11-08T22:57:06.9901315Z exporting build record to /home/runner/work/_temp/docker-actions-toolkit-i4Id1d/export
+2026-11-08T22:57:06.9918410Z (node:3865) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:57:06.9919097Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:57:07.1743574Z [command]/usr/bin/docker buildx history export --builder builder-988f1427-9ab5-44ad-85d5-9a06e5861395 --output /home/runner/work/_temp/docker-actions-toolkit-i4Id1d/export/Parikshit-Sahrawat~OpsControl_Dashboard~KOUGVH.dockerbuild kougvhw79kertswipy4prs6v6 --finalize
+2026-11-08T22:57:07.3291573Z Build record written to /home/runner/work/_temp/docker-actions-toolkit-i4Id1d/export/Parikshit-Sahrawat~OpsControl_Dashboard~KOUGVH.dockerbuild (53.02 KB)
+2026-11-08T22:57:07.3313299Z Uploading Parikshit-Sahrawat~OpsControl_Dashboard~KOUGVH.dockerbuild to blob storage
+2026-11-08T22:57:07.5579309Z Beginning upload of artifact content to blob storage
+2026-11-08T22:57:07.5647427Z (node:3865) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-08T22:57:07.5653573Z Uploaded bytes 54292
+2026-11-08T22:57:07.6306825Z Finished uploading artifact content to blob storage!
+2026-11-08T22:57:07.6310471Z SHA256 hash of uploaded artifact is 4bd198139af52e07f8d7cbc236e21dee2a9acdb543e1fff8a35b059ba7025801
+2026-11-08T22:57:07.6311935Z Finalizing artifact upload
+2026-11-08T22:57:07.9996131Z Artifact successfully finalized (13637917749)
+2026-11-08T22:57:07.9997589Z Artifact download URL: https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42532627312/artifacts/13637917749
+2026-11-08T22:57:08.0017562Z Writing summary
+2026-11-08T22:57:08.0028685Z ##[endgroup]
+2026-11-08T22:57:08.0029352Z ##[group]Removing temp folder /home/runner/work/_temp/docker-actions-toolkit-FnvbfI
+2026-11-08T22:57:08.0032976Z ##[endgroup]
+2026-11-08T22:57:08.0033606Z ##[group]Post cache
+2026-11-08T22:57:08.0034970Z State not set
+2026-11-08T22:57:08.0035425Z ##[endgroup]
+2026-11-08T22:57:08.0199757Z Post job cleanup.
+2026-11-08T22:57:08.2222253Z ##[group]Removing builder
+2026-11-08T22:57:08.2226705Z (node:4005) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T22:57:08.2227467Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T22:57:08.3275116Z [command]/usr/bin/docker buildx rm builder-988f1427-9ab5-44ad-85d5-9a06e5861395
+2026-11-08T22:57:10.7242134Z builder-988f1427-9ab5-44ad-85d5-9a06e5861395 removed
+2026-11-08T22:57:10.7291746Z ##[endgroup]
+2026-11-08T22:57:10.7292187Z ##[group]Cleaning up certificates
+2026-11-08T22:57:10.7293544Z ##[endgroup]
+2026-11-08T22:57:10.7294239Z ##[group]Post cache
+2026-11-08T22:57:10.7296372Z State not set
+2026-11-08T22:57:10.7296804Z ##[endgroup]
+2026-11-08T22:57:10.7518802Z Post job cleanup.
+2026-11-08T22:57:10.8254589Z [command]/usr/bin/git version
+2026-11-08T22:57:10.8291269Z git version 2.56.0
+2026-11-08T22:57:10.8322872Z Temporarily overriding HOME='/home/runner/work/_temp/3ae29ca8-058d-4015-8f9a-e8cb3e00f4ea' before making global git config changes
+2026-11-08T22:57:10.8323914Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T22:57:10.8327144Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:57:10.8360788Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:57:10.8392833Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:57:10.8633144Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:57:10.8669208Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:57:10.8914227Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:57:10.8953936Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:57:10.9326183Z Cleaning up orphan processes
+2026-11-08T22:57:10.9642950Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8, docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -1,0 +1,239 @@
+[
+    {
+        "Id": "f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee",
+        "Created": "2026-11-08T12:06:36.990517995Z",
+        "Path": "docker-entrypoint.sh",
+        "Args": [
+            "postgres"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 686666,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-11-08T12:06:38.129480116Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+        "ResolvConfPath": "/var/lib/docker/containers/f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee/hostname",
+        "HostsPath": "/var/lib/docker/containers/f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee/hosts",
+        "LogPath": "/var/lib/docker/containers/f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee/f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee-json.log",
+        "Name": "/opscontrol-ci003-stage-d49dde26c0",
+        "RestartCount": 0,
+        "Driver": "vfs",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "5432/tcp": [
+                    {
+                        "HostIp": "127.0.0.1",
+                        "HostPort": ""
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "Tmpfs": {
+                "/var/lib/postgresql/data": ""
+            },
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "f07eb713d7e54a1af99059aa45e5334fa730a047d82c87615c807fc06d21e5ee"
+            },
+            "Name": "vfs"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "f07eb713d7e5",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "5432/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "NO_PROXY=localhost,127.0.0.1,::1",
+                "POSTGRES_USER=opscontrol",
+                "POSTGRES_DB=opscontrol",
+                "HTTP_PROXY=http://172.31.2.253:8080",
+                "http_proxy=http://172.31.2.253:8080",
+                "no_proxy=localhost,127.0.0.1,::1",
+                "POSTGRES_PASSWORD=[REDACTED]",
+                "HTTPS_PROXY=http://172.31.2.253:8080",
+                "https_proxy=http://172.31.2.253:8080",
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "GOSU_VERSION=1.19",
+                "LANG=en_US.utf8",
+                "PG_MAJOR=17",
+                "PG_VERSION=17.11",
+                "PG_SHA256=dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979",
+                "DOCKER_PG_LLVM_DEPS=llvm21-dev \t\tclang21",
+                "PGDATA=/var/lib/postgresql/data"
+            ],
+            "Cmd": [
+                "postgres"
+            ],
+            "Image": "postgres:17-alpine",
+            "Volumes": {
+                "/var/lib/postgresql/data": {}
+            },
+            "WorkingDir": "/",
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {},
+            "StopSignal": "SIGINT"
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "4adc6172b0296d66d9b3a903905f23fe690808dae488eeda6484c8847b5dd85f",
+            "SandboxKey": "/run/codex-docker/exec-sjbgh8yz/netns/4adc6172b029",
+            "Ports": {
+                "5432/tcp": [
+                    {
+                        "HostIp": "127.0.0.1",
+                        "HostPort": "32892"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "385c96c5fe2ccc4212b75492d7b8a0619b7e0a240fa914af7cd8b47f15d1e857",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "b6:b6:a8:cb:d1:02",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "b6:b6:a8:cb:d1:02",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "5a7db531e41e25d3aac922bbe2bb6fcaa1cd962649fffc28cbf6ae88f4cc0b6c",
+                    "EndpointID": "385c96c5fe2ccc4212b75492d7b8a0619b7e0a240fa914af7cd8b47f15d1e857",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        }
+    }
+]
+

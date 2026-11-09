@@ -48,6 +48,14 @@ class DataSourceCreate(DataSourceBase):
         return require_safe_url(value)
 
 class DataSourceUpdate(BaseModel):
+    @field_validator("name", "source_type", "enabled", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
+    model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
     def reject_removed_platform(cls, value):
@@ -76,6 +84,7 @@ class DataSourceUpdate(BaseModel):
         return require_safe_url(value)
 
 class DataSourceOut(DataSourceBase):
+    configuration_revision: int = 0
     model_config = ConfigDict(from_attributes=True)
     id: UUID
     organization_id: UUID
@@ -120,6 +129,14 @@ class CollectorCreate(CollectorBase):
         return require_safe_config(require_supported_configuration(value))
 
 class CollectorUpdate(BaseModel):
+    @field_validator("name", "collector_type", "enabled", "interval_seconds", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
+    model_config = ConfigDict(extra="forbid")
     @field_validator("source_type", "collector_type", check_fields=False)
     @classmethod
     def reject_removed_platform(cls, value):
@@ -461,9 +478,19 @@ class MonitoringTemplateCreate(BaseModel):
     @field_validator("package_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(require_supported_configuration(value))
+        from app.services.template_packages import require_template_package
+        return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    expected_version: int | None = Field(default=None, ge=1)
+    @field_validator("name", "scope", check_fields=False)
+    @classmethod
+    def reject_null_required_fields(cls, value):
+        if value is None:
+            raise ValueError("Required configuration field cannot be null")
+        return value
+
     name: str | None = Field(default=None, min_length=1, max_length=200)
     description: str | None = None
     scope: str | None = Field(default=None, max_length=200)
@@ -474,7 +501,8 @@ class MonitoringTemplateUpdate(BaseModel):
     @field_validator("package_config")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(require_supported_configuration(value))
+        from app.services.template_packages import require_template_package
+        return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -496,6 +524,7 @@ class MonitoringTemplateOut(BaseModel):
         return redact_config(value)
 
 class MonitoringTemplateAttachmentCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     template_id: UUID
     template_version: int | None = Field(default=None, ge=1)
     priority: int = Field(default=100, ge=0, le=100000)
@@ -505,9 +534,21 @@ class MonitoringTemplateAttachmentCreate(BaseModel):
     @field_validator("overrides")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(require_supported_configuration(value))
+        from app.services.template_packages import require_template_package
+        return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateAttachmentUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    # Optional for older clients; callers that send a revision get lost-edit protection.
+    expected_updated_at: datetime | None = None
+
+    @field_validator("template_version", "priority", "enabled", check_fields=False)
+    @classmethod
+    def reject_null_state(cls, value):
+        if value is None:
+            raise ValueError("Configuration state cannot be null")
+        return value
+
     template_version: int | None = Field(default=None, ge=1)
     priority: int | None = Field(default=None, ge=0, le=100000)
     overrides: dict | None = None
@@ -517,7 +558,8 @@ class MonitoringTemplateAttachmentUpdate(BaseModel):
     @field_validator("overrides")
     @classmethod
     def validate_no_embedded_secrets(cls, value):
-        return require_safe_config(require_supported_configuration(value))
+        from app.services.template_packages import require_template_package
+        return require_safe_config(require_supported_configuration(require_template_package(value)))
 
 class MonitoringTemplateAttachmentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

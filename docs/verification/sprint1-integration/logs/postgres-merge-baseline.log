@@ -1,0 +1,14 @@
+Sprint 08 existing authorization/history/holds preservation PASS
+Ran 650 tests in 90.854s
+OK (skipped=56)
+{"status": "PASS", "scenario_status": {"REC-01": "PASS", "REC-02": "PASS", "REC-03": "PASS", "REC-04": "PASS", "REC-05": "PASS", "REC-06": "PASS"}, "source_bytes": 28415667, "restored_bytes": 26154675, "backup_bytes": 1705031, "backup_sha256": "9d43922dc55c08d00e494df9e81a97c392c9f5bb12d128278cf62bd3c7edbe96", "backup_seconds": 0.317, "restore_seconds": 0.836, "migration_head": "0041_etl_authority_writer", "restored_alembic_drift": false, "restored_populated_downgrade_refused": true, "table_counts": {"organizations": 234, "users": 368, "roles": 54, "customer_access_grants": 51, "data_sources": 669, "collectors": 662, "collector_methods": 1, "pipeline_sources": 201, "pipeline_evidence": 389, "pipeline_holds": 19, "job_order_histories": 152, "operational_incidents": 51, "incident_activities": 121, "security_audit_events": 1286}, "critical_projection_equal": true, "corrupt_artifact_rejected": true, "production_rpo_rto_certified": false}
+V1.6 actual HTTP multi-job/draft/configuration/association/activation/RBAC workflow PASS: 15 groups
+Pentaho Sprint 03 actual HTTP acceptance PASS: 4 groups
+Pentaho Sprint 04 actual HTTP acceptance PASS: 5 groups
+V16_FAILED_PROBE scripts.pentaho_sprint05_http_probe
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/scripts/v16-acceptance.py", line 393, in <module>
+    run(
+  File "/tmp/oc-sprint1-integration/scripts/v16-acceptance.py", line 71, in run
+    raise RuntimeError(
+RuntimeError: Owned V1.6 check failed; private diagnostics: /tmp/opscontrol-v16-e1ip9q_7

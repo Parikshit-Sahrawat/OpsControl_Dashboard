@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa0f4a03-c74e-41bd-87b7-d6e149aa99f9/jobs/f8305810-58ab-4d19-bfd3-d04d1eae74cd/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "GET",
+      "path": "access/roles",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "PATCH",
+      "path": "access/roles/87d6a4cc-90de-493b-b53b-3b0e78d0bc46",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/aa0f4a03-c74e-41bd-87b7-d6e149aa99f9/jobs/f8305810-58ab-4d19-bfd3-d04d1eae74cd/native-bindings",
+      "expected": 403,
+      "actual": 403,
+      "detail": "Access denied"
+    },
+    {
+      "method": "GET",
+      "path": "etl/workflows/aa0f4a03-c74e-41bd-87b7-d6e149aa99f9/jobs/f8305810-58ab-4d19-bfd3-d04d1eae74cd/native-bindings",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    }
+  ]
+}

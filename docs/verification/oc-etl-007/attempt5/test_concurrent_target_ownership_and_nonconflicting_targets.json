@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "same_target_different_jobs": [
+        201,
+        409
+      ]
+    },
+    {
+      "independent_targets": [
+        201,
+        201
+      ]
+    }
+  ]
+}

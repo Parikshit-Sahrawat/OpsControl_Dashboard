@@ -56,7 +56,7 @@ def validate_ip(value, cidrs):
         raise EgressDenied("DNS answer outside approved network policy")
     return ip
 
-def check_target(url, hosts, cidrs):
+def parse_https_target(url):
     if not isinstance(url,str) or not url.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in url):
         raise EgressDenied("URL contains unsafe characters")
     try: parts=urlsplit(url)
@@ -68,14 +68,19 @@ def check_target(url, hosts, cidrs):
     except ValueError as exc: raise EgressDenied("Invalid port") from exc
     if port not in (None,443): raise EgressDenied("Only TLS port 443 is allowed")
     host=parts.hostname
-    if host not in policy_hosts(hosts): raise EgressDenied("Target hostname is not approved")
-    networks=policy_cidrs(cidrs)
     if host is None: raise EgressDenied("Missing hostname")
     if len(url)>2048: raise EgressDenied("URL exceeds limit")
     path=parts.path or "/"
     if not path.isascii() or any(ord(ch)<33 or ord(ch)>126 for ch in path):
         raise EgressDenied("Target path contains unsafe characters")
-    return parts, networks
+    return parts
+
+
+def check_target(url, hosts, cidrs):
+    parts = parse_https_target(url)
+    if parts.hostname not in policy_hosts(hosts):
+        raise EgressDenied("Target hostname is not approved")
+    return parts, policy_cidrs(cidrs)
 
 def resolve_target(host, networks, resolver=socket.getaddrinfo):
     answers=resolver(host,443,type=socket.SOCK_STREAM)

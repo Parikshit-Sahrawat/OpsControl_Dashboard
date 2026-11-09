@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Real browser regression for retained NOC evidence; no incident/ITSM workflow.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -31,12 +32,8 @@ async function login(who) {
   await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   return page;
 }
-async function nav(page, name) {
-  await page
-    .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name, exact: true })
-    .click();
-}
+async function nav(page,name){await navigatePrimary(page,name);}
+
 try {
   const page = await login("reader");
   assert.equal(

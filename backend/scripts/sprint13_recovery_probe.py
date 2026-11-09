@@ -400,6 +400,7 @@ def assert_preserved_downgrade(
 ) -> None:
     """Accept only an explicit preservation refusal with no committed schema change."""
     guards = (
+        "Unsafe populated ETL downgrade blocked before DDL",
         "V1.6 identities/evidence/checkpoints exist",
         "Pentaho attempts/identity/evidence/recovery exist",
         "Pentaho evidence review/decisions exist",
@@ -408,6 +409,11 @@ def assert_preserved_downgrade(
         "Access boundaries or decisions exist",
         "Canonical cluster or association evidence exists",
     )
+    if "Unsafe populated ETL downgrade blocked before DDL" in downgrade.stderr:
+        assert (
+            "verified full backup" in downgrade.stderr
+            and "isolated restoration" in downgrade.stderr
+        )
     assert (
         downgrade.returncode != 0
         and any(marker in downgrade.stderr for marker in guards)

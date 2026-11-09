@@ -1,0 +1,66 @@
+{
+  "status": "PASS",
+  "dataset": {
+    "authorized_customers": 5,
+    "resources": 1201,
+    "executions": 207,
+    "schedule_occurrences": 603,
+    "attempt_revisions": 103,
+    "attempt_aliases": 206,
+    "incident_activities": 205
+  },
+  "measurements": [
+    {
+      "name": "inventory_one_customer",
+      "requests": 20,
+      "concurrency": 1,
+      "duration_seconds": 1.9015,
+      "throughput_rps": 10.518,
+      "p50_ms": 45.073,
+      "p95_ms": 52.044,
+      "p99_ms": 52.044,
+      "failures": 0,
+      "failure_types": []
+    },
+    {
+      "name": "inventory_five_customers",
+      "requests": 40,
+      "concurrency": 4,
+      "duration_seconds": 2.7963,
+      "throughput_rps": 14.305,
+      "p50_ms": 167.932,
+      "p95_ms": 215.334,
+      "p99_ms": 1214.801,
+      "failures": 0,
+      "failure_types": []
+    },
+    {
+      "name": "concurrent_execution_evidence_schedule",
+      "requests": 60,
+      "concurrency": 8,
+      "duration_seconds": 3.874,
+      "throughput_rps": 15.488,
+      "p50_ms": 356.69,
+      "p95_ms": 1452.727,
+      "p99_ms": 1498.778,
+      "failures": 0,
+      "failure_types": []
+    }
+  ],
+  "revocation": {
+    "concurrent_reads": 24,
+    "subsequent_denials": 5,
+    "post_revocation_started_successes": 0
+  },
+  "environment": {
+    "python": "3.12.14",
+    "os": "Linux",
+    "cpu_visible": 5,
+    "api_workers": 1,
+    "database": "Owned local PostgreSQL container",
+    "tls": false,
+    "scope": "bounded local only"
+  },
+  "production_scale_certification": false,
+  "genuine_runtime_acceptance": false
+}

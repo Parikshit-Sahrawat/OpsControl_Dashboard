@@ -1,0 +1,34 @@
+{
+  "prior_head": "b3fe328809ee0a219cd9371a6bf73fe9e956380c",
+  "failing_runs": {
+    "verification": 42235938595,
+    "pipeline-contracts": 42235938447
+  },
+  "cause": "Black formatting in modified readiness/pipeline files; subsequent coverage failure had no collected data because the job stopped before tests",
+  "changed_sources": {
+    "backend/app/data_pipelines/service.py": {
+      "base_sha256": "f08b5e30a5fb35bbcfea8edfc64920969e5119631d822c4f00b7bf280dd0090a",
+      "formatted_sha256": "4c016c95ebc3c565bc365055ea17ae20bbd3d316238ba1a795433b456a667bc2",
+      "ast_identical": true
+    },
+    "backend/app/unified/engines.py": {
+      "base_sha256": "18eb682503fd0d614f10329dfdaefdf7b946d51a47528653428c7811e7c59edd",
+      "formatted_sha256": "3475e315b9a89d2c067938cd013c4d31e7bfe30dadae86efd787d3b1b1971272",
+      "ast_identical": true
+    }
+  },
+  "policy_or_assertion_changes": false,
+  "local_quality": {
+    "command": "PRETTIER_BIN=<pinned isolated Prettier3.6.2> OPSCONTROL_TEST_EVIDENCE_DIR=/tmp/etl006-ci-quality make test-quality",
+    "exit_code": 0
+  },
+  "local_pipeline": {
+    "command": "DOCKER_HOST=unix:///var/run/docker.sock V16_EVIDENCE_DIR=/tmp/etl006-ci-pipeline make test-pipeline-v16",
+    "exit_code": 0,
+    "transport_passed": 14,
+    "postgresql_passed": 56,
+    "http_groups_passed": 9,
+    "counts_overlap": true
+  },
+  "final_head_hosted": "Pending; exact final conclusions in PR80 closure comment"
+}

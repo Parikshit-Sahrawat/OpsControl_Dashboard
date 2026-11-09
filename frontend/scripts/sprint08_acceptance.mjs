@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 import assert from "node:assert/strict";
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -131,6 +132,7 @@ try {
   checks.push(
     "Non-elevated selector exposes no ALL and clearing the final customer removes operational data",
   );
+  await preparePrimaryNavigation(delegate);
   await delegate
     .getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: "Employees", exact: true })

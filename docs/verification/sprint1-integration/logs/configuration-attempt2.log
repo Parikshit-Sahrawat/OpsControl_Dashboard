@@ -1,0 +1,15 @@
+postgres-start exit 0
+postgres-port exit 0
+postgres-version exit 0
+fresh-upgrade exit 0
+empty-safe-downgrade exit 0
+forward-reupgrade exit 0
+schema-drift exit 0
+authenticated-contracts exit 1
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/scripts/sprint1-configuration-acceptance.py", line 52, in <module>
+    run([python, "-m", "unittest", *targets, "-v"], "authenticated-contracts", ROOT/"backend")
+  File "/tmp/oc-sprint1-integration/scripts/sprint1-configuration-acceptance.py", line 27, in run
+    if result.returncode: raise RuntimeError(label + " failed; see redacted log")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: authenticated-contracts failed; see redacted log

@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/tmp/oc-sprint1-integration/docs/verification/sprint1-integration/sec001-2026-11-09/analyze_evidence.py", line 135, in <module>
+    if __name__ == '__main__': main()
+                               ^^^^^^
+  File "/tmp/oc-sprint1-integration/docs/verification/sprint1-integration/sec001-2026-11-09/analyze_evidence.py", line 127, in main
+    write_csv(BASE / 'FINDINGS_BY_IMAGE.csv', findings)
+  File "/tmp/oc-sprint1-integration/docs/verification/sprint1-integration/sec001-2026-11-09/analyze_evidence.py", line 67, in write_csv
+    writer.writerows({k: json.dumps(v, sort_keys=True) if isinstance(v, (list, dict)) else v for k, v in row.items()} for row in rows)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/csv.py", line 167, in writerows
+    return self.writer.writerows(map(self._dict_to_list, rowdicts))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/csv.py", line 159, in _dict_to_list
+    raise ValueError("dict contains fields not in fieldnames: "
+ValueError: dict contains fields not in fieldnames: 'vendor_trixie', 'debian_source_package_candidates'

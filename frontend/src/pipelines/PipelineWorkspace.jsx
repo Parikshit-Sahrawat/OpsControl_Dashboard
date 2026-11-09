@@ -18,7 +18,6 @@ import ETLJobs from "../pages/ETLJobs";
 import ScheduleView from "./ScheduleView";
 import ReviewView from "./ReviewView";
 import RecoveryView from "./RecoveryView";
-import IncidentView from "./IncidentView";
 import "./pipelines.css";
 const hashPage = () => {
   const key = window.location.hash.split("/")[2];
@@ -145,14 +144,14 @@ export default function PipelineWorkspace({
           />
         </section>
       )}
-      {page !== "incidents" && inventoryIds.length === 0 && (
+      {inventoryIds.length === 0 && (
         <p role="status">
           Resource discovery requires resources.view as well as etl.view for the
           selected customer. Request the existing read grants from an access
           administrator.
         </p>
       )}
-      {page !== "incidents" && inventoryIds.length > 0 && (
+      {inventoryIds.length > 0 && (
         <>
           <form
             className="pipeline-filters"
@@ -347,13 +346,6 @@ export default function PipelineWorkspace({
             </>
           )}
         </>
-      )}
-      {page === "incidents" && (
-        <IncidentView
-          organizationIds={ids}
-          environment={environment}
-          user={user}
-        />
       )}
       {drawer && (
         <Drawer

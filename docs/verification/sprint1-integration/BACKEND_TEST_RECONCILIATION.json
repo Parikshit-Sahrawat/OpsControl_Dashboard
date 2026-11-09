@@ -1,0 +1,4594 @@
+{
+  "per_suite": {
+    "broad_postgres": {
+      "executions": 662,
+      "counts": {
+        "PASS": 594,
+        "SKIPPED": 68
+      },
+      "summary": [
+        "Ran 662 tests in 93.337s",
+        "OK (skipped=68)"
+      ]
+    },
+    "etl_postgres_http_browser": {
+      "executions": 117,
+      "counts": {
+        "PASS": 117
+      },
+      "summary": [
+        "Ran 117 tests in 96.866s",
+        "OK"
+      ]
+    },
+    "source_configuration_postgres_http": {
+      "executions": 38,
+      "counts": {
+        "PASS": 38
+      },
+      "summary": [
+        "Ran 38 tests in 19.718s",
+        "OK"
+      ]
+    }
+  },
+  "unique_test_ids": 642,
+  "reconciled_counts": {
+    "PASS": 642
+  },
+  "records": {
+    "tests.test_access_control.AccessPolicyTests.test_access_administrator_defaults_have_no_operational_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_agent_transport_keeps_its_separate_handler_authentication": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_default_deny_and_customer_action_scope": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_every_existing_http_route_has_an_explicit_policy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_mass_assignment_and_weak_password_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_transaction_denial_releases_session_and_authorization_lock": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_access_control.AccessPolicyTests.test_unknown_routes_are_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_activation_hydration.ActivationHydrationTests.test_legacy_activation_infers_template_selection_from_persisted_plan": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_activation_hydration.ActivationHydrationTests.test_missing_activation_returns_not_configured": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_activation_hydration.ActivationHydrationTests.test_persisted_selection_metadata_excludes_configuration_and_secrets": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_activation_hydration.ActivationHydrationTests.test_unauthorized_source_cannot_read_activation_metadata": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_reenrollment.ReenrollmentTests.test_different_resource_never_overwrites_existing_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_reenrollment.ReenrollmentTests.test_normal_restart_does_not_consume_new_enrollment": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_reenrollment.ReenrollmentTests.test_same_identity_force_keeps_checkpoint_and_private_backup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_applied_is_not_verified_without_all_receipts": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_failed_runtime_start_restores_previous_yaml": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_first_runtime_launch_exception_leaves_no_unapproved_config": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_handoff_flag_follows_actual_config_for_validate_start_and_rollback": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_invalid_configuration_never_stops_working_runtime": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_missing_or_private_log_path_is_not_healthy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_offline_handoff_restart_uses_same_checked_contract": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_offline_restart_rejects_modified_local_yaml": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_offline_restart_uses_validated_private_configuration": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_private_write_and_checkpoint_survives_apply": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_rotation_grace_expires": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_agent_v15.AgentLifecycleTests.test_runtime_launch_exception_restores_previous_yaml": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_bounded_latency_assertion_is_retained": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_get_defaults_preserve_existing_remote_worker_protocol": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_head_and_allowlisted_headers_are_valid": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_header_injection_is_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_unsupported_or_unsafe_api_configuration_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_monitoring_config.APIConfigTests.test_valid_explicit_get_preserves_status_and_timeout": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_service_health_projection.ApiServiceHealthProjectionTests.test_stopped_probe_with_recent_success_is_not_healthy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_agent_executes_v2_claim_under_local_policy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_agent_rejects_server_policy_expansion": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_crlf_injection_is_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_head_uses_pinned_tls_and_only_approved_header": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_invalid_latency_limit_is_denied_before_dns": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_latency_assertion_marks_slow_probe_failed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_legacy_get_preserves_transport_signature": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_post_is_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_api_worker_v2.APIWorkerV2Tests.test_untrusted_header_is_denied_before_dns": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_conflicting_and_out_of_order_claims_preserve_projection_and_raw_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_dependency_preview_and_pages_preserve_full_scoped_history": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_inline_platform_creation_is_atomic_and_does_not_change_other_scope": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_native_partial_three_of_three_idempotent_and_empty_preserves": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_paged_sources_collectors_scoped_totals_and_legacy_shape": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_reordered_native_step_copies_and_nullable_metrics_survive_api": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.AuditRemediation.test_unknown_observation_never_resolves_verified_failure": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_audit_remediation.CanonicalCarteProjection.test_native_xml_fenced_source_to_attempt_steps_and_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_absent_or_disabled_filelog_retains_nonfile_pipeline_behavior": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_actual_contrib_accepts_five_methods": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_concurrent_five_methods_reference_unique_receivers": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_file_checkpoints_are_path_stable": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_filelog_handoff_is_synchronous_persistent_and_backpressured": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_five_schemas_and_advanced_transport": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_invalid_source_configurations_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_legacy_short_interval_gets_compatible_timeout": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.CollectionV15Tests.test_scrape_timeout_filter_labels_and_verified_tls": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.MethodAttributionTests.test_selected_signals_are_enforced_for_attributed_telemetry": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.MethodHealthTests.test_actual_quiet_file_is_idle_and_missing_file_is_error": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.MethodHealthTests.test_idle_observation_is_distinct_from_real_reception": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.MethodHealthTests.test_observations_are_closed_and_bounded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_collection_v15.RealCollectionRuntimeTests.test_actual_scrape_and_log_rotation_truncation_restart": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_condition_refresh.ConditionRefreshTests.test_disabled_setup_cannot_open_or_reenable_alert": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_condition_refresh.ConditionRefreshTests.test_existing_active_condition_reenables_only_explicitly_approved_rule": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_database_integrity.RestoreFingerprintTests.test_changed_allowed_values_and_operator_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_database_integrity.RestoreFingerprintTests.test_restore_text_array_cast_rewrite_is_equivalent": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_database_integrity.RestoreFingerprintTests.test_unapproved_constraint_definition_remains_byte_exact": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_database_integrity.RestoreFingerprintTests.test_unvalidated_constraint_is_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_eks_discovery.EksDiscoveryTests.test_customer_admin_still_cannot_use_deployment_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_eks_discovery.EksDiscoveryTests.test_even_platform_admin_cannot_discover_removed_platform": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_eks_discovery.EksDiscoveryTests.test_removed_provider_adapter_and_capability": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityEnvelopePolicyTests.test_expired_future_unbounded_duplicate_and_tampered_contracts_refuse": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityEnvelopePolicyTests.test_valid_signature_is_not_provider_qualification": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_aliases_have_one_canonical_key_but_operator_changes_cannot_claim_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_browser_contract_preview_never_qualifies_or_activates": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_every_legacy_fence_table_refuses_its_bound_old_writer": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_exact_older_binaries_read_but_cannot_write_opted_in_jobs_after_restart": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_expiry_signature_and_live_issuer_revocation_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_initial_optin_refuses_another_enabled_source_consumer": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_legacy_write_before_optin_commits_before_the_binding": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_old_sql_bypasses_and_checkpoint_batch_are_rolled_back": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_signed_contract_preview_cannot_persist_or_confirm_provider_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_transaction_local_writer_marker_cannot_leak_to_old_requests": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_authority_writer.AuthorityWriterTests.test_writer_fence_survives_restore_and_unsafe_downgrade_refuses": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_committed_binding_survives_owned_api_sigkill_and_restart": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_concurrent_same_job_one_commit_and_other_refresh": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_concurrent_target_ownership_and_nonconflicting_targets": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_confirmation_requires_independent_reviewer_and_real_native_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_database_immutability_and_interrupted_closure_rollback": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_duplicate_conflict_and_failed_transaction_leave_no_operation": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_fence_advance_without_generation_change_is_not_a_rebind": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_native_binding_authenticated_browser": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_populated_binding_downgrade_refused_and_full_restore_preserves_history": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_reader_versions_from_another_integration_cannot_be_snapshotted": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_readiness_version_evaluation_and_legacy_history_not_inferred": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_receipt_cannot_claim_unconfirmed_historical_binding": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_role_revocation_and_view_only_denial": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_same_qualified_claim_cannot_get_two_job_owners": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_stage_replace_retire_idempotency_and_immutable_history": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_stale_generation_inflight_and_retention_holds": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.BindingLifecycleTests.test_tenant_environment_invalid_payload_and_unauthenticated_denials": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_binding_lifecycle.FreshnessPolicyTests.test_observed_and_committed_clocks_and_boundary": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_authorization_mutation_excludes_dependency_writes": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_busy_workflow_returns_actionable_error_without_mutation": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_duplicate_has_one_commit_and_clean_rollback": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_long_cycle_uses_entire_persisted_graph": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_nonconflicting_edges_both_commit": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_concurrent_opposite_edges_cannot_both_commit": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_dag_concurrency.WorkflowDAGConcurrency.test_workflow_lock_does_not_serialize_other_workflows": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_native_binding_contract.NativeBindingContractTests.test_existing_staged_bridge_authorization_and_generation": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_child_workflow_routes_enforce_customer_permissions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_dependency_contract_rejects_bad_uuid": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_invalid_workflow_schedule_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_activation_blocked_when_workflow_inactive": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_job_contract_excludes_workflow_timing": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_create_requires_customer_configure_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_detail_enforces_customer_view_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_and_dependency_models_are_registered": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_requires_tenant_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_job_update_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_list_requires_customer_view_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_monitoring_requires_tenant_view": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_owns_schedule_and_sla": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_contract_rejects_invalid_schedule": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_enforces_customer_configure_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_foundation.ETLWorkflowFoundationTests.test_workflow_update_rejects_incomplete_window": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_authenticated_http_workflow_job_dependency_updates_and_negatives": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_authorized_workflow_and_dependency_commit_with_audit": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_dependency_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_cross_customer_job_workflow_reference_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_endpoints_are_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_dependency_self_edge_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_existing_job_parent_is_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_failed_reference_preserves_existing_resources_and_no_success_audit": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_invalid_organization_cannot_persist": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_job_environment_must_match_parent": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_missing_dependency_parent_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_read_scope_and_empty_selection": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_resource_restricted_unknown_workflow_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_same_customer_wrong_workflow_dependency_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_selected_scope_limits_even_admin": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_viewer_cannot_write": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_environment_cannot_invalidate_existing_jobs": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_owner_is_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_scope.WorkflowScopeTests.test_workflow_requires_visibility_of_every_child_resource": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_etl_workflow_ui.WorkflowUIAcceptance.test_real_configuration_browser_and_receipts": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_audience_respects_opt_out_and_current_customer_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_authorized_active_recipient_accepted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_fanout_is_bounded_and_mismatched_evidence_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_inactive_foreign_provider_or_customer_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_malformed_or_unbounded_targets_fail_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_in_app_notifications.RecipientTests.test_plain_credentials_and_unknown_settings_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_infrastructure_health_projection.InfrastructureHealthProjectionTests.test_stopped_collector_with_recent_success_is_not_healthy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_kubernetes_cluster_associations.KubernetesClusterAssociationTests.test_customer_isolation_and_forged_selection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_kubernetes_cluster_associations.KubernetesClusterAssociationTests.test_legacy_history_identity_revision_and_delete_guards": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_kubernetes_cluster_associations.KubernetesClusterAssociationTests.test_legacy_resource_boundaries_and_foreign_write_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.AgentPermissionTests.test_actual_file_access_missing_source_and_private_state": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.AgentPermissionTests.test_management_secret_cannot_be_scrape_authentication": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.EvaluationBoundaryTests.test_dynamic_baseline_requires_history_and_combined_uses_stricter_threshold": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.EvaluationBoundaryTests.test_sustained_breach_requires_complete_duration_and_contiguous_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.EvaluationBoundaryTests.test_unavailable_collector_validator_fails_with_actionable_safe_error": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_binding_paths_and_os_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_invalid_duplicate_listeners_and_exporter_origins": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_itsm_routes_removed_alert_routes_present": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_no_raw_credentials_or_invalid_signal_fields": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_only_explicit_signals_enabled_and_disabled_methods_excluded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_percentage_rule_requires_valid_minimum_duration_count": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_managed_telemetry.ManagedTelemetryTests.test_same_type_methods_have_independent_receiver_identities": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_acknowledgement_requires_exact_permission": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_active_or_evidenceless_condition_blocks": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_authorized_transition_uses_authenticated_actor": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_duplicate_worker_lease_performs_no_writes": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_empty_evidence_never_proves_recovery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_future_evidence_cannot_verify": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_mass_assignment_is_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_observation_window_cannot_be_skipped": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_open_alert_blocks": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_pending_detail_is_reused_before_flush": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_recovery_failure_preserves_state": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_recovery_rejects_nan_sample": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_recovery_rejects_resolved_transient_rebreach": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_recovery_rejects_unhealthy_sample_inside_window": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_service_denies_cross_customer": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_service_denies_unauthenticated": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_stable_fresh_resolved_evidence_verifies": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_stale_alert_uses_real_fresh_condition": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_stale_revision_preserves_state": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_native_incidents_v15.NativeRecoveryTests.test_state_graph_forbids_unverified_shortcuts": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notification_transport.NotificationTransportTests.test_destination_revocation_prevents_delivery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notification_transport.NotificationTransportTests.test_smtp_tls_authentication_message_identity_and_header_sanitization": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notification_transport.NotificationTransportTests.test_webhook_managed_authentication_and_header_injection_rejection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notification_transport.NotificationTransportTests.test_webhook_rejected_or_oversized_response_never_reports_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notification_transport.NotificationTransportTests.test_webhook_verifies_dns_identity_and_has_retry_idempotency_key": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_email_recipient_and_secret_boundaries": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_idempotent_in_app_reference": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_only_secure_webhooks": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_provider_error_never_contains_secrets": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_retired_itsm_cannot_deliver": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_notifications.NotificationSecurityTests.test_valid_smtp_configuration_accepts_real_address_syntax": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_base64_gzip_cdata_whitespace_and_redaction": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_inventory_empty_multiple_and_explicit_only_use_get": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_legacy_adapter_preserves_step_copy_identity_on_reorder": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_missing_zero_and_malformed_numbers_stay_distinct": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_monitoring_transport_failure_is_not_execution_failure": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_native_fixture_scoped_read_only_poll_and_idempotent_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_native_inventory_extracts_job_despite_empty_transformations": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_native_result_requires_consistent_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_native_step_observation_shape_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_native_transformation_outcomes_and_step_metrics": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_partial_inventory_ingests_observed_runs_without_claiming_no_run": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_r1_rejects_wrong_status_root": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_repeated_child_names_do_not_merge_or_invent_native_uuid": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_supplied_pdi_94_native_job_status_fixtures": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_carte_compat.CarteCompatTests.test_transformation_missing_counters_and_conflicts_remain_unknown": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_declared_retry_authority_needs_native_scheduler_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_names_and_time_matching_configuration_cannot_group_r1_invocations": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_cancelled_terminal_does_not_invent_sla_success_or_staleness": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_completion_proof_and_cancellation_are_monitoring_only": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_native_lifecycle_outcome_and_completeness_are_separate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_routes_require_view_or_investigation_not_resource_creation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_contracts.PentahoExecutionContracts.test_unattested_observation_never_self_certifies_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_cancelled_is_native_outcome_without_execution_controls": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_conflicting_native_alias_does_not_retarget_confirmed_run": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_cross_customer_history_and_relation_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_duplicate_observations_keep_raw_records_but_not_duplicate_attempts_revisions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_identity_quarantine_blocks_recovery_confirmation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_known_retry_predecessor_cannot_point_back_from_an_earlier_attempt": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_legal_hold_and_referenced_raw_history_survive_cleanup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_manual_recovery_keeps_failed_original_and_distinct_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_many_to_many_recovery_links_and_reversal_are_append_only": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_missing_retry_authority_never_implies_exhaustion": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_native_retry_revision_advances_without_rewriting_prior_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_out_of_order_start_and_earlier_retry_do_not_regress_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_process_exit_alone_unknown_and_scheduler_alone_not_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_recovery_self_confirmation_and_viewer_mutation_are_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_revision_and_alias_mutations_and_history_deletion_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_single_success_has_canonical_history_attempt_and_aliases": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_stale_source_generation_does_not_accept_attempt_or_advance_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_unverified_retry_proposal_remains_separate_and_quarantined": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_verified_failed_attempt_pending_then_success_after_retry": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_execution_r1.PentahoExecutionTests.test_verified_final_failure_exhausted_is_terminal": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_contracts.HistoryContracts.test_historical_worker_failure_does_not_prevent_live_alert_delivery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_contracts.HistoryContracts.test_native_schedule_requires_immutable_identity_inventory_and_hash": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_contracts.HistoryContracts.test_replay_privileges_not_implicitly_inherited": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_contracts.HistoryContracts.test_schedule_authority_not_implicitly_configured": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_contracts.HistoryContracts.test_spring_gap_skipped_and_fall_fold_is_explicit": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_beyond_bound_requires_independent_approval": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_bounded_reconciliation_preserves_live_and_physical_recovery_cursors": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_conflicted_failure_cannot_queue_or_deliver_authoritative_notice": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_delivery_retries_audits_and_recipient_scoped_inbox": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_explicit_expectation_grace_and_legitimate_no_run": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_historical_failure_never_drives_live_incident_conditions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_historical_failure_obligation_keeps_occurrence_discovery_and_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_incomplete_poll_does_not_prove_no_run_despite_idle_health": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_late_failure_keeps_closed_incident_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_live_priority_and_holds_fail_closed_without_cursor_advance": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_manual_mode_creates_no_expected_occurrences": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_notice_and_inbox_are_immutable_under_legal_hold": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_notification_claims_and_completions_are_fenced": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_persisted_occurrence_authority_cannot_be_rewritten": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_provider_replay_explicitly_unsupported": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_queued_notice_blocked_if_identity_later_quarantined": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_recipient_access_revocation_is_respected_at_delivery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_replay_batch_bound_resumes_cursor_without_starving_live_collection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_replay_preparation_failure_keeps_live_health_and_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_schedule_occurrence_does_not_claim_attempt_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_shared_holds_compose_and_no_failover_is_possible": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_stale_generation_or_fence_rejects_replay": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_stale_replay_cleanup_cannot_release_replacement_owner": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_unhealthy_or_suspended_collection_never_infers_no_run": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_unknown_and_manual_schedule_not_native_success_or_no_run": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_history_r1.PentahoHistoryTests.test_verified_native_schedule_and_freshness": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_contracts.IncidentContracts.test_assessment_input_requires_revision_key_and_bounded_period": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_contracts.IncidentContracts.test_assessment_results_are_independent": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_contracts.IncidentContracts.test_cause_requires_occurrence_authority_and_hash": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_contracts.IncidentContracts.test_root_scope_and_proof_are_exact": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_contracts.IncidentContracts.test_unverified_cause_cannot_correlate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_common_root_groups_distinct_failures_and_preserves_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_assessments_serialize_revision": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_concurrent_correlation_preserves_single_incident": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicted_failure_cannot_create_authoritative_association": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_conflicting_recovery_evidence_blocks_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_current_source_requires_complete_receipt": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_distinct_failure_observations_are_all_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_failure_and_assessment_evidence_is_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_gap_in_observation_restarts_period": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_historical_root_never_reopens_resolved_incident": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_incomplete_recovery_is_not_restoration": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_live_failure_after_closed_root_creates_new_episode": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_manual_recovery_preserves_failed_original_and_requires_observation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_missing_schedule_compliance_blocks_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_stale_idempotent_and_unauthorized_assessments": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_downstream_dependency_blocks_recovery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unhealthy_monitoring_blocks_and_resets_window": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_unrelated_same_job_and_time_stay_separate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_verified_failure_creates_native_incident_and_replay_is_idempotent": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_incident_r1.PentahoIncidentTests.test_waiting_for_retry_creates_no_terminal_incident": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_metadata_registration.PentahoMetadataRegistrationTests.test_canonical_monitoring_resource_is_registered": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_metadata_registration.PentahoMetadataRegistrationTests.test_pentaho_history_columns_and_scoped_fk_resolve": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_alias_tamper_and_ambiguous_alias_refuse": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_carte_epoch_and_tenant_are_identity_boundaries": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_duplicate_identity_is_stable_without_claiming_database_dedup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_endpoint_candidates_never_authorize_live_requests": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_missing_and_conflicting_identity_refuse": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_no_scheduler_or_execution_fields_added_to_authority_schema": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_scheduler_trigger_success_does_not_assert_execution_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_signature_validity_never_grants_qualification": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_stale_observation_can_parse_but_expired_proof_refuses": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_qualification_offline.QualificationPreparationTests.test_success_failure_running_are_only_synthetic_observations": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_inventory_is_advisory_and_not_complete_persistent_discovery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_missing_errors_unknown_and_stopped_never_become_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_only_fixed_get_status_paths_and_safe_escaped_parameters": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_parses_job_and_transformation_without_certification": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_tls_failure_is_structured_and_body_not_logged": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_unbound_customer_cannot_collect": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_unchanged_status_does_not_repeat_evidence_and_epoch_continuity_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_carte_wrong_native_id_epoch_and_workload_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_cli_bound_native_result_is_locally_normalized": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_cli_start_and_exit_do_not_invent_completion": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_context_validation_is_additive_legacy_and_other_eight_unchanged": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_customer_bound_bridge_passes_scope_before_native_routing": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_exact_build_surface_proof_is_additional_not_static_certification": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_executable_and_scheduler_provenance_without_retry_grouping": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_identity_scopes_customer_authority_environment_workload_epoch": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_pan_and_windows_remain_distinct_from_kitchen": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_pid_name_and_close_timestamps_are_not_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_raw_command_credentials_are_never_persisted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_reader_enforces_local_policy_tls_auth_and_control_endpoint_deny": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_runtime_profile_api_rejects_wrong_build_before_marking_certified": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_scope_mismatch_and_unsupported_agent_os_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_server_scheduler_and_repository_never_assert_execution_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_server_unknown_authority_missing_hash_and_universal_endpoint_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_surface_method_and_host_cannot_bypass_canonical_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_unauthenticated_or_other_customer_agent_is_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_unknown_build_family_and_schema_versions_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_r1.PentahoR1Tests.test_unsafe_xml_oversize_dtd_entities_and_alternate_encoding_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_contracts.ReviewContracts.test_authority_integrity_snapshot_required_for_reviewed_correction": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_contracts.ReviewContracts.test_claim_categories_do_not_mix_identity_outcomes_and_recovery": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_contracts.ReviewContracts.test_conflict_projection_guard_does_not_query_or_modify_outcome": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_contracts.ReviewContracts.test_granular_permission_not_granted_to_existing_investigators": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_contracts.ReviewContracts.test_review_input_no_override_fields_or_workload_actions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_alias_collision_never_reassigns_confirmed_aliases": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_batched_conflict_preserves_first_verified_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_closed_incident_not_reopened_by_evidence_correction": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_concurrent_reviewers_have_one_committed_winner": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_cross_customer_decision_denied_and_database_fk_rejects": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_duplicate_and_late_start_do_not_clear_conflict_or_regress": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_equal_authority_conflict_pins_last_projection_and_both_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_identity_quarantine_blocks_outcome_correction": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_later_retry_policy_cannot_silently_regress_terminal_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_legacy_conflicting_outcome_cannot_be_adopted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_legal_hold_pins_unverified_review_raw_without_attempt_revision": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_operator_can_flag_recovery_identity_without_creating_recovery_link": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_ordinary_investigator_has_no_implicit_adjudication_privilege": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_pending_legacy_backfill_cannot_be_bypassed_by_review": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_pre_sprint04_quarantine_backfill_is_bounded_and_idempotent": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_raw_acceptance_order_survives_reverse_connector_inventory": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_reject_preserves_outcome_and_defer_does_not_resolve": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_retry_authority_conflict_not_resolvable_as_execution_outcome": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_review_context_decisions_and_raw_history_are_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_reviewed_correction_cannot_automatically_drive_incident_conditions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_same_native_observation_id_with_changed_evidence_is_reviewed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_stale_revision_and_changed_idempotency_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_verified_correction_is_append_only_and_idempotent": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_verified_legacy_adoption_requires_explicit_review": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_review_r1.PentahoReviewTests.test_weaker_outcome_cannot_override_verified_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_authorized_catalogue_exposes_candidates_without_certification": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_consumer_mutation_cannot_rewrite_later_declarations": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_declarations_cannot_select_an_unimplemented_runtime": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_other_eight_platform_descriptions_remain_unchanged": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_partial_surfaces_do_not_claim_native_producers_or_live_support": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pentaho_surface_contracts.PentahoMonitoringContractTests.test_three_surfaces_are_read_only_and_never_runtime_verified": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pip_bootstrap.BootstrapTests.test_bad_wheel_is_rejected_before_execution": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_adf_body_window_continuation_and_failure": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_adf_embedded_activity_and_on_demand_continuation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_airflow_pagination_and_steps": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_airflow_steps_bounded_paginated_resume_and_attempt": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_configuration_registry_helpers_types_and_closed_properties": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_custom_checkpoint_partial_rotation_and_distinct_raw": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_custom_explicit_step_record_does_not_end_parent_execution": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_custom_identical_records_remain_distinct_and_resume": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_glue_sdk_read_only_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_http_auth_rate_limit_schema_and_redirection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_iics_embedded_activity_detail_and_invalid_inventory": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_iics_warnings_unknown_and_paging": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_invalid_time_rejected_and_distinct_sources_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_nifi_async_flow_semantics": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_pentaho_preserves_carte_step_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_pentaho_untimed_step_failure_preserved_without_fake_duration": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_platform_normalization": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_registry_all_nine_and_closed_configs": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_retries_preserve_checkpoint_and_auth_is_not_retried": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_ssis_active_runs_revisited": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_terminal_snapshot_does_not_invent_execution_end": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_adapters.PipelineAdapterTests.test_tls_egress_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_control_plane_tick_is_durable_and_does_not_read_providers": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_discovery_rename_and_incomplete_absence_preserve_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_evidence_constraint_failure_rolls_back_checkpoint_and_receipt": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_expired_runtime_proof_retains_only_safe_attestation_metadata": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_fence_itself_rejects_same_owner_with_live_lease": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_generation_change_rejects_old_ticket": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_legacy_http_binding_never_replaces_existing_primary": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_legacy_http_primary_binding_preserves_real_probe_reports": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_legacy_job_initial_host_binding_preserves_immutable_ownership": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_legacy_job_initial_host_binding_rejects_other_customer": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_legal_hold_release_requires_independent_actor": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_manual_discovery_match_requires_confirmation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_native_job_projection_preserves_v15_identity_and_provider_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_no_selection_or_name_based_routing": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_optimistic_operation_idempotency_mismatch_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_fenced_acceptance_normalizes_and_redacts_atomically": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_host_os_mismatch_rejected_before_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_normalized_event_cannot_bypass_native_observation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_requires_exact_build_surface_even_with_prior_profile_proof": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_scope_failure_rolls_back_evidence_and_cursor": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_selected_native_identity_projects_to_existing_resource": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_server_export_scheduler_never_changes_execution_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_pentaho_r1_stale_generation_rejected_before_normalization": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_postgres_rejects_cross_customer_method_fk": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_recovery_bounds_and_live_cursor_separation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_reference_hold_reconciliation_does_not_churn_fence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_retention_respects_legal_hold_and_selected_stale_jobs": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_adding_incompatible_binding_is_rejected_by_api": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_different_credentials_cannot_share": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_different_queries_and_checkpoint_interpretation_cannot_share": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_discovery_revoked_during_provider_read_never_reconciles_absence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_discovery_unverified_draft_succeeds_activation_stays_blocked": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_durable_contract_rejects_single_reader_change_without_handoff": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_enabling_incompatible_binding_is_rejected_by_api": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_equivalent_readers_share_one_unit_and_one_fenced_owner": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_expired_recovery_claim_is_requeued_and_refenced": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_expired_worker_never_commits_checkpoint_or_cleans_new_owner": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_failed_database_preparation_is_rolled_back_before_cleanup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_incomplete_discovery_does_not_stale_or_delete": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_invalid_recovery_operation_cannot_become_live_collection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_preparation_exception_rolls_back_and_releases_owned_lease": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_reader_contract_covers_transport_endpoint_overrides_and_evidence_options": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_recovery_failure_preserves_live_and_recovery_cursors": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_redetection_does_not_require_runtime_eligibility": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_replacement_active_lease_is_never_released_by_stale_cleanup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_replacement_commit_survives_stale_worker_cleanup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_stale_cleanup_cannot_change_replacement_recovery_claim": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_unauthorized_discovery_never_reads_or_stales": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_review_verification_failure_is_structured_and_does_not_advance": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_shared_integration_pause_and_composed_manual_hold": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_stale_observation_stops_claiming_receiving_without_fabricated_data": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_token_41_expires_token_42_commits_then_delayed_41_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_two_actual_database_sessions_cannot_both_own_source": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_unverified_profile_blocks_acquisition": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_upgrade_fixture_cleanup_orders_resource_before_source_preserves_others": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_ownership_v16.OwnershipTests.test_upgrade_fixture_unexpected_dependency_rolls_back_entire_cleanup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_cursor_and_evidence_commit_together_and_resume": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_evidence_failure_rolls_back_cursor_progress": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_failed_partial_mutation_does_not_advance_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_invalid_payload_checkpoint_never_persists_progress": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_provider_raw_evidence_is_recursively_secret_redacted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_retry_reads_keep_original_checkpoint_then_persist_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_running_snapshot_uses_received_clock_without_changing_source_start": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_scope_mismatch_stops_before_provider_read": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_step_times_do_not_create_parent_start": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_runtime_v15.PipelineRuntimeV15Tests.test_terminal_without_end_preserved_and_no_fabricated_time": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_adf_native_authority_is_qualified_not_display_name": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_checkpoint_outside_pattern_or_negative_position_is_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_equal_message_timestamp_records_have_distinct_source_offsets": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_failed_backend_ack_never_advances_local_checkpoint": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_glue_uses_verified_account_and_partition_before_job_collection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_name_is_never_a_native_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_nested_fixture_labels_cannot_certify_runtime": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_override_cannot_change_destination_without_canonical_handoff": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_partial_line_keeps_offset_and_reports_incomplete_coverage": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_pentaho_observation_is_forwarded_raw_for_fenced_backend_normalization": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_recovery_claim_uses_recovery_operation_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_secret_references_cannot_export_backend_or_other_customer_secrets": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_truncation_fails_closed_before_acceptance": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_pipeline_transport_v16.TransportTests.test_windows_paths_canonicalize_but_distinct_patterns_remain_separate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_provider_failure_classification.ProviderFailureTests.test_missing_identity_and_connection_failures_are_distinct": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_provider_failure_classification.ProviderFailureTests.test_official_sdk_error_categories_and_redacted_messages": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_quiet_file_readiness.QuietReadinessTests.test_future_stale_and_unaware_observations_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_quiet_file_readiness.QuietReadinessTests.test_no_file_permission_error_or_partial_reads_are_not_ready": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_quiet_file_readiness.QuietReadinessTests.test_non_file_sources_need_independent_reception": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_quiet_file_readiness.QuietReadinessTests.test_quiet_readable_files_are_idle_availability_only": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_quiet_file_readiness.QuietReadinessTests.test_wrong_revision_or_checksum_does_not_activate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.DraftValidationTests.test_customer_fields_must_agree_and_resource_id_is_valid_uuid": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.DraftValidationTests.test_linked_resource_cannot_change_domain_or_customer": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.DraftValidationTests.test_partial_draft_retains_empty_fields_without_claiming_activation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.DraftValidationTests.test_unknown_attributes_bad_types_and_embedded_credentials_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryDefinitionTests.test_nullable_refs_defaults_and_validation_render_without_secret_values": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryDefinitionTests.test_package_checksum_is_stable_and_covers_capabilities": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryDefinitionTests.test_supported_sources_and_nine_adapters_have_typed_definitions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_bad_payload_is_422_without_persistence_or_secret_error_echo": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_customer_permission_denial_precedes_any_draft_write": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_lookup_query_binds_id_provider_and_owner_before_returning_data": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_owner_context_requires_authenticated_provider": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_runtime_model_defaults_are_timezone_aware_and_scoped": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_stale_revision_and_domain_changes_are_conflicts_before_mutation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_registry_contracts.RegistryRouteGuardTests.test_uninstalled_registry_is_503_not_a_fake_default": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.AsyncSecurityTests.test_production_legacy_api_fails_before_secret_or_network_access": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.AsyncSecurityTests.test_slow_identity_database_does_not_block_asgi_event_loop": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_finite_threshold_is_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_invalid_environment_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_mixed_case_and_other_url_credentials_are_rejected_and_redacted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_nonfinite_thresholds_are_rejected_on_all_write_paths": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_production_loaded_from_dotenv_denies_environment_credentials": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_proxy_trust_rejects_wildcards_and_unbounded_networks": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_short_user_password_is_validation_error": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_release_hardening.ReleaseSecurityTests.test_url_without_credentials_is_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_remote_auth.RemoteBasicAuthTests.test_approved_reference_sends_basic_only_to_pinned_verified_transport": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_remote_auth.RemoteBasicAuthTests.test_colon_account_rejected_before_transport": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_remote_auth.RemoteBasicAuthTests.test_reference_validation_never_resolves_credentials": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_remote_auth.RemoteBasicAuthTests.test_unapproved_reference_is_denied_before_secret_retrieval_and_transport": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.OperationalConfigurationTests.test_configuration_depth_is_bounded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.OperationalConfigurationTests.test_legacy_source_cannot_be_relabelled_by_collector": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.OperationalConfigurationTests.test_nested_operational_aliases_rejected_without_erasing_generic_labels": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.OperationalConfigurationTests.test_nested_source_template_and_collector_configs_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.RemovedPlatformTests.test_no_cluster_routes_or_capabilities": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.RemovedPlatformTests.test_removed_source_inputs_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_removed_platform_scope.RemovedPlatformTests.test_supported_source_inputs_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_jsonb_contract_without_converting_existing_json_columns": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_latest_evidence_indexes_have_deterministic_descending_order": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_named_lookup_and_chronological_indexes_match_migrations": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_partial_indexes_preserve_alert_and_scheduler_semantics": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_template_version_fk_preserves_existing_cascade": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_schema_contract.SchemaContractTests.test_unique_constraints_remain_separate_from_lookup_indexes": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_attach_reload_history_rollback_and_detach": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_concurrent_stale_commands_and_idempotent_retry": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_configuration_commit_does_not_create_or_enable_collector": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_history_immutable_hash_and_atomic_failure": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_https_template_uses_real_api_schema_without_claiming_network_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_invalid_os_methods_overrides_missing_revision_and_secret": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_legacy_import_is_explicit_non_operational_and_old_writers_fenced": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_method_schema_and_ambiguous_priorities_fail_without_history": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_populated_downgrade_refusal_preserves_revision": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_retired_dependency_cannot_be_restored_and_version_rows_are_immutable": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_source_history_foreign_key_and_actor_are_not_client_controlled": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_source_configuration_contract.SourceConfigurationContract.test_tenant_viewer_and_stale_session_denied": [
+      {
+        "suite": "broad_postgres",
+        "status": "SKIPPED"
+      },
+      {
+        "suite": "source_configuration_postgres_http",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint07_frontend_contracts.Sprint07FrontendContracts.test_canonical_detail_evidence_routes": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint07_frontend_contracts.Sprint07FrontendContracts.test_recovery_proposal_and_decision_revision_contracts": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint07_frontend_contracts.Sprint07FrontendContracts.test_restoration_is_server_evaluated": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint07_frontend_contracts.Sprint07FrontendContracts.test_review_decision_anchors_server_candidate": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint07_frontend_contracts.Sprint07FrontendContracts.test_scoped_pagination_and_bounded_occurrences": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_all_future_and_snapshot_semantics": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_all_requires_separate_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_boundary_decision_history_cannot_be_rewritten_or_deleted": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_budget_prevents_role_escalation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_delegation_is_not_inferred_from_access_role": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_deny_overrides_limit_and_inherited_allow": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_direct_and_legacy_multi_department_inheritance_preserved": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_environment_limit_filters_before_pagination": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_global_employee_deny_survives_other_grants": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_invalid_persisted_policy_fails_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_inventory_query_count_is_not_per_row": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_large_customer_selection_keeps_restriction_sql_bounded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_multiple_limits_intersect_instead_of_bypassing_a_restriction": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_no_selection_is_empty": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_omitted_selection_and_wildcard_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_one_customer_sql_scope": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_resource_limit_allows_exact_id": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_revocation_changes_existing_session_projection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_scope_revision_explains_restrictions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_separate_delegations_cannot_form_permission_customer_cross_product": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_unassigned_all_role_never_grants": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint08_rbac.Sprint08RBAC.test_worker_replay_rechecks_resource_restrictions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      },
+      {
+        "suite": "etl_postgres_http_browser",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_contracts.Sprint09Contracts.test_collection_filters_use_fixed_contract_allowlists": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_contracts.Sprint09Contracts.test_invalid_client_authority_never_becomes_all": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_contracts.Sprint09Contracts.test_new_archives_are_read_only_and_bounded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_contracts.Sprint09Contracts.test_service_credentials_do_not_request_employee_scope": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_attempt_alias_archive_and_child_idor": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_execution_children_are_batched_and_bounded": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_incident_association_filter_and_activity_scope": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_inventory_projection_queries_are_constant_for_a_page": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_large_integration_detail_has_safe_readiness_and_pages": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_outcome_filter_keeps_pending_retry_nonterminal": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_schedule_archive_beyond_legacy_cap_and_stable_order": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint09_hardening.Sprint09Hardening.test_worker_restart_resumes_retained_recovery_without_reprocessing": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint12_shared_trust.SharedTrustFixture.test_cross_customer_edge_and_second_vm_binding_fail_closed": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint12_shared_trust.SharedTrustFixture.test_two_customer_and_one_customer_scope_with_forged_selection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint12_shared_trust.SharedTrustFixture.test_unapproved_method_identity_cannot_relabel_source": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint13_recovery_probe.PreservedDowngradeTests.test_central_guard_requires_recovery_guidance": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint13_recovery_probe.PreservedDowngradeTests.test_earlier_guard_rolls_back_the_whole_downgrade": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint13_recovery_probe.PreservedDowngradeTests.test_kubernetes_history_guard_keeps_current_revision": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint13_recovery_probe.PreservedDowngradeTests.test_unknown_failure_or_changed_revision_is_not_preservation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_monitoring_only.MonitoringOnlyConfigurationTests.test_parameter_selectors_do_not_authorize_service_control": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_monitoring_only.MonitoringOnlyConfigurationTests.test_workload_operations_are_not_vm_registration_fields": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_both_patch_routes_refuse_disabled_parent_without_commit": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_configuration_does_not_assert_health": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_disabling_and_enabled_parent_are_supported": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_ownership_and_unknown_patch_fields_are_rejected": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_resource_lifecycle.ResourceLifecycleTests.test_unreviewed_release_mapping_fails_before_network": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_template_configuration.TemplateConfigurationTests.test_attachment_revision_does_not_allow_unknown_ownership": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_template_configuration.TemplateConfigurationTests.test_attachment_update_rejects_forged_ownership_and_null_state": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_template_configuration.TemplateConfigurationTests.test_explicit_null_required_patch_fields_are_validation_errors": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_template_configuration.TemplateConfigurationTests.test_malformed_package_fails_with_validation_instead_of_500": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_sprint_template_configuration.TemplateConfigurationTests.test_named_overrides_preserve_unrelated_metrics": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_terminal_conflicts.TerminalConflictTests.test_conflict_preserves_unknown_without_explicit_precedence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_terminal_conflicts.TerminalConflictTests.test_consistent_terminal_evidence_needs_no_policy_override": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_terminal_conflicts.TerminalConflictTests.test_explicit_precedence_preserves_selected_failure_evidence": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_terminal_conflicts.TerminalConflictTests.test_unmatched_preference_does_not_silently_allow_success": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_concurrent_duplicate_creates_one_current_edge": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_deadlock_aborts_one_transaction_without_partial_edge": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_eight_adversarial_concurrent_additions_remain_acyclic": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_lock_timeout_rolls_back_without_partial_edge": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_paths_duplicates_and_rollback": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_resource_limit_rejects_hidden_parent_without_exposing_edges": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_topology_traversal.TopologyTraversalTests.test_validation_bound_allows_999_reachable_nodes_but_rejects_1000": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.CalendarTests.test_calendar_month_quarter_custom_and_exceptions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.CalendarTests.test_spring_gap_is_skipped_and_fall_fold_is_deterministic": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.NativeAdapterContractTests.test_cloud_adapter_accepts_the_existing_worker_entity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.NativeAdapterContractTests.test_worker_entity_contract_and_tls_failure_are_not_health": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_api_identity_rejects_credentials_and_unsafe_configuration": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_import_never_executes_yaml_or_accepts_recursive_aliases": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_jobchain_filter_and_retry_identity": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_missing_execution_id_is_unresolved_not_inferred": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_override_cannot_change_tenant_identity_or_invalid_units": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_saas_etl_requires_customer_but_not_vm": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_monitoring.UnifiedSchemaTests.test_unknown_timezone_and_invalid_pattern_fail_as_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.NormalizationAndReportContracts.test_event_identity_retry_and_execution_mode_rejections_are_explicit": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.NormalizationAndReportContracts.test_malformed_document_and_regex_mismatch_are_not_fabricated_executions": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.NormalizationAndReportContracts.test_report_query_contains_customer_resource_environment_and_domain_filters": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.NormalizationAndReportContracts.test_report_range_requires_aware_ordered_bounded_dates": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.NormalizationAndReportContracts.test_timestamp_parsing_preserves_timezone_and_rejects_nonexistent_dst": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.ParameterSafetyContracts.test_api_configuration_rejects_tls_disable_auth_over_http_and_header_injection": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.ParameterSafetyContracts.test_duplicate_matching_never_uses_only_message_or_jobchain": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.ParameterSafetyContracts.test_overrides_cannot_change_identity_or_bypass_threshold_validation": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.ParameterSafetyContracts.test_percentage_and_recovery_direction_require_finite_coherent_values": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_activation_requires_approval_and_actual_readiness_boundary": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_echoing_exact_internal_state_is_compatible_without_creating_privileges": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_enabled_alert_setup_requires_active_version_and_same_customer_destination": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_environment_propagation_retains_child_threshold_overrides": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_generic_edit_cannot_escalate_or_erase_internal_alert_policy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_generic_edit_preserves_internal_alert_setup_and_bound_log_method_ids": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_host_identity_and_os_cannot_be_repurposed_by_edit": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_metric_selection_cannot_reference_another_customer_or_source": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_monitoring_activation_does_not_require_optional_parameters_or_alert_setup": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_native_connection_failure_is_not_success_and_never_echoes_secret_error": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_native_connection_requires_configured_pipeline_and_collectors_authority": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_pause_stops_source_collector_and_vm_without_erasing_history_or_policy": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_unified_v15_contracts.UnifiedServiceContracts.test_stale_resource_revision_fails_before_making_any_changes": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_worker_readiness.WorkerReadinessTests.test_database_failure_does_not_refresh_heartbeat": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_worker_readiness.WorkerReadinessTests.test_database_success_writes_heartbeat": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ],
+    "tests.test_worker_readiness.WorkerReadinessTests.test_disabled_heartbeat_does_not_open_database": [
+      {
+        "suite": "broad_postgres",
+        "status": "PASS"
+      }
+    ]
+  },
+  "limits": "Repeated unittest identities and overlapping fixtures are not additive certification. The68 discovery skips are executed in the owned ETL/source suites; genuine-provider and release cases remain unqualified."
+}

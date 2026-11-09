@@ -1,0 +1,15 @@
+Sprint 08 existing authorization/history/holds preservation PASS
+Ran 667 tests in 95.556s
+FAILED (errors=4, skipped=73)
+ERROR: test_echoing_exact_internal_state_is_compatible_without_creating_privileges (tests.test_unified_v15_contracts.UnifiedServiceContracts.test_echoing_exact_internal_state_is_compatible_without_creating_privileges)
+ERROR: test_environment_propagation_retains_child_threshold_overrides (tests.test_unified_v15_contracts.UnifiedServiceContracts.test_environment_propagation_retains_child_threshold_overrides)
+ERROR: test_generic_edit_preserves_internal_alert_setup_and_bound_log_method_ids (tests.test_unified_v15_contracts.UnifiedServiceContracts.test_generic_edit_preserves_internal_alert_setup_and_bound_log_method_ids)
+ERROR: test_pause_stops_source_collector_and_vm_without_erasing_history_or_policy (tests.test_unified_v15_contracts.UnifiedServiceContracts.test_pause_stops_source_collector_and_vm_without_erasing_history_or_policy)
+FAILED (errors=4, skipped=73)
+Traceback (most recent call last):
+  File "/tmp/pr89-operational-check/scripts/v16-acceptance.py", line 295, in <module>
+    output = run(
+             ^^^^
+  File "/tmp/pr89-operational-check/scripts/v16-acceptance.py", line 71, in run
+    raise RuntimeError(
+RuntimeError: Owned V1.6 check failed; private diagnostics: /tmp/opscontrol-v16-ttvh_kon

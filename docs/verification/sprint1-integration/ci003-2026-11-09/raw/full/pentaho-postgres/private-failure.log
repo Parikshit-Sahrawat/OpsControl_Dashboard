@@ -1,0 +1,8 @@
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/pr89-operational-check/backend/scripts/v16_api_probe.py", line 675, in <module>
+    assert {v["version"] for v in request(f"monitoring/templates/{tid}/versions",token=admin)}=={1,2,3,4}
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

@@ -1,0 +1,35 @@
+
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/__main__.py", line 4, in <module>
+    main(prog="alembic")
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/config.py", line 1022, in main
+    CommandLine(prog=prog).main(argv=argv)
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/config.py", line 1012, in main
+    self.run_cmd(cfg, options)
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/config.py", line 946, in run_cmd
+    fn(
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/command.py", line 530, in downgrade
+    script.run_env()
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/script/base.py", line 549, in run_env
+    util.load_python_file(self.dir, "env.py")
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 116, in load_python_file
+    module = load_module_py(module_id, path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/pr89-closure-contract-check/backend/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 136, in load_module_py
+    spec.loader.exec_module(module)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/tmp/pr89-closure-contract-check/backend/migrations/env.py", line 80, in <module>
+    run_migrations_online()
+  File "/tmp/pr89-closure-contract-check/backend/migrations/env.py", line 68, in run_migrations_online
+    protect_downgrade(
+  File "/tmp/pr89-closure-contract-check/backend/app/db/etl_rollback.py", line 156, in protect_downgrade
+    raise RuntimeError(
+RuntimeError: Unsafe populated ETL downgrade blocked before DDL: job_order_histories.provider_execution_id. Retain the current schema; take a verified full backup and rehearse isolated restoration. No automatic deletion or force override is supported.

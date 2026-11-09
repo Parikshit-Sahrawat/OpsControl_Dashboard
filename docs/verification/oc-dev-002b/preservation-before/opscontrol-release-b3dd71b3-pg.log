@@ -1,0 +1,104 @@
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2026-11-07 15:53:21.600 UTC [66] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-11-07 15:53:21.601 UTC [66] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-11-07 15:53:21.603 UTC [69] LOG:  database system was shut down at 2026-11-07 15:53:21 UTC
+2026-11-07 15:53:21.605 UTC [66] LOG:  database system is ready to accept connections
+2026-11-07 15:53:21.676 UTC [79] FATAL:  database "opscontrol" does not exist
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+waiting for server to shut down....2026-11-07 15:53:21.733 UTC [66] LOG:  received fast shutdown request
+2026-11-07 15:53:21.733 UTC [66] LOG:  aborting any active transactions
+2026-11-07 15:53:21.735 UTC [66] LOG:  background worker "logical replication launcher" (PID 72) exited with exit code 1
+2026-11-07 15:53:21.736 UTC [67] LOG:  shutting down
+2026-11-07 15:53:21.736 UTC [67] LOG:  checkpoint starting: shutdown immediate
+2026-11-07 15:53:21.743 UTC [67] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.008 s, sync=0.001 s, total=0.008 s; sync files=301, longest=0.001 s, average=0.000 s; distance=4266 kB, estimate=4266 kB; lsn=0/191E820, redo lsn=0/191E820
+2026-11-07 15:53:21.748 UTC [66] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+
+sh: locale: not found
+2026-11-07 15:53:21.251 UTC [42] WARNING:  no usable system locales were found
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+2026-11-07 15:53:21.851 UTC [1] LOG:  starting PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-11-07 15:53:21.852 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-11-07 15:53:21.852 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-11-07 15:53:21.853 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-11-07 15:53:21.854 UTC [89] LOG:  database system was shut down at 2026-11-07 15:53:21 UTC
+2026-11-07 15:53:21.857 UTC [1] LOG:  database system is ready to accept connections
+2026-11-07 15:53:30.093 UTC [97] ERROR:  Security audit events are append-only
+2026-11-07 15:53:30.093 UTC [97] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+2026-11-07 15:53:30.093 UTC [97] STATEMENT:  UPDATE security_audit_events SET outcome=$1::VARCHAR
+2026-11-07 15:53:48.141 UTC [113] LOG:  unexpected EOF on client connection with an open transaction
+2026-11-07 15:53:53.290 UTC [120] ERROR:  Security audit events are append-only
+2026-11-07 15:53:53.290 UTC [120] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+2026-11-07 15:53:53.290 UTC [120] STATEMENT:  UPDATE security_audit_events SET outcome='FAILURE'
+2026-11-07 15:53:53.292 UTC [120] ERROR:  new row for relation "monitoring_rule_catalogs" violates check constraint "ck_monitoring_catalog_kind"
+2026-11-07 15:53:53.292 UTC [120] DETAIL:  Failing row contains (2ca6829a-6204-4c68-a4b6-fe26db966c28, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, INVALID, release-check-fixture, 2026-11-07 15:53:43.602638+00).
+2026-11-07 15:53:53.292 UTC [120] STATEMENT:  UPDATE monitoring_rule_catalogs SET kind='INVALID'
+2026-11-07 15:53:53.293 UTC [120] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_status"
+2026-11-07 15:53:53.293 UTC [120] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, INVALID, RECOVERED, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:53.293 UTC [120] STATEMENT:  UPDATE operational_incidents SET status='INVALID'
+2026-11-07 15:53:53.294 UTC [120] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_condition"
+2026-11-07 15:53:53.294 UTC [120] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, RESOLVED, INVALID, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:53.294 UTC [120] STATEMENT:  UPDATE operational_incidents SET condition_status='INVALID'
+2026-11-07 15:53:55.217 UTC [149] ERROR:  Security audit events are append-only
+2026-11-07 15:53:55.217 UTC [149] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+2026-11-07 15:53:55.217 UTC [149] STATEMENT:  UPDATE security_audit_events SET outcome='FAILURE'
+2026-11-07 15:53:55.219 UTC [149] ERROR:  new row for relation "monitoring_rule_catalogs" violates check constraint "ck_monitoring_catalog_kind"
+2026-11-07 15:53:55.219 UTC [149] DETAIL:  Failing row contains (2ca6829a-6204-4c68-a4b6-fe26db966c28, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, INVALID, release-check-fixture, 2026-11-07 15:53:43.602638+00).
+2026-11-07 15:53:55.219 UTC [149] STATEMENT:  UPDATE monitoring_rule_catalogs SET kind='INVALID'
+2026-11-07 15:53:55.220 UTC [149] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_status"
+2026-11-07 15:53:55.220 UTC [149] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, INVALID, RECOVERED, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:55.220 UTC [149] STATEMENT:  UPDATE operational_incidents SET status='INVALID'
+2026-11-07 15:53:55.221 UTC [149] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_condition"
+2026-11-07 15:53:55.221 UTC [149] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, RESOLVED, INVALID, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:55.221 UTC [149] STATEMENT:  UPDATE operational_incidents SET condition_status='INVALID'
+2026-11-07 15:53:57.107 UTC [151] ERROR:  Security audit events are append-only
+2026-11-07 15:53:57.107 UTC [151] CONTEXT:  PL/pgSQL function opscontrol_reject_audit_mutation() line 3 at RAISE
+2026-11-07 15:53:57.107 UTC [151] STATEMENT:  UPDATE security_audit_events SET outcome='FAILURE'
+2026-11-07 15:53:57.109 UTC [151] ERROR:  new row for relation "monitoring_rule_catalogs" violates check constraint "ck_monitoring_catalog_kind"
+2026-11-07 15:53:57.109 UTC [151] DETAIL:  Failing row contains (2ca6829a-6204-4c68-a4b6-fe26db966c28, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, INVALID, release-check-fixture, 2026-11-07 15:53:43.602638+00).
+2026-11-07 15:53:57.109 UTC [151] STATEMENT:  UPDATE monitoring_rule_catalogs SET kind='INVALID'
+2026-11-07 15:53:57.110 UTC [151] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_status"
+2026-11-07 15:53:57.110 UTC [151] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, INVALID, RECOVERED, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:57.110 UTC [151] STATEMENT:  UPDATE operational_incidents SET status='INVALID'
+2026-11-07 15:53:57.112 UTC [151] ERROR:  new row for relation "operational_incidents" violates check constraint "ck_incident_condition"
+2026-11-07 15:53:57.112 UTC [151] DETAIL:  Failing row contains (57e24c3a-c500-4391-8686-353cab80b112, 63c9d8ef-5aec-45d5-aceb-ad98040fe2a4, archived-release-fixture, METRIC, historical-synthetic-fixture, null, null, null, Archived synthetic record, WARNING, RESOLVED, INVALID, 2026-10-08 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00, 2026-10-09 15:53:43.414324+00).
+2026-11-07 15:53:57.112 UTC [151] STATEMENT:  UPDATE operational_incidents SET condition_status='INVALID'
+2026-11-07 15:54:01.539 UTC [160] ERROR:  permission denied for table security_audit_events
+2026-11-07 15:54:01.539 UTC [160] STATEMENT:  UPDATE security_audit_events SET outcome=outcome
+2026-11-07 15:54:01.540 UTC [160] ERROR:  must be owner of table data_sources
+2026-11-07 15:54:01.540 UTC [160] STATEMENT:  ALTER TABLE data_sources ADD COLUMN forbidden_runtime_ddl int

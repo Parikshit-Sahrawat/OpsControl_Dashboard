@@ -7,6 +7,7 @@ export async function control(path, method = "GET", payload, options = {}) {
     headers: {
       "Content-Type": "application/json",
       ...authHeaders(),
+      ...(options.headers || {}),
       ...(options.customerIds
         ? { "X-OpsControl-Customers": options.customerIds.join(",") }
         : {}),
@@ -21,7 +22,7 @@ export async function control(path, method = "GET", payload, options = {}) {
     const error = new Error(
       typeof message === "string"
         ? message
-        : message?.message ||
+        : message?.message || message?.code ||
           (Array.isArray(message)
             ? message.map((item) => item.msg || "Invalid request").join("; ")
             : "Evidence requirements are not satisfied"),

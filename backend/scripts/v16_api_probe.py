@@ -6,6 +6,7 @@ from urllib.error import HTTPError
 from pathlib import Path
 import app.main  # noqa: F401 - register existing parent models for fixture transactions
 from app.db.session import SessionLocal
+from sqlalchemy import select
 from app.models import Organization
 from app.security.models import User, OrganizationMembership
 from app.security.passwords import hash_password
@@ -27,6 +28,18 @@ def request(path, method="GET", payload=None, token=None, expected=200):
         headers["Authorization"] = "Bearer " + token
         from scripts.acceptance_scope import selection_headers
         headers.update(selection_headers(base,token))
+    if method in {"POST", "PATCH", "DELETE"} and path.startswith("monitoring/data-sources/") and "/templates" in path and token and expected not in {403,404}:
+        source_id = path.split("/")[2]
+        head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
+        headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
+    if method == "PATCH" and expected == 200 and token and len(path.split("/")) == 3 and path.split("/")[0] in {"monitoring", "resource-management"} and path.split("/")[1] == "data-sources":
+        source_id = path.split("/")[2]
+        head = request(f"monitoring/data-sources/{source_id}/configuration", token=token)
+        headers.update({"Expected-Revision":str(head["revision"]),"Idempotency-Key":str(uuid.uuid4())})
+    if path.startswith("monitoring/templates/") and len(path.split("/"))==3 and token:
+        if method=="PATCH" and "expected_version" not in (payload or {}):
+            payload={**(payload or {}),"expected_version":request(path,token=token)["version"]}
+        if method=="DELETE":headers["Expected-Version"]=str(request(path,token=token)["version"])
     body = json.dumps(payload).encode() if payload is not None else None
     if body is not None:
         headers["Content-Type"] = "application/json"
@@ -38,11 +51,17 @@ def request(path, method="GET", payload=None, token=None, expected=200):
             timeout=15,
         )
         status = response.status
-        data = json.load(response)
+        data = None if status == 204 else json.load(response)
     except HTTPError as error:
         status = error.code
-        data = json.load(error)
-    if status != expected:
+        raw = error.read()
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            if status != 500 or expected != 500:
+                raise
+            data = {"detail": "Expected injected server failure (non-JSON response)"}
+    if status not in ((expected,) if isinstance(expected,int) else expected):
         (private / "api-error.json").write_text(
             json.dumps(
                 {
@@ -53,7 +72,7 @@ def request(path, method="GET", payload=None, token=None, expected=200):
                 }
             )
         )
-    assert status == expected, (path, status, expected)
+    assert status in ((expected,) if isinstance(expected,int) else expected), (path, status, expected)
     return data
 
 
@@ -517,6 +536,180 @@ with SessionLocal() as db:
 checks.append(
     "Reviewed legacy handoff preserves resource/collector/JobOrder UUIDs and original checkpoint; staged identity cannot activate implicitly"
 )
+# Sprint1 lifecycle checks use real authentication, scope hooks and PostgreSQL.
+source = request("resource-management/data-sources", "POST", {"organization_id": aid, "name": "Sprint lifecycle", "source_type": "LINUX", "enabled": True}, admin, 201)
+sid = source["id"]
+collector = request("resource-management/collectors", "POST", {"data_source_id": sid, "name": "Sprint collector", "collector_type": "HTTP", "enabled": False, "interval_seconds": 60, "configuration": {}}, admin, 201)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"organization_id": bid}, admin, 422)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"name": "forbidden"}, viewer, 403)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"enabled": False}, admin)
+for route in ("resource-management", "monitoring"):
+    request(f"{route}/collectors/{collector['id']}", "PATCH", {"enabled": True}, admin, 409)
+with SessionLocal() as db:
+    from app.models import DataSource, Collector
+    persisted = db.get(DataSource, uuid.UUID(sid))
+    assert str(persisted.organization_id) == aid and not persisted.enabled
+    assert not db.get(Collector, uuid.UUID(collector["id"])).enabled
+checks.append("Sprint1: protected ownership fields, viewer denial, disabled-parent collector enable refusal on both APIs and persisted unchanged ownership")
+# Template lifecycle uses the same authenticated API and immutable version rows.
+applicability = {"schema_version":1,"source_types":["LINUX"],"os":["Linux"],"methods":[{"name":"Host metrics","method_type":"HOST_METRICS","configuration":{"scrapers":["cpu"],"interval_seconds":30}}],"collector_override_fields":["interval_seconds"]}
+template = request("monitoring/templates", "POST", {"name":"Sprint template " + uuid.uuid4().hex, "package_config":{"applicability":applicability,"attributes":[{"key":"team","required":True}],"collector":{"type":"OTEL"}}}, admin, 201)
+tid = template["id"]
+request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 422)
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"}}}}, admin)
+request(f"monitoring/data-sources/{sid}/templates", "POST", {"template_id":tid,"template_version":1}, admin, 201)
+request(f"monitoring/templates/{tid}", "PATCH", {"package_config":{"collector":{"type":"HTTP","interval_seconds":90}}}, admin)
+effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
+assert effective["templates"][0]["version"] == 1 and effective["valid"] and not effective["missing_required_attributes"]
+request(f"resource-management/data-sources/{sid}", "PATCH", {"connection_config":{"opscontrol":{"attributes":{"team":"controlled"},"monitoring_overrides":{"collector":{"interval_seconds":30}}}}}, admin, 428)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"collector":{"interval_seconds":30}}}, admin)
+effective = request(f"monitoring/data-sources/{sid}/effective-configuration", token=admin)
+assert effective["valid"] and effective["collector"]["interval_seconds"] == 30 and effective["templates"][0]["version"] == 1
+versions = request(f"monitoring/templates/{tid}/versions", token=admin)
+assert {v["version"] for v in versions} == {1,2}
+request("monitoring/collectors", "POST", {"data_source_id":sid,"name":"forbidden enabled legacy collector","collector_type":"HTTP","enabled":True,"interval_seconds":60,"configuration":{}},admin,409)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"priority":200},viewer,403)
+request(f"monitoring/data-sources/{sid}/templates/{tid}", "PATCH", {"overrides":{"metrics":"invalid"}},admin,422)
+request("monitoring/templates", "POST", {"name":"invalid shape","package_config":{"collector":[]}},admin,422)
+other_source=request("resource-management/data-sources","POST",{"organization_id":bid,"name":"Other template scope "+uuid.uuid4().hex,"source_type":"LINUX"},admin,201)
+request(f"monitoring/data-sources/{other_source['id']}/templates", "POST", {"template_id":tid,"template_version":1},viewer,403)
+from concurrent.futures import ThreadPoolExecutor as TemplatePool
+with TemplatePool(max_workers=2) as pool:
+    jobs=[pool.submit(request,f"monitoring/templates/{tid}","PATCH",{"expected_version":2,"package_config":{"collector":{"type":"HTTP","interval_seconds":interval}}},admin,(200,409)) for interval in (40,50)]
+    committed=[future.result() for future in jobs]
+assert sum(value.get("version")==3 for value in committed)==1
+assert sum(value.get("detail",{}).get("code")=="STALE_CATALOGUE_VERSION" for value in committed)==1
+assert request(f"monitoring/templates/{tid}","PATCH",{"expected_version":3,"description":"Explicit retry after conflict"},admin)["version"]==4
+assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)["templates"][0]["version"]==1
+checks.append("Template immutable v1 pin survives v2 commit; required attributes and source overrides resolve; original versions retained; viewer mutation and disabled-parent legacy creation denied")
+# Role edits revoke prior sessions; stale callers cannot mutate a resource.
+with SessionLocal() as db:
+    user = db.scalar(select(User).where(User.username == "v16-api-viewer"))
+    membership = db.scalar(select(OrganizationMembership).where(OrganizationMembership.user_id == user.id))
+    membership_id = str(membership.id)
+request(f"auth/memberships/{membership_id}", "PATCH", {"role":"org_admin"}, admin)
+try:
+    urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"name":"stale forbidden"}).encode(),headers={"Authorization":"Bearer "+viewer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=10)
+    raise AssertionError("revoked session accepted")
+except HTTPError as error:
+    assert error.code == 401
+writer = request("auth/login", "POST", {"username":"v16-api-viewer", "password":fixture["viewer_password"]})["access_token"]
+request(f"resource-management/data-sources/{sid}", "PATCH", {"description":"authorized before revocation"}, writer)
+# Queue revocation before a mutation at the existing transaction-authority lock.
+from app.db.session import engine
+from sqlalchemy import text as sql_text
+import time as race_time
+from concurrent.futures import ThreadPoolExecutor as RacePool
+
+def raw_mutation():
+    try:
+        with urlopen(Request(base+f"/api/v1/resource-management/data-sources/{sid}", method="PATCH",data=json.dumps({"description":"forbidden concurrent"}).encode(),headers={"Authorization":"Bearer "+writer,"Content-Type":"application/json","X-OpsControl-Customers":aid}),timeout=20) as response:
+            return response.status
+    except HTTPError as error:
+        return error.code
+
+def wait_authority_queue(count):
+    for _ in range(500):
+        with engine.connect() as poll:
+            waiting=poll.scalar(sql_text("SELECT count(*) FROM pg_locks WHERE locktype='advisory' AND classid=782104 AND objid=8 AND NOT granted"))
+        if waiting>=count:return
+        race_time.sleep(.01)
+    raise AssertionError("Expected transaction authority waiter did not reach PostgreSQL lock")
+
+with RacePool(max_workers=2) as pool:
+    with engine.begin() as blocker:
+        blocker.execute(sql_text("SELECT pg_advisory_xact_lock(782104,8)"))
+        revocation=pool.submit(request,f"auth/memberships/{membership_id}","PATCH",{"role":"viewer"},admin)
+        wait_authority_queue(1)
+        mutation=pool.submit(raw_mutation)
+        wait_authority_queue(2)
+    assert revocation.result()["sessions_revoked"]
+    denied_status=mutation.result()
+    assert denied_status in (401,403), denied_status
+with SessionLocal() as db:
+    assert db.get(DataSource,uuid.UUID(sid)).description=="authorized before revocation"
+checks.append("Actual PostgreSQL queued revocation/update race: prior authorized writer succeeds, revocation commits first, waiting mutation401/403 with no committed partial change")
+
+with SessionLocal() as db:
+    assert db.get(DataSource,uuid.UUID(sid)).name != "stale forbidden"
+checks.append("Membership role mutation revokes old session; actual stale authenticated PATCH401; no committed resource mutation; viewer role restored")
+# OC-DEV-002C: real optimistic update conflict, concurrent writers and rollback.
+attachment_path = f"monitoring/data-sources/{sid}/templates/{tid}"
+original = request(f"monitoring/data-sources/{sid}/templates", token=admin)[0]
+revision = original["updated_at"]
+source_revision=request(f"monitoring/data-sources/{sid}/configuration",token=admin)["revision"]
+with TemplatePool(max_workers=2) as pool:
+    def edit_attachment(priority):
+        try:
+            headers={"Authorization":"Bearer "+admin,"Expected-Revision":str(source_revision),"Idempotency-Key":str(uuid.uuid4())}
+            from scripts.acceptance_scope import selection_headers
+            headers.update(selection_headers(base,admin));headers["Content-Type"]="application/json"
+            with urlopen(Request(base+"/api/v1/"+attachment_path,method="PATCH",headers=headers,data=json.dumps({"expected_updated_at":revision,"priority":priority}).encode()),timeout=20) as response:
+                return response.status,json.load(response)
+        except HTTPError as error:
+            return error.code,json.load(error)
+    competing=list(pool.map(edit_attachment,(301,302)))
+assert sorted(status for status,_ in competing)==[200,409],competing
+winner=request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]
+assert winner["priority"] in (301,302) and winner["template_version"]==1
+before_effective=request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)
+assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
+# A task-owned PostgreSQL trigger injects failure before UPDATE can commit.
+from sqlalchemy import text as injected_text
+with SessionLocal() as db:
+    db.execute(injected_text("CREATE FUNCTION sprint_attachment_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.priority=98765 THEN RAISE EXCEPTION 'controlled attachment transaction failure'; END IF; RETURN NEW; END $$"))
+    db.execute(injected_text("CREATE TRIGGER sprint_attachment_failure BEFORE UPDATE ON monitoring_template_attachments FOR EACH ROW EXECUTE FUNCTION sprint_attachment_failure()"));db.commit()
+try:
+    request(attachment_path,"PATCH",{"priority":98765},admin,500)
+    assert request(f"monitoring/data-sources/{sid}/templates",token=admin)==[winner]
+    assert request(f"monitoring/data-sources/{sid}/effective-configuration",token=admin)==before_effective
+finally:
+    with SessionLocal() as db:
+        db.execute(injected_text("DROP TRIGGER sprint_attachment_failure ON monitoring_template_attachments"))
+        db.execute(injected_text("DROP FUNCTION sprint_attachment_failure()"));db.commit()
+request(f"monitoring/templates/{tid}","DELETE",token=admin,expected=204)
+request(attachment_path,"PATCH",{"enabled":False},admin)
+request(attachment_path,"PATCH",{"enabled":True},admin,409)
+request(f"monitoring/data-sources/{sid}/templates","POST",{"template_id":tid,"template_version":1},admin,409)
+assert not request(f"monitoring/data-sources/{sid}/templates",token=admin)[0]["enabled"]
+retained_versions=request(f"monitoring/templates/{tid}/versions",token=admin)
+assert {v["version"] for v in retained_versions}=={1,2,3,4,5}
+assert next(v for v in retained_versions if v["version"]==5)["status"]=="DISABLED"
+checks.append("002C attachment concurrent expected-revision writes produce200/409; injected PostgreSQL failure rolls back state; disabled template cannot re-enable or attach; pinned versions preserved")
+
+# Bounded DB-ingestion load probe, not a genuine Agent/OTLP throughput certification.
+import time
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+from sqlalchemy import select, func
+from app.models import MetricDefinition, MetricSample
+metric_id = uuid.uuid4()
+with SessionLocal() as db:
+    db.add(MetricDefinition(id=metric_id, organization_id=uuid.UUID(aid), data_source_id=uuid.UUID(sid), collector_id=uuid.UUID(collector["id"]), name="controlled-load", resource_type="VM", metric_type="gauge"))
+    db.commit()
+expected_ids = [uuid.uuid4() for _ in range(200)]
+def write_load():
+    for start in range(0, 200, 10):
+        with SessionLocal() as db:
+            db.add_all([MetricSample(id=identity, organization_id=uuid.UUID(aid), metric_definition_id=metric_id, collector_id=uuid.UUID(collector["id"]), observed_at=datetime.now(timezone.utc), value_numeric=1.0) for identity in expected_ids[start:start+10]])
+            db.commit()
+        time.sleep(0.01)
+latencies = []
+with ThreadPoolExecutor(max_workers=1) as pool:
+    future = pool.submit(write_load)
+    for _ in range(20):
+        started = time.perf_counter()
+        response = request("infrastructure/resources?limit=50", token=admin)
+        latencies.append((time.perf_counter()-started)*1000)
+        assert response["total"] >= 1
+    future.result()
+with SessionLocal() as db:
+    actual_ids = set(db.scalars(select(MetricSample.id).where(MetricSample.metric_definition_id == metric_id)))
+    physical = db.scalar(select(func.count()).select_from(MetricSample).where(MetricSample.metric_definition_id == metric_id))
+assert actual_ids == set(expected_ids) and physical == 200
+ordered = sorted(latencies)
+Path(os.environ["V16_EVIDENCE_DIR"]).joinpath("controlled-load.json").write_text(json.dumps({"scope":"200 direct PostgreSQL sample writes concurrent with20 authenticated infrastructure reads; not full OTLP/global responsiveness reproduction", "p50_ms":ordered[9], "p95_ms":ordered[18], "max_ms":max(ordered), "latencies_ms":latencies, "expected":200, "persisted_distinct":len(actual_ids), "physical_rows":physical, "missing":0, "duplicates":0, "global_RM_DEF_036":"NOT REPRODUCED by this bounded probe; all-module representative load remains NOT TESTED"},indent=2))
+checks.append("Controlled concurrent sample writes/read latency:200/200 stable IDs, zero missing/duplicates; no global performance certification")
 report = {
     "status": "PASS",
     "checks": checks,

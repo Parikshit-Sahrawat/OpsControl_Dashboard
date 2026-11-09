@@ -1,0 +1,27 @@
+file:///tmp/oc-etl003a-frontend-node-modules/vite/bin/vite.js:12
+    throw new Error('UNHANDLED PROMISE REJECTION', { cause: err })
+    ^
+
+Error: UNHANDLED PROMISE REJECTION
+    at process.<anonymous> (file:///tmp/oc-etl003a-frontend-node-modules/vite/bin/vite.js:12:11)
+    at process.emit (node:events:509:28)
+    at emitUnhandledRejection (node:internal/process/promises:252:13)
+    at throwUnhandledRejectionsMode (node:internal/process/promises:388:19)
+    at processPromiseRejections (node:internal/process/promises:475:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:106:37) {
+  [cause]: Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'rollup' imported from /tmp/oc-etl003a-frontend-node-modules/vite/dist/node/chunks/config.js
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+      at moduleResolve (node:internal/modules/esm/resolve:859:18)
+      at defaultResolve (node:internal/modules/esm/resolve:992:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+      at #resolve (node:internal/modules/esm/loader:683:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+    code: 'ERR_MODULE_NOT_FOUND'
+  }
+}
+
+Node.js v24.19.0

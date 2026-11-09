@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Real password login and data-backed ETL drawer checks; no mocked API responses.
 import assert from 'node:assert/strict';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
@@ -18,7 +19,7 @@ async function login(who){
   await page.getByRole('button',{name:'Sign in'}).click();
   await page.locator('.org-context-button').click();
   await page.locator('.org-option').filter({hasText:who==='other'?'Other ETL Tenant':'Controlled ETL Lab'}).getByRole('checkbox').check();
-  await page.getByRole('button',{name:'Data Pipeline Monitoring',exact:true}).click();
+  await navigatePrimary(page,'Data Pipeline Monitoring');
   await page.getByRole('link',{name:'Execution History',exact:true}).click();
   await page.getByRole('heading',{name:'Execution investigation',exact:true}).waitFor();
   return page;

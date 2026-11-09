@@ -1,3 +1,4 @@
+import { navigatePrimary } from "./primary_navigation.mjs";
 // Actual authenticated browser and API evidence; no interception or fabricated telemetry.
 import assert from "node:assert/strict";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
@@ -28,18 +29,7 @@ page.on("response", (r) => {
   if (r.url().includes("/api/v1/") && r.status() >= 500)
     failed.push(r.status() + ":" + new URL(r.url()).pathname);
 });
-const nav = async (name) =>
-  page
-    .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", {
-      name:
-        {
-          "Resource Management": "Data Sources / Resources",
-          "Access Management": "Employees",
-        }[name] || name,
-      exact: true,
-    })
-    .click();
+const nav = (name) => navigatePrimary(page,name);
 const shot = async (name) => {
   await page.screenshot({ path: join(out, name), fullPage: true });
   screenshots.push(name);
@@ -84,7 +74,7 @@ try {
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
-    1,
+    0,
   );
   await page.getByRole("button", { name: "Global environments" }).click();
   await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();
@@ -239,16 +229,37 @@ try {
   const delayedDetailResponse = response(linkedDetailPath);
   releaseLinkedDetail();
   await delayedDetailResponse;
-  await page.unroute("**" + linkedDetailPath);
+  await page.unrouteAll({behavior:"wait"});
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   const savedSecondDraftResponse = response("/api/v1/resource-drafts/" + secondDraft.id, "PUT");
   await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
   const savedSecondDraft = await (await savedSecondDraftResponse).json();
   assert.equal(savedSecondDraft.id, secondDraft.id);
   assert.equal(savedSecondDraft.configuration.resource_id, null, "A delayed linked-resource response must not relink the current draft");
-  await dialog.getByLabel("Hostname", { exact: true }).fill("");
-  await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
-  await dialog.getByRole("alert").getByText("Hostname and DNS/IP address are required before saving a Compute Instance").waitFor();
+  // The native identity form rejects invalid fields before React's submit
+  // handler. Verify that contract rather than waiting for its old JS banner.
+  const invalidWrites = [];
+  const observeWrite = request => {
+    if (["POST", "PUT", "PATCH"].includes(request.method()) &&
+        /\/unified\/resources(?:\/|$)/.test(new URL(request.url()).pathname)) invalidWrites.push(request.url());
+  };
+  page.on("request", observeWrite);
+  const invalidBefore = draftSwitchDatabaseState(created.id, secondDraft.id, secondName);
+  const validation = [];
+  for (const label of ["Hostname", "DNS / IP address"]) {
+    const input = dialog.getByLabel(label, {exact:true});
+    const original = await input.inputValue();
+    await input.fill("");
+    await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
+    const field = await input.evaluate(el => ({valid:el.validity.valid, missing:el.validity.valueMissing, message:Boolean(el.validationMessage), focused:el===document.activeElement}));
+    assert.deepEqual(field, {valid:false, missing:true, message:true, focused:true});
+    assert.deepEqual(invalidWrites, [], "invalid form must not issue a mutation");
+    assert.deepEqual(draftSwitchDatabaseState(created.id, secondDraft.id, secondName), invalidBefore, "invalid submit preserves independent DB state");
+    validation.push({field:label,...field,mutations:0,database_unchanged:true});
+    await input.fill(original);
+  }
+  page.off("request", observeWrite);
+  await writeFile(join(out,"identity-validation.json"),JSON.stringify({status:"PASS",checks:validation},null,2));
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
   await dialog.getByLabel("Resource name", { exact: true }).waitFor();
   assert.equal(await dialog.getByRole("alert").count(), 0);
@@ -359,7 +370,6 @@ try {
     "Compute Health",
     "API Endpoint Monitoring",
     "Alerts",
-    "Incidents",
     "Reports",
   ]) {
     await nav(name);
@@ -370,36 +380,10 @@ try {
       })
       .waitFor();
   }
-  await nav("Incidents");
-  await page.getByRole("button", { name: "Global environments" }).click();
-  await page.getByRole("button", { name: "All environments", exact: true }).click();
-  await page
-    .getByLabel("Incident status", { exact: true })
-    .selectOption("OPEN");
-  const incidentRow = page.locator("tbody tr").first();
-  await incidentRow.getByRole("button").click();
-  const incidentId = await incidentRow.locator("small").innerText();
-  await page
-    .getByRole("heading", { name: "Recovery validation", exact: true })
-    .waitFor();
-  const ack = response(
-    "/api/v1/native-incidents/" + incidentId + "/transition",
-    "POST",
-  );
-  await page
-    .getByRole("button", { name: "Acknowledge incident", exact: true })
-    .click();
-  assert.equal((await ack).status(), 200);
-  const note = "Controlled browser investigation " + Date.now();
-  await page.getByLabel("Investigation note", { exact: true }).fill(note);
-  const savedNote = response(
-    "/api/v1/native-incidents/" + incidentId + "/notes",
-    "POST",
-  );
-  await page.getByRole("button", { name: "Add note", exact: true }).click();
-  assert.equal((await savedNote).status(), 200);
-  await page.getByText(note, { exact: true }).waitFor();
-  await shot("arch001-native-incident-investigation.png");
+  assert.equal(await page.getByRole("navigation",{name:"Primary navigation"}).getByRole("button",{name:"Incidents",exact:true}).count(),0);
+  await page.goto(process.env.ARCH001_UI_URL+"/#/incidents");
+  assert.equal(await page.getByRole("heading",{name:"Incidents",exact:true}).count(),0);
+  await shot("arch001-excluded-incident-ui.png");
   await page
     .getByRole("button", { name: "Notifications", exact: true })
     .click();
@@ -477,11 +461,11 @@ try {
         status: "PASS",
         origin: "ACTUAL_PLAYWRIGHT_AND_OWNED_FASTAPI",
         screenshots,
-        incident_ui: true,
+        incident_ui: false,
         customer_grants_ui: false,
         rbac: true,
         resource_selector_independent: true,
-        compute_wizard_stages: 10,
+        compute_wizard_stages: 0,
         server_registry: true,
         server_draft_resume: true,
         notification_destination_persisted: true,
@@ -492,7 +476,7 @@ try {
     ),
   );
   console.log(
-    "ARCH-001 V1.5 actual browser, registry, ten-stage wizard, drafts, configuration, reports and access negatives PASS",
+    "ARCH-001 V1.5 actual browser, registry, resource identity, drafts, configuration, reports and access negatives PASS",
   );
 } finally {
   await browser.close();

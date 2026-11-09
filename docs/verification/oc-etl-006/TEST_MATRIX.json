@@ -1,0 +1,185 @@
+[
+  {
+    "case": "test_stage_replace_retire_idempotency_and_immutable_history",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_stage_replace_retire_idempotency_and_immutable_history.json"
+    ]
+  },
+  {
+    "case": "test_duplicate_conflict_and_failed_transaction_leave_no_operation",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_duplicate_conflict_and_failed_transaction_leave_no_operation.json"
+    ]
+  },
+  {
+    "case": "test_concurrent_same_job_one_commit_and_other_refresh",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_concurrent_same_job_one_commit_and_other_refresh.json"
+    ]
+  },
+  {
+    "case": "test_same_qualified_claim_cannot_get_two_job_owners",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_same_qualified_claim_cannot_get_two_job_owners.json"
+    ]
+  },
+  {
+    "case": "test_stale_generation_inflight_and_retention_holds",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_stale_generation_inflight_and_retention_holds.json"
+    ]
+  },
+  {
+    "case": "test_confirmation_requires_independent_reviewer_and_real_native_authority",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_confirmation_requires_independent_reviewer_and_real_native_authority.json"
+    ]
+  },
+  {
+    "case": "test_tenant_environment_invalid_payload_and_unauthenticated_denials",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_tenant_environment_invalid_payload_and_unauthenticated_denials.json"
+    ]
+  },
+  {
+    "case": "test_role_revocation_and_view_only_denial",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_role_revocation_and_view_only_denial.json"
+    ]
+  },
+  {
+    "case": "test_database_immutability_and_interrupted_closure_rollback",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_database_immutability_and_interrupted_closure_rollback.json"
+    ]
+  },
+  {
+    "case": "test_readiness_version_evaluation_and_legacy_history_not_inferred",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_readiness_version_evaluation_and_legacy_history_not_inferred.json"
+    ]
+  },
+  {
+    "case": "test_native_binding_authenticated_browser",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_native_binding_authenticated_browser.json"
+    ]
+  },
+  {
+    "case": "test_populated_binding_downgrade_refused_and_full_restore_preserves_history",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_populated_binding_downgrade_refused_and_full_restore_preserves_history.json"
+    ]
+  },
+  {
+    "case": "test_receipt_cannot_claim_unconfirmed_historical_binding",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_receipt_cannot_claim_unconfirmed_historical_binding.json"
+    ]
+  },
+  {
+    "case": "test_fence_advance_without_generation_change_is_not_a_rebind",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_fence_advance_without_generation_change_is_not_a_rebind.json"
+    ]
+  },
+  {
+    "case": "test_concurrent_target_ownership_and_nonconflicting_targets",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_concurrent_target_ownership_and_nonconflicting_targets.json"
+    ]
+  },
+  {
+    "case": "test_committed_binding_survives_owned_api_sigkill_and_restart",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_committed_binding_survives_owned_api_sigkill_and_restart.json"
+    ]
+  },
+  {
+    "case": "test_reader_versions_from_another_integration_cannot_be_snapshotted",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log",
+      "final/test_reader_versions_from_another_integration_cannot_be_snapshotted.json"
+    ]
+  },
+  {
+    "case": "test_observed_and_committed_clocks_and_boundary",
+    "status": "PASS",
+    "evidence": [
+      "final/regressions.log"
+    ]
+  },
+  {
+    "case": "provider_native_authority_confirmation",
+    "status": "BLOCKED",
+    "reason": "D09 exact native namespace/authority attestation unavailable; no successful CONFIRMED API transition"
+  },
+  {
+    "case": "positive_binding_receipt_routing",
+    "status": "BLOCKED",
+    "reason": "Requires qualified confirmed binding; only negative receipt provenance was tested"
+  },
+  {
+    "case": "live_active_reader_cutover",
+    "status": "BLOCKED",
+    "reason": "API refuses active/in-flight/held sources; existing reviewed source handoff requires separate qualification"
+  },
+  {
+    "case": "workflow_positive_activation_and_health",
+    "status": "BLOCKED",
+    "reason": "No qualified authority/complete provider aggregation; saves always remain BLOCKED/UNVERIFIED"
+  },
+  {
+    "case": "old_application_writer_rollback",
+    "status": "BLOCKED",
+    "reason": "No version-fenced old-writer deployment/rollback rehearsal"
+  },
+  {
+    "case": "genuine_provider_certification",
+    "status": "BLOCKED",
+    "reason": "No approved genuine provider endpoint/build/evidence"
+  },
+  {
+    "case": "independent_uat",
+    "status": "NOT TESTED",
+    "reason": "Not supplied or performed"
+  },
+  {
+    "case": "separate_containerized_deployment",
+    "status": "BLOCKED",
+    "reason": "No qualified immutable app candidates and old-writer rollback prerequisite incomplete"
+  }
+]

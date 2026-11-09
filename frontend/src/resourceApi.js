@@ -17,7 +17,9 @@ async function request(path, options = {}) {
       const body = await response.json();
       message = body.detail || message;
     } catch {}
-    throw new Error(message);
+    const error = new Error(typeof message === "string" ? message : message.code || JSON.stringify(message));
+    error.status = response.status;
+    throw error;
   }
   return response.status === 204 ? null : response.json();
 }
@@ -121,8 +123,8 @@ export const updateMonitoringTemplate = (id, payload) =>
   });
 export const fetchMonitoringTemplateVersions = (id) =>
   request("/api/v1/monitoring/templates/" + id + "/versions");
-export const disableMonitoringTemplate = (id) =>
-  request("/api/v1/monitoring/templates/" + id, { method: "DELETE" });
+export const disableMonitoringTemplate = (id, version) =>
+  request("/api/v1/monitoring/templates/" + id, { method: "DELETE", headers: {"Expected-Version":String(version)} });
 
 export const fetchDataSourceTemplates = (id) =>
   request("/api/v1/monitoring/data-sources/" + id + "/templates");
@@ -143,3 +145,11 @@ export const detachDataSourceTemplate = (id, templateId) =>
   );
 export const fetchEffectiveDataSourceConfiguration = (id) =>
   request("/api/v1/monitoring/data-sources/" + id + "/effective-configuration");
+
+// One source-owned transaction for context plus the complete attachment set.
+export const commitSourceConfiguration = (id, payload, key) => request(
+  "/api/v1/monitoring/data-sources/" + id + "/configuration/commands",
+  { method: "POST", body: JSON.stringify(payload), headers: {"Idempotency-Key": key} },
+);
+
+export const fetchMonitoringTemplate = id => request("/api/v1/monitoring/templates/"+id);

@@ -1,0 +1,14 @@
+Populated migration preserves old UUIDs, customer FKs, password hashes and sessions PASS
+Full PostgreSQL schema / models PASS: 99 tables, zero drift; immutable additive migration head PASS
+No new upgrade operations detected.
+Schema/ORM migration check and unsafe downgrade refusal PASS
+Unknown legacy roles fail and roll back without altering old users/schema PASS
+ACCESS MIGRATION / PROVIDER / DEPARTMENT / CUSTOMER RBAC SECURITY PASS (25 check groups)
+Private diagnostics: /tmp/opscontrol-access-fep1oo9y
+Traceback (most recent call last):
+  File "/tmp/ci003-pr84-before/scripts/access-acceptance.py", line 260, in <module>
+    print(run(["node", "frontend/scripts/access_acceptance.mjs"]), flush=True)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/ci003-pr84-before/scripts/access-acceptance.py", line 43, in run
+    raise RuntimeError(
+RuntimeError: Owned access fixture command failed; private diagnostics retained

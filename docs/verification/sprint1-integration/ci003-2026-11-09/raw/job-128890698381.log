@@ -1,0 +1,211 @@
+﻿2026-11-08T22:58:37.9303079Z Current runner version: '2.338.2'
+2026-11-08T22:58:37.9323262Z ##[group]Runner Image Provisioner
+2026-11-08T22:58:37.9323905Z Hosted Compute Agent
+2026-11-08T22:58:37.9324353Z Version: 20261028.624
+2026-11-08T22:58:37.9324779Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T22:58:37.9325257Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T22:58:37.9325708Z Worker ID: {7654da48-ec42-4d21-80d3-56cbb1f225f8}
+2026-11-08T22:58:37.9326359Z Region: centralus
+2026-11-08T22:58:37.9326715Z Cloud: Azure
+2026-11-08T22:58:37.9327082Z ##[endgroup]
+2026-11-08T22:58:37.9327954Z ##[group]Operating System
+2026-11-08T22:58:37.9328338Z Ubuntu
+2026-11-08T22:58:37.9328706Z 24.04.5
+2026-11-08T22:58:37.9329122Z LTS
+2026-11-08T22:58:37.9329442Z ##[endgroup]
+2026-11-08T22:58:37.9329850Z ##[group]Runner Image
+2026-11-08T22:58:37.9330228Z Image: ubuntu-24.04
+2026-11-08T22:58:37.9330617Z Version: 20261101.360.1
+2026-11-08T22:58:37.9331466Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-08T22:58:37.9332433Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-08T22:58:37.9333026Z ##[endgroup]
+2026-11-08T22:58:37.9333778Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T22:58:37.9335021Z Contents: read
+2026-11-08T22:58:37.9335424Z Metadata: read
+2026-11-08T22:58:37.9335799Z ##[endgroup]
+2026-11-08T22:58:37.9337608Z Secret source: Actions
+2026-11-08T22:58:37.9338303Z Cache mode: write
+2026-11-08T22:58:37.9338763Z Prepare workflow directory
+2026-11-08T22:58:37.9609241Z Prepare all required actions
+2026-11-08T22:58:37.9659608Z Getting action download info
+2026-11-08T22:58:38.2035329Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T22:58:38.3948740Z Complete job name: security-sbom
+2026-11-08T22:58:38.4582608Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-08T22:58:38.4583227Z with:
+2026-11-08T22:58:38.4583522Z   persist-credentials: false
+2026-11-08T22:58:38.4583873Z   repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:58:38.4586367Z   token: ***
+2026-11-08T22:58:38.4586622Z   ssh-strict: true
+2026-11-08T22:58:38.4586881Z   ssh-user: git
+2026-11-08T22:58:38.4587131Z   clean: true
+2026-11-08T22:58:38.4587396Z   sparse-checkout-cone-mode: true
+2026-11-08T22:58:38.4587703Z   fetch-depth: 1
+2026-11-08T22:58:38.4587957Z   fetch-tags: false
+2026-11-08T22:58:38.4588218Z   show-progress: true
+2026-11-08T22:58:38.4588481Z   lfs: false
+2026-11-08T22:58:38.4588727Z   submodules: false
+2026-11-08T22:58:38.4588991Z   set-safe-directory: true
+2026-11-08T22:58:38.4589288Z   allow-unsafe-pr-checkout: false
+2026-11-08T22:58:38.4589674Z ##[endgroup]
+2026-11-08T22:58:38.6926917Z Syncing repository: Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:58:38.6928335Z ##[group]Getting Git version info
+2026-11-08T22:58:38.6929070Z Working directory is '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T22:58:38.6930102Z [command]/usr/bin/git version
+2026-11-08T22:58:38.7026720Z git version 2.56.0
+2026-11-08T22:58:38.7042385Z ##[endgroup]
+2026-11-08T22:58:38.7054391Z Temporarily overriding HOME='/home/runner/work/_temp/abc90e9d-b5a6-4852-a17e-23e275df7e1a' before making global git config changes
+2026-11-08T22:58:38.7055609Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T22:58:38.7058921Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:58:38.7114482Z Deleting the contents of '/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard'
+2026-11-08T22:58:38.7125006Z ##[group]Initializing the repository
+2026-11-08T22:58:38.7125623Z [command]/usr/bin/git init /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:58:38.7216689Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T22:58:38.7217658Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T22:58:38.7218856Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T22:58:38.7219614Z hint: call:
+2026-11-08T22:58:38.7219973Z hint:
+2026-11-08T22:58:38.7220459Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T22:58:38.7221028Z hint:
+2026-11-08T22:58:38.7221555Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T22:58:38.7222406Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T22:58:38.7223143Z hint:
+2026-11-08T22:58:38.7223516Z hint: 	git branch -m <name>
+2026-11-08T22:58:38.7223947Z hint:
+2026-11-08T22:58:38.7224517Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T22:58:38.7228060Z Initialized empty Git repository in /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/.git/
+2026-11-08T22:58:38.7237625Z [command]/usr/bin/git remote add origin https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:58:38.7283786Z ##[endgroup]
+2026-11-08T22:58:38.7284717Z ##[group]Disabling automatic garbage collection
+2026-11-08T22:58:38.7287190Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T22:58:38.7320320Z ##[endgroup]
+2026-11-08T22:58:38.7321073Z ##[group]Setting up auth
+2026-11-08T22:58:38.7326888Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:58:38.7371198Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:58:38.7733497Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:58:38.7773211Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:58:38.7981490Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:58:38.8022639Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:58:38.8228051Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T22:58:38.8276259Z ##[endgroup]
+2026-11-08T22:58:38.8276900Z ##[group]Fetching the repository
+2026-11-08T22:58:38.8286831Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +aecf3f8ad1615898e4eb8098739b4f0c4f7d1908:refs/remotes/pull/89/merge
+2026-11-08T22:58:53.5817682Z From https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard
+2026-11-08T22:58:53.5818349Z  * [new ref]         aecf3f8ad1615898e4eb8098739b4f0c4f7d1908 -> pull/89/merge
+2026-11-08T22:58:53.5824743Z ##[endgroup]
+2026-11-08T22:58:53.5825106Z ##[group]Determining the checkout info
+2026-11-08T22:58:53.5825499Z ##[endgroup]
+2026-11-08T22:58:53.5828530Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T22:58:53.5880459Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T22:58:53.5916124Z ##[group]Checking out the ref
+2026-11-08T22:58:53.5919193Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/89/merge
+2026-11-08T22:58:54.6090730Z Updating files:  54% (5699/10479)
+2026-11-08T22:58:54.6260077Z Updating files:  55% (5764/10479)
+2026-11-08T22:58:54.6359092Z Updating files:  56% (5869/10479)
+2026-11-08T22:58:54.6534129Z Updating files:  57% (5974/10479)
+2026-11-08T22:58:54.6639947Z Updating files:  58% (6078/10479)
+2026-11-08T22:58:54.6802535Z Updating files:  59% (6183/10479)
+2026-11-08T22:58:54.6926738Z Updating files:  60% (6288/10479)
+2026-11-08T22:58:54.7054383Z Updating files:  61% (6393/10479)
+2026-11-08T22:58:54.7222118Z Updating files:  62% (6497/10479)
+2026-11-08T22:58:54.7352912Z Updating files:  63% (6602/10479)
+2026-11-08T22:58:54.7524851Z Updating files:  64% (6707/10479)
+2026-11-08T22:58:54.7663425Z Updating files:  65% (6812/10479)
+2026-11-08T22:58:54.7788898Z Updating files:  66% (6917/10479)
+2026-11-08T22:58:54.7925785Z Updating files:  67% (7021/10479)
+2026-11-08T22:58:54.8204507Z Updating files:  68% (7126/10479)
+2026-11-08T22:58:54.8343998Z Updating files:  69% (7231/10479)
+2026-11-08T22:58:54.8512738Z Updating files:  70% (7336/10479)
+2026-11-08T22:58:54.8680663Z Updating files:  71% (7441/10479)
+2026-11-08T22:58:54.9048077Z Updating files:  72% (7545/10479)
+2026-11-08T22:58:54.9180356Z Updating files:  73% (7650/10479)
+2026-11-08T22:58:54.9211503Z Updating files:  74% (7755/10479)
+2026-11-08T22:58:54.9325556Z Updating files:  75% (7860/10479)
+2026-11-08T22:58:54.9750626Z Updating files:  76% (7965/10479)
+2026-11-08T22:58:55.0139990Z Updating files:  77% (8069/10479)
+2026-11-08T22:58:55.0479129Z Updating files:  78% (8174/10479)
+2026-11-08T22:58:55.0824335Z Updating files:  79% (8279/10479)
+2026-11-08T22:58:55.1132955Z Updating files:  80% (8384/10479)
+2026-11-08T22:58:55.1160026Z Updating files:  81% (8488/10479)
+2026-11-08T22:58:55.1227357Z Updating files:  82% (8593/10479)
+2026-11-08T22:58:55.1433015Z Updating files:  83% (8698/10479)
+2026-11-08T22:58:55.1513872Z Updating files:  84% (8803/10479)
+2026-11-08T22:58:55.1857145Z Updating files:  85% (8908/10479)
+2026-11-08T22:58:55.1973125Z Updating files:  86% (9012/10479)
+2026-11-08T22:58:55.2068613Z Updating files:  87% (9117/10479)
+2026-11-08T22:58:55.2190162Z Updating files:  88% (9222/10479)
+2026-11-08T22:58:55.2392354Z Updating files:  89% (9327/10479)
+2026-11-08T22:58:55.2733887Z Updating files:  90% (9432/10479)
+2026-11-08T22:58:55.3059208Z Updating files:  91% (9536/10479)
+2026-11-08T22:58:55.3146108Z Updating files:  92% (9641/10479)
+2026-11-08T22:58:55.3292472Z Updating files:  93% (9746/10479)
+2026-11-08T22:58:55.3533645Z Updating files:  94% (9851/10479)
+2026-11-08T22:58:55.3743843Z Updating files:  95% (9956/10479)
+2026-11-08T22:58:55.4019467Z Updating files:  96% (10060/10479)
+2026-11-08T22:58:55.4081934Z Updating files:  97% (10165/10479)
+2026-11-08T22:58:55.4135148Z Updating files:  98% (10270/10479)
+2026-11-08T22:58:55.4189862Z Updating files:  99% (10375/10479)
+2026-11-08T22:58:55.4190230Z Updating files: 100% (10479/10479)
+2026-11-08T22:58:55.4190471Z Updating files: 100% (10479/10479), done.
+2026-11-08T22:58:55.4290926Z Note: switching to 'refs/remotes/pull/89/merge'.
+2026-11-08T22:58:55.4291205Z 
+2026-11-08T22:58:55.4291669Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-08T22:58:55.4292141Z changes and commit them, and you can discard any commits you make in this
+2026-11-08T22:58:55.4292440Z state without impacting any branches by switching back to a branch.
+2026-11-08T22:58:55.4292736Z 
+2026-11-08T22:58:55.4292923Z If you want to create a new branch to retain commits you create, you may
+2026-11-08T22:58:55.4293190Z do so (now or later) by using -c with the switch command. Example:
+2026-11-08T22:58:55.4293344Z 
+2026-11-08T22:58:55.4293415Z   git switch -c <new-branch-name>
+2026-11-08T22:58:55.4293517Z 
+2026-11-08T22:58:55.4293578Z Or undo this operation with:
+2026-11-08T22:58:55.4293673Z 
+2026-11-08T22:58:55.4293723Z   git switch -
+2026-11-08T22:58:55.4293797Z 
+2026-11-08T22:58:55.4293916Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-08T22:58:55.4294089Z 
+2026-11-08T22:58:55.4294325Z HEAD is now at aecf3f8 Merge 54f26e51106469e285dd747dd6b8afd09ca43ce6 into 2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a
+2026-11-08T22:58:55.4462862Z ##[endgroup]
+2026-11-08T22:58:55.4514066Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T22:58:55.4549620Z aecf3f8ad1615898e4eb8098739b4f0c4f7d1908
+2026-11-08T22:58:55.4559723Z ##[group]Removing auth
+2026-11-08T22:58:55.4563105Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:58:55.4602819Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:58:55.4822190Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:58:55.4856386Z http.https://github.com/.extraheader
+2026-11-08T22:58:55.4863572Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T22:58:55.4901805Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:58:55.5110334Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:58:55.5150281Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:58:55.5354510Z ##[endgroup]
+2026-11-08T22:58:55.5547133Z ##[group]Run python scripts/ci/require_success.py
+2026-11-08T22:58:55.5547407Z [36;1mpython scripts/ci/require_success.py[0m
+2026-11-08T22:58:55.5566752Z shell: /usr/bin/bash -e {0}
+2026-11-08T22:58:55.5566901Z env:
+2026-11-08T22:58:55.5567092Z   NEEDS_JSON: {
+  "image-evidence": {
+    "result": "failure",
+    "outputs": {}
+  }
+}
+2026-11-08T22:58:55.5567315Z ##[endgroup]
+2026-11-08T22:58:55.6298957Z Traceback (most recent call last):
+2026-11-08T22:58:55.6299464Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/require_success.py", line 21, in <module>
+2026-11-08T22:58:55.6299797Z     validate(json.loads(os.environ["NEEDS_JSON"]))
+2026-11-08T22:58:55.6300114Z   File "/home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard/scripts/ci/require_success.py", line 16, in validate
+2026-11-08T22:58:55.6300460Z     raise ValueError("Required verification did not succeed: " + str(bad))
+2026-11-08T22:58:55.6300861Z ValueError: Required verification did not succeed: {'image-evidence': 'failure'}
+2026-11-08T22:58:55.6437698Z ##[error]Process completed with exit code 1.
+2026-11-08T22:58:55.6641821Z Post job cleanup.
+2026-11-08T22:58:55.7262611Z [command]/usr/bin/git version
+2026-11-08T22:58:55.7331489Z git version 2.56.0
+2026-11-08T22:58:55.7358617Z Temporarily overriding HOME='/home/runner/work/_temp/2d5ca1c8-9f8e-43bf-a4ce-e39f100aa084' before making global git config changes
+2026-11-08T22:58:55.7359369Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T22:58:55.7360965Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/OpsControl_Dashboard/OpsControl_Dashboard
+2026-11-08T22:58:55.7402188Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T22:58:55.7436496Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T22:58:55.7676623Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T22:58:55.7731223Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T22:58:55.7968391Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T22:58:55.8009912Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T22:58:55.8357564Z Cleaning up orphan processes
+2026-11-08T22:58:55.8624563Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

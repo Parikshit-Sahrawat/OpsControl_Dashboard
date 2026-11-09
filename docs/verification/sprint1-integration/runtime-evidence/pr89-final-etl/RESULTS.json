@@ -1,0 +1,116 @@
+{
+  "status": "PASS",
+  "source_sha": "592fcc36611145850132ad9c7a6083f02a67a617",
+  "working_tree_diff": [],
+  "commands": [
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "run",
+        "-d",
+        "--name",
+        "oc-etl002-40cb3793f8e0",
+        "--label",
+        "task=OC-ETL-002",
+        "--tmpfs",
+        "/var/lib/postgresql/data",
+        "-p",
+        "127.0.0.1::5432",
+        "-e",
+        "POSTGRES_PASSWORD",
+        "-e",
+        "POSTGRES_DB=etl_scope",
+        "postgres:17-alpine"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration",
+      "exit_code": 0,
+      "log": "postgres-start.log"
+    },
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "port",
+        "oc-etl002-40cb3793f8e0",
+        "5432/tcp"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration",
+      "exit_code": 0,
+      "log": "postgres-port.log"
+    },
+    {
+      "command": [
+        "docker",
+        "--host=unix:///var/run/docker.sock",
+        "inspect",
+        "--format",
+        "{{.Id}} {{.Image}}",
+        "oc-etl002-40cb3793f8e0"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration",
+      "exit_code": 0,
+      "log": "postgres-identity.log"
+    },
+    {
+      "command": [
+        "/tmp/oc-sprint1-integration/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "upgrade",
+        "head"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration/backend",
+      "exit_code": 0,
+      "log": "migration-upgrade.log"
+    },
+    {
+      "command": [
+        "/tmp/oc-sprint1-integration/backend/.venv/bin/python",
+        "-m",
+        "alembic",
+        "check"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration/backend",
+      "exit_code": 0,
+      "log": "migration-model-check.log"
+    },
+    {
+      "command": [
+        "/tmp/oc-sprint1-integration/backend/.venv/bin/python",
+        "-m",
+        "scripts.etl_rollback_probe"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration/backend",
+      "exit_code": 0,
+      "log": "rollback-preservation.log"
+    },
+    {
+      "command": [
+        "/tmp/oc-sprint1-integration/backend/.venv/bin/python",
+        "-m",
+        "unittest",
+        "tests.test_etl_workflow_scope",
+        "tests.test_etl_workflow_foundation",
+        "tests.test_etl_dag_concurrency",
+        "tests.test_etl_native_binding_contract",
+        "tests.test_etl_binding_lifecycle",
+        "tests.test_etl_authority_writer",
+        "tests.test_etl_workflow_ui",
+        "tests.test_sprint08_rbac",
+        "-v"
+      ],
+      "cwd": "/tmp/oc-sprint1-integration/backend",
+      "exit_code": 0,
+      "log": "regressions.log"
+    }
+  ],
+  "container": "oc-etl002-40cb3793f8e0",
+  "identity": "a65635c532e0566c6c686d8c3d361260cfbb511511375dc45426ad26ca0e25fb sha256:ab20e934b27ba3ff927c1b4c9ff8cf6c32f315f743efe68dd3441182a87fb085",
+  "remaining_container": false,
+  "cleanup_exit": 0,
+  "api_stopped": true,
+  "ui_stopped": true,
+  "volumes": "tmpfs only; rm -v scoped to owned container",
+  "production_or_uat_access": false
+}

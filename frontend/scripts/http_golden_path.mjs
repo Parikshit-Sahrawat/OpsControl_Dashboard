@@ -1,3 +1,4 @@
+import { preparePrimaryNavigation } from "./primary_navigation.mjs";
 // Actual browser assertions/screenshots; no injected sessions or mocked HTTP.
 import assert from 'node:assert/strict';
 import { readFile, mkdir } from 'node:fs/promises';
@@ -20,7 +21,7 @@ try {
   await page.getByRole('button',{name:'Sign in'}).click();
   await page.locator('.org-context-button').click();
   await page.locator('.org-option').filter({hasText:'Golden HTTP Lab'}).getByRole('checkbox').check();
-  await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+  await preparePrimaryNavigation(page);await page.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
   await page.getByRole('tab',{name:'API Endpoints',exact:true}).click();
   await page.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).click();
   await page.getByRole('button',{name:'Open legacy monitoring configuration',exact:true}).click();
@@ -61,7 +62,7 @@ try {
     await other.getByRole('button',{name:'Sign in'}).click();
     await other.locator('.org-context-button').click();
     await other.locator('.org-option').filter({hasText:'Other Fictional Tenant'}).getByRole('checkbox').check();
-    await other.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+    await preparePrimaryNavigation(other);await other.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
     await other.getByRole('tab',{name:'API Endpoints',exact:true}).click();
     await other.getByText('No resources match these authorized filters.',{exact:true}).waitFor();
     assert.equal(await other.getByRole('button',{name:'Fictional HTTPS Portal',exact:true}).count(),0);

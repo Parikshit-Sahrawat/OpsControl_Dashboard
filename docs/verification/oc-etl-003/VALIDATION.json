@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-05",
+  "tested_commit": "f57153836615fb07d748ede6b49af6a11dba96fe",
+  "unittest": {
+    "passed": 84,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "preservation_groups": 6,
+  "existing_http_assertions": 21,
+  "ruff": "PASS",
+  "compile": "PASS",
+  "diff_check": "PASS",
+  "cleanup": {
+    "run1": false,
+    "run2": false,
+    "run3": false,
+    "final": false
+  },
+  "limitations": [
+    "Arbitrary older populated downgrade chains NOT TESTED",
+    "Application-only rollback version certification NOT TESTED",
+    "No genuine provider or production acceptance",
+    "Hosted final CI reported separately; no inference from baseline green CI"
+  ],
+  "gates": {
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "SECURITY": "BLOCKED",
+    "RELEASE": "NO-GO"
+  },
+  "documentation": {
+    "json_files_parsed": 25,
+    "local_markdown_links": "PASS",
+    "source_hashes": "PASS",
+    "historical_migrations": "UNCHANGED",
+    "initial_manifest_validation": "Failed because manifest had not yet been created; generated and revalidated before this commit"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "method": "POST",
+      "path": "auth/login",
+      "expected": 200,
+      "actual": 200,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/ffeb1b82-f3c0-4c7e-add9-2c89f05cf706/jobs/20e89d77-e00b-445e-889c-4826cbdd6fb1/native-bindings",
+      "expected": 201,
+      "actual": 201,
+      "detail": null
+    },
+    {
+      "method": "POST",
+      "path": "etl/workflows/ffeb1b82-f3c0-4c7e-add9-2c89f05cf706/jobs/d0a1a0e2-8620-4e3e-9f54-906bbebe8d54/native-bindings",
+      "expected": 409,
+      "actual": 409,
+      "detail": "BINDING_CONFLICT_OR_INVARIANT_REFUSED_REFRESH_AND_REVIEW"
+    }
+  ]
+}

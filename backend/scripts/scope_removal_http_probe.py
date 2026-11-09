@@ -46,7 +46,7 @@ def main():
         check(422,'POST','/api/v1/monitoring/data-sources',admin,payload)
     sources=[]
     for kind in ('LINUX_HOST','WINDOWS_HOST','AWS_EC2','HTTP','PENTAHO'):
-        sources.append(check(201,'POST',root+'/data-sources',north,{'organization_id':org_id,'name':'scope-supported-'+kind,'source_type':kind}))
+        sources.append(check(201,'POST',root+'/data-sources',north,{'organization_id':org_id,'name':'scope-supported-'+kind,'source_type':kind,**({'endpoint':'https://scope-supported.example.test/health'} if kind=='HTTP' else {})}))
     source_id=sources[-2]['id']
     for config in ({'nested':[{'provider':'AKS'}]}, {'opscontrol':{'monitoring_overrides':{'collector':{'type':'K8S'}}}}, {'receivers':{'k8s_cluster':{}}}):
         check(422,'PATCH',root+'/data-sources/'+source_id,north,{'connection_config':config})
@@ -61,10 +61,10 @@ def main():
     for suffix,payload in (('scan',{}),('import',{'approved_external_ids':['synthetic'],'dry_run':False})):
         check(422,'POST','/api/v1/resource-discovery/sources/'+legacy_id+'/'+suffix,admin,payload)
     check(422,'POST','/api/v1/data-sources/'+legacy_id+'/activations',admin,{'rule_version_ids':[],'include_templates':False})
-    template=check(201,'POST','/api/v1/monitoring/templates',admin,{'name':'scope-supported-template','package_config':{'collector':{'type':'HTTP'}}})
-    check(422,'POST','/api/v1/monitoring/data-sources/'+legacy_id+'/templates',admin,{'template_id':template['id']})
-    check(201,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id']})
-    check(422,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id'],'overrides':{'collector':{'type':'OpenShift'}}})
+    template=check(201,'POST','/api/v1/monitoring/templates',admin,{'name':'scope-supported-template','package_config':{'applicability':{'schema_version':1,'family':'API','source_types':['HTTP','API'],'methods':[{'name':'Read-only HTTPS','method_type':'HTTPS','configuration':{'method':'GET'}}]},'collector':{'type':'HTTP'}}})
+    check(422,'POST','/api/v1/monitoring/data-sources/'+legacy_id+'/templates',admin,{'template_id':template['id'],'template_version':1})
+    check(201,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id'],'template_version':1})
+    check(422,'POST','/api/v1/monitoring/data-sources/'+source_id+'/templates',admin,{'template_id':template['id'],'template_version':1,'overrides':{'collector':{'type':'OpenShift'}}})
     for domain in ('VM','ETL','API'):
         check(422,'POST','/api/v1/unified/import/validate',north,{'domain':domain,'format':'JSON','content':json.dumps({'collector':{'type':'Kubernetes'}})})
     for suffix in ('','/'+str(uuid4()),'/'+str(uuid4())+'/associations/'+org_id):
