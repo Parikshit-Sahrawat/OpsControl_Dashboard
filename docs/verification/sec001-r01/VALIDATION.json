@@ -1,0 +1,65 @@
+{
+  "status": "PASS_LOCAL_BOUNDED_VALIDATION_ONLY",
+  "tested_base_commit": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "tested_patch": "Changed paths and content hashes in SOURCE_HASHES.json, then committed without runtime changes",
+  "commands": [
+    {
+      "command": "backend/.venv/bin/python -m unittest discover -s tests -p 'test_*.py' -v",
+      "exit": 0,
+      "passed": 123,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "root CI/security/controller unit regressions; not full backend or runtime acceptance",
+      "log": "raw/root-tests.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/policy.py",
+      "exit": 0,
+      "log": "raw/ci-policy.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/e2e_alignment.py",
+      "exit": 0,
+      "log": "raw/e2e-integrity.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "raw/diff-check.log"
+    },
+    {
+      "command": "backend/.venv/bin/python -m unittest discover -s tests -p test_ci_image_coverage.py -v",
+      "exit": 0,
+      "passed": 11,
+      "overlap": "included in 123; do not sum",
+      "log": "raw/focused-tests.log"
+    },
+    {
+      "command": "actionlint v1.7.7 -shellcheck= -pyflakes= .github/workflows/*.yml",
+      "exit": 0,
+      "workflow_count": 28,
+      "tool_archive_sha256": "023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757",
+      "log": "raw/actionlint.log"
+    },
+    {
+      "command": "backend/.venv/bin/python -m black --check scripts/ci/image_coverage.py scripts/ci/scan_image.py tests/test_ci_image_coverage.py",
+      "exit": 0,
+      "log": "raw/black.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/image_coverage.py validate --directory docs/verification/sprint1-integration/sec001-2026-11-09/raw --source b1e645f342be5bc84141f314a12a81d3c38f621b --output docs/verification/sec001-r01/raw/historical-coverage-refusal.json",
+      "exit": 1,
+      "expected": "reject missing production frontend; historical artifacts cannot be upgraded to fresh bindings",
+      "log": "raw/historical-coverage-refusal.log"
+    }
+  ],
+  "fresh_image_scans": "NOT RUN locally; CI PENDING",
+  "runtime_database_browser_tests": "NOT RUN \u2014 no runtime changes authorized/required by these bounded contracts",
+  "ci": "TRIGGER ON DRAFT PR; RESULT PENDING; do not poll",
+  "security": "BLOCKED",
+  "chk001": "FAIL",
+  "chk002": "BLOCKED",
+  "release": "NO-GO",
+  "collector": "0.123.0 unchanged",
+  "cleanup": "No Docker resources or databases created. Unit tests remove their own temporary fixture directories only."
+}
