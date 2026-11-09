@@ -1,0 +1,107 @@
+{
+  "task": "OC-S01-CLOSE-R02",
+  "date": "2026-11-10",
+  "timezone": "Asia/Calcutta",
+  "baseline": "506d24356a205bbddb82c74924f4e84a5e54d441",
+  "application_sha": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "branch": "review/oc-s01-close-r02-20261110",
+  "mode": "DOCUMENTATION_EVIDENCE_ONLY",
+  "commands": [
+    {
+      "command": "backend/.venv/bin/python docs/verification/oc-s01-close/2026-11-10/validate_review.py",
+      "result": "PASS",
+      "scope": "Original closure traceability validator;not runtime qualification",
+      "log": "raw/r02/original-validator.log"
+    },
+    {
+      "command": "backend/.venv/bin/python docs/verification/oc-s01-close/2026-11-10/validate_r02.py",
+      "result": "PASS_DOCUMENTATION_RECONCILIATION_ONLY",
+      "scope": "158 IDs/144 unresolved/92 quarantined/18 compatibility boundaries/66 CI jobs/preserved rules/evidence",
+      "log": "raw/r02/r02-validator.log"
+    },
+    {
+      "command": "git diff --check 506d24356a205bbddb82c74924f4e84a5e54d441 -- . (after staging all task-owned files)",
+      "result": "PASS",
+      "scope": "Documentation whitespace",
+      "log": "raw/r02/diff-check.log"
+    }
+  ],
+  "runtime_tests_this_task": "NOT RUN;no product changes or contradiction;preserved PR101 controlled executions",
+  "ci_actions": "Read18existing runs perhead;no rerun/rename/disable;new review PR triggers normal checks afterpush;Trigger-and-Exit",
+  "ci_snapshot": {
+    "checks": 66,
+    "per_pr": {
+      "89": {
+        "success": 25,
+        "failure": 8
+      },
+      "101": {
+        "PENDING": 1,
+        "success": 24,
+        "failure": 8
+      }
+    },
+    "no_workflows_rerun": true,
+    "no_completion_polling": true,
+    "required_checks": [
+      "access-rbac",
+      "contracts",
+      "frontend-build",
+      "frontend-dependency-audit",
+      "image-validation",
+      "noc",
+      "pipeline-contracts",
+      "private-https",
+      "python-dependency-audit",
+      "restore-retention-tls",
+      "secret-history-scan",
+      "staging-smoke",
+      "verification"
+    ]
+  },
+  "authority": "AUTH694 APPROVED/CURRENT;quarantine authorized by current usertask;no reapproval requested",
+  "scope_stops": {
+    "supported_deployment_version_qualification": "STOPPED_ROSTER_NOT_ESTABLISHED",
+    "independent_semantic_approval": "INDEPENDENT_REVIEW_PENDING;no reviewer supplied orreviewsubmitted",
+    "product_or_ci_remediation": "NOT_AUTHORIZED;request bounded separatetask ifneeded"
+  },
+  "known_limits": [
+    "PR101verification inprogress;no completed result,no defect rootcause established",
+    "Per-test hostedskip/identity counts not fullyextracted;job andconditional step outcomes retained",
+    "Six completedworkflow types perhead do not configurestandaloneartifactupload;logsavailable",
+    "HeadSHA identifies reviewedcheck;not all actualcheckoutSHAsextracted;imageprovenance kept distinct",
+    "No installed-version roster,providerpositivecertification,UAT,legal signature or independent signoff",
+    "No new Postgres/browser tests or imagescans;preserved actualPR101data not relabelled as newrun"
+  ],
+  "prior_evidence": "Original257 hashrecords copied unchanged to raw/r02/PR101_ARTIFACT_SHA256_BASELINE.json;prior runtime andC01\u2013C15 evidence remainsbyteidentical",
+  "decisions": {
+    "Sprint0": "ACCEPTABLE_BASELINE_WITH_EXPLICIT_QUARANTINE",
+    "Sprint1": "CORRECTIONS_REQUIRED",
+    "Sprint2": "CONDITIONAL_PENDING_OWNER_DECISIONS"
+  },
+  "independent_gates": {
+    "SECURITY": "BLOCKED",
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "collector": "0.123.0 unchanged"
+  },
+  "mutations": {
+    "production_behavior": false,
+    "database": false,
+    "workflows_or_rules": false,
+    "PR89_product": false,
+    "merge_deploy_publish_close_delete": false,
+    "draft_review_PR": "Authorized only after evidence/validation"
+  },
+  "status": "PASS_DOCUMENTATION_RECONCILIATION_ONLY",
+  "new_runtime_or_ci_reruns": 0,
+  "old_runtime_evidence": "Preserved byte-identically;not re-executed or relabelled at new documentation source",
+  "failed_documentation_check": {
+    "initial_staged_exit": 2,
+    "evidence": "raw/r02/staged-whitespace-attempt1.json",
+    "resolution": "Normalize generated CSV/task-text CRLF to LF;original task bytes preserved;final staged check required before push",
+    "final_exit": 0,
+    "source_patch": "Exact unified diff preserved gzip-compressed;its context markers are not product whitespace modifications"
+  }
+}

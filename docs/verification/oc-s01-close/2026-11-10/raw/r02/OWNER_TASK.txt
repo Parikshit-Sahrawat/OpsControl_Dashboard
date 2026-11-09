@@ -1,0 +1,235 @@
+# CODEX TASK — OC-S01-CLOSE-R02
+
+## Mission
+
+Execute the final bounded Sprint 0 + Sprint 1 acceptance-resolution workstream.
+
+Repository:
+`Parikshit-Sahrawat/OpsControl_Dashboard`
+
+Authoritative references:
+
+- Main: `2e4fe5d8cb0f39170b0d789fdd7e07be4ac0219a`
+- Sprint 1 integration: PR #89, `ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce`
+- Closure evidence: PR #101, `506d24356a205bbddb82c74924f4e84a5e54d441`
+- Security coverage: PR #99
+- PostgreSQL/gosu qualification: PR #100
+
+Re-fetch all moving references and record changes. Do not silently substitute newer commits for the approved assessment baselines.
+
+## A. Sprint 0 — Resolve closure authority
+
+Use the existing 158-ID reconciliation register.
+
+Starting dispositions:
+
+- 14 RESOLVED
+- 25 APPROVED_DEFERRED
+- 39 AWAITING_OWNER_DECISION
+- 80 BLOCKED
+
+For every unresolved item, determine:
+
+1. Whether the source is recovered and authoritative.
+2. Whether the item belongs to approved product scope.
+3. Whether its behavior is required for Sprint 1 acceptance.
+4. Whether it is required before Sprint 2 development.
+5. Whether it belongs to a later approved sprint.
+6. Whether it is blocked independently by provider, security, licensing or formal UAT.
+7. Whether an explicit owner decision is required.
+
+Maintain separate fields for historical provenance, implementation evidence, approval status and development sequencing.
+
+**Quarantine all unrecovered source material.**
+
+The 62 missing historical IMP definitions and 30 unrecovered included journey descriptions must not be reconstructed through guesses or implementation inference.
+
+Preserve AUTH-694 as APPROVED/CURRENT. Do not request that approval again.
+
+Produce an authoritative review proposal specifying exactly which unresolved decisions block Sprint 2 and which may safely remain deferred.
+
+## B. Sprint 1 — Resolve remaining acceptance contracts
+
+Start from S01-C01 through S01-C20 in PR #101.
+
+Preserve existing controlled PASS evidence unless an actual contradiction is established.
+
+Focus on the unresolved contracts:
+
+### S01-C16 — Writer and collector compatibility
+
+- Enumerate supported revisioned HTTP writers.
+- Enumerate legacy supported adapters.
+- Identify supported client and collector configuration-consumer versions.
+- Distinguish currently supported deployments from arbitrary historical binaries.
+- Verify expected-revision enforcement, transactional safety, RBAC and context revocation for the supported set.
+- Identify genuinely missing compatibility tests.
+- Do not expand the compatibility commitment without approval.
+
+Output: exact supported compatibility matrix, missing tests, owner decisions and exit criteria.
+
+### S01-C17 — Provider boundaries
+
+- Separate verified configuration contracts from genuine provider activation.
+- Preserve unavailable-provider and external-certification limitations.
+- Identify whether genuine provider qualification is required for Sprint 1 exit or belongs to a subsequent approved sprint.
+- Do not enable provider activation or claim certification from fixtures.
+
+### S01-C18 — Owner visual acceptance
+
+- Review the latest desktop administrator/operator screenshots.
+- Compare against the previously accepted visual baseline.
+- Identify changed interactions, history, diff, detach, rollback, stale-conflict and keyboard behaviors.
+- Prepare a concise owner acceptance matrix.
+- Preserve prior approved visual decisions.
+- Do not infer owner acceptance from Playwright PASS.
+
+### S01-C19 — Independent release blockers
+
+Retain separate status and evidence for:
+
+- Security findings and SBOM
+- Licence/NOTICE approvals
+- CHK-001
+- CHK-002
+- Genuine-provider certification
+- Formal UAT
+- Release authorization
+
+Do not use these independent release blockers to misclassify a successfully tested Sprint 1 functional contract as defective.
+
+### S01-C20 — Retention and authority
+
+- Preserve existing revision history.
+- Identify the precise retention, legal-hold, erasure and legacy-import decisions.
+- Distinguish decisions necessary for Sprint 1 safety from those validly deferred.
+- Do not implement deletion, pruning or policy changes without approval.
+
+## C. Independent semantic integration review
+
+A reviewer independent of the integration author must evaluate PR #89.
+
+The review must compare the six source PRs and the integrated source, including:
+
+- Source-level semantic changes
+- Conflict resolutions
+- ORM models and relationships
+- Alembic migration ordering and compatibility
+- Source configuration revision ledger
+- Parent/child atomic saves and CAS
+- Tenant ownership and RBAC enforcement
+- ETL workflow bindings and background processing
+- Resource Management UI and API contracts
+- Removed incident-management UI versus preserved background alert functions
+- Security-sensitive regressions
+- Historical-data preservation
+
+Commit ancestry, identical migration hashes and passing tests are supporting evidence, not sufficient independent approval.
+
+Record each finding with exact file, source commit, risk, reproduction and disposition.
+
+If no independent reviewer is available, mark INDEPENDENT_REVIEW_PENDING. Do not fabricate signoff or self-approve.
+
+## D. Hosted CI reconciliation
+
+Retrieve completed hosted CI results for PR #89 and PR #101 at the exact reviewed commits.
+
+For every check:
+
+- Record check name, workflow, run URL, tested SHA and conclusion.
+- Classify functional, integration, security, reliability or release scope.
+- Differentiate genuine regression from expected unresolved security/licence findings.
+- Identify infrastructure failures, skips and missing evidence.
+- Verify the existing required-check policy remains unchanged.
+- Reconcile local tests without double-counting overlapping identities.
+
+Do not rerun, rename, remove or weaken checks merely to obtain green results.
+
+If a genuinely defective test or CI contract is found, report a bounded corrective implementation request rather than silently expanding this workstream.
+
+## E. Final integration-readiness decision
+
+Produce three independent determinations.
+
+### Sprint 0
+
+One of:
+
+- ACCEPTABLE_BASELINE_WITH_EXPLICIT_QUARANTINE
+- CORRECTIONS_REQUIRED
+- BLOCKED_AUTHORITY
+
+### Sprint 1
+
+One of:
+
+- READY_FOR_OWNER_ACCEPTANCE
+- CORRECTIONS_REQUIRED
+- BLOCKED_FUNCTIONAL_CONTRACT
+
+### Sprint 2 entry
+
+One of:
+
+- RECOMMEND_AUTHORIZE
+- CONDITIONAL_PENDING_OWNER_DECISIONS
+- NOT_READY
+
+A Sprint 2 development recommendation must not be represented as approval for deployment, release or production use.
+
+## F. Required deliverables
+
+Update the existing closure evidence rather than creating another broad independent audit.
+
+Produce:
+
+1. `SPRINT0_FINAL_DISPOSITION.md`
+2. `SPRINT0_AUTHORITY_QUARANTINE.csv`
+3. `SPRINT1_REMAINING_CONTRACTS.md`
+4. `SUPPORTED_WRITER_COMPATIBILITY_MATRIX.csv`
+5. `DESKTOP_OWNER_ACCEPTANCE_PACKET.md`
+6. `INDEPENDENT_SEMANTIC_REVIEW.md`
+7. `HOSTED_CI_EXACT_SHA_RECONCILIATION.md`
+8. `INTEGRATION_READINESS_DECISION.md`
+9. `SPRINT2_ENTRY_DECISION_REQUEST.md`
+10. Updated artifact SHA256 manifest
+
+All evidence must reference actual files, commits, test commands and results.
+
+## G. Git workflow
+
+- Create an isolated review branch from the verified PR #101 closure baseline.
+- Keep all changes limited to evidence, reconciliation and bounded documentation corrections.
+- Commit with an OC-S01-CLOSE-R02 identifier.
+- Push and open a draft PR targeting the appropriate integration/review branch.
+- Do not modify PR #89 product implementation.
+- Do not merge, deploy, publish, close PRs or delete branches.
+
+## H. Stop conditions
+
+Stop the affected scope and report if:
+
+- A new product implementation is required.
+- An authority conflict cannot be resolved from existing approvals.
+- A supported compatibility version cannot be established.
+- A semantic regression requires source changes.
+- Independent approval is unavailable.
+- A security or release exception would be necessary.
+
+Do not broaden scope to resolve these automatically.
+
+## I. Preserve release controls
+
+SECURITY BLOCKED
+
+CHK-001 FAIL
+
+CHK-002 BLOCKED
+
+RELEASE NO-GO
+
+Collector 0.123.0 unchanged
+
+End by presenting the owner with a definitive acceptance/deferral/blocker decision table and exact outstanding approvals.
+
+Do not begin Sprint 2 without subsequent explicit authorization.

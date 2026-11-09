@@ -1,0 +1,105 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 129205045934,
+      "run_id": 42630435494,
+      "workflow_name": "OC Dev - Tier B - Controlled HTTPS Alert Recovery",
+      "head_branch": "integration/sprint1-pr80-81-82-83-84-86",
+      "run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42630435494",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVAHcRc8AAAAeFTiKrg",
+      "head_sha": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+      "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/jobs/129205045934",
+      "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42630435494/job/129205045934",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-09T14:00:12Z",
+      "started_at": "2026-11-09T14:00:16Z",
+      "completed_at": "2026-11-09T14:02:08Z",
+      "name": "real-tls-evidence-alert",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-09T14:00:16Z",
+          "completed_at": "2026-11-09T14:00:17Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-09T14:00:17Z",
+          "completed_at": "2026-11-09T14:00:50Z"
+        },
+        {
+          "name": "Start isolated disposable API and PostgreSQL",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-09T14:00:50Z",
+          "completed_at": "2026-11-09T14:01:50Z"
+        },
+        {
+          "name": "Launch TLS target and outbound-only agent on separate isolated networks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-09T14:01:50Z",
+          "completed_at": "2026-11-09T14:01:54Z"
+        },
+        {
+          "name": "Verify real healthy \u2192 failed \u2192 recovered evidence and native alert lifecycle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-09T14:01:54Z",
+          "completed_at": "2026-11-09T14:02:03Z"
+        },
+        {
+          "name": "Assert network-level containment",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-09T14:02:03Z",
+          "completed_at": "2026-11-09T14:02:03Z"
+        },
+        {
+          "name": "Cleanup and purge synthetic secrets",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-09T14:02:03Z",
+          "completed_at": "2026-11-09T14:02:05Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-09T14:02:05Z",
+          "completed_at": "2026-11-09T14:02:06Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-09T14:02:06Z",
+          "completed_at": "2026-11-09T14:02:06Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/check-runs/129205045934",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000007664,
+      "runner_name": "GitHub Actions 1000007664",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

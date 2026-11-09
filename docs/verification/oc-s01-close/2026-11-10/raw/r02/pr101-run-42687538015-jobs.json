@@ -1,0 +1,305 @@
+{
+  "total_count": 3,
+  "jobs": [
+    {
+      "id": 129398272980,
+      "run_id": 42687538015,
+      "workflow_name": "OC Dev - Tier A - Source Tests Lint and Build",
+      "head_branch": "review/oc-s01-close-20261110",
+      "run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVAHcRc8AAAAeILzz1A",
+      "head_sha": "506d24356a205bbddb82c74924f4e84a5e54d441",
+      "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/jobs/129398272980",
+      "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015/job/129398272980",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-09T19:52:42Z",
+      "started_at": "2026-11-09T19:53:36Z",
+      "completed_at": "2026-11-09T19:54:49Z",
+      "name": "backend-validation",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-09T19:53:37Z",
+          "completed_at": "2026-11-09T19:53:37Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-09T19:53:37Z",
+          "completed_at": "2026-11-09T19:54:19Z"
+        },
+        {
+          "name": "Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-09T19:54:19Z",
+          "completed_at": "2026-11-09T19:54:21Z"
+        },
+        {
+          "name": "Run python \"$(git rev-parse --show-toplevel)/backend/bootstrap_pip.py\" && pip install -r requirements-providers.txt -r requirements-hosts.txt",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-09T19:54:21Z",
+          "completed_at": "2026-11-09T19:54:36Z"
+        },
+        {
+          "name": "Validate CI requirement and owner-decision traceability",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-09T19:54:36Z",
+          "completed_at": "2026-11-09T19:54:36Z"
+        },
+        {
+          "name": "Run python -m compileall -q app migrations",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-09T19:54:36Z",
+          "completed_at": "2026-11-09T19:54:36Z"
+        },
+        {
+          "name": "Run python -m unittest discover -s tests -v",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-09T19:54:36Z",
+          "completed_at": "2026-11-09T19:54:41Z"
+        },
+        {
+          "name": "Run python -m scripts.export_api_inventory /tmp/opscontrol-api-inventory.json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-09T19:54:41Z",
+          "completed_at": "2026-11-09T19:54:44Z"
+        },
+        {
+          "name": "Run python -c \"from sqlalchemy.orm import configure_mappers; from app.main import app; configure_mappers(); print('SQLAlchemy mapper validation passed')\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-09T19:54:44Z",
+          "completed_at": "2026-11-09T19:54:46Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-09T19:54:46Z",
+          "completed_at": "2026-11-09T19:54:46Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-09T19:54:46Z",
+          "completed_at": "2026-11-09T19:54:47Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-09T19:54:47Z",
+          "completed_at": "2026-11-09T19:54:47Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/check-runs/129398272980",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007784,
+      "runner_name": "GitHub Actions 1000007784",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 129398273598,
+      "run_id": 42687538015,
+      "workflow_name": "OC Dev - Tier A - Source Tests Lint and Build",
+      "head_branch": "review/oc-s01-close-20261110",
+      "run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVAHcRc8AAAAeILz2Pg",
+      "head_sha": "506d24356a205bbddb82c74924f4e84a5e54d441",
+      "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/jobs/129398273598",
+      "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015/job/129398273598",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-09T19:52:42Z",
+      "started_at": "2026-11-09T19:53:37Z",
+      "completed_at": "2026-11-09T19:54:33Z",
+      "name": "frontend-validation",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-09T19:53:38Z",
+          "completed_at": "2026-11-09T19:53:38Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-09T19:53:38Z",
+          "completed_at": "2026-11-09T19:54:21Z"
+        },
+        {
+          "name": "Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-09T19:54:21Z",
+          "completed_at": "2026-11-09T19:54:24Z"
+        },
+        {
+          "name": "Run npm ci",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-09T19:54:24Z",
+          "completed_at": "2026-11-09T19:54:27Z"
+        },
+        {
+          "name": "Run npm test",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-09T19:54:27Z",
+          "completed_at": "2026-11-09T19:54:28Z"
+        },
+        {
+          "name": "Run npm run lint",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-09T19:54:28Z",
+          "completed_at": "2026-11-09T19:54:29Z"
+        },
+        {
+          "name": "Run npm run build",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-09T19:54:29Z",
+          "completed_at": "2026-11-09T19:54:32Z"
+        },
+        {
+          "name": "Post Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-09T19:54:32Z",
+          "completed_at": "2026-11-09T19:54:32Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-09T19:54:32Z",
+          "completed_at": "2026-11-09T19:54:32Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-09T19:54:32Z",
+          "completed_at": "2026-11-09T19:54:32Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/check-runs/129398273598",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007785,
+      "runner_name": "GitHub Actions 1000007785",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 129399457750,
+      "run_id": 42687538015,
+      "workflow_name": "OC Dev - Tier A - Source Tests Lint and Build",
+      "head_branch": "review/oc-s01-close-20261110",
+      "run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOVAHcRc8AAAAeIM8H1g",
+      "head_sha": "506d24356a205bbddb82c74924f4e84a5e54d441",
+      "url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/actions/jobs/129399457750",
+      "html_url": "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/actions/runs/42687538015/job/129399457750",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-09T19:54:50Z",
+      "started_at": "2026-11-09T19:54:52Z",
+      "completed_at": "2026-11-09T19:55:09Z",
+      "name": "unit-and-build",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-09T19:54:53Z",
+          "completed_at": "2026-11-09T19:54:54Z"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-09T19:54:54Z",
+          "completed_at": "2026-11-09T19:55:08Z"
+        },
+        {
+          "name": "Run python scripts/ci/require_success.py",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-09T19:55:08Z",
+          "completed_at": "2026-11-09T19:55:08Z"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-09T19:55:08Z",
+          "completed_at": "2026-11-09T19:55:08Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-09T19:55:08Z",
+          "completed_at": "2026-11-09T19:55:08Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Parikshit-Sahrawat/OpsControl_Dashboard/check-runs/129399457750",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007792,
+      "runner_name": "GitHub Actions 1000007792",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
