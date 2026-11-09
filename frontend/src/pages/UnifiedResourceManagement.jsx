@@ -1631,7 +1631,7 @@ function ResourceForm({ domain, item, user, customers, onClose, onSaved }) {
           </Field>
           <div className="form-footer">
             <button onClick={onClose}>Cancel</button>
-            <button className="primary-button" disabled={busy} onClick={save}>
+            <button className="primary-button" disabled={busy || Boolean((item || created) && !contextSnapshot)} onClick={save}>
               {busy
                 ? "Saving…"
                 : item
