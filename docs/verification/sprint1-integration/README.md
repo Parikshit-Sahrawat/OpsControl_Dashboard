@@ -28,3 +28,5 @@ Final hosted CI is triggered after the evidence commit and reported **RESULT PEN
 Latest scoped follow-up: [exact-head Access/keyboard recovery](required-recovery-2026-11-09/REPORT.md), [retained seven-role security failures](required-recovery-2026-11-09/IMAGE_FAILURE_REVIEW.md), and [machine-readable validation](required-recovery-2026-11-09/VALIDATION.json). Hosted final-head results remain pending; historical evidence is preserved.
 
 Latest sequential work: [CI005 exact-head recovery](ci005-2026-11-09/REPORT.md), [issue95 architecture/evidence guard](arch95-2026-11-09/REPORT.md), and [bounded E2E workflow matrix](E2E_WORKFLOW_MATRIX.md). All7 whole workflows remain partial/blocked; subpath evidence is preserved.
+
+Latest [CI006 recovery evidence](ci006-2026-11-09/REPORT.md) retains2 exact-head hosted route failures, explicit local non-reproduction,2 passing native-response-gate recovery candidates and #95 revalidation. Final hosted status remains pending; no gate promotion.

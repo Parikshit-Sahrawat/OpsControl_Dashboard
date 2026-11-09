@@ -31,3 +31,7 @@ CHK-001 FAIL · CHK-002 BLOCKED · SECURITY BLOCKED · RELEASE NO-GO · Sprint1 
 ## CI005 plus sequential issue95
 
 [Exact72382ad failures and local recovery](ci005-2026-11-09/REPORT.md) distinguish actual subprocess failure, controlled runtime PASS and missing historical private stderr. Scope now includes814 reviewed/retained entries;786 UNKNOWN still RUN. [Issue95 guard](arch95-2026-11-09/REPORT.md) adds only explicit exact-ID provenance preparation to the2 existing root-test workflows. All28 workflow definitions and13 required check identities remain intact. Final18 PR-safe workflows are triggered on the new combined SHA and handed off RESULT PENDING under Trigger-and-Exit. No live provider/publisher/UAT workflow is authorized.
+
+## OC-S1-CI-006
+
+[Exact artifacts, candidate and test outcomes](ci006-2026-11-09/REPORT.md). Artifact13666480538 fails on late route.fulfill rather than a keyboard assertion. Native browser response-delivery gating replaces that test-only mechanism; no TLS/RBAC/migration/collector change. Updated817 scope entries include3 real-browser regressions; all814 prior rows unchanged and786 UNKNOWN still RUN. Verification at41cfb377 passed; final18 PR-safe workflows are triggered and handed off pending without polling.
