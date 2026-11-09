@@ -171,8 +171,43 @@ class WorkflowTests(unittest.TestCase):
 
     def test_test_omission_rejected(self):
         (self.root / "tests/test_new.py").write_text("def test_security(): pass\n")
-        with self.assertRaises(ValueError):
+        with self.assertRaisesRegex(ValueError, "test_new.py::test_security"):
             policy.validate(self.root)
+
+    def test_stale_inventory_entry_rejected(self):
+        path = self.root / ".ci/scope-manifest.json"
+        data = json.loads(path.read_text())
+        data["tests"]["tests/test_removed.py::test_guard"] = {
+            "classification": "SHARED_SECURITY",
+            "disposition": "RUN",
+        }
+        path.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError, "stale=.*test_removed.py::test_guard"):
+            policy.validate(self.root)
+
+    def test_python_and_node_new_tests_require_explicit_review(self):
+        (self.root / "tests/test_new.py").write_text(
+            "class Contract:\n    async def test_revocation(self): pass\n"
+        )
+        (self.root / "frontend/scripts/new.test.mjs").write_text(
+            'test("authenticated negative", () => {});\n'
+        )
+        inventory = policy.test_inventory(self.root)
+        self.assertEqual(
+            set(inventory),
+            {
+                "tests/test_new.py::test_revocation",
+                "frontend/scripts/new.test.mjs::authenticated negative",
+            },
+        )
+        self.assertTrue(all(row["disposition"] == "RUN" for row in inventory.values()))
+        with self.assertRaisesRegex(ValueError, "missing="):
+            policy.validate(self.root)
+        path = self.root / ".ci/scope-manifest.json"
+        data = json.loads(path.read_text())
+        data["tests"] = inventory
+        path.write_text(json.dumps(data))
+        self.assertEqual(policy.validate(self.root)["status"], "PASS")
 
     def test_required_context_removal_rejected(self):
         for f in (self.root / ".github/workflows").glob("*.yml"):

@@ -229,16 +229,37 @@ try {
   const delayedDetailResponse = response(linkedDetailPath);
   releaseLinkedDetail();
   await delayedDetailResponse;
-  await page.unroute("**" + linkedDetailPath);
+  await page.unrouteAll({behavior:"wait"});
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   const savedSecondDraftResponse = response("/api/v1/resource-drafts/" + secondDraft.id, "PUT");
   await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
   const savedSecondDraft = await (await savedSecondDraftResponse).json();
   assert.equal(savedSecondDraft.id, secondDraft.id);
   assert.equal(savedSecondDraft.configuration.resource_id, null, "A delayed linked-resource response must not relink the current draft");
-  await dialog.getByLabel("Hostname", { exact: true }).fill("");
-  await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
-  await dialog.getByRole("alert").getByText("Hostname and DNS/IP address are required before saving a Compute Instance").waitFor();
+  // The native identity form rejects invalid fields before React's submit
+  // handler. Verify that contract rather than waiting for its old JS banner.
+  const invalidWrites = [];
+  const observeWrite = request => {
+    if (["POST", "PUT", "PATCH"].includes(request.method()) &&
+        /\/unified\/resources(?:\/|$)/.test(new URL(request.url()).pathname)) invalidWrites.push(request.url());
+  };
+  page.on("request", observeWrite);
+  const invalidBefore = draftSwitchDatabaseState(created.id, secondDraft.id, secondName);
+  const validation = [];
+  for (const label of ["Hostname", "DNS / IP address"]) {
+    const input = dialog.getByLabel(label, {exact:true});
+    const original = await input.inputValue();
+    await input.fill("");
+    await dialog.getByRole("button", { name: "Save resource identity", exact: true }).click();
+    const field = await input.evaluate(el => ({valid:el.validity.valid, missing:el.validity.valueMissing, message:Boolean(el.validationMessage), focused:el===document.activeElement}));
+    assert.deepEqual(field, {valid:false, missing:true, message:true, focused:true});
+    assert.deepEqual(invalidWrites, [], "invalid form must not issue a mutation");
+    assert.deepEqual(draftSwitchDatabaseState(created.id, secondDraft.id, secondName), invalidBefore, "invalid submit preserves independent DB state");
+    validation.push({field:label,...field,mutations:0,database_unchanged:true});
+    await input.fill(original);
+  }
+  page.off("request", observeWrite);
+  await writeFile(join(out,"identity-validation.json"),JSON.stringify({status:"PASS",checks:validation},null,2));
   await dialog.getByLabel("Resume draft").selectOption(draft.id);
   await dialog.getByLabel("Resource name", { exact: true }).waitFor();
   assert.equal(await dialog.getByRole("alert").count(), 0);

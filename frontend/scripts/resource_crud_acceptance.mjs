@@ -299,10 +299,15 @@ try {
   // keyboard reachability while the mandatory snapshot is still pending.
   let releaseContext;
   const contextGate = new Promise(resolve => { releaseContext = resolve; });
+  let contextInFlight = 0, contextCompleted = 0;
   await page.route("**/configuration-context", async route => {
-    const response = await route.fetch();
-    await contextGate;
-    await route.fulfill({response});
+    contextInFlight++;
+    try {
+      const response = await route.fetch();
+      await contextGate;
+      await route.fulfill({response});
+      contextCompleted++;
+    } finally { contextInFlight--; }
   });
   const mutations = [];
   page.on("request", request => {
@@ -323,8 +328,12 @@ try {
   assert.equal(mutations.length, 0, "no write without authorized revisions");
   assert.equal(await nameInput.inputValue(), "Wizard keyboard persisted");
   releaseContext();
+  // A response event can precede completion of route.fulfill(). Plain unroute
+  // lets Playwright auto-handle that request a second time. Drain, don't ignore.
+  await page.unrouteAll({behavior:"wait"});
+  assert.equal(contextInFlight,0);
+  assert.ok(contextCompleted > 0);
   await page.waitForFunction(() => document.querySelector('button[form][aria-disabled="false"]'));
-  await page.unroute("**/configuration-context");
   assert.equal(await keyboardSave.evaluate(el=>el===document.activeElement), true, "snapshot arrival preserves keyboard focus");
   await page.keyboard.press("Enter");await modal.waitFor({state:"hidden"});
   assert.equal(mutations.length, 1, "one Enter commits one command");
@@ -349,7 +358,7 @@ try {
   await page.getByLabel("Search resources",{exact:true}).fill("Wizard keyboard persisted");
   await page.getByRole("button",{name:"Wizard keyboard persisted",exact:true}).waitFor();
   await page.screenshot({path:process.env.RELEASE_EVIDENCE_DIR+"/resource-keyboard-desktop.png",fullPage:true});
-  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/keyboard-regression.json",JSON.stringify({status:"PASS",pending_snapshot_writes:0,committed_commands:mutations.length,revision_increased:true,focus_preserved:true,enter_button:true,enter_input:true,reload_persisted:true},null,2));
+  await writeFile(process.env.RELEASE_EVIDENCE_DIR+"/keyboard-regression.json",JSON.stringify({status:"PASS",pending_snapshot_writes:0,committed_commands:mutations.length,revision_increased:true,focus_preserved:true,enter_button:true,enter_input:true,reload_persisted:true,route_handlers_drained:contextInFlight===0,completed_real_context_responses:contextCompleted},null,2));
   await page.setViewportSize({ width:390, height:844 });
   await page.keyboard.press("Tab");
   assert.notEqual(await page.evaluate(()=>document.activeElement.tagName), "BODY");

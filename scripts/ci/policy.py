@@ -85,11 +85,13 @@ def validate(root=ROOT):
     lock = json.loads((root / "scripts/ci/action-lock.json").read_text())
     pins = {(k.split("@")[0], v) for k, v in lock.items()}
     manifest = json.loads((root / ".ci/scope-manifest.json").read_text())
-    if manifest.get("schema") != 1 or set(manifest["tests"]) != set(
-        test_inventory(root)
-    ):
+    current = test_inventory(root)
+    missing = sorted(set(current) - set(manifest["tests"]))
+    stale = sorted(set(manifest["tests"]) - set(current))
+    if manifest.get("schema") != 1 or missing or stale:
         raise ValueError(
-            "Test scope inventory changed: review and regenerate manifest, never silently omit tests"
+            "Test scope inventory changed: review and regenerate manifest, never silently omit tests; "
+            f"missing={missing}; stale={stale}"
         )
     for key, row in manifest["tests"].items():
         if row["classification"] not in CLASSES or row["disposition"] != "RUN":

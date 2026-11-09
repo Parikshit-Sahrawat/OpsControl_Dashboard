@@ -2,6 +2,7 @@
 """Owned ARCH-001 PostgreSQL/API lab: no existing volumes or production data."""
 import json, os, secrets, shutil, socket, subprocess, sys, tempfile, time
 from pathlib import Path
+from acceptance_diagnostics import export_logs
 
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = ROOT / "backend/.venv/bin/python"
@@ -37,6 +38,10 @@ def run(args, cwd=ROOT, expected=0):
     )
     if p.returncode != expected:
         (private / "failure.log").write_text(p.stdout + "\n" + p.stderr)
+        (OUT / "failed-command.json").write_text(json.dumps({
+            "command": [str(a).replace(password, "[REDACTED]") for a in args],
+            "exit_code": p.returncode, "expected_exit": expected,
+        }, indent=2))
         raise RuntimeError(
             "Owned ARCH-001 command failed; private diagnostics retained"
         )
@@ -348,6 +353,14 @@ finally:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+    exported = export_logs(private, OUT, env, [password])
+    (OUT / "cleanup.json").write_text(json.dumps({
+        "source_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+        "passed": passed, "processes_stopped": all(p.poll() is not None for p in processes),
+        "owned_containers": [name] + ([name + "-target"] if target_started else []),
+        "remaining_containers": [n for n in [name, name + "-target"] if subprocess.run(["docker", "inspect", n], capture_output=True).returncode == 0],
+        "redacted_logs": exported,
+    }, indent=2))
     if passed:
         shutil.rmtree(private)
     else:
