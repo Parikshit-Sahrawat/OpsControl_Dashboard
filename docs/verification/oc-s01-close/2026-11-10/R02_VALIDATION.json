@@ -20,7 +20,7 @@
       "log": "raw/r02/r02-validator.log"
     },
     {
-      "command": "git diff --check",
+      "command": "git diff --check 506d24356a205bbddb82c74924f4e84a5e54d441 -- . (after staging all task-owned files)",
       "result": "PASS",
       "scope": "Documentation whitespace",
       "log": "raw/r02/diff-check.log"
@@ -96,5 +96,12 @@
   },
   "status": "PASS_DOCUMENTATION_RECONCILIATION_ONLY",
   "new_runtime_or_ci_reruns": 0,
-  "old_runtime_evidence": "Preserved byte-identically;not re-executed or relabelled at new documentation source"
+  "old_runtime_evidence": "Preserved byte-identically;not re-executed or relabelled at new documentation source",
+  "failed_documentation_check": {
+    "initial_staged_exit": 2,
+    "evidence": "raw/r02/staged-whitespace-attempt1.json",
+    "resolution": "Normalize generated CSV/task-text CRLF to LF;original task bytes preserved;final staged check required before push",
+    "final_exit": 0,
+    "source_patch": "Exact unified diff preserved gzip-compressed;its context markers are not product whitespace modifications"
+  }
 }

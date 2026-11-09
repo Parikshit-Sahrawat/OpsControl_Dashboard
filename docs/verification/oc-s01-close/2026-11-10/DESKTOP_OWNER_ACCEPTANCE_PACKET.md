@@ -10,7 +10,7 @@ The baseline capture files are present in the accepted source snapshot but were 
 |1440×900|[Admin](runtime/browser/admin-desktop-1440x900.png)|[Operator](runtime/browser/operator-desktop-1440x900.png)|
 |1366×768|[Admin](runtime/browser/admin-desktop-1366x768.png)|[Operator](runtime/browser/operator-desktop-1366x768.png)|
 
-The navy single-panel three-level Feature Directory,light workspace,compact horizontal filters,table/action alignment and read-only operator layout remain visually consistent in inspected pairs. No stylesheet changed between54f26e5 andPR89. Source delta affects ResourceManagementV2.jsx,UnifiedResourceManagement.jsx andresourceApi.js;exact diff retained in raw/r02/accepted-baseline-ui-diff.patch. Typography remains a separate pending decision;do not retroactively invalidate accepted layout.
+The navy single-panel three-level Feature Directory,light workspace,compact horizontal filters,table/action alignment and read-only operator layout remain visually consistent in inspected pairs. No stylesheet changed between54f26e5 andPR89. Source delta affects ResourceManagementV2.jsx,UnifiedResourceManagement.jsx andresourceApi.js;exact diff retained in raw/r02/accepted-baseline-ui-diff.patch.gz. Typography remains a separate pending decision;do not retroactively invalidate accepted layout.
 
 |Case|Owner-observable expected result|Implementation/evidence|Change since accepted source|Owner decision|
 |---|---|---|---|---|
