@@ -34,7 +34,7 @@ export default function FeatureDirectory({ user, active, activeSection, collapse
     {groups.map(group => {
       const open = !collapsed && (expanded[group.name] ?? group.name === current);
       const id = 'directory-' + group.name.replaceAll(' ', '-').toLowerCase();
-      const nested = group.items.every(item => item[2]);
+      const nested = group.name !== "Resource Management" && group.items.every(item => item[2]);
       const subgroup = group.name + ':workspace';
       const subOpen = expanded[subgroup] ?? group.name === current;
       return <div className="nav-group" role="group" aria-label={group.name} key={group.name}>

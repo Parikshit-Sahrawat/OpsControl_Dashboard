@@ -1,8 +1,8 @@
 import { setAdministrativeCustomers } from "../auth";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useId, useRef, useState } from "react";
 import { control, control as scopedControl, downloadPackage } from "../controlPlane";
 import { hasPermission } from "../permissions";
-import { canOpenSection } from "../navigation";
+import { canOpenSection, resourceDomainForSection, resourceSectionForDomain } from "../navigation";
 import { fetchAuthorizedCustomers } from "../api";
 import useDialogFocus from "../components/useDialogFocus";
 import ETLWorkflowConfiguration from "./ETLWorkflowConfiguration";
@@ -119,8 +119,8 @@ function Modal({ title, onClose, children, focus = true, workspace = false }) {
   );
 }
 export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange, resourceSelection, onResourceSelectionHandled }) {
-  const [area, setArea] = useState(section || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
-    [domain, setDomain] = useState(() => readResourceFilters(window.location.search).domain),
+  const [area, setArea] = useState((resourceDomainForSection(section) ? "resources" : section) || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
+    [domain, setDomain] = useState(() => resourceDomainForSection(section) || readResourceFilters(window.location.search).domain),
     [customers, setCustomers] = useState([]),
     [customer, setCustomer] = useState(() => readResourceFilters(window.location.search).customer),
     [environment, setEnvironment] = useState(() => readResourceFilters(window.location.search).environment),
@@ -159,21 +159,24 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   const control = (path, method, payload, options={}) => scopedControl(path, method, payload, {...options,customerIds:customer?[customer]:customers.map(c=>c.id)});
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
-  useEffect(() => {
-    if (["organizations", "resources", "collectors", "parameters", "rules", "delivery", "templates"].includes(section)) {
-      setArea(section);
+  useLayoutEffect(() => {
+    if (resourceDomainForSection(section) || ["organizations", "resources", "collectors", "parameters", "rules", "delivery", "templates"].includes(section)) {
+      setArea(resourceDomainForSection(section) ? "resources" : section);
+      setData(null);
+      if (resourceDomainForSection(section)) setDomain(resourceDomainForSection(section));
       setSelected(null);
       setCollector(null);
       setSource(null);
       setForm(null);
-      if (previousSection.current !== section) setSearch("");
+      if (previousSection.current !== section) { setSearch(""); setSearchQuery(""); }
       previousSection.current = section;
       setOffset(0);
     }
   }, [section]);
   const chooseArea = (next) => {
     if (!canOpenSection(user, "Resource Management", next)) return;
-    setArea(next);
+    setArea(resourceDomainForSection(next) ? "resources" : next);
+    if (resourceDomainForSection(next)) setDomain(resourceDomainForSection(next));
     if (next !== "collectors") setCollectorTarget(null);
     setSelected(null);
     setSearch("");
@@ -196,9 +199,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
     window.history.replaceState(null, "", window.location.pathname + (next ? "?" + next : "") + window.location.hash);
   }, [customer, environment, searchQuery, activeState, domain]);
   useEffect(() => {
-    const restore = () => { const f=readResourceFilters(window.location.search);setDomain(f.domain);setCustomer(f.customer);setEnvironment(f.environment);setSearch(f.search);setActiveState(f.active); };
+    const restore = () => { const f=readResourceFilters(window.location.search);setDomain(resourceDomainForSection(section) || f.domain);setCustomer(f.customer);setEnvironment(f.environment);setSearch(f.search);setActiveState(f.active); };
     window.addEventListener("popstate",restore);return()=>window.removeEventListener("popstate",restore);
-  }, []);
+  }, [section]);
   useEffect(() => {
     if (!resourceSelection?.id || !authorizedLoaded) return;
     const controller = new AbortController(); let live=true;
@@ -343,9 +346,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       </div>}
       <label className="resource-section-select">
         <span>Resource Management component</span>
-        <select value={area} onChange={(event) => chooseArea(event.target.value)}>
+        <select value={area === "resources" ? resourceSectionForDomain(domain) || "resources" : area} onChange={(event) => chooseArea(event.target.value)}>
           {canOpenSection(user, "Resource Management", "organizations") && <option value="organizations">Organizations</option>}
-          {canOpenSection(user, "Resource Management", "resources") && <option value="resources">Data Sources / Resources</option>}
+          {Object.entries({"compute-instances":"Compute Instances","data-pipelines":"Data Pipelines",apis:"APIs"}).filter(([key])=>canOpenSection(user,"Resource Management",key)).map(([key,label])=><option key={key} value={key}>{label}</option>)}
           {canOpenSection(user, "Resource Management", "collectors") && <option value="collectors">Collectors</option>}
           {canOpenSection(user, "Resource Management", "rules") && <option value="rules">Alert Rules</option>}
           {canOpenSection(user, "Resource Management", "delivery") && <option value="delivery">Notification Delivery</option>}
@@ -370,7 +373,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
               key={v}
               role="tab"
               aria-selected={domain === v}
-              onClick={() => setDomain(v)}
+              onClick={() => { setDomain(v); if (area === "resources") onSectionChange?.(resourceSectionForDomain(v)); }}
             >
               {area === "resources"
                 ? domainNames[v]
@@ -389,7 +392,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
           parameter version.
         </p>
       )}
-      {area !== "delivery" && <ResourceFilters customers={customers} customer={customer} environment={environment} search={search} active={activeState} total={data?.total} busy={!data&&!error} onApply={() => {setSearchQuery(search);refresh();}} onChange={(field,value)=>{setOffset(0);setSelected(null);if(field==="reset"){setCustomer("");setEnvironment("");setSearch("");setActiveState("");setDomain("VM");}else if(field==="customer")setCustomer(value);else if(field==="environment")setEnvironment(value);else if(field==="active")setActiveState(value);else setSearch(value);}} />}
+      {area !== "delivery" && <ResourceFilters customers={customers} customer={customer} environment={environment} search={search} active={activeState} total={data?.total} busy={!data&&!error} onApply={() => {setSearchQuery(search);refresh();}} onChange={(field,value)=>{setOffset(0);setSelected(null);if(field==="reset"){setCustomer("");setEnvironment("");setSearch("");setActiveState("");if(area!=="resources")setDomain("VM");}else if(field==="customer")setCustomer(value);else if(field==="environment")setEnvironment(value);else if(field==="active")setActiveState(value);else setSearch(value);}} />}
       {area === "resources" && <div className="workspace-summary-grid" aria-label="Resource configuration summary"><article className="card"><span>Matching resources</span><strong>{data?.total ?? "—"}</strong><small>Authorized current filters</small></article><article className="card"><span>Loaded on this page</span><strong>{data?.items.length ?? "—"}</strong><small>Paginated inventory</small></article><article className="card"><span>Workspace access</span><strong>{configurationCapable(user,customer?[customer]:customers.map(c=>c.id)) ? "Configuration" : "Read only"}</strong><small>Monitoring health requires separate evidence</small></article></div>}
       {error && (
         <p role="alert" className="error-banner">

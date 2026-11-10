@@ -13,7 +13,7 @@ export async function preparePrimaryNavigation(page) {
 }
 export async function navigatePrimary(page,name){
   const nav=await preparePrimaryNavigation(page);
-  const aliases={'Resource Management':['Data Sources / Resources'],'Access Management':['Employees'],'Data Pipeline Monitoring':['Data Pipeline Monitoring','Data Pipelines'],'Compute Health':['Compute Health','Compute Instances'],'API Endpoint Monitoring':['API Endpoint Monitoring','API Endpoints']};
+  const aliases={'Resource Management':['Compute Instances'],'Access Management':['Employees'],'Data Pipeline Monitoring':['Data Pipeline Monitoring','Data Pipelines'],'Compute Health':['Compute Health','Compute Instances'],'API Endpoint Monitoring':['API Endpoint Monitoring','API Endpoints']};
   for(const label of aliases[name]||[name]){
     const target=nav.getByRole('button',{name:label,exact:true});
     if(await target.count()){await target.click();return;}

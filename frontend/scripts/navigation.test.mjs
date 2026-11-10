@@ -35,3 +35,20 @@ test("configuration sections have stable guarded routes", () => {
     assert.deepEqual(readSectionRoute(path, user(["templates.view"])), section === "delivery" ? ["Resource Management", section] : null);
   }
 });
+
+test('domain management routes are explicit, revocable and independent of monitoring permissions',async()=>{
+ const {resourceDomainForSection,resourceSectionForDomain,readPageRoute,pageHash}=await import('../src/navigation.js');
+ for(const [section,domain] of [['compute-instances','VM'],['data-pipelines','ETL'],['apis','API']]){
+  const path='#/resources/'+section;
+  assert.equal(resourceDomainForSection(section),domain);assert.equal(resourceSectionForDomain(domain),section);
+  assert.equal(sectionHash('Resource Management',section),path);
+  assert.deepEqual(readSectionRoute(path,user(['resources.view'])),['Resource Management',section]);
+  assert.equal(readSectionRoute(path,user(['etl.view'])),null);assert.equal(readSectionRoute(path,user([])),null);
+ }
+ assert.equal(resourceDomainForSection('__proto__'),undefined);assert.equal(canOpenSection(user(['resources.view']),'Resource Management','toString'),false);
+ assert.deepEqual(readSectionRoute('#/resources/data-resources',user(['resources.view'])),['Resource Management','resources']);
+ for(const page of ['Overview','Compute Health','API Endpoint Monitoring','Alerts','Reports']){
+  const {NAV_PERMISSIONS}=await import('../src/permissions.js');
+  assert.equal(readPageRoute(pageHash(page),user([NAV_PERMISSIONS[page]])),page);assert.equal(readPageRoute(pageHash(page),user([])),null);
+ }
+});

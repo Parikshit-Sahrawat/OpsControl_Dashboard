@@ -1,0 +1,55 @@
+{
+  "fixture_cleanup": [
+    {
+      "run": "before",
+      "record": {
+        "container": "opscontrol-v16-5fb8fdc46ff1",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      },
+      "independently_absent": true
+    },
+    {
+      "run": "intermediate",
+      "record": {
+        "container": "opscontrol-v16-40e34adbf135",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      },
+      "independently_absent": true
+    },
+    {
+      "run": "after",
+      "record": {
+        "container": "opscontrol-v16-16bad251849f",
+        "container_removed": true,
+        "api_stopped": true,
+        "ui_stopped": true,
+        "private_fixtures_removed": true,
+        "scope": "Exact allocated processes, container and private directory only"
+      },
+      "independently_absent": true
+    },
+    {
+      "run": "configuration",
+      "record": {
+        "container": "opscontrol-v16-f750318f1922",
+        "removed": true,
+        "api_stopped": true,
+        "private_removed": true,
+        "storage": "tmpfs; not disk-crash durability certification"
+      },
+      "independently_absent": true
+    }
+  ],
+  "remaining_task_containers": 0,
+  "broad_cleanup": false,
+  "production_shared_uat_modified": false,
+  "closure_worktrees_modified": false
+}

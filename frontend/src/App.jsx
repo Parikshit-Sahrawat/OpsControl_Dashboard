@@ -25,7 +25,7 @@ import UnifiedOverview from "./pages/UnifiedOverview";
 import DomainMonitoring from "./pages/DomainMonitoring";
 import PipelineWorkspace from "./pipelines/PipelineWorkspace";
 import DomainReports from "./pages/DomainReports";
-import { canOpenSection, readSectionRoute, sectionHash } from "./navigation";
+import { canOpenSection, readSectionRoute, sectionHash, resourceSectionForDomain, readPageRoute, pageHash } from "./navigation";
 
 function mapDetail(execution, investigation, evidence) {
   const fmt = (value) =>
@@ -124,7 +124,7 @@ function mapDetail(execution, investigation, evidence) {
 export default function App({ user }) {
   const [active, setActive] = useState(
       () =>
-        readSectionRoute(window.location.hash, user)?.[0] ||
+        readSectionRoute(window.location.hash, user)?.[0] || readPageRoute(window.location.hash, user) ||
         (window.location.hash.startsWith("#/pipelines/") &&
         canNavigate(user, "Data Pipeline Monitoring")
           ? "Data Pipeline Monitoring"
@@ -338,6 +338,12 @@ export default function App({ user }) {
       ) {
         setActive("Data Pipeline Monitoring");
         setNavSection("");
+      } else if (readPageRoute(window.location.hash, user)) {
+        setActive(readPageRoute(window.location.hash, user));
+        setNavSection("");
+      } else if (window.location.hash.startsWith("#/resources/")) {
+        setActive("Unauthorized");
+        setNavSection("");
       } else if (!window.location.hash) {
         setActive(
           Object.keys(NAV_PERMISSIONS).find((page) =>
@@ -362,6 +368,7 @@ export default function App({ user }) {
     if (childHash) window.location.hash = childHash.slice(1);
     else if (page === "Data Pipeline Monitoring")
       window.location.hash = "/pipelines/inventory";
+    else if (pageHash(page)) window.location.hash = pageHash(page).slice(1);
     else if (window.location.hash)
       window.history.pushState(
         null,
@@ -416,7 +423,7 @@ export default function App({ user }) {
           setOrganizationIds(selected);
         }}
         active={active}
-        activeSection={navSection}
+        activeSection={navSection === "resources" ? resourceSectionForDomain(target.resourceDomain || new URLSearchParams(window.location.search).get("rm.domain") || "VM") : navSection}
         onChange={navigate}
         environment={environment}
         onEnvironmentChange={(value) => {

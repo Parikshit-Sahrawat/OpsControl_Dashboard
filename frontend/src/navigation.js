@@ -2,7 +2,17 @@ import { canNavigate, hasPermission } from "./permissions.js";
 
 // Only existing sections have addressable child hashes. Unknown or unauthorized
 // hashes never become a source of authorization or a new page identity.
+export const RESOURCE_DOMAIN_SECTIONS = { "compute-instances": "VM", "data-pipelines": "ETL", apis: "API" };
+export const resourceDomainForSection = section => Object.hasOwn(RESOURCE_DOMAIN_SECTIONS, section) ? RESOURCE_DOMAIN_SECTIONS[section] : undefined;
+export const resourceSectionForDomain = domain => Object.keys(RESOURCE_DOMAIN_SECTIONS).find(section => RESOURCE_DOMAIN_SECTIONS[section] === domain);
+export const PAGE_ROUTES = { "#/overview": "Overview", "#/operations/compute-health": "Compute Health", "#/operations/api-endpoints": "API Endpoint Monitoring", "#/alerts": "Alerts", "#/reports": "Reports" };
+export const readPageRoute = (hash, user) => canNavigate(user, PAGE_ROUTES[hash]) ? PAGE_ROUTES[hash] : null;
+export const pageHash = page => Object.keys(PAGE_ROUTES).find(hash => PAGE_ROUTES[hash] === page) || "";
+
 export const SECTION_ROUTES = {
+  "#/resources/compute-instances": ["Resource Management", "compute-instances"],
+  "#/resources/data-pipelines": ["Resource Management", "data-pipelines"],
+  "#/resources/apis": ["Resource Management", "apis"],
   "#/resources/organizations": ["Resource Management", "organizations"],
   "#/resources/data-resources": ["Resource Management", "resources"],
   "#/resources/templates": ["Resource Management", "templates"],
@@ -27,7 +37,7 @@ export function canOpenSection(user, page, section) {
     if (section === "delivery") return hasPermission(user, "templates.view");
     if (["parameters", "rules"].includes(section))
       return hasPermission(user, "templates.view") && hasPermission(user, "resources.view");
-    return section === "resources" && (hasPermission(user, "resources.view") || hasPermission(user, "resources.create"));
+    return (section === "resources" || Boolean(resourceDomainForSection(section))) && (hasPermission(user, "resources.view") || hasPermission(user, "resources.create"));
   }
   if (page === "Access Management")
     return section === "Access Audit"
