@@ -1,0 +1,884 @@
+{
+  "status": "PASS",
+  "checks": [
+    "admin VM inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "admin ETL inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "admin API inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "admin back/forward, keyboard navigation, expansion persistence, collapse/expand and separate Operations route",
+    "operator VM inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "operator ETL inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "operator API inventory: actual HTTP persistence, tenant/env filters, reload, active item/breadcrumb and three desktop sizes",
+    "operator back/forward, keyboard navigation, expansion persistence, collapse/expand and separate Operations route",
+    "Operator mutations denied for VM/ETL/API and foreign-customer inventory denied/empty",
+    "No resources.view: all three management links/direct routes withheld and real domain APIs403"
+  ],
+  "screenshots": [
+    "navigation-admin-VM-1920x1080.png",
+    "navigation-admin-VM-1440x900.png",
+    "navigation-admin-VM-1366x768.png",
+    "navigation-admin-ETL-1920x1080.png",
+    "navigation-admin-ETL-1440x900.png",
+    "navigation-admin-ETL-1366x768.png",
+    "navigation-admin-API-1920x1080.png",
+    "navigation-admin-API-1440x900.png",
+    "navigation-admin-API-1366x768.png",
+    "navigation-operator-VM-1920x1080.png",
+    "navigation-operator-VM-1440x900.png",
+    "navigation-operator-VM-1366x768.png",
+    "navigation-operator-ETL-1920x1080.png",
+    "navigation-operator-ETL-1440x900.png",
+    "navigation-operator-ETL-1366x768.png",
+    "navigation-operator-API-1920x1080.png",
+    "navigation-operator-API-1440x900.png",
+    "navigation-operator-API-1366x768.png"
+  ],
+  "trace": [
+    {
+      "phase": "login",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "login",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "seed owned inventory",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/etl/executions",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "admin history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator domains",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/etl/workflows",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/catalogue",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/data-pipelines/integrations",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/etl/executions",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    },
+    {
+      "phase": "operator history",
+      "path": "/api/v1/unified/resources",
+      "status": 200
+    },
+    {
+      "phase": "ungranted account",
+      "path": "/api/v1/auth/login",
+      "status": 200
+    },
+    {
+      "phase": "ungranted account",
+      "path": "/api/v1/auth/me",
+      "status": 200
+    },
+    {
+      "phase": "ungranted account",
+      "path": "/api/v1/auth/customer-scope",
+      "status": 200
+    }
+  ],
+  "fixture": "Owned PostgreSQL synthetic records;no provider activation",
+  "permissions": "Existing resources.view governs all resource inventories;no new domain permission catalogue"
+}

@@ -1,0 +1,42 @@
+{
+  "application_sha": "f39596548a45f48d3e24a2ea76b7584634d67a18",
+  "commands": [
+    {
+      "command": "npm --prefix frontend test",
+      "exit": 0,
+      "log": "raw/frontend-tests.log"
+    },
+    {
+      "command": "npm --prefix frontend run lint",
+      "exit": 0,
+      "log": "raw/frontend-lint.log"
+    },
+    {
+      "command": "npm --prefix frontend run build",
+      "exit": 0,
+      "log": "raw/frontend-build.log"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/policy.py",
+      "exit": 0,
+      "log": "raw/ci-policy.json"
+    },
+    {
+      "command": "backend/.venv/bin/python scripts/ci/e2e_alignment.py",
+      "exit": 0,
+      "log": "raw/e2e-integrity.json"
+    },
+    {
+      "command": "V16_EVIDENCE_DIR=/tmp/oc-ui001-final V16_TEST_TARGETS=tests.test_pipeline_ownership_v16 V16_API_ACCEPTANCE=1 V16_BROWSER_ACCEPTANCE=1 V16_SPRINT1_UI=1 V16_SCOPE_ACCEPTANCE=1 RESOURCE_NAV_ACCEPTANCE=1 PLAYWRIGHT_MODULE=/tmp/oc-closure-tools/node_modules/playwright/index.mjs PLAYWRIGHT_CHROMIUM_EXECUTABLE=/tmp/oc-etl003a-browsers/chromium-1194/chrome-linux/chrome backend/.venv/bin/python scripts/v16-acceptance.py",
+      "exit": 0,
+      "log": "after/console.log"
+    },
+    {
+      "command": "S01_EVIDENCE_DIR=/tmp/oc-ui001-config backend/.venv/bin/python scripts/sprint1-configuration-acceptance.py",
+      "exit": 0,
+      "log": "configuration/console.log"
+    }
+  ],
+  "before_command": "Same V16 command atclean PR89,without RESOURCE_NAV_ACCEPTANCE;output /tmp/oc-ui001-before",
+  "runtime": "PG17.11 task-specific tmpfs,real FastAPI and Vite/Chromium;not power-loss certification"
+}

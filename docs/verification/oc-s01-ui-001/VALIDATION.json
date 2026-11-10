@@ -1,0 +1,77 @@
+{
+  "status": "PASS_EXECUTED_SCOPE_PENDING_OWNER_REVIEW",
+  "baseline": "ecfdff2cf3f9d1a7b7b284e79a7f708d1baea8ce",
+  "implementation_and_tested_application": "f39596548a45f48d3e24a2ea76b7584634d67a18",
+  "ci_gate_commit": "60c0037b15e5ec681949727fd181a2f6aefdc22e",
+  "application_unchanged_by_ci_followup": true,
+  "branch": "fix/oc-s01-ui-001-resource-navigation",
+  "date": "2026-11-10",
+  "timezone": "Asia/Calcutta",
+  "frontend": {
+    "pass": 57,
+    "fail": 0,
+    "skip": 0,
+    "new": 2,
+    "retained": 55
+  },
+  "postgresql": {
+    "ownership_pass": 56,
+    "configuration_security_pass": 46,
+    "unique_test_ids": 102,
+    "fail": 0,
+    "skip": 0,
+    "version": "17.11",
+    "storage": "task-owned tmpfs;not disk/power-loss durability certification"
+  },
+  "browser_groups": {
+    "navigation_new": 10,
+    "resource_security_retained": 9,
+    "workspace_retained": 15,
+    "pipeline": "PASS;not separately enumerated"
+  },
+  "http_groups": 15,
+  "lint": "PASS",
+  "production_build": "PASS;existing bundle size warning retained",
+  "ci_policy": "PASS;all817prior records preserved,2newmandatorypositivecases",
+  "workflow_validation": "actionlint PASS across28;required13contextsunchanged",
+  "screenshots": {
+    "before_desktop": 6,
+    "after_domain_desktop": 18,
+    "viewports": [
+      "1920x1080",
+      "1440x900",
+      "1366x768"
+    ],
+    "accounts": [
+      "administrator",
+      "operator"
+    ]
+  },
+  "permission_boundary": "Existing resources.view gates all3managementdomains;no newpermissionsinvented;ungrantedrealAPI403forVM/ETL/API",
+  "failures_preserved": [
+    "Original directorytestexpectedonegenericdestination;updated approvedhierarchy assertion",
+    "Intermediate reverse-domain helper predicate failed;corrected implementation,not assertion",
+    "Document validator first ran before required VALIDATION.json/manifest existed;package completed before rerun"
+  ],
+  "intermediate_browser": "Success retained but not final acceptance because source was uncommitted/changing;finalruntime pinnedto f395965",
+  "code_change_scope": "Frontend navigation/state,existingbrowserhelperselectors,two unitcases,newrealbrowsercase,CItestinventory andone existingworkflowenvironmentflag",
+  "backend_schema_monitoring_agent_stylesheets": "UNCHANGED",
+  "formal_uat": "NOT PERFORMED",
+  "genuine_provider_certification": "NOT PERFORMED",
+  "owner_visual_acceptance": "PENDING",
+  "cleanup": "Four exacttaskfixturecontainers absent;privatefixtures/APIs/UI processes cleaned;no broadcleanup",
+  "release_gates": {
+    "SECURITY": "BLOCKED",
+    "CHK-001": "FAIL",
+    "CHK-002": "BLOCKED",
+    "RELEASE": "NO-GO",
+    "collector": "0.123.0 unchanged"
+  },
+  "ci": "TRIGGER ON PUSH/DRAFT PR \u2014 RESULT PENDING;Trigger-and-Exit,do notpoll",
+  "known_limitations": [
+    "No independent owner visualsignoff or comprehensive accessibility certification",
+    "Existing bundle-size warning is not remediated under navigation task",
+    "Image/licence/durability/providerrelease gates remain independently blocking"
+  ],
+  "documentation_whitespace_attempt": "Nodecoverage table trailing whitespace found on first stagedcheck;exactoriginalbytes retained compressed and readablelogcopiesnormalized;not a product/test failure"
+}
