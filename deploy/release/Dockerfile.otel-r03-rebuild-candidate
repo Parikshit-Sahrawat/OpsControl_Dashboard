@@ -1,0 +1,20 @@
+# SEC001-R03B: experimental FULL Contrib candidate with patched Go/x/crypto.
+# This must NOT replace the pinned production/legacy 0.123.0 Collector without
+# full transport/configuration, identity/replay and native-migration review.
+FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368 AS collector-build
+RUN apk add --no-cache git ca-certificates
+RUN git clone --depth 1 --branch v0.165.0 \
+      https://github.com/open-telemetry/opentelemetry-collector-releases.git /src/releases \
+    && test "$(git -C /src/releases rev-parse HEAD)" = "b9425f263115f328bc3bd4e65b825101b499f144"
+ENV GOTOOLCHAIN=local CGO_ENABLED=0 GOMEMLIMIT=5GiB GOFLAGS="-p=2"
+RUN go install go.opentelemetry.io/collector/cmd/builder@v0.165.0
+WORKDIR /src/releases/distributions/otelcol-contrib
+RUN builder --skip-compilation --config manifest.yaml
+RUN cd _build \
+    && go get golang.org/x/crypto@v0.58.1-0.20261009181718-2f1f834330b2 \
+    && go mod tidy \
+    && go build -trimpath -o /out/otelcol-contrib . \
+    && go version -m /out/otelcol-contrib > /out/otelcol-buildinfo.txt
+FROM otel/opentelemetry-collector-contrib:0.165.0@sha256:e40d61f10c9a617cca1ffd1be4d7e2b3a4b0f0001798ff07e58cabe82e618cea
+COPY --from=collector-build /out/otelcol-contrib /otelcol-contrib
+COPY --from=collector-build /out/otelcol-buildinfo.txt /otelcol-buildinfo.txt
