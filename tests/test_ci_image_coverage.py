@@ -9,8 +9,11 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts/ci"))
+import image_security_gate as gate
 spec = importlib.util.spec_from_file_location(
     "image_coverage", ROOT / "scripts/ci/image_coverage.py"
 )
@@ -120,8 +123,32 @@ class ImageCoverageTests(unittest.TestCase):
         result = coverage.coverage(self.images, self.source, self.root)
         self.assertEqual(len(result["images"]), 8)
         self.assertFalse(result["release_eligible"])
+        # Per-image evidence integrity must PASS without pretending security approval.
+        image_path = self.images / "image-evidence-backend-runtime"
+        self.assertEqual(
+            security.verify_evidence(image_path)["status"],
+            "PASS_BOUNDED_IMAGE_EVIDENCE",
+        )
+        # Mandatory centralized security evaluation sees EVERY failing role.
+        verdict = gate.evaluate(self.images, self.source, self.root)
+        self.assertEqual(verdict["status"], "BLOCKED")
+        self.assertEqual(verdict["blocked_roles"], 8)
+        self.assertFalse(verdict["release_approved"])
         with self.assertRaisesRegex(ValueError, "Unresolved High"):
-            security.validate(self.images / "image-evidence-backend-runtime")
+            security.validate(image_path)
+        # Even a clean vulnerability scan cannot manufacture legal approval.
+        self.mutate("grype.json", lambda x: x.update(matches=[]))
+        self.assertEqual(
+            security.verify_evidence(image_path)["status"],
+            "PASS_BOUNDED_IMAGE_EVIDENCE",
+        )
+        with self.assertRaisesRegex(ValueError, "License/NOTICE review pending"):
+            security.validate(image_path)
+        # Regression guard: the workflow must keep the central policy gate
+        # mandatory, independent of successful per-image evidence collection.
+        workflow = (self.root / ".github/workflows/security-artifacts.yml").read_text()
+        self.assertIn("scripts/ci/image_security_gate.py", workflow)
+        self.assertIn("name: image-security-policy", workflow)
 
     def test_missing_production_image_is_failure(self):
         shutil.rmtree(self.images / "image-evidence-production-frontend")
