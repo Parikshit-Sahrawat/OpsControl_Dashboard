@@ -115,23 +115,35 @@ jobs:
               docker volume rm "$volume" >/dev/null 2>&1 || true
             }
             trap cleanup EXIT
+            pg_sql_ready() {
+              for i in $(seq 1 60); do
+                # pg_isready alone can pass during PostgreSQL's temporary init
+                # server before the final post-init restart. Require real SQL.
+                if docker exec "$container" psql -U postgres -d postgres -Atqc 'SELECT 1' 2>/dev/null | grep -qx '1'; then return 0; fi
+                sleep 1
+              done
+              docker logs "$container"
+              return 1
+            }
             docker volume create "$volume"
             docker run -d --name "$container" -e POSTGRES_PASSWORD=sec001-disposable-only \
               -v "$volume:/var/lib/postgresql/data" "$image"
-            for i in $(seq 1 40); do
-              if docker exec "$container" pg_isready -U postgres >/dev/null 2>&1; then break; fi
+            pg_sql_ready
+            created=false
+            for i in $(seq 1 30); do
+              if docker exec "$container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 \
+                -c 'CREATE TABLE IF NOT EXISTS sec001_r03_probe(id integer PRIMARY KEY); INSERT INTO sec001_r03_probe VALUES (42) ON CONFLICT (id) DO NOTHING;' >/dev/null 2>&1; then
+                created=true
+                break
+              fi
               sleep 1
             done
-            docker exec "$container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 \
-              -c 'CREATE TABLE sec001_r03_probe(id integer PRIMARY KEY); INSERT INTO sec001_r03_probe VALUES (42);'
+            test "$created" = true
             docker stop "$container"
             docker rm "$container"
             docker run -d --name "$container" -e POSTGRES_PASSWORD=sec001-disposable-only \
               -v "$volume:/var/lib/postgresql/data" "$image"
-            for i in $(seq 1 40); do
-              if docker exec "$container" pg_isready -U postgres >/dev/null 2>&1; then break; fi
-              sleep 1
-            done
+            pg_sql_ready
             test "$(docker exec "$container" psql -U postgres -d postgres -At -c 'SELECT id FROM sec001_r03_probe')" = "42"
           elif [[ "$ROLE" == backend-alpine-* ]]; then
             image="sec001-r03-$ROLE:scan"
