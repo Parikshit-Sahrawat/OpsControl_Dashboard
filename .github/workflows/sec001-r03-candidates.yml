@@ -16,16 +16,34 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - role: backend-alpine-runtime-r03
+            file: backend/Dockerfile.alpine-r03-candidate
+            context: backend
+            target: runtime
+            image: ''
+            upstream: python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422
+          - role: backend-alpine-migration-r03
+            file: backend/Dockerfile.alpine-r03-candidate
+            context: backend
+            target: migration
+            image: ''
+            upstream: python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422
           - role: postgres-gosu-r03
             file: deploy/release/Dockerfile.postgres-gosu-r03-candidate
+            context: .
+            target: ''
             image: ''
             upstream: postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
           - role: otel-contrib-r03
             file: ''
+            context: .
+            target: ''
             image: otel/opentelemetry-collector-contrib:0.165.0@sha256:e40d61f10c9a617cca1ffd1be4d7e2b3a4b0f0001798ff07e58cabe82e618cea
             upstream: otel/opentelemetry-collector-contrib:0.165.0@sha256:e40d61f10c9a617cca1ffd1be4d7e2b3a4b0f0001798ff07e58cabe82e618cea
           - role: otel-contrib-r03-rebuilt
             file: deploy/release/Dockerfile.otel-r03-rebuild-candidate
+            context: .
+            target: ''
             image: ''
             upstream: otel/opentelemetry-collector-contrib:0.165.0@sha256:e40d61f10c9a617cca1ffd1be4d7e2b3a4b0f0001798ff07e58cabe82e618cea
     steps:
@@ -42,6 +60,8 @@ jobs:
         env:
           ROLE: ${{ matrix.role }}
           DOCKERFILE: ${{ matrix.file }}
+          CONTEXT: ${{ matrix.context }}
+          TARGET: ${{ matrix.target }}
           IMAGE: ${{ matrix.image }}
           UPSTREAM: ${{ matrix.upstream }}
         run: |
@@ -61,13 +81,20 @@ jobs:
           else
             if [[ "$ROLE" == "postgres-gosu-r03" ]]; then
               grep -Fq 'FROM postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac' "$DOCKERFILE"
+              grep -Fq 'FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368' "$DOCKERFILE"
+            elif [[ "$ROLE" == backend-alpine-* ]]; then
+              grep -Fq 'FROM python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422' "$DOCKERFILE"
+              test "$CONTEXT" = backend
+              [[ "$TARGET" == runtime || "$TARGET" == migration ]]
             else
               grep -Fq 'FROM otel/opentelemetry-collector-contrib:0.165.0@sha256:e40d61f10c9a617cca1ffd1be4d7e2b3a4b0f0001798ff07e58cabe82e618cea' "$DOCKERFILE"
+              grep -Fq 'FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368' "$DOCKERFILE"
             fi
-            grep -Fq 'FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368' "$DOCKERFILE"
+            target=()
+            if [[ -n "$TARGET" ]]; then target=(--target "$TARGET"); fi
             docker build --iidfile "$RUNNER_TEMP/candidate.id" \
               --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt \
-              -f "$DOCKERFILE" -t "sec001-r03-$ROLE:scan" .
+              "${target[@]}" -f "$DOCKERFILE" -t "sec001-r03-$ROLE:scan" "$CONTEXT"
           fi
           echo "Candidate config image id: $(cat "$RUNNER_TEMP/candidate.id")"
       - name: Smoke test isolated candidate (no production resources)
@@ -106,6 +133,41 @@ jobs:
               sleep 1
             done
             test "$(docker exec "$container" psql -U postgres -d postgres -At -c 'SELECT id FROM sec001_r03_probe')" = "42"
+          elif [[ "$ROLE" == backend-alpine-* ]]; then
+            image="sec001-r03-$ROLE:scan"
+            docker run --rm --entrypoint python "$image" -c '
+          import os, ssl, sqlite3, psycopg, sqlalchemy, fastapi, uvicorn
+          from app.main import app
+          from app.security.access_control import authorize_route
+          assert os.geteuid() == 10001
+          assert app.title
+          print("Alpine Python/psycopg ABI, non-root and FastAPI imports: PASS")
+          '
+            if [[ "$ROLE" == backend-alpine-migration-r03 ]]; then
+              docker run --rm --entrypoint python "$image" -c 'import alembic; from alembic.config import Config; assert Config("/app/alembic.ini").get_main_option("script_location")'
+            fi
+            # Isolated PG17 integration checks the actual psycopg musl runtime.
+            network="sec001-r03-net-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${ROLE}"
+            db="sec001-r03-db-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${ROLE}"
+            cleanup() {
+              docker rm -f "$db" >/dev/null 2>&1 || true
+              docker network rm "$network" >/dev/null 2>&1 || true
+            }
+            trap cleanup EXIT
+            docker network create "$network"
+            docker run -d --name "$db" --network "$network" \
+              -e POSTGRES_PASSWORD=sec001-disposable-only \
+              postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+            for i in $(seq 1 40); do
+              if docker exec "$db" pg_isready -U postgres >/dev/null 2>&1; then break; fi
+              sleep 1
+            done
+            docker run --rm --network "$network" --entrypoint python "$image" -c '
+          import psycopg
+          with psycopg.connect("postgresql://postgres:sec001-disposable-only@" + "'$db'" + ":5432/postgres") as conn:
+              assert conn.execute("SELECT 42").fetchone() == (42,)
+          print("Alpine psycopg to isolated PG17: PASS")
+          '
           else
             docker run --rm --entrypoint /otelcol-contrib "sec001-r03-$ROLE:scan" --version
           fi
