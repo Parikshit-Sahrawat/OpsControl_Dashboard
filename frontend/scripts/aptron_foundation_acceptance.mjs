@@ -17,10 +17,12 @@ export async function checkFoundation(page, fixture, out) {
   for (const [label, section] of [['Compute Instances', 'compute-instances'], ['Data Pipelines', 'data-pipelines'], ['APIs', 'apis']]) {
     await nav.getByRole('button', { name: label, exact: true }).click();
     await page.getByLabel('Resource Management component').waitFor();
+    await page.waitForFunction(expected => document.querySelector('.resource-section-select select')?.value === expected, section);
     assert.equal(await page.getByLabel('Resource Management component').inputValue(), section);
     assert.ok(page.url().endsWith('#/resources/' + section));
     await page.reload();
     await page.getByLabel('Resource Management component').waitFor();
+    await page.waitForFunction(expected => document.querySelector('.resource-section-select select')?.value === expected, section);
     assert.equal(await page.getByLabel('Resource Management component').inputValue(), section);
   }
   checks.push('Three domain inventory routes and reload retain the same guarded existing workspace');

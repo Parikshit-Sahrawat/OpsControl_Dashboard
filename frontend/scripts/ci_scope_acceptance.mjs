@@ -24,6 +24,7 @@ try {
   result.status='PASS';
 } catch(error) {
   result.status='FAIL';result.error=error.message;
+  await page.screenshot({path:join(process.env.V16_EVIDENCE_DIR,'ci-scope-failed.png'),fullPage:true});
   throw error;
 } finally {
   await writeFile(join(process.env.V16_EVIDENCE_DIR,'ci-scope.json'),JSON.stringify(result,null,2));
