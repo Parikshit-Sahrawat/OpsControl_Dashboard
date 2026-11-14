@@ -1,0 +1,93 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> opscontrol-frontend@0.1.0 test
+> node --experimental-test-coverage --test scripts/permissions.test.mjs scripts/pipelines.test.mjs scripts/explicit_scope.test.mjs scripts/navigation.test.mjs scripts/pagination.test.mjs scripts/monitoring_settings.test.mjs
+
+✔ owned browser clients explicitly select a UUID snapshot and empty stays empty (1.347733ms)
+✔ failed customer lookup cannot fall back to unrestricted operational requests (0.724731ms)
+✔ authorized active collector restores all editable settings and pinned selections without copying credentials (2.690249ms)
+✔ legacy default GET settings remain explicit and optional assertions empty (0.318115ms)
+✔ NOT_CONFIGURED does not fetch or restore a historical collector (0.302693ms)
+✔ DISABLED does not fetch or restore a historical collector (0.136911ms)
+✔ disabled collector resets controls; a collector belonging to another source fails closed (0.871856ms)
+✔ out-of-order source fetch cannot replace the selected source or organization (0.372675ms)
+✔ pending hydration preserves actual user edits and invalidates an in-flight preview (8.154068ms)
+✔ source switch cancels a real pending settings read and no stale state or error is applied (1.016318ms)
+✔ permission failures propagate instead of silently exposing an editable default configuration (0.434026ms)
+✔ saved selections are applied before controls become ready (0.906868ms)
+✔ excluded source aliases cannot become monitoring selections (0.418072ms)
+✔ VM and application types and generic telemetry terms stay supported (0.157741ms)
+✔ approved child hashes open only existing authorized sections (2.41082ms)
+✔ organizational access is an access view, never a customer grant (0.24568ms)
+✔ configuration sections have stable guarded routes (0.350343ms)
+✔ domain inventories retain explicit role guards and legacy bookmarks (1.570549ms)
+Pagination traversal, duplicate, mutation, incomplete and scope-change regressions passed
+✔ scripts/pagination.test.mjs (115.172837ms)
+✔ navigation and customer actions default deny (0.971442ms)
+✔ administrative pages use independent filters (0.179072ms)
+✔ revocation replaces UI affordances; platform capability is explicit (0.142709ms)
+✔ malformed cached customer preferences cannot corrupt selector state (1.105989ms)
+✔ retired navigation cannot be enabled by cached permissions (0.156159ms)
+✔ dedicated Incidents UI stays excluded even with legacy permission (0.098134ms)
+✖ six pages and seven existing incident states (2.6228ms)
+✔ pending retry remains nonterminal despite failed attempt (0.38293ms)
+✔ scheduler or process success cannot imply verified native success (0.174195ms)
+✔ scheduler retry and manual recovery preserve original failure (0.199072ms)
+✔ explicit customer scope never expands to ALL (0.34854ms)
+✔ old success or failure is invalidated on customer switch (0.449158ms)
+✔ native workload classifications remain distinct (0.880739ms)
+✔ persisted schedule authority and incomplete coverage stay explicit (0.207023ms)
+✔ review actions require category and verified completion (0.993995ms)
+✔ independent recovery confirmation and confirmed-only reversal (0.243557ms)
+✔ timestamps use explicit UTC (0.616082ms)
+✔ capabilities follow bound methods only (0.268864ms)
+✔ revision and authorization errors are explicit (0.229155ms)
+✔ resource restriction affordances do not become grants (0.782465ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 38
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 176.242314
+ℹ start of coverage report
+ℹ --------------------------------------------------------------------------
+ℹ file                      | line % | branch % | funcs % | uncovered lines
+ℹ --------------------------------------------------------------------------
+ℹ scripts                   |        |          |         | 
+ℹ  explicit_scope.mjs       | 100.00 |   100.00 |  100.00 | 
+ℹ src                       |        |          |         | 
+ℹ  excludedPlatforms.js     | 100.00 |    85.71 |  100.00 | 
+ℹ  foundationNavigation.js  | 100.00 |   100.00 |  100.00 | 
+ℹ  monitoringSettings.js    | 100.00 |    92.11 |   92.31 | 
+ℹ  navigation.js            |  98.04 |    87.50 |   83.33 | 41
+ℹ  pagination.js            | 100.00 |   100.00 |  100.00 | 
+ℹ  permissions.js           | 100.00 |    93.33 |  100.00 | 
+ℹ  pipelines                |        |          |         | 
+ℹ   contracts.js            |  95.65 |    80.28 |   77.78 | 87 121-126 151
+ℹ --------------------------------------------------------------------------
+ℹ all files                 |  97.97 |    88.79 |   87.88 | 
+ℹ --------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at scripts/pipelines.test.mjs:17:1
+✖ six pages and seven existing incident states (2.6228ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  5 !== 6
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/2e839df90367/OpsControl_Dashboard/frontend/scripts/pipelines.test.mjs:18:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 5,
+    expected: 6,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
