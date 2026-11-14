@@ -1,0 +1,25 @@
+# SEC001-R03C: isolated candidate ONLY; NOT selected for deployment or release.
+# Build from upstream gosu 1.19 source at the exact verified commit using
+# an official patched Go compiler, retaining PostgreSQL 17's entrypoint, UID
+# and persistent-data semantics. This does not certify DBA/HA compatibility.
+FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368 AS gosu-build
+RUN apk add --no-cache git ca-certificates
+RUN git clone --depth 1 --branch 1.19 https://github.com/tianon/gosu.git /src/gosu \
+    && test "$(git -C /src/gosu rev-parse HEAD)" = "6456aaa0f3c854d199d0f037f068eb97515b7513"
+WORKDIR /src/gosu
+ENV CGO_ENABLED=0 GOTOOLCHAIN=local GOOS=linux GOARCH=amd64
+RUN go mod download && go mod verify \
+    && go build -trimpath -buildvcs=false -ldflags="-w" -o /out/gosu . \
+    && /out/gosu --version \
+    && go version -m /out/gosu > /out/gosu-buildinfo.txt \
+    && cp LICENSE /out/LICENSE
+FROM postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache
+COPY --from=gosu-build /out/gosu /usr/local/bin/gosu
+COPY --from=gosu-build /out/gosu-buildinfo.txt /usr/share/doc/gosu-buildinfo.txt
+COPY --from=gosu-build /out/LICENSE /usr/share/licenses/gosu/LICENSE
+RUN chmod 0755 /usr/local/bin/gosu \
+    && gosu --version \
+    && gosu nobody true \
+    && gosu postgres id -u | grep -qx '70'

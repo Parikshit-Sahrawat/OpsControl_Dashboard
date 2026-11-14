@@ -1,0 +1,49 @@
+# SEC001-R03A isolated Alpine/musl backend qualification ONLY.
+# DO NOT select for release or deploy without owned-PostgreSQL, tenant/RBAC,
+# migration/rollback, platform/ABI and accountable license acceptance.
+# Exact official Python 3.12.16 Alpine 3.23 linux/amd64 image manifest.
+FROM python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422 AS dependencies
+WORKDIR /build
+COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    PIP_CERT=/run/secrets/proxy_ca python bootstrap_pip.py
+# Require verified musllinux/pure-Python wheels. No unqualified source build.
+# psutil 7.1.0 lacks a musllinux wheel in the verified index. Compile
+# exactly that pinned package in this disposable builder, not in runtime.
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    SSL_CERT_FILE=/run/secrets/proxy_ca apk add --no-cache build-base linux-headers
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    PIP_CERT=/run/secrets/proxy_ca python -m pip wheel \
+      --no-deps --no-binary=psutil --wheel-dir=/tmp/qualified-wheels psutil==7.1.0 \
+    && sha256sum /tmp/qualified-wheels/psutil-7.1.0-*.whl
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    PIP_CERT=/run/secrets/proxy_ca python -m pip install \
+      --no-cache-dir --only-binary=:all: --find-links=/tmp/qualified-wheels \
+      --prefix=/install -r requirements-providers.txt -r requirements-hosts.txt
+
+FROM python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422 AS runtime_base
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache \
+    && rm -rf /usr/local/lib/python3.12/site-packages/pip \
+      /usr/local/lib/python3.12/site-packages/pip-*.dist-info \
+      /usr/local/lib/python3.12/ensurepip /root/.cache/pip \
+    && rm -f /usr/local/bin/pip /usr/local/bin/pip3 /usr/local/bin/pip3.12
+COPY --from=dependencies /install/ /usr/local/
+WORKDIR /app
+COPY app/ app/
+COPY scripts/ scripts/
+RUN chmod -R a+rX /app/app /app/scripts
+USER 10001:10001
+
+FROM runtime_base AS runtime
+EXPOSE 8000
+CMD ["python", "-m", "scripts.run_api"]
+
+FROM runtime_base AS migration
+USER 0
+COPY migrations/ /app/migrations/
+COPY alembic.ini /app/alembic.ini
+RUN chmod -R a+rX /app/migrations /app/alembic.ini
+USER 10001:10001
+CMD ["python", "-m", "alembic", "upgrade", "head"]
