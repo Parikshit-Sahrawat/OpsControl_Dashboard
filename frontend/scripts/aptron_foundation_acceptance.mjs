@@ -27,6 +27,10 @@ export async function checkFoundation(page, fixture, out) {
   }
   checks.push('Three domain inventory routes and reload retain the same guarded existing workspace');
   await page.goto(ui + '/#/pipelines/incidents');
+  // Resource Management has independent filters; Operations requires an explicit customer.
+  await page.locator('.org-context-button').click();
+  await page.locator('.org-menu').getByRole('checkbox', { name: /Controlled HTTP A/ }).check();
+  await page.locator('.org-context-button').click();
   await page.getByRole('heading', { name: 'Pipeline Inventory', exact: true }).waitFor();
   assert.equal(await page.getByRole('link', { name: 'Incident Correlation', exact: true }).count(), 0);
   checks.push('Retired pipeline incident bookmark cannot reopen dedicated incident management');
