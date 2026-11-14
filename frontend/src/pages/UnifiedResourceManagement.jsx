@@ -310,7 +310,6 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
         <select value={area === "resources" ? resourceSectionForDomain(domain) : area} onChange={(event) => chooseArea(event.target.value)}>
           {canOpenSection(user, "Resource Management", "organizations") && <option value="organizations">Organizations</option>}
           {Object.entries({"compute-instances": "Compute Instances", "data-pipelines": "Data Pipelines", apis: "APIs"}).filter(([key]) => canOpenSection(user, "Resource Management", key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-          {canOpenSection(user, "Resource Management", "parameters") && <option value="parameters">Event Parameters</option>}
           {canOpenSection(user, "Resource Management", "collectors") && <option value="collectors">Collectors</option>}
           {canOpenSection(user, "Resource Management", "rules") && <option value="rules">Alert Rules</option>}
           {canOpenSection(user, "Resource Management", "delivery") && <option value="delivery">Notification Delivery</option>}
