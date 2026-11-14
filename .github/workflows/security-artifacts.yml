@@ -78,7 +78,7 @@ jobs:
             docker build --iidfile "$RUNNER_TEMP/image-result.id" --secret id=proxy_ca,src=/etc/ssl/certs/ca-certificates.crt "${args[@]}" -f "$DOCKERFILE" -t "opscontrol-ci-$ROLE:scan" "$CONTEXT"
           fi
           python scripts/ci/image_coverage.py bind --role "$ROLE" --image "opscontrol-ci-$ROLE:scan" --iid-file "$RUNNER_TEMP/image-result.id" --directory "$RUNNER_TEMP/image-evidence"
-      - name: CycloneDX, OS/transitive scan, licence inventory and provenance gate
+      - name: Collect CycloneDX, vulnerabilities, licences and verified provenance
         env:
           ROLE: ${{ matrix.role }}
         run: python scripts/ci/scan_image.py "opscontrol-ci-$ROLE:scan" "$RUNNER_TEMP/image-evidence" "$RUNNER_TEMP/scanners"
@@ -115,6 +115,17 @@ jobs:
         with:
           name: image-coverage-index
           path: ${{ runner.temp }}/image-coverage-result.json
+          if-no-files-found: error
+      # Image collection is not approval. This job remains mandatory and fails
+      # closed for ANY unresolved High/Critical/unknown or pending licence review.
+      - name: Enforce unchanged per-image security and licence policy
+        if: always()
+        run: python scripts/ci/image_security_gate.py --directory "$RUNNER_TEMP/image-coverage" --source "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/image-security-policy.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: image-security-policy
+          path: ${{ runner.temp }}/image-security-policy.json
           if-no-files-found: error
       - if: always()
         env:
