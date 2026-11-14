@@ -2,11 +2,15 @@
 # This must NOT replace the pinned production/legacy 0.123.0 Collector without
 # full transport/configuration, identity/replay and native-migration review.
 FROM golang:1.27.4-alpine3.23@sha256:7a93747afee80359e81dbe39c8a65037b147cada0262bf86f5b96dd06842b368 AS collector-build
-RUN apk add --no-cache git ca-certificates
+RUN apk add --no-cache git ca-certificates bash curl
 RUN git clone --depth 1 --branch v0.165.0 \
       https://github.com/open-telemetry/opentelemetry-collector-releases.git /src/releases \
     && test "$(git -C /src/releases rev-parse HEAD)" = "b9425f263115f328bc3bd4e65b825101b499f144"
 ENV GOTOOLCHAIN=local CGO_ENABLED=0 GOMEMLIMIT=5GiB GOFLAGS="-p=2"
+# Upstream full-contrib manifest requires source-generated OBI receiver files.
+# Official prepare script verifies the tagged release archive against SHA256SUMS.
+WORKDIR /src/releases
+RUN bash scripts/prepare-obi.sh otelcol-contrib
 RUN go install go.opentelemetry.io/collector/cmd/builder@v0.165.0
 WORKDIR /src/releases/distributions/otelcol-contrib
 RUN builder --skip-compilation --config manifest.yaml
