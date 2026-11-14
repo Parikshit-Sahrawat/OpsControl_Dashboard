@@ -180,88 +180,15 @@ jobs:
               assert conn.execute("SELECT 42").fetchone() == (42,)
           print("Alpine psycopg to isolated PG17: PASS")
           '
-            if [[ "$ROLE" == backend-alpine-migration-r03 ]]; then
-              # Full Alembic upgrade against this job's owned, disposable DB;
-              # never an existing customer/schema or production volume.
+            if [[ "$ROLE" == "backend-alpine-migration-r03" ]]; then
+              # Owned disposable database: real Alembic head upgrade; no customer data.
               docker run --rm --network "$network" \
-                -e "DATABASE_URL=postgresql+psycopg://postgres:sec001-disposable-only@${db}:5432/postgres" \
+                -e "DATABASE_URL=postgresql+psycopg://postgres:sec001-disposable-only@$db:5432/postgres" \
                 --entrypoint python "$image" -m alembic upgrade head
-              docker exec "$db" psql -U postgres -d postgres -Atqc \
-                "SELECT version_num FROM alembic_version" | grep -Eq '^[a-z0-9_]+
-            docker run --rm --entrypoint /otelcol-contrib "$image" --version
-            # Synthetic config validation only: no Agent promotion, secret,
-            # network listener, persisted checkpoint or production endpoint.
-            cat > "$RUNNER_TEMP/sec001-r03/collector-synthetic.yaml" <<'YAML'
-          receivers:
-            otlp:
-              protocols:
-                http:
-                  endpoint: 127.0.0.1:4318
-            filelog:
-              include: [/tmp/sec001-r03-synthetic.log]
-              start_at: beginning
-            hostmetrics:
-              collection_interval: 30s
-              scrapers:
-                cpu: {}
-                memory: {}
-          processors:
-            batch: {}
-          exporters:
-            debug: {}
-          service:
-            pipelines:
-              logs:
-                receivers: [filelog, otlp]
-                processors: [batch]
-                exporters: [debug]
-              metrics:
-                receivers: [hostmetrics, otlp]
-                processors: [batch]
-                exporters: [debug]
-          YAML
-            docker run --rm --network none \
-              -v "$RUNNER_TEMP/sec001-r03/collector-synthetic.yaml:/fixture/config.yaml:ro" \
-              --entrypoint /otelcol-contrib "$image" \
-              validate --config=/fixture/config.yaml
-            docker run --rm --network none --entrypoint /otelcol-contrib "$image" \
-              components > "$RUNNER_TEMP/sec001-r03/collector-components.txt"
-            for part in filelog hostmetrics otlp debug; do
-              grep -q "$part" "$RUNNER_TEMP/sec001-r03/collector-components.txt"
-            done
-          fi
-      - name: Generate full exact-image SBOM and Grype evidence
-        env:
-          ROLE: ${{ matrix.role }}
-          UPSTREAM: ${{ matrix.upstream }}
-        run: |
-          set -euo pipefail
-          evidence="$RUNNER_TEMP/sec001-r03"
-          image_id="$(cat "$RUNNER_TEMP/candidate.id")"
-          export GRYPE_DB_CACHE_DIR="$RUNNER_TEMP/sec001-r03/grype-cache"
-          "$RUNNER_TEMP/scanners/syft" "docker:$image_id" \
-            -o "cyclonedx-json=$evidence/sbom.cdx.json" \
-            -o "syft-json=$evidence/sbom.syft.json"
-          "$RUNNER_TEMP/scanners/grype" db update
-          "$RUNNER_TEMP/scanners/grype" db status -o json > "$evidence/grype-db.json"
-          "$RUNNER_TEMP/scanners/grype" "sbom:$evidence/sbom.syft.json" -o json > "$evidence/grype.json"
-          python scripts/ci/r03_candidate_report.py \
-            --role "$ROLE" --image-id-file "$RUNNER_TEMP/candidate.id" \
-            --directory "$evidence" --source "$(git rev-parse HEAD)" \
-            --expected-upstream "$UPSTREAM"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: sec001-r03-candidate-${{ matrix.role }}
-          path: |
-            ${{ runner.temp }}/sec001-r03
-            !${{ runner.temp }}/sec001-r03/grype-cache/**
-          if-no-files-found: warn
-
-              table_count="$(docker exec "$db" psql -U postgres -d postgres -Atqc \
-                "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='public'")"
-              test "$table_count" -gt 5
-              echo "Alpine full Alembic upgrade created $table_count application tables"
+              docker exec "$db" psql -U postgres -d postgres -Atqc "SELECT version_num FROM alembic_version" | grep -q .
+              count="$(docker exec "$db" psql -U postgres -d postgres -Atqc "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")"
+              test "$count" -gt 5
+              echo "Alpine Alembic migration created $count application tables"
             fi
           else
             image="sec001-r03-$ROLE:scan"
