@@ -29,7 +29,7 @@ try {
   await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
   phase = "open onboarding";
   await page
-    .getByRole("button", { name: "Data Sources / Resources", exact: true })
+    .getByRole("button", { name: "Compute Instances", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Create Compute Instance", exact: true })

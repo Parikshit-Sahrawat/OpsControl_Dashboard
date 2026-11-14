@@ -1,0 +1,4 @@
+# Isolated PostgreSQL17 candidate. Preserve official entrypoint/init/UID behavior.
+# No production volume or live Compose configuration is changed by this image.
+FROM postgres:17-alpine@sha256:3540c0362c809df084ffac0ae69fe794515f9de92692f02178bcdce0ef0302ac
+RUN --mount=type=secret,id=proxy_ca,required=true SSL_CERT_FILE=/run/secrets/proxy_ca apk upgrade --no-cache

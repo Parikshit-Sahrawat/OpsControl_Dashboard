@@ -91,7 +91,7 @@ const navigate = async (page, tab) => {
     .getByRole("button", {
       name:
         {
-          "Resource Management": "Data Sources / Resources",
+          "Resource Management": "Compute Instances",
           "Access Management": "Employees",
         }[tab] || tab,
       exact: true,

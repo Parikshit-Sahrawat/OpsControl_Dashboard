@@ -34,7 +34,7 @@ const nav = async (name) =>
     .getByRole("button", {
       name:
         {
-          "Resource Management": "Data Sources / Resources",
+          "Resource Management": "Compute Instances",
           "Access Management": "Employees",
         }[name] || name,
       exact: true,
@@ -84,7 +84,7 @@ try {
   await page.getByRole("navigation", { name: "Primary navigation" }).waitFor();
   assert.equal(
     await page.getByRole("button", { name: "Incidents", exact: true }).count(),
-    1,
+    0,
   );
   await page.getByRole("button", { name: "Global environments" }).click();
   await page.getByRole("group", { name: "Environment filter" }).getByRole("checkbox", { name: "QA" }).check();
@@ -359,7 +359,6 @@ try {
     "Compute Health",
     "API Endpoint Monitoring",
     "Alerts",
-    "Incidents",
     "Reports",
   ]) {
     await nav(name);
@@ -370,36 +369,16 @@ try {
       })
       .waitFor();
   }
-  await nav("Incidents");
-  await page.getByRole("button", { name: "Global environments" }).click();
-  await page.getByRole("button", { name: "All environments", exact: true }).click();
-  await page
-    .getByLabel("Incident status", { exact: true })
-    .selectOption("OPEN");
-  const incidentRow = page.locator("tbody tr").first();
-  await incidentRow.getByRole("button").click();
-  const incidentId = await incidentRow.locator("small").innerText();
-  await page
-    .getByRole("heading", { name: "Recovery validation", exact: true })
-    .waitFor();
-  const ack = response(
-    "/api/v1/native-incidents/" + incidentId + "/transition",
-    "POST",
-  );
-  await page
-    .getByRole("button", { name: "Acknowledge incident", exact: true })
-    .click();
-  assert.equal((await ack).status(), 200);
-  const note = "Controlled browser investigation " + Date.now();
-  await page.getByLabel("Investigation note", { exact: true }).fill(note);
-  const savedNote = response(
-    "/api/v1/native-incidents/" + incidentId + "/notes",
-    "POST",
-  );
-  await page.getByRole("button", { name: "Add note", exact: true }).click();
-  assert.equal((await savedNote).status(), 200);
-  await page.getByText(note, { exact: true }).waitFor();
-  await shot("arch001-native-incident-investigation.png");
+  // Dedicated incident UI is excluded; preserve the historical API independently.
+  assert.equal(await page.getByRole("button", { name: "Incidents", exact: true }).count(), 0);
+  const historicalToken = await page.evaluate(() => sessionStorage.getItem("opscontrol.sessionToken"));
+  const historicalHeaders = { Authorization: "Bearer " + historicalToken, "X-OpsControl-Customers": fixture.vm_resource.organization_id };
+  const historical = await page.request.get(process.env.ARCH001_API_URL + "/api/v1/native-incidents?organization_id=" + fixture.vm_resource.organization_id, { headers: historicalHeaders });
+  assert.equal(historical.status(), 200);
+  const historicalRows = await historical.json();
+  assert.ok(historicalRows.total > 0, "Removing the UI must preserve recorded historical incidents");
+  // Existing scripts.native_incidents_acceptance_probe already verifies transition,
+  // note, recovery and cross-customer denial before this browser script is invoked.
   await page
     .getByRole("button", { name: "Notifications", exact: true })
     .click();
@@ -477,7 +456,9 @@ try {
         status: "PASS",
         origin: "ACTUAL_PLAYWRIGHT_AND_OWNED_FASTAPI",
         screenshots,
-        incident_ui: true,
+        incident_ui: false,
+        excluded_incident_ui: true,
+        historical_incident_api: true,
         customer_grants_ui: false,
         rbac: true,
         resource_selector_independent: true,

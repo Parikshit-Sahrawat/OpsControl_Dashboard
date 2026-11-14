@@ -1,36 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { canNavigate, administrationPage } from "../permissions";
-import { canOpenSection } from "../navigation";
+import { administrationPage } from "../permissions";
+import { FOUNDATION_SECTIONS as sections, visibleFoundationSections } from "../foundationNavigation.js";
 import ThemeToggle from "./ThemeToggle";
 import InAppNotifications from "./InAppNotifications";
 import NavIcon from "./NavIcon";
 import PersonalWorkspace from "./PersonalWorkspace";
 
-// Labels describe the UI; keys remain the existing page identities and guards.
-const sections = [
-  { name: "Overview", items: [["Overview", "Dashboard"]] },
-  { name: "Operations", items: [
-    ["Data Pipeline Monitoring", "Data Pipelines"],
-    ["Compute Health", "Compute Instances"],
-    ["API Endpoint Monitoring", "API Endpoints"],
-    ["Alerts", "Alerts"], ["Incidents", "Incidents"], ["Reports", "Reports"],
-  ] },
-  { name: "Resource Management", items: [
-    ["Resource Management", "Organizations", "organizations"],
-    ["Resource Management", "Data Sources / Resources", "resources"],
-    ["Resource Management", "Collectors", "collectors"],
-    ["Resource Management", "Event Parameters", "parameters"],
-    ["Resource Management", "Alert Rules", "rules"],
-    ["Resource Management", "Notification Delivery", "delivery"],
-  ] },
-  { name: "Access Management", items: [
-    ["Access Management", "Departments", "Departments"],
-    ["Access Management", "Employees", "Employees"],
-    ["Access Management", "Roles & Permissions", "Roles & Permissions"],
-    ["Access Management", "Organisational Access", "Organisational Access"],
-    ["Access Management", "Access Audit", "Access Audit"],
-  ] },
-];
 const environmentChoices = ["PROD", "QA", "TEST", "DEV", "SANDBOX"];
 
 export default function TopNav({
@@ -154,8 +129,8 @@ export default function TopNav({
             </svg>
           </span>
           <span>
-            OpsControl
-            <span className="brand-caption">MONITORING WORKSPACE</span>
+            APTron
+            <span className="brand-caption">OBSERVABILITY</span>
           </span>
         </button>
       </div>
@@ -188,9 +163,8 @@ export default function TopNav({
         >
           {collapsed ? "+" : "×"}
         </button>
-        {sections.map((section) => {
-          const visible = section.items.filter(([key, , child]) =>
-            child ? canOpenSection(user, key, child) : canNavigate(user, key));
+        {visibleFoundationSections(user).map((section) => {
+          const visible = section.items;
           return visible.length ? (
             <div className="nav-group" role="group" aria-label={section.name} key={section.name}>
               <button

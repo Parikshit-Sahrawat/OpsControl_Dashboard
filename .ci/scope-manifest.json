@@ -3235,15 +3235,15 @@
       "disposition": "RUN",
       "reason": "Existing Node test remains mandatory"
     },
-    "frontend/scripts/permissions.test.mjs::native incident visibility requires its backend permission": {
-      "classification": "UNKNOWN",
+    "frontend/scripts/permissions.test.mjs::dedicated Incidents UI stays excluded even with legacy permission": {
+      "classification": "EXCLUDED_NEGATIVE",
       "disposition": "RUN",
-      "reason": "Existing Node test remains mandatory"
+      "reason": "APTron dedicated incident UI excluded; retain historical API/state contracts and mandatory execution"
     },
-    "frontend/scripts/pipelines.test.mjs::six pages and seven existing incident states": {
-      "classification": "UNKNOWN",
+    "frontend/scripts/pipelines.test.mjs::five operational pages retain seven historical incident states": {
+      "classification": "EXCLUDED_NEGATIVE",
       "disposition": "RUN",
-      "reason": "Existing Node test remains mandatory"
+      "reason": "APTron dedicated incident UI excluded; retain historical API/state contracts and mandatory execution"
     },
     "frontend/scripts/pipelines.test.mjs::pending retry remains nonterminal despite failed attempt": {
       "classification": "UNKNOWN",
@@ -3309,6 +3309,66 @@
       "classification": "UNKNOWN",
       "disposition": "RUN",
       "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/navigation.test.mjs::domain inventories retain explicit role guards and legacy bookmarks": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "Mandatory APTron role filtering, existing inventory authorization, legacy bookmark preservation and excluded incident entry checks"
+    },
+    "tests/test_ci_image_coverage.py::test_repository_workflow_has_all_six_production_and_seven_legacy_roles": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_complete_fixture_coverage_does_not_clear_vulnerability_or_legal_gates": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_missing_production_image_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_swapped_role_artifact_is_failure_even_if_hashes_are_consistent": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_each_sbom_or_scan_digest_mismatch_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_stale_source_commit_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_wrong_build_target_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_tampered_or_missing_binding_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_workflow_matrix_drift_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_missing_required_scan_report_is_failure": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
+    },
+    "tests/test_ci_image_coverage.py::test_empty_catalog_cannot_satisfy_coverage": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "SEC001-R01 exact image role/source/build/SBOM digest/coverage enforcement; fixtures cannot certify runtime or waive vulnerabilities/legal gates"
     }
   }
 }

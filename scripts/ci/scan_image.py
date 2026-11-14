@@ -27,6 +27,22 @@ def scan(image, output, tools):
         subprocess.check_output(["docker", "image", "inspect", image], text=True)
     )[0]
     identity = info["Id"]
+    from image_coverage import contract, material
+
+    binding_path = output / "image-binding.json"
+    binding = json.loads(binding_path.read_text())
+    role = os.environ["ROLE"]
+    row = next(r for r in contract() if r["role"] == role)
+    source_sha = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+    ).strip()
+    if (
+        binding["image_id"] != identity
+        or binding["role"] != role
+        or binding["source_sha"] != source_sha
+        or binding["build_input"] != material(row)
+    ):
+        raise ValueError("Build/pull identity changed before immutable scan")
     capture(
         [
             str(tools / "syft"),
@@ -78,6 +94,7 @@ def scan(image, output, tools):
         )
     )
     files = [
+        "image-binding.json",
         "sbom.cdx.json",
         "sbom.syft.json",
         "grype.json",
@@ -89,6 +106,7 @@ def scan(image, output, tools):
         json.dumps(
             {
                 "schema": 1,
+                "scan_role": role,
                 "image_id": identity,
                 "architecture": info["Architecture"],
                 "source_sha": subprocess.check_output(
@@ -104,9 +122,12 @@ def scan(image, output, tools):
             indent=2,
         )
     )
-    from security_manifest import validate
+    # Collection/identity integrity is required for every image in PR CI.
+    # The unchanged zero-severe and accountable licence policy is evaluated
+    # separately across ALL eight roles by the mandatory security-sbom job.
+    from security_manifest import verify_evidence
 
-    print(json.dumps(validate(output), indent=2))
+    print(json.dumps(verify_evidence(output), indent=2))
 
 
 if __name__ == "__main__":

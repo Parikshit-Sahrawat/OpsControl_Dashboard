@@ -131,28 +131,48 @@ try {
   checks.push(
     "Schedule paging and server filter keep unknown/incomplete fixture coverage out of NO_RUN",
   );
-  await route("incidents");
-  await page
-    .getByRole("region", { name: "Native incident correlation" })
-    .getByRole("button")
-    .first()
-    .click();
-  const incident = page.getByRole("dialog", {
-    name: "Incident correlation details",
-    exact: true,
+  // The dedicated incident UI is deliberately retired; keep its underlying
+  // historical pagination and tenant security assertions as real HTTP checks.
+  const operationalNav = page.getByRole("navigation", {
+    name: "Pipeline operational pages",
   });
-  await incident.getByRole("button", { name: "Audit", exact: true }).click();
-  await incident
-    .getByRole("navigation", { name: "Activities pagination" })
-    .getByRole("button", { name: "Next page" })
-    .click();
-  await incident
-    .getByRole("navigation", { name: "Activities pagination" })
-    .getByText(/21–40 of/)
-    .waitFor();
-  await shot("incident-activity");
+  assert.equal(
+    await operationalNav.getByRole("link", { name: "Incident Correlation", exact: true }).count(),
+    0,
+  );
+  const token = await page.evaluate(() =>
+    sessionStorage.getItem("opscontrol.sessionToken"),
+  );
+  const headers = {
+    Authorization: "Bearer " + token,
+    "X-OpsControl-Customers": f.organization,
+  };
+  const path = process.env.V16_API_URL + "/api/v1/native-incidents/" + f.incident;
+  const pageOne = await page.request.get(path + "/activities?limit=20&offset=0", { headers });
+  const pageTwo = await page.request.get(path + "/activities?limit=20&offset=20", { headers });
+  assert.equal(pageOne.status(), 200, await pageOne.text());
+  assert.equal(pageTwo.status(), 200, await pageTwo.text());
+  const first = await pageOne.json();
+  const second = await pageTwo.json();
+  assert.ok(first.total >= 205);
+  assert.equal(second.total, first.total);
+  assert.equal(first.items.length, 20);
+  assert.equal(second.items.length, 20);
+  assert.equal(
+    new Set([...first.items, ...second.items].map((a) => a.id)).size,
+    40,
+    "Activity pages must have distinct stable identities",
+  );
+  const incident = await page.request.get(path, { headers });
+  assert.equal(incident.status(), 200, await incident.text());
+  assert.equal((await incident.json()).organization_id, f.organization);
+  const denied = await page.request.get(path + "/activities?limit=20", {
+    headers: { ...headers, "X-OpsControl-Customers": "00000000-0000-4000-8000-000000000001" },
+  });
+  assert.ok([403, 404].includes(denied.status()));
+  await shot("incident-activity-api-preserved");
   checks.push(
-    "Native incident activity history pages without alternate lifecycle definitions",
+    "Retired incident UI absent; authenticated historical activity pagination remains stable and other customer scopes are denied",
   );
   assert.deepEqual(errors, []);
   await writeFile(

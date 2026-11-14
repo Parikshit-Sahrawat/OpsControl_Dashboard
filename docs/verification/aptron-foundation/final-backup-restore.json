@@ -1,0 +1,1222 @@
+{
+  "status": "PASS",
+  "postgres_version": "17.12",
+  "before": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 18,
+        "sha256": "1051a6cf20c1c04d34360b08115a4930b3eb45c2b4edba0d79425d7c563b360a"
+      },
+      "access_boundary_decisions": {
+        "rows": 1,
+        "sha256": "2740fba81615aa1177ac482ea8ddf739a2318e2773ee575a1ce4c7a9d729dd34"
+      },
+      "access_sessions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "6b9db2957c6e249797f86fc3a47f22859321a3fbc1ec5ebd89e9aa34bb27c978"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "688cf816a9a831e0334bda0ac25e1e961788e8d8eba2ed9d334b9bc244e6d686"
+      },
+      "auth_throttle_buckets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 41,
+        "sha256": "dc5450c3871abfbf579980152044e9e40f48bc9458f5ee67ced0b33db16d09ff"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 47,
+        "sha256": "b43fe5aeb579003e118777faa977ad5df8743ed509776419b0f4ca8689ea6183"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 21,
+        "sha256": "720443f1ca2aaa5ee40db6f2c6a2f56026f2f79738d4f9702122d4480399b6d9"
+      },
+      "data_sources": {
+        "rows": 52,
+        "sha256": "5d8b787464a85c1743df85357982eb717de4f686ce033abb1690ab1855210275"
+      },
+      "department_memberships": {
+        "rows": 4,
+        "sha256": "4902c5265871d555c3c7945abd6700e0e7219ff19a4cf5d66ca041bcc487efbd"
+      },
+      "department_role_assignments": {
+        "rows": 4,
+        "sha256": "224f9b63676c2891fbf89d242efacb709c462c33626141442299105b62a07ffa"
+      },
+      "departments": {
+        "rows": 7,
+        "sha256": "6f55199ffd95a9ddca3ae3599fd0dfe75eea71dacfb0b01e99cffd3c5a6e737b"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 52,
+        "sha256": "cafc6378e652135632e342afd181a06f403f54d1cce2a8ab8811d54325337805"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 35,
+        "sha256": "5bb147d3e150dee02569a701fb871cc8eeb23ce1f392b4fbe8a84035b32860f4"
+      },
+      "job_orders": {
+        "rows": 45,
+        "sha256": "e2872c53f58a7d8c5dfa23b72e18a5f813221fc492ec0c207fe8cd02e66de5b3"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 51,
+        "sha256": "d67caa5537c2f3df8092fe1e58534fa5225b498790f6ab901bda65985bfa78a1"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_templates": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 20,
+        "sha256": "33f6d60e7866301ddd247c8617a700692b5c05545bf312b56e75d9d7d45fa762"
+      },
+      "native_incident_failures": {
+        "rows": 23,
+        "sha256": "f30803a6101936c67503a917b65ad9664ed8f21a2ec8baa192c970d727ca28de"
+      },
+      "native_recovery_assessments": {
+        "rows": 7,
+        "sha256": "9a2445ce3a3a9bc98b6e819bc2d87fb5706686af46cc769df5c02104ecdb3a39"
+      },
+      "normalized_telemetry_events": {
+        "rows": 38,
+        "sha256": "49f8741391c5c6d4ad4e944df3d8e54e533f17b8bf685b39b73dbc04b42266c7"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 20,
+        "sha256": "b40aeabb5308fe0c0c7a7f5e2a25e476f261ed50783eec207553875d19d732c3"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organizations": {
+        "rows": 102,
+        "sha256": "ef31cdceaef29485b3fe93deae03a6f386a811132cf8afae7f42149075136a99"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 37,
+        "sha256": "2eecc568ff27f3d91b0aec4c426f24cbceaf360516ee6cbf1dce2cb05d986fc7"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 2,
+        "sha256": "a0cb89373be09c02163c8558e67ba5deab91900674784795b63f9734aaf452d7"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 34,
+        "sha256": "aff517056b70e9bfc13f7661f9f106e4de54ec6abd9a2f9e3177841c56a71ded"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 82,
+        "sha256": "a698c9f2b3b81a5c90a05245aa4a51f8875588cf0a75760bec7c2b824889f8f6"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 10,
+        "sha256": "9458a705d9325bcc891f752454d8ed8178a4d9a77d18f1bc6b162c0649ac57c1"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 44,
+        "sha256": "6858185ed28be95e0f31e9c50134c9f3758d8f53c94959285d4d41477d3ef8cb"
+      },
+      "pipeline_capabilities": {
+        "rows": 105,
+        "sha256": "90805321c46cdab41cb24d13a371afe03d5a8fa9561e0cba4238880328320b03"
+      },
+      "pipeline_connections": {
+        "rows": 105,
+        "sha256": "c09cf46b85664f04fea8a92af89681dc192654fbbb94d4438f11a1e87ed5deaf"
+      },
+      "pipeline_evidence": {
+        "rows": 142,
+        "sha256": "203b1a25357e3259fc8c12d9e1c9929bf1d29eae4b2fdd6d10113670799c9b5d"
+      },
+      "pipeline_holds": {
+        "rows": 10,
+        "sha256": "c9c136d833fb6fd87ba1f501d4271bb61923d4070cfa6b1dc8417eb6129e53d7"
+      },
+      "pipeline_integrations": {
+        "rows": 105,
+        "sha256": "82d338635acd9a8acd41b5b45db440d3eb3a0060ab24a952c40a8faf18fcc059"
+      },
+      "pipeline_jobs": {
+        "rows": 50,
+        "sha256": "d8af102134ecefa1ec98ae93dc4085cef6b8442e93a08a8ec95ea85fb0ec0889"
+      },
+      "pipeline_methods": {
+        "rows": 104,
+        "sha256": "cf5e40564af2351e4646046e248e1921bdd94dd3697c9d7d501bb740fff8adcc"
+      },
+      "pipeline_operations": {
+        "rows": 345,
+        "sha256": "92cf69c8310be56660e38d82b0809625cabbb3ba8071fca3c8a5d66c474b4ded"
+      },
+      "pipeline_sources": {
+        "rows": 98,
+        "sha256": "15d5fcb7d39adcf82ef50f9f2f273113ddcbcc2def29958d331652a2ec447894"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 1,
+        "sha256": "dcbd830def1972d44b9c4b1dab319c8d2ca4a26828e172750667524e55c5a2db"
+      },
+      "resource_dependencies": {
+        "rows": 1,
+        "sha256": "1065576dfad72da4313d7ee7ed72c8480905f171c29785167a486d4bc65e3f89"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 184,
+        "sha256": "b8e4851e2c253522c7c8fc694680da525b840057d3c1413828c180b025a24263"
+      },
+      "roles": {
+        "rows": 31,
+        "sha256": "01031b3bf7e080133ec66f68795918fc12a833b044c610dfbcd5e39b84a8fec6"
+      },
+      "security_audit_events": {
+        "rows": 418,
+        "sha256": "7994f694f84a976d107b330d17a15077d439463df265e987580dcefd21d08c47"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 20,
+        "sha256": "b04a508d4b0b92753d8e39ebe838275a50873e69796696d7fc160a26efd92d8f"
+      },
+      "users": {
+        "rows": 141,
+        "sha256": "ffaf04dd09754ea013329346269e6394032c8304d0d1286a78df01ddd6b4477a"
+      },
+      "vms": {
+        "rows": 1,
+        "sha256": "e436f8d4448a1254b33fce0f833a9eb937936213b950105f1c430144435cee9c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "d7091ad98c179a77ee217b4591e366fa219a00a162ab04d5b28be0a21b95742d"
+  },
+  "restored": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 18,
+        "sha256": "1051a6cf20c1c04d34360b08115a4930b3eb45c2b4edba0d79425d7c563b360a"
+      },
+      "access_boundary_decisions": {
+        "rows": 1,
+        "sha256": "2740fba81615aa1177ac482ea8ddf739a2318e2773ee575a1ce4c7a9d729dd34"
+      },
+      "access_sessions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "6b9db2957c6e249797f86fc3a47f22859321a3fbc1ec5ebd89e9aa34bb27c978"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "688cf816a9a831e0334bda0ac25e1e961788e8d8eba2ed9d334b9bc244e6d686"
+      },
+      "auth_throttle_buckets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 41,
+        "sha256": "dc5450c3871abfbf579980152044e9e40f48bc9458f5ee67ced0b33db16d09ff"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 47,
+        "sha256": "b43fe5aeb579003e118777faa977ad5df8743ed509776419b0f4ca8689ea6183"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 21,
+        "sha256": "720443f1ca2aaa5ee40db6f2c6a2f56026f2f79738d4f9702122d4480399b6d9"
+      },
+      "data_sources": {
+        "rows": 52,
+        "sha256": "5d8b787464a85c1743df85357982eb717de4f686ce033abb1690ab1855210275"
+      },
+      "department_memberships": {
+        "rows": 4,
+        "sha256": "4902c5265871d555c3c7945abd6700e0e7219ff19a4cf5d66ca041bcc487efbd"
+      },
+      "department_role_assignments": {
+        "rows": 4,
+        "sha256": "224f9b63676c2891fbf89d242efacb709c462c33626141442299105b62a07ffa"
+      },
+      "departments": {
+        "rows": 7,
+        "sha256": "6f55199ffd95a9ddca3ae3599fd0dfe75eea71dacfb0b01e99cffd3c5a6e737b"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 52,
+        "sha256": "cafc6378e652135632e342afd181a06f403f54d1cce2a8ab8811d54325337805"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 35,
+        "sha256": "5bb147d3e150dee02569a701fb871cc8eeb23ce1f392b4fbe8a84035b32860f4"
+      },
+      "job_orders": {
+        "rows": 45,
+        "sha256": "e2872c53f58a7d8c5dfa23b72e18a5f813221fc492ec0c207fe8cd02e66de5b3"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 51,
+        "sha256": "d67caa5537c2f3df8092fe1e58534fa5225b498790f6ab901bda65985bfa78a1"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_templates": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 20,
+        "sha256": "33f6d60e7866301ddd247c8617a700692b5c05545bf312b56e75d9d7d45fa762"
+      },
+      "native_incident_failures": {
+        "rows": 23,
+        "sha256": "f30803a6101936c67503a917b65ad9664ed8f21a2ec8baa192c970d727ca28de"
+      },
+      "native_recovery_assessments": {
+        "rows": 7,
+        "sha256": "9a2445ce3a3a9bc98b6e819bc2d87fb5706686af46cc769df5c02104ecdb3a39"
+      },
+      "normalized_telemetry_events": {
+        "rows": 38,
+        "sha256": "49f8741391c5c6d4ad4e944df3d8e54e533f17b8bf685b39b73dbc04b42266c7"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 20,
+        "sha256": "b40aeabb5308fe0c0c7a7f5e2a25e476f261ed50783eec207553875d19d732c3"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organizations": {
+        "rows": 102,
+        "sha256": "ef31cdceaef29485b3fe93deae03a6f386a811132cf8afae7f42149075136a99"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 37,
+        "sha256": "2eecc568ff27f3d91b0aec4c426f24cbceaf360516ee6cbf1dce2cb05d986fc7"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 2,
+        "sha256": "a0cb89373be09c02163c8558e67ba5deab91900674784795b63f9734aaf452d7"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 34,
+        "sha256": "aff517056b70e9bfc13f7661f9f106e4de54ec6abd9a2f9e3177841c56a71ded"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 82,
+        "sha256": "a698c9f2b3b81a5c90a05245aa4a51f8875588cf0a75760bec7c2b824889f8f6"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 10,
+        "sha256": "9458a705d9325bcc891f752454d8ed8178a4d9a77d18f1bc6b162c0649ac57c1"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 44,
+        "sha256": "6858185ed28be95e0f31e9c50134c9f3758d8f53c94959285d4d41477d3ef8cb"
+      },
+      "pipeline_capabilities": {
+        "rows": 105,
+        "sha256": "90805321c46cdab41cb24d13a371afe03d5a8fa9561e0cba4238880328320b03"
+      },
+      "pipeline_connections": {
+        "rows": 105,
+        "sha256": "c09cf46b85664f04fea8a92af89681dc192654fbbb94d4438f11a1e87ed5deaf"
+      },
+      "pipeline_evidence": {
+        "rows": 142,
+        "sha256": "203b1a25357e3259fc8c12d9e1c9929bf1d29eae4b2fdd6d10113670799c9b5d"
+      },
+      "pipeline_holds": {
+        "rows": 10,
+        "sha256": "c9c136d833fb6fd87ba1f501d4271bb61923d4070cfa6b1dc8417eb6129e53d7"
+      },
+      "pipeline_integrations": {
+        "rows": 105,
+        "sha256": "82d338635acd9a8acd41b5b45db440d3eb3a0060ab24a952c40a8faf18fcc059"
+      },
+      "pipeline_jobs": {
+        "rows": 50,
+        "sha256": "d8af102134ecefa1ec98ae93dc4085cef6b8442e93a08a8ec95ea85fb0ec0889"
+      },
+      "pipeline_methods": {
+        "rows": 104,
+        "sha256": "cf5e40564af2351e4646046e248e1921bdd94dd3697c9d7d501bb740fff8adcc"
+      },
+      "pipeline_operations": {
+        "rows": 345,
+        "sha256": "92cf69c8310be56660e38d82b0809625cabbb3ba8071fca3c8a5d66c474b4ded"
+      },
+      "pipeline_sources": {
+        "rows": 98,
+        "sha256": "15d5fcb7d39adcf82ef50f9f2f273113ddcbcc2def29958d331652a2ec447894"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 1,
+        "sha256": "dcbd830def1972d44b9c4b1dab319c8d2ca4a26828e172750667524e55c5a2db"
+      },
+      "resource_dependencies": {
+        "rows": 1,
+        "sha256": "1065576dfad72da4313d7ee7ed72c8480905f171c29785167a486d4bc65e3f89"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 184,
+        "sha256": "b8e4851e2c253522c7c8fc694680da525b840057d3c1413828c180b025a24263"
+      },
+      "roles": {
+        "rows": 31,
+        "sha256": "01031b3bf7e080133ec66f68795918fc12a833b044c610dfbcd5e39b84a8fec6"
+      },
+      "security_audit_events": {
+        "rows": 418,
+        "sha256": "7994f694f84a976d107b330d17a15077d439463df265e987580dcefd21d08c47"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 20,
+        "sha256": "b04a508d4b0b92753d8e39ebe838275a50873e69796696d7fc160a26efd92d8f"
+      },
+      "users": {
+        "rows": 141,
+        "sha256": "ffaf04dd09754ea013329346269e6394032c8304d0d1286a78df01ddd6b4477a"
+      },
+      "vms": {
+        "rows": 1,
+        "sha256": "e436f8d4448a1254b33fce0f833a9eb937936213b950105f1c430144435cee9c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "d7091ad98c179a77ee217b4591e366fa219a00a162ab04d5b28be0a21b95742d"
+  },
+  "original_after": {
+    "tables": {
+      "access_boundaries": {
+        "rows": 18,
+        "sha256": "1051a6cf20c1c04d34360b08115a4930b3eb45c2b4edba0d79425d7c563b360a"
+      },
+      "access_boundary_decisions": {
+        "rows": 1,
+        "sha256": "2740fba81615aa1177ac482ea8ddf739a2318e2773ee575a1ce4c7a9d729dd34"
+      },
+      "access_sessions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_deployments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "agent_registrations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alembic_version": {
+        "rows": 1,
+        "sha256": "6b9db2957c6e249797f86fc3a47f22859321a3fbc1ec5ebd89e9aa34bb27c978"
+      },
+      "alert_incident_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_notification_deliveries": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_rules": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "alert_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "applications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "attribute_registry_versions": {
+        "rows": 1,
+        "sha256": "688cf816a9a831e0334bda0ac25e1e961788e8d8eba2ed9d334b9bc244e6d686"
+      },
+      "auth_throttle_buckets": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_config_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_methods": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collector_runs": {
+        "rows": 41,
+        "sha256": "dc5450c3871abfbf579980152044e9e40f48bc9458f5ee67ced0b33db16d09ff"
+      },
+      "collector_runtime_states": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "collectors": {
+        "rows": 47,
+        "sha256": "b43fe5aeb579003e118777faa977ad5df8743ed509776419b0f4ca8689ea6183"
+      },
+      "correlation_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "correlation_records": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "customer_access_grants": {
+        "rows": 21,
+        "sha256": "720443f1ca2aaa5ee40db6f2c6a2f56026f2f79738d4f9702122d4480399b6d9"
+      },
+      "data_sources": {
+        "rows": 52,
+        "sha256": "5d8b787464a85c1743df85357982eb717de4f686ce033abb1690ab1855210275"
+      },
+      "department_memberships": {
+        "rows": 4,
+        "sha256": "4902c5265871d555c3c7945abd6700e0e7219ff19a4cf5d66ca041bcc487efbd"
+      },
+      "department_role_assignments": {
+        "rows": 4,
+        "sha256": "224f9b63676c2891fbf89d242efacb709c462c33626141442299105b62a07ffa"
+      },
+      "departments": {
+        "rows": 7,
+        "sha256": "6f55199ffd95a9ddca3ae3599fd0dfe75eea71dacfb0b01e99cffd3c5a6e737b"
+      },
+      "event_correlation_groups": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_correlation_members": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "expected_execution_windows": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "in_app_notifications": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "incident_activities": {
+        "rows": 52,
+        "sha256": "cafc6378e652135632e342afd181a06f403f54d1cce2a8ab8811d54325337805"
+      },
+      "infrastructure_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigation_transitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "investigations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "job_order_histories": {
+        "rows": 35,
+        "sha256": "5bb147d3e150dee02569a701fb871cc8eeb23ce1f392b4fbe8a84035b32860f4"
+      },
+      "job_orders": {
+        "rows": 45,
+        "sha256": "e2872c53f58a7d8c5dfa23b72e18a5f813221fc492ec0c207fe8cd02e66de5b3"
+      },
+      "job_step_executions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_association_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_cluster_associations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "kubernetes_clusters": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_events": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "log_sources": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "managed_agents": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_definitions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metric_samples": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_resources": {
+        "rows": 51,
+        "sha256": "d67caa5537c2f3df8092fe1e58534fa5225b498790f6ab901bda65985bfa78a1"
+      },
+      "monitoring_rule_bindings": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_catalogs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_rule_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_attachments": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_template_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "monitoring_templates": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_alerts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_incident_details": {
+        "rows": 20,
+        "sha256": "33f6d60e7866301ddd247c8617a700692b5c05545bf312b56e75d9d7d45fa762"
+      },
+      "native_incident_failures": {
+        "rows": 23,
+        "sha256": "f30803a6101936c67503a917b65ad9664ed8f21a2ec8baa192c970d727ca28de"
+      },
+      "native_recovery_assessments": {
+        "rows": 7,
+        "sha256": "9a2445ce3a3a9bc98b6e819bc2d87fb5706686af46cc769df5c02104ecdb3a39"
+      },
+      "normalized_telemetry_events": {
+        "rows": 38,
+        "sha256": "49f8741391c5c6d4ad4e944df3d8e54e533f17b8bf685b39b73dbc04b42266c7"
+      },
+      "notification_destinations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "operational_incidents": {
+        "rows": 20,
+        "sha256": "b40aeabb5308fe0c0c7a7f5e2a25e476f261ed50783eec207553875d19d732c3"
+      },
+      "operator_notes": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organization_memberships": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "organizations": {
+        "rows": 102,
+        "sha256": "ef31cdceaef29485b3fe93deae03a6f386a811132cf8afae7f42149075136a99"
+      },
+      "pentaho_attempt_revisions": {
+        "rows": 37,
+        "sha256": "2eecc568ff27f3d91b0aec4c426f24cbceaf360516ee6cbf1dce2cb05d986fc7"
+      },
+      "pentaho_evidence_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_evidence_reviews": {
+        "rows": 2,
+        "sha256": "a0cb89373be09c02163c8558e67ba5deab91900674784795b63f9734aaf452d7"
+      },
+      "pentaho_execution_attempts": {
+        "rows": 34,
+        "sha256": "aff517056b70e9bfc13f7661f9f106e4de54ec6abd9a2f9e3177841c56a71ded"
+      },
+      "pentaho_historical_notices": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_instances": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_native_aliases": {
+        "rows": 82,
+        "sha256": "a698c9f2b3b81a5c90a05245aa4a51f8875588cf0a75760bec7c2b824889f8f6"
+      },
+      "pentaho_recovery_decisions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pentaho_recovery_links": {
+        "rows": 10,
+        "sha256": "9458a705d9325bcc891f752454d8ed8178a4d9a77d18f1bc6b162c0649ac57c1"
+      },
+      "permissions": {
+        "rows": 32,
+        "sha256": "225c5844018769622ffa9c9dbf5b9d5456fd1ac0db6dda292df7a2c808e90b61"
+      },
+      "pipeline_associations": {
+        "rows": 44,
+        "sha256": "6858185ed28be95e0f31e9c50134c9f3758d8f53c94959285d4d41477d3ef8cb"
+      },
+      "pipeline_capabilities": {
+        "rows": 105,
+        "sha256": "90805321c46cdab41cb24d13a371afe03d5a8fa9561e0cba4238880328320b03"
+      },
+      "pipeline_connections": {
+        "rows": 105,
+        "sha256": "c09cf46b85664f04fea8a92af89681dc192654fbbb94d4438f11a1e87ed5deaf"
+      },
+      "pipeline_evidence": {
+        "rows": 142,
+        "sha256": "203b1a25357e3259fc8c12d9e1c9929bf1d29eae4b2fdd6d10113670799c9b5d"
+      },
+      "pipeline_holds": {
+        "rows": 10,
+        "sha256": "c9c136d833fb6fd87ba1f501d4271bb61923d4070cfa6b1dc8417eb6129e53d7"
+      },
+      "pipeline_integrations": {
+        "rows": 105,
+        "sha256": "82d338635acd9a8acd41b5b45db440d3eb3a0060ab24a952c40a8faf18fcc059"
+      },
+      "pipeline_jobs": {
+        "rows": 50,
+        "sha256": "d8af102134ecefa1ec98ae93dc4085cef6b8442e93a08a8ec95ea85fb0ec0889"
+      },
+      "pipeline_methods": {
+        "rows": 104,
+        "sha256": "cf5e40564af2351e4646046e248e1921bdd94dd3697c9d7d501bb740fff8adcc"
+      },
+      "pipeline_operations": {
+        "rows": 345,
+        "sha256": "92cf69c8310be56660e38d82b0809625cabbb3ba8071fca3c8a5d66c474b4ded"
+      },
+      "pipeline_sources": {
+        "rows": 98,
+        "sha256": "15d5fcb7d39adcf82ef50f9f2f273113ddcbcc2def29958d331652a2ec447894"
+      },
+      "remote_probe_evidence": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "remote_probe_jobs": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_conditions": {
+        "rows": 1,
+        "sha256": "dcbd830def1972d44b9c4b1dab319c8d2ca4a26828e172750667524e55c5a2db"
+      },
+      "resource_dependencies": {
+        "rows": 1,
+        "sha256": "1065576dfad72da4313d7ee7ed72c8480905f171c29785167a486d4bc65e3f89"
+      },
+      "resource_drafts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_mapping_issues": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_activations": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "resource_parameter_versions": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "role_permissions": {
+        "rows": 184,
+        "sha256": "b8e4851e2c253522c7c8fc694680da525b840057d3c1413828c180b025a24263"
+      },
+      "roles": {
+        "rows": 31,
+        "sha256": "01031b3bf7e080133ec66f68795918fc12a833b044c610dfbcd5e39b84a8fec6"
+      },
+      "security_audit_events": {
+        "rows": 418,
+        "sha256": "7994f694f84a976d107b330d17a15077d439463df265e987580dcefd21d08c47"
+      },
+      "service_providers": {
+        "rows": 1,
+        "sha256": "8203881fd4bc3e9090d52470d3f42581328e32cc118568929aa236e98c1590ca"
+      },
+      "telemetry_receipts": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "trace_spans": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "user_role_assignments": {
+        "rows": 20,
+        "sha256": "b04a508d4b0b92753d8e39ebe838275a50873e69796696d7fc160a26efd92d8f"
+      },
+      "users": {
+        "rows": 141,
+        "sha256": "ffaf04dd09754ea013329346269e6394032c8304d0d1286a78df01ddd6b4477a"
+      },
+      "vms": {
+        "rows": 1,
+        "sha256": "e436f8d4448a1254b33fce0f833a9eb937936213b950105f1c430144435cee9c"
+      },
+      "worker_identities": {
+        "rows": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "schema_sha256": "d7091ad98c179a77ee217b4591e366fa219a00a162ab04d5b28be0a21b95742d"
+  },
+  "dump_sha256": "029da86b4e443b4e71c4a95cefb17653695ea31f4dc6def0c8f74ea6061c5845",
+  "dump_retention": "Synthetic credential-bearing dump erased after verification; hashes only retained",
+  "isolated_restore_database_removed": true
+}

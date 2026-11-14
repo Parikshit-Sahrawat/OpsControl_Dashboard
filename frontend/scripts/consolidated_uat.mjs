@@ -40,7 +40,7 @@ const nav = async (name) => {
     await page.getByRole("button", { name: "Open navigation" }).click();
   await page
     .getByRole("navigation", { name: "Primary navigation" })
-    .getByRole("button", { name: name === "Resource Management" ? "Data Sources / Resources" : name === "Access Management" ? "Employees" : name, exact: true })
+    .getByRole("button", { name: name === "Resource Management" ? "Compute Instances" : name === "Access Management" ? "Employees" : name, exact: true })
     .click();
 };
 const waitFor = async (fn, label = "condition") => {

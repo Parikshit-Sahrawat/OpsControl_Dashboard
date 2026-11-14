@@ -45,7 +45,7 @@ try {
   await desktop.getByRole('button',{name:'Dark theme'}).click();
   check(await desktop.evaluate(()=>document.documentElement.dataset.theme)==='dark','dark theme applies to the application');
   const nav=desktop.getByRole('navigation',{name:'Primary navigation'});
-  await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).waitFor();
+  await nav.getByRole('button',{name:'Compute Instances',exact:true}).waitFor();
   await desktop.getByRole('heading',{name:'Dashboard',exact:true}).waitFor();
   check(await desktop.getByRole('heading',{name:'Running Data Pipeline Executions'}).count()===1,'dashboard includes scoped running execution evidence');
   const environmentButton=desktop.getByRole('button',{name:'Global environments'});
@@ -63,10 +63,10 @@ try {
   const resourceGroup=nav.getByRole('button',{name:'Resource Management navigation'});
   await resourceGroup.click();
   check(await resourceGroup.getAttribute('aria-expanded')==='false','resource navigation group collapses');
-  check(await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).count()===0,'collapsed group removes child controls from keyboard navigation');
+  check(await nav.getByRole('button',{name:'Compute Instances',exact:true}).count()===0,'collapsed group removes child controls from keyboard navigation');
   await resourceGroup.click();
   check(await resourceGroup.getAttribute('aria-expanded')==='true','resource navigation group expands');
-  await nav.getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+  await nav.getByRole('button',{name:'Compute Instances',exact:true}).click();
   await desktop.getByRole('tab',{name:'Data Pipelines'}).click();
   check(await desktop.getByRole('button',{name:'Create Legacy Data Pipeline'}).count()===1,'legacy pipeline creation remains in Resource Management header');
   check(await desktop.getByRole('button',{name:'Create Data Pipeline',exact:true}).count()===0,'native integration editor has no duplicate create action');
@@ -226,7 +226,7 @@ try {
   await mobile.getByRole('button',{name:'Open navigation'}).click();
   check(await mobile.getByRole('navigation',{name:'Primary navigation'}).isVisible(),'mobile navigation opens');
   if (evidenceDir) await mobile.screenshot({path:path.join(evidenceDir,'navigation-r2-mobile-menu.png'),fullPage:true});
-  await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Data Sources / Resources',exact:true}).click();
+  await mobile.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Compute Instances',exact:true}).click();
   check(await mobile.getByRole('navigation',{name:'Primary navigation'}).isHidden(),'mobile navigation closes after selection');
   check(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'mobile document has no horizontal overflow');
   await mobile.getByRole('button',{name:'Create Compute Instance'}).click();

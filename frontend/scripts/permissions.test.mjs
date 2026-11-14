@@ -67,10 +67,10 @@ test("retired navigation cannot be enabled by cached permissions", () => {
   );
 });
 
-test("native incident visibility requires its backend permission", () => {
+test("dedicated Incidents UI stays excluded even with legacy permission", () => {
   assert.equal(canNavigate({}, "Incidents"), false);
   assert.equal(
     canNavigate({ permissions: ["incidents.view"] }, "Incidents"),
-    true,
+    false,
   );
 });

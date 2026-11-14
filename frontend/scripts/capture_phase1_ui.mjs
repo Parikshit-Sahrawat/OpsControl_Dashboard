@@ -39,7 +39,7 @@ const categories = [
   ["API Endpoint Monitoring", "04-apis"],
   ["Alerts", "05-alerts"],
   ["Reports", "06-reports"],
-  ["Data Sources / Resources", "10-resource-management"],
+  ["Compute Instances", "10-resource-management"],
 ];
 const navigationLabel = {
   Overview: "Overview",
@@ -123,7 +123,7 @@ try {
         throw new Error("Standalone Event Parameters option unexpectedly present");
       }
     }
-    await selector.selectOption({ label: section === "Data Resources" ? "Data Sources / Resources" : section });
+    await selector.selectOption({ label: section === "Data Resources" ? "Compute Instances" : section });
     if (!domains.length)
       await capture(
         "Resource Management / " + section,

@@ -6,7 +6,8 @@ import useDialogFocus from "./useDialogFocus";
 import ThemeToggle from "./ThemeToggle";
 import "./personal-workspace.css";
 
-const docs = "https://github.com/Parikshit-Sahrawat/OpsControl_Dashboard/blob/main/docs/";
+// Guides ship with the frontend, including subpath and offline deployments.
+const docs = import.meta.env.BASE_URL + "docs/";
 
 export default function PersonalWorkspace({ kind, user, onClose }) {
   const ref = useRef(null);
@@ -64,20 +65,30 @@ export default function PersonalWorkspace({ kind, user, onClose }) {
           {saved && <p role="status">Notification preference saved.</p>}
         </> : <p>Notification preferences require alerts viewing permission. Ask your access administrator if you need this access.</p>}
       </> : <>
-        <p>Use Resource Management to configure resources. Operations pages display collected evidence and monitoring health.</p>
+        <p><strong>Self-hosted, customer-managed:</strong> APTron provides monitoring software, secure defaults and deployment guidance. Your organization chooses and operates the hosts, storage, network, account, keys, backups and any cloud provider. APTron does not bill customer infrastructure.</p>
         <h3>Getting started</h3>
-        <ol><li>Select an authorized customer organization.</li><li>Register a supported compute instance, API endpoint or data pipeline in Resource Management.</li><li>Configure templates and independent collection methods. Keep credentials in approved secret references.</li><li>Validate readiness and review actual telemetry before activation. Registration alone does not prove monitoring health.</li></ol>
-        <h3>Operator guides</h3>
-        <ul>
-          <li><a href={docs + "AGENT_INSTALL_OPERATOR.md"} target="_blank" rel="noopener noreferrer">Windows and Linux agent installation</a></li>
-          <li><a href={docs + "ARCH_001_V16.md"} target="_blank" rel="noopener noreferrer">Collection methods, supported capabilities and readiness</a></li>
-          <li><a href={docs + "verification/dev052/PENTAHO_CERTIFICATION.md"} target="_blank" rel="noopener noreferrer">Pentaho compatibility and read-only certification prerequisites</a></li>
-        </ul>
+        <ol>
+          <li>Select an authorized customer organization and environment.</li>
+          <li>Choose an approved self-hosted Linux deployment location: on-premises, private cloud, or your own AWS, Azure, GCP or other supported account.</li>
+          <li>Register supported resources, configure collection methods, and supply only your organization's approved credential references.</li>
+          <li>Validate actual monitoring evidence before activation; a single-host demonstration is not high availability.</li>
+        </ol>
+        <h3>Documentation</h3>
+        <p>Deployment environments, Docker Compose, candidate three-host HA, backup, rollback and recovery responsibilities.</p>
+        <ul><li><a href={docs + "self-hosted/DEPLOYMENT_GUIDE.md"} target="_blank" rel="noopener noreferrer">Self-hosted deployment guide — on-premises, AWS, Azure, GCP and private cloud</a></li></ul>
+        <h3>Learning</h3>
+        <p>Learn infrastructure sizing, cloud versus on-premises cost drivers, customer-managed billing and the use of editable illustrative value sheets. Estimates are not quotes.</p>
+        <ul><li><a href={docs + "self-hosted/COST_PLANNING.md"} target="_blank" rel="noopener noreferrer">Infrastructure cost planning and example assumptions</a></li></ul>
+        <h3>Training</h3>
+        <p>Role-based self-paced exercises for collectors, jobs/workflows, API and Synthetic Monitoring, privacy-safe RUM, security and recovery. Use synthetic data.</p>
+        <ul><li><a href={docs + "self-hosted/TRAINING_GUIDE.md"} target="_blank" rel="noopener noreferrer">Self-hosted operations and security learning paths</a></li></ul>
         <h3>Frequently asked questions</h3>
-        <details><summary>Why is my resource not visible?</summary><p>Check your explicit organization selection, environment filters and assigned permissions. An empty authorized view does not establish that a resource was deleted.</p></details>
-        <details><summary>Why is activation blocked?</summary><p>Read the reported readiness diagnostics. Missing telemetry, unsupported collection methods, expired credentials or unverified native capabilities must be resolved. Do not bypass readiness checks.</p></details>
-        <details><summary>Can OpsControl run or change Pentaho jobs?</summary><p>Pentaho monitoring is read-only. Job execution, scheduler changes and provider administration remain outside the monitoring workflow.</p></details>
-        <details><summary>What should I include in a support report?</summary><p>Include the resource ID, timestamp, application revision, expected and actual behavior, and redacted diagnostics. Never include passwords, tokens or customer payloads.</p></details>
+        <details><summary>Does APTron require AWS, Azure or GCP?</summary><p>No. Cloud hosting is optional. Install on customer-operated on-premises Linux infrastructure, private cloud, or a supported customer-owned provider environment. No APTron-operated account is required.</p></details>
+        <details><summary>Who pays for servers, cloud resources and backups?</summary><p>Your organization chooses and pays the infrastructure provider. APTron supplies software and documentation; it does not invoice for the provider's infrastructure. Sample cost values are illustrative, not live prices.</p></details>
+        <details><summary>Is an APTron installation legally compliant or certified?</summary><p>Not automatically. The product targets industry technical controls including OWASP ASVS, NIST CSF and CIS Controls. APTron is responsible for secure software and security fixes; customers determine applicable data residency, privacy and operational obligations.</p></details>
+        <details><summary>Why is activation blocked?</summary><p>Review readiness diagnostics and actual telemetry. Resolve missing evidence, unsupported collection methods or expired credentials before activation.</p></details>
+        <details><summary>Why is my resource not visible?</summary><p>Check the explicit organization, environment filters, assigned permissions and fresh telemetry evidence. An empty authorized view does not mean a resource was deleted.</p></details>
+        <details><summary>What should I include in a support report?</summary><p>Include resource ID, timestamp, application revision, expected and actual behavior, and redacted diagnostics. Never share passwords, secrets, customer payloads or cloud billing credentials.</p></details>
       </>}
     </section>
   </div>, document.body);

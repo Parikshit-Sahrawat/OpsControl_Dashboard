@@ -1,3 +1,4 @@
+import { resourceDomainForSection, resourceSectionForDomain } from "../navigation.js";
 import { setAdministrativeCustomers } from "../auth";
 import { useEffect, useRef, useState } from "react";
 import { control, control as scopedControl, downloadPackage } from "../controlPlane";
@@ -114,8 +115,8 @@ function Modal({ title, onClose, children, focus = true, workspace = false }) {
   );
 }
 export default function UnifiedResourceManagement({ user, onCustomerCreated, section, onSectionChange }) {
-  const [area, setArea] = useState(section || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
-    [domain, setDomain] = useState("VM"),
+  const [area, setArea] = useState((resourceDomainForSection(section) ? "resources" : section) || ["resources", "organizations", "delivery"].find((candidate) => canOpenSection(user, "Resource Management", candidate)) || "resources"),
+    [domain, setDomain] = useState(resourceDomainForSection(section) || "VM"),
     [customers, setCustomers] = useState([]),
     [customer, setCustomer] = useState(""),
     [environment, setEnvironment] = useState(""),
@@ -150,8 +151,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   const allowed = (key, org) => hasPermission(user, key, org);
   const refresh = () => setReload((v) => v + 1);
   useEffect(() => {
-    if (["organizations", "resources", "collectors", "parameters", "rules", "delivery"].includes(section)) {
-      setArea(section);
+    if (canOpenSection(user, "Resource Management", section)) {
+      setArea(resourceDomainForSection(section) ? "resources" : section);
+      if (resourceDomainForSection(section)) setDomain(resourceDomainForSection(section));
       setSelected(null);
       setCollector(null);
       setSource(null);
@@ -161,7 +163,8 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
   }, [section]);
   const chooseArea = (next) => {
     if (!canOpenSection(user, "Resource Management", next)) return;
-    setArea(next);
+    setArea(resourceDomainForSection(next) ? "resources" : next);
+    if (resourceDomainForSection(next)) setDomain(resourceDomainForSection(next));
     if (next !== "collectors") setCollectorTarget(null);
     setSelected(null);
     setSearch("");
@@ -304,9 +307,9 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
       </div>}
       <label className="resource-section-select">
         <span>Resource Management component</span>
-        <select value={area} onChange={(event) => chooseArea(event.target.value)}>
+        <select value={area === "resources" ? resourceSectionForDomain(domain) : area} onChange={(event) => chooseArea(event.target.value)}>
           {canOpenSection(user, "Resource Management", "organizations") && <option value="organizations">Organizations</option>}
-          {canOpenSection(user, "Resource Management", "resources") && <option value="resources">Data Sources / Resources</option>}
+          {Object.entries({"compute-instances": "Compute Instances", "data-pipelines": "Data Pipelines", apis: "APIs"}).filter(([key]) => canOpenSection(user, "Resource Management", key)).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
           {canOpenSection(user, "Resource Management", "collectors") && <option value="collectors">Collectors</option>}
           {canOpenSection(user, "Resource Management", "rules") && <option value="rules">Alert Rules</option>}
           {canOpenSection(user, "Resource Management", "delivery") && <option value="delivery">Notification Delivery</option>}
@@ -331,7 +334,7 @@ export default function UnifiedResourceManagement({ user, onCustomerCreated, sec
               key={v}
               role="tab"
               aria-selected={domain === v}
-              onClick={() => setDomain(v)}
+              onClick={() => { setDomain(v); if (area === "resources") onSectionChange?.(resourceSectionForDomain(v)); }}
             >
               {area === "resources"
                 ? domainNames[v]

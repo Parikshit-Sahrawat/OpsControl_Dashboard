@@ -7,7 +7,7 @@ export default function useDialogFocus(ref, open, onClose) {
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement;
-    const controls = () => [...(ref.current?.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]') || [])].filter(node => node.getClientRects().length);
+    const controls = () => [...(ref.current?.querySelectorAll('button:not(:disabled),summary,a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]') || [])].filter(node => node.getClientRects().length);
     controls()[0]?.focus();
     const keyboard = event => {
       if (event.key === "Escape") { event.preventDefault(); close.current?.(); }
