@@ -122,9 +122,12 @@ def scan(image, output, tools):
             indent=2,
         )
     )
-    from security_manifest import validate
+    # Collection/identity integrity is required for every image in PR CI.
+    # The unchanged zero-severe and accountable licence policy is evaluated
+    # separately across ALL eight roles by the mandatory security-sbom job.
+    from security_manifest import verify_evidence
 
-    print(json.dumps(validate(output), indent=2))
+    print(json.dumps(verify_evidence(output), indent=2))
 
 
 if __name__ == "__main__":
