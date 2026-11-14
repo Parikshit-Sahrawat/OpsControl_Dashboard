@@ -145,6 +145,22 @@ jobs:
               -v "$volume:/var/lib/postgresql/data" "$image"
             pg_sql_ready
             test "$(docker exec "$container" psql -U postgres -d postgres -At -c 'SELECT id FROM sec001_r03_probe')" = "42"
+            # Real logical backup and restore against this job-owned data only.
+            # Do not confuse this with Patroni/etcd failover or production DR.
+            docker exec "$container" pg_dump -U postgres -d postgres -Fc \
+              --no-owner --no-privileges > "$RUNNER_TEMP/sec001-r03-pg.backup"
+            test -s "$RUNNER_TEMP/sec001-r03-pg.backup"
+            docker exec "$container" createdb -U postgres sec001_r03_restored
+            docker exec -i "$container" pg_restore -U postgres \
+              -d sec001_r03_restored --exit-on-error --no-owner --no-privileges \
+              < "$RUNNER_TEMP/sec001-r03-pg.backup"
+            test "$(docker exec "$container" psql -U postgres -d sec001_r03_restored -Atqc 'SELECT id FROM sec001_r03_probe')" = "42"
+            test "$(docker exec "$container" psql -U postgres -d postgres -Atqc "SHOW fsync")" = on
+            docker exec "$container" psql -U postgres -d postgres -v ON_ERROR_STOP=1 \
+              -c "CREATE EXTENSION IF NOT EXISTS pgcrypto"
+            docker exec "$container" psql -U postgres -d postgres -Atqc \
+              "SELECT extversion FROM pg_extension WHERE extname = 'pgcrypto'" | grep -q .
+            echo "PostgreSQL17 owned-volume restart, logical backup/restore, fsync and pgcrypto PASS"
           elif [[ "$ROLE" == backend-alpine-* ]]; then
             image="sec001-r03-$ROLE:scan"
             docker run --rm --entrypoint python "$image" -c '
