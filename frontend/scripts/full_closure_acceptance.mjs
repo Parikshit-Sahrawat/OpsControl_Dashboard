@@ -40,7 +40,7 @@ try {
  await dialog.getByRole('heading',{name:'Getting started'}).waitFor();
  assert.equal(await dialog.getByRole('link').count(),3);
  for(const a of await dialog.getByRole('link').all())assert.match(await a.getAttribute('href'),/^https:\/\/github.com\/Parikshit-Sahrawat\/OpsControl_Dashboard\/blob\/main\/docs\//);
- await dialog.getByText('Can OpsControl run or change Pentaho jobs?',{exact:true}).click();await dialog.getByText(/Pentaho monitoring is read-only/).waitFor();
+ await dialog.getByText('Does APTron require AWS, Azure or GCP?',{exact:true}).click();await dialog.getByText(/Cloud hosting is optional/).waitFor();
  for(const width of [390,768,1366]){
   await page.setViewportSize({width,height:900});const box=await dialog.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width+1);
   assert.ok(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
