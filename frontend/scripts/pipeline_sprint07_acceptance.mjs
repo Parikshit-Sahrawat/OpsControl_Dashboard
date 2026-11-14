@@ -29,7 +29,6 @@ const pages = {
   schedules: "Schedule Monitoring",
   evidence: "Evidence Review",
   recovery: "Recovery Tracking",
-  incidents: "Incident Correlation",
 };
 async function session(username) {
   const p = await browser.newPage({
@@ -353,41 +352,43 @@ try {
   checks.push(
     "Independent confirmation and reversal preserve original FAILED execution",
   );
-  await route(page, "incidents");
-  await page
-    .getByRole("region", { name: "Native incident correlation" })
-    .getByRole("row")
-    .filter({ hasText: f.incident })
-    .getByRole("button")
-    .click();
-  await page
-    .getByRole("navigation", { name: "Incident detail sections" })
-    .getByRole("button", { name: "Recovery", exact: true })
-    .click();
-  await page
-    .getByText("Restoration is not verified.", { exact: false })
-    .waitFor();
-  await decide(page, "Record recovery assessment");
-  await page
-    .getByRole("navigation", { name: "Incident detail sections" })
-    .getByRole("button", { name: "Recovery", exact: true })
-    .click();
-  await page
-    .getByRole("region", { name: "Recovery assessment history" })
-    .getByRole("row")
-    .nth(1)
-    .waitFor();
-  await screenshot(page, "incident-recovery");
+  // APTron deliberately excludes dedicated Incidents UI. Preserve the
+  // Sprint 07 historical incident/recovery contract via its authorized API,
+  // without restoring retired navigation or granting extra permissions.
+  const operationalNav = page.getByRole("navigation", {
+    name: "Pipeline operational pages",
+  });
   assert.equal(
-    await page
-      .getByRole("button", { name: "Validate recovery evidence", exact: true })
-      .count(),
+    await operationalNav.getByRole("link", { name: "Incident Correlation", exact: true }).count(),
     0,
   );
-  await close(page);
-  await screenshot(page, "incidents");
+  const incidentToken = await page.evaluate(() =>
+    sessionStorage.getItem("opscontrol.sessionToken"),
+  );
+  const incidentHeaders = {
+    Authorization: "Bearer " + incidentToken,
+    "X-OpsControl-Customers": f.organization,
+  };
+  const incidentBase = process.env.V16_API_URL + "/api/v1/native-incidents/" + f.incident;
+  const historical = await page.request.get(incidentBase, {
+    headers: incidentHeaders,
+  });
+  assert.equal(historical.status(), 200, await historical.text());
+  const historicalBody = await historical.json();
+  assert.equal(historicalBody.id, f.incident);
+  assert.equal(historicalBody.organization_id, f.organization);
+  const assessments = await page.request.get(
+    incidentBase + "/recovery-assessments?limit=20&offset=0",
+    { headers: incidentHeaders },
+  );
+  assert.equal(assessments.status(), 200, await assessments.text());
+  const assessmentBody = await assessments.json();
+  assert.ok(Array.isArray(assessmentBody.items));
+  // The failed original and independent recovery proposal/reversal above
+  // must not silently be represented as a verified restoration.
+  assert.notEqual(historicalBody.status, "RESOLVED");
   checks.push(
-    "Assessment records failed validation without declaring restoration",
+    "Excluded incident page remains absent while authenticated historical incident and recovery-assessment APIs remain customer-scoped",
   );
   await route(page, "inventory");
   let release, seen;
