@@ -21,7 +21,7 @@
 | Reference production HA | 3 | 16 vCPU / 64 GiB | Candidate; benchmarks pending |
 | HA plus passive DR | 6 | 16 vCPU / 64 GiB | Two customer-operated independent sites |
 
-For editable assumed values and cost formulas, use the companion internal planning workbook **APTron_SH_v1.0_Illustrative_Customer_Infrastructure_Cost_Assumptions.xlsx**; it is *not embedded in this public source repository*. Administrators may copy it into their own local cost model. Do not share confidential provider quotations or credentials through the application Help UI.
+Download the [example infrastructure assumption values (CSV)](./ASSUMED_INFRASTRUCTURE_VALUES.csv) for local editing. This CSV is intentionally generic and contains fictional values only.\n\nFor editable assumed values and cost formulas, use the companion internal planning workbook **APTron_SH_v1.0_Illustrative_Customer_Infrastructure_Cost_Assumptions.xlsx**; it is *not embedded in this public source repository*. Administrators may copy it into their own local cost model. Do not share confidential provider quotations or credentials through the application Help UI.
 
 ## Replace all sample numbers with real provider quotes
 
