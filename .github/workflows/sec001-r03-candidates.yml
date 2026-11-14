@@ -1,11 +1,6 @@
 name: "SEC001-R03 - Isolated Image Candidate Qualification (No Deploy)"
 on:
   pull_request:
-    paths:
-      - ".github/workflows/sec001-r03-candidates.yml"
-      - "deploy/release/Dockerfile.postgres-gosu-r03-candidate"
-      - "deploy/release/Dockerfile.otel-r03-rebuild-candidate"
-      - "scripts/ci/r03_candidate_report.py"
   workflow_dispatch:
 permissions:
   contents: read
