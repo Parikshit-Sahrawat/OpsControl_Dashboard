@@ -63,7 +63,6 @@ def verify_evidence(directory):
 def validate(directory):
     """Mandatory existing zero-severe plus accountable License/NOTICE gate."""
     verify_evidence(directory)
-    record = json.loads((directory / "provenance.json").read_text())
     scan = json.loads((directory / "grype.json").read_text())
     bad = [
         m
