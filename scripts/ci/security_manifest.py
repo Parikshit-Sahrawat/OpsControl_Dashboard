@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
 
-def validate(directory):
+def verify_evidence(directory):
     record = json.loads((directory / "provenance.json").read_text())
     if not re.fullmatch(r"sha256:[a-f0-9]{64}", record["image_id"]):
         raise ValueError("Immutable image ID required")
@@ -52,6 +52,19 @@ def validate(directory):
         or stamp < datetime.now(timezone.utc) - timedelta(days=7)
     ):
         raise ValueError("Scanner database stale or invalid")
+    return {
+        "status": "PASS_BOUNDED_IMAGE_EVIDENCE",
+        "image_id": record["image_id"],
+        "not_security_approval": True,
+        "not_release_clearance": True,
+    }
+
+
+def validate(directory):
+    """Mandatory existing zero-severe plus accountable License/NOTICE gate."""
+    verify_evidence(directory)
+    record = json.loads((directory / "provenance.json").read_text())
+    scan = json.loads((directory / "grype.json").read_text())
     bad = [
         m
         for m in scan["matches"]
