@@ -34,7 +34,7 @@ const nav = async (name) =>
     .getByRole("button", {
       name:
         {
-          "Resource Management": "Data Sources / Resources",
+          "Resource Management": "Compute Instances",
           "Access Management": "Employees",
         }[name] || name,
       exact: true,

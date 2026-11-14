@@ -1,3 +1,4 @@
+import { checkFoundation } from "./aptron_foundation_acceptance.mjs";
 // Controlled, authenticated scope rejection. No synthetic operational status.
 import assert from 'node:assert/strict';
 import {readFile, writeFile} from 'node:fs/promises';
@@ -19,6 +20,7 @@ try {
   result.checks.push({id:'excluded-incident-navigation',expected:0,actual:count,status:count===0?'PASS':'FAIL'});
   await page.screenshot({path:join(process.env.V16_EVIDENCE_DIR,'ci-scope-desktop.png'),fullPage:true});
   assert.equal(count,0,'Excluded incident-management UI must not be offered as supported');
+  await checkFoundation(page,fixture,process.env.V16_EVIDENCE_DIR);
   result.status='PASS';
 } catch(error) {
   result.status='FAIL';result.error=error.message;

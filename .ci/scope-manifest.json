@@ -3235,15 +3235,15 @@
       "disposition": "RUN",
       "reason": "Existing Node test remains mandatory"
     },
-    "frontend/scripts/permissions.test.mjs::native incident visibility requires its backend permission": {
-      "classification": "UNKNOWN",
+    "frontend/scripts/permissions.test.mjs::dedicated Incidents UI stays excluded even with legacy permission": {
+      "classification": "EXCLUDED_NEGATIVE",
       "disposition": "RUN",
-      "reason": "Existing Node test remains mandatory"
+      "reason": "APTron dedicated incident UI excluded; retain historical API/state contracts and mandatory execution"
     },
-    "frontend/scripts/pipelines.test.mjs::six pages and seven existing incident states": {
-      "classification": "UNKNOWN",
+    "frontend/scripts/pipelines.test.mjs::five operational pages retain seven historical incident states": {
+      "classification": "EXCLUDED_NEGATIVE",
       "disposition": "RUN",
-      "reason": "Existing Node test remains mandatory"
+      "reason": "APTron dedicated incident UI excluded; retain historical API/state contracts and mandatory execution"
     },
     "frontend/scripts/pipelines.test.mjs::pending retry remains nonterminal despite failed attempt": {
       "classification": "UNKNOWN",
@@ -3309,6 +3309,11 @@
       "classification": "UNKNOWN",
       "disposition": "RUN",
       "reason": "Existing Node test remains mandatory"
+    },
+    "frontend/scripts/navigation.test.mjs::domain inventories retain explicit role guards and legacy bookmarks": {
+      "classification": "SHARED_SECURITY",
+      "disposition": "RUN",
+      "reason": "Mandatory APTron role filtering, existing inventory authorization, legacy bookmark preservation and excluded incident entry checks"
     }
   }
 }

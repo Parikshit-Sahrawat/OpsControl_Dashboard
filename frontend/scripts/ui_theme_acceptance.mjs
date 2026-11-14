@@ -21,7 +21,6 @@ const primaryTabs = [
   "Compute Health",
   "API Endpoint Monitoring",
   "Alerts",
-  "Incidents",
   "Reports",
   "Resource Management",
 ];
@@ -130,7 +129,7 @@ async function expandExisting(page, label) {
 async function tab(page, name) {
   if (await page.getByRole("button", { name: "Open navigation" }).isVisible())
     await page.getByRole("button", { name: "Open navigation" }).click();
-  const destination = name === "Resource Management" ? "Data Sources / Resources"
+  const destination = name === "Resource Management" ? "Compute Instances"
     : name === "Access Management" ? "Employees" : name;
   await page.getByRole("navigation", { name: "Primary navigation" })
     .getByRole("button", { name: destination, exact: true }).click();

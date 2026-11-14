@@ -39,8 +39,9 @@ try {
  await page.getByRole('button',{name:'Help',exact:true}).click();dialog=page.getByRole('dialog',{name:'Help and operator guides'});
  await dialog.getByRole('heading',{name:'Getting started'}).waitFor();
  assert.equal(await dialog.getByRole('link').count(),3);
- for(const a of await dialog.getByRole('link').all())assert.match(await a.getAttribute('href'),/^https:\/\/github.com\/Parikshit-Sahrawat\/OpsControl_Dashboard\/blob\/main\/docs\//);
- await dialog.getByText('Can OpsControl run or change Pentaho jobs?',{exact:true}).click();await dialog.getByText(/Pentaho monitoring is read-only/).waitFor();
+ for(const a of await dialog.getByRole('link').all())assert.match(await a.getAttribute('href'),/\/docs\/self-hosted\/[A-Z_]+\.md$/);
+ for(const title of ['Documentation','Learning','Training'])await dialog.getByRole('heading',{name:title,exact:true}).waitFor();
+ await dialog.getByText('Does APTron require AWS, Azure or GCP?',{exact:true}).click();await dialog.getByText(/Cloud hosting is optional/).waitFor();
  for(const width of [390,768,1366]){
   await page.setViewportSize({width,height:900});const box=await dialog.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width+1);
   assert.ok(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth+1));
@@ -65,21 +66,13 @@ try {
  const adminHeaders={Authorization:'Bearer '+adminToken,'X-OpsControl-Customers':north};
  const incidents=await page.request.get(api+'/api/v1/native-incidents?status=CLOSED&limit=100&organization_id='+north,{headers:adminHeaders});assert.equal(incidents.status(),200);
  const expected=await incidents.json();assert.ok(expected.total>=61);assert.equal(expected.items.length,expected.total);
- await page.getByRole('button',{name:'Incidents',exact:true}).click();await page.getByLabel('Incident status',{exact:true}).selectOption('CLOSED');
- const ids=[];
- for(let offset=0;offset<expected.total;offset+=50){
-  const count=Math.min(50,expected.total-offset);
-  await page.getByText(`${offset+1}–${offset+count} of ${expected.total} incidents`,{exact:true}).waitFor();
-  const pageIds=await page.locator('.native-incidents tbody td:first-child small').allTextContents();assert.equal(pageIds.length,count);ids.push(...pageIds);
-  if(offset+count<expected.total)await page.getByRole('button',{name:'Next',exact:true}).click();
- }
- assert.equal(new Set(ids).size,ids.length);assert.deepEqual([...ids].sort(),expected.items.map(x=>x.id).sort());
- assert.equal(await page.getByRole('button',{name:'Next',exact:true}).isDisabled(),true);
- await page.screenshot({path:out+'/incident-pagination-last-page.png',fullPage:true});
+ assert.equal(await page.getByRole('navigation',{name:'Primary navigation'}).getByRole('button',{name:'Incidents',exact:true}).count(),0);
+ // Preserve the historical API and its tenant denial after removal of the UI.
+ const ids=expected.items.map(x=>x.id);
+ assert.equal(new Set(ids).size,ids.length);
  const hidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:southHeaders});assert.equal(hidden.status(),403);
  const scopedHidden=await page.request.get(api+'/api/v1/native-incidents/'+ids[0],{headers:{...adminHeaders,'X-OpsControl-Customers':southHeaders['X-OpsControl-Customers']}});assert.equal(scopedHidden.status(),404);
- await page.getByLabel('Incident status',{exact:true}).selectOption('OPEN');await page.getByRole('button',{name:'Previous',exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Previous',exact:true}).isDisabled(),true);
- checks.push('UI-021 real multi-page filtered incident totals, distinct IDs, last-page bounds, filter reset and cross-tenant denial');
+ checks.push('Excluded dedicated Incidents UI absent; persisted historical records and cross-tenant API denial retained');
  assert.deepEqual(errors,[]);
  await writeFile(out+'/full-closure-browser.json',JSON.stringify({status:'PASS',checks,groups:checks.length,page_errors:errors,limitations:['Preference read failure is explicitly injected for UI recovery only','Appearance is browser-local, not cross-device profile synchronization','No provider certification or new account/password policy']},null,2));
  console.log('FULL DEVELOPMENT CLOSURE BROWSER PASS',checks.length);
