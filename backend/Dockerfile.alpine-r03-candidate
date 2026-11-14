@@ -8,10 +8,18 @@ COPY requirements*.txt bootstrap_pip.py pip-bootstrap.json ./
 RUN --mount=type=secret,id=proxy_ca,required=true \
     PIP_CERT=/run/secrets/proxy_ca python bootstrap_pip.py
 # Require verified musllinux/pure-Python wheels. No unqualified source build.
+# psutil 7.1.0 lacks a musllinux wheel in the verified index. Compile
+# exactly that pinned package in this disposable builder, not in runtime.
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    SSL_CERT_FILE=/run/secrets/proxy_ca apk add --no-cache build-base linux-headers
+RUN --mount=type=secret,id=proxy_ca,required=true \
+    PIP_CERT=/run/secrets/proxy_ca python -m pip wheel \
+      --no-deps --no-binary=psutil --wheel-dir=/tmp/qualified-wheels psutil==7.1.0 \
+    && sha256sum /tmp/qualified-wheels/psutil-7.1.0-*.whl
 RUN --mount=type=secret,id=proxy_ca,required=true \
     PIP_CERT=/run/secrets/proxy_ca python -m pip install \
-      --no-cache-dir --only-binary=:all: --prefix=/install \
-      -r requirements-providers.txt -r requirements-hosts.txt
+      --no-cache-dir --only-binary=:all: --find-links=/tmp/qualified-wheels \
+      --prefix=/install -r requirements-providers.txt -r requirements-hosts.txt
 
 FROM python:3.12.16-alpine3.23@sha256:fe32c943235f1c5748d1106dbdfa25d206355c1be1ae1e167444a7ff9dfa9422 AS runtime_base
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
