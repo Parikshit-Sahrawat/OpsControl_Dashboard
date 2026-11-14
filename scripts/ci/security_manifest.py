@@ -62,7 +62,7 @@ def verify_evidence(directory):
 
 def validate(directory):
     """Mandatory existing zero-severe plus accountable License/NOTICE gate."""
-    verify_evidence(directory)
+    evidence = verify_evidence(directory)
     scan = json.loads((directory / "grype.json").read_text())
     bad = [
         m
@@ -81,7 +81,7 @@ def validate(directory):
         )
     return {
         "status": "PASS_BOUNDED_IMAGE_POLICY",
-        "image_id": record["image_id"],
+        "image_id": evidence["image_id"],
         "not_release_clearance": True,
     }
 
