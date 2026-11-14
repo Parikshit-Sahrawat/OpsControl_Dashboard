@@ -14,7 +14,7 @@ def sha256(path):
 
 
 def assess(root, role, image_id, source, expected_upstream):
-    if role not in {"postgres-gosu-r03", "otel-contrib-r03", "otel-contrib-r03-rebuilt"}:
+    if role not in {"postgres-gosu-r03", "otel-contrib-r03", "otel-contrib-r03-rebuilt", "backend-alpine-runtime-r03", "backend-alpine-migration-r03"}:
         raise ValueError("Unrecognized isolated candidate role")
     if not re.fullmatch(r"sha256:[0-9a-f]{64}", image_id):
         raise ValueError("Docker configuration SHA-256 is missing")
