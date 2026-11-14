@@ -218,17 +218,18 @@ jobs:
                 http:
                   endpoint: 127.0.0.1:4318
             filelog:
-              include: [/tmp/sec001-r03-synthetic.log]
+              include: [/fixture/events.log]
               start_at: beginning
             hostmetrics:
-              collection_interval: 30s
+              collection_interval: 5s
               scrapers:
                 cpu: {}
                 memory: {}
           processors:
             batch: {}
           exporters:
-            debug: {}
+            debug:
+              verbosity: detailed
           service:
             pipelines:
               logs:
@@ -249,6 +250,37 @@ jobs:
             for part in filelog hostmetrics otlp debug; do
               grep -q "$part" "$RUNNER_TEMP/sec001-r03/collector-components.txt"
             done
+            # Actual local filelog -> debug exporter evidence. No external
+            # network, privileged identity, management credential, or promotion.
+            echo SEC001_R03_FILELOG_DELIVERED > "$RUNNER_TEMP/sec001-r03/events.log"
+            chmod 0644 "$RUNNER_TEMP/sec001-r03/events.log"
+            collector="sec001-r03-collector-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${ROLE}"
+            cleanup_collector() {
+              docker rm -f "$collector" >/dev/null 2>&1 || true
+            }
+            trap cleanup_collector EXIT
+            docker run -d --name "$collector" --network none \
+              --user 10001:10001 --cap-drop ALL \
+              --security-opt no-new-privileges \
+              -v "$RUNNER_TEMP/sec001-r03:/fixture:ro" \
+              --entrypoint /otelcol-contrib "$image" --config=/fixture/collector-synthetic.yaml
+            delivered=false
+            for i in $(seq 1 40); do
+              if docker logs "$collector" 2>&1 | grep -Fq SEC001_R03_FILELOG_DELIVERED; then
+                delivered=true
+                break
+              fi
+              if ! docker inspect -f '{{.State.Running}}' "$collector" | grep -qx true; then
+                break
+              fi
+              sleep 1
+            done
+            docker logs "$collector" > "$RUNNER_TEMP/sec001-r03/collector-runtime.log" 2>&1
+            test "$delivered" = true
+            docker inspect -f '{{.State.Running}}' "$collector" | grep -qx true
+            docker stop "$collector"
+            docker rm "$collector"
+            trap - EXIT
           fi
       - name: Generate full exact-image SBOM and Grype evidence
         env:
